@@ -4,9 +4,16 @@ Joomla 3.x
 ## CHANGELOG
 
 ### Version 3.11 - released April 20.04.2026
+Summary of changes:
+- Joomla 3.x is now compatible with PHP up to version 8.5
+- Includes security patches for issues reported in newer versions of Joomla that also apply to Joomla 3.x
+- Includes additional security patches & some quality-of-life improvements
+- Works better with MySQL 8.x
+
+In detail:
 - Patched the MySQLi driver to work better under PHP 8.3
 - Patched 3 CVEs after Joomla 3.10.20 was released (CVE-2025-54476, CVE-2025-63083, CVE-2026-21629)
-- Fixed CVE-2025-54476 bypass: extended whitespace stripping in InputFilter to include `\r`, `\v`, `\f`
+- For CVE-2025-54476: extended whitespace stripping in InputFilter to include `\r`, `\v`, `\f`
 - Added `core.admin` authorisation to `finalise()`, `cleanup()`, and `purge()` in com_joomlaupdate controller
 - Replaced `===` with `hash_equals()` for all TOTP code comparisons (timing-safe)
 - Added Yubico API client ID/secret params to the YubiKey 2FA plugin; added HMAC-SHA1 request signing and response verification
@@ -32,3 +39,20 @@ Joomla 3.x
 - Replaced removed `mhash()` with `hash($algo, $data, true)` for raw-binary output in `UserHelper.php` legacy password schemes (PHP 8.1)
 - Replaced deprecated `strftime()` with `date()` via new `HTMLHelper::strftimeToDateFormat()` helper in calendar field rendering (PHP 8.1)
 - Replaced remaining `utf8_encode()` calls in `twitter/statuses.php` with `mb_convert_encoding()` (PHP 8.2)
+
+
+## CONTRIBUTE
+If you'd like to contribute meaningful upgrades to existing functionality or fix bugs, feel free to open an issue in this project.
+
+
+## TO DO
+- Create endpoints to easily update Joomla 3.x after version 3.11, from within the Joomla backend
+- Maintain modern PHP compatibility and apply security patches when necessary
+
+
+## LONGTERM PLAN AS A DIFFERENT PROJECT
+A new fork is on the way, based on Joomla 3.x. This fork is WIP (but very, very active) and it will feature:
+- A stripped down version of Joomla 3.x with all non-essential extensions removed
+- The focus shifts to K2 and com_content (and anything related) is removed entirely - this way important content features are decoupled from the CMS base which aims to be a solid platform for building sites, maintaining true backwards compatibility for future releases
+- Complete jQuery/Mootools removal - switch to modern JS.
+- Codebase gradually modernized to support future PHP & MySQL/MariaDB versions
