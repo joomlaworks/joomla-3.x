@@ -1,0 +1,1 @@
+ALTER TABLE `#__extensions` CHANGE `enabled` `enabled` TINYINT NOT NULL DEFAULT '0';

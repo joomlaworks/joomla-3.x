@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metafile
+	version="3.7"
+	client="installation">
+	<name>French (Canada)</name>
+	<version>3.7.0</version>
+	<creationDate>2016-10-01</creationDate>
+	<author>Martin Lamothe</author>
+	<copyright>(C) 2014 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<files>
+		<filename>fr-CA.ini</filename>
+	</files>
+	<metadata>
+		<name>French (fr-CA)</name>
+		<nativeName>Français (Canada)</nativeName>
+		<tag>fr-CA</tag>
+		<rtl>0</rtl>
+	</metadata>
+	<params />
+</metafile>

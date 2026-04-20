@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metafile
+	version="3.9"
+	client="installation">
+	<name>English (United Kingdom)</name>
+	<version>3.10.12</version>
+	<creationDate>July 2023</creationDate>
+	<author>Joomla! Project</author>
+	<copyright>(C) 2005 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<files>
+		<filename>en-GB.ini</filename>
+	</files>
+	<metadata>
+		<name>English (en-GB)</name>
+		<nativeName>English (United Kingdom)</nativeName>
+		<tag>en-GB</tag>
+		<rtl>0</rtl>
+	</metadata>
+	<params />
+</metafile>
