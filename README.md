@@ -41,13 +41,19 @@ In detail:
 - Replaced remaining `utf8_encode()` calls in `twitter/statuses.php` with `mb_convert_encoding()` (PHP 8.2)
 
 
-## CONTRIBUTE
-If you'd like to contribute meaningful upgrades to existing functionality or fix bugs, feel free to open an issue in this project.
-
-
 ## TO DO
 - Create endpoints to easily update Joomla 3.x after version 3.11, from within the Joomla backend
 - Maintain modern PHP compatibility and apply security patches when necessary
+
+
+## HOW TO USE / UPGRADE
+To upgrade: Grab the project zip (for now) and using the terminal, extract on top of an existing Joomla 3.10.12 or newer version. On a production site, remove the "/installation" folder and you're done.
+
+To install from scratch: just extract and follow the installation process as you always did.
+
+
+## CONTRIBUTE
+If you'd like to contribute meaningful upgrades to existing functionality or fix bugs, feel free to open an issue in this project.
 
 
 ## LONGTERM PLAN AS A DIFFERENT PROJECT
