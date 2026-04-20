@@ -614,9 +614,35 @@ class HtmlDocument extends Document
 				: count(ModuleHelper::getModules($name));
 		}
 
-		$str = 'return ' . implode(' ', $words) . ';';
+		// Evaluate the integer-and-operator expression without eval()
+		$result = (int) $words[0];
 
-		return eval($str);
+		for ($j = 1, $n = count($words); $j < $n; $j += 2)
+		{
+			$op  = (string) $words[$j];
+			$rhs = (int) $words[$j + 1];
+
+			switch ($op)
+			{
+				case '+':   $result += $rhs; break;
+				case '-':   $result -= $rhs; break;
+				case '*':   $result *= $rhs; break;
+				case '/':   $result = $rhs !== 0 ? intdiv($result, $rhs) : 0; break;
+				case '==':  $result = (int) ($result == $rhs); break;
+				case '!=':
+				case '<>':  $result = (int) ($result != $rhs); break;
+				case '<':   $result = (int) ($result < $rhs); break;
+				case '>':   $result = (int) ($result > $rhs); break;
+				case '<=':  $result = (int) ($result <= $rhs); break;
+				case '>=':  $result = (int) ($result >= $rhs); break;
+				case 'and': $result = (int) ($result && $rhs); break;
+				case 'or':  $result = (int) ($result || $rhs); break;
+				case 'xor': $result = (int) ((bool) $result xor (bool) $rhs); break;
+				default:    $result = 0;
+			}
+		}
+
+		return $result;
 	}
 
 	/**

@@ -78,6 +78,15 @@ class CacheStorage
 	public $_hash;
 
 	/**
+	 * Cache threshold (legacy, no longer used in core)
+	 *
+	 * @var    integer
+	 * @since  1.7.0
+	 * @deprecated  4.0
+	 */
+	public $_threshold;
+
+	/**
 	 * Constructor
 	 *
 	 * @param   array  $options  Optional parameters

@@ -20,7 +20,7 @@ defined('_JEXEC') or die;
 		<?php $class = $listItem->liClass ? ' class="' . $listItem->liClass . '"' : ''; ?>
 		<li<?php echo $class; ?>>
 			<a href="<?php echo $listItem->link; ?>" class="<?php echo $listItem->class; ?>">
-				<?php echo $listItem->title; ?>
+				<?php echo htmlspecialchars($listItem->title, ENT_QUOTES, 'UTF-8'); ?>
 			</a>
 		</li>
 	<?php endforeach; ?>

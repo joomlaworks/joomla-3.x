@@ -34,7 +34,7 @@ class JDatabaseExceptionExecuting extends RuntimeException
 	 *
 	 * @since   3.6
 	 */
-	public function __construct($query, $message = '', $code = 0, Exception $previous = null)
+	public function __construct($query, $message = '', $code = 0, ?Exception $previous = null)
 	{
 		parent::__construct($message, $code, $previous);
 

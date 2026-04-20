@@ -57,7 +57,7 @@ class SiteRouter extends Router
 	 *
 	 * @since   3.4
 	 */
-	public function __construct($options = array(), CMSApplication $app = null, \JMenu $menu = null)
+	public function __construct($options = array(), ?CMSApplication $app = null, ?\JMenu $menu = null)
 	{
 		parent::__construct($options);
 

@@ -46,7 +46,7 @@ class AdminModelProfile extends UsersModelUser
 		if ($this->loadFormData()->username)
 		{
 			$username = $this->loadFormData()->username;
-			$isUsernameCompliant = !(preg_match('#[<>"\'%;()&\\\\]|\\.\\./#', $username) || strlen(utf8_decode($username)) < 2
+			$isUsernameCompliant = !(preg_match('#[<>"\';()&\\\\]|\\.\\../#', $username) || mb_strlen($username, 'UTF-8') < 2
 				|| trim($username) != $username);
 		}
 

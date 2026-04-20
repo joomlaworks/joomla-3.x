@@ -163,7 +163,8 @@ class FinderIndexerStemmerFr extends FinderIndexerStemmer
 			$rule = $vars['rules'][$i];
 			$rule = preg_replace($vars['rule_pattern'], "\\1", $rule);
 
-			if (strncasecmp(utf8_decode($rule), $reversedInput, strlen(utf8_decode($rule))) == 0)
+			$ruleISO = mb_convert_encoding($rule, 'ISO-8859-1', 'UTF-8');
+			if (strncasecmp($ruleISO, $reversedInput, strlen($ruleISO)) == 0)
 			{
 				return $i;
 			}
@@ -185,7 +186,8 @@ class FinderIndexerStemmerFr extends FinderIndexerStemmer
 	{
 		$vars = static::getStemRules();
 
-		if (preg_match('/[' . $vars['vowels'] . ']$/', utf8_encode($reversedStem)))
+		$reversedStemUTF8 = mb_convert_encoding($reversedStem, 'UTF-8', 'ISO-8859-1');
+		if (preg_match('/[' . $vars['vowels'] . ']$/', $reversedStemUTF8))
 		{
 			// If the form starts with a vowel then at least two letters must remain after stemming (e.g.: "etaient" --> "et")
 			return (strlen($reversedStem) > 2);
@@ -199,7 +201,7 @@ class FinderIndexerStemmerFr extends FinderIndexerStemmer
 			}
 
 			// And at least one of these must be a vowel or "y"
-			return preg_match('/[' . $vars['vowels'] . ']/', utf8_encode($reversedStem));
+			return preg_match('/[' . $vars['vowels'] . ']/', $reversedStemUTF8);
 		}
 	}
 
@@ -216,7 +218,7 @@ class FinderIndexerStemmerFr extends FinderIndexerStemmer
 	{
 		$vars = static::getStemRules();
 
-		$reversed_input = strrev(utf8_decode($input));
+		$reversed_input = strrev(mb_convert_encoding($input, 'ISO-8859-1', 'UTF-8'));
 		$rule_number = 0;
 
 		// This loop goes through the rules' array until it finds an ending one (ending by '.') or the last one ('end0.')
@@ -233,7 +235,7 @@ class FinderIndexerStemmerFr extends FinderIndexerStemmer
 			$rule = $vars['rules'][$rule_number];
 			preg_match($vars['rule_pattern'], $rule, $matches);
 
-			$reversed_stem = utf8_decode($matches[4]) . substr($reversed_input, $matches[3]);
+			$reversed_stem = mb_convert_encoding($matches[4], 'ISO-8859-1', 'UTF-8') . substr($reversed_input, $matches[3]);
 
 			if (self::check($reversed_stem))
 			{
@@ -251,6 +253,6 @@ class FinderIndexerStemmerFr extends FinderIndexerStemmer
 			}
 		}
 
-		return utf8_encode(strrev($reversed_input));
+		return mb_convert_encoding(strrev($reversed_input), 'UTF-8', 'ISO-8859-1');
 	}
 }

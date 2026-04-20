@@ -46,7 +46,7 @@ abstract class JTwitterObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function __construct(Registry &$options = null, JHttp $client = null, JTwitterOAuth $oauth = null)
+	public function __construct(Registry &$options = null, ?JHttp $client = null, ?JTwitterOAuth $oauth = null)
 	{
 		$this->options = isset($options) ? $options : new Registry;
 		$this->client = isset($client) ? $client : new JHttp($this->options);

@@ -27,7 +27,7 @@ class JGoogleDataPicasa extends JGoogleData
 	 *
 	 * @since   3.1.4
 	 */
-	public function __construct(Registry $options = null, JGoogleAuth $auth = null)
+	public function __construct(?Registry $options = null, ?JGoogleAuth $auth = null)
 	{
 		parent::__construct($options, $auth);
 

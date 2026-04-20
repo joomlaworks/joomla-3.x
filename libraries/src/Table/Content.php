@@ -86,7 +86,7 @@ class Content extends Table
 	 * @since   1.6
 	 * @deprecated  3.1.4 Class will be removed upon completion of transition to UCM
 	 */
-	protected function _getAssetParentId(Table $table = null, $id = null)
+	protected function _getAssetParentId(?Table $table = null, $id = null)
 	{
 		$assetId = null;
 

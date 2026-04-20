@@ -56,7 +56,7 @@ abstract class AbstractApplication implements LoggerAwareInterface
 	 *
 	 * @since   1.0
 	 */
-	public function __construct(Input $input = null, Registry $config = null)
+	public function __construct(?Input $input = null, ?Registry $config = null)
 	{
 		$this->input  = $input instanceof Input ? $input : new Input;
 		$this->config = $config instanceof Registry ? $config : new Registry;

@@ -60,7 +60,7 @@ abstract class FeedParser
 	 *
 	 * @since   3.1.4
 	 */
-	public function __construct(\XMLReader $stream, InputFilter $inputFilter = null)
+	public function __construct(\XMLReader $stream, ?InputFilter $inputFilter = null)
 	{
 		$this->stream      = $stream;
 		$this->inputFilter = $inputFilter ? $inputFilter : InputFilter::getInstance(array(), array(), 1, 1);

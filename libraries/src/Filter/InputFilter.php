@@ -1178,7 +1178,7 @@ class InputFilter extends BaseInputFilter
 
 			foreach ($trans_tbl as $k => $v)
 			{
-				$ttr[$v] = utf8_encode($k);
+				$ttr[$v] = mb_convert_encoding($k, 'UTF-8', 'ISO-8859-1');
 			}
 		}
 
@@ -1187,14 +1187,14 @@ class InputFilter extends BaseInputFilter
 		// Convert decimal
 		$source = preg_replace_callback('/&#(\d+);/m', function($m)
 		{
-			return utf8_encode(chr($m[1]));
+			return mb_convert_encoding(chr($m[1]), 'UTF-8', 'ISO-8859-1');
 		}, $source
 		);
 
 		// Convert hex
 		$source = preg_replace_callback('/&#x([a-f0-9]+);/mi', function($m)
 		{
-			return utf8_encode(chr(hexdec($m[1])));
+			return mb_convert_encoding(chr(hexdec($m[1])), 'UTF-8', 'ISO-8859-1');
 		}, $source
 		);
 

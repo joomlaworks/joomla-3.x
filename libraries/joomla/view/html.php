@@ -43,7 +43,7 @@ abstract class JViewHtml extends JViewBase
 	 *
 	 * @since   3.0.0
 	 */
-	public function __construct(JModel $model, SplPriorityQueue $paths = null)
+	public function __construct(JModel $model, ?SplPriorityQueue $paths = null)
 	{
 		parent::__construct($model);
 

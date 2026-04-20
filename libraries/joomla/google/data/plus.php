@@ -45,7 +45,7 @@ class JGoogleDataPlus extends JGoogleData
 	 *
 	 * @since   3.1.4
 	 */
-	public function __construct(Registry $options = null, JGoogleAuth $auth = null)
+	public function __construct(?Registry $options = null, ?JGoogleAuth $auth = null)
 	{
 		// Setup the default API url if not already set.
 		$options->def('api.url', 'https://www.googleapis.com/plus/v1/');

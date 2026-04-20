@@ -187,7 +187,7 @@ class UsersModelReset extends JModelForm
 		$user = JUser::getInstance($userId);
 
 		// Check for a user and that the tokens match.
-		if (empty($user) || $user->activation !== $token)
+		if (empty($user) || !hash_equals((string) $user->activation, (string) $token))
 		{
 			$this->setError(JText::_('COM_USERS_USER_NOT_FOUND'));
 

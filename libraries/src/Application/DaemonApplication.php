@@ -108,7 +108,7 @@ class DaemonApplication extends CliApplication
 	 * @since   1.7.0
 	 * @throws  \RuntimeException
 	 */
-	public function __construct(\JInputCli $input = null, Registry $config = null, \JEventDispatcher $dispatcher = null)
+	public function __construct(?\JInputCli $input = null, ?Registry $config = null, ?\JEventDispatcher $dispatcher = null)
 	{
 		// Verify that the process control extension for PHP is available.
 		if (!defined('SIGHUP'))
@@ -286,7 +286,7 @@ class DaemonApplication extends CliApplication
 
 		// The application description.  This string is used in generating startup scripts.
 		$tmp = (string) $this->config->get('application_description', 'A generic Joomla Platform application.');
-		$this->config->set('application_description', filter_var($tmp, FILTER_SANITIZE_STRING));
+		$this->config->set('application_description', strip_tags($tmp));
 
 		/*
 		 * Setup the application path options.  This defines the default executable name, executable directory,
@@ -465,7 +465,7 @@ class DaemonApplication extends CliApplication
 		}
 
 		// Change the user id for the process necessary.
-		if ($uid && (posix_getuid($file) != $uid) && (!@ posix_setuid($uid)))
+		if ($uid && (posix_getuid() != $uid) && (!@ posix_setuid($uid)))
 		{
 			\JLog::add('Unable to change user ownership of the proccess.', \JLog::ERROR);
 
@@ -473,7 +473,7 @@ class DaemonApplication extends CliApplication
 		}
 
 		// Change the group id for the process necessary.
-		if ($gid && (posix_getgid($file) != $gid) && (!@ posix_setgid($gid)))
+		if ($gid && (posix_getgid() != $gid) && (!@ posix_setgid($gid)))
 		{
 			\JLog::add('Unable to change group ownership of the proccess.', \JLog::ERROR);
 

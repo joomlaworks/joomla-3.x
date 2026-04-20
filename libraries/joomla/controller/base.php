@@ -43,7 +43,7 @@ abstract class JControllerBase implements JController
 	 *
 	 * @since  3.0.0
 	 */
-	public function __construct(JInput $input = null, AbstractApplication $app = null)
+	public function __construct(?JInput $input = null, ?AbstractApplication $app = null)
 	{
 		// Setup dependencies.
 		$this->app = isset($app) ? $app : $this->loadApplication();

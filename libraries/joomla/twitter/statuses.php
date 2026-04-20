@@ -177,7 +177,7 @@ class JTwitterStatuses extends JTwitterObject
 		$path = '/statuses/update.json';
 
 		// Set POST data.
-		$data = array('status' => utf8_encode($status));
+		$data = array('status' => mb_convert_encoding($status, 'UTF-8', 'ISO-8859-1'));
 
 		// Check if in_reply_to_status_id is specified.
 		if ($inReplyToStatusId)
@@ -513,7 +513,7 @@ class JTwitterStatuses extends JTwitterObject
 
 		// Set POST data.
 		$data = array(
-			'status' => utf8_encode($status),
+			'status' => mb_convert_encoding($status, 'UTF-8', 'ISO-8859-1'),
 			'media[]' => "@{$media}",
 		);
 

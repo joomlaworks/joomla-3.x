@@ -118,7 +118,7 @@ class JTwitter
 	 *
 	 * @since   3.1.4
 	 */
-	public function __construct(JTwitterOAuth $oauth = null, Registry $options = null, JHttp $client = null)
+	public function __construct(?JTwitterOAuth $oauth = null, ?Registry $options = null, ?JHttp $client = null)
 	{
 		$this->oauth = $oauth;
 		$this->options = isset($options) ? $options : new Registry;

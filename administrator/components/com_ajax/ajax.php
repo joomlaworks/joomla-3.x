@@ -9,4 +9,10 @@
 
 defined('_JEXEC') or die;
 
+// CVE-2026-21629: Administrator area AJAX requires an authenticated (non-guest) user.
+if (JFactory::getUser()->guest)
+{
+	throw new RuntimeException(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+}
+
 require_once JPATH_SITE . '/components/com_ajax/ajax.php';

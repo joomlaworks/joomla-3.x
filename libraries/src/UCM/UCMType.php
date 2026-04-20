@@ -86,7 +86,7 @@ class UCMType implements UCM
 	 *
 	 * @since   3.1
 	 */
-	public function __construct($alias = null, \JDatabaseDriver $database = null, BaseApplication $application = null)
+	public function __construct($alias = null, ?\JDatabaseDriver $database = null, ?BaseApplication $application = null)
 	{
 		$this->db = $database ?: \JFactory::getDbo();
 		$app      = $application ?: \JFactory::getApplication();

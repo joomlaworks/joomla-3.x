@@ -325,6 +325,9 @@ class InputFilter
 		$attrSubSet[0] = strtolower($attrSubSet[0]);
 		$attrSubSet[1] = html_entity_decode(strtolower($attrSubSet[1]), $quoteStyle, 'UTF-8');
 
+		// Remove common XSS-evasion characters (CVE-2025-54476); include all ASCII whitespace per WHATWG URL parsing
+		$attrSubSet[1] = str_replace(["\t", "\n", "\r", "\v", "\f", " ", "\0"], '', $attrSubSet[1]);
+
 		return (strpos($attrSubSet[1], 'expression') !== false && $attrSubSet[0] === 'style')
 			|| preg_match('/(?:(?:java|vb|live)script|behaviour|mocha)(?::|&colon;|&column;)/', $attrSubSet[1]) !== 0;
 	}

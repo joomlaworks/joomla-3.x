@@ -62,7 +62,7 @@ class JGithubPackageIssuesComments extends JGithubPackage
 	 *
 	 * @return  array
 	 */
-	public function getRepositoryList($owner, $repo, $sort = 'created', $direction = 'asc', JDate $since = null)
+	public function getRepositoryList($owner, $repo, $sort = 'created', $direction = 'asc', ?JDate $since = null)
 	{
 		// Build the request path.
 		$path = '/repos/' . $owner . '/' . $repo . '/issues/comments';

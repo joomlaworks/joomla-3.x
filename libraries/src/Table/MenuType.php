@@ -273,7 +273,7 @@ class MenuType extends Table
 	 *
 	 * @since   3.6
 	 */
-	protected function _getAssetParentId(Table $table = null, $id = null)
+	protected function _getAssetParentId(?Table $table = null, $id = null)
 	{
 		$assetId = null;
 		$asset = Table::getInstance('asset');

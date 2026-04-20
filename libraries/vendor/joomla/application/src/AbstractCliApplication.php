@@ -53,7 +53,7 @@ abstract class AbstractCliApplication extends AbstractApplication
 	 *
 	 * @since   1.0
 	 */
-	public function __construct(Input\Cli $input = null, Registry $config = null, Cli\CliOutput $output = null, Cli\CliInput $cliInput = null)
+	public function __construct(?Input\Cli $input = null, ?Registry $config = null, ?Cli\CliOutput $output = null, ?Cli\CliInput $cliInput = null)
 	{
 		// Close the application if we are not executed from the command line.
 		// @codeCoverageIgnoreStart

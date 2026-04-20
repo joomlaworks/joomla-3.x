@@ -48,7 +48,7 @@ class Cli extends Input
 	 * @since   1.7.0
 	 * @deprecated  5.0  Use Joomla\Input\Cli instead
 	 */
-	public function __construct(array $source = null, array $options = array())
+	public function __construct(?array $source = null, array $options = array())
 	{
 		if (isset($options['filter']))
 		{
@@ -102,6 +102,61 @@ class Cli extends Input
 	{
 		// Unserialize the executable, args, options, data, and inputs.
 		list($this->executable, $this->args, $this->options, $this->data, $this->inputs) = unserialize($input);
+
+		// Load the filter.
+		if (isset($this->options['filter']))
+		{
+			$this->filter = $this->options['filter'];
+		}
+		else
+		{
+			$this->filter = InputFilter::getInstance();
+		}
+	}
+
+	/**
+	 * Magic method to serialize the input (PHP 8.1+ __serialize/__unserialize API).
+	 *
+	 * @return  array
+	 *
+	 * @since   3.11.0
+	 * @deprecated  5.0  Use Joomla\Input\Cli instead
+	 */
+	public function __serialize(): array
+	{
+		// Load all of the inputs.
+		$this->loadAllInputs();
+
+		// Remove $_ENV and $_SERVER from the inputs.
+		$inputs = $this->inputs;
+		unset($inputs['env'], $inputs['server']);
+
+		return array(
+			'executable' => $this->executable,
+			'args'       => $this->args,
+			'options'    => $this->options,
+			'data'       => $this->data,
+			'inputs'     => $inputs,
+		);
+	}
+
+	/**
+	 * Magic method to unserialize the input (PHP 8.1+ __serialize/__unserialize API).
+	 *
+	 * @param   array  $data  The serialized data array.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.11.0
+	 * @deprecated  5.0  Use Joomla\Input\Cli instead
+	 */
+	public function __unserialize(array $data): void
+	{
+		$this->executable = $data['executable'];
+		$this->args       = $data['args'];
+		$this->options    = $data['options'];
+		$this->data       = $data['data'];
+		$this->inputs     = $data['inputs'];
 
 		// Load the filter.
 		if (isset($this->options['filter']))

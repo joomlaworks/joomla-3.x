@@ -45,7 +45,7 @@ abstract class JLinkedinObject
 	 *
 	 * @since   3.2.0
 	 */
-	public function __construct(Registry $options = null, JHttp $client = null, JLinkedinOAuth $oauth = null)
+	public function __construct(?Registry $options = null, ?JHttp $client = null, ?JLinkedinOAuth $oauth = null)
 	{
 		$this->options = isset($options) ? $options : new Registry;
 		$this->client = isset($client) ? $client : new JHttp($this->options);

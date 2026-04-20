@@ -118,7 +118,7 @@ class JFacebook
 	 *
 	 * @since   3.2.0
 	 */
-	public function __construct(JFacebookOAuth $oauth = null, Registry $options = null, JHttp $client = null)
+	public function __construct(?JFacebookOAuth $oauth = null, ?Registry $options = null, ?JHttp $client = null)
 	{
 		$this->oauth = $oauth;
 		$this->options = isset($options) ? $options : new Registry;

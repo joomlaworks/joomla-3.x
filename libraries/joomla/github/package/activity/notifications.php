@@ -34,7 +34,7 @@ class JGithubPackageActivityNotifications extends JGithubPackage
 	 *
 	 * @return object
 	 */
-	public function getList($all = true, $participating = true, JDate $since = null)
+	public function getList($all = true, $participating = true, ?JDate $since = null)
 	{
 		// Build the request path.
 		$path = '/notifications?';
@@ -65,7 +65,7 @@ class JGithubPackageActivityNotifications extends JGithubPackage
 	 *
 	 * @return object
 	 */
-	public function getListRepository($owner, $repo, $all = true, $participating = true, JDate $since = null)
+	public function getListRepository($owner, $repo, $all = true, $participating = true, ?JDate $since = null)
 	{
 		// Build the request path.
 		$path = '/repos/' . $owner . '/' . $repo . '/notifications?';
@@ -93,7 +93,7 @@ class JGithubPackageActivityNotifications extends JGithubPackage
 	 *
 	 * @return object
 	 */
-	public function markRead($unread = true, $read = true, JDate $lastReadAt = null)
+	public function markRead($unread = true, $read = true, ?JDate $lastReadAt = null)
 	{
 		// Build the request path.
 		$path = '/notifications';
@@ -130,7 +130,7 @@ class JGithubPackageActivityNotifications extends JGithubPackage
 	 *
 	 * @return object
 	 */
-	public function markReadRepository($owner, $repo, $unread, $read, JDate $lastReadAt = null)
+	public function markReadRepository($owner, $repo, $unread, $read, ?JDate $lastReadAt = null)
 	{
 		// Build the request path.
 		$path = '/repos/' . $owner . '/' . $repo . '/notifications';

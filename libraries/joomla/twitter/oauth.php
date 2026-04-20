@@ -35,7 +35,7 @@ class JTwitterOAuth extends JOAuth1Client
 	 *
 	 * @since   3.1.4
 	 */
-	public function __construct(Registry $options = null, JHttp $client = null, JInput $input = null, JApplicationWeb $application = null)
+	public function __construct(?Registry $options = null, ?JHttp $client = null, ?JInput $input = null, ?JApplicationWeb $application = null)
 	{
 		$this->options = isset($options) ? $options : new Registry;
 

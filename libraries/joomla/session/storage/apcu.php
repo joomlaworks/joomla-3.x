@@ -46,6 +46,7 @@ class JSessionStorageApcu extends JSessionStorage
 	 *
 	 * @since   3.9
 	 */
+	#[\ReturnTypeWillChange]
 	public function read($id)
 	{
 		$sess_id = 'sess_' . $id;
@@ -63,6 +64,7 @@ class JSessionStorageApcu extends JSessionStorage
 	 *
 	 * @since   3.9
 	 */
+	#[\ReturnTypeWillChange]
 	public function write($id, $sessionData)
 	{
 		$sess_id = 'sess_' . $id;
@@ -79,6 +81,7 @@ class JSessionStorageApcu extends JSessionStorage
 	 *
 	 * @since   3.9
 	 */
+	#[\ReturnTypeWillChange]
 	public function destroy($id)
 	{
 		$sess_id = 'sess_' . $id;

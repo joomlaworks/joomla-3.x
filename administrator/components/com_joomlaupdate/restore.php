@@ -4915,6 +4915,12 @@ function masterSetup()
 
 	if (!is_null($serialized))
 	{
+		// Require the same password protection that the JSON path enforces
+		if (empty($json) || empty($password))
+		{
+			die('###{"status":false,"message":"Invalid login"}###');
+		}
+
 		// Get the serialized factory
 		AKFactory::unserialize($serialized);
 		AKFactory::set('kickstart.enabled', true);

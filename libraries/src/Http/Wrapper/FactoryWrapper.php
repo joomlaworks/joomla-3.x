@@ -34,7 +34,7 @@ class FactoryWrapper
 	 * @since   3.4
 	 * @throws  \RuntimeException
 	 */
-	public function getHttp(Registry $options = null, $adapters = null)
+	public function getHttp(?Registry $options = null, $adapters = null)
 	{
 		return HttpFactory::getHttp($options, $adapters);
 	}

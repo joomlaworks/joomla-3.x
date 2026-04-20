@@ -51,7 +51,7 @@ abstract class BaseApplication extends AbstractApplication
 	 *
 	 * @since   3.0.0
 	 */
-	public function __construct(Input $input = null, Registry $config = null)
+	public function __construct(?Input $input = null, ?Registry $config = null)
 	{
 		$this->input = $input instanceof Input ? $input : new Input;
 		$this->config = $config instanceof Registry ? $config : new Registry;
@@ -101,7 +101,7 @@ abstract class BaseApplication extends AbstractApplication
 	 *
 	 * @since   3.0.0
 	 */
-	public function triggerEvent($event, array $args = null)
+	public function triggerEvent($event, ?array $args = null)
 	{
 		if ($this->dispatcher instanceof \JEventDispatcher)
 		{
@@ -124,7 +124,7 @@ abstract class BaseApplication extends AbstractApplication
 	 *
 	 * @since   3.0.0
 	 */
-	public function loadDispatcher(\JEventDispatcher $dispatcher = null)
+	public function loadDispatcher(?\JEventDispatcher $dispatcher = null)
 	{
 		$this->dispatcher = ($dispatcher === null) ? \JEventDispatcher::getInstance() : $dispatcher;
 
@@ -144,7 +144,7 @@ abstract class BaseApplication extends AbstractApplication
 	 *
 	 * @since   3.0.0
 	 */
-	public function loadIdentity(\JUser $identity = null)
+	public function loadIdentity(?\JUser $identity = null)
 	{
 		$this->identity = ($identity === null) ? \JFactory::getUser() : $identity;
 

@@ -27,6 +27,7 @@ class JSessionStorageDatabase extends JSessionStorage
 	 *
 	 * @since   1.7.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function read($id)
 	{
 		// Get the database connection object and verify its connected.
@@ -64,6 +65,7 @@ class JSessionStorageDatabase extends JSessionStorage
 	 *
 	 * @since   1.7.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function write($id, $data)
 	{
 		// Get the database connection object and verify its connected.
@@ -105,6 +107,7 @@ class JSessionStorageDatabase extends JSessionStorage
 	 *
 	 * @since   1.7.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function destroy($id)
 	{
 		// Get the database connection object and verify its connected.
@@ -136,6 +139,7 @@ class JSessionStorageDatabase extends JSessionStorage
 	 *
 	 * @since   1.7.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function gc($lifetime = 1440)
 	{
 		// Get the database connection object and verify its connected.

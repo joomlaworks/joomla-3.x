@@ -30,7 +30,7 @@ class JMediawikiLinks extends JMediawikiObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function getLinks(array $titles, array $plnamespace = null, $pllimit = null, $plcontinue = null, array $pltitles = null, $pldir = null)
+	public function getLinks(array $titles, ?array $plnamespace = null, $pllimit = null, $plcontinue = null, ?array $pltitles = null, $pldir = null)
 	{
 		// Build the request.
 		$path = '?action=query&prop=links';
@@ -273,7 +273,7 @@ class JMediawikiLinks extends JMediawikiObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function enumerateLinks($alcontinue = false, $alfrom = null, $alto = null, $alprefix = null, $alunique = null, array $alprop = null,
+	public function enumerateLinks($alcontinue = false, $alfrom = null, $alto = null, $alprefix = null, $alunique = null, ?array $alprop = null,
 		$alnamespace = null, $allimit = null)
 	{
 		// Build the request.

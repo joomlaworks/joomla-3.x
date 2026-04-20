@@ -162,7 +162,7 @@ abstract class AbstractWebApplication extends AbstractApplication
 	 *
 	 * @since   1.0
 	 */
-	public function __construct(Input $input = null, Registry $config = null, Web\WebClient $client = null)
+	public function __construct(?Input $input = null, ?Registry $config = null, ?Web\WebClient $client = null)
 	{
 		$this->client = $client instanceof Web\WebClient ? $client : new Web\WebClient;
 

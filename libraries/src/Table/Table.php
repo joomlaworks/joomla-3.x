@@ -418,7 +418,7 @@ abstract class Table extends \JObject implements \JObservableInterface, \JTableI
 	 *
 	 * @since   1.7.0
 	 */
-	protected function _getAssetParentId(Table $table = null, $id = null)
+	protected function _getAssetParentId(?Table $table = null, $id = null)
 	{
 		// For simple cases, parent to the asset root.
 		/** @var  \JTableAsset  $assets */

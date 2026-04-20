@@ -54,7 +54,7 @@ class JGoogle
 	 *
 	 * @since   3.1.4
 	 */
-	public function __construct(Registry $options = null, JGoogleAuth $auth = null)
+	public function __construct(?Registry $options = null, ?JGoogleAuth $auth = null)
 	{
 		$this->options = isset($options) ? $options : new Registry;
 		$this->auth  = isset($auth) ? $auth : new JGoogleAuthOauth2($this->options);

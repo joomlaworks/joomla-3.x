@@ -148,6 +148,11 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 			return false;
 		}
 
+		if (!JFactory::getUser()->authorise('core.admin'))
+		{
+			throw new RuntimeException(JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
+		}
+
 		$options['format'] = '{DATE}\t{TIME}\t{LEVEL}\t{CODE}\t{MESSAGE}';
 		$options['text_file'] = 'joomla_update.php';
 		JLog::addLogger($options, JLog::INFO, array('Update', 'databasequery', 'jerror'));
@@ -190,6 +195,11 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 			$this->setRedirect('index.php?option=com_joomlaupdate&view=update&layout=finaliseconfirm');
 
 			return false;
+		}
+
+		if (!JFactory::getUser()->authorise('core.admin'))
+		{
+			throw new RuntimeException(JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
 		}
 
 		$options['format'] = '{DATE}\t{TIME}\t{LEVEL}\t{CODE}\t{MESSAGE}';
@@ -236,6 +246,11 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 	{
 		// Check for request forgeries
 		$this->checkToken();
+
+		if (!JFactory::getUser()->authorise('core.admin'))
+		{
+			throw new RuntimeException(JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
+		}
 
 		// Purge updates
 		/** @var JoomlaupdateModelDefault $model */

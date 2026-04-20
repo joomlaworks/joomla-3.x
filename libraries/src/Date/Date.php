@@ -431,7 +431,7 @@ class Date extends \DateTime
 	 * @link    http://dev.mysql.com/doc/refman/5.0/en/datetime.html
 	 * @since   2.5.0
 	 */
-	public function toSql($local = false, \JDatabaseDriver $db = null)
+	public function toSql($local = false, ?\JDatabaseDriver $db = null)
 	{
 		if ($db === null)
 		{

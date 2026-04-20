@@ -39,7 +39,7 @@ abstract class JGithubObject
 	 *
 	 * @since   1.7.3
 	 */
-	public function __construct(Registry $options = null, JGithubHttp $client = null)
+	public function __construct(?Registry $options = null, ?JGithubHttp $client = null)
 	{
 		$this->options = isset($options) ? $options : new Registry;
 		$this->client  = isset($client) ? $client : new JGithubHttp($this->options);

@@ -36,7 +36,7 @@ class AdministratorApplication extends CMSApplication
 	 *
 	 * @since   3.2
 	 */
-	public function __construct(Input $input = null, Registry $config = null, \JApplicationWebClient $client = null)
+	public function __construct(?Input $input = null, ?Registry $config = null, ?\JApplicationWebClient $client = null)
 	{
 		// Register the application name
 		$this->_name = 'administrator';

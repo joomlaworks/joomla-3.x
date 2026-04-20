@@ -67,7 +67,7 @@ class SocketTransport implements TransportInterface
 	 * @since   1.7.3
 	 * @throws  \RuntimeException
 	 */
-	public function request($method, Uri $uri, $data = null, array $headers = null, $timeout = null, $userAgent = null)
+	public function request($method, Uri $uri, $data = null, ?array $headers = null, $timeout = null, $userAgent = null)
 	{
 		$connection = $this->connect($uri, $timeout);
 

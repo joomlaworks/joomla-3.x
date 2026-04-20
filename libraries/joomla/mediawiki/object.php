@@ -38,7 +38,7 @@ abstract class JMediawikiObject
      *
      * @since   3.1.4
      */
-	public function __construct(Registry $options = null, JMediawikiHttp $client = null)
+	public function __construct(?Registry $options = null, ?JMediawikiHttp $client = null)
 	{
 		$this->options = isset($options) ? $options : new Registry;
 		$this->client = isset($client) ? $client : new JMediawikiHttp($this->options);

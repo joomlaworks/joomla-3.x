@@ -121,7 +121,7 @@ class Session implements \IteratorAggregate
 	 *
 	 * @since   1.7.0
 	 */
-	public function __construct($store = 'none', array $options = array(), \JSessionHandlerInterface $handlerInterface = null)
+	public function __construct($store = 'none', array $options = array(), ?\JSessionHandlerInterface $handlerInterface = null)
 	{
 		// Set the session handler
 		$this->_handler = $handlerInterface instanceof \JSessionHandlerInterface ? $handlerInterface : new \JSessionHandlerJoomla($options);
@@ -180,7 +180,7 @@ class Session implements \IteratorAggregate
 	 *
 	 * @since   1.7.0
 	 */
-	public static function getInstance($store, $options, \JSessionHandlerInterface $handlerInterface = null)
+	public static function getInstance($store, $options, ?\JSessionHandlerInterface $handlerInterface = null)
 	{
 		if (!is_object(self::$instance))
 		{
@@ -466,7 +466,7 @@ class Session implements \IteratorAggregate
 	 *
 	 * @since   3.0.1
 	 */
-	public function initialise(Input $input, \JEventDispatcher $dispatcher = null)
+	public function initialise(Input $input, ?\JEventDispatcher $dispatcher = null)
 	{
 		// With the introduction of the handler class this variable is no longer required
 		// however we keep setting it for b/c

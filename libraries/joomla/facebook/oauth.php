@@ -34,7 +34,7 @@ class JFacebookOAuth extends JOAuth2Client
 	 *
 	 * @since   3.2.0
 	 */
-	public function __construct(Registry $options = null, JHttp $client = null, JInput $input = null)
+	public function __construct(?Registry $options = null, ?JHttp $client = null, ?JInput $input = null)
 	{
 		$this->options = isset($options) ? $options : new Registry;
 

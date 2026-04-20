@@ -439,7 +439,7 @@ abstract class UserHelper
 				return $plaintext;
 
 			case 'sha':
-				$encrypted = base64_encode(mhash(MHASH_SHA1, $plaintext));
+				$encrypted = base64_encode(hash('sha1', $plaintext, true));
 
 				return ($showEncrypt) ? '{SHA}' . $encrypted : $encrypted;
 
@@ -450,17 +450,17 @@ abstract class UserHelper
 				return ($showEncrypt ? '{crypt}' : '') . crypt($plaintext, $salt);
 
 			case 'md5-base64':
-				$encrypted = base64_encode(mhash(MHASH_MD5, $plaintext));
+				$encrypted = base64_encode(hash('md5', $plaintext, true));
 
 				return ($showEncrypt) ? '{MD5}' . $encrypted : $encrypted;
 
 			case 'ssha':
-				$encrypted = base64_encode(mhash(MHASH_SHA1, $plaintext . $salt) . $salt);
+				$encrypted = base64_encode(hash('sha1', $plaintext . $salt, true) . $salt);
 
 				return ($showEncrypt) ? '{SSHA}' . $encrypted : $encrypted;
 
 			case 'smd5':
-				$encrypted = base64_encode(mhash(MHASH_MD5, $plaintext . $salt) . $salt);
+				$encrypted = base64_encode(hash('md5', $plaintext . $salt, true) . $salt);
 
 				return ($showEncrypt) ? '{SMD5}' . $encrypted : $encrypted;
 

@@ -33,6 +33,24 @@
 					<option value="2">PLG_TWOFACTORAUTH_YUBIKEY_SECTION_ADMIN</option>
 					<option value="3">PLG_TWOFACTORAUTH_YUBIKEY_SECTION_BOTH</option>
 				</field>
+				<field
+					name="clientid"
+					type="text"
+					label="PLG_TWOFACTORAUTH_YUBIKEY_CLIENTID_LABEL"
+					description="PLG_TWOFACTORAUTH_YUBIKEY_CLIENTID_DESC"
+					default=""
+					filter="integer"
+					size="10"
+				/>
+				<field
+					name="clientsecret"
+					type="password"
+					label="PLG_TWOFACTORAUTH_YUBIKEY_CLIENTSECRET_LABEL"
+					description="PLG_TWOFACTORAUTH_YUBIKEY_CLIENTSECRET_DESC"
+					default=""
+					filter="raw"
+					size="64"
+				/>
 			</fieldset>
 		</fields>
 	</config>

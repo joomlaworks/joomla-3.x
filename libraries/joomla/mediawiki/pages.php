@@ -334,7 +334,7 @@ class JMediawikiPages extends JMediawikiObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function getPageInfo(array $titles, array $inprop = null, array $intoken = null, $incontinue = null)
+	public function getPageInfo(array $titles, ?array $inprop = null, ?array $intoken = null, $incontinue = null)
 	{
 		// Build the request
 		$path = '?action=query&prop=info';
@@ -410,7 +410,7 @@ class JMediawikiPages extends JMediawikiObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function getRevisions(array $titles, array $rvprop = null, $rvparse = null, $rvlimit = null)
+	public function getRevisions(array $titles, ?array $rvprop = null, $rvparse = null, $rvlimit = null)
 	{
 		// Build the request
 		$path = '?action=query&prop=revisions';
@@ -453,7 +453,7 @@ class JMediawikiPages extends JMediawikiObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function getPageTemplates(array $titles, array $tlnamespace = null, $tllimit = null, $tlcontinue = null, $tltemplates = null, $tldir = null)
+	public function getPageTemplates(array $titles, ?array $tlnamespace = null, $tllimit = null, $tlcontinue = null, $tltemplates = null, $tldir = null)
 	{
 		// Build the request.
 		$path = '?action=query&prop=templates';
@@ -507,7 +507,7 @@ class JMediawikiPages extends JMediawikiObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function getBackLinks($bltitle, $blpageid = null, $blcontinue = null, array $blnamespace = null, $blfilterredirect = null,
+	public function getBackLinks($bltitle, $blpageid = null, $blcontinue = null, ?array $blnamespace = null, $blfilterredirect = null,
 		$bllimit = null, $blredirect = null)
 	{
 		// Build the request.
@@ -567,7 +567,7 @@ class JMediawikiPages extends JMediawikiObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function getIWBackLinks($iwbltitle, $iwblprefix = null, $iwblcontinue = null, $iwbllimit = null, array $iwblprop = null)
+	public function getIWBackLinks($iwbltitle, $iwblprefix = null, $iwblcontinue = null, $iwbllimit = null, ?array $iwblprop = null)
 	{
 		// Build the request
 		$path = '?action=query&list=iwbacklinks';

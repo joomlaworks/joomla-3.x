@@ -204,7 +204,7 @@ abstract class JDatabaseQuery
 	 *
 	 * @since   1.7.0
 	 */
-	public function __construct(JDatabaseDriver $db = null)
+	public function __construct(?JDatabaseDriver $db = null)
 	{
 		$this->db = $db;
 	}

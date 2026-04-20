@@ -34,7 +34,7 @@ class HttpFactory
 	 *
 	 * @since   3.0.0
 	 */
-	public static function getHttp(Registry $options = null, $adapters = null)
+	public static function getHttp(?Registry $options = null, $adapters = null)
 	{
 		if (empty($options))
 		{

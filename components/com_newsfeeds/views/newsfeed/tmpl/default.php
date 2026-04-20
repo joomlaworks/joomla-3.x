@@ -41,8 +41,8 @@ defined('_JEXEC') or die;
 			<?php if ($this->item->published == 0) : ?>
 				<span class="label label-warning"><?php echo JText::_('JUNPUBLISHED'); ?></span>
 			<?php endif; ?>
-			<a href="<?php echo $this->item->link; ?>" target="_blank">
-				<?php echo str_replace('&apos;', "'", $this->item->name); ?>
+			<a href="<?php echo $this->escape($this->item->link); ?>" target="_blank">
+				<?php echo $this->escape(str_replace('&apos;', "'", $this->item->name)); ?>
 			</a>
 		</h2>
 		<?php if ($this->params->get('show_tags', 1)) : ?>
@@ -75,13 +75,13 @@ defined('_JEXEC') or die;
 		<!-- Show Feed's Description -->
 		<?php if ($this->params->get('show_feed_description')) : ?>
 			<div class="feed-description">
-				<?php echo str_replace('&apos;', "'", $this->rssDoc->description); ?>
+				<?php echo $this->escape(str_replace('&apos;', "'", $this->rssDoc->description)); ?>
 			</div>
 		<?php endif; ?>
 		<!-- Show Image -->
 		<?php if ($this->rssDoc->image && $this->params->get('show_feed_image')) : ?>
 			<div>
-				<img src="<?php echo $this->rssDoc->image->uri; ?>" alt="<?php echo $this->rssDoc->image->title; ?>" />
+				<img src="<?php echo $this->escape($this->rssDoc->image->uri); ?>" alt="<?php echo $this->escape($this->rssDoc->image->title); ?>" />
 			</div>
 		<?php endif; ?>
 		<!-- Show items -->
@@ -97,12 +97,12 @@ defined('_JEXEC') or die;
 					<li>
 						<?php if (!empty($uri)) : ?>
 							<h3 class="feed-link">
-								<a href="<?php echo htmlspecialchars($uri); ?>" target="_blank">
-									<?php echo trim($this->rssDoc[$i]->title); ?>
+								<a href="<?php echo htmlspecialchars($uri, ENT_QUOTES, 'UTF-8'); ?>" target="_blank">
+									<?php echo $this->escape(trim($this->rssDoc[$i]->title)); ?>
 								</a>
 							</h3>
 						<?php else : ?>
-							<h3 class="feed-link"><?php echo trim($this->rssDoc[$i]->title); ?></h3>
+							<h3 class="feed-link"><?php echo $this->escape(trim($this->rssDoc[$i]->title)); ?></h3>
 						<?php endif; ?>
 						<?php if ($this->params->get('show_item_description') && $text !== '') : ?>
 							<div class="feed-item-description">

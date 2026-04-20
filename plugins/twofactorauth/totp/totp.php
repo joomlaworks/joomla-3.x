@@ -192,7 +192,7 @@ class PlgTwofactorauthTotp extends JPlugin
 
 		// Check the security code entered by the user (exact time slot match)
 		$code = $totp->getCode($data['key']);
-		$check = $code === $data['securitycode'];
+		$check = hash_equals((string) $code, (string) $data['securitycode']);
 
 		/*
 		 * If the check fails, test the previous 30 second slot. This allow the
@@ -203,7 +203,7 @@ class PlgTwofactorauthTotp extends JPlugin
 		{
 			$time = time() - 30;
 			$code = $totp->getCode($data['key'], $time);
-			$check = $code === $data['securitycode'];
+			$check = hash_equals((string) $code, (string) $data['securitycode']);
 		}
 
 		/*
@@ -214,7 +214,7 @@ class PlgTwofactorauthTotp extends JPlugin
 		{
 			$time = time() + 30;
 			$code = $totp->getCode($data['key'], $time);
-			$check = $code === $data['securitycode'];
+			$check = hash_equals((string) $code, (string) $data['securitycode']);
 		}
 
 		if (!$check)
@@ -274,7 +274,7 @@ class PlgTwofactorauthTotp extends JPlugin
 
 		// Check the code
 		$code = $totp->getCode($otpConfig->config['code']);
-		$check = $code === $credentials['secretkey'];
+		$check = hash_equals((string) $code, (string) $credentials['secretkey']);
 
 		/*
 		 * If the check fails, test the previous 30 second slot. This allow the
@@ -285,7 +285,7 @@ class PlgTwofactorauthTotp extends JPlugin
 		{
 			$time = time() - 30;
 			$code = $totp->getCode($otpConfig->config['code'], $time);
-			$check = $code === $credentials['secretkey'];
+			$check = hash_equals((string) $code, (string) $credentials['secretkey']);
 		}
 
 		/*
@@ -296,7 +296,7 @@ class PlgTwofactorauthTotp extends JPlugin
 		{
 			$time = time() + 30;
 			$code = $totp->getCode($otpConfig->config['code'], $time);
-			$check = $code === $credentials['secretkey'];
+			$check = hash_equals((string) $code, (string) $credentials['secretkey']);
 		}
 
 		return $check;

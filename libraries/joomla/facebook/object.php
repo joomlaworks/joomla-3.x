@@ -46,7 +46,7 @@ abstract class JFacebookObject
 	 *
 	 * @since   3.2.0
 	 */
-	public function __construct(Registry $options = null, JHttp $client = null, JFacebookOAuth $oauth = null)
+	public function __construct(?Registry $options = null, ?JHttp $client = null, ?JFacebookOAuth $oauth = null)
 	{
 		$this->options = isset($options) ? $options : new Registry;
 		$this->client = isset($client) ? $client : new JHttp($this->options);
@@ -112,7 +112,7 @@ abstract class JFacebookObject
 	 * @since    3.2.0
 	 * @throws   DomainException
 	 */
-	public function sendRequest($path, $data = '', array $headers = null, $limit = 0, $offset = 0, $until = null, $since = null)
+	public function sendRequest($path, $data = '', ?array $headers = null, $limit = 0, $offset = 0, $until = null, $since = null)
 	{
 		// Send the request.
 		$response = $this->client->get($this->fetchUrl($path, $limit, $offset, $until, $since), $headers);
@@ -213,7 +213,7 @@ abstract class JFacebookObject
 	 *
 	 * @since   3.2.0
 	 */
-	public function createConnection($object, $connection = null, $parameters = null, array $headers = null)
+	public function createConnection($object, $connection = null, $parameters = null, ?array $headers = null)
 	{
 		if ($this->oauth->isAuthenticated())
 		{

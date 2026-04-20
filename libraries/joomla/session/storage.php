@@ -16,7 +16,7 @@ defined('JPATH_PLATFORM') or die;
  * @since       1.7.0
  * @deprecated  4.0  The CMS' Session classes will be replaced with the `joomla/session` package
  */
-abstract class JSessionStorage
+abstract class JSessionStorage implements \SessionHandlerInterface
 {
 	/**
 	 * @var    JSessionStorage[]  JSessionStorage instances container.
@@ -97,14 +97,8 @@ abstract class JSessionStorage
 	{
 		if (!headers_sent())
 		{
-			session_set_save_handler(
-				array($this, 'open'),
-				array($this, 'close'),
-				array($this, 'read'),
-				array($this, 'write'),
-				array($this, 'destroy'),
-				array($this, 'gc')
-			);
+			// Use object form to avoid deprecation in PHP 8.1+ (individual callbacks were deprecated).
+			session_set_save_handler($this, true);
 		}
 	}
 
@@ -118,6 +112,7 @@ abstract class JSessionStorage
 	 *
 	 * @since   1.7.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function open($savePath, $sessionName)
 	{
 		return true;
@@ -130,6 +125,7 @@ abstract class JSessionStorage
 	 *
 	 * @since   1.7.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function close()
 	{
 		return true;
@@ -145,9 +141,10 @@ abstract class JSessionStorage
 	 *
 	 * @since   1.7.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function read($id)
 	{
-		return;
+		return '';
 	}
 
 	/**
@@ -160,6 +157,7 @@ abstract class JSessionStorage
 	 *
 	 * @since   1.7.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function write($id, $sessionData)
 	{
 		return true;
@@ -175,6 +173,7 @@ abstract class JSessionStorage
 	 *
 	 * @since   1.7.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function destroy($id)
 	{
 		return true;
@@ -189,6 +188,7 @@ abstract class JSessionStorage
 	 *
 	 * @since   1.7.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function gc($maxlifetime = null)
 	{
 		return true;

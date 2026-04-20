@@ -32,7 +32,7 @@ class JMediawikiSearch extends JMediawikiObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function search($srsearch, array $srnamespace = null, $srwhat = null, array $srinfo = null, array $srprop = null,
+	public function search($srsearch, ?array $srnamespace = null, $srwhat = null, ?array $srinfo = null, ?array $srprop = null,
 		$srredirects = null, $sroffest = null, $srlimit = null)
 	{
 		// Build the request.
@@ -97,7 +97,7 @@ class JMediawikiSearch extends JMediawikiObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function openSearch($search, $limit = null, array $namespace = null, $suggest = null, $format = null)
+	public function openSearch($search, $limit = null, ?array $namespace = null, $suggest = null, $format = null)
 	{
 		// Build the request.
 		$path = '?action=query&list=search';

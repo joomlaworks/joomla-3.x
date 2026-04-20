@@ -98,7 +98,7 @@ class JMediawikiUsers extends JMediawikiObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function getUserInfo(array $ususers, array $usprop = null)
+	public function getUserInfo(array $ususers, ?array $usprop = null)
 	{
 		// Build the request path.
 		$path = '?action=query&list=users';
@@ -126,7 +126,7 @@ class JMediawikiUsers extends JMediawikiObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function getCurrentUserInfo(array $uiprop = null)
+	public function getCurrentUserInfo(?array $uiprop = null)
 	{
 		// Build the request path.
 		$path = '?action=query&meta=userinfo';
@@ -163,7 +163,7 @@ class JMediawikiUsers extends JMediawikiObject
 	 * @since   3.1.4
 	 */
 	public function getUserContribs($ucuser = null, $ucuserprefix = null, $uclimit = null, $ucstart = null, $ucend = null, $uccontinue = null,
-		$ucdir = null, array $ucnamespace = null, array $ucprop = null, array $ucshow = null, $uctag = null, $uctoponly = null)
+		$ucdir = null, ?array $ucnamespace = null, ?array $ucprop = null, ?array $ucshow = null, $uctag = null, $uctoponly = null)
 	{
 		// Build the request path.
 		$path = '?action=query&list=usercontribs';

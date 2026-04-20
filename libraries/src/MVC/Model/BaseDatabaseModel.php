@@ -222,7 +222,7 @@ abstract class BaseDatabaseModel extends \JObject
 	 * @since   3.0
 	 * @throws  \Exception
 	 */
-	public function __construct($config = array(), MVCFactoryInterface $factory = null)
+	public function __construct($config = array(), ?MVCFactoryInterface $factory = null)
 	{
 		// Guess the option from the class name (Option)Model(View).
 		if (empty($this->option))

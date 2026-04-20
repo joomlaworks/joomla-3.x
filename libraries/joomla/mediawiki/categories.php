@@ -31,8 +31,8 @@ class JMediawikiCategories extends JMediawikiObject
 	 *
 	 * @since   3.0.0
 	 */
-	public function getCategories(array $titles, array $clprop = null, array $clshow = null, $cllimit = null, $clcontinue = false,
-		array $clcategories = null, $cldir = null)
+	public function getCategories(array $titles, ?array $clprop = null, ?array $clshow = null, $cllimit = null, $clcontinue = false,
+		?array $clcategories = null, $cldir = null)
 	{
 		// Build the request.
 		$path = '?action=query&prop=categories';
@@ -154,8 +154,8 @@ class JMediawikiCategories extends JMediawikiObject
 	 * @since   3.2.2 (CMS)
 	 * @throws  RuntimeException
 	 */
-	public function getCategoryMembers($cmtitle = null, $cmpageid = null, $cmlimit = null, array $cmprop = null, array $cmnamespace = null,
-		array $cmtype = null, $cmstart = null, $cmend = null, $cmstartsortkey = null, $cmendsortkey = null, $cmstartsortkeyprefix = null,
+	public function getCategoryMembers($cmtitle = null, $cmpageid = null, $cmlimit = null, ?array $cmprop = null, ?array $cmnamespace = null,
+		?array $cmtype = null, $cmstart = null, $cmend = null, $cmstartsortkey = null, $cmendsortkey = null, $cmstartsortkeyprefix = null,
 		$cmendsortkeyprefix = null, $cmsort = null, $cmdir = null, $cmcontinue = null)
 	{
 		// Build the request.
@@ -271,7 +271,7 @@ class JMediawikiCategories extends JMediawikiObject
 	 * @since   3.1.4
 	 */
 	public function enumerateCategories($acfrom = null, $acto = null, $acprefix = null, $acdir = null, $acmin = null,
-		$acmax = null, $aclimit = null, array $acprop = null)
+		$acmax = null, $aclimit = null, ?array $acprop = null)
 	{
 		// Build the request.
 		$path = '?action=query&list=allcategories';
@@ -337,7 +337,7 @@ class JMediawikiCategories extends JMediawikiObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function getChangeTags(array $tgprop = null, $tglimit = null)
+	public function getChangeTags(?array $tgprop = null, $tglimit = null)
 	{
 		// Build the request.
 		$path = '?action=query&list=tags';

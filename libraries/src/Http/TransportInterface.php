@@ -43,7 +43,7 @@ interface TransportInterface
 	 *
 	 * @since   1.7.3
 	 */
-	public function request($method, Uri $uri, $data = null, array $headers = null, $timeout = null, $userAgent = null);
+	public function request($method, Uri $uri, $data = null, ?array $headers = null, $timeout = null, $userAgent = null);
 
 	/**
 	 * Method to check if HTTP transport is available for use

@@ -1,0 +1,37 @@
+# Joomla! media upload directory — deny PHP (and related) execution.
+# This is a defence-in-depth measure. The primary extension and MIME
+# checks in com_media/JHelperMedia are the first line of defence.
+
+# Apache 2.4
+<IfModule mod_authz_core.c>
+	<FilesMatch "(?i)\.(php[0-9]?|php\d+|phtml|phar|shtml|cgi|pl|py|asp|aspx|exe|sh|bash)$">
+		Require all denied
+	</FilesMatch>
+</IfModule>
+
+# Apache 2.2
+<IfModule !mod_authz_core.c>
+	<FilesMatch "(?i)\.(php[0-9]?|php\d+|phtml|phar|shtml|cgi|pl|py|asp|aspx|exe|sh|bash)$">
+		Order Deny,Allow
+		Deny from All
+	</FilesMatch>
+</IfModule>
+
+# Disable script execution via mod_php/suPHP regardless of extension
+<IfModule mod_php5.c>
+	php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+	php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+	php_flag engine off
+</IfModule>
+
+# Prevent CGI execution
+Options -ExecCGI
+
+# Prevent .htaccess files inside subdirectories from re-enabling execution
+<IfModule mod_autoindex.c>
+	Options -Indexes
+</IfModule>

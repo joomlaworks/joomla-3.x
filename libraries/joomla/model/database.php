@@ -35,7 +35,7 @@ abstract class JModelDatabase extends JModelBase
 	 *
 	 * @since   3.0.0
 	 */
-	public function __construct(Registry $state = null, JDatabaseDriver $db = null)
+	public function __construct(?Registry $state = null, ?JDatabaseDriver $db = null)
 	{
 		parent::__construct($state);
 

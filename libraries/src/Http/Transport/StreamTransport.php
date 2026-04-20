@@ -68,7 +68,7 @@ class StreamTransport implements TransportInterface
 	 * @since   1.7.3
 	 * @throws  \RuntimeException
 	 */
-	public function request($method, Uri $uri, $data = null, array $headers = null, $timeout = null, $userAgent = null)
+	public function request($method, Uri $uri, $data = null, ?array $headers = null, $timeout = null, $userAgent = null)
 	{
 		// Create the stream context options array with the required method offset.
 		$options = array('method' => strtoupper($method));

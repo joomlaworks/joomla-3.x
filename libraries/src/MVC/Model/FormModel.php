@@ -48,7 +48,7 @@ abstract class FormModel extends BaseDatabaseModel
 	 * @see     \JModelLegacy
 	 * @since   3.6
 	 */
-	public function __construct($config = array(), MVCFactoryInterface $factory = null)
+	public function __construct($config = array(), ?MVCFactoryInterface $factory = null)
 	{
 		$config['events_map'] = isset($config['events_map']) ? $config['events_map'] : array();
 

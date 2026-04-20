@@ -201,7 +201,7 @@ class WebApplication extends BaseApplication
 	 *
 	 * @since   1.7.3
 	 */
-	public function __construct(Input $input = null, Registry $config = null, \JApplicationWebClient $client = null)
+	public function __construct(?Input $input = null, ?Registry $config = null, ?\JApplicationWebClient $client = null)
 	{
 		// If an input object is given use it.
 		if ($input instanceof Input)
@@ -1132,7 +1132,7 @@ class WebApplication extends BaseApplication
 	 *
 	 * @since   1.7.3
 	 */
-	public function loadDocument(\JDocument $document = null)
+	public function loadDocument(?\JDocument $document = null)
 	{
 		$this->document = ($document === null) ? \JFactory::getDocument() : $document;
 
@@ -1152,7 +1152,7 @@ class WebApplication extends BaseApplication
 	 *
 	 * @since   1.7.3
 	 */
-	public function loadLanguage(\JLanguage $language = null)
+	public function loadLanguage(?\JLanguage $language = null)
 	{
 		$this->language = ($language === null) ? \JFactory::getLanguage() : $language;
 
@@ -1172,7 +1172,7 @@ class WebApplication extends BaseApplication
 	 *
 	 * @since   1.7.3
 	 */
-	public function loadSession(\JSession $session = null)
+	public function loadSession(?\JSession $session = null)
 	{
 		if ($session !== null)
 		{
@@ -1302,9 +1302,9 @@ class WebApplication extends BaseApplication
 		$this->set('uri.base.path', $path . '/');
 
 		// Set the extended (non-base) part of the request URI as the route.
-		if (stripos($this->get('uri.request'), $this->get('uri.base.full')) === 0)
+		if (stripos((string) $this->get('uri.request'), (string) $this->get('uri.base.full')) === 0)
 		{
-			$this->set('uri.route', substr_replace($this->get('uri.request'), '', 0, strlen($this->get('uri.base.full'))));
+			$this->set('uri.route', substr_replace((string) $this->get('uri.request'), '', 0, strlen((string) $this->get('uri.base.full'))));
 		}
 
 		// Get an explicitly set media URI is present.

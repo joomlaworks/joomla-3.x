@@ -50,7 +50,7 @@ abstract class JApplicationWebRouter
 	 *
 	 * @since   3.0
 	 */
-	public function __construct(JApplicationWeb $app, JInput $input = null)
+	public function __construct(JApplicationWeb $app, ?JInput $input = null)
 	{
 		$this->app   = $app;
 		$this->input = ($input === null) ? $this->app->input : $input;

@@ -105,7 +105,7 @@ class CMSApplication extends WebApplication
 	 *
 	 * @since   3.2
 	 */
-	public function __construct(Input $input = null, Registry $config = null, \JApplicationWebClient $client = null)
+	public function __construct(?Input $input = null, ?Registry $config = null, ?\JApplicationWebClient $client = null)
 	{
 		parent::__construct($input, $config, $client);
 
@@ -786,7 +786,7 @@ class CMSApplication extends WebApplication
 	 *
 	 * @since   3.2
 	 */
-	public function loadSession(\JSession $session = null)
+	public function loadSession(?\JSession $session = null)
 	{
 		if ($session !== null)
 		{

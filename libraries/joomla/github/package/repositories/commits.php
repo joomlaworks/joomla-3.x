@@ -40,7 +40,7 @@ class JGithubPackageRepositoriesCommits extends JGithubPackage
 	 *
 	 * @return  array
 	 */
-	public function getList($user, $repo, $sha = '', $path = '', $author = '', JDate $since = null, JDate $until = null)
+	public function getList($user, $repo, $sha = '', $path = '', $author = '', ?JDate $since = null, ?JDate $until = null)
 	{
 		// Build the request path.
 		$rPath = '/repos/' . $user . '/' . $repo . '/commits?';

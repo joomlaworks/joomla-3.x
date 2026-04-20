@@ -323,7 +323,7 @@ class BaseController extends \JObject
 	 *
 	 * @since   3.0
 	 */
-	public function __construct($config = array(), MVCFactoryInterface $factory = null)
+	public function __construct($config = array(), ?MVCFactoryInterface $factory = null)
 	{
 		$this->methods = array();
 		$this->message = null;

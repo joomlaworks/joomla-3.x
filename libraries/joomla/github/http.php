@@ -51,7 +51,7 @@ class JGithubHttp extends JHttp
 	 *
 	 * @since   1.7.3
 	 */
-	public function __construct(Registry $options = null, JHttpTransport $transport = null)
+	public function __construct(?Registry $options = null, ?JHttpTransport $transport = null)
 	{
 		// Call the JHttp constructor to setup the object.
 		parent::__construct($options, $transport);

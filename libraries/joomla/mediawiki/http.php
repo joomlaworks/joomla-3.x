@@ -26,7 +26,7 @@ class JMediawikiHttp extends JHttp
      *
      * @since   3.1.4
      */
-	public function __construct(Registry $options = null, JHttpTransport $transport = null)
+	public function __construct(?Registry $options = null, ?JHttpTransport $transport = null)
 	{
 		// Override the JHttp contructor to use JHttpTransportStream.
 		$this->options = isset($options) ? $options : new Registry;
@@ -50,7 +50,7 @@ class JMediawikiHttp extends JHttp
 	 *
 	 * @since   3.1.4
 	 */
-	public function get($url, array $headers = null, $timeout = null)
+	public function get($url, ?array $headers = null, $timeout = null)
 	{
 		// Look for headers set in the options.
 		$temp = (array) $this->options->get('headers');
@@ -84,7 +84,7 @@ class JMediawikiHttp extends JHttp
 	 *
 	 * @since   3.1.4
 	 */
-	public function post($url, $data, array $headers = null, $timeout = null)
+	public function post($url, $data, ?array $headers = null, $timeout = null)
 	{
 		// Look for headers set in the options.
 		$temp = (array) $this->options->get('headers');

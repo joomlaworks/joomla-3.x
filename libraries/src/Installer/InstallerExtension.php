@@ -91,7 +91,7 @@ class InstallerExtension extends \JObject
 	 *
 	 * @since  3.1
 	 */
-	public function __construct(\SimpleXMLElement $element = null)
+	public function __construct(?\SimpleXMLElement $element = null)
 	{
 		if ($element)
 		{

@@ -81,7 +81,7 @@ class JDatabaseFactory
 	 * @since   3.0.0
 	 * @throws  RuntimeException
 	 */
-	public function getExporter($name, JDatabaseDriver $db = null)
+	public function getExporter($name, ?JDatabaseDriver $db = null)
 	{
 		// Derive the class name from the driver.
 		$class = 'JDatabaseExporter' . ucfirst(strtolower($name));
@@ -114,7 +114,7 @@ class JDatabaseFactory
 	 * @since   3.0.0
 	 * @throws  RuntimeException
 	 */
-	public function getImporter($name, JDatabaseDriver $db = null)
+	public function getImporter($name, ?JDatabaseDriver $db = null)
 	{
 		// Derive the class name from the driver.
 		$class = 'JDatabaseImporter' . ucfirst(strtolower($name));
@@ -159,7 +159,7 @@ class JDatabaseFactory
 	 * @since   3.0.0
 	 * @throws  RuntimeException
 	 */
-	public function getQuery($name, JDatabaseDriver $db = null)
+	public function getQuery($name, ?JDatabaseDriver $db = null)
 	{
 		// Derive the class name from the driver.
 		$class = 'JDatabaseQuery' . ucfirst(strtolower($name));
@@ -183,7 +183,7 @@ class JDatabaseFactory
 	 *
 	 * @since   3.0.0
 	 */
-	public static function setInstance(JDatabaseFactory $instance = null)
+	public static function setInstance(?JDatabaseFactory $instance = null)
 	{
 		self::$_instance = $instance;
 	}

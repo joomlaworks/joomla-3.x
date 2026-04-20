@@ -45,7 +45,7 @@ final class HttpBridgePostRequestMethod implements RequestMethod
 	 *
 	 * @since   3.9.0
 	 */
-	public function __construct(Http $http = null)
+	public function __construct(?Http $http = null)
 	{
 		$this->http = $http ?: HttpFactory::getHttp();
 	}

@@ -34,7 +34,7 @@ abstract class JModelBase implements JModel
 	 *
 	 * @since   3.0.0
 	 */
-	public function __construct(Registry $state = null)
+	public function __construct(?Registry $state = null)
 	{
 		// Setup the model.
 		$this->state = isset($state) ? $state : $this->loadState();

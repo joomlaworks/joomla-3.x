@@ -167,7 +167,7 @@ class Input implements \Serializable, \Countable
 	 * @since   1.0
 	 * @see     Countable::count()
 	 */
-	public function count()
+	public function count(): int
 	{
 		return \count($this->data);
 	}
@@ -394,6 +394,52 @@ class Input implements \Serializable, \Countable
 	{
 		// Unserialize the options, data, and inputs.
 		list($this->options, $this->data, $this->inputs) = unserialize($input);
+
+		// Load the filter.
+		if (isset($this->options['filter']))
+		{
+			$this->filter = $this->options['filter'];
+		}
+		else
+		{
+			$this->filter = new Filter\InputFilter;
+		}
+	}
+
+	/**
+	 * Magic method to serialize the input (PHP 8.1+ __serialize/__unserialize API).
+	 * Kept alongside the legacy Serializable interface methods for PHP 7.x compatibility.
+	 *
+	 * @return  array
+	 *
+	 * @since   3.11.0
+	 */
+	public function __serialize(): array
+	{
+		// Load all of the inputs.
+		$this->loadAllInputs();
+
+		// Remove $_ENV and $_SERVER from the inputs.
+		$inputs = $this->inputs;
+		unset($inputs['env'], $inputs['server']);
+
+		return array('options' => $this->options, 'data' => $this->data, 'inputs' => $inputs);
+	}
+
+	/**
+	 * Magic method to unserialize the input (PHP 8.1+ __serialize/__unserialize API).
+	 *
+	 * @param   array  $data  The serialized data array.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.11.0
+	 */
+	public function __unserialize(array $data): void
+	{
+		$this->options = $data['options'];
+		$this->data    = $data['data'];
+		$this->inputs  = $data['inputs'];
 
 		// Load the filter.
 		if (isset($this->options['filter']))

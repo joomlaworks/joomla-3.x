@@ -41,7 +41,7 @@ class UrlRule extends FormRule
 	 * @link    http://www.w3.org/Addressing/URL/url-spec.txt
 	 * @see	    JString
 	 */
-	public function test(\SimpleXMLElement $element, $value, $group = null, Registry $input = null, Form $form = null)
+	public function test(\SimpleXMLElement $element, $value, $group = null, ?Registry $input = null, ?Form $form = null)
 	{
 		// If the field is empty and not required, the field is valid.
 		$required = ((string) $element['required'] == 'true' || (string) $element['required'] == 'required');

@@ -53,7 +53,7 @@ class JOAuth2Client
 	 *
 	 * @since   3.1.4
 	 */
-	public function __construct(Registry $options = null, JHttp $http = null, JInput $input = null, JApplicationWeb $application = null)
+	public function __construct(?Registry $options = null, ?JHttp $http = null, ?JInput $input = null, ?JApplicationWeb $application = null)
 	{
 		$this->options = isset($options) ? $options : new Registry;
 		$this->http = isset($http) ? $http : new JHttp($this->options);

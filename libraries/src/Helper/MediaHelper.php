@@ -177,8 +177,10 @@ class MediaHelper
 
 		// Media file names should never have executable extensions buried in them.
 		$executable = array(
-			'php', 'js', 'exe', 'phtml', 'java', 'perl', 'py', 'asp', 'dll', 'go', 'ade', 'adp', 'bat', 'chm', 'cmd', 'com', 'cpl', 'hta', 'ins', 'isp',
-			'jse', 'lib', 'mde', 'msc', 'msp', 'mst', 'pif', 'scr', 'sct', 'shb', 'sys', 'vb', 'vbe', 'vbs', 'vxd', 'wsc', 'wsf', 'wsh', 'html', 'htm',
+			'php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phps', 'phtml', 'phar',
+			'js', 'exe', 'java', 'perl', 'py', 'asp', 'dll', 'go', 'ade', 'adp', 'bat', 'chm', 'cmd', 'com', 'cpl', 'hta', 'ins', 'isp',
+			'jse', 'lib', 'mde', 'msc', 'msp', 'mst', 'pif', 'scr', 'sct', 'shb', 'sys', 'vb', 'vbe', 'vbs', 'vxd', 'wsc', 'wsf', 'wsh',
+			'shtml', 'html', 'htm',
 		);
 
 		// Remove allowed executables from array
@@ -291,7 +293,7 @@ class MediaHelper
 			}
 		}
 
-		$xss_check = file_get_contents($file['tmp_name'], false, null, -1, 256);
+		$xss_check = file_get_contents($file['tmp_name'], false, null, 0, 256);
 
 		$html_tags = array(
 			'abbr', 'acronym', 'address', 'applet', 'area', 'audioscope', 'base', 'basefont', 'bdo', 'bgsound', 'big', 'blackface', 'blink',

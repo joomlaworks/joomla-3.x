@@ -108,7 +108,7 @@ abstract class AbstractDaemonApplication extends AbstractCliApplication implemen
 	 *
 	 * @since   1.0
 	 */
-	public function __construct(Cli $input = null, Registry $config = null, Cli\CliOutput $output = null, Cli\CliInput $cliInput = null)
+	public function __construct(?Cli $input = null, ?Registry $config = null, ?Cli\CliOutput $output = null, ?Cli\CliInput $cliInput = null)
 	{
 		// Verify that the process control extension for PHP is available.
 		// @codeCoverageIgnoreStart

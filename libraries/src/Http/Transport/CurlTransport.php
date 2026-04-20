@@ -62,7 +62,7 @@ class CurlTransport implements TransportInterface
 	 * @since   1.7.3
 	 * @throws  \RuntimeException
 	 */
-	public function request($method, Uri $uri, $data = null, array $headers = null, $timeout = null, $userAgent = null)
+	public function request($method, Uri $uri, $data = null, ?array $headers = null, $timeout = null, $userAgent = null)
 	{
 		// Setup the cURL handle.
 		$ch = curl_init();

@@ -34,7 +34,7 @@ class JGoogleDataPicasaPhoto extends JGoogleData
 	 *
 	 * @since   3.1.4
 	 */
-	public function __construct(SimpleXMLElement $xml, Registry $options = null, JGoogleAuth $auth = null)
+	public function __construct(SimpleXMLElement $xml, ?Registry $options = null, ?JGoogleAuth $auth = null)
 	{
 		$this->xml = $xml;
 

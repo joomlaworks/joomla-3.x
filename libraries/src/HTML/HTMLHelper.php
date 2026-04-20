@@ -1047,7 +1047,7 @@ abstract class HTMLHelper
 		{
 			$tz = date_default_timezone_get();
 			date_default_timezone_set('UTC');
-			$inputvalue = strftime($format, strtotime($value));
+			$inputvalue = date(static::strftimeToDateFormat($format), strtotime($value));
 			date_default_timezone_set($tz);
 		}
 		else
@@ -1169,5 +1169,38 @@ abstract class HTMLHelper
 		}
 
 		return '{' . implode(',', $elements) . '}';
+	}
+
+	/**
+	 * Convert a strftime() format string to a date() format string.
+	 *
+	 * @param   string  $strftimeFormat  Format using strftime % specifiers.
+	 *
+	 * @return  string  Equivalent date() format string.
+	 *
+	 * @since   3.11
+	 */
+	public static function strftimeToDateFormat($strftimeFormat)
+	{
+		static $map = [
+			'%A' => 'l', '%a' => 'D',
+			'%B' => 'F', '%b' => 'M', '%h' => 'M',
+			'%C' => 'y', '%d' => 'd', '%e' => 'j',
+			'%G' => 'o', '%g' => 'y',
+			'%H' => 'H', '%I' => 'h',
+			'%j' => 'z', '%k' => 'G', '%l' => 'g',
+			'%M' => 'i', '%m' => 'm',
+			'%n' => "\n", '%p' => 'A', '%P' => 'a',
+			'%R' => 'H:i', '%r' => 'h:i:s A',
+			'%S' => 's', '%T' => 'H:i:s',
+			'%t' => "\t",
+			'%u' => 'N', '%V' => 'W', '%w' => 'w', '%W' => 'W',
+			'%X' => 'H:i:s', '%x' => 'm/d/Y',
+			'%Y' => 'Y', '%y' => 'y',
+			'%Z' => 'T', '%z' => 'O',
+			'%%' => '%',
+		];
+
+		return strtr($strftimeFormat, $map);
 	}
 }

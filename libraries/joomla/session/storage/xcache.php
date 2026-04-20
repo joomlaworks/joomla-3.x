@@ -44,6 +44,7 @@ class JSessionStorageXcache extends JSessionStorage
 	 *
 	 * @since   1.7.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function read($id)
 	{
 		$sess_id = 'sess_' . $id;
@@ -51,7 +52,7 @@ class JSessionStorageXcache extends JSessionStorage
 		// Check if id exists
 		if (!xcache_isset($sess_id))
 		{
-			return;
+			return '';
 		}
 
 		return (string) xcache_get($sess_id);
@@ -67,6 +68,7 @@ class JSessionStorageXcache extends JSessionStorage
 	 *
 	 * @since   1.7.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function write($id, $sessionData)
 	{
 		$sess_id = 'sess_' . $id;
@@ -83,6 +85,7 @@ class JSessionStorageXcache extends JSessionStorage
 	 *
 	 * @since   1.7.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function destroy($id)
 	{
 		$sess_id = 'sess_' . $id;

@@ -144,7 +144,7 @@ abstract class PluginHelper
 	 *
 	 * @since   1.5
 	 */
-	public static function importPlugin($type, $plugin = null, $autocreate = true, \JEventDispatcher $dispatcher = null)
+	public static function importPlugin($type, $plugin = null, $autocreate = true, ?\JEventDispatcher $dispatcher = null)
 	{
 		static $loaded = array();
 
@@ -208,7 +208,7 @@ abstract class PluginHelper
 	 * @since   1.5
 	 * @deprecated  4.0  Use PluginHelper::import() instead
 	 */
-	protected static function _import($plugin, $autocreate = true, \JEventDispatcher $dispatcher = null)
+	protected static function _import($plugin, $autocreate = true, ?\JEventDispatcher $dispatcher = null)
 	{
 		static::import($plugin, $autocreate, $dispatcher);
 	}
@@ -224,7 +224,7 @@ abstract class PluginHelper
 	 *
 	 * @since   3.2
 	 */
-	protected static function import($plugin, $autocreate = true, \JEventDispatcher $dispatcher = null)
+	protected static function import($plugin, $autocreate = true, ?\JEventDispatcher $dispatcher = null)
 	{
 		static $paths = array();
 

@@ -125,7 +125,10 @@ class JSessionHandlerNative implements JSessionHandlerInterface
 			throw new LogicException('Cannot change the name of an active session');
 		}
 
-		session_name($name);
+		if (!headers_sent())
+		{
+			session_name($name);
+		}
 	}
 
 	/**
@@ -232,7 +235,10 @@ class JSessionHandlerNative implements JSessionHandlerInterface
 		register_shutdown_function(array($this, 'save'));
 
 		// Disable the cache limiter
-		session_cache_limiter('none');
+		if (!headers_sent())
+		{
+			session_cache_limiter('none');
+		}
 
 		/*
 		 * Extended checks to determine if the session has already been started

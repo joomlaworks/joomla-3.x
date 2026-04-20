@@ -276,13 +276,20 @@ class PlgTwofactorauthYubikey extends JPlugin
 		$token = JSession::getFormToken();
 		$nonce = md5($token . uniqid(mt_rand()));
 
+		$clientId     = (int) $this->params->get('clientid', 0);
+		$clientSecret = trim((string) $this->params->get('clientsecret', ''));
+
+		if (empty($clientId))
+		{
+			return false;
+		}
+
 		while (!$gotResponse && !empty($server_queue))
 		{
 			$server = array_shift($server_queue);
 			$uri    = new JUri('https://' . $server . '/wsapi/2.0/verify');
 
-			// I don't see where this ID is used?
-			$uri->setVar('id', 1);
+			$uri->setVar('id', $clientId);
 
 			// The OTP we read from the user
 			$uri->setVar('otp', $otp);
@@ -295,8 +302,19 @@ class PlgTwofactorauthYubikey extends JPlugin
 			// servers must reply positively for the OTP to validate)
 			$uri->setVar('sl', 50);
 
-			// Timeou waiting for YubiCloud servers to reply: 5 seconds.
+			// Timeout waiting for YubiCloud servers to reply: 5 seconds.
 			$uri->setVar('timeout', 5);
+
+			// Sign the request if we have a client secret (Yubico API v2.0 HMAC-SHA1)
+			if (!empty($clientSecret))
+			{
+				$params = array();
+				parse_str($uri->getQuery(), $params);
+				ksort($params);
+				$paramString = http_build_query($params);
+				$signature   = base64_encode(hash_hmac('sha1', $paramString, base64_decode($clientSecret), true));
+				$uri->setVar('h', $signature);
+			}
 
 			try
 			{
@@ -342,6 +360,27 @@ class PlgTwofactorauthYubikey extends JPlugin
 			$data[$parts[0]] = $parts[1];
 		}
 
+		// Verify the response HMAC signature (Yubico API v2.0)
+		if (!empty($clientSecret))
+		{
+			if (empty($data['h']))
+			{
+				return false;
+			}
+
+			$receivedSig = $data['h'];
+			$checkData   = $data;
+			unset($checkData['h']);
+			ksort($checkData);
+			$checkString    = http_build_query($checkData);
+			$expectedSig    = base64_encode(hash_hmac('sha1', $checkString, base64_decode($clientSecret), true));
+
+			if (!hash_equals($expectedSig, $receivedSig))
+			{
+				return false;
+			}
+		}
+
 		// Validate the response - We need an OK message reply
 		if ($data['status'] !== 'OK')
 		{
@@ -354,14 +393,14 @@ class PlgTwofactorauthYubikey extends JPlugin
 			return false;
 		}
 
-		// Validate the response - The OTP must match
-		if ($data['otp'] !== $otp)
+		// Validate the response - The OTP must match (constant-time)
+		if (!hash_equals((string) $otp, (string) $data['otp']))
 		{
 			return false;
 		}
 
-		// Validate the response - The token must match
-		if ($data['nonce'] !== $nonce)
+		// Validate the response - The nonce must match (constant-time)
+		if (!hash_equals((string) $nonce, (string) $data['nonce']))
 		{
 			return false;
 		}
