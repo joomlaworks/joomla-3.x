@@ -3,7 +3,7 @@
 ## Version 3.11 - released April 20.04.2026
 Summary of changes:
 - Joomla 3.x is now compatible with PHP up to version 8.5
-- Includes security patches for issues reported in newer versions of Joomla that also apply to Joomla 3.x
+- Includes security patches for CVEs reported after Joomla 3.10.20 eLTS was released
 - Includes additional security patches & some quality-of-life improvements
 - Works better with MySQL 8.x
 
