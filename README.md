@@ -39,7 +39,7 @@ A new fork is on the way, based on Joomla 3.x. This fork is WIP (but very, very 
 - A stripped down version of Joomla 3.x with all non-essential extensions removed.
 - Fully compatible with PHP versions from 7.4 to 8.x and so on.
 - Fully compatible with the latest versions of MySQL & MariaDB.
-- The focus shifts to using K2 for content. This means that com_content (and anything related) is removed entirely. This way important content features are decoupled from the CMS base, which aims to be a solid platform for building sites, while maintaining true backwards compatibility with past releases.
+- The focus shifts to using K2 for content. This means that com_content (and anything related) is removed entirely. This way important content features are decoupled from the CMS base, which aims to be a solid platform for building sites, while maintaining true backwards compatibility with past releases (of the fork).
 - Admin refresh.
 - Gradual jQuery/Mootools removal - switch to modern JS only.
 - Gradual codebase modernization to support future PHP & MySQL/MariaDB versions without much effort.
