@@ -28,6 +28,12 @@ To install from scratch: just extract and follow the installation process as you
 If you'd like to contribute meaningful upgrades to existing functionality or fix bugs, feel free to open an issue in this project.
 
 
+## DISCUSS
+The discussion forum is now open: https://github.com/joomlaworks/joomla-3.x/discussions
+
+Use it to report bugs with this distribution of Joomla 3.x only - this includes functional bugs for any existing feature in Joomla 3.x itself.
+
+
 ## LONGTERM PLAN AS A DIFFERENT PROJECT
 A new fork is on the way, based on Joomla 3.x. This fork is WIP (but very, very active) and it will feature:
 - A stripped down version of Joomla 3.x with all non-essential extensions removed
