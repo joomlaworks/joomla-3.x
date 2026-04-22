@@ -19,7 +19,7 @@ For detailed changelog, please visit: https://github.com/joomlaworks/joomla-3.x/
 
 
 ## HOW TO USE / UPGRADE
-To upgrade: Grab the project zip https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.zip (or the one for a specific version from [releases](https://github.com/joomlaworks/joomla-3.x/releases)) and using your server's terminal or file manager, extract on top of an existing Joomla 3.10.12 (or newer version) you wisth to upgrade. Remember to remove the "/installation" folder and you're done.
+To upgrade: Grab the project zip https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.zip (or the one for a specific version from [releases](https://github.com/joomlaworks/joomla-3.x/releases)) and using your server's terminal or file manager, extract on top of an existing Joomla 3.10.12 (or newer version) you wish to upgrade. Remember to remove the "/installation" folder and you're done.
 
 To install from scratch: just extract and follow the installation process as you always did.
 
