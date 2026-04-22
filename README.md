@@ -24,6 +24,23 @@ To upgrade: Grab the project zip https://github.com/joomlaworks/joomla-3.x/archi
 To install from scratch: just extract and follow the installation process as you always did.
 
 
+## NOTES ON MYSQL & MARIADB
+For Joomla 3.x to work flawlessly with MySQL versions 8.0 or newer, you need to have this setting enabled in your my.cnf configuration:
+```
+# For MySQL 8.0 only
+default_authentication_plugin = mysql_native_password
+
+# For MySQL 8.4+
+mysql_native_password         = ON
+```
+Use one or the other, not both. The above settings do not apply to MariaDB.
+
+We also recommend the following setting for maximum compatibility in both MySQL and MariaDB:
+```
+sql_mode = ""
+```
+
+
 ## CONTRIBUTE
 If you'd like to contribute meaningful upgrades to existing functionality or fix bugs, feel free to open an issue in this project.
 
