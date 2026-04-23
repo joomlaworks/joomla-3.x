@@ -1053,7 +1053,7 @@ class CMSApplication extends WebApplication
 				$this->enqueueMessage($message, $type);
 
 				// Reset the $moved variable
-				$status = isset($args[3]) ? (boolean) $args[3] : false;
+				$status = isset($args[3]) ? (bool) $args[3] : false;
 			}
 		}
 

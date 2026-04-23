@@ -52,15 +52,15 @@ class Text
 		{
 			if (array_key_exists('interpretBackSlashes', $jsSafe))
 			{
-				$interpretBackSlashes = (boolean) $jsSafe['interpretBackSlashes'];
+				$interpretBackSlashes = (bool) $jsSafe['interpretBackSlashes'];
 			}
 
 			if (array_key_exists('script', $jsSafe))
 			{
-				$script = (boolean) $jsSafe['script'];
+				$script = (bool) $jsSafe['script'];
 			}
 
-			$jsSafe = array_key_exists('jsSafe', $jsSafe) ? (boolean) $jsSafe['jsSafe'] : false;
+			$jsSafe = array_key_exists('jsSafe', $jsSafe) ? (bool) $jsSafe['jsSafe'] : false;
 		}
 
 		if (self::passSprintf($string, $jsSafe, $interpretBackSlashes, $script))

@@ -122,7 +122,7 @@ class JSessionStorageDatabase extends JSessionStorage
 			// Remove a session from the database.
 			$db->setQuery($query);
 
-			return (boolean) $db->execute();
+			return (bool) $db->execute();
 		}
 		catch (RuntimeException $e)
 		{
@@ -157,7 +157,7 @@ class JSessionStorageDatabase extends JSessionStorage
 			// Remove expired sessions from the database.
 			$db->setQuery($query);
 
-			return (boolean) $db->execute();
+			return (bool) $db->execute();
 		}
 		catch (RuntimeException $e)
 		{

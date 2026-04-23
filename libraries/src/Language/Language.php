@@ -1086,7 +1086,7 @@ class Language
 	public function setDebug($debug)
 	{
 		$previous = $this->debug;
-		$this->debug = (boolean) $debug;
+		$this->debug = (bool) $debug;
 
 		return $previous;
 	}
