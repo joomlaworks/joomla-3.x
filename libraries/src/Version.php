@@ -103,7 +103,7 @@ final class Version
 	 * @var    string
 	 * @since  3.5
 	 */
-	const CODENAME = 'Extended Long Term Support';
+	const CODENAME = '';
 
 	/**
 	 * Release date.
@@ -111,7 +111,7 @@ final class Version
 	 * @var    string
 	 * @since  3.5
 	 */
-	const RELDATE = '7-January-2025';
+	const RELDATE = '23-April-2026';
 
 	/**
 	 * Release time.
@@ -119,7 +119,7 @@ final class Version
 	 * @var    string
 	 * @since  3.5
 	 */
-	const RELTIME = '17:00';
+	const RELTIME = '00:00';
 
 	/**
 	 * Release timezone.
