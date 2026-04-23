@@ -26,7 +26,7 @@ To upgrade: Using your server's terminal or a file manager, extract the current 
 In a typical Linux based server, you can easily do the upgrade using the following one-liner command (after you "cd" into your Joomla site's folder):
 ```
 cd /path/to/joomla/site/
-wget -qO- https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1
+wget -qO- https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 && rm -rf installation *.md .gitignore
 ```
 
 
