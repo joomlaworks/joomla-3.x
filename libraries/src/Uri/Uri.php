@@ -161,15 +161,14 @@ class Uri extends \Joomla\Uri\Uri
 				if (strpos(php_sapi_name(), 'cgi') !== false && !ini_get('cgi.fix_pathinfo') && !empty($_SERVER['REQUEST_URI']))
 				{
 					// PHP-CGI on Apache with "cgi.fix_pathinfo = 0"
-
 					// We shouldn't have user-supplied PATH_INFO in PHP_SELF in this case
 					// because PHP will not work with PATH_INFO at all.
-					$script_name = $_SERVER['PHP_SELF'];
+					$script_name = (string) ($_SERVER['PHP_SELF'] ?? '');
 				}
 				else
 				{
 					// Others
-					$script_name = $_SERVER['SCRIPT_NAME'];
+					$script_name = (string) ($_SERVER['SCRIPT_NAME'] ?? '');
 				}
 
 				// Extra cleanup to remove invalid chars in the URL to prevent injections through broken server implementation

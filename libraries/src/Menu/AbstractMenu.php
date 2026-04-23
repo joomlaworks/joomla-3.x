@@ -213,12 +213,12 @@ class AbstractMenu
 	 */
 	public function getDefault($language = '*')
 	{
-		if (array_key_exists($language, $this->_default))
+		if (array_key_exists($language, $this->_default) && $this->_default[$language] !== null)
 		{
 			return $this->_items[$this->_default[$language]];
 		}
 
-		if (array_key_exists('*', $this->_default))
+		if (array_key_exists('*', $this->_default) && $this->_default['*'] !== null)
 		{
 			return $this->_items[$this->_default['*']];
 		}
@@ -429,4 +429,3 @@ class AbstractMenu
 		}
 	}
 }
-
