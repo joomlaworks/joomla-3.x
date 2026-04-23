@@ -23,6 +23,12 @@ To install: just extract the current version https://github.com/joomlaworks/joom
 
 To upgrade: Using your server's terminal or a file manager, extract the current version https://github.com/joomlaworks/joomla-3.x/releases/download/v3.11/joomla-3.11.zip on top of an existing Joomla 3.10.12 (or newer version) you wish to upgrade. Remember to remove the "/installation" folder and you're done.
 
+In a typical Linux based server, you can easily do the upgrade using the following one-liner command (after you "cd" into your Joomla site's folder):
+```
+cd /path/to/joomla/site/
+wget -qO- https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1
+```
+
 
 ## NOTES ON MYSQL & MARIADB
 For Joomla 3.x to work flawlessly with MySQL versions 8.0 or newer, you need to have this setting enabled in your my.cnf configuration:
