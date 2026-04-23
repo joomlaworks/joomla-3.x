@@ -18,10 +18,16 @@ For detailed changelog, please visit: https://github.com/joomlaworks/joomla-3.x/
 - Maintain modern PHP compatibility and apply security patches when necessary
 
 
-## HOW TO USE / UPGRADE
-To upgrade: Grab the project zip https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.zip (or the one for a specific version from [releases](https://github.com/joomlaworks/joomla-3.x/releases)) and using your server's terminal or file manager, extract on top of an existing Joomla 3.10.12 (or newer version) you wish to upgrade. Remember to remove the "/installation" folder and you're done.
+## HOW TO INSTALL / UPGRADE
+To install: just extract the current version https://github.com/joomlaworks/joomla-3.x/releases/download/v3.11/joomla-3.11.zip were you want the site to be and then follow the installation process (as with Joomla in general).
 
-To install from scratch: just extract and follow the installation process as you always did.
+To upgrade: Using your server's terminal or a file manager, extract the current version https://github.com/joomlaworks/joomla-3.x/releases/download/v3.11/joomla-3.11.zip on top of an existing Joomla 3.10.12 (or newer version) you wish to upgrade. Remember to remove the "/installation" folder and you're done.
+
+In a typical Linux based server, you can easily do the upgrade using the following one-liner command (after you "cd" into your Joomla site's folder):
+```
+cd /path/to/joomla/site/
+wget -qO- https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1
+```
 
 
 ## NOTES ON MYSQL & MARIADB
