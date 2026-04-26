@@ -37,6 +37,7 @@ default_authentication_plugin = mysql_native_password
 
 # For MySQL 8.4+
 mysql_native_password         = ON
+authentication_policy         = mysql_native_password
 ```
 Use one or the other, not both. The above settings do not apply to MariaDB.
 
