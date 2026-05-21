@@ -36,12 +36,14 @@ jobs:
         run: gh release delete rolling --yes 2>/dev/null || true
 
       - name: Delete rolling tag (if any)
-        run: git push origin :refs/tags/rolling 2>/dev/null || true
+        run: |
+          git push origin :refs/tags/rolling 2>/dev/null || true
+          git tag -d rolling 2>/dev/null || true
 
       - name: Read version from list.xml
         id: version
         run: |
-          VERSION=$(grep -oP '(?<=<version>)[^<]+' docs/list.xml | head -1)
+          VERSION=$(grep -oP '(?<=<version>)\d+\.\d+\.\d+' docs/list.xml | head -1)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Create rolling release with zip
