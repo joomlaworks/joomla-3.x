@@ -1,35 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Joomla 3.x (JoomlaWorks Security Distribution) — Update Feed
+    Joomla 3.x (JoomlaWorks Security Distribution) — Update Collection
     Hosted via GitHub Pages at https://joomlaworks.github.io/joomla-3.x/list.xml
-    Consumed by com_joomlaupdate in the Joomla administrator backend.
+    Consumed by com_joomlaupdate (type="collection" in #__update_sites).
 
-    To release a new version:
-      1. Bump the version number in libraries/src/Version.php and in the <version> tag below
-      2. Commit and push to main
-      The GitHub Action (.github/workflows/rolling-release.yml) will automatically
-      rebuild joomla-latest.zip and update the rolling release. No tagged release needed.
+    This format mirrors update.joomla.org/core/list.xml exactly.
+    Each <extension> entry's targetplatformversion is matched (as a regexp) against JVERSION
+    on the visitor's site. Matching entries cause their detailsurl to be fetched for the
+    actual download URL and version comparison.
+
+    To release a new version (e.g. 3.13.0):
+      1. Bump version="3.12.0" → version="3.13.0" in every <extension> entry below.
+      2. Add a new <extension> row for targetplatformversion="3.13" so sites already on 3.13
+         can receive future updates.
+      3. Update docs/extension.xml with the new version and release notes.
+      4. Bump MINOR_VERSION / RELEASE / DEV_LEVEL in libraries/src/Version.php.
+      5. Commit and push to main — the GitHub Action rebuilds joomla-latest.zip automatically.
 -->
-<updates>
-
-    <update>
-        <name>Joomla! 3.12.0</name>
-        <description>Joomla! 3.12.0 Stable — JoomlaWorks Security Distribution</description>
-        <element>joomla</element>
-        <type>file</type>
-        <version>3.12.0</version>
-        <infourl title="Joomla! 3.12.0 — Changelog">https://github.com/joomlaworks/joomla-3.x/blob/main/CHANGELOG.md</infourl>
-        <downloads>
-            <downloadurl type="full" format="zip">https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip</downloadurl>
-        </downloads>
-        <tags>
-            <tag>stable</tag>
-        </tags>
-        <maintainer>JoomlaWorks</maintainer>
-        <maintainerurl>https://github.com/joomlaworks/joomla-3.x</maintainerurl>
-        <section>STS</section>
-        <targetplatform name="joomla" version="3\.[0-9]+" />
-        <php_minimum>7.4.0</php_minimum>
-    </update>
-
-</updates>
+<extensionset name="Joomla Core" description="Joomla! Core">
+	<extension name="Joomla" element="joomla" type="file" version="3.12.0" targetplatformversion="3.10" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+	<extension name="Joomla" element="joomla" type="file" version="3.12.0" targetplatformversion="3.11" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+	<extension name="Joomla" element="joomla" type="file" version="3.12.0" targetplatformversion="3.12" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+</extensionset>
