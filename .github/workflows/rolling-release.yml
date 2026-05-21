@@ -1,0 +1,60 @@
+name: Rolling Release
+
+# Rebuilds joomla-latest.zip and updates the "rolling" GitHub Release
+# on every push to main. The download URL never changes:
+#   https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip
+#
+# com_joomlaupdate compares the version in docs/list.xml against the site's
+# current Joomla version. To publish a new release, bump the <version> in
+# docs/list.xml (and Version.php) and push — this workflow does the rest.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build clean zip via git archive
+        # git archive produces a zip with files at the root — no joomla-3.x-main/
+        # subdirectory prefix. This is required by com_joomlaupdate / Kickstart.
+        run: git archive --format=zip HEAD -o joomla-latest.zip
+
+      - name: Delete existing rolling release (if any)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release delete rolling --yes 2>/dev/null || true
+
+      - name: Delete rolling tag (if any)
+        run: git push origin :refs/tags/rolling 2>/dev/null || true
+
+      - name: Read version from list.xml
+        id: version
+        run: |
+          VERSION=$(grep -oP '(?<=<version>)[^<]+' docs/list.xml | head -1)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create rolling release with zip
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create rolling \
+            --title "Rolling Release (v${{ steps.version.outputs.version }})" \
+            --notes "Latest build from the \`main\` branch — Joomla! ${{ steps.version.outputs.version }} (JoomlaWorks Security Distribution).
+
+          Install/upgrade via the Joomla backend updater, or manually:
+          \`\`\`
+          wget -qO- https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 && rm -rf installation *.md .gitignore
+          \`\`\`" \
+            --latest \
+            joomla-latest.zip

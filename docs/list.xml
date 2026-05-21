@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Joomla 3.x (JoomlaWorks Security Distribution) — Update Feed
+    Hosted via GitHub Pages at https://joomlaworks.github.io/joomla-3.x/list.xml
+    Consumed by com_joomlaupdate in the Joomla administrator backend.
+
+    To release a new version:
+      1. Bump the version number in libraries/src/Version.php and in the <version> tag below
+      2. Commit and push to main
+      The GitHub Action (.github/workflows/rolling-release.yml) will automatically
+      rebuild joomla-latest.zip and update the rolling release. No tagged release needed.
+-->
+<updates>
+
+    <update>
+        <name>Joomla! 3.12.0</name>
+        <description>Joomla! 3.12.0 Stable — JoomlaWorks Security Distribution</description>
+        <element>joomla</element>
+        <type>file</type>
+        <version>3.12.0</version>
+        <infourl title="Joomla! 3.12.0 — Changelog">https://github.com/joomlaworks/joomla-3.x/blob/main/CHANGELOG.md</infourl>
+        <downloads>
+            <downloadurl type="full" format="zip">https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip</downloadurl>
+        </downloads>
+        <tags>
+            <tag>stable</tag>
+        </tags>
+        <maintainer>JoomlaWorks</maintainer>
+        <maintainerurl>https://github.com/joomlaworks/joomla-3.x</maintainerurl>
+        <section>STS</section>
+        <targetplatform name="joomla" version="3\.[0-9]+" />
+        <php_minimum>7.4.0</php_minimum>
+    </update>
+
+</updates>

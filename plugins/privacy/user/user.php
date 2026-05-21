@@ -34,7 +34,7 @@ class PlgPrivacyUser extends PrivacyPlugin
 	 *
 	 * @since   3.9.0
 	 */
-	public function onPrivacyCanRemoveData(PrivacyTableRequest $request, JUser $user = null)
+	public function onPrivacyCanRemoveData(PrivacyTableRequest $request, ?JUser $user = null)
 	{
 		$status = new PrivacyRemovalStatus;
 
@@ -69,7 +69,7 @@ class PlgPrivacyUser extends PrivacyPlugin
 	 *
 	 * @since   3.9.0
 	 */
-	public function onPrivacyExportRequest(PrivacyTableRequest $request, JUser $user = null)
+	public function onPrivacyExportRequest(PrivacyTableRequest $request, ?JUser $user = null)
 	{
 		if (!$user)
 		{
@@ -101,7 +101,7 @@ class PlgPrivacyUser extends PrivacyPlugin
 	 *
 	 * @since   3.9.0
 	 */
-	public function onPrivacyRemoveData(PrivacyTableRequest $request, JUser $user = null)
+	public function onPrivacyRemoveData(PrivacyTableRequest $request, ?JUser $user = null)
 	{
 		// This plugin only processes data for registered user accounts
 		if (!$user)

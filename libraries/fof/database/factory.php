@@ -96,7 +96,7 @@ class FOFDatabaseFactory
 	 * @since   12.1
 	 * @throws  RuntimeException
 	 */
-	public function getQuery($name, FOFDatabaseDriver $db = null)
+	public function getQuery($name, ?FOFDatabaseDriver $db = null)
 	{
 		// Derive the class name from the driver.
 		$class = 'FOFDatabaseQuery' . ucfirst(strtolower($name));
@@ -120,7 +120,7 @@ class FOFDatabaseFactory
 	 *
 	 * @since   12.1
 	 */
-	public static function setInstance(FOFDatabaseFactory $instance = null)
+	public static function setInstance(?FOFDatabaseFactory $instance = null)
 	{
 		self::$_instance = $instance;
 	}

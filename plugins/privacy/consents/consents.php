@@ -30,7 +30,7 @@ class PlgPrivacyConsents extends PrivacyPlugin
 	 *
 	 * @since   3.9.0
 	 */
-	public function onPrivacyExportRequest(PrivacyTableRequest $request, JUser $user = null)
+	public function onPrivacyExportRequest(PrivacyTableRequest $request, ?JUser $user = null)
 	{
 		if (!$user)
 		{

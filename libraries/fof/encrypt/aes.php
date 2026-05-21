@@ -44,7 +44,7 @@ class FOFEncryptAes
 	 * @param   FOFUtilsPhpfunc $phpfunc  For testing
 	 * @param   string          $priority Priority which adapter we should try first
 	 */
-	public function __construct($key, $strength = 128, $mode = 'cbc', FOFUtilsPhpfunc $phpfunc = null, $priority = 'openssl')
+	public function __construct($key, $strength = 128, $mode = 'cbc', ?FOFUtilsPhpfunc $phpfunc = null, $priority = 'openssl')
 	{
 		if ($priority == 'openssl')
 		{
@@ -161,7 +161,7 @@ class FOFEncryptAes
 	 *
 	 * @return boolean
 	 */
-	public static function isSupported(FOFUtilsPhpfunc $phpfunc = null)
+	public static function isSupported(?FOFUtilsPhpfunc $phpfunc = null)
 	{
 		if (!is_object($phpfunc) || !($phpfunc instanceof $phpfunc))
 		{

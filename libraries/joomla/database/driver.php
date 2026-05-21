@@ -1952,6 +1952,20 @@ abstract class JDatabaseDriver extends JDatabase implements JDatabaseInterface
 	 */
 	protected function quoteNameStr($strArr)
 	{
+		// Reject identifiers containing null bytes or backslashes to prevent SQL injection (CVE-2025-25226)
+		foreach ($strArr as $part)
+		{
+			if (is_null($part))
+			{
+				continue;
+			}
+
+			if (strpos($part, "\x00") !== false || strpos($part, '\\') !== false)
+			{
+				throw new \InvalidArgumentException('Invalid database identifier.');
+			}
+		}
+
 		$parts = array();
 		$q = $this->nameQuote;
 

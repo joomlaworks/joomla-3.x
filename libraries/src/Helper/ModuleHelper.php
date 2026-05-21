@@ -249,6 +249,15 @@ abstract class ModuleHelper
 			return '';
 		}
 
+		// Escape chrome attributes before passing to modChrome_* functions (CVE-2024-40747)
+		foreach ($attribs as $key => $value)
+		{
+			if (is_string($value))
+			{
+				$attribs[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+			}
+		}
+
 		foreach (explode(' ', $attribs['style']) as $style)
 		{
 			$chromeMethod = 'modChrome_' . $style;

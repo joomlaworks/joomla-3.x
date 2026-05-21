@@ -27,5 +27,5 @@ interface DumpableInterface
 	 *
 	 * @since   1.0
 	 */
-	public function dump($depth = 3, \SplObjectStorage $dumped = null);
+	public function dump($depth = 3, ?\SplObjectStorage $dumped = null);
 }

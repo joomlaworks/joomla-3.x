@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## Version 3.12 - released May 21st, 2026
+Summary of changes:
+- Further PHP 8.x compatibility fixes, extending coverage to previously missed files
+- Additional security patches backported from Joomla 4/5/6, partly informed by the [TLWebdesign/Joomla-3-EOL-Security-Fixes](https://github.com/TLWebdesign/Joomla-3-EOL-Security-Fixes) project
+- Built-in update server: sites running 3.12 or newer can now receive updates directly via the Joomla backend updater
+
+In detail:
+- Added `#[\AllowDynamicProperties]` to `Table` (abstract base), `CMSObject`, and `idna_convert` — suppresses PHP 8.2 dynamic property deprecation across all Table subclasses and all JObject descendants, which intentionally use dynamic properties by design (PHP 8.2; also PHP 9 safe)
+- Changed remaining implicitly nullable typed parameters (`Type $p = null` → `?Type $p = null`) in `libraries/fof/` (form header, AES encrypt class and its mcrypt/openssl/interface adapters, database query and factory), `libraries/vendor/joomla/session/`, `libraries/vendor/joomla/data/` (DataObject, DataSet, DumpableInterface), `libraries/vendor/joomla/di/`, `libraries/vendor/google/recaptcha/`, `libraries/vendor/symfony/yaml/`, `libraries/vendor/joomla/filesystem/`, and all six `plugins/privacy/` plugins — these were missed by the automated P-10 pass (PHP 8.1/8.5 `E_DEPRECATED`)
+- Blocked malicious `data:` URIs in HTML attribute filtering: `InputFilter::checkAttribute()` now rejects any `data:` URI that is not a safe image base64 (`data:image/(png|gif|jpeg|webp);base64,`), preventing XSS via crafted data URLs in `href`/`src` attributes (CVE-2025-63082)
+- Escaped module chrome attributes in `ModuleHelper::renderModule()` with `htmlspecialchars()` before they are passed to `modChrome_*` template functions, preventing XSS via maliciously crafted module style/attribute parameters (CVE-2024-40747)
+- Rejected database identifiers containing null bytes or backslashes in `JDatabaseDriver::quoteNameStr()` — both can be used to break out of identifier quoting and inject arbitrary SQL (CVE-2025-25226)
+- Escaped `data-title` and `data-title-value` attributes in the com_associations side-by-side editor template with `$this->escape()`, preventing stored XSS via item titles in the multilingual association comparison view (CVE-2026-21631)
+- Added `docs/list.xml` update feed hosted via GitHub Pages (`https://joomlaworks.github.io/joomla-3.x/list.xml`); `com_joomlaupdate` and all three installation SQL files now point to this feed instead of `update.joomla.org`
+- Added `.github/workflows/rolling-release.yml`: on every push to `main`, a clean zip is built via `git archive` and published to a fixed `rolling` GitHub Release (`joomla-latest.zip`) — no tagged releases required; updating the version in `list.xml` is sufficient to trigger the update notification on live sites
+
+---
+
 ## Version 3.11 - released April 20th, 2026
 Summary of changes:
 - Joomla 3.x is now compatible with PHP up to version 8.5

@@ -200,7 +200,7 @@ abstract class FOFDatabaseQuery
 	 *
 	 * @since   11.1
 	 */
-	public function __construct(FOFDatabaseDriver $db = null)
+	public function __construct(?FOFDatabaseDriver $db = null)
 	{
 		$this->db = $db;
 	}

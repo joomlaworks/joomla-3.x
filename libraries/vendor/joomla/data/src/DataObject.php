@@ -173,7 +173,7 @@ class DataObject implements DumpableInterface, \IteratorAggregate, \JsonSerializ
 	 *
 	 * @since   1.0
 	 */
-	public function dump($depth = 3, \SplObjectStorage $dumped = null)
+	public function dump($depth = 3, ?\SplObjectStorage $dumped = null)
 	{
 		// Check if we should initialise the recursion tracker.
 		if ($dumped === null)

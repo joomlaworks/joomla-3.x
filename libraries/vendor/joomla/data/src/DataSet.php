@@ -326,7 +326,7 @@ class DataSet implements DumpableInterface, \ArrayAccess, \Countable, \Iterator
 	 * @see     DataObject::dump()
 	 * @since   1.0
 	 */
-	public function dump($depth = 3, \SplObjectStorage $dumped = null)
+	public function dump($depth = 3, ?\SplObjectStorage $dumped = null)
 	{
 		// Check if we should initialise the recursion tracker.
 		if ($dumped === null)

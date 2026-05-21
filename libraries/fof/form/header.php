@@ -153,7 +153,7 @@ abstract class FOFFormHeader
 	 *
 	 * @since   2.0
 	 */
-	public function __construct(FOFForm $form = null)
+	public function __construct(?FOFForm $form = null)
 	{
 		// If there is a form passed into the constructor set the form and form control properties.
 		if ($form instanceof FOFForm)

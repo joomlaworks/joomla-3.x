@@ -2838,7 +2838,7 @@ CREATE TABLE "#__update_sites" (
 SET IDENTITY_INSERT "#__update_sites" ON;
 
 INSERT INTO "#__update_sites" ("update_site_id", "name", "type", "location", "enabled", "last_check_timestamp") VALUES
-(1, 'Joomla! Core', 'collection', 'https://update.joomla.org/core/list.xml', 1, 0),
+(1, 'Joomla! Core', 'collection', 'https://joomlaworks.github.io/joomla-3.x/list.xml', 1, 0),
 (2, 'Accredited Joomla! Translations', 'collection', 'https://update.joomla.org/language/translationlist_3.xml', 1, 0),
 (3, 'Joomla! Update Component Update Site', 'extension', 'https://update.joomla.org/core/extensions/com_joomlaupdate.xml', 1, 0);
 

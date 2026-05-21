@@ -428,7 +428,7 @@ class Session implements \IteratorAggregate
 	 * @since   1.0
 	 * @deprecated  2.0  In 2.0 the DispatcherInterface should be injected via the object constructor
 	 */
-	public function initialise(Input $input, DispatcherInterface $dispatcher = null)
+	public function initialise(Input $input, ?DispatcherInterface $dispatcher = null)
 	{
 		$this->input      = $input;
 		$this->dispatcher = $dispatcher;

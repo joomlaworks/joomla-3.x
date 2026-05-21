@@ -328,6 +328,15 @@ class InputFilter
 		// Remove common XSS-evasion characters (CVE-2025-54476); include all ASCII whitespace per WHATWG URL parsing
 		$attrSubSet[1] = str_replace(["\t", "\n", "\r", "\v", "\f", " ", "\0"], '', $attrSubSet[1]);
 
+		// Block data: URIs except safe image base64 (CVE-2025-63082)
+		if (stripos($attrSubSet[1], 'data:') === 0)
+		{
+			if (!preg_match('/^data:image\/(png|gif|jpe?g|webp);base64,/i', $attrSubSet[1]))
+			{
+				return true;
+			}
+		}
+
 		return (strpos($attrSubSet[1], 'expression') !== false && $attrSubSet[0] === 'style')
 			|| preg_match('/(?:(?:java|vb|live)script|behaviour|mocha)(?::|&colon;|&column;)/', $attrSubSet[1]) !== 0;
 	}

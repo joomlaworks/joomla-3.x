@@ -51,6 +51,7 @@
  * @version 0.8.0 2011-03-11
  * @note This file has been modified by the Joomla! Project and no longer reflects the original work of its author.
  */
+#[\AllowDynamicProperties]
 class idna_convert
 {
     // NP See below

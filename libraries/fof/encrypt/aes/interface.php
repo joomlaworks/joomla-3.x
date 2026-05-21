@@ -79,5 +79,5 @@ interface FOFEncryptAesInterface
 	 *
 	 * @return  bool
 	 */
-	public function isSupported(FOFUtilsPhpfunc $phpfunc = null);
+	public function isSupported(?FOFUtilsPhpfunc $phpfunc = null);
 }

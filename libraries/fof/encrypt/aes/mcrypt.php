@@ -76,7 +76,7 @@ class FOFEncryptAesMcrypt extends FOFEncryptAesAbstract implements FOFEncryptAes
 		return $plainText;
 	}
 
-	public function isSupported(FOFUtilsPhpfunc $phpfunc = null)
+	public function isSupported(?FOFUtilsPhpfunc $phpfunc = null)
 	{
 		if (!is_object($phpfunc) || !($phpfunc instanceof $phpfunc))
 		{

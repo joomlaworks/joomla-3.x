@@ -20,6 +20,7 @@ defined('JPATH_PLATFORM') or die;
  * @since  1.7.0
  * @tutorial  Joomla.Platform/jtable.cls
  */
+#[\AllowDynamicProperties]
 abstract class Table extends \JObject implements \JObservableInterface, \JTableInterface
 {
 	/**

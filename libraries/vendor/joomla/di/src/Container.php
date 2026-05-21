@@ -68,7 +68,7 @@ class Container implements ContainerInterface
 	 *
 	 * @since   1.0
 	 */
-	public function __construct(ContainerInterface $parent = null)
+	public function __construct(?ContainerInterface $parent = null)
 	{
 		$this->parent = $parent;
 	}
