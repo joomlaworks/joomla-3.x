@@ -5,6 +5,7 @@ Summary of changes:
 - Further PHP 8.x compatibility fixes, extending coverage to previously missed files
 - Additional security patches backported from Joomla 4/5/6, partly informed by the [TLWebdesign/Joomla-3-EOL-Security-Fixes](https://github.com/TLWebdesign/Joomla-3-EOL-Security-Fixes) project
 - Built-in update server: sites running 3.12 or newer can now receive updates directly via the Joomla backend updater
+- Removed legacy/unused bundled items: `eos310` and `phpversioncheck` quickicon plugins, `beez3` frontend template, `hathor` backend template
 
 In detail:
 - Added `#[\AllowDynamicProperties]` to `Table` (abstract base), `CMSObject`, and `idna_convert` — suppresses PHP 8.2 dynamic property deprecation across all Table subclasses and all JObject descendants, which intentionally use dynamic properties by design (PHP 8.2; also PHP 9 safe)
@@ -15,6 +16,9 @@ In detail:
 - Escaped `data-title` and `data-title-value` attributes in the com_associations side-by-side editor template with `$this->escape()`, preventing stored XSS via item titles in the multilingual association comparison view (CVE-2026-21631)
 - Added `docs/list.xml` update feed hosted via GitHub Pages (`https://joomlaworks.github.io/joomla-3.x/list.xml`); `com_joomlaupdate` and all three installation SQL files now point to this feed instead of `update.joomla.org`
 - Added `.github/workflows/rolling-release.yml`: on every push to `main`, a clean zip is built via `git archive` and published to a fixed `rolling` GitHub Release (`joomla-latest.zip`) — no tagged releases required; updating the version in `list.xml` is sufficient to trigger the update notification on live sites
+- Removed `plugins/quickicon/eos310`, `plugins/quickicon/phpversioncheck`, `templates/beez3`, and `administrator/templates/hathor` along with their language files and `media/plg_quickicon_eos310` — none are relevant to this distribution
+- Removed all four items from the installation SQL files (MySQL, PostgreSQL, SQL Azure) so fresh installs do not register them
+- Added migration SQL (`administrator/components/com_admin/sql/updates/*/3.12.0-2026-05-21.sql`) that runs automatically on upgrade: reassigns any site using beez3/hathor as their global default template to protostar/isis, then deletes all related `#__extensions`, `#__template_styles`, and `#__postinstall_messages` records
 
 ---
 

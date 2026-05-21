@@ -3,6 +3,13 @@ Joomla 3.x
 
 ## CHANGELOG
 
+## Version 3.12 - released May 21st, 2026
+Summary of changes:
+- Further PHP 8.x compatibility fixes, extending coverage to previously missed files
+- Additional security patches backported from Joomla 4/5/6
+- Built-in update server: sites running 3.12 or newer can now receive updates directly via the Joomla backend updater
+- Removed legacy bundled items: `eos310` & `phpversioncheck` quickicon plugins, `beez3` frontend template, `hathor` backend template
+
 ## Version 3.11 - released April 20th, 2026
 Summary of changes:
 - Joomla 3.x is now compatible with PHP up to version 8.5
@@ -14,19 +21,35 @@ For detailed changelog, please visit: https://github.com/joomlaworks/joomla-3.x/
 
 
 ## TO DO
-- Create endpoints to easily update Joomla 3.x after version 3.11, from within the Joomla backend
 - Maintain modern PHP compatibility and apply security patches when necessary
 
 
 ## HOW TO INSTALL / UPGRADE
-To install: just extract the current version https://github.com/joomlaworks/joomla-3.x/releases/download/v3.11/joomla-v3.11.zip were you want the site to be and then follow the installation process (as with Joomla in general).
+To install: just extract the latest rolling release https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip where you want the site to be and then follow the normal Joomla installation process.
 
-To upgrade: Using your server's terminal or a file manager, extract the current version https://github.com/joomlaworks/joomla-3.x/releases/download/v3.11/joomla-v3.11.zip on top of an existing Joomla 3.10.12 (or newer version) you wish to upgrade. Remember to remove the "/installation" folder and you're done.
+To upgrade manually: using your server's terminal or a file manager, extract the latest rolling release https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip on top of an existing Joomla 3.10.12 (or newer) installation. Remember to remove the `/installation` folder afterwards.
 
 In a typical Linux based server, you can easily do the upgrade using the following one-liner command (after you "cd" into your Joomla site's folder):
 ```
 wget -qO- https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 && rm -rf installation *.md .gitignore
 ```
+
+### Upgrading via the Joomla backend updater (from v3.12 onwards)
+
+> **⚠ IMPORTANT — Action required for sites already running v3.11 or earlier:**
+>
+> Starting with v3.12, this distribution ships its own update feed. Sites on v3.12 or newer will receive future updates automatically through the Joomla backend updater (`Extensions → Update`).
+>
+> If your site is currently running **v3.11 or earlier**, you must point the Joomla updater to this distribution's update feed **once** before in-panel updates will work. Run the following SQL against your Joomla database:
+>
+> ```sql
+> UPDATE `#__update_sites` SET `location` = 'https://joomlaworks.github.io/joomla-3.x/list.xml' WHERE `update_site_id` = 1;
+> ```
+>
+> Alternatively, go to **Extensions → Update → Update Sites**, edit the "Joomla! Core" entry, and change the URL to:
+> `https://joomlaworks.github.io/joomla-3.x/list.xml`
+>
+> Once updated to v3.12 (or newer), this step is no longer necessary — future updates will be detected and applied automatically.
 
 
 ## NOTES ON MYSQL & MARIADB
