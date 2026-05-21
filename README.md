@@ -5,10 +5,12 @@ Joomla 3.x
 
 ## Version 3.12 - released May 21st, 2026
 Summary of changes:
-- Further PHP 8.x compatibility fixes, extending coverage to previously missed files
-- Additional security patches backported from Joomla 4/5/6
 - Built-in update server: sites running 3.12 or newer can now receive updates directly via the Joomla backend updater
 - Removed legacy bundled items: `eos310` & `phpversioncheck` quickicon plugins, `beez3` frontend template, `hathor` backend template
+- Further PHP 8.x compatibility fixes, extending coverage to previously missed files
+- Additional security patches backported from Joomla 4/5/6
+
+Please note that if you had `beez3` or `hathor` as one of your frontend or backend (respectively) default templates, upgrading to thos version will set `protostar` and `isis` as your new defaults (respectively). If you use another frontend template, it will (of course) not be updated...
 
 ## Version 3.11 - released April 20th, 2026
 Summary of changes:
@@ -34,20 +36,19 @@ In a typical Linux based server, you can easily do the upgrade using the followi
 wget -qO- https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 && rm -rf installation *.md .gitignore
 ```
 
-### Upgrading via the Joomla backend updater (from v3.12 onwards)
+### Upgrading via the Joomla Update Component (from v3.12 onwards)
 
 > **⚠ IMPORTANT — Action required for sites already running v3.11 or earlier:**
 >
-> Starting with v3.12, this distribution ships its own update feed. Sites on v3.12 or newer will receive future updates automatically through the Joomla backend updater (`Extensions → Update`).
+> Starting with v3.12, this distribution ships its own update feed. Sites on v3.12 or newer will receive future updates automatically through the Joomla updater (`Components → Joomla Update`).
 >
-> If your site is currently running **v3.11 or earlier**, you must point the Joomla updater to this distribution's update feed **once** before in-panel updates will work. Run the following SQL against your Joomla database:
+> If your site is currently running **v3.11 or earlier**, you must point the Joomla updater to this distribution's update feed **once** before in-panel updates will work.
 >
-> ```sql
-> UPDATE `#__update_sites` SET `location` = 'https://joomlaworks.github.io/joomla-3.x/list.xml' WHERE `update_site_id` = 1;
-> ```
+> Adjust the options for the Joomla Update Component (either from the component's "Options" or through Joomla's "Global Configuration") and use the following update URL in the "Custom URL" field, along with these settings:
 >
-> Alternatively, go to **Extensions → Update → Update Sites**, edit the "Joomla! Core" entry, and change the URL to:
-> `https://joomlaworks.github.io/joomla-3.x/list.xml`
+> - Update Channel: Custom Url
+> - Minimum Stability: Stable
+> - Custom URL: `https://joomlaworks.github.io/joomla-3.x/list.xml`
 >
 > Once updated to v3.12 (or newer), this step is no longer necessary — future updates will be detected and applied automatically.
 
