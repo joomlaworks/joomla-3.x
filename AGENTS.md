@@ -1,3 +1,74 @@
+# Joomla 3.x (JoomlaWorks Security Distribution) — Agent Onboarding & Patch Log
+
+---
+
+## For the AI Agent — Read This First
+
+This file is the primary onboarding document for resuming work on this project. Read it fully before making any changes.
+
+### What this project is
+
+A security-hardened, PHP 8.x-compatible fork of Joomla 3.10.20 eLTS, maintained by JoomlaWorks (Fotis Evangelou). It is **not** an official Joomla release. The goal is to keep Joomla 3.x sites running safely on modern PHP and MySQL/MariaDB versions, with backported CVE fixes from Joomla 4/5/6.
+
+- **GitHub repo:** https://github.com/joomlaworks/joomla-3.x
+- **Current version:** Joomla 3.12.0 (released May 21, 2026)
+- **Minimum PHP:** 7.4 — **all code changes must remain compatible with PHP 7.4**
+- **Tested up to PHP:** 8.5
+- **Database support:** MySQL 5.7+, MySQL 8.x, MariaDB, PostgreSQL, SQL Azure
+
+### Key conventions to follow
+
+- **PHP 7.4 minimum:** The `?Type` nullable syntax is fine (valid since PHP 7.1). The `#[\AllowDynamicProperties]` attribute is fine (parsed as a comment on PHP 7.x). Never use PHP 8.0+ syntax that would be a parse error on 7.4.
+- **No comments unless the WHY is non-obvious.** Do not narrate what code does.
+- **Security patches:** Always check `libraries/vendor/joomla/filter/src/InputFilter.php` (vendor-level) AND `libraries/src/Filter/InputFilter.php` (CMS-level) — they are separate implementations and both may need patching.
+- **SQL changes** affect three files: `installation/sql/mysql/joomla.sql`, `installation/sql/postgresql/joomla.sql`, `installation/sql/sqlazure/joomla.sql`. Schema migration SQL goes in `administrator/components/com_admin/sql/updates/{mysql,postgresql,sqlazure}/`. File naming: `{version}-{YYYY-MM-DD}.sql` (e.g. `3.12.0-2026-05-21.sql`).
+- **Changelog:** `CHANGELOG.md` is the detailed log; `README.md` has a brief per-version summary. Always update both.
+- **AGENTS.md** (this file): append a new section for every version worked on, documenting every change made. This is how future sessions resume without losing context.
+
+### What already exists and must NOT be re-applied
+
+The following fixes are already in the codebase. Do not duplicate them:
+
+- CVE-2025-54476 + H-1 extension (whitespace stripping + `\r\v\f` in `checkAttribute()`)
+- CVE-2025-63083 (pagebreak toc.php htmlspecialchars)
+- CVE-2026-21629 (com_ajax guest check)
+- H-2 through H-8 (joomlaupdate ACL, TOTP timing, Yubikey HMAC, restore.php, RSS escaping, password reset timing, eval() removal)
+- U-1 through U-3 (MediaHelper blocklist, sniff offset, images/.htaccess)
+- P-1 through P-16 (all PHP 8.x compat fixes documented in the 3.11 section below)
+- CVE-2025-63082 (data: URI blocking in checkAttribute)
+- CVE-2024-40747 (ModuleHelper chrome attribs escaping)
+- CVE-2025-25226 (quoteNameStr null byte/backslash rejection)
+- CVE-2026-21631 (com_associations edit.php data-title escaping)
+- All `#[\AllowDynamicProperties]` additions (Table, CMSObject, idna_convert)
+- All remaining implicit-nullable fixes in fof/, vendor/joomla/session, vendor/joomla/data, vendor/joomla/di, vendor/google/recaptcha, vendor/symfony/yaml, vendor/joomla/filesystem, plugins/privacy/*
+
+### Update server
+
+- Feed URL: `https://joomlaworks.github.io/joomla-3.x/list.xml` (GitHub Pages, served from `docs/list.xml`)
+- Download URL: `https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip`
+- GitHub Action: `.github/workflows/rolling-release.yml` — rebuilds the zip on every push to `main` using `git archive`
+- To release a new version: bump `MINOR_VERSION` in `libraries/src/Version.php`, bump `<version>` in `docs/list.xml`, update `CHANGELOG.md` and `README.md`, push.
+
+### Removed in 3.12 (do not re-add)
+
+- `plugins/quickicon/eos310` and all its language/media files
+- `plugins/quickicon/phpversioncheck` and its language files
+- `templates/beez3` and its language files
+- `administrator/templates/hathor` and its language files
+
+### CVEs confirmed NOT applicable to 3.x (do not re-investigate)
+
+| CVE | Reason |
+|-----|--------|
+| CVE-2026-21630 | SQL injection in com_content webservice — 4.0.0+ only |
+| CVE-2026-21632 | XSS in article title outputs — 4.0.0+ only |
+| CVE-2026-23898 | Arbitrary file deletion in com_joomlaupdate — 4.0.0+ only |
+| CVE-2026-23899 | Improper access check in webservice endpoints — 4.0.0+ only |
+
+> **Note:** CVE-2025-63082 and CVE-2026-21631 were initially marked "4.0.0+ only" in the 3.11 review but were later confirmed to affect 3.x and have been patched in 3.12.
+
+---
+
 # Joomla 3.11.0 — Security Patch Log
 
 **Date:** April 20, 2026
@@ -291,13 +362,13 @@ The following vulnerabilities were identified by auditing all file upload code p
 
 ---
 
-## CVEs Reviewed but Not Applicable to 3.x
+## CVEs Reviewed but Not Applicable to 3.x (at 3.11 review time)
 
 | CVE | Reason not patched |
 |-----|--------------------|
-| CVE-2025-63082 | XSS for data URLs in img tags — affects 4.0.0+ only |
+| CVE-2025-63082 | ~~XSS for data URLs — affects 4.0.0+ only~~ **CORRECTION: patched in 3.12** |
 | CVE-2026-21630 | SQL injection in com_content webservice — 4.0.0+ only (no webservice API in 3.x) |
-| CVE-2026-21631 | XSS in com_associations comparison view — 4.0.0+ only |
+| CVE-2026-21631 | ~~XSS in com_associations comparison view — 4.0.0+ only~~ **CORRECTION: patched in 3.12** |
 | CVE-2026-21632 | XSS in article title outputs — 4.0.0+ only |
 | CVE-2026-23898 | Arbitrary file deletion in com_joomlaupdate — 4.0.0+ only |
 | CVE-2026-23899 | Improper access check in webservice endpoints — 4.0.0+ only |
@@ -427,3 +498,87 @@ base64_encode(hash('md5', $plaintext . $salt, true) . $salt)
 - **File:** `libraries/joomla/twitter/statuses.php`
 - **Issue:** Two remaining calls to the removed `utf8_encode()` were present in the Twitter API status update methods; the first-pass fix (P-1) had not covered this file.
 - **Fix:** Both replaced with `mb_convert_encoding($status, 'UTF-8', 'ISO-8859-1')`.
+
+---
+
+# Joomla 3.12.0 — Patch Log
+
+**Date:** May 21, 2026
+**Base version:** Joomla 3.11.0
+**Patched version:** Joomla 3.12.0
+
+---
+
+## PHP 8.x Compatibility Fixes — Session 3
+
+### Q-1 — `#[\AllowDynamicProperties]` on base classes (PHP 8.2)
+- **Files:** `libraries/src/Table/Table.php`, `libraries/src/Object/CMSObject.php`, `libraries/idna_convert/idna_convert.class.php`
+- **Issue:** PHP 8.2 deprecated dynamic property creation. `Table` uses `bind()` to set arbitrary database column names as properties; `CMSObject` uses `set()` for arbitrary property names. Both are intentional by design. `idna_convert` has internal dynamic properties.
+- **Fix:** Added `#[\AllowDynamicProperties]` attribute to all three classes. On PHP 7.x the `#` is a line comment so the attribute line is silently ignored — fully backward-compatible. The attribute propagates to all subclasses, fixing every concrete Table subclass and every JObject descendant in one change.
+
+### Q-2 — Remaining implicit-nullable typed parameters (PHP 8.1/8.5)
+- **Scope:** 17 files missed by the P-10 automated pass
+- **Files:**
+  - `libraries/fof/form/header.php`, `libraries/fof/encrypt/aes.php`, `libraries/fof/encrypt/aes/interface.php`, `libraries/fof/encrypt/aes/mcrypt.php`, `libraries/fof/encrypt/aes/openssl.php`, `libraries/fof/database/query.php`, `libraries/fof/database/factory.php` — FOF library
+  - `libraries/vendor/joomla/session/Joomla/Session/Session.php`
+  - `libraries/vendor/joomla/data/src/DataObject.php`, `DataSet.php`, `DumpableInterface.php`
+  - `libraries/vendor/joomla/di/src/Container.php`
+  - `libraries/vendor/google/recaptcha/src/ReCaptcha/ReCaptcha.php`
+  - `libraries/vendor/symfony/yaml/Exception/ParseException.php`
+  - `libraries/vendor/joomla/filesystem/src/Exception/FilesystemException.php`
+  - `plugins/privacy/actionlogs/actionlogs.php`, `message/message.php`, `content/content.php`, `contact/contact.php`, `consents/consents.php`, `user/user.php` (3 occurrences)
+- **Fix:** `Type $p = null` → `?Type $p = null` on all affected signatures.
+
+---
+
+## Security Patches — Session 3 (backported from Joomla 4/5/6 via TLWebdesign/Joomla-3-EOL-Security-Fixes audit)
+
+### S-1 — CVE-2025-63082 — Data URI XSS in InputFilter
+- **File:** `libraries/vendor/joomla/filter/src/InputFilter.php`
+- **Change:** After the existing whitespace stripping in `checkAttribute()`, added a check that rejects any `data:` URI unless it matches `^data:image/(png|gif|jpe?g|webp);base64,`. Previously marked "4.0.0+ only" in 3.11 — this was incorrect; the filter class is shared and the vulnerability is present in 3.x.
+
+### S-2 — CVE-2024-40747 — XSS via module chrome attributes
+- **File:** `libraries/src/Helper/ModuleHelper.php`
+- **Change:** In `renderModule()`, all string values in `$attribs` are now run through `htmlspecialchars(ENT_QUOTES, 'UTF-8')` after the `onRenderModule` event fires and before they are passed to `modChrome_*` template functions, which echo them directly into HTML.
+
+### S-3 — CVE-2025-25226 — SQL injection via database identifier names
+- **File:** `libraries/joomla/database/driver.php`
+- **Change:** `quoteNameStr()` now iterates over all identifier parts before quoting and throws `InvalidArgumentException` if any part contains a null byte (`\x00`) or a backslash (`\`). Both can break out of the quoting delimiters.
+
+### S-4 — CVE-2026-21631 — XSS in com_associations side-by-side editor
+- **File:** `administrator/components/com_associations/views/association/tmpl/edit.php`
+- **Change:** `$this->referenceTitle`, `$this->referenceTitleValue`, and `$this->targetTitle` were echoed raw into `data-*` HTML attributes. All three are now wrapped with `$this->escape()`. Previously marked "4.0.0+ only" — this was incorrect; `com_associations` has been in core since Joomla 3.7.
+
+---
+
+## Update Server Infrastructure
+
+- **`docs/list.xml`** — Joomla update feed served via GitHub Pages at `https://joomlaworks.github.io/joomla-3.x/list.xml`. Format: standard Joomla `<updates>` XML with `<type>file</type>` and `<targetplatform name="joomla" version="3\.[0-9]+" />`. Add a new `<update>` block per release; bump `<version>` to make the update visible.
+- **`docs/.nojekyll`** — Prevents GitHub Pages from running Jekyll on the `docs/` folder.
+- **`.github/workflows/rolling-release.yml`** — On every push to `main`: runs `git archive --format=zip HEAD -o joomla-latest.zip`, deletes and recreates the `rolling` GitHub Release. The download URL `…/releases/download/rolling/joomla-latest.zip` is permanent. `git archive` produces a root-level zip (no subdirectory prefix), which is required by Kickstart inside `com_joomlaupdate`.
+- **Installation SQL** (all three DB variants) — `#__update_sites` row 1 now points to `https://joomlaworks.github.io/joomla-3.x/list.xml` instead of `update.joomla.org`.
+- **`com_joomlaupdate/models/default.php`** — All `$updateURL` cases (default, next, testing) now point to the GitHub Pages feed.
+
+---
+
+## Removed Extensions & Templates
+
+The following items were removed from the distribution entirely in 3.12:
+
+| Item | Type | Reason |
+|------|------|--------|
+| `plugins/quickicon/eos310` | Plugin | Joomla 3.x end-of-service notice — irrelevant in this distribution |
+| `plugins/quickicon/phpversioncheck` | Plugin | PHP version nag — irrelevant given our active PHP 8.x support |
+| `templates/beez3` | Frontend template | Legacy, unmaintained; protostar is the maintained default |
+| `administrator/templates/hathor` | Backend template | Legacy, unmaintained; isis is the maintained default |
+
+Also removed: associated language files in `administrator/language/en-GB/` and `language/en-GB/`, and the `media/plg_quickicon_eos310/` JS directory.
+
+**Installation SQL** — all four extension rows, their `#__template_styles` entries (style IDs 4 and 5), and the hathor `#__postinstall_messages` entry were removed from all three installation SQL files.
+
+**Migration SQL** — `administrator/components/com_admin/sql/updates/{mysql,postgresql,sqlazure}/3.12.0-2026-05-21.sql` runs automatically on upgrade via `com_joomlaupdate`. It:
+1. Reassigns any site using beez3/hathor as their global default template to protostar/isis (using a derived-subquery `EXISTS` check to avoid MySQL's "can't update target table" restriction)
+2. Deletes all `#__template_styles` rows for beez3 and hathor
+3. Deletes the four `#__extensions` records
+4. Deletes the hathor `#__postinstall_messages` record
+5. Cleans up any orphaned `#__update_sites_extensions` rows
