@@ -44,10 +44,18 @@ The following fixes are already in the codebase. Do not duplicate them:
 
 ### Update server
 
-- Feed URL: `https://joomlaworks.github.io/joomla-3.x/list.xml` (GitHub Pages, served from `docs/list.xml`)
-- Download URL: `https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip`
-- GitHub Action: `.github/workflows/rolling-release.yml` — rebuilds the zip on every push to `main` using `git archive`
-- To release a new version: bump `MINOR_VERSION` in `libraries/src/Version.php`, bump `<version>` in `docs/list.xml`, update `CHANGELOG.md` and `README.md`, push.
+The update server uses a **two-file architecture** that mirrors `update.joomla.org` exactly. The update site type in `#__update_sites` is `collection`, which means Joomla uses `CollectionAdapter` to parse `list.xml`. `CollectionAdapter` only understands `<extensionset>/<extension>` tags — it will silently return nothing if given an `<updates>` file.
+
+- **`docs/list.xml`** — `<extensionset>` collection. Each `<extension>` entry has a `targetplatformversion` regex matched against `JVERSION` on the visitor's site, and a `detailsurl` pointing to `extension.xml`. Add one entry per supported minor version.
+- **`docs/extension.xml`** — `<updates>` details file. Contains the `<update>` block with the download URL. `com_joomlaupdate` fetches this via `detailsurl` to display the "Update Now" button and download the package.
+- **Download URL:** `https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip`
+- **GitHub Action:** `.github/workflows/rolling-release.yml` — rebuilds the zip on every push to `main` using `git archive`
+
+**To release a new version (e.g. 3.13.0):**
+1. Bump `MINOR_VERSION` (and `RELEASE`, `DEV_LEVEL`) in `libraries/src/Version.php`
+2. In `docs/list.xml`: bump `version="3.12.0"` → `version="3.13.0"` in all `<extension>` entries, and add a new entry for `targetplatformversion="3.13"`
+3. In `docs/extension.xml`: bump `<version>3.12.0</version>` → `<version>3.13.0</version>` and update `<infourl>`
+4. Update `CHANGELOG.md` and `README.md`, push
 
 ### Removed in 3.12 (do not re-add)
 
@@ -553,10 +561,13 @@ base64_encode(hash('md5', $plaintext . $salt, true) . $salt)
 
 ## Update Server Infrastructure
 
-- **`docs/list.xml`** — Joomla update feed served via GitHub Pages at `https://joomlaworks.github.io/joomla-3.x/list.xml`. Format: standard Joomla `<updates>` XML with `<type>file</type>` and `<targetplatform name="joomla" version="3\.[0-9]+" />`. Add a new `<update>` block per release; bump `<version>` to make the update visible.
-- **`docs/.nojekyll`** — Prevents GitHub Pages from running Jekyll on the `docs/` folder.
+Two-file architecture (mirrors `update.joomla.org` exactly — see "Update server" in the guidance section above for the full explanation):
+
+- **`docs/list.xml`** — `<extensionset>` collection. Each `<extension>` entry has `version`, `targetplatformversion` (regex against `JVERSION`), and `detailsurl` pointing to `extension.xml`. Served at `https://joomlaworks.github.io/joomla-3.x/list.xml`.
+- **`docs/extension.xml`** — `<updates>` details file with the actual `<update>` block (download URL, `<targetplatform>`, `<php_minimum>`, etc.). Served at `https://joomlaworks.github.io/joomla-3.x/extension.xml`. This is what `com_joomlaupdate` fetches to display the update and get the package URL.
+- **`docs/.nojekyll`** — Prevents GitHub Pages from running Jekyll on the `docs/` folder (required so XML files are served raw).
 - **`.github/workflows/rolling-release.yml`** — On every push to `main`: runs `git archive --format=zip HEAD -o joomla-latest.zip`, deletes and recreates the `rolling` GitHub Release. The download URL `…/releases/download/rolling/joomla-latest.zip` is permanent. `git archive` produces a root-level zip (no subdirectory prefix), which is required by Kickstart inside `com_joomlaupdate`.
-- **Installation SQL** (all three DB variants) — `#__update_sites` row 1 now points to `https://joomlaworks.github.io/joomla-3.x/list.xml` instead of `update.joomla.org`.
+- **Installation SQL** (all three DB variants) — `#__update_sites` row 1 (`type='collection'`) now points to `https://joomlaworks.github.io/joomla-3.x/list.xml` instead of `update.joomla.org`.
 - **`com_joomlaupdate/models/default.php`** — All `$updateURL` cases (default, next, testing) now point to the GitHub Pages feed.
 
 ---
@@ -582,3 +593,25 @@ Also removed: associated language files in `administrator/language/en-GB/` and `
 3. Deletes the four `#__extensions` records
 4. Deletes the hathor `#__postinstall_messages` record
 5. Cleans up any orphaned `#__update_sites_extensions` rows
+
+---
+
+## Post-Release Bug Fixes — May 22, 2026
+
+Three bugs discovered after the 3.12.0 release was published, fixed before the next version bump.
+
+### B-1 — Update feed format wrong: `<updates>` instead of `<extensionset>` in `list.xml`
+- **Files:** `docs/list.xml` (rewritten), `docs/extension.xml` (new file)
+- **Root cause:** The `#__update_sites` entry for the Joomla core has `type='collection'`. This means Joomla uses `CollectionAdapter` to parse `list.xml`. `CollectionAdapter` only handles `<extensionset>/<extension>` elements — it silently ignores `<updates>/<update>` content entirely. The original `list.xml` was in `<updates>` format, so every update check returned nothing.
+- **Fix:** Rewrote `docs/list.xml` as an `<extensionset>` collection with one `<extension>` entry per supported minor version (3.10, 3.11, 3.12), each pointing `detailsurl` to `docs/extension.xml`. Created `docs/extension.xml` as the `<updates>` details file containing the download URL and `<targetplatform>` check. This matches the `update.joomla.org/core/list.xml` + `extension.xml` architecture exactly.
+
+### B-2 — `MINOR_VERSION = 11` in `Version.php` (should be 12)
+- **File:** `libraries/src/Version.php`
+- **Root cause:** When bumping from 3.11 to 3.12, `MINOR_VERSION` was not updated. Since `JVERSION` is computed as `MAJOR_VERSION . '.' . MINOR_VERSION . '.' . PATCH_VERSION` (via `getShortVersion()` in `libraries/cms.php`), the constant `JVERSION` evaluated to `'3.11.0'` instead of `'3.12.0'`. The deprecated `RELEASE` constant was correctly set to `'3.12'`, but nothing used it for the version constant.
+- **Impact:** After upgrading to 3.12, the site would still report `JVERSION = '3.11.0'`. The `com_joomlaupdate` "hasUpdate" check (`version_compare($latest, JVERSION, '>')`) would then evaluate `version_compare('3.12.0', '3.11.0', '>') = true` — meaning the update notification would reappear on every check even after a successful upgrade.
+- **Fix:** `MINOR_VERSION` changed from `11` to `12`.
+
+### B-3 — Migration SQL used wrong column name `language_key` on `#__postinstall_messages`
+- **Files:** `administrator/components/com_admin/sql/updates/mysql/3.12.0-2026-05-21.sql`, `…/postgresql/…`, `…/sqlazure/…`
+- **Root cause:** The `#__postinstall_messages` table has no `language_key` column. The correct column for the language key is `title_key`. The migration SQL's `DELETE FROM #__postinstall_messages WHERE language_key = 'TPL_HATHOR_MESSAGE_POSTINSTALL_TITLE'` triggered MySQL error 1054 ("Unknown column 'language_key' in 'where clause'") mid-migration on first upgrade attempt.
+- **Fix:** Column name changed from `language_key` to `title_key` in all three SQL variants. Sites that hit this error mid-migration need to run the corrected DELETE manually: `DELETE FROM #__postinstall_messages WHERE title_key = 'TPL_HATHOR_MESSAGE_POSTINSTALL_TITLE';`
