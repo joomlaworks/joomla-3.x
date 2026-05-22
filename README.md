@@ -9,6 +9,7 @@ Summary of changes:
 - Removed legacy bundled items: `eos310` & `phpversioncheck` quickicon plugins, `beez3` frontend template, `hathor` backend template
 - Further PHP 8.x compatibility fixes, extending coverage to previously missed files
 - Additional security patches backported from Joomla 4/5/6
+- Fixed the getModuleById method in JModuleHelper to correctly return a module's data using its ID.
 
 Please note that if you had `beez3` or `hathor` as one of your frontend or backend (respectively) default templates, upgrading to thos version will set `protostar` and `isis` as your new defaults (respectively). If you use another frontend template, it will (of course) not be updated...
 
