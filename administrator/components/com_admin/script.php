@@ -2058,6 +2058,16 @@ class JoomlaInstallerScript
 			// Joomla 3.10.7-rc1 to 3.10.7 stable
 			'/administrator/components/com_admin/sql/updates/postgresql/3.10.7-2022-02-20.sql.sql',
 			'/administrator/components/com_admin/sql/updates/sqlazure/3.10.7-2022-02-20.sql.sql',
+
+			// Joomla 3.12.0
+			'/administrator/language/en-GB/en-GB.plg_quickicon_eos310.ini',
+			'/administrator/language/en-GB/en-GB.plg_quickicon_eos310.sys.ini',
+			'/administrator/language/en-GB/en-GB.plg_quickicon_phpversioncheck.ini',
+			'/administrator/language/en-GB/en-GB.plg_quickicon_phpversioncheck.sys.ini',
+			'/administrator/language/en-GB/en-GB.tpl_hathor.ini',
+			'/administrator/language/en-GB/en-GB.tpl_hathor.sys.ini',
+			'/language/en-GB/en-GB.tpl_beez3.ini',
+			'/language/en-GB/en-GB.tpl_beez3.sys.ini',
 		);
 
 		// TODO There is an issue while deleting folders using the ftp mode
@@ -2302,6 +2312,12 @@ class JoomlaInstallerScript
 			'/libraries/joomla/base',
 			// Joomla 3.10.8
 			'/administrator/components/com_users/models/fields/primaryauthproviders.php',
+			// Joomla 3.12.0
+			'/administrator/templates/hathor',
+			'/media/plg_quickicon_eos310',
+			'/plugins/quickicon/eos310',
+			'/plugins/quickicon/phpversioncheck',
+			'/templates/beez3',
 		);
 
 		jimport('joomla.filesystem.file');

@@ -205,7 +205,7 @@ class JDatabaseDriverMysqli extends JDatabaseDriver
 
 	/**
 	 * Disconnects the database.
-	 * Patched for PHP 8.3 and MySQL 8.0.x
+	 * Patched to support PHP 8.x and MySQL 8.0 or newer
 	 *
 	 * @return  void
 	 *
@@ -216,7 +216,8 @@ class JDatabaseDriverMysqli extends JDatabaseDriver
 		// Close the connection.
 		if ($this->connection instanceof mysqli) {
 			try {
-				$isValid = $this->connection->stat() !== false;
+				// Suppress errors in PHP 7.x
+				$isValid = @$this->connection->stat() !== false;
 				if ($isValid) {
 					foreach ($this->disconnectHandlers as $h) {
 						call_user_func_array($h, array(&$this));

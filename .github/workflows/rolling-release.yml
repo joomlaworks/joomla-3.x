@@ -28,9 +28,9 @@ jobs:
       - name: Build clean zip via git archive
         # git archive produces a zip with files at the root — no joomla-3.x-main/
         # subdirectory prefix. This is required by com_joomlaupdate / Kickstart.
-        # docs/, *.md and .gitignore are excluded — infrastructure/meta files
-        # that have no place on a live Joomla site.
-        run: git archive --format=zip -o joomla-latest.zip HEAD -- ':(exclude)docs' ':(exclude)*.md' ':(exclude).gitignore'
+        # docs/, .github/, *.md and .gitignore are excluded — repository
+        # infrastructure and meta files that have no place on a live Joomla site.
+        run: git archive --format=zip -o joomla-latest.zip HEAD -- ':(exclude)docs' ':(exclude).github' ':(exclude)*.md' ':(exclude).gitignore'
 
       - name: Delete existing rolling release (if any)
         env:
