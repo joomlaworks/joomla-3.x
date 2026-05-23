@@ -19,7 +19,7 @@ Summary of changes:
 - Additional security patches backported from Joomla 4/5/6
 - Fixed the getModuleById method in JModuleHelper to correctly return a module's data using its ID.
 
-Please note that if you had `beez3` or `hathor` as one of your frontend or backend (respectively) default templates, upgrading to thos version will set `protostar` and `isis` as your new defaults (respectively). If you use another frontend template, it will (of course) not be updated...
+Please note that if you had `beez3` or `hathor` as one of your frontend or backend (respectively) default templates, upgrading to this version will set `protostar` and `isis` as your new defaults (respectively). If you use another frontend template, it will (of course) not be updated...
 
 ## Version 3.11 - released April 20th, 2026
 Summary of changes:
