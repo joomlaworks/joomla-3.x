@@ -341,15 +341,31 @@ class JoomlaInstallerScript
 			)->execute();
 		}
 
-		// Sync manifest_cache version for the Joomla extension (extension_id 700) to JVERSION.
+		// Sync manifest_cache version for the Joomla extension (extension_id 700).
+		// Read from joomla.xml rather than JVERSION: on PHP-FPM with OPcache,
+		// opcache_reset() only clears the current worker, so JVERSION may still
+		// reflect the pre-upgrade value when this runs. XML files are never
+		// bytecode-cached, so simplexml_load_file() always returns the current value.
+		$manifestFile = JPATH_ADMINISTRATOR . '/manifests/files/joomla.xml';
+		$cmsVersion   = JVERSION;
+
+		if (is_readable($manifestFile))
+		{
+			$xml = @simplexml_load_file($manifestFile);
+
+			if ($xml !== false && !empty((string) $xml->version))
+			{
+				$cmsVersion = (string) $xml->version;
+			}
+		}
+
 		$table = JTable::getInstance('Extension');
 		$table->load('700');
-		$cache      = new JRegistry($table->manifest_cache);
-		$cmsVersion = new JVersion;
+		$cache = new JRegistry($table->manifest_cache);
 
-		if ($cache->get('version') !== $cmsVersion->getShortVersion())
+		if ($cache->get('version') !== $cmsVersion)
 		{
-			$cache->set('version', $cmsVersion->getShortVersion());
+			$cache->set('version', $cmsVersion);
 			$table->manifest_cache = $cache->toString();
 			$table->store();
 		}
