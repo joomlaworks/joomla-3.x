@@ -11,7 +11,7 @@ So we're actively developing Joomla 3.x UTD as an up-to-date distribution of the
 
 ## CHANGELOG
 
-# Version 3.13 - release May 31st, 2026
+## Version 3.13 - released May 31st, 2026
 Summary of changes:
 - The Isis administrator (backend) template now uses CSS view transitions
 - All obsolete CSS has been removed from the Isis template
