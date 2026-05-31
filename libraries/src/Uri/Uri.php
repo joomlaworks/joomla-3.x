@@ -88,11 +88,15 @@ class Uri extends \Joomla\Uri\Uri
 				 * are present, we will assume we are running on apache.
 				 */
 
+				// HTTP_HOST is absent in CLI context; fall back to 'localhost' to avoid
+				// an undefined-key warning that would poison stdout and break session startup.
+				$httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+
 				if (!empty($_SERVER['PHP_SELF']) && !empty($_SERVER['REQUEST_URI']))
 				{
 					// To build the entire URI we need to prepend the protocol, and the http host
 					// to the URI string.
-					$theURI = 'http' . $https . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+					$theURI = 'http' . $https . $httpHost . $_SERVER['REQUEST_URI'];
 				}
 				else
 				{
@@ -103,7 +107,7 @@ class Uri extends \Joomla\Uri\Uri
 					 *
 					 * IIS uses the SCRIPT_NAME variable instead of a REQUEST_URI variable... thanks, MS
 					 */
-					$theURI = 'http' . $https . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
+					$theURI = 'http' . $https . $httpHost . $_SERVER['SCRIPT_NAME'];
 
 					// If the query string exists append it to the URI string
 					if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING']))
