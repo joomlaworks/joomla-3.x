@@ -69,7 +69,7 @@ final class Version
 	 * @since  3.5
 	 * @deprecated  4.0  Use separated version constants instead
 	 */
-	const RELEASE = '3.12';
+	const RELEASE = '3.13';
 
 	/**
 	 * Maintenance version.
@@ -111,7 +111,7 @@ final class Version
 	 * @var    string
 	 * @since  3.5
 	 */
-	const RELDATE = '21-May-2026';
+	const RELDATE = '31-May-2026';
 
 	/**
 	 * Release time.

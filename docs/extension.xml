@@ -10,12 +10,12 @@
 -->
 <updates>
 	<update>
-		<name>Joomla! 3.12</name>
-		<description>Joomla! 3.12 CMS</description>
+		<name>Joomla! 3.13</name>
+		<description>Joomla! 3.13 CMS</description>
 		<element>joomla</element>
 		<type>file</type>
-		<version>3.12.0</version>
-		<infourl title="Joomla! 3.12.0 — Changelog">https://github.com/joomlaworks/joomla-3.x/blob/main/CHANGELOG.md</infourl>
+		<version>3.13.0</version>
+		<infourl title="Joomla! 3.13.0 — Changelog">https://github.com/joomlaworks/joomla-3.x/blob/main/CHANGELOG.md</infourl>
 		<downloads>
 			<downloadurl type="full" format="zip">https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip</downloadurl>
 		</downloads>

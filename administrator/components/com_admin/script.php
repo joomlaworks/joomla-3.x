@@ -84,6 +84,7 @@ class JoomlaInstallerScript
 		$this->deleteUnexistingFiles();
 		$this->updateManifestCaches();
 		$this->updateDatabase();
+		$this->fixSchemas();
 		$this->clearRadCache();
 		$this->updateAssets($installer);
 		$this->clearStatsCache();
@@ -286,6 +287,71 @@ class JoomlaInstallerScript
 			}
 
 			break;
+		}
+	}
+
+	/**
+	 * Apply pending SQL schema migration files and sync the version records so the
+	 * "Database" section under Extensions > Manage shows no mismatch after an update.
+	 *
+	 * Mirrors the logic in com_installer/models/database.php::fix() so that clicking
+	 * "Fix" manually is no longer necessary after a core update.
+	 *
+	 * @return  void
+	 */
+	protected function fixSchemas()
+	{
+		$db     = JFactory::getDbo();
+		$folder = JPATH_ADMINISTRATOR . '/components/com_admin/sql/updates/';
+
+		try
+		{
+			$changeSet = JSchemaChangeset::getInstance($db, $folder);
+		}
+		catch (RuntimeException $e)
+		{
+			return;
+		}
+
+		// Run any SQL migration files that have not been applied yet.
+		$changeSet->fix();
+
+		// Update #__schemas to the latest SQL file version.
+		$schema  = $changeSet->getSchema();
+		$current = $db->setQuery(
+			$db->getQuery(true)
+				->select($db->quoteName('version_id'))
+				->from($db->quoteName('#__schemas'))
+				->where('extension_id = 700')
+		)->loadResult();
+
+		if ($schema && $schema !== $current)
+		{
+			$db->setQuery(
+				$db->getQuery(true)
+					->delete($db->quoteName('#__schemas'))
+					->where('extension_id = 700')
+			)->execute();
+
+			$db->setQuery(
+				$db->getQuery(true)
+					->insert($db->quoteName('#__schemas'))
+					->columns(array($db->quoteName('extension_id'), $db->quoteName('version_id')))
+					->values('700, ' . $db->quote($schema))
+			)->execute();
+		}
+
+		// Sync manifest_cache version for the Joomla extension (extension_id 700) to JVERSION.
+		$table = JTable::getInstance('Extension');
+		$table->load('700');
+		$cache      = new JRegistry($table->manifest_cache);
+		$cmsVersion = new JVersion;
+
+		if ($cache->get('version') !== $cmsVersion->getShortVersion())
+		{
+			$cache->set('version', $cmsVersion->getShortVersion());
+			$table->manifest_cache = $cache->toString();
+			$table->store();
 		}
 	}
 

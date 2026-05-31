@@ -10,7 +10,7 @@
     actual download URL and version comparison.
 
     To release a new version (e.g. 3.13.0):
-      1. Bump version="3.12.0" → version="3.13.0" in every <extension> entry below.
+      1. Bump version="3.13.0" → version="3.13.0" in every <extension> entry below.
       2. Add a new <extension> row for targetplatformversion="3.13" so sites already on 3.13
          can receive future updates.
       3. Update docs/extension.xml with the new version and release notes.
@@ -18,7 +18,8 @@
       5. Commit and push to main — the GitHub Action rebuilds joomla-latest.zip automatically.
 -->
 <extensionset name="Joomla Core" description="Joomla! Core">
-	<extension name="Joomla" element="joomla" type="file" version="3.12.0" targetplatformversion="3.10" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
-	<extension name="Joomla" element="joomla" type="file" version="3.12.0" targetplatformversion="3.11" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
-	<extension name="Joomla" element="joomla" type="file" version="3.12.0" targetplatformversion="3.12" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+	<extension name="Joomla" element="joomla" type="file" version="3.13.0" targetplatformversion="3.10" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+	<extension name="Joomla" element="joomla" type="file" version="3.13.0" targetplatformversion="3.11" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+	<extension name="Joomla" element="joomla" type="file" version="3.13.0" targetplatformversion="3.12" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+   <extension name="Joomla" element="joomla" type="file" version="3.13.0" targetplatformversion="3.13" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
 </extensionset>
