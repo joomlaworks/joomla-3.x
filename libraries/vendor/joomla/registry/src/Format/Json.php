@@ -57,7 +57,7 @@ class Json extends AbstractRegistryFormat
 	 */
 	public function stringToObject($data, array $options = array('processSections' => false))
 	{
-		$data = trim($data);
+		$data = trim((string) $data);
 
 		// Because developers are clearly not validating their data before pushing it into a Registry, we'll do it for them
 		if (empty($data))

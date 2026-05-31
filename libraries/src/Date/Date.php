@@ -109,7 +109,7 @@ class Date extends \DateTime
 		$date = is_numeric($date) ? date('c', $date) : $date;
 
 		// Call the DateTime constructor.
-		parent::__construct($date, $tz);
+		parent::__construct($date ?? 'now', $tz);
 
 		// Reset the timezone for 3rd party libraries/extension that does not use JDate
 		date_default_timezone_set(self::$stz->getName());

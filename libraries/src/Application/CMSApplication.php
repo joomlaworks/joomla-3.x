@@ -48,6 +48,15 @@ class CMSApplication extends WebApplication
 	public $scope = null;
 
 	/**
+	 * Registered URL parameters for page caching.
+	 * Set by controllers and extensions that participate in the cache plugin's URL-keyed caching.
+	 *
+	 * @var    object|null
+	 * @since  3.2
+	 */
+	public $registeredurlparams = null;
+
+	/**
 	 * The client identifier.
 	 *
 	 * @var    integer

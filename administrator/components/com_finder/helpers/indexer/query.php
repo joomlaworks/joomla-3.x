@@ -162,6 +162,22 @@ class FinderIndexerQuery
 	public $when2;
 
 	/**
+	 * Flag indicating if the query can return results when the input is empty.
+	 *
+	 * @var    boolean
+	 * @since  2.5
+	 */
+	public $empty = false;
+
+	/**
+	 * Date range registry for the query.
+	 *
+	 * @var    Registry
+	 * @since  2.5
+	 */
+	public $dates;
+
+	/**
 	 * Method to instantiate the query object.
 	 *
 	 * @param   array  $options  An array of query options.

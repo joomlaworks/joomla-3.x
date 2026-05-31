@@ -40,6 +40,14 @@ class TagsHelper extends CMSHelper
 	protected $replaceTags = false;
 
 	/**
+	 * Cached item tags.
+	 *
+	 * @var    array
+	 * @since  3.1
+	 */
+	public $itemTags = array();
+
+	/**
 	 * Alias for querying mapping and content type table.
 	 *
 	 * @var    string

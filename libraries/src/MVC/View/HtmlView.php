@@ -382,6 +382,11 @@ class HtmlView extends \JObject
 	 */
 	public function escape($var)
 	{
+		if ($var === null)
+		{
+			return '';
+		}
+
 		if (in_array($this->_escape, array('htmlspecialchars', 'htmlentities')))
 		{
 			return call_user_func($this->_escape, $var, ENT_COMPAT, $this->_charset);
