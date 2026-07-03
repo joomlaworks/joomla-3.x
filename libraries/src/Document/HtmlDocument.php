@@ -462,10 +462,12 @@ class HtmlDocument extends Document
 		}
 
 		$title = (isset($attribs['title'])) ? $attribs['title'] : null;
+		$bufferName = ($name === null) ? '' : $name;
+		$bufferTitle = ($title === null) ? '' : $title;
 
-		if (isset(parent::$_buffer[$type][$name][$title]))
+		if (isset(parent::$_buffer[$type][$bufferName][$bufferTitle]))
 		{
-			return parent::$_buffer[$type][$name][$title];
+			return parent::$_buffer[$type][$bufferName][$bufferTitle];
 		}
 
 		$renderer = $this->loadRenderer($type);
@@ -498,7 +500,7 @@ class HtmlDocument extends Document
 			$options['modulemode'] = 1;
 
 			$this->setBuffer($renderer->render($name, $attribs, null), $type, $name);
-			$data = parent::$_buffer[$type][$name][$title];
+			$data = parent::$_buffer[$type][$bufferName][$bufferTitle];
 
 			$tmpdata = Cache::setWorkarounds($data, $options);
 
@@ -511,7 +513,7 @@ class HtmlDocument extends Document
 			$this->setBuffer($renderer->render($name, $attribs, null), $type, $name, $title);
 		}
 
-		return parent::$_buffer[$type][$name][$title];
+		return parent::$_buffer[$type][$bufferName][$bufferTitle];
 	}
 
 	/**
@@ -536,7 +538,11 @@ class HtmlDocument extends Document
 			$options['title'] = (isset($args[3])) ? $args[3] : null;
 		}
 
-		parent::$_buffer[$options['type']][$options['name']][$options['title']] = $content;
+		$type = $options['type'] ?? '';
+		$name = $options['name'] ?? '';
+		$title = $options['title'] ?? '';
+
+		parent::$_buffer[$type][$name][$title] = $content;
 
 		return $this;
 	}
