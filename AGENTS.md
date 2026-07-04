@@ -11,7 +11,7 @@ This file is the primary onboarding document for resuming work on this project. 
 A security-hardened, PHP 8.x-compatible fork of Joomla 3.10.20 eLTS, maintained by JoomlaWorks (Fotis Evangelou). It is **not** an official Joomla release. The goal is to keep Joomla 3.x sites running safely on modern PHP and MySQL/MariaDB versions, with backported CVE fixes from Joomla 4/5/6.
 
 - **GitHub repo:** https://github.com/joomlaworks/joomla-3.x
-- **Current version:** Joomla 3.13.0 (released May 31, 2026)
+- **Current version:** Joomla 3.14.0 (released July 4, 2026)
 - **Minimum PHP:** 7.4 — **all code changes must remain compatible with PHP 7.4**
 - **Tested up to PHP:** 8.5
 - **Database support:** MySQL 5.7+, MySQL 8.x, MariaDB, PostgreSQL, SQL Azure
@@ -24,6 +24,10 @@ A security-hardened, PHP 8.x-compatible fork of Joomla 3.10.20 eLTS, maintained 
 - **SQL changes** affect three files: `installation/sql/mysql/joomla.sql`, `installation/sql/postgresql/joomla.sql`, `installation/sql/sqlazure/joomla.sql`. Schema migration SQL goes in `administrator/components/com_admin/sql/updates/{mysql,postgresql,sqlazure}/`. File naming: `{version}-{YYYY-MM-DD}.sql` (e.g. `3.12.0-2026-05-21.sql`).
 - **Changelog:** `CHANGELOG.md` is the detailed log; `README.md` has a brief per-version summary. Always update both.
 - **AGENTS.md** (this file): append a new section for every version worked on, documenting every change made. This is how future sessions resume without losing context.
+
+### Open considerations for future sessions
+
+- **Language-file version fingerprinting:** As of 3.14.0, `administrator/language/en-GB/{en-GB.xml,install.xml}`, `language/en-GB/{en-GB.xml,install.xml}`, and `administrator/manifests/packages/pkg_en-GB.xml` correctly report the running version (previously stuck at the stale `3.10.20` from the original eLTS base, which caused false-positive "vulnerable old version" flags from some scanners). The tradeoff: unauthenticated vulnerability scanners/bots commonly fingerprint Joomla version by reading these language metafiles (no login required), and an accurate `3.14` value now lets them pinpoint the exact version precisely — and a version number with no corresponding official Joomla release could itself signal "this is a patched fork," inviting more targeted probing. Consider whether to deliberately desynchronize or obscure the language-file version from `JVERSION` in a future release, without breaking the update system's version comparisons. Not yet decided or implemented — raised by the maintainer on 2026-07-04, no fix applied.
 
 ### What already exists and must NOT be re-applied
 
@@ -44,7 +48,8 @@ The following fixes are already in the codebase. Do not duplicate them:
 - All `(boolean)` → `(bool)` casts (libraries/src/ and libraries/joomla/, 13 files)
 - `Uri::getInstance()` null guard (null → 'SERVER' coercion)
 - `Uri::getInstance()` `HTTP_HOST` absent-in-CLI guard (`$httpHost` variable with `'localhost'` fallback before the SERVER URI branch — both Apache and IIS paths)
-- All Q-3 through Q-13 PHP 8.x fixes (see 3.13 patch log): null guards in `HtmlView::escape()`, `Date::__construct()`, `ListModel::populateState()` (×2), `utf8_ltrim/rtrim/trim`, `Json::stringToObject()`; declared properties `$registeredurlparams` on `CMSApplication`, `$itemTags` on `TagsHelper`, `$empty` and `$dates` on `FinderIndexerQuery`; `HtmlDocument::getBuffer()`/`setBuffer()` null-array-offset normalization; `Image::destroy()` no longer calls the deprecated `imagedestroy()`
+- Q-3 through Q-11 PHP 8.x fixes (see 3.13 patch log): null guards in `HtmlView::escape()`, `Date::__construct()`, `ListModel::populateState()` (×2), `utf8_ltrim/rtrim/trim`, `Json::stringToObject()`; declared properties `$registeredurlparams` on `CMSApplication`, `$itemTags` on `TagsHelper`, `$empty` and `$dates` on `FinderIndexerQuery`
+- Q-12/Q-13 PHP 8.5 fixes (see 3.14.0 patch log, in progress): `HtmlDocument::getBuffer()`/`setBuffer()` null-array-offset normalization; `Image::destroy()`/`Backgroundfill::execute()` no longer call the deprecated `imagedestroy()`
 - `fixSchemas()` in `com_admin/script.php` (auto-runs SQL migrations + syncs `#__schemas` + syncs `manifest_cache.version` on upgrade)
 - `administrator/manifests/files/joomla.xml` version and `<updateservers>` URL (updated; do not revert)
 - `deleteUnexistingFiles()` 3.12 entries (beez3, hathor, eos310, phpversioncheck directories and language files)
@@ -725,7 +730,15 @@ The following fixes were identified from a community report posted in GitHub Dis
 
 ---
 
-## Post-3.13.0 Bug Fixes — July 4, 2026
+# Joomla 3.14.0 — Patch Log
+
+**Date:** July 4, 2026
+**Base version:** Joomla 3.13.0
+**Patched version:** Joomla 3.14.0
+
+---
+
+## PHP 8.x Compatibility Fixes — Session 5
 
 Both fixes below were contributed via GitHub PR #13 (github.com/joomlaworks/joomla-3.x/pull/13) by community member @raramuridesign. Verified against upstream PHP 8.5 deprecation notices before merging; both are backward-compatible with PHP 7.4.
 
@@ -738,3 +751,30 @@ Both fixes below were contributed via GitHub PR #13 (github.com/joomlaworks/joom
 - **Files:** `libraries/vendor/joomla/image/src/Image.php`, `libraries/vendor/joomla/image/src/Filter/Backgroundfill.php`
 - **Issue:** `Image::destroy()` called `imagedestroy($this->getHandle())`. Since PHP 8.0, GD uses refcounted `GdImage` objects instead of resources, so `imagedestroy()` has had no effect for several major versions; PHP 8.5 deprecates calling it at all. `Backgroundfill::execute()` had a second occurrence — `imagedestroy($bg)` on a local temporary handle — found via codebase-wide grep after fixing the first (confirmed `imagedestroy` had no other call sites anywhere in the tree). Also found one remaining `(boolean)` cast in `Image::setThumbnailGenerate()`, missed by the B-4 sweep in 3.12 (that pass's file list didn't include this vendor file).
 - **Fix:** `Image::destroy()` now sets `$this->handle = null` and returns `true` directly instead of calling `imagedestroy()` — `isLoaded()` (via `isValidImage($this->handle)`) still correctly reports `false` afterward, preserving the method's observable contract. In `Backgroundfill::execute()`, the `imagedestroy($bg)` call was simply removed — `$bg` is a local variable that goes out of scope at the end of the method, so the `GdImage` object is reclaimed by normal refcounting with no explicit call needed. `(boolean)` → `(bool)` in `setThumbnailGenerate()`.
+
+---
+
+## Language File Version Fix
+
+### L-1 — Stale `3.10.20` version in en-GB language metafiles
+- **Files:** `administrator/language/en-GB/en-GB.xml`, `administrator/language/en-GB/install.xml`, `language/en-GB/en-GB.xml`, `language/en-GB/install.xml`, `administrator/manifests/packages/pkg_en-GB.xml`
+- **Issue:** These files still carried `<version>3.10.20</version>` (and `3.10.20.1` for the package manifest) — the original eLTS base version, never updated across the 3.11/3.12/3.13 bumps. Some vulnerability scanners fingerprint the Joomla version from these language metafiles (readable pre-auth, unlike `JVERSION` which requires more work to expose), so sites running this distribution were being flagged as "Joomla 3.10.20" and matched against CVEs already patched here.
+- **Fix:** Bumped `<version>` to `3.14` (`pkg_en-GB.xml` to `3.14`, dropping the redundant `.1` patch suffix) and `<creationDate>` to `July 4th, 2026` in all five files, aligning them with the actual running version.
+- **Open question:** see "Open considerations for future sessions" at the top of this file — reporting the true version here is more accurate but also lets scanners precisely fingerprint this fork. Not resolved in this release.
+
+---
+
+## Version Bump
+
+**File:** `libraries/src/Version.php`
+
+| Constant | Before | After |
+|----------|--------|-------|
+| `MINOR_VERSION` | `13` | `14` |
+| `PATCH_VERSION` | `0` | `0` |
+| `RELEASE` (deprecated) | `'3.13'` | `'3.14'` |
+| `RELDATE` | `'31-May-2026'` | `'4-July-2026'` |
+
+Also updated per the release checklist: `administrator/manifests/files/joomla.xml` (`<version>3.14.0</version>`, `<creationDate>July 4th, 2026</creationDate>`), `docs/list.xml` (all `<extension>` rows bumped to `version="3.14.0"`, new row added for `targetplatformversion="3.14"`), `docs/extension.xml` (`<version>3.14.0</version>`, name/description/infourl updated to 3.14).
+
+The installation now reports itself as **Joomla! 3.14.0**.

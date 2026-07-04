@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## Version 3.14 - released July 4th, 2026
+Summary of changes:
+- Fixed two PHP 8.5 deprecations reported via [PR #13](https://github.com/joomlaworks/joomla-3.x/pull/13) (contributed by [@raramuridesign](https://github.com/raramuridesign))
+- Updated the en-GB language file version metadata to match the actual running version, fixing false-positive "outdated Joomla" flags from vulnerability scanners that read these files
+
+In detail:
+- Fixed PHP 8.5 deprecation "Using null as an array offset" in `HtmlDocument::getBuffer()` / `setBuffer()` — `$name`/`$title` are frequently `null` (e.g. modules rendered without a title) and were used directly as array keys into the internal render buffer; `getBuffer()` now normalizes them to `''` before indexing, and `setBuffer()` normalizes `$options['type']`/`['name']`/`['title']` with `?? ''` before storing
+- Fixed PHP 8.5 deprecation of `imagedestroy()` in `Image::destroy()` and `Backgroundfill::execute()` — the function has had no effect since PHP 8.0 (GD switched from resources to refcounted `GdImage` objects) and PHP 8.5 now deprecates calling it; `Image::destroy()` was changed to `$this->handle = null` (preserves `isLoaded()` behavior), and the redundant call on a local temp handle in `Backgroundfill` was simply removed
+- Fixed a stray `(boolean)` → `(bool)` cast in `libraries/vendor/joomla/image/src/Image.php`, missed by the broader PHP 8.5 cast sweep in 3.12
+- `administrator/language/en-GB/{en-GB.xml,install.xml}`, `language/en-GB/{en-GB.xml,install.xml}`, and `administrator/manifests/packages/pkg_en-GB.xml` still declared `<version>3.10.20</version>` (unchanged since the original eLTS base). Some scanners fingerprint the Joomla version from these files rather than `JVERSION`; bumped all five to `3.14` (`pkg_en-GB.xml` version simplified from `3.10.20.1` to `3.14`) with an updated `<creationDate>`
+
+---
+
 ## Version 3.13 - released May 31st, 2026
 Summary of changes:
 - The Isis administrator (backend) template now uses CSS view transitions
@@ -30,11 +43,6 @@ In detail:
 - Updated `administrator/manifests/files/joomla.xml`: `<version>` was never updated from its original `3.10.20-elts` value, causing `updateManifestCaches()` to write the wrong version to `manifest_cache` on every upgrade; also updated `<updateservers>` to `https://joomlaworks.github.io/joomla-3.x/list.xml` — prevents upgrades from silently reverting the `#__update_sites` entry back to `update.joomla.org`
 - Added 3.12 filesystem cleanup entries to `deleteUnexistingFiles()` in `script.php`: `/templates/beez3`, `/administrator/templates/hathor`, `/plugins/quickicon/eos310`, `/plugins/quickicon/phpversioncheck`, `/media/plg_quickicon_eos310` and their associated language files are now removed from disk on upgrade, closing the gap where the 3.12 migration SQL correctly removed DB records but left the actual files on disk
 - Fixed `com_joomlaupdate` post-upgrade "complete" screen showing the old version instead of the new one: on PHP-FPM with OPcache, `opcache_reset()` (called during `finalise()`) only resets the current worker process — the `cleanup()` and `complete` requests can land on different workers that still have the old `Version.php` bytecode cached, leaving `JVERSION` at the pre-upgrade value; `cleanup()` now reads the version from `administrator/manifests/files/joomla.xml` on disk (XML files are never bytecode-cached by OPcache), stores it in `com_joomlaupdate.newversion` session state, and `complete.php` reads from the session instead of `JVERSION`
-
-Post-release corrections (July 4, 2026, contributed by [@raramuridesign](https://github.com/raramuridesign) via [PR #13](https://github.com/joomlaworks/joomla-3.x/pull/13)):
-- Fixed PHP 8.5 deprecation "Using null as an array offset" in `HtmlDocument::getBuffer()` / `setBuffer()` — `$name`/`$title` are frequently `null` (e.g. modules rendered without a title) and were used directly as array keys into the internal render buffer; `getBuffer()` now normalizes them to `''` before indexing, and `setBuffer()` normalizes `$options['type']`/`['name']`/`['title']` with `?? ''` before storing
-- Fixed PHP 8.5 deprecation of `imagedestroy()` in `Image::destroy()` and `Backgroundfill::execute()` — the function has had no effect since PHP 8.0 (GD switched from resources to refcounted `GdImage` objects) and PHP 8.5 now deprecates calling it; `Image::destroy()` was changed to `$this->handle = null` (preserves `isLoaded()` behavior), and the redundant call on a local temp handle in `Backgroundfill` was simply removed
-- Fixed a stray `(boolean)` → `(bool)` cast in `libraries/vendor/joomla/image/src/Image.php`, missed by the broader PHP 8.5 cast sweep in 3.12
 
 ---
 

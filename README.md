@@ -11,13 +11,17 @@ So we're actively developing Joomla 3.x UTD as an up-to-date distribution of the
 
 ## CHANGELOG
 
+## Version 3.14 - released July 4th, 2026
+Summary of changes:
+- Fixed two PHP 8.5 deprecations reported via PR #13: null array offsets in `HtmlDocument::getBuffer()`/`setBuffer()`, and the now-deprecated `imagedestroy()` call in `Image::destroy()` and `Backgroundfill::execute()` (supplemental to PR #13).
+- Updated Joomla language file versioning, in-line with the main version (this would also "trip" some scanners)
+
 ## Version 3.13 - released May 31st, 2026
 Summary of changes:
 - The Isis administrator (backend) template now uses CSS view transitions
 - All obsolete CSS has been removed from the Isis template
 - Further PHP 8.x compatibility fixes, extending coverage to newly reported files
 - Fixed: Database update version (OLD-VERSION) does not match CMS version (CURRENT-VERSION) - under Extensions > Manage > Database
-- (July 4, 2026) Fixed two PHP 8.5 deprecations reported via PR #13: null array offsets in `HtmlDocument::getBuffer()`/`setBuffer()`, and the now-deprecated `imagedestroy()` call in `Image::destroy()`
 
 ## Version 3.12 - released May 21st, 2026
 Summary of changes:
@@ -43,29 +47,39 @@ For detailed changelog, please visit: https://github.com/joomlaworks/joomla-3.x/
 - Maintain modern PHP compatibility and apply security patches when necessary
 
 
-## HOW TO INSTALL / UPGRADE
-To install: just extract the latest rolling release https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip where you want the site to be and then follow the normal Joomla installation process.
+## HOW TO UPGRADE FOR EXISTING JOOMLA 3.X SITES
 
-To upgrade manually: using your server's terminal or a file manager, extract the latest rolling release https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip on top of an existing Joomla 3.10.12 (or newer) installation. Remember to remove the `/installation` folder afterwards.
+### Using the Joomla Update component in the backend (Web UI method)
+In the Joomla backend, adjust the options for the Joomla Update component (either from the component's "Options" or through Joomla's "Global Configuration") and use the following update URL in the "Custom URL" field, along with these settings:
+
+- Update Channel: Custom URL
+- Minimum Stability: Stable
+- Custom URL: `https://joomlaworks.github.io/joomla-3.x/list.xml`
+
+Refresh and you should see the latest release available to upgrade.
+
+Future updates will also show up there and you can also be notified (as a super admin) about them (if you have these notifications enabled).
+
+Happy updating!
+
+
+### Using a terminal (CLI method)
+Using your server's terminal, extract the latest rolling release https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip on top of an existing Joomla 3.x installation.
+
+Remember to remove the `/installation` folder afterwards.
 
 In a typical Linux based server, you can easily do the upgrade using the following one-liner command (after you "cd" into your Joomla site's folder):
 ```
 wget -qO- https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 && rm -rf installation .github .gitignore *.md
 ```
 
-**Starting with v3.12**, this distribution ships its own update feed.
 
-Sites on v3.12 or newer will receive update notifications automatically through the Joomla Update component (`Components → Joomla Update`), which you can also use to perform an in-place update of your Joomla 3.x site to this distribution.
+## HOW TO INSTALL (FOR NEW SITES)
+To install, just extract the latest rolling release https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip where you want the site to be and then follow the normal Joomla installation process.
 
-If your site is currently running **v3.11 or earlier**, you must point the Joomla Update component to this distribution's update feed **once** before in-place updates will work.
 
-Adjust the options for the Joomla Update component (either from the component's "Options" or through Joomla's "Global Configuration") and use the following update URL in the "Custom URL" field, along with these settings:
-
-- Update Channel: Custom URL
-- Minimum Stability: Stable
-- Custom URL: `https://joomlaworks.github.io/joomla-3.x/list.xml`
-
-Once updated to v3.12 (or newer), this step is no longer necessary — future updates will be detected and applied automatically.
+## NOTES ON PHP COMPATIBILITY
+This distribution targets at least PHP 7.4. This is the baseline version we use for broader compatibility with hosts and the Joomla 3.x ecosystem (e.g. other extensions and templates).
 
 
 ## NOTES ON MYSQL & MARIADB
