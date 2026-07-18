@@ -7,7 +7,7 @@
 	<authorEmail>admin@joomla.org</authorEmail>
 	<authorUrl>www.joomla.org</authorUrl>
 	<copyright>(C) 2006 Open Source Matters, Inc.</copyright>
-	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<license>GNU General Public License version 2 or later; see LICENSE.md</license>
 	<description><![CDATA[en-GB site language]]></description>
 	<metadata>
 		<name>English (United Kingdom)</name>

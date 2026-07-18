@@ -4,7 +4,7 @@
  * @subpackage  Captcha
  *
  * @copyright   (C) 2018 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  *
  * This file contains the functions used by the com_postinstall code to deliver
  * the necessary post-installation messages for the end of life of reCAPTCHA V1.

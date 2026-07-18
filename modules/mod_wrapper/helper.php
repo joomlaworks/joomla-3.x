@@ -4,7 +4,7 @@
  * @subpackage  mod_wrapper
  *
  * @copyright   (C) 2006 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
