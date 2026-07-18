@@ -18,10 +18,11 @@
       5. Commit and push to main — the GitHub Action rebuilds joomla-latest.zip automatically.
 -->
 <extensionset name="Joomla Core" description="Joomla! Core">
-	<extension name="Joomla" element="joomla" type="file" version="3.15.0" targetplatformversion="3.10" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
-	<extension name="Joomla" element="joomla" type="file" version="3.15.0" targetplatformversion="3.11" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
-	<extension name="Joomla" element="joomla" type="file" version="3.15.0" targetplatformversion="3.12" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
-   <extension name="Joomla" element="joomla" type="file" version="3.15.0" targetplatformversion="3.13" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
-   <extension name="Joomla" element="joomla" type="file" version="3.15.0" targetplatformversion="3.14" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
-   <extension name="Joomla" element="joomla" type="file" version="3.15.0" targetplatformversion="3.15" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.15.0" targetplatformversion="3.10" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.15.0" targetplatformversion="3.11" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.15.0" targetplatformversion="3.12" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.15.0" targetplatformversion="3.13" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.15.0" targetplatformversion="3.14" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.15.0" targetplatformversion="3.15" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
 </extensionset>
+

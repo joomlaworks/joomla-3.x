@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.9" client="administrator" type="language" method="upgrade">
-	<name>English (en-GB)</name>
-	<tag>en-GB</tag>
-	<version>3.15</version>
-	<creationDate>July 18th, 2026</creationDate>
-	<author>Joomla! Project</author>
-	<authorEmail>admin@joomla.org</authorEmail>
-	<authorUrl>www.joomla.org</authorUrl>
-	<copyright>(C) 2013 Open Source Matters, Inc.</copyright>
-	<license>GNU General Public License version 2 or later; see LICENSE.md</license>
-	<description>en-GB administrator language</description>
-	<files>
-		<folder>/</folder>
-		<filename file="meta">install.xml</filename>
-	</files>
-	<params />
+    <name>English (en-GB)</name>
+    <tag>en-GB</tag>
+    <version>3.15</version>
+    <creationDate>July 18th, 2026</creationDate>
+    <author>Joomla! Project</author>
+    <authorEmail>admin@joomla.org</authorEmail>
+    <authorUrl>www.joomla.org</authorUrl>
+    <copyright>(C) 2013 Open Source Matters, Inc.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.md</license>
+    <description>en-GB administrator language</description>
+    <files>
+        <folder>/</folder>
+        <filename file="meta">install.xml</filename>
+    </files>
+    <params />
 </extension>
+
