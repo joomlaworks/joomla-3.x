@@ -172,6 +172,13 @@ A new fork is on the way, based on Joomla 3.x. This fork is WIP (but very, very 
 - Gradual jQuery/Mootools removal - switch to modern JS only.
 - Gradual codebase modernization to support future PHP & MySQL/MariaDB versions without much effort.
 
-***
+## LEGAL
+Joomla 3.x UTD is an independent community project. It is not affiliated with, endorsed by, or supported by Open Source Matters, Inc. or The Joomla! Project™.
 
-Copyright &copy; 2005 - 2025 [Open Source Matters, Inc.](https://www.opensourcematters.org), 2026 [JoomlaWorks Ltd.](https://www.joomlaworks.net)
+The Joomla!® name and logo are trademarks of Open Source Matters, Inc. in the United States and other countries. This project does not use the Joomla! logo.
+
+This distribution is free software, released under the GNU General Public License version 2 or later. See LICENSE.md.
+
+Original Joomla! code: Copyright &copy; 2005 - 2025 Open Source Matters, Inc.
+
+Modifications in this distribution: Copyright &copy; 2026 JoomlaWorks Ltd. and this project's contributors
