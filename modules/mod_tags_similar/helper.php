@@ -81,11 +81,15 @@ abstract class ModTagssimilarHelper
 
 		$query->join('INNER', $db->quoteName('#__tags', 't') . ' ON m.tag_id = t.id')
 			->join('INNER', $db->quoteName('#__ucm_content', 'cc') . ' ON m.core_content_id = cc.core_content_id')
-			->join('INNER', $db->quoteName('#__content_types', 'ct') . ' ON m.type_alias = ct.type_alias');
+			->join('INNER', $db->quoteName('#__content_types', 'ct') . ' ON m.type_alias = ct.type_alias')
+			->join('LEFT', $db->quoteName('#__categories', 'tc') . ' ON tc.id = cc.core_catid');
 
 		$query->where($db->quoteName('m.tag_id') . ' IN (' . $tagsToMatch . ')');
 		$query->where('t.access IN (' . $groups . ')');
 		$query->where('(cc.core_access IN (' . $groups . ') OR cc.core_access = 0)');
+
+		// Items inside an inaccessible or unpublished category must not be listed either
+		$query->where('(cc.core_catid = 0 OR (tc.access IN (' . $groups . ') AND tc.published = 1))');
 
 		// Don't show current item
 		$query->where('(' . $db->quoteName('m.content_item_id') . ' <> ' . $id

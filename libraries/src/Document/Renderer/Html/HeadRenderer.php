@@ -94,7 +94,7 @@ class HeadRenderer extends DocumentRenderer
 			{
 				if ($type == 'http-equiv' && !($document->isHtml5() && $name == 'content-type'))
 				{
-					$buffer .= $tab . '<meta http-equiv="' . $name . '" content="' . htmlspecialchars($content, ENT_COMPAT, 'UTF-8') . '" />' . $lnEnd;
+					$buffer .= $tab . '<meta http-equiv="' . $name . '" content="' . htmlspecialchars((string) $content, ENT_COMPAT, 'UTF-8') . '" />' . $lnEnd;
 				}
 				elseif ($type != 'http-equiv' && !empty($content))
 				{
@@ -102,12 +102,12 @@ class HeadRenderer extends DocumentRenderer
 					{
 						foreach ($content as $value)
 						{
-							$buffer .= $tab . '<meta ' . $type . '="' . $name . '" content="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '" />' . $lnEnd;
+							$buffer .= $tab . '<meta ' . $type . '="' . $name . '" content="' . htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8') . '" />' . $lnEnd;
 						}
 					}
 					else
 					{
-						$buffer .= $tab . '<meta ' . $type . '="' . $name . '" content="' . htmlspecialchars($content, ENT_COMPAT, 'UTF-8') . '" />' . $lnEnd;
+						$buffer .= $tab . '<meta ' . $type . '="' . $name . '" content="' . htmlspecialchars((string) $content, ENT_COMPAT, 'UTF-8') . '" />' . $lnEnd;
 					}
 				}
 			}
@@ -118,7 +118,7 @@ class HeadRenderer extends DocumentRenderer
 
 		if ($documentDescription)
 		{
-			$buffer .= $tab . '<meta name="description" content="' . htmlspecialchars($documentDescription, ENT_COMPAT, 'UTF-8') . '" />' . $lnEnd;
+			$buffer .= $tab . '<meta name="description" content="' . htmlspecialchars((string) $documentDescription, ENT_COMPAT, 'UTF-8') . '" />' . $lnEnd;
 		}
 
 		// Don't add empty generators
@@ -126,10 +126,10 @@ class HeadRenderer extends DocumentRenderer
 
 		if ($generator)
 		{
-			$buffer .= $tab . '<meta name="generator" content="' . htmlspecialchars($generator, ENT_COMPAT, 'UTF-8') . '" />' . $lnEnd;
+			$buffer .= $tab . '<meta name="generator" content="' . htmlspecialchars((string) $generator, ENT_COMPAT, 'UTF-8') . '" />' . $lnEnd;
 		}
 
-		$buffer .= $tab . '<title>' . htmlspecialchars($document->getTitle(), ENT_COMPAT, 'UTF-8') . '</title>' . $lnEnd;
+		$buffer .= $tab . '<title>' . htmlspecialchars((string) $document->getTitle(), ENT_COMPAT, 'UTF-8') . '</title>' . $lnEnd;
 
 		// Generate link declarations
 		foreach ($document->_links as $link => $linkAtrr)
@@ -156,7 +156,7 @@ class HeadRenderer extends DocumentRenderer
 			$conditional = isset($attribs['options']) && isset($attribs['options']['conditional']) ? $attribs['options']['conditional'] : null;
 
 			// Check if script uses media version.
-			if (isset($attribs['options']['version']) && $attribs['options']['version'] && strpos($src, '?') === false
+			if (isset($attribs['options']['version']) && $attribs['options']['version'] && strpos((string) $src, '?') === false
 				&& ($mediaVersion || $attribs['options']['version'] !== 'auto'))
 			{
 				$src .= '?' . ($attribs['options']['version'] === 'auto' ? $mediaVersion : $attribs['options']['version']);
@@ -195,7 +195,7 @@ class HeadRenderer extends DocumentRenderer
 				}
 
 				// Add attribute to script tag output.
-				$buffer .= ' ' . htmlspecialchars($attrib, ENT_COMPAT, 'UTF-8');
+				$buffer .= ' ' . htmlspecialchars((string) $attrib, ENT_COMPAT, 'UTF-8');
 
 				// Json encode value if it's an array.
 				$value = !is_scalar($value) ? json_encode($value) : $value;
@@ -268,7 +268,7 @@ class HeadRenderer extends DocumentRenderer
 			$conditional = isset($attribs['options']) && isset($attribs['options']['conditional']) ? $attribs['options']['conditional'] : null;
 
 			// Check if script uses media version.
-			if (isset($attribs['options']['version']) && $attribs['options']['version'] && strpos($src, '?') === false
+			if (isset($attribs['options']['version']) && $attribs['options']['version'] && strpos((string) $src, '?') === false
 				&& ($mediaVersion || $attribs['options']['version'] !== 'auto'))
 			{
 				$src .= '?' . ($attribs['options']['version'] === 'auto' ? $mediaVersion : $attribs['options']['version']);
@@ -317,7 +317,7 @@ class HeadRenderer extends DocumentRenderer
 				}
 
 				// Add attribute to script tag output.
-				$buffer .= ' ' . htmlspecialchars($attrib, ENT_COMPAT, 'UTF-8');
+				$buffer .= ' ' . htmlspecialchars((string) $attrib, ENT_COMPAT, 'UTF-8');
 
 				if (!($document->isHtml5() && in_array($attrib, $html5NoValueAttributes)))
 				{

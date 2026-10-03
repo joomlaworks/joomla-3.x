@@ -236,7 +236,7 @@ class FOFUtilsUpdateCollection
 			$jVersion = JVERSION;
 		}
 
-		$versionParts = explode('.', $jVersion, 4);
+		$versionParts = explode('.', (string) $jVersion, 4);
 		$platformVersionMajor = $versionParts[0];
 		$platformVersionMinor = (count($versionParts) > 1) ? $platformVersionMajor . '.' . $versionParts[1] : $platformVersionMajor;
 		$platformVersionNormal = (count($versionParts) > 2) ? $platformVersionMinor . '.' . $versionParts[2] : $platformVersionMinor;

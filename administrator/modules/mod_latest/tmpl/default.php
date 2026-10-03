@@ -21,12 +21,12 @@ JHtml::_('bootstrap.tooltip');
 						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time); ?>
 					<?php endif; ?>
 
-					<strong class="row-title" title="<?php echo htmlspecialchars($item->title, ENT_QUOTES, 'UTF-8'); ?>">
+					<strong class="row-title" title="<?php echo htmlspecialchars((string) $item->title, ENT_QUOTES, 'UTF-8'); ?>">
 						<?php if ($item->link) : ?>
 							<a href="<?php echo $item->link; ?>">
-								<?php echo htmlspecialchars($item->title, ENT_QUOTES, 'UTF-8'); ?></a>
+								<?php echo htmlspecialchars((string) $item->title, ENT_QUOTES, 'UTF-8'); ?></a>
 						<?php else : ?>
-							<?php echo htmlspecialchars($item->title, ENT_QUOTES, 'UTF-8'); ?>
+							<?php echo htmlspecialchars((string) $item->title, ENT_QUOTES, 'UTF-8'); ?>
 						<?php endif; ?>
 					</strong>
 

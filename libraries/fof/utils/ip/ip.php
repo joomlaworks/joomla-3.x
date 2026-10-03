@@ -141,7 +141,7 @@ abstract class FOFUtilsIp
 
 		foreach ($ipTable as $ipExpression)
 		{
-			$ipExpression = trim($ipExpression);
+			$ipExpression = trim((string) $ipExpression);
 
 			// Inclusive IP range, i.e. 123.123.123.123-124.125.126.127
 			if (strstr($ipExpression, '-'))
@@ -492,7 +492,7 @@ abstract class FOFUtilsIp
 
 		foreach ($unpacked as $char)
 		{
-			$binaryip .= str_pad(decbin(ord($char)), 8, '0', STR_PAD_LEFT);
+			$binaryip .= str_pad(decbin(ord($char[0])), 8, '0', STR_PAD_LEFT);
 		}
 
 		return $binaryip;

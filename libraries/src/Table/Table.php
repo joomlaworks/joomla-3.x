@@ -289,7 +289,7 @@ abstract class Table extends \JObject implements \JObservableInterface, \JTableI
 	{
 		// Sanitize and prepare the table class name.
 		$type       = preg_replace('/[^A-Z0-9_\.-]/i', '', $type);
-		$tableClass = $prefix . ucfirst($type);
+		$tableClass = $prefix . ucfirst((string) $type);
 
 		// Only try to load the class if it doesn't already exist.
 		if (!class_exists($tableClass))
@@ -302,7 +302,7 @@ abstract class Table extends \JObject implements \JObservableInterface, \JTableI
 
 			while (!class_exists($tableClass) && $pathIndex < count($paths))
 			{
-				if ($tryThis = \JPath::find($paths[$pathIndex++], strtolower($type) . '.php'))
+				if ($tryThis = \JPath::find($paths[$pathIndex++], strtolower((string) $type) . '.php'))
 				{
 					// Import the class file.
 					include_once $tryThis;
@@ -356,7 +356,7 @@ abstract class Table extends \JObject implements \JObservableInterface, \JTableI
 			foreach ($path as $dir)
 			{
 				// Sanitize path.
-				$dir = trim($dir);
+				$dir = trim((string) $dir);
 
 				// Add to the front of the list so that custom paths are searched first.
 				if (!in_array($dir, self::$_includePaths))
@@ -586,7 +586,7 @@ abstract class Table extends \JObject implements \JObservableInterface, \JTableI
 		foreach ($this->getFields() as $k => $v)
 		{
 			// If the property is not the primary key or private, reset it.
-			if (!in_array($k, $this->_tbl_keys) && (strpos($k, '_') !== 0))
+			if (!in_array($k, $this->_tbl_keys) && (strpos((string) $k, '_') !== 0))
 			{
 				$this->$k = $v->Default;
 			}
@@ -1703,7 +1703,7 @@ abstract class Table extends \JObject implements \JObservableInterface, \JTableI
 		}
 
 		// Sanitize the name
-		$return = preg_replace('#[^A-Z0-9_]#i', '', $return);
+		$return = preg_replace('#[^A-Z0-9_]#i', '', (string) $return);
 
 		return $return;
 	}

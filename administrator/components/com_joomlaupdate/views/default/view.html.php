@@ -151,7 +151,7 @@ class JoomlaupdateViewDefault extends JViewLegacy
 			case 'custom':
 				$this->langKey         = 'COM_JOOMLAUPDATE_VIEW_DEFAULT_UPDATES_INFO_CUSTOM';
 
-				if (strpos($params->get('customurl', ''), 'https://elts-updates.joomla.org') === 0)
+				if (strpos((string) $params->get('customurl', ''), 'https://elts-updates.joomla.org') === 0)
 				{
 					$this->langKey         = 'COM_JOOMLAUPDATE_VIEW_DEFAULT_UPDATES_INFO_ELTS';
 				}

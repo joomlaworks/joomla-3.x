@@ -41,7 +41,7 @@ final class Version
 	 * @var    integer
 	 * @since  3.8.0
 	 */
-	const MINOR_VERSION = 15; // Updated for 3.15 release
+	const MINOR_VERSION = 16; // Updated for 3.16 release
 
 	/**
 	 * Patch release version.
@@ -69,7 +69,7 @@ final class Version
 	 * @since  3.5
 	 * @deprecated  4.0  Use separated version constants instead
 	 */
-	const RELEASE = '3.15';
+	const RELEASE = '3.16';
 
 	/**
 	 * Maintenance version.
@@ -111,7 +111,7 @@ final class Version
 	 * @var    string
 	 * @since  3.5
 	 */
-	const RELDATE = '18-July-2026';
+	const RELDATE = 'October 3rd, 2026';
 
 	/**
 	 * Release time.

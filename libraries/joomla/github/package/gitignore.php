@@ -70,12 +70,12 @@ class JGithubPackageGitignore extends JGithubPackage
 		if ($response->code != 200)
 		{
 			// Decode the error response and throw an exception.
-			$error   = json_decode($response->body);
+			$error   = json_decode((string) $response->body);
 			$message = (isset($error->message)) ? $error->message : 'Invalid response';
 
 			throw new DomainException($message, $response->code);
 		}
 
-		return ($raw) ? $response->body : json_decode($response->body);
+		return ($raw) ? $response->body : json_decode((string) $response->body);
 	}
 }

@@ -93,7 +93,7 @@ else // XTD Image plugin
 			</div>
 		</div>
 
-		<iframe id="imageframe" name="imageframe" src="index.php?option=com_media&amp;view=imagesList&amp;tmpl=component&amp;folder=<?php echo rawurlencode($this->state->folder); ?>&amp;asset=<?php echo $asset; ?>&amp;author=<?php echo $author; ?>"></iframe>
+		<iframe id="imageframe" name="imageframe" src="index.php?option=com_media&amp;view=imagesList&amp;tmpl=component&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>&amp;asset=<?php echo $asset; ?>&amp;author=<?php echo $author; ?>"></iframe>
 
 		<div class="well">
 			<div class="row-fluid">

@@ -118,13 +118,13 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						<td class="break-word">
 							<?php if ($canEdit) : ?>
 								<a href="<?php echo JRoute::_('index.php?option=com_redirect&task=link.edit&id=' . $item->id); ?>" title="<?php echo $this->escape($item->old_url); ?>">
-									<?php echo $this->escape(str_replace(JUri::root(), '', rawurldecode($item->old_url))); ?></a>
+									<?php echo $this->escape(str_replace(JUri::root(), '', rawurldecode((string) $item->old_url))); ?></a>
 							<?php else : ?>
-									<?php echo $this->escape(str_replace(JUri::root(), '', rawurldecode($item->old_url))); ?>
+									<?php echo $this->escape(str_replace(JUri::root(), '', rawurldecode((string) $item->old_url))); ?>
 							<?php endif; ?>
 						</td>
 						<td class="small break-word">
-							<?php echo $this->escape(rawurldecode($item->new_url)); ?>
+							<?php echo $this->escape(rawurldecode((string) $item->new_url)); ?>
 						</td>
 						<td class="small break-word hidden-phone hidden-tablet">
 							<?php echo $this->escape($item->referer); ?>

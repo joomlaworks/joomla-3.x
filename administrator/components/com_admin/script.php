@@ -41,7 +41,7 @@ class JoomlaInstallerScript
 			// Get the version we are updating from
 			if (!empty($installer->extension->manifest_cache))
 			{
-				$manifestValues = json_decode($installer->extension->manifest_cache, true);
+				$manifestValues = json_decode((string) $installer->extension->manifest_cache, true);
 
 				if ((array_key_exists('version', $manifestValues)))
 				{
@@ -82,7 +82,19 @@ class JoomlaInstallerScript
 
 		// This needs to stay for 2.5 update compatibility
 		$this->deleteUnexistingFiles();
+
+		// After the data migrations, which may add rows for newly bundled core extensions (e.g. Little WAF)
 		$this->runDataMigrations();
+		$this->fixCoreCategorySubmenus();
+
+		if ($this->restoreCoreExtensions)
+		{
+			$this->restoreRemovedCoreExtensions();
+		}
+		else
+		{
+			$this->deleteFilesOfRemovedCoreExtensions();
+		}
 		$this->updateManifestCaches();
 		$this->updateDatabase();
 		$this->fixSchemas();
@@ -336,6 +348,7 @@ class JoomlaInstallerScript
 		// whenever a future release ships a similar data-only migration file.
 		$dataMigrationFiles = array(
 			'3.12.0-2026-05-21.sql',
+			'3.16.0-2026-08-21.sql',
 		);
 
 		foreach ($dataMigrationFiles as $file)
@@ -351,7 +364,7 @@ class JoomlaInstallerScript
 
 			foreach ($queries as $query)
 			{
-				$query = trim($query);
+				$query = trim((string) $query);
 
 				if ($query === '')
 				{
@@ -593,6 +606,794 @@ class JoomlaInstallerScript
 				echo JText::sprintf('FILES_JOOMLA_ERROR_MANIFEST', $extension->type, $extension->element, $extension->name, $extension->client_id) . '<br />';
 			}
 		}
+	}
+
+	/**
+	 * Core extensions which the site admin is allowed to uninstall, grouped by the feature they belong to.
+	 * Each member is checked on its own, so a partially removed bundle is handled correctly too.
+	 *
+	 * Format: array(type, element, folder[, client]) - folder is the plugin group, empty otherwise; client is
+	 * 0 (site, the default) or 1 (administrator) and only matters for modules and templates.
+	 *
+	 * @var    array
+	 * @since  3.16.0
+	 */
+	protected $removableCoreExtensions = array(
+		'Banners' => array(
+			array('component', 'com_banners', ''),
+			array('module', 'mod_banners', ''),
+		),
+		'Contacts' => array(
+			array('component', 'com_contact', ''),
+			array('plugin', 'contact', 'content'),
+			array('plugin', 'contact', 'editors-xtd'),
+			array('plugin', 'contact', 'privacy'),
+			array('plugin', 'contactcreator', 'user'),
+			array('plugin', 'contacts', 'finder'),
+			array('plugin', 'contacts', 'search'),
+		),
+		'News Feeds' => array(
+			array('component', 'com_newsfeeds', ''),
+			array('plugin', 'newsfeeds', 'finder'),
+			array('plugin', 'newsfeeds', 'search'),
+		),
+		'Search' => array(
+			array('component', 'com_search', ''),
+			array('module', 'mod_search', ''),
+			array('plugin', 'categories', 'search'),
+			array('plugin', 'content', 'search'),
+			array('plugin', 'tags', 'search'),
+			array('plugin', 'highlight', 'system'),
+		),
+		'Smart Search' => array(
+			array('component', 'com_finder', ''),
+			array('module', 'mod_finder', ''),
+			array('plugin', 'finder', 'content'),
+			array('plugin', 'categories', 'finder'),
+			array('plugin', 'content', 'finder'),
+			array('plugin', 'tags', 'finder'),
+		),
+		'Content History' => array(
+			array('component', 'com_contenthistory', ''),
+		),
+		'Multilingual Associations' => array(
+			array('component', 'com_associations', ''),
+		),
+		'Fields' => array(
+			array('component', 'com_fields', ''),
+			array('plugin', 'fields', 'content'),
+			array('plugin', 'fields', 'editors-xtd'),
+			array('plugin', 'fields', 'system'),
+			array('plugin', 'calendar', 'fields'),
+			array('plugin', 'checkboxes', 'fields'),
+			array('plugin', 'color', 'fields'),
+			array('plugin', 'editor', 'fields'),
+			array('plugin', 'imagelist', 'fields'),
+			array('plugin', 'integer', 'fields'),
+			array('plugin', 'list', 'fields'),
+			array('plugin', 'media', 'fields'),
+			array('plugin', 'radio', 'fields'),
+			array('plugin', 'repeatable', 'fields'),
+			array('plugin', 'sql', 'fields'),
+			array('plugin', 'text', 'fields'),
+			array('plugin', 'textarea', 'fields'),
+			array('plugin', 'url', 'fields'),
+			array('plugin', 'user', 'fields'),
+			array('plugin', 'usergrouplist', 'fields'),
+		),
+		'Other site modules' => array(
+			array('module', 'mod_articles_archive', ''),
+			array('module', 'mod_articles_categories', ''),
+			array('module', 'mod_articles_category', ''),
+			array('module', 'mod_articles_latest', ''),
+			array('module', 'mod_articles_news', ''),
+			array('module', 'mod_articles_popular', ''),
+			array('module', 'mod_feed', ''),
+			array('module', 'mod_footer', ''),
+			array('module', 'mod_random_image', ''),
+			array('module', 'mod_related_items', ''),
+			array('module', 'mod_stats', ''),
+			array('module', 'mod_tags_popular', ''),
+			array('module', 'mod_tags_similar', ''),
+			array('module', 'mod_users_latest', ''),
+			array('module', 'mod_whosonline', ''),
+			array('module', 'mod_wrapper', ''),
+		),
+		'Other administrator modules' => array(
+			array('module', 'mod_feed', '', 1),
+			array('module', 'mod_latest', '', 1),
+			array('module', 'mod_latestactions', '', 1),
+			array('module', 'mod_logged', '', 1),
+			array('module', 'mod_menu', '', 1),
+			array('module', 'mod_multilangstatus', '', 1),
+			array('module', 'mod_popular', '', 1),
+			array('module', 'mod_privacy_dashboard', '', 1),
+			array('module', 'mod_sampledata', '', 1),
+			array('module', 'mod_stats_admin', '', 1),
+			array('module', 'mod_status', '', 1),
+			array('module', 'mod_submenu', '', 1),
+			array('module', 'mod_title', '', 1),
+			array('module', 'mod_version', '', 1),
+		),
+		'Other plugins' => array(
+			array('plugin', 'joomla', 'actionlog'),
+			array('plugin', 'cookie', 'authentication'),
+			array('plugin', 'gmail', 'authentication'),
+			array('plugin', 'ldap', 'authentication'),
+			array('plugin', 'recaptcha', 'captcha'),
+			array('plugin', 'recaptcha_invisible', 'captcha'),
+			array('plugin', 'confirmconsent', 'content'),
+			array('plugin', 'emailcloak', 'content'),
+			array('plugin', 'joomla', 'content'),
+			array('plugin', 'loadmodule', 'content'),
+			array('plugin', 'pagebreak', 'content'),
+			array('plugin', 'pagenavigation', 'content'),
+			array('plugin', 'vote', 'content'),
+			array('plugin', 'tinymce', 'editors'),
+			array('plugin', 'article', 'editors-xtd'),
+			array('plugin', 'image', 'editors-xtd'),
+			array('plugin', 'menu', 'editors-xtd'),
+			array('plugin', 'module', 'editors-xtd'),
+			array('plugin', 'pagebreak', 'editors-xtd'),
+			array('plugin', 'readmore', 'editors-xtd'),
+			array('plugin', 'actionlogs', 'privacy'),
+			array('plugin', 'consents', 'privacy'),
+			array('plugin', 'content', 'privacy'),
+			array('plugin', 'message', 'privacy'),
+			array('plugin', 'user', 'privacy'),
+			array('plugin', 'privacycheck', 'quickicon'),
+			array('plugin', 'blog', 'sampledata'),
+			array('plugin', 'actionlogs', 'system'),
+			array('plugin', 'debug', 'system'),
+			array('plugin', 'languagecode', 'system'),
+			array('plugin', 'littlewaf', 'system'),
+			array('plugin', 'logrotation', 'system'),
+			array('plugin', 'p3p', 'system'),
+			array('plugin', 'privacyconsent', 'system'),
+			array('plugin', 'sef', 'system'),
+			array('plugin', 'sessiongc', 'system'),
+			array('plugin', 'stats', 'system'),
+			array('plugin', 'updatenotification', 'system'),
+			array('plugin', 'totp', 'twofactorauth'),
+			array('plugin', 'yubikey', 'twofactorauth'),
+			array('plugin', 'joomla', 'user'),
+			array('plugin', 'profile', 'user'),
+			array('plugin', 'terms', 'user'),
+		),
+		'Templates' => array(
+			array('template', 'protostar', ''),
+			array('template', 'isis', '', 1),
+		),
+	);
+
+	/**
+	 * The only removable core extensions whose manifest declares a media folder. A real uninstall removes
+	 * just these, so the cleanup below does the same and leaves every other media/ folder alone.
+	 *
+	 * @var    array
+	 * @since  3.16.0
+	 */
+	protected $removableCoreExtensionMedia = array(
+		'component:0::com_finder'   => '/media/com_finder',
+		'module:1::mod_sampledata'  => '/media/mod_sampledata',
+	);
+
+	/**
+	 * Removable core plugins which a fresh install ships disabled. Every other removable core extension
+	 * ships enabled. Used when restoring uninstalled core extensions.
+	 *
+	 * @var    array
+	 * @since  3.16.0
+	 */
+	protected $removableCoreExtensionsDisabled = array(
+		'plugin:0:authentication:gmail',
+		'plugin:0:authentication:ldap',
+		'plugin:0:captcha:recaptcha',
+		'plugin:0:captcha:recaptcha_invisible',
+		'plugin:0:content:confirmconsent',
+		'plugin:0:content:finder',
+		'plugin:0:content:vote',
+		'plugin:0:system:languagecode',
+		'plugin:0:system:littlewaf',
+		'plugin:0:system:p3p',
+		'plugin:0:system:privacyconsent',
+		'plugin:0:twofactorauth:totp',
+		'plugin:0:twofactorauth:yubikey',
+		'plugin:0:user:contactcreator',
+		'plugin:0:user:profile',
+		'plugin:0:user:terms',
+	);
+
+	/**
+	 * The module placements a fresh install creates for the removable administrator modules. Uninstalling a
+	 * module deletes its placements too, and without one an administrator module never shows up.
+	 *
+	 * Format: element => array(title, position, ordering, published, access, params)
+	 *
+	 * @var    array
+	 * @since  3.16.0
+	 */
+	protected $stockAdministratorModules = array(
+		'mod_latest'            => array('Recently Added Articles', 'cpanel', 4, 1, 3, '{"count":"5","ordering":"c_dsc","catid":"","user_id":"0","layout":"_:default","moduleclass_sfx":"","cache":"0"}'),
+		'mod_latestactions'     => array('Latest Actions', 'cpanel', 0, 1, 6, '{}'),
+		'mod_logged'            => array('Logged-in Users', 'cpanel', 2, 1, 3, '{"count":"5","name":"1","layout":"_:default","moduleclass_sfx":"","cache":"0"}'),
+		'mod_menu'              => array('Admin Menu', 'menu', 1, 1, 3, '{"layout":"","moduleclass_sfx":"","shownew":"1","showhelp":"1","cache":"0"}'),
+		'mod_multilangstatus'   => array('Multilanguage status', 'status', 1, 0, 3, '{"layout":"_:default","moduleclass_sfx":"","cache":"0"}'),
+		'mod_popular'           => array('Popular Articles', 'cpanel', 3, 1, 3, '{"count":"5","catid":"","user_id":"0","layout":"_:default","moduleclass_sfx":"","cache":"0"}'),
+		'mod_privacy_dashboard' => array('Privacy Dashboard', 'cpanel', 0, 1, 6, '{}'),
+		'mod_sampledata'        => array('Sample Data', 'cpanel', 0, 1, 6, '{}'),
+		'mod_status'            => array('User Status', 'status', 2, 1, 3, ''),
+		'mod_submenu'           => array('Admin Submenu', 'submenu', 1, 1, 3, ''),
+		'mod_title'             => array('Title', 'title', 1, 1, 3, ''),
+		'mod_version'           => array('Joomla Version', 'footer', 1, 1, 3, '{"format":"short","product":"1","layout":"_:default","moduleclass_sfx":"","cache":"0"}'),
+	);
+
+	/**
+	 * Set by Joomla Update when the site admin asks a core files reinstall to also bring back the core
+	 * extensions which were uninstalled. Off for every regular update.
+	 *
+	 * @var    boolean
+	 * @since  3.16.0
+	 */
+	public $restoreCoreExtensions = false;
+
+	/**
+	 * The stock "Categories" entries under Components → Banners/Contacts/News Feeds pointed at com_categories
+	 * instead of their own component, so uninstalling the component left them behind as a stray top level
+	 * "com_*_categories" entry. Point them at their own component (as the installer itself does when it
+	 * builds these menus from the manifests), and delete the ones already orphaned by an earlier uninstall.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.16.0
+	 */
+	protected function fixCoreCategorySubmenus()
+	{
+		$db    = JFactory::getDbo();
+		$table = JTable::getInstance('Menu');
+
+		$deleted = false;
+
+		foreach (array('com_banners', 'com_contact', 'com_newsfeeds') as $component)
+		{
+			$query = $db->getQuery(true)
+				->select($db->quoteName('extension_id'))
+				->from($db->quoteName('#__extensions'))
+				->where($db->quoteName('type') . ' = ' . $db->quote('component'))
+				->where($db->quoteName('element') . ' = ' . $db->quote($component))
+				->where($db->quoteName('state') . ' <> -1');
+
+			$conditions = array(
+				$db->quoteName('menutype') . ' = ' . $db->quote('main'),
+				$db->quoteName('client_id') . ' = 1',
+				$db->quoteName('link') . ' = ' . $db->quote('index.php?option=com_categories&extension=' . $component),
+			);
+
+			try
+			{
+				$componentId = (int) $db->setQuery($query)->loadResult();
+
+				if ($componentId)
+				{
+					$query = $db->getQuery(true)
+						->update($db->quoteName('#__menu'))
+						->set($db->quoteName('component_id') . ' = ' . $componentId)
+						->where($conditions)
+						->where($db->quoteName('component_id') . ' <> ' . $componentId);
+
+					$db->setQuery($query)->execute();
+
+					continue;
+				}
+
+				$query = $db->getQuery(true)
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__menu'))
+					->where($conditions);
+
+				$ids = $db->setQuery($query)->loadColumn();
+			}
+			catch (Exception $e)
+			{
+				continue;
+			}
+
+			// Through the table, so the nested set stays consistent
+			foreach ($ids as $id)
+			{
+				$deleted = $table->delete((int) $id) || $deleted;
+			}
+		}
+
+		if ($deleted)
+		{
+			$table->rebuild();
+		}
+	}
+
+	/**
+	 * Loads which removable core extensions are installed.
+	 *
+	 * @return  array|null  array(installed keys => true, discovered keys => list of state -1 ids), or null
+	 *                      when the extensions table can't be read or looks untrustworthy
+	 *
+	 * @since   3.16.0
+	 */
+	protected function getCoreExtensionStates()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('extension_id', 'type', 'element', 'folder', 'client_id', 'state')))
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('type') . ' IN (' . implode(',', $db->quote(array('component', 'module', 'plugin', 'template'))) . ')');
+
+		try
+		{
+			$rows = $db->setQuery($query)->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			return null;
+		}
+
+		$installed  = array();
+		$discovered = array();
+
+		foreach ($rows as $row)
+		{
+			$key = $this->removableCoreExtensionKey($row->type, $row->element, $row->folder, $row->client_id);
+
+			if ((int) $row->state === -1)
+			{
+				$discovered[$key][] = (int) $row->extension_id;
+
+				continue;
+			}
+
+			$installed[$key] = true;
+		}
+
+		// Sanity check: if protected core components look uninstalled, the query result can't be trusted
+		if (!isset($installed['component:0::com_content'], $installed['component:0::com_users']))
+		{
+			return null;
+		}
+
+		return array($installed, $discovered);
+	}
+
+	/**
+	 * The update package always contains every core extension, so extracting it brings back the files of
+	 * any removable core extension the site admin had uninstalled. Delete those files again, so the update
+	 * doesn't silently re-add an extension the site deliberately got rid of.
+	 *
+	 * An extension counts as uninstalled when it has no #__extensions row, or only a "discovered, not
+	 * installed" (state -1) one. This runs after the update SQL, so rows for extensions newer than the
+	 * version being updated from are already in place and their files are kept. Only what an uninstall
+	 * itself removes is deleted again.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.16.0
+	 */
+	protected function deleteFilesOfRemovedCoreExtensions()
+	{
+		$states = $this->getCoreExtensionStates();
+
+		// Without a reliable list of installed extensions, deleting anything would be guesswork
+		if ($states === null)
+		{
+			return;
+		}
+
+		list($installed, $discovered) = $states;
+
+		$db = JFactory::getDbo();
+
+		jimport('joomla.filesystem.file');
+		jimport('joomla.filesystem.folder');
+
+		foreach ($this->removableCoreExtensions as $bundle => $members)
+		{
+			foreach ($members as $member)
+			{
+				list($type, $element, $folder) = $member;
+
+				$client = isset($member[3]) ? (int) $member[3] : 0;
+				$key    = $this->removableCoreExtensionKey($type, $element, $folder, $client);
+
+				if (isset($installed[$key]))
+				{
+					continue;
+				}
+
+				switch ($type)
+				{
+					case 'component':
+						$folders = array('/components/' . $element, '/administrator/components/' . $element);
+						$files   = array(
+							'/language/en-GB/en-GB.' . $element . '.ini',
+							'/language/en-GB/en-GB.' . $element . '.sys.ini',
+							'/administrator/language/en-GB/en-GB.' . $element . '.ini',
+							'/administrator/language/en-GB/en-GB.' . $element . '.sys.ini',
+						);
+						break;
+
+					case 'module':
+					case 'template':
+						$base    = $client ? '/administrator' : '';
+						$prefix  = $type === 'module' ? $element : 'tpl_' . $element;
+						$folders = array($base . ($type === 'module' ? '/modules/' : '/templates/') . $element);
+						$files   = array(
+							$base . '/language/en-GB/en-GB.' . $prefix . '.ini',
+							$base . '/language/en-GB/en-GB.' . $prefix . '.sys.ini',
+						);
+						break;
+
+					default:
+						$name    = 'plg_' . $folder . '_' . $element;
+						$folders = array('/plugins/' . $folder . '/' . $element);
+						$files   = array(
+							'/administrator/language/en-GB/en-GB.' . $name . '.ini',
+							'/administrator/language/en-GB/en-GB.' . $name . '.sys.ini',
+						);
+						break;
+				}
+
+				if (isset($this->removableCoreExtensionMedia[$key]))
+				{
+					$folders[] = $this->removableCoreExtensionMedia[$key];
+				}
+
+				$deleted = false;
+
+				foreach ($files as $file)
+				{
+					if (JFile::exists(JPATH_ROOT . $file))
+					{
+						$deleted = JFile::delete(JPATH_ROOT . $file) || $deleted;
+					}
+				}
+
+				foreach ($folders as $path)
+				{
+					if (JFolder::exists(JPATH_ROOT . $path))
+					{
+						$deleted = JFolder::delete(JPATH_ROOT . $path) || $deleted;
+					}
+				}
+
+				// A "discovered" placeholder row would now point at files which no longer exist
+				if (!empty($discovered[$key]))
+				{
+					$this->deleteDiscoveredRows($discovered[$key]);
+				}
+
+				if ($deleted)
+				{
+					try
+					{
+						JLog::add(sprintf('Kept removed core extension uninstalled (%s): %s', $bundle, $key), JLog::INFO, 'Update');
+					}
+					catch (RuntimeException $exception)
+					{
+						// Informational log only
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Reinstalls the removable core extensions which were uninstalled, through Joomla's own discover install
+	 * (database records, administrator menu items, permissions, the extension's own install SQL). Afterwards
+	 * each one gets its stock enabled state, and administrator modules get their stock placement if they
+	 * have none. Only runs when the site admin explicitly asked for it on a core files reinstall.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.16.0
+	 */
+	protected function restoreRemovedCoreExtensions()
+	{
+		$app    = JFactory::getApplication();
+		$states = $this->getCoreExtensionStates();
+
+		if ($states === null)
+		{
+			$app->enqueueMessage(JText::_('COM_JOOMLAUPDATE_RESTORE_CORE_EXTENSIONS_UNAVAILABLE'), 'warning');
+
+			return;
+		}
+
+		list($installed, $discovered) = $states;
+
+		// Components first, as some modules and plugins only make sense with their component in place
+		$members = array();
+		$rank    = array('component' => 0, 'module' => 1, 'plugin' => 2, 'template' => 3);
+
+		foreach ($this->removableCoreExtensions as $bundleMembers)
+		{
+			foreach ($bundleMembers as $member)
+			{
+				$members[$rank[$member[0]]][] = $member;
+			}
+		}
+
+		ksort($members);
+
+		$discoverer = new JInstaller;
+		$onDisk     = array();
+
+		foreach ($discoverer->discover() as $row)
+		{
+			$onDisk[$this->removableCoreExtensionKey($row->type, $row->element, $row->folder, $row->client_id)] = $row;
+		}
+
+		$db       = JFactory::getDbo();
+		$restored = array();
+		$failed   = array();
+
+		foreach ($members as $group)
+		{
+			foreach ($group as $member)
+			{
+				list($type, $element, $folder) = $member;
+
+				$client = isset($member[3]) ? (int) $member[3] : 0;
+				$key    = $this->removableCoreExtensionKey($type, $element, $folder, $client);
+				$label  = $this->removableCoreExtensionLabel($type, $element, $folder, $client);
+
+				if (isset($installed[$key]))
+				{
+					continue;
+				}
+
+				$leftovers = isset($discovered[$key]) ? $discovered[$key] : array();
+
+				if ($leftovers)
+				{
+					$eid = array_shift($leftovers);
+				}
+				elseif (isset($onDisk[$key]))
+				{
+					$row = $onDisk[$key];
+
+					if (!$row->check() || !$row->store())
+					{
+						$failed[] = $label;
+
+						continue;
+					}
+
+					$eid = (int) $row->extension_id;
+				}
+				else
+				{
+					// Files missing from disk, nothing to install from
+					$failed[] = $label;
+
+					continue;
+				}
+
+				$installer = new JInstaller;
+
+				if (!$installer->discover_install($eid))
+				{
+					$failed[] = $label;
+
+					continue;
+				}
+
+				if ($leftovers)
+				{
+					$this->deleteDiscoveredRows($leftovers);
+				}
+
+				$values = array(
+					$db->quoteName('enabled') . ' = ' . (in_array($key, $this->removableCoreExtensionsDisabled, true) ? 0 : 1),
+				);
+
+				// Little WAF must run before every other system plugin, see its install SQL
+				if ($key === 'plugin:0:system:littlewaf')
+				{
+					$values[] = $db->quoteName('ordering') . ' = -10000';
+				}
+
+				$query = $db->getQuery(true)
+					->update($db->quoteName('#__extensions'))
+					->set($values)
+					->where($db->quoteName('extension_id') . ' = ' . (int) $eid);
+
+				try
+				{
+					$db->setQuery($query)->execute();
+				}
+				catch (Exception $e)
+				{
+					// Installed, just not with its stock enabled state
+				}
+
+				if ($type === 'module' && $client === 1 && isset($this->stockAdministratorModules[$element]))
+				{
+					$this->createStockAdministratorModule($element);
+				}
+
+				$restored[] = $label;
+
+				try
+				{
+					JLog::add('Restored removed core extension: ' . $key, JLog::INFO, 'Update');
+				}
+				catch (RuntimeException $exception)
+				{
+					// Informational log only
+				}
+			}
+		}
+
+		if ($restored)
+		{
+			$app->enqueueMessage(JText::sprintf('COM_JOOMLAUPDATE_RESTORE_CORE_EXTENSIONS_DONE', implode(', ', $restored)), 'message');
+		}
+
+		if ($failed)
+		{
+			$app->enqueueMessage(JText::sprintf('COM_JOOMLAUPDATE_RESTORE_CORE_EXTENSIONS_FAILED', implode(', ', $failed)), 'warning');
+		}
+
+		if (!$restored && !$failed)
+		{
+			$app->enqueueMessage(JText::_('COM_JOOMLAUPDATE_RESTORE_CORE_EXTENSIONS_NONE'), 'message');
+		}
+	}
+
+	/**
+	 * Creates the stock placement of a restored administrator module, unless it already has one.
+	 *
+	 * @param   string  $element  The module element
+	 *
+	 * @return  void
+	 *
+	 * @since   3.16.0
+	 */
+	protected function createStockAdministratorModule($element)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true)
+			->select('COUNT(*)')
+			->from($db->quoteName('#__modules'))
+			->where($db->quoteName('module') . ' = ' . $db->quote($element))
+			->where($db->quoteName('client_id') . ' = 1');
+
+		try
+		{
+			if ((int) $db->setQuery($query)->loadResult() > 0)
+			{
+				return;
+			}
+		}
+		catch (Exception $e)
+		{
+			return;
+		}
+
+		list($title, $position, $ordering, $published, $access, $params) = $this->stockAdministratorModules[$element];
+
+		$module = JTable::getInstance('Module');
+		$data   = array(
+			'title'     => $title,
+			'note'      => '',
+			'content'   => '',
+			'ordering'  => $ordering,
+			'position'  => $position,
+			'published' => $published,
+			'module'    => $element,
+			'access'    => $access,
+			'showtitle' => 1,
+			'params'    => $params,
+			'client_id' => 1,
+			'language'  => '*',
+		);
+
+		if (!$module->bind($data) || !$module->check() || !$module->store())
+		{
+			return;
+		}
+
+		// Administrator modules are assigned to "all pages"
+		$query = $db->getQuery(true)
+			->insert($db->quoteName('#__modules_menu'))
+			->columns($db->quoteName(array('moduleid', 'menuid')))
+			->values((int) $module->id . ', 0');
+
+		try
+		{
+			$db->setQuery($query)->execute();
+		}
+		catch (Exception $e)
+		{
+			// The module exists, it just isn't assigned yet
+		}
+	}
+
+	/**
+	 * Deletes "discovered, not installed" (state -1) placeholder rows.
+	 *
+	 * @param   integer[]  $ids  The extension ids
+	 *
+	 * @return  void
+	 *
+	 * @since   3.16.0
+	 */
+	protected function deleteDiscoveredRows(array $ids)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__extensions'))
+			->where($db->quoteName('extension_id') . ' IN (' . implode(',', array_map('intval', $ids)) . ')')
+			->where($db->quoteName('state') . ' = -1');
+
+		try
+		{
+			$db->setQuery($query)->execute();
+		}
+		catch (Exception $e)
+		{
+			// Harmless leftover, Extensions: Discover purges these rows on its own
+		}
+	}
+
+	/**
+	 * Builds the lookup key for an extension. The client only tells modules and templates apart, as the same
+	 * element can exist on both the site and the administrator side (e.g. mod_feed).
+	 *
+	 * @param   string   $type     The extension type
+	 * @param   string   $element  The extension element
+	 * @param   string   $folder   The plugin group, empty otherwise
+	 * @param   integer  $client   The client id
+	 *
+	 * @return  string
+	 *
+	 * @since   3.16.0
+	 */
+	private function removableCoreExtensionKey($type, $element, $folder, $client)
+	{
+		$client = in_array($type, array('module', 'template'), true) ? (int) $client : 0;
+
+		return $type . ':' . $client . ':' . $folder . ':' . $element;
+	}
+
+	/**
+	 * Builds a readable name for an extension, as used in the Extensions Manager.
+	 *
+	 * @param   string   $type     The extension type
+	 * @param   string   $element  The extension element
+	 * @param   string   $folder   The plugin group, empty otherwise
+	 * @param   integer  $client   The client id
+	 *
+	 * @return  string
+	 *
+	 * @since   3.16.0
+	 */
+	private function removableCoreExtensionLabel($type, $element, $folder, $client)
+	{
+		switch ($type)
+		{
+			case 'plugin':
+				$label = 'plg_' . $folder . '_' . $element;
+				break;
+
+			case 'template':
+				$label = 'tpl_' . $element;
+				break;
+
+			default:
+				$label = $element;
+				break;
+		}
+
+		return $client && in_array($type, array('module', 'template'), true) ? $label . ' (' . JText::_('JADMINISTRATOR') . ')' : $label;
 	}
 
 	/**
@@ -2244,7 +3045,28 @@ class JoomlaInstallerScript
 
 			// Joomla 3.15.0
 			'/README.txt',
-			'/LICENSE.txt',
+
+			// Joomla 3.16.0
+			'/LISENSE.txt',
+			'/libraries/src/Cache/Storage/ApcStorage.php',
+			'/libraries/src/Cache/Storage/MemcacheStorage.php',
+			'/libraries/joomla/session/storage/apc.php',
+			'/libraries/joomla/session/storage/memcache.php',
+			'/libraries/vendor/joomla/session/Joomla/Session/Storage/Apc.php',
+			'/libraries/vendor/joomla/session/Joomla/Session/Storage/Memcache.php',
+			'/libraries/src/Cache/Storage/XcacheStorage.php',
+			'/libraries/joomla/session/storage/xcache.php',
+			'/libraries/vendor/joomla/session/Joomla/Session/Storage/Xcache.php',
+			'/libraries/src/Cache/Storage/CacheliteStorage.php',
+			'/libraries/joomla/database/driver/mysql.php',
+			'/libraries/joomla/database/exporter/mysql.php',
+			'/libraries/joomla/database/importer/mysql.php',
+			'/libraries/joomla/database/iterator/mysql.php',
+			'/libraries/joomla/database/query/mysql.php',
+			'/libraries/legacy/database/mysql.php',
+			'/libraries/fof/database/driver/mysql.php',
+			'/libraries/fof/database/iterator/mysql.php',
+			'/libraries/fof/database/query/mysql.php',
 		);
 
 		// TODO There is an issue while deleting folders using the ftp mode
@@ -2854,12 +3676,35 @@ class JoomlaInstallerScript
 		JModelLegacy::addIncludePath(JPATH_ROOT . '/administrator/components/com_cache/models');
 		$model = JModelLegacy::getInstance('cache', 'CacheModel');
 
-		// Clean frontend cache
-		$model->clean();
+		// Clean every group, like System > Clear Cache > Delete All. Cleaning the empty default group only
+		// empties the File handler; Redis, Memcached, APCu and WinCache take it literally and clean nothing.
+		$cleaned = true;
 
-		// Clean admin cache
-		$model->setState('client_id', 1);
-		$model->clean();
+		foreach (array(0, 1) as $clientId)
+		{
+			try
+			{
+				$cache  = $model->getCache($clientId);
+				$groups = $cache->getAll();
+
+				foreach ($groups ?: array() as $group)
+				{
+					$cleaned = $cache->clean($group->group) !== false && $cleaned;
+				}
+			}
+			catch (Exception $e)
+			{
+				// A cache that can't be reached right now isn't a reason to fail the update
+				$cleaned = false;
+			}
+		}
+
+		// Stale cached data can hide what the update installed or restored, e.g. in the administrator menu
+		if (!$cleaned)
+		{
+			JFactory::getLanguage()->load('com_joomlaupdate', JPATH_ADMINISTRATOR);
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_JOOMLAUPDATE_CACHE_CLEAN_FAILED'), 'warning');
+		}
 	}
 
 	/**

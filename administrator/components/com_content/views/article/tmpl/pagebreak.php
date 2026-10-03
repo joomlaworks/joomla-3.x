@@ -15,7 +15,7 @@ JHtml::_('script', 'com_content/admin-article-pagebreak.min.js', array('version'
 
 $document    = JFactory::getDocument();
 $this->eName = JFactory::getApplication()->input->getCmd('e_name', '');
-$this->eName = preg_replace('#[^A-Z0-9\-\_\[\]]#i', '', $this->eName);
+$this->eName = preg_replace('#[^A-Z0-9\-\_\[\]]#i', '', (string) $this->eName);
 
 $document->setTitle(JText::_('COM_CONTENT_PAGEBREAK_DOC_TITLE'));
 ?>

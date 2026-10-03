@@ -672,14 +672,14 @@ class Cache
 						{
 							foreach ($newvalue as $type => $currentScriptStr)
 							{
-								if (isset($options['headerbefore'][$now][strtolower($type)]))
+								if (isset($options['headerbefore'][$now][strtolower((string) $type)]))
 								{
-									$oldScriptStr = $options['headerbefore'][$now][strtolower($type)];
+									$oldScriptStr = $options['headerbefore'][$now][strtolower((string) $type)];
 
 									if ($oldScriptStr != $currentScriptStr)
 									{
 										// Save only the appended declaration.
-										$newvalue[strtolower($type)] = StringHelper::substr($currentScriptStr, StringHelper::strlen($oldScriptStr));
+										$newvalue[strtolower((string) $type)] = StringHelper::substr($currentScriptStr, StringHelper::strlen($oldScriptStr));
 									}
 								}
 							}

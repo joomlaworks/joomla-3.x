@@ -1412,7 +1412,7 @@ class Form
 
 				// This cleans some of the more dangerous characters but leaves special characters that are valid.
 				$value = \JFilterInput::getInstance()->clean($value, 'html');
-				$value = trim($value);
+				$value = trim((string) $value);
 
 				// <>" are never valid in a uri see http://www.ietf.org/rfc/rfc1738.txt.
 				$value = str_replace(array('<', '>', '"'), '', $value);
@@ -1464,7 +1464,7 @@ class Form
 				break;
 
 			case 'TEL':
-				$value = trim($value);
+				$value = trim((string) $value);
 
 				// Does it match the NANP pattern?
 				if (preg_match('/^(?:\+?1[-. ]?)?\(?([2-9][0-8][0-9])\)?[-. ]?([2-9][0-9]{2})[-. ]?([0-9]{4})$/', $value) == 1)
@@ -1782,7 +1782,7 @@ class Form
 					// If we want to exclude nested groups then we need to check each field.
 					else
 					{
-						$groupNames = explode('.', $group);
+						$groupNames = explode('.', (string) $group);
 
 						foreach ($tmp as $field)
 						{
@@ -2270,7 +2270,7 @@ class Form
 		// Only instantiate the form if it does not already exist.
 		if (!isset($forms[$name]))
 		{
-			$data = trim($data);
+			$data = trim((string) $data);
 
 			if (empty($data))
 			{

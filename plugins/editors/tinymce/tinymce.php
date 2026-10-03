@@ -162,7 +162,7 @@ class PlgEditorTinymce extends JPlugin
 		}
 
 		$id            = preg_replace('/(\s|[^A-Za-z0-9_])+/', '_', $id);
-		$nameGroup     = explode('[', preg_replace('/\[\]|\]/', '', $name));
+		$nameGroup     = explode('[', (string) preg_replace('/\[\]|\]/', '', $name));
 		$fieldName     = end($nameGroup);
 		$scriptOptions = array();
 
@@ -284,9 +284,9 @@ class PlgEditorTinymce extends JPlugin
 			{
 				$langPrefix = $language->getTag();
 			}
-			elseif (file_exists(JPATH_ROOT . '/media/editors/tinymce/langs/' . substr($language->getTag(), 0, strpos($language->getTag(), '-')) . '.js'))
+			elseif (file_exists(JPATH_ROOT . '/media/editors/tinymce/langs/' . substr((string) $language->getTag(), 0, strpos((string) $language->getTag(), '-')) . '.js'))
 			{
-				$langPrefix = substr($language->getTag(), 0, strpos($language->getTag(), '-'));
+				$langPrefix = substr((string) $language->getTag(), 0, strpos((string) $language->getTag(), '-'));
 			}
 			else
 			{
@@ -333,7 +333,7 @@ class PlgEditorTinymce extends JPlugin
 		if ($content_css_custom)
 		{
 			// If URL, just pass it to $content_css
-			if (strpos($content_css_custom, 'http') !== false)
+			if (strpos((string) $content_css_custom, 'http') !== false)
 			{
 				$content_css = $content_css_custom;
 			}
@@ -403,9 +403,9 @@ class PlgEditorTinymce extends JPlugin
 		else
 		{
 			// Use filters from TinyMCE params
-			$invalid_elements  = trim($levelParams->get('invalid_elements', 'script,applet,iframe'));
-			$extended_elements = trim($levelParams->get('extended_elements', ''));
-			$valid_elements    = trim($levelParams->get('valid_elements', ''));
+			$invalid_elements  = trim((string) $levelParams->get('invalid_elements', 'script,applet,iframe'));
+			$extended_elements = trim((string) $levelParams->get('extended_elements', ''));
+			$valid_elements    = trim((string) $levelParams->get('valid_elements', ''));
 		}
 
 		$html_height = $this->params->get('html_height', '550');
@@ -564,8 +564,8 @@ class PlgEditorTinymce extends JPlugin
 		}
 
 		// User custom plugins and buttons
-		$custom_plugin = trim($levelParams->get('custom_plugin', ''));
-		$custom_button = trim($levelParams->get('custom_button', ''));
+		$custom_plugin = trim((string) $levelParams->get('custom_plugin', ''));
+		$custom_button = trim((string) $levelParams->get('custom_button', ''));
 
 		if ($custom_plugin)
 		{
@@ -898,7 +898,7 @@ class PlgEditorTinymce extends JPlugin
 
 			// Each group the user is in could have different filtering properties.
 			$filterData = $filters->$groupId;
-			$filterType = strtoupper($filterData->filter_type);
+			$filterType = strtoupper((string) $filterData->filter_type);
 
 			if ($filterType === 'NH')
 			{
@@ -913,8 +913,8 @@ class PlgEditorTinymce extends JPlugin
 			{
 				// Blacklist or whitelist.
 				// Preprocess the tags and attributes.
-				$tags           = explode(',', $filterData->filter_tags);
-				$attributes     = explode(',', $filterData->filter_attributes);
+				$tags           = explode(',', (string) $filterData->filter_tags);
+				$attributes     = explode(',', (string) $filterData->filter_attributes);
 				$tempTags       = array();
 				$tempAttributes = array();
 
@@ -1233,7 +1233,7 @@ class PlgEditorTinymce extends JPlugin
 		}
 
 		$id            = preg_replace('/(\s|[^A-Za-z0-9_])+/', '_', $id);
-		$nameGroup     = explode('[', preg_replace('/\[\]|\]/', '', $name));
+		$nameGroup     = explode('[', (string) preg_replace('/\[\]|\]/', '', $name));
 		$fieldName     = end($nameGroup);
 		$scriptOptions = array();
 
@@ -1330,9 +1330,9 @@ class PlgEditorTinymce extends JPlugin
 			{
 				$langPrefix = $language->getTag();
 			}
-			elseif (file_exists(JPATH_ROOT . "/media/editors/tinymce/langs/" . substr($language->getTag(), 0, strpos($language->getTag(), '-')) . ".js"))
+			elseif (file_exists(JPATH_ROOT . "/media/editors/tinymce/langs/" . substr((string) $language->getTag(), 0, strpos((string) $language->getTag(), '-')) . ".js"))
 			{
-				$langPrefix = substr($language->getTag(), 0, strpos($language->getTag(), '-'));
+				$langPrefix = substr((string) $language->getTag(), 0, strpos((string) $language->getTag(), '-'));
 			}
 			else
 			{
@@ -1379,7 +1379,7 @@ class PlgEditorTinymce extends JPlugin
 		if ($content_css_custom)
 		{
 			// If URL, just pass it to $content_css
-			if (strpos($content_css_custom, 'http') !== false)
+			if (strpos((string) $content_css_custom, 'http') !== false)
 			{
 				$content_css = $content_css_custom;
 			}

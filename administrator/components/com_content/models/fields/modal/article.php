@@ -118,7 +118,7 @@ class JFormFieldModal_Article extends JFormField
 			}
 		}
 
-		$title = empty($title) ? JText::_('COM_CONTENT_SELECT_AN_ARTICLE') : htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+		$title = empty($title) ? JText::_('COM_CONTENT_SELECT_AN_ARTICLE') : htmlspecialchars((string) $title, ENT_QUOTES, 'UTF-8');
 
 		// The current article display field.
 		$html  = '<span class="input-append">';

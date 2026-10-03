@@ -72,7 +72,7 @@ class FOFFormFieldModel extends FOFFormFieldList implements FOFFormField
 		$class = $this->element['class'] ? ' class="' . (string) $this->element['class'] . '"' : '';
 
 		return '<span id="' . $this->id . '" ' . $class . '>' .
-			htmlspecialchars(FOFFormFieldList::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8') .
+			htmlspecialchars((string) FOFFormFieldList::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8') .
 			'</span>';
 	}
 
@@ -196,7 +196,7 @@ class FOFFormFieldModel extends FOFFormFieldList implements FOFFormField
 
 		// Explode model name into model name and prefix
 		$parts = FOFInflector::explode($modelName);
-		$mName = ucfirst(array_pop($parts));
+		$mName = ucfirst((string) array_pop($parts));
 		$mPrefix = FOFInflector::implode($parts);
 
 		// Get the model object
@@ -280,7 +280,7 @@ class FOFFormFieldModel extends FOFFormFieldList implements FOFFormField
 				$fieldname = $fielddata->column_name;
 			}
 
-			$search    = '[ITEM:' . strtoupper($fieldname) . ']';
+			$search    = '[ITEM:' . strtoupper((string) $fieldname) . ']';
 			$replace   = $this->item->$fieldname;
 			$ret  = str_replace($search, $replace, $ret);
 		}

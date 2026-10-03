@@ -64,7 +64,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 				$currentShortVersion = preg_replace('#^([0-9\.]+)(|.*)$#', '$1', $version->getShortVersion());
 				$i = 0;
 				foreach ($this->items as $language) :
-					preg_match('#^pkg_([a-z]{2,3}-[A-Z]{2})$#', $language->element, $element);
+					preg_match('#^pkg_([a-z]{2,3}-[A-Z]{2})$#', (string) $language->element, $element);
 					$language->code  = $element[1];
 					?>
 					<tr class="row<?php echo $i % 2; ?>">
@@ -82,7 +82,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						<td class="center">
 								<?php $minorVersion = $version::MAJOR_VERSION . '.' . $version::MINOR_VERSION; ?>
 								<?php // Display a Note if language pack version is not equal to Joomla version ?>
-								<?php if (strpos($language->version, $minorVersion) !== 0 || strpos($language->version, $currentShortVersion) !== 0) : ?>
+								<?php if (strpos((string) $language->version, $minorVersion) !== 0 || strpos((string) $language->version, $currentShortVersion) !== 0) : ?>
 									<span class="label label-warning hasTooltip" title="<?php echo JText::_('JGLOBAL_LANGUAGE_VERSION_NOT_PLATFORM'); ?>"><?php echo $language->version; ?></span>
 								<?php else : ?>
 									<span class="label label-success"><?php echo $language->version; ?></span>

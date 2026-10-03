@@ -185,7 +185,7 @@ class Route
 		$url = $uri->toString($scheme);
 
 		// Replace spaces.
-		$url = preg_replace('/\s/u', '%20', $url);
+		$url = preg_replace('/\s/u', '%20', (string) $url);
 
 		if ($xhtml)
 		{

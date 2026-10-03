@@ -171,7 +171,7 @@ class MenusModelMenus extends JModelList
 		$query->where('a.client_id = ' . (int) $this->getState('client_id'));
 
 		// Filter by search in title or menutype
-		if ($search = trim($this->getState('filter.search')))
+		if ($search = trim((string) $this->getState('filter.search')))
 		{
 			$search = $db->quote('%' . str_replace(' ', '%', $db->escape(trim($search), true) . '%'));
 			$query->where('(' . 'a.title LIKE ' . $search . ' OR a.menutype LIKE ' . $search . ')');

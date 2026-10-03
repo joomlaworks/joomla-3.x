@@ -108,7 +108,7 @@ if ($isMoo)
 							<span class="<?php echo $activatedStates[(empty($item->activation) ? 0 : 1)]; ?>"></span>
 						</td>
 						<td>
-							<?php echo nl2br($item->group_names); ?>
+							<?php echo nl2br((string) $item->group_names); ?>
 						</td>
 						<td>
 							<?php echo (int) $item->id; ?>

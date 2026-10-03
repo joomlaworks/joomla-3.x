@@ -141,7 +141,7 @@ class PluginsModelPlugins extends JModelList
 
 				foreach ($result as $i => $item)
 				{
-					if (!preg_match("/$escapedSearchString/i", $item->name))
+					if (!preg_match("/$escapedSearchString/i", (string) $item->name))
 					{
 						unset($result[$i]);
 					}

@@ -28,7 +28,7 @@ if ( !defined('UTF8_CORE') ) {
 * @package utf8
 */
 function utf8_strlen($str){
-    return strlen(utf8_decode($str));
+    return strlen(mb_convert_encoding((string) $str, 'ISO-8859-1'));
 }
 
 
@@ -51,7 +51,7 @@ function utf8_strpos($str, $needle, $offset = NULL) {
 
     if ( is_null($offset) ) {
 
-        $ar = explode($needle, $str, 2);
+        $ar = explode($needle, (string) $str, 2);
         if ( count($ar) > 1 ) {
             return utf8_strlen($ar[0]);
         }
@@ -94,7 +94,7 @@ function utf8_strrpos($str, $needle, $offset = NULL) {
 
     if ( is_null($offset) ) {
 
-        $ar = explode($needle, $str);
+        $ar = explode($needle, (string) $str);
 
         if ( count($ar) > 1 ) {
             // Pop off the end of the string where the last match was made
@@ -169,7 +169,7 @@ function utf8_substr($str, $offset, $length = NULL) {
     if ($offset < 0) {
 
         // see notes
-        $strlen = strlen(utf8_decode($str));
+        $strlen = strlen(mb_convert_encoding($str, 'ISO-8859-1'));
         $offset = $strlen + $offset;
         if ($offset < 0) $offset = 0;
 
@@ -208,7 +208,7 @@ function utf8_substr($str, $offset, $length = NULL) {
 
         if (!isset($strlen)) {
             // see notes
-            $strlen = strlen(utf8_decode($str));
+            $strlen = strlen(mb_convert_encoding($str, 'ISO-8859-1'));
         }
 
         // another trivial case

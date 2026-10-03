@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.8" type="plugin" group="system" method="upgrade">
+    <name>plg_system_littlewaf</name>
+    <author>Joomla 3.x UTD Contributors</author>
+    <creationDate>August 2026</creationDate>
+    <copyright>(C) 2026 JoomlaWorks Ltd. and this project's contributors</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.md</license>
+    <authorUrl>https://github.com/joomlaworks/joomla-3.x</authorUrl>
+    <version>1.0.0</version>
+    <description>PLG_SYSTEM_LITTLEWAF_XML_DESCRIPTION</description>
+    <files>
+        <filename plugin="littlewaf">littlewaf.php</filename>
+    </files>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_system_littlewaf.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_system_littlewaf.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="filter_sourcerer" type="radio" label="PLG_SYSTEM_LITTLEWAF_FILTER_SOURCERER_LABEL" description="PLG_SYSTEM_LITTLEWAF_FILTER_SOURCERER_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="filter_modulesanywhere" type="radio" label="PLG_SYSTEM_LITTLEWAF_FILTER_MODULESANYWHERE_LABEL" description="PLG_SYSTEM_LITTLEWAF_FILTER_MODULESANYWHERE_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="log_blocked" type="radio" label="PLG_SYSTEM_LITTLEWAF_LOG_BLOCKED_LABEL" description="PLG_SYSTEM_LITTLEWAF_LOG_BLOCKED_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

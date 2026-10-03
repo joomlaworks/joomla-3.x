@@ -404,7 +404,7 @@ class FOFRenderJoomla extends FOFRenderAbstract
 
 		$html = '';
 
-		$validate	 = strtolower($form->getAttribute('validate'));
+		$validate	 = strtolower((string) $form->getAttribute('validate'));
 		$class		 = '';
 
 		if (in_array($validate, array('true', 'yes', '1', 'on')))

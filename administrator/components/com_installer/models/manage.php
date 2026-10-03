@@ -230,11 +230,11 @@ class InstallerModelManage extends InstallerModel
 
 		foreach ($eid as $id)
 		{
-			$id = trim($id);
+			$id = trim((string) $id);
 			$row->load($id);
 			$result = false;
 
-			$langstring = 'COM_INSTALLER_TYPE_TYPE_' . strtoupper($row->type);
+			$langstring = 'COM_INSTALLER_TYPE_TYPE_' . strtoupper((string) $row->type);
 			$rowtype = JText::_($langstring);
 
 			if (strpos($rowtype, $langstring) !== false)

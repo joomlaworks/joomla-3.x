@@ -39,9 +39,9 @@ abstract class FOFStringUtils
 		$value = preg_replace(array('/\s+/', '/[^A-Za-z0-9\-_]/'), array('-', ''), $value);
 
 		// Limit length
-		if (strlen($value) > 100)
+		if (strlen((string) $value) > 100)
 		{
-			$value = substr($value, 0, 100);
+			$value = substr((string) $value, 0, 100);
 		}
 
 		return $value;

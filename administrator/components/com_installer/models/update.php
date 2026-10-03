@@ -166,9 +166,9 @@ class InstallerModelUpdate extends JModelList
 		foreach ($items as &$item)
 		{
 			$item->client_translated  = $item->client_id ? JText::_('JADMINISTRATOR') : JText::_('JSITE');
-			$manifest                 = json_decode($item->manifest_cache);
+			$manifest                 = json_decode((string) $item->manifest_cache);
 			$item->current_version    = isset($manifest->version) ? $manifest->version : JText::_('JLIB_UNKNOWN');
-			$item->type_translated    = JText::_('COM_INSTALLER_TYPE_' . strtoupper($item->type));
+			$item->type_translated    = JText::_('COM_INSTALLER_TYPE_' . strtoupper((string) $item->type));
 			$item->folder_translated  = $item->folder ?: JText::_('COM_INSTALLER_TYPE_NONAPPLICABLE');
 			$item->install_type       = $item->extension_id ? JText::_('COM_INSTALLER_MSG_UPDATE_UPDATE') : JText::_('COM_INSTALLER_NEW_INSTALL');
 		}
@@ -415,7 +415,7 @@ class InstallerModelUpdate extends JModelList
 			return false;
 		}
 
-		$url     = trim($update->downloadurl->_data);
+		$url     = trim((string) $update->downloadurl->_data);
 		$sources = $update->get('downloadSources', array());
 
 		if ($extra_query = $update->get('extra_query'))
@@ -429,7 +429,7 @@ class InstallerModelUpdate extends JModelList
 		while (!($p_file = InstallerHelper::downloadPackage($url)) && isset($sources[$mirror]))
 		{
 			$name = $sources[$mirror];
-			$url  = trim($name->url);
+			$url  = trim((string) $name->url);
 
 			if ($extra_query)
 			{

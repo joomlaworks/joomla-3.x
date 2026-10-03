@@ -276,7 +276,7 @@ class FOFFormFieldUser extends JFormFieldUser implements FOFFormField
 			else
 			{
 				// Fall back to the Gravatar method
-				$md5 = md5($user->email);
+				$md5 = md5((string) $user->email);
 
 				if (FOFPlatform::getInstance()->isCli())
 				{

@@ -66,7 +66,7 @@ class FOFDatabaseDriverMysqli extends FOFDatabaseDriver
 	 * @var    string  The minimum supported database version.
 	 * @since  12.2
 	 */
-	protected static $dbMinimum = '5.0.4';
+	protected static $dbMinimum = '5.5.3';
 
 	/**
 	 * Constructor.
@@ -447,7 +447,7 @@ class FOFDatabaseDriverMysqli extends FOFDatabaseDriver
 		{
 			foreach ($fields as $field)
 			{
-				$result[$field->Field] = preg_replace("/[(0-9)]/", '', $field->Type);
+				$result[$field->Field] = preg_replace("/[(0-9)]/", '', (string) $field->Type);
 			}
 		}
 		// If we want the whole field data object add that to the list.

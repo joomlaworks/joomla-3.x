@@ -125,7 +125,7 @@ class CaptchaField extends FormField
 			// Obs: Don't put required="required" in the xml file, you just need to have validate="captcha"
 			$this->required = true;
 
-			if (strpos($this->class, 'required') === false)
+			if (strpos((string) $this->class, 'required') === false)
 			{
 				$this->class .= ' required';
 			}

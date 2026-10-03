@@ -57,7 +57,7 @@ class ConfigControllerTemplatesDisplay extends ConfigControllerDisplay
 		$paths = new SplPriorityQueue;
 		$paths->insert(JPATH_COMPONENT . '/view/' . $viewName . '/tmpl', 'normal');
 
-		$viewClass  = 'ConfigView' . ucfirst($viewName) . ucfirst($viewFormat);
+		$viewClass  = 'ConfigView' . ucfirst($viewName) . ucfirst((string) $viewFormat);
 		$modelClass = 'ConfigModel' . ucfirst($viewName);
 
 		if (class_exists($viewClass))

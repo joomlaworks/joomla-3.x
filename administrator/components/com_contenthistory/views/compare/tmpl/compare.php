@@ -71,7 +71,7 @@ JFactory::getDocument()->addScriptDeclaration("
 				<?php $rowClass = ($subValue->value == $newSubValue) ? 'items-equal' : 'items-not-equal'; ?>
 				<tr class="<?php echo $rowClass; ?>">
 				<td><i>&nbsp;&nbsp;<?php echo $subValue->label; ?></i></td>
-				<td class="originalhtml" style="display:none" ><?php echo htmlspecialchars($subValue->value, ENT_COMPAT, 'UTF-8'); ?></td>
+				<td class="originalhtml" style="display:none" ><?php echo htmlspecialchars((string) $subValue->value, ENT_COMPAT, 'UTF-8'); ?></td>
 				<td class="changedhtml" style="display:none" ><?php echo htmlspecialchars($newSubValue, ENT_COMPAT, 'UTF-8'); ?></td>
 				<td class="original"><?php echo $subValue->value; ?></td>
 				<td class="changed"><?php echo $newSubValue; ?></td>
@@ -82,9 +82,9 @@ JFactory::getDocument()->addScriptDeclaration("
 		<?php endforeach; ?>
 	<?php else : ?>
 		<td><strong><?php echo $value->label; ?></strong></td>
-		<td class="originalhtml" style="display:none" ><?php echo htmlspecialchars($value->value); ?></td>
+		<td class="originalhtml" style="display:none" ><?php echo htmlspecialchars((string) $value->value); ?></td>
 		<?php $object2->$name->value = is_object($object2->$name->value) ? json_encode($object2->$name->value) : $object2->$name->value; ?>
-		<td class="changedhtml" style="display:none" ><?php echo htmlspecialchars($object2->$name->value, ENT_COMPAT, 'UTF-8'); ?></td>
+		<td class="changedhtml" style="display:none" ><?php echo htmlspecialchars((string) $object2->$name->value, ENT_COMPAT, 'UTF-8'); ?></td>
 		<td class="original"><?php echo $value->value; ?></td>
 		<td class="changed"><?php echo $object2->$name->value; ?></td>
 		<td class="diff" />

@@ -281,7 +281,7 @@ class ContactModelCategory extends JModelList
 
 		$listOrder = $app->input->get('filter_order_Dir', 'ASC');
 
-		if (!in_array(strtoupper($listOrder), array('ASC', 'DESC', '')))
+		if (!in_array(strtoupper((string) $listOrder), array('ASC', 'DESC', '')))
 		{
 			$listOrder = 'ASC';
 		}

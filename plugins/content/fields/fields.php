@@ -49,7 +49,7 @@ class PlgContentFields extends JPlugin
 		}
 
 		// Simple performance check to determine whether bot should process further
-		if (strpos($item->text, 'field') === false)
+		if (strpos((string) $item->text, 'field') === false)
 		{
 			return;
 		}
@@ -161,7 +161,7 @@ class PlgContentFields extends JPlugin
 				}
 			}
 
-			$string = preg_replace("|$match[0]|", addcslashes($output, '\\$'), $string, 1);
+			$string = preg_replace("|$match[0]|", addcslashes((string) $output, '\\$'), (string) $string, 1);
 		}
 
 		return $string;

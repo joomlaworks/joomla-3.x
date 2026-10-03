@@ -130,7 +130,7 @@ final class ColorStyle
 
 		foreach ($options as $option)
 		{
-			if (array_key_exists($option, static::$knownOptions) == false)
+			if (array_key_exists((string) $option, static::$knownOptions) == false)
 			{
 				throw new \InvalidArgumentException(
 					sprintf('Invalid option "%1$s" [%2$s]',

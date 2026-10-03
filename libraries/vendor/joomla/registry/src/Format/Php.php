@@ -109,7 +109,7 @@ class Php extends AbstractRegistryFormat
 			}
 			else
 			{
-				$s .= '"' . addslashes($v) . '"';
+				$s .= '"' . addslashes((string) $v) . '"';
 			}
 
 			$i++;

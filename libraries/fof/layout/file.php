@@ -34,7 +34,7 @@ class FOFLayoutFile extends JLayoutFile
 
 		if (is_null($this->fullPath) && !empty($this->layoutId))
 		{
-			$parts = explode('.', $this->layoutId);
+			$parts = explode('.', (string) $this->layoutId);
 			$file  = array_pop($parts);
 
 			$filePath = implode('/', $parts);

@@ -23,9 +23,9 @@ $user      = JFactory::getUser();
 $userId    = $user->get('id');
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
-$saveOrder = ($listOrder == 'a.lft' && strtolower($listDirn) == 'asc');
+$saveOrder = ($listOrder == 'a.lft' && strtolower((string) $listDirn) == 'asc');
 $extension = $this->escape($this->state->get('filter.extension'));
-$parts     = explode('.', $extension);
+$parts     = explode('.', (string) $extension);
 $component = $parts[0];
 $section   = null;
 $mode      = false;
@@ -52,7 +52,7 @@ if ($section === 'categories')
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_tags&task=tags.saveOrderAjax';
-	JHtml::_('sortablelist.sortable', 'categoryList', 'adminForm', strtolower($listDirn), $saveOrderingUrl, false, true);
+	JHtml::_('sortablelist.sortable', 'categoryList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl, false, true);
 }
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_tags&view=tags'); ?>" method="post" name="adminForm" id="adminForm">

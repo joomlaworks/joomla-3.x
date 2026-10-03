@@ -40,13 +40,13 @@ function utf8_bad_find($str) {
     '|(.{1}))';                              # invalid byte
     $pos = 0;
     $badList = array();
-    while (preg_match('/'.$UTF8_BAD.'/S', $str, $matches)) {
+    while (preg_match('/'.$UTF8_BAD.'/S', (string) $str, $matches)) {
         $bytes = strlen($matches[0]);
         if ( isset($matches[2])) {
             return $pos;
         }
         $pos += $bytes;
-        $str = substr($str,$bytes);
+        $str = substr((string) $str,$bytes);
     }
     return FALSE;
 }
@@ -76,13 +76,13 @@ function utf8_bad_findall($str) {
     '|(.{1}))';                              # invalid byte
     $pos = 0;
     $badList = array();
-    while (preg_match('/'.$UTF8_BAD.'/S', $str, $matches)) {
+    while (preg_match('/'.$UTF8_BAD.'/S', (string) $str, $matches)) {
         $bytes = strlen($matches[0]);
         if ( isset($matches[2])) {
             $badList[] = $pos;
         }
         $pos += $bytes;
-        $str = substr($str,$bytes);
+        $str = substr((string) $str,$bytes);
     }
     if ( count($badList) > 0 ) {
         return $badList;
@@ -113,11 +113,11 @@ function utf8_bad_strip($str) {
     '|\xF4[\x80-\x8F][\x80-\xBF]{2}'.        # plane 16
     '|(.{1}))';                              # invalid byte
     ob_start();
-    while (preg_match('/'.$UTF8_BAD.'/S', $str, $matches)) {
+    while (preg_match('/'.$UTF8_BAD.'/S', (string) $str, $matches)) {
         if ( !isset($matches[2])) {
             echo $matches[0];
         }
-        $str = substr($str,strlen($matches[0]));
+        $str = substr((string) $str,strlen($matches[0]));
     }
     $result = ob_get_contents();
     ob_end_clean();
@@ -149,13 +149,13 @@ function utf8_bad_replace($str, $replace = '?') {
     '|\xF4[\x80-\x8F][\x80-\xBF]{2}'.        # plane 16
     '|(.{1}))';                              # invalid byte
     ob_start();
-    while (preg_match('/'.$UTF8_BAD.'/S', $str, $matches)) {
+    while (preg_match('/'.$UTF8_BAD.'/S', (string) $str, $matches)) {
         if ( !isset($matches[2])) {
             echo $matches[0];
         } else {
             echo $replace;
         }
-        $str = substr($str,strlen($matches[0]));
+        $str = substr((string) $str,strlen($matches[0]));
     }
     $result = ob_get_contents();
     ob_end_clean();
@@ -246,7 +246,7 @@ function utf8_bad_identify($str, &$i) {
     $mUcs4  = 0;     // cached Unicode character
     $mBytes = 1;     // cached expected number of octets in the current sequence
 
-    $len = strlen($str);
+    $len = strlen((string) $str);
 
     for($i = 0; $i < $len; $i++) {
 

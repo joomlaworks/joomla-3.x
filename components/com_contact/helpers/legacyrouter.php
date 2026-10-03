@@ -18,6 +18,15 @@ defined('_JEXEC') or die;
 class ContactRouterRulesLegacy implements JComponentRouterRulesInterface
 {
 	/**
+	 * The router this rule belongs to. Declared here (rather than left as a dynamic property)
+	 * to avoid the PHP 8.2+ deprecation warning.
+	 *
+	 * @var    JComponentRouterAdvanced
+	 * @since  3.16.0
+	 */
+	protected $router;
+
+	/**
 	 * Constructor for this legacy router
 	 *
 	 * @param   JComponentRouterAdvanced  $router  The router this rule belongs to
@@ -126,7 +135,7 @@ class ContactRouterRulesLegacy implements JComponentRouterRulesInterface
 
 						if ($advanced)
 						{
-							list($tmp, $id) = explode(':', $id, 2);
+							list($tmp, $id) = explode(':', (string) $id, 2);
 						}
 
 						$array[] = $id;

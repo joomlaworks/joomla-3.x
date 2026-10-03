@@ -63,7 +63,7 @@ class JDatabaseDriverMysqli extends JDatabaseDriver
 	 * @var    string  The minimum supported database version.
 	 * @since  3.0.1
 	 */
-	protected static $dbMinimum = '5.0.4';
+	protected static $dbMinimum = '5.5.3';
 
 	/**
 	 * Constructor.
@@ -457,7 +457,7 @@ class JDatabaseDriverMysqli extends JDatabaseDriver
 		{
 			foreach ($fields as $field)
 			{
-				$result[$field->Field] = preg_replace('/[(0-9)]/', '', $field->Type);
+				$result[$field->Field] = preg_replace('/[(0-9)]/', '', (string) $field->Type);
 			}
 		}
 		// If we want the whole field data object add that to the list.

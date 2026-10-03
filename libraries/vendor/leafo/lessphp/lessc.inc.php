@@ -68,7 +68,7 @@ class lessc {
     // attempts to find the path of an import url, returns null for css files
     protected function findImport($url) {
         foreach ((array)$this->importDir as $dir) {
-            $full = $dir.(substr($dir, -1) != '/' ? '/' : '').$url;
+            $full = $dir.(substr((string) $dir, -1) != '/' ? '/' : '').$url;
             if ($this->fileExists($file = $full.'.less') || $this->fileExists($file = $full)) {
                 return $file;
             }
@@ -87,7 +87,7 @@ class lessc {
     }
 
     public static function preg_quote($what) {
-        return preg_quote($what, '/');
+        return preg_quote((string) $what, '/');
     }
 
     protected function tryImport($importPath, $parentBlock, $out) {
@@ -101,7 +101,7 @@ class lessc {
         $url = $this->compileValue($this->lib_e($str));
 
         // don't import if it ends in css
-        if (substr_compare($url, '.css', -4, 4) === 0) return false;
+        if (substr_compare((string) $url, '.css', -4, 4) === 0) return false;
 
         $realPath = $this->findImport($url);
 
@@ -295,7 +295,7 @@ class lessc {
         $comments = array();
 
         foreach ($lines as $line) {
-            if (strpos($line, '/*') === 0) {
+            if (strpos((string) $line, '/*') === 0) {
                 $comments[] = $line;
                 continue;
             }
@@ -416,7 +416,7 @@ class lessc {
     }
 
     protected function expandParentSelectors(&$tag, $replace) {
-        $parts = explode("$&$", $tag);
+        $parts = explode("$&$", (string) $tag);
         $count = 0;
         foreach ($parts as &$part) {
             $part = str_replace($this->parentSelector, $replace, $part, $c);
@@ -462,7 +462,7 @@ class lessc {
 
                 // don't prepend the parent tag if & was used
                 if ($count > 0) {
-                    $out[] = trim($child);
+                    $out[] = trim((string) $child);
                 } else {
                     $out[] = trim($parent . ' ' . $child);
                 }
@@ -479,7 +479,7 @@ class lessc {
         foreach ($selectors as $s) {
             if (is_array($s)) {
                 list(, $value) = $s;
-                $out[] = trim($this->compileValue($this->reduce($value)));
+                $out[] = trim((string) $this->compileValue($this->reduce($value)));
             } else {
                 $out[] = $s;
             }
@@ -1046,7 +1046,7 @@ class lessc {
         $template = $this->compileValue($this->lib_e($string));
 
         $i = 0;
-        if (preg_match_all('/%[dsa]/', $template, $m)) {
+        if (preg_match_all('/%[dsa]/', (string) $template, $m)) {
             foreach ($m[0] as $match) {
                 $val = isset($values[$i]) ?
                     $this->reduce($values[$i]) : array('keyword', '');
@@ -1059,7 +1059,7 @@ class lessc {
                 $i++;
                 $rep = $this->compileValue($this->lib_e($val));
                 $template = preg_replace('/'.self::preg_quote($match).'/',
-                    $rep, $template, 1);
+                    (string) $rep, (string) $template, 1);
             }
         }
 
@@ -2468,7 +2468,7 @@ class lessc_parser {
         // parse the entire file
         while (false !== $this->parseChunk());
 
-        if ($this->count != strlen($this->buffer))
+        if ($this->count != strlen((string) $this->buffer))
             $this->throwError();
 
         // TODO report where the block was opened
@@ -2672,7 +2672,7 @@ class lessc_parser {
             array_map(array("lessc", "preg_quote"), $directives));
         $pattern = '/^(-[a-z-]+-)?(' . $pattern . ')$/i';
 
-        return preg_match($pattern, $dirname);
+        return preg_match($pattern, (string) $dirname);
     }
 
     protected function fixTags($tags) {
@@ -2972,13 +2972,13 @@ class lessc_parser {
             if (!empty($m[1])) {
                 $content[] = $m[1];
                 if ($nestingOpen) {
-                    $nestingLevel += substr_count($m[1], $nestingOpen);
+                    $nestingLevel += substr_count($m[1], (string) $nestingOpen);
                 }
             }
 
             $tok = $m[2];
 
-            $this->count-= strlen($tok);
+            $this->count-= strlen((string) $tok);
             if ($tok == $end) {
                 if ($nestingLevel == 0) {
                     break;
@@ -3002,7 +3002,7 @@ class lessc_parser {
             }
 
             $content[] = $tok;
-            $this->count+= strlen($tok);
+            $this->count+= strlen((string) $tok);
         }
 
         $this->eatWhiteDefault = $oldWhite;
@@ -3595,7 +3595,7 @@ class lessc_parser {
             $validChars = $allowNewline ? "." : "[^\n]";
         }
         if (!$this->match('('.$validChars.'*?)'.lessc::preg_quote($what), $m, !$until)) return false;
-        if ($until) $this->count -= strlen($what); // give back $what
+        if ($until) $this->count -= strlen((string) $what); // give back $what
         $out = $m[1];
         return true;
     }
@@ -3717,7 +3717,7 @@ class lessc_parser {
         while (true) {
             // find the next item
             foreach ($look as $token) {
-                $pos = strpos($text, $token);
+                $pos = strpos((string) $text, $token);
                 if ($pos !== false) {
                     if (!isset($min) || $pos < $min[1]) $min = array($token, $pos);
                 }
@@ -3730,21 +3730,21 @@ class lessc_parser {
             $newlines = 0;
             switch ($min[0]) {
             case 'url(':
-                if (preg_match('/url\(.*?\)/', $text, $m, 0, $count))
+                if (preg_match('/url\(.*?\)/', (string) $text, $m, 0, $count))
                     $count += strlen($m[0]) - strlen($min[0]);
                 break;
             case '"':
             case "'":
-                if (preg_match('/'.$min[0].'.*?(?<!\\\\)'.$min[0].'/', $text, $m, 0, $count))
+                if (preg_match('/'.$min[0].'.*?(?<!\\\\)'.$min[0].'/', (string) $text, $m, 0, $count))
                     $count += strlen($m[0]) - 1;
                 break;
             case '//':
-                $skip = strpos($text, "\n", $count);
-                if ($skip === false) $skip = strlen($text) - $count;
+                $skip = strpos((string) $text, "\n", $count);
+                if ($skip === false) $skip = strlen((string) $text) - $count;
                 else $skip -= $count;
                 break;
             case '/*':
-                if (preg_match('/\/\*.*?\*\//s', $text, $m, 0, $count)) {
+                if (preg_match('/\/\*.*?\*\//s', (string) $text, $m, 0, $count)) {
                     $skip = strlen($m[0]);
                     $newlines = substr_count($m[0], "\n");
                 }
@@ -3753,8 +3753,8 @@ class lessc_parser {
 
             if ($skip == 0) $count += strlen($min[0]);
 
-            $out .= substr($text, 0, $count).str_repeat("\n", $newlines);
-            $text = substr($text, $count + $skip);
+            $out .= substr((string) $text, 0, $count).str_repeat("\n", $newlines);
+            $text = substr((string) $text, $count + $skip);
 
             $min = null;
         }
@@ -3786,7 +3786,7 @@ class lessc_formatter_classic {
     }
 
     public function indentStr($n = 0) {
-        return str_repeat($this->indentChar, max($this->indentLevel + $n, 0));
+        return str_repeat((string) $this->indentChar, max($this->indentLevel + $n, 0));
     }
 
     public function property($name, $value) {

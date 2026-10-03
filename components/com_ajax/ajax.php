@@ -58,13 +58,13 @@ elseif ($input->get('module'))
 	{
 		$helperFile = JPATH_BASE . '/modules/mod_' . $module . '/helper.php';
 
-		if (strpos($module, '_'))
+		if (strpos((string) $module, '_'))
 		{
-			$parts = explode('_', $module);
+			$parts = explode('_', (string) $module);
 		}
-		elseif (strpos($module, '-'))
+		elseif (strpos((string) $module, '-'))
 		{
-			$parts = explode('-', $module);
+			$parts = explode('-', (string) $module);
 		}
 
 		if ($parts)
@@ -80,7 +80,7 @@ elseif ($input->get('module'))
 		}
 		else
 		{
-			$class = 'Mod' . ucfirst($module) . 'Helper';
+			$class = 'Mod' . ucfirst((string) $module) . 'Helper';
 		}
 
 		$method = $input->get('method') ?: 'get';
@@ -137,7 +137,7 @@ elseif ($input->get('plugin'))
 {
 	$group      = $input->get('group', 'ajax');
 	JPluginHelper::importPlugin($group);
-	$plugin     = ucfirst($input->get('plugin'));
+	$plugin     = ucfirst((string) $input->get('plugin'));
 	$dispatcher = JEventDispatcher::getInstance();
 
 	try
@@ -168,13 +168,13 @@ elseif ($input->get('template'))
 		$basePath   = ($table->client_id) ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		$helperFile = $basePath . '/templates/' . $template . '/helper.php';
 
-		if (strpos($template, '_'))
+		if (strpos((string) $template, '_'))
 		{
-			$parts = explode('_', $template);
+			$parts = explode('_', (string) $template);
 		}
-		elseif (strpos($template, '-'))
+		elseif (strpos((string) $template, '-'))
 		{
-			$parts = explode('-', $template);
+			$parts = explode('-', (string) $template);
 		}
 
 		if ($parts)
@@ -190,7 +190,7 @@ elseif ($input->get('template'))
 		}
 		else
 		{
-			$class = 'Tpl' . ucfirst($template) . 'Helper';
+			$class = 'Tpl' . ucfirst((string) $template) . 'Helper';
 		}
 
 		$method = $input->get('method') ?: 'get';

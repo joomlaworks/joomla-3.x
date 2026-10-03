@@ -95,7 +95,7 @@ class ContactModelContact extends JModelForm
 		if ($active)
 		{
 			// If the current view is the active item and a contact view for this contact, then the menu item params take priority
-			if (strpos($active->link, 'view=contact') && strpos($active->link, '&id=' . (int) $contact->id))
+			if (strpos((string) $active->link, 'view=contact') && strpos((string) $active->link, '&id=' . (int) $contact->id))
 			{
 				// $contact->params are the contact params, $temp are the menu item params
 				// Merge so that the menu item params take priority

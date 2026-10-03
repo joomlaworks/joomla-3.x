@@ -1056,16 +1056,21 @@ class FieldsModelField extends JModelAdmin
 		$user      = JFactory::getUser();
 		$table     = $this->getTable();
 		$newIds    = array();
-		$component = $this->state->get('filter.component');
 		$value     = (int) $value;
 
 		foreach ($pks as $pk)
 		{
-			if ($user->authorise('core.create', $component . '.fieldgroup.' . $value))
-			{
-				$table->reset();
-				$table->load($pk);
+			$table->reset();
+			$table->load($pk);
 
+			$recordContextParts = explode('.', (string) $table->context);
+			$recordComponent    = $recordContextParts[0];
+
+			if (
+				$user->authorise('core.create', $recordComponent . '.fieldgroup.' . $value)
+				&& $user->authorise('core.edit', $recordComponent . '.field.' . $pk)
+			)
+			{
 				$table->group_id = $value;
 
 				// Reset the ID because we are making a copy
@@ -1117,7 +1122,7 @@ class FieldsModelField extends JModelAdmin
 		// Set the variables
 		$user      = JFactory::getUser();
 		$table     = $this->getTable();
-		$context   = explode('.', JFactory::getApplication()->getUserState('com_fields.fields.context'));
+		$context   = explode('.', (string) JFactory::getApplication()->getUserState('com_fields.fields.context'));
 		$value     = (int) $value;
 
 		foreach ($pks as $pk)

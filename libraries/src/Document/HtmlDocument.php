@@ -27,6 +27,17 @@ jimport('joomla.utilities.utility');
 class HtmlDocument extends Document
 {
 	/**
+	 * Submenu modules for the current admin page, set directly by several core admin templates
+	 * and view template overrides (e.g. templates/isis/index.php, com_config's application view).
+	 * Declared here (rather than left as a dynamic property) to avoid the PHP 8.2+ deprecation
+	 * warning.
+	 *
+	 * @var    array
+	 * @since  3.16.0
+	 */
+	public $submenumodules;
+
+	/**
 	 * Array of Header `<link>` tags
 	 *
 	 * @var    array
@@ -312,7 +323,7 @@ class HtmlDocument extends Document
 		{
 			foreach ($data['style'] as $type => $stdata)
 			{
-				if (!isset($this->_style[strtolower($type)]) || !stristr($stdata, $this->_style[strtolower($type)]))
+				if (!isset($this->_style[strtolower((string) $type)]) || !stristr((string) $stdata, $this->_style[strtolower((string) $type)]))
 				{
 					$this->addStyleDeclaration($stdata, $type);
 				}
@@ -327,7 +338,7 @@ class HtmlDocument extends Document
 		{
 			foreach ($data['script'] as $type => $sdata)
 			{
-				if (!isset($this->_script[strtolower($type)]) || !stristr($sdata, $this->_script[strtolower($type)]))
+				if (!isset($this->_script[strtolower((string) $type)]) || !stristr((string) $sdata, $this->_script[strtolower((string) $type)]))
 				{
 					$this->addScriptDeclaration($sdata, $type);
 				}

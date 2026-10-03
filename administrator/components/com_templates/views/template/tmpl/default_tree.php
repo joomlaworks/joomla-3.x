@@ -17,8 +17,8 @@ uksort($this->files, 'strnatcmp');
 	<?php foreach ($this->files as $key => $value) : ?>
 		<?php if (is_array($value)) : ?>
 			<?php
-			$keyArray  = explode('/', $key);
-			$fileArray = explode('/', $this->fileName);
+			$keyArray  = explode('/', (string) $key);
+			$fileArray = explode('/', (string) $this->fileName);
 			$count     = 0;
 
 			$keyArrayCount = count($keyArray);
@@ -50,7 +50,7 @@ uksort($this->files, 'strnatcmp');
 			?>
 			<li class="<?php echo $class; ?>">
 				<a class='folder-url nowrap' href=''>
-					<span class='icon-folder'>&nbsp;<?php $explodeArray = explode('/', $key); echo $this->escape(end($explodeArray)); ?></span>
+					<span class='icon-folder'>&nbsp;<?php $explodeArray = explode('/', (string) $key); echo $this->escape(end($explodeArray)); ?></span>
 				</a>
 				<?php echo $this->directoryTree($value); ?>
 			</li>

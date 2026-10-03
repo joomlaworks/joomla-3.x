@@ -58,7 +58,7 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 	 * @var    string
 	 * @since  12.1
 	 */
-	protected static $dbMinimum = '8.3.18';
+	protected static $dbMinimum = '9.0.0';
 
 	/**
 	 * Operator used for concatenation
@@ -411,18 +411,18 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 		{
 			foreach ($fields as $field)
 			{
-				$result[$field->column_name] = preg_replace("/[(0-9)]/", '', $field->type);
+				$result[$field->column_name] = preg_replace("/[(0-9)]/", '', (string) $field->type);
 			}
 		}
 		else
 		{
 			foreach ($fields as $field)
 			{
-				if (stristr(strtolower($field->type), "character varying"))
+				if (stristr(strtolower((string) $field->type), "character varying"))
 				{
 					$field->Default = "";
 				}
-				if (stristr(strtolower($field->type), "text"))
+				if (stristr(strtolower((string) $field->type), "text"))
 				{
 					$field->Default = "";
 				}
@@ -446,7 +446,7 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 		/* Change Postgresql's NULL::* type with PHP's null one */
 		foreach ($fields as $field)
 		{
-			if (preg_match("/^NULL::*/", $field->Default))
+			if (preg_match("/^NULL::*/", (string) $field->Default))
 			{
 				$field->Default = null;
 			}

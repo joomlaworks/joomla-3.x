@@ -73,7 +73,7 @@ JHtml::_('script', 'user.js', array('version' => 'auto', 'relative' => true));
 JHtml::_('bootstrap.loadCss', false, $this->direction);
 
 // Logo file or site title param
-$sitename = htmlspecialchars($app->get('sitename'), ENT_QUOTES, 'UTF-8');
+$sitename = htmlspecialchars((string) $app->get('sitename'), ENT_QUOTES, 'UTF-8');
 
 if ($this->params->get('logoFile'))
 {
@@ -81,7 +81,7 @@ if ($this->params->get('logoFile'))
 }
 elseif ($this->params->get('sitetitle'))
 {
-	$logo = '<span class="site-title" title="' . $sitename . '">' . htmlspecialchars($this->params->get('sitetitle')) . '</span>';
+	$logo = '<span class="site-title" title="' . $sitename . '">' . htmlspecialchars((string) $this->params->get('sitetitle')) . '</span>';
 }
 else
 {

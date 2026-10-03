@@ -43,7 +43,7 @@ $dispatcher = JEventDispatcher::getInstance();
 
 		<?php if ($this->canDelete) : ?>
 			<td>
-				<a class="delete-item" target="_top" href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode($this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($doc->name); ?>" rel="<?php echo $this->escape($doc->name); ?>">
+				<a class="delete-item" target="_top" href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($doc->name); ?>" rel="<?php echo $this->escape($doc->name); ?>">
 					<span class="icon-remove hasTooltip" title="<?php echo JHtml::tooltipText('JACTION_DELETE'); ?>"></span>
 				</a>
 			</td>

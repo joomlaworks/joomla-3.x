@@ -228,7 +228,7 @@ class FOFModel extends FOFUtilsObject
 		}
 
 		$type = preg_replace('/[^A-Z0-9_\.-]/i', '', $type);
-		$modelClass = $prefix . ucfirst($type);
+		$modelClass = $prefix . ucfirst((string) $type);
 		$result = false;
 
 		// Guess the component name and include path
@@ -279,7 +279,7 @@ class FOFModel extends FOFUtilsObject
 
 		if ($needsAView)
 		{
-			$config['view'] = strtolower($type);
+			$config['view'] = strtolower((string) $type);
 		}
 
 		$config['input']->set('option', $config['option']);
@@ -592,7 +592,7 @@ class FOFModel extends FOFUtilsObject
 		}
 
 		$this->input->set('option', $component);
-		$bareComponent = str_replace('com_', '', strtolower($component));
+		$bareComponent = str_replace('com_', '', strtolower((string) $component));
 
 		// Get the view name
 		$className = get_class($this);
@@ -732,7 +732,7 @@ class FOFModel extends FOFUtilsObject
 			)
 		)
 		{
-			$cid = explode(',', $cid);
+			$cid = explode(',', (string) $cid);
 		}
 		else
 		{
@@ -748,7 +748,7 @@ class FOFModel extends FOFUtilsObject
 			)
 		)
 		{
-			$id = explode(',', $id);
+			$id = explode(',', (string) $id);
 			$id = array_shift($id);
 		}
 		else
@@ -1101,7 +1101,7 @@ class FOFModel extends FOFUtilsObject
 				return false;
 			}
 
-			$rowArray = JArrayHelper::fromObject(json_decode($historyTable->version_data));
+			$rowArray = JArrayHelper::fromObject(json_decode((string) $historyTable->version_data));
 
 			$typeId = JTable::getInstance('Contenttype')->getTypeId($alias);
 
@@ -1376,7 +1376,7 @@ class FOFModel extends FOFUtilsObject
 				if (!array_key_exists($nfield, $allData))
 				{
 					$field = $form->getField($fldset->fieldname, $fldset->group);
-					$type  = strtolower($field->type);
+					$type  = strtolower((string) $field->type);
 
 					switch ($type)
 					{
@@ -1391,7 +1391,7 @@ class FOFModel extends FOFUtilsObject
 				}
 			}
 
-			$serverside_validate = strtolower($form->getAttribute('serverside_validate'));
+			$serverside_validate = strtolower((string) $form->getAttribute('serverside_validate'));
 
 			$validateResult = true;
 			if (in_array($serverside_validate, array('true', 'yes', '1', 'on')))
@@ -2093,7 +2093,7 @@ class FOFModel extends FOFUtilsObject
 				$order = $db->qn($this->getTableAlias()) . '.' . $order;
 			}
 
-			$dir = strtoupper($this->getState('filter_order_Dir', 'ASC', 'cmd'));
+			$dir = strtoupper((string) $this->getState('filter_order_Dir', 'ASC', 'cmd'));
 			$dir = in_array($dir, array('DESC', 'ASC')) ? $dir : 'ASC';
 
 			// If the table cache is broken you may end up with an empty order by.
@@ -2362,8 +2362,8 @@ class FOFModel extends FOFUtilsObject
 		}
 
 		// Set up the form name and path
-		$source = basename($formFilename, '.xml');
-		FOFForm::addFormPath(dirname($formFilename));
+		$source = basename((string) $formFilename, '.xml');
+		FOFForm::addFormPath(dirname((string) $formFilename));
 
 		// Set up field paths
 		$option         = $this->input->getCmd('option', 'com_foobar');

@@ -41,7 +41,7 @@ class BannersViewTracks extends JViewLegacy
 		JFactory::getApplication()
 			->setHeader(
 				'Content-disposition',
-				'attachment; filename="' . $basename . '.' . $filetype . '"; creation-date="' . JFactory::getDate()->toRFC822() . '"',
+				'attachment; filename="' . str_replace('"', '', $basename) . '.' . $filetype . '"; creation-date="' . JFactory::getDate()->toRFC822() . '"',
 				true
 			);
 		echo $content;

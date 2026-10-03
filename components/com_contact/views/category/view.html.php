@@ -67,7 +67,7 @@ class ContactViewCategory extends JViewCategory
 
 			if ($item->params->get('show_email_headings', 0) == 1)
 			{
-				$item->email_to = trim($item->email_to);
+				$item->email_to = trim((string) $item->email_to);
 
 				if (!empty($item->email_to) && JMailHelper::isEmailAddress($item->email_to))
 				{

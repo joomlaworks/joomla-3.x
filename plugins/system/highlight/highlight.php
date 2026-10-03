@@ -68,7 +68,7 @@ class PlgSystemHighlight extends JPlugin
 
 		foreach ($terms as $term)
 		{
-			$cleanTerms[] = htmlspecialchars($filter->clean($term, 'string'));
+			$cleanTerms[] = htmlspecialchars((string) $filter->clean($term, 'string'));
 		}
 
 		// Activate the highlighter.

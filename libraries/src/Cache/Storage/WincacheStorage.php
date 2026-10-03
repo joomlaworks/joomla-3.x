@@ -68,7 +68,7 @@ class WincacheStorage extends CacheStorage
 		foreach ($keys as $key)
 		{
 			$name    = $key['key_name'];
-			$namearr = explode('-', $name);
+			$namearr = explode('-', (string) $name);
 
 			if ($namearr !== false && $namearr[0] == $secret && $namearr[1] == 'cache')
 			{

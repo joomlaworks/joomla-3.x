@@ -51,12 +51,12 @@ class ContentViewFeatured extends JViewLegacy
 			$link = ContentHelperRoute::getArticleRoute($row->slug, $row->catid, $row->language);
 
 			$description = '';
-			$obj = json_decode($row->images);
+			$obj = json_decode((string) $row->images);
 			$introImage = isset($obj->{'image_intro'}) ? $obj->{'image_intro'} : '';
 
 			if (isset($introImage) && ($introImage != ''))
 			{
-				$image = preg_match('/http/', $introImage) ? $introImage : JURI::root() . $introImage;
+				$image = preg_match('/http/', (string) $introImage) ? $introImage : JURI::root() . $introImage;
 				$description = '<p><img src="' . $image . '" /></p>';
 			}
 

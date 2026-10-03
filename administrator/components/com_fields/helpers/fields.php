@@ -86,7 +86,7 @@ class FieldsHelper
 	 *
 	 * @since   3.7.0
 	 */
-	public static function getFields($context, $item = null, $prepareValue = false, array $valuesToOverride = null)
+	public static function getFields($context, $item = null, $prepareValue = false, ?array $valuesToOverride = null)
 	{
 		if (self::$fieldsCache === null)
 		{
@@ -366,13 +366,13 @@ class FieldsHelper
 
 		foreach ($fields as $field)
 		{
-			if (!array_key_exists($field->type, $fieldTypes))
+			if (!array_key_exists((string) $field->type, $fieldTypes))
 			{
 				// Field type is not available
 				continue;
 			}
 
-			if (!array_key_exists($field->group_id, $fieldsPerGroup))
+			if (!array_key_exists((string) $field->group_id, $fieldsPerGroup))
 			{
 				$fieldsPerGroup[$field->group_id] = array();
 			}
@@ -450,7 +450,7 @@ class FieldsHelper
 			}
 
 			$fieldset->setAttribute('label', $label);
-			$fieldset->setAttribute('description', strip_tags($description));
+			$fieldset->setAttribute('description', strip_tags((string) $description));
 
 			// Looping through the fields for that context
 			foreach ($fieldsPerGroup[$group->id] as $field)

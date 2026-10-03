@@ -121,7 +121,7 @@ class Inline
                 return 'true';
             case false === $value:
                 return 'false';
-            case ctype_digit($value):
+            case ctype_digit((string) $value):
                 return \is_string($value) ? "'$value'" : (int) $value;
             case is_numeric($value):
                 $locale = setlocale(LC_NUMERIC, 0);
@@ -252,7 +252,7 @@ class Inline
                 }
             } elseif (Parser::preg_match('/^(.+?)('.implode('|', $delimiters).')/', substr($scalar, $i), $match)) {
                 $output = $match[1];
-                $i += \strlen($output);
+                $i += \strlen((string) $output);
             } else {
                 throw new ParseException(sprintf('Malformed inline YAML string: %s.', $scalar));
             }

@@ -356,11 +356,11 @@ class Language
 		if ($jsSafe)
 		{
 			// Javascript filter
-			$string = addslashes($string);
+			$string = addslashes((string) $string);
 		}
 		elseif ($interpretBackSlashes)
 		{
-			if (strpos($string, '\\') !== false)
+			if (strpos((string) $string, '\\') !== false)
 			{
 				// Interpret \n and \t characters
 				$string = str_replace(array('\\\\', '\t', '\n'), array("\\", "\t", "\n"), $string);

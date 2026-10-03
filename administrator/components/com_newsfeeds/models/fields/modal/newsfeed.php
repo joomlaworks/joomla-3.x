@@ -116,7 +116,7 @@ class JFormFieldModal_Newsfeed extends JFormField
 			}
 		}
 
-		$title = empty($title) ? JText::_('COM_NEWSFEEDS_SELECT_A_FEED') : htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+		$title = empty($title) ? JText::_('COM_NEWSFEEDS_SELECT_A_FEED') : htmlspecialchars((string) $title, ENT_QUOTES, 'UTF-8');
 
 		// The current newsfeed display field.
 		$html  = '<span class="input-append">';

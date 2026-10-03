@@ -77,7 +77,7 @@ class AssociationsViewAssociation extends JViewLegacy
 		$input      = $this->app->input;
 		$this->referenceId = $input->get('id', 0, 'int');
 
-		list($extensionName, $typeName) = explode('.', $input->get('itemtype', '', 'string'));
+		list($extensionName, $typeName) = explode('.', (string) $input->get('itemtype', '', 'string'));
 
 		$extension = AssociationsHelper::getSupportedExtension($extensionName);
 		$types     = $extension->get('types');
@@ -132,7 +132,7 @@ class AssociationsViewAssociation extends JViewLegacy
 
 		if ($target = $input->get('target', '', 'string'))
 		{
-			$matches = preg_split("#[\:]+#", $target);
+			$matches = preg_split("#[\:]+#", (string) $target);
 			$this->targetAction     = $matches[2];
 			$this->targetId         = $matches[1];
 			$this->targetLanguage   = $matches[0];

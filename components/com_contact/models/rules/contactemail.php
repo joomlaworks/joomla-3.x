@@ -34,7 +34,7 @@ class JFormRuleContactEmail extends JFormRuleEmail
 	 *
 	 * @return  boolean  True if the value is valid, false otherwise.
 	 */
-	public function test(SimpleXMLElement $element, $value, $group = null, Registry $input = null, JForm $form = null)
+	public function test(SimpleXMLElement $element, $value, $group = null, ?Registry $input = null, ?JForm $form = null)
 	{
 		if (!parent::test($element, $value, $group, $input, $form))
 		{
@@ -46,7 +46,7 @@ class JFormRuleContactEmail extends JFormRuleEmail
 
 		if ($banned)
 		{
-			foreach (explode(';', $banned) as $item)
+			foreach (explode(';', (string) $banned) as $item)
 			{
 				if ($item != '' && StringHelper::stristr($value, $item) !== false)
 				{

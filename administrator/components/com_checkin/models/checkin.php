@@ -99,7 +99,7 @@ class CheckinModelCheckin extends JModelList
 		foreach ($ids as $tn)
 		{
 			// Make sure we get the right tables based on prefix.
-			if (stripos($tn, JFactory::getApplication()->get('dbprefix')) !== 0)
+			if (stripos((string) $tn, (string) JFactory::getApplication()->get('dbprefix')) !== 0)
 			{
 				continue;
 			}
@@ -166,13 +166,13 @@ class CheckinModelCheckin extends JModelList
 			foreach ($tables as $i => $tn)
 			{
 				// Make sure we get the right tables based on prefix.
-				if (stripos($tn, JFactory::getApplication()->get('dbprefix')) !== 0)
+				if (stripos((string) $tn, (string) JFactory::getApplication()->get('dbprefix')) !== 0)
 				{
 					unset($tables[$i]);
 					continue;
 				}
 
-				if ($this->getState('filter.search') && stripos($tn, $this->getState('filter.search')) === false)
+				if ($this->getState('filter.search') && stripos((string) $tn, $this->getState('filter.search')) === false)
 				{
 					unset($tables[$i]);
 					continue;

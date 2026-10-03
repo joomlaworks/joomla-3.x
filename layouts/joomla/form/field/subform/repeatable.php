@@ -76,7 +76,7 @@ $sublayout = empty($groupByFieldset) ? 'section' : 'section-byfieldsets';
 						array('<', '>'),
 						array('SUBFORMLT', 'SUBFORMGT'),
 						trim(
-							$this->sublayout(
+							(string) $this->sublayout(
 								$sublayout,
 								array(
 									'form' => $tmpl,

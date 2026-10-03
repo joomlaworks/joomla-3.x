@@ -117,7 +117,7 @@ abstract class JFacebookObject
 		// Send the request.
 		$response = $this->client->get($this->fetchUrl($path, $limit, $offset, $until, $since), $headers);
 
-		$response = json_decode($response->body);
+		$response = json_decode((string) $response->body);
 
 		// Validate the response.
 		if (property_exists($response, 'error'))
@@ -145,7 +145,7 @@ abstract class JFacebookObject
 			{
 				$response = $this->oauth->query($this->fetchUrl($object));
 
-				return json_decode($response->body);
+				return json_decode((string) $response->body);
 			}
 			else
 			{
@@ -182,9 +182,9 @@ abstract class JFacebookObject
 			{
 				$response = $this->oauth->query($this->fetchUrl($path, $limit, $offset, $until, $since));
 
-				if (strcmp($response->body, ''))
+				if (strcmp((string) $response->body, ''))
 				{
-					return json_decode($response->body);
+					return json_decode((string) $response->body);
 				}
 				else
 				{
@@ -230,7 +230,7 @@ abstract class JFacebookObject
 			// Send the post request.
 			$response = $this->oauth->query($this->fetchUrl($path), $parameters, $headers, 'post');
 
-			return json_decode($response->body);
+			return json_decode((string) $response->body);
 		}
 		else
 		{
@@ -266,7 +266,7 @@ abstract class JFacebookObject
 			// Send the delete request.
 			$response = $this->oauth->query($this->fetchUrl($path), null, array(), 'delete');
 
-			return json_decode($response->body);
+			return json_decode((string) $response->body);
 		}
 		else
 		{

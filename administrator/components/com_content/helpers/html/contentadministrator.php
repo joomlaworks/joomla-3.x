@@ -71,10 +71,10 @@ abstract class JHtmlContentAdministrator
 			{
 				foreach ($items as &$item)
 				{
-					$text    = $item->lang_sef ? strtoupper($item->lang_sef) : 'XX';
+					$text    = $item->lang_sef ? strtoupper((string) $item->lang_sef) : 'XX';
 					$url     = JRoute::_('index.php?option=com_content&task=article.edit&id=' . (int) $item->id);
 
-					$tooltip = htmlspecialchars($item->title, ENT_QUOTES, 'UTF-8') . '<br />' . JText::sprintf('JCATEGORY_SPRINTF', $item->category_title);
+					$tooltip = htmlspecialchars((string) $item->title, ENT_QUOTES, 'UTF-8') . '<br />' . JText::sprintf('JCATEGORY_SPRINTF', $item->category_title);
 					$classes = 'hasPopover label label-association label-' . $item->lang_sef;
 
 					$item->link = '<a href="' . $url . '" title="' . $item->language_title . '" class="' . $classes

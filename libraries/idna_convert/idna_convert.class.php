@@ -192,7 +192,7 @@ class idna_convert
             }
         }
         // Make sure to drop any newline characters around
-        $input = trim($input);
+        $input = trim((string) $input);
 
         // Negotiate input and try to determine, whether it is a plain string,
         // an email address or something like a complete URL
@@ -205,7 +205,7 @@ class idna_convert
             list ($email_pref, $input) = explode('@', $input, 2);
             $arr = explode('.', $input);
             foreach ($arr as $k => $v) {
-                if (preg_match('!^'.preg_quote($this->_punycode_prefix, '!').'!', $v)) {
+                if (preg_match('!^'.preg_quote((string) $this->_punycode_prefix, '!').'!', $v)) {
                     $conv = $this->_decode($v);
                     if ($conv) $arr[$k] = $conv;
                 }
@@ -213,7 +213,7 @@ class idna_convert
             $input = join('.', $arr);
             $arr = explode('.', $email_pref);
             foreach ($arr as $k => $v) {
-                if (preg_match('!^'.preg_quote($this->_punycode_prefix, '!').'!', $v)) {
+                if (preg_match('!^'.preg_quote((string) $this->_punycode_prefix, '!').'!', $v)) {
                     $conv = $this->_decode($v);
                     if ($conv) $arr[$k] = $conv;
                 }
@@ -406,18 +406,18 @@ class idna_convert
     {
         $decoded = array();
         // find the Punycode prefix
-        if (!preg_match('!^'.preg_quote($this->_punycode_prefix, '!').'!', $encoded)) {
+        if (!preg_match('!^'.preg_quote((string) $this->_punycode_prefix, '!').'!', (string) $encoded)) {
             $this->_error('This is not a punycode string');
             return false;
         }
-        $encode_test = preg_replace('!^'.preg_quote($this->_punycode_prefix, '!').'!', '', $encoded);
+        $encode_test = preg_replace('!^'.preg_quote((string) $this->_punycode_prefix, '!').'!', '', (string) $encoded);
         // If nothing left after removing the prefix, it is hopeless
         if (!$encode_test) {
             $this->_error('The given encoded string was empty');
             return false;
         }
         // Find last occurence of the delimiter
-        $delim_pos = strrpos($encoded, '-');
+        $delim_pos = strrpos((string) $encoded, '-');
         if ($delim_pos > self::byteLength($this->_punycode_prefix)) {
             for ($k = self::byteLength($this->_punycode_prefix); $k < $delim_pos; ++$k) {
                 $decoded[] = ord($encoded[$k]);

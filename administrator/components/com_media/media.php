@@ -33,7 +33,7 @@ $popup_upload = $input->get('pop_up', null);
 $path         = 'file_path';
 $view         = $input->get('view');
 
-if (substr(strtolower($view), 0, 6) == 'images' || $popup_upload == 1)
+if (substr(strtolower((string) $view), 0, 6) == 'images' || $popup_upload == 1)
 {
 	$path = 'image_path';
 }

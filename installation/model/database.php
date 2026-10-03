@@ -162,7 +162,7 @@ class InstallationModelDatabase extends JModelBase
 		$localhost = '/^(((localhost|127\.0\.0\.1|\[\:\:1\])(\:[1-9]{1}[0-9]{0,4})?)|(\:\:1))$/';
 
 		// Check the security file if now switched off and the db_host is not one of the allowed hosts
-		if ($shouldCheckLocalhost && preg_match($localhost, $options->db_host) !== 1)
+		if ($shouldCheckLocalhost && preg_match($localhost, (string) $options->db_host) !== 1)
 		{
 			$remoteDbFileTestsPassed = JFactory::getSession()->get('remoteDbFileTestsPassed', false);
 
@@ -396,7 +396,7 @@ class InstallationModelDatabase extends JModelBase
 		if ($db->getServerType() === 'mysql')
 		{
 			// @internal MySQL versions pre 5.1.6 forbid . / or \ or NULL.
-			if (preg_match('#[\\\/\.\0]#', $options->db_name) && (!version_compare($db_version, '5.1.6', '>=')))
+			if (preg_match('#[\\\/\.\0]#', (string) $options->db_name) && (!version_compare($db_version, '5.1.6', '>=')))
 			{
 				JFactory::getApplication()->enqueueMessage(JText::sprintf('INSTL_DATABASE_INVALID_NAME', $db_version), 'error');
 
@@ -405,7 +405,7 @@ class InstallationModelDatabase extends JModelBase
 		}
 
 		// @internal Check for spaces in beginning or end of name.
-		if (strlen(trim($options->db_name)) <> strlen($options->db_name))
+		if (strlen(trim((string) $options->db_name)) <> strlen((string) $options->db_name))
 		{
 			JFactory::getApplication()->enqueueMessage(JText::_('INSTL_DATABASE_NAME_INVALID_SPACES'), 'error');
 
@@ -413,7 +413,7 @@ class InstallationModelDatabase extends JModelBase
 		}
 
 		// @internal Check for asc(00) Null in name.
-		if (strpos($options->db_name, chr(00)) !== false)
+		if (strpos((string) $options->db_name, chr(00)) !== false)
 		{
 			JFactory::getApplication()->enqueueMessage(JText::_('INSTL_DATABASE_NAME_INVALID_CHAR'), 'error');
 
@@ -1058,7 +1058,7 @@ class InstallationModelDatabase extends JModelBase
 			foreach ($tables as $table)
 			{
 				// If the table uses the given prefix, back it up.
-				if (strpos($table, $prefix) === 0)
+				if (strpos((string) $table, $prefix) === 0)
 				{
 					// Backup table name.
 					$backupTable = str_replace($prefix, $backup, $table);
@@ -1144,7 +1144,7 @@ class InstallationModelDatabase extends JModelBase
 			foreach ($tables as $table)
 			{
 				// If the table uses the given prefix, drop it.
-				if (strpos($table, $prefix) === 0)
+				if (strpos((string) $table, $prefix) === 0)
 				{
 					// Drop the table.
 					try
@@ -1192,7 +1192,7 @@ class InstallationModelDatabase extends JModelBase
 		foreach ($queries as $query)
 		{
 			// Trim any whitespace.
-			$query = trim($query);
+			$query = trim((string) $query);
 
 			// If the query isn't empty and is not a MySQL or PostgreSQL comment, execute it.
 			if (!empty($query) && ($query[0] != '#') && ($query[0] != '-'))
@@ -1285,7 +1285,7 @@ class InstallationModelDatabase extends JModelBase
 		$query = preg_replace("/\n\--[^\n]*/", '', "\n" . $query);
 
 		// Find function.
-		$funct = explode('CREATE OR REPLACE FUNCTION', $query);
+		$funct = explode('CREATE OR REPLACE FUNCTION', (string) $query);
 
 		// Save sql before function and parse it.
 		$query = $funct[0];

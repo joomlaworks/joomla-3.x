@@ -210,7 +210,7 @@ class FOFDownload
 
 		if (empty($localFilename))
 		{
-			$localFilename = basename($url);
+			$localFilename = basename((string) $url);
 
 			if (strpos($localFilename, '?') !== false)
 			{
@@ -220,7 +220,7 @@ class FOFDownload
 		}
 
 		$tmpDir        = JFactory::getConfig()->get('tmp_path', JPATH_ROOT . '/tmp');
-		$tmpDir        = rtrim($tmpDir, '/\\');
+		$tmpDir        = rtrim((string) $tmpDir, '/\\');
 
 		// Init retArray
 		$retArray = array(

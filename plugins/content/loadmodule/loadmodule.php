@@ -41,6 +41,10 @@ class PlgContentLoadmodule extends JPlugin
 			return true;
 		}
 
+		// Not every content-providing extension guarantees $article->text is a real string -
+		// normalize once here since it's used unguarded throughout the rest of this method.
+		$article->text = (string) $article->text;
+
 		// Simple performance check to determine whether bot should process further
 		if (strpos($article->text, 'loadposition') === false && strpos($article->text, 'loadmodule') === false)
 		{

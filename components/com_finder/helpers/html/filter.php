@@ -151,7 +151,7 @@ abstract class JHtmlFilter
 
 			foreach ($nodes as $nk => $nv)
 			{
-				if (trim($nv->parent_title, '**') === 'Language')
+				if (trim((string) $nv->parent_title, '**') === 'Language')
 				{
 					$title = FinderHelperLanguage::branchLanguageTitle($nv->title);
 				}
@@ -346,7 +346,7 @@ abstract class JHtmlFilter
 
 				foreach ($branches[$bk]->nodes as $node_id => $node)
 				{
-					if (trim($node->parent_title, '**') === 'Language')
+					if (trim((string) $node->parent_title, '**') === 'Language')
 					{
 						$title = FinderHelperLanguage::branchLanguageTitle($node->title);
 					}
@@ -389,7 +389,7 @@ abstract class JHtmlFilter
 			$active = null;
 
 			// Check if the branch is in the filter.
-			if (array_key_exists($bv->title, $idxQuery->filters))
+			if (array_key_exists((string) $bv->title, $idxQuery->filters))
 			{
 				// Get the request filters.
 				$temp   = JFactory::getApplication()->input->request->get('t', array(), 'array');

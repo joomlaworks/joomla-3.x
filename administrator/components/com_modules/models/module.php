@@ -415,9 +415,9 @@ class ModulesModelModule extends JModelAdmin
 				// Alter the title.
 				$m = null;
 
-				if (preg_match('#\((\d+)\)$#', $table->title, $m))
+				if (preg_match('#\((\d+)\)$#', (string) $table->title, $m))
 				{
-					$table->title = preg_replace('#\(\d+\)$#', '(' . ($m[1] + 1) . ')', $table->title);
+					$table->title = preg_replace('#\(\d+\)$#', '(' . ($m[1] + 1) . ')', (string) $table->title);
 				}
 
 				$data = $this->generateNewTitle(0, $table->title, $table->position);
@@ -815,8 +815,8 @@ class ModulesModelModule extends JModelAdmin
 	 */
 	protected function prepareTable($table)
 	{
-		$table->title    = htmlspecialchars_decode($table->title, ENT_QUOTES);
-		$table->position = trim($table->position);
+		$table->title    = htmlspecialchars_decode((string) $table->title, ENT_QUOTES);
+		$table->position = trim((string) $table->position);
 	}
 
 	/**

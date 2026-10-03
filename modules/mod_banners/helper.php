@@ -32,7 +32,7 @@ class ModBannersHelper
 
 		$document = JFactory::getDocument();
 		$app      = JFactory::getApplication();
-		$keywords = explode(',', $document->getMetaData('keywords'));
+		$keywords = explode(',', (string) $document->getMetaData('keywords'));
 		$config   = ComponentHelper::getParams('com_banners');
 
 		$model = JModelLegacy::getInstance('Banners', 'BannersModel', array('ignore_request' => true));

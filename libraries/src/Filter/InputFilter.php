@@ -242,12 +242,12 @@ class InputFilter extends BaseInputFilter
 					// Iterate through the array
 					foreach ($source as $eachString)
 					{
-						$result[] = (string) preg_replace($pattern, '', $eachString);
+						$result[] = (string) preg_replace($pattern, '', (string) $eachString);
 					}
 				}
 				else
 				{
-					$result = (string) preg_replace($pattern, '', $source);
+					$result = (string) preg_replace($pattern, '', (string) $source);
 				}
 
 				break;
@@ -261,12 +261,12 @@ class InputFilter extends BaseInputFilter
 					// Iterate through the array
 					foreach ($source as $eachString)
 					{
-						$result[] = (string) preg_replace($pattern, '', $eachString);
+						$result[] = (string) preg_replace($pattern, '', (string) $eachString);
 					}
 				}
 				else
 				{
-					$result = (string) preg_replace($pattern, '', $source);
+					$result = (string) preg_replace($pattern, '', (string) $source);
 				}
 
 				break;
@@ -280,13 +280,13 @@ class InputFilter extends BaseInputFilter
 					// Iterate through the array
 					foreach ($source as $eachString)
 					{
-						$cleaned  = (string) preg_replace($pattern, '', $eachString);
+						$cleaned  = (string) preg_replace($pattern, '', (string) $eachString);
 						$result[] = ltrim($cleaned, '.');
 					}
 				}
 				else
 				{
-					$result = (string) preg_replace($pattern, '', $source);
+					$result = (string) preg_replace($pattern, '', (string) $source);
 					$result = ltrim($result, '.');
 				}
 
@@ -301,12 +301,12 @@ class InputFilter extends BaseInputFilter
 					// Iterate through the array
 					foreach ($source as $eachString)
 					{
-						$result[] = (string) preg_replace($pattern, '', $eachString);
+						$result[] = (string) preg_replace($pattern, '', (string) $eachString);
 					}
 				}
 				else
 				{
-					$result = (string) preg_replace($pattern, '', $source);
+					$result = (string) preg_replace($pattern, '', (string) $source);
 				}
 
 				break;
@@ -363,14 +363,14 @@ class InputFilter extends BaseInputFilter
 					// Iterate through the array
 					foreach ($source as $eachString)
 					{
-						$cleaned  = (string) trim($eachString);
+						$cleaned  = (string) trim((string) $eachString);
 						$cleaned  = StringHelper::trim($cleaned, chr(0xE3) . chr(0x80) . chr(0x80));
 						$result[] = StringHelper::trim($cleaned, chr(0xC2) . chr(0xA0));
 					}
 				}
 				else
 				{
-					$result = (string) trim($source);
+					$result = (string) trim((string) $source);
 					$result = StringHelper::trim($result, chr(0xE3) . chr(0x80) . chr(0x80));
 					$result = StringHelper::trim($result, chr(0xC2) . chr(0xA0));
 				}
@@ -386,12 +386,12 @@ class InputFilter extends BaseInputFilter
 					// Iterate through the array
 					foreach ($source as $eachString)
 					{
-						$result[] = (string) preg_replace($pattern, '', $eachString);
+						$result[] = (string) preg_replace($pattern, '', (string) $eachString);
 					}
 				}
 				else
 				{
-					$result = (string) preg_replace($pattern, '', $source);
+					$result = (string) preg_replace($pattern, '', (string) $source);
 				}
 
 				break;
@@ -494,7 +494,7 @@ class InputFilter extends BaseInputFilter
 			// Forbidden string in extension (e.g. php matched .php, .xxx.php, .php.xxx and so on)
 			'forbidden_extensions'       => array(
 				'php', 'phps', 'pht', 'phtml', 'php3', 'php4', 'php5', 'php6', 'php7',
-				'php8', 'phar', 'inc', 'pl', 'cgi', 'fcgi', 'java', 'jar', 'py',
+				'php8', 'php9', 'phar', 'inc', 'pl', 'cgi', 'fcgi', 'java', 'jar', 'py',
 			),
 
 			// <?php tag in file contents
@@ -508,7 +508,7 @@ class InputFilter extends BaseInputFilter
 
 			// Which file extensions to scan for short tags
 			'shorttag_extensions'        => array(
-				'inc', 'phps', 'class', 'php3', 'php4', 'php5', 'php6', 'php7', 'php8', 'txt', 'dat', 'tpl', 'tmpl',
+				'inc', 'phps', 'class', 'php3', 'php4', 'php5', 'php6', 'php7', 'php8', 'php9', 'txt', 'dat', 'tpl', 'tmpl',
 			),
 
 			// Forbidden extensions anywhere in the content
@@ -579,7 +579,7 @@ class InputFilter extends BaseInputFilter
 				// 1. Null byte check
 				if ($options['null_byte'])
 				{
-					if (strstr($intendedName, "\x00"))
+					if (strstr((string) $intendedName, "\x00"))
 					{
 						return false;
 					}
@@ -588,7 +588,7 @@ class InputFilter extends BaseInputFilter
 				// 2. PHP-in-extension check (.php, .php.xxx[.yyy[.zzz[...]]], .xxx[.yyy[.zzz[...]]].php)
 				if (!empty($options['forbidden_extensions']))
 				{
-					$explodedName = explode('.', $intendedName);
+					$explodedName = explode('.', (string) $intendedName);
 					$explodedName =	array_reverse($explodedName);
 					array_pop($explodedName);
 					$explodedName = array_map('strtolower', $explodedName);
@@ -611,7 +611,7 @@ class InputFilter extends BaseInputFilter
 					|| $options['shorttag_in_content'] || $options['phar_stub_in_content']
 					|| ($options['fobidden_ext_in_content'] && !empty($options['forbidden_extensions'])))
 				{
-					$fp = strlen($tempName) ? @fopen($tempName, 'r') : false;
+					$fp = strlen((string) $tempName) ? @fopen($tempName, 'r') : false;
 
 					if ($fp !== false)
 					{
@@ -899,7 +899,7 @@ class InputFilter extends BaseInputFilter
 			// All ASCII whitespaces replace by 0x20
 			$tagNormalized = preg_replace('/\s/', ' ', $tagContent);
 			$tagLength     = strlen($tagContent);
-			$spaceOffset   = strpos($tagNormalized, ' ');
+			$spaceOffset   = strpos((string) $tagNormalized, ' ');
 
 			// Are we an open tag or a close tag?
 			$isClosingTag     = $tagContent[0] === '/' ? 1 : 0;
@@ -943,22 +943,22 @@ class InputFilter extends BaseInputFilter
 				$attrStartOffset = $spaceOffset + 1;
 
 				// Find position of equal and open quote
-				if (preg_match('#= *(")[^"]*(")#', $tagNormalized, $matches, PREG_OFFSET_CAPTURE, $attrStartOffset))
+				if (preg_match('#= *(")[^"]*(")#', (string) $tagNormalized, $matches, PREG_OFFSET_CAPTURE, $attrStartOffset))
 				{
 					$equalOffset     = $matches[0][1];
 					$quote1Offset    = $matches[1][1];
 					$quote2Offset    = $matches[2][1];
-					$nextSpaceOffset = strpos($tagNormalized, ' ', $quote2Offset);
+					$nextSpaceOffset = strpos((string) $tagNormalized, ' ', $quote2Offset);
 				}
 				else
 				{
-					$equalOffset     = strpos($tagNormalized, '=', $attrStartOffset);
-					$quote1Offset    = strpos($tagNormalized, '"', $attrStartOffset);
-					$nextSpaceOffset = strpos($tagNormalized, ' ', $attrStartOffset);
+					$equalOffset     = strpos((string) $tagNormalized, '=', $attrStartOffset);
+					$quote1Offset    = strpos((string) $tagNormalized, '"', $attrStartOffset);
+					$nextSpaceOffset = strpos((string) $tagNormalized, ' ', $attrStartOffset);
 
 					if ($quote1Offset !== false)
 					{
-						$quote2Offset = strpos($tagNormalized, '"', $quote1Offset + 1);
+						$quote2Offset = strpos((string) $tagNormalized, '"', $quote1Offset + 1);
 					}
 					else
 					{
@@ -1195,7 +1195,7 @@ class InputFilter extends BaseInputFilter
 		$source = preg_replace_callback('/&#x([a-f0-9]+);/mi', function($m)
 		{
 			return mb_convert_encoding(chr(hexdec($m[1])), 'UTF-8', 'ISO-8859-1');
-		}, $source
+		}, (string) $source
 		);
 
 		return $source;
@@ -1259,6 +1259,6 @@ class InputFilter extends BaseInputFilter
 			return $filteredArray;
 		}
 
-		return preg_replace('/[\xF0-\xF7].../s', "\xE2\xAF\x91", $source);
+		return preg_replace('/[\xF0-\xF7].../s', "\xE2\xAF\x91", (string) $source);
 	}
 }

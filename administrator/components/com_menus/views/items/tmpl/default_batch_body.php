@@ -37,7 +37,7 @@ endif;
 
 ?>
 <div class="container-fluid">
-	<?php if (strlen($menuType) && $menuType != '*') : ?>
+	<?php if (strlen((string) $menuType) && $menuType != '*') : ?>
 	<?php if ($clientId != 1) : ?>
 	<div class="row-fluid">
 		<div class="control-group span6">

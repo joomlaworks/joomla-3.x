@@ -406,9 +406,9 @@ class FinderIndexerStemmerPorter_En extends FinderIndexerStemmer
 		$v = self::$regex_vowel;
 
 		$str = preg_replace("#^$c+#", '', $str);
-		$str = preg_replace("#$v+$#", '', $str);
+		$str = preg_replace("#$v+$#", '', (string) $str);
 
-		preg_match_all("#($v+$c+)#", $str, $matches);
+		preg_match_all("#($v+$c+)#", (string) $str, $matches);
 
 		return count($matches[1]);
 	}

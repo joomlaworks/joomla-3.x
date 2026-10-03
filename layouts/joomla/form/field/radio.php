@@ -75,7 +75,7 @@ $alt    = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $name);
 				$onclick    = !empty($option->onclick) ? 'onclick="' . $option->onclick . '"' : '';
 				$onchange   = !empty($option->onchange) ? 'onchange="' . $option->onchange . '"' : '';
 				$oid        = $id . $i;
-				$ovalue     = htmlspecialchars($option->value, ENT_COMPAT, 'UTF-8');
+				$ovalue     = htmlspecialchars((string) $option->value, ENT_COMPAT, 'UTF-8');
 				$attributes = array_filter(array($checked, $optionClass, $disabled, $style, $onchange, $onclick));
 			?>
 

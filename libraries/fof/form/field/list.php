@@ -79,7 +79,7 @@ class FOFFormFieldList extends JFormFieldList implements FOFFormField
 		$class = $this->element['class'] ? ' class="' . (string) $this->element['class'] . '"' : '';
 
 		return '<span id="' . $this->id . '" ' . $class . '>' .
-			htmlspecialchars(self::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8') .
+			htmlspecialchars((string) self::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8') .
 			'</span>';
 	}
 
@@ -128,7 +128,7 @@ class FOFFormFieldList extends JFormFieldList implements FOFFormField
 			$html .= '<a href="' . $link_url . '">';
 		}
 
-		$html .= htmlspecialchars(self::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8');
+		$html .= htmlspecialchars((string) self::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8');
 
 		if ($show_link)
 		{
@@ -373,7 +373,7 @@ class FOFFormFieldList extends JFormFieldList implements FOFFormField
 				$fieldname = $fielddata->column_name;
 			}
 
-			$search    = '[ITEM:' . strtoupper($fieldname) . ']';
+			$search    = '[ITEM:' . strtoupper((string) $fieldname) . ']';
 			$replace   = $this->item->$fieldname;
 			$ret  = str_replace($search, $replace, $ret);
 		}

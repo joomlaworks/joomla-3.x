@@ -156,7 +156,7 @@ class OpensearchDocument extends Document
 			$elImage->setAttribute('type', $image->type);
 			$elImage->setAttribute('width', $image->width);
 			$elImage->setAttribute('height', $image->height);
-			$elImage->appendChild($xml->createTextNode(htmlspecialchars($image->data)));
+			$elImage->appendChild($xml->createTextNode(htmlspecialchars((string) $image->data)));
 			$elOs->appendChild($elImage);
 		}
 

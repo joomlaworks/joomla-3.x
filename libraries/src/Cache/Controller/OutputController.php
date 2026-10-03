@@ -83,7 +83,7 @@ class OutputController extends CacheController
 
 		if ($data !== false)
 		{
-			$data = unserialize(trim($data));
+			$data = unserialize(trim((string) $data));
 			echo $data;
 
 			if ($this->_locktest->locked == true)
@@ -181,7 +181,7 @@ class OutputController extends CacheController
 		if ($data !== false)
 		{
 			// Trim to fix unserialize errors
-			$data = unserialize(trim($data));
+			$data = unserialize(trim((string) $data));
 		}
 
 		return $data;

@@ -95,7 +95,7 @@ class InstallerHelper
 
 		foreach ($types as $type)
 		{
-			$options[] = JHtml::_('select.option', $type, JText::_('COM_INSTALLER_TYPE_' . strtoupper($type)));
+			$options[] = JHtml::_('select.option', $type, JText::_('COM_INSTALLER_TYPE_' . strtoupper((string) $type)));
 		}
 
 		return $options;

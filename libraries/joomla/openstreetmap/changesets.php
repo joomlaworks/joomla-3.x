@@ -146,7 +146,7 @@ class JOpenstreetmapChangesets extends JOpenstreetmapObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'PUT', $parameters, $xml, $header);
 
-		$xml_string = simplexml_load_string($response->body);
+		$xml_string = simplexml_load_string((string) $response->body);
 
 		return $xml_string->changeset;
 	}
@@ -252,7 +252,7 @@ class JOpenstreetmapChangesets extends JOpenstreetmapObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'POST', $parameters, $xml, $header);
 
-		$xml_string = simplexml_load_string($response->body);
+		$xml_string = simplexml_load_string((string) $response->body);
 
 		return $xml_string->changeset;
 	}
@@ -310,7 +310,7 @@ class JOpenstreetmapChangesets extends JOpenstreetmapObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'POST', $parameters, $xml, $header);
 
-		$xml_string = simplexml_load_string($response->body);
+		$xml_string = simplexml_load_string((string) $response->body);
 
 		return $xml_string->diffResult;
 	}

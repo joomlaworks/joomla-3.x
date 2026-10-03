@@ -295,7 +295,7 @@ class JDatabaseDriverSqlsrv extends JDatabaseDriver
 	public function quoteBinary($data)
 	{
 		// ODBC syntax for hexadecimal literals
-		return '0x' . bin2hex($data);
+		return '0x' . bin2hex((string) $data);
 	}
 
 	/**
@@ -427,7 +427,7 @@ class JDatabaseDriverSqlsrv extends JDatabaseDriver
 		{
 			foreach ($fields as $field)
 			{
-				$result[$field->Field] = preg_replace('/[(0-9)]/', '', $field->Type);
+				$result[$field->Field] = preg_replace('/[(0-9)]/', '', (string) $field->Type);
 			}
 		}
 		// If we want the whole field data object add that to the list.
@@ -435,7 +435,7 @@ class JDatabaseDriverSqlsrv extends JDatabaseDriver
 		{
 			foreach ($fields as $field)
 			{
-				$field->Default = preg_replace("/(^(\(\(|\('|\(N'|\()|(('\)|(?<!\()\)\)|\))$))/i", '', $field->Default);
+				$field->Default = preg_replace("/(^(\(\(|\('|\(N'|\()|(('\)|(?<!\()\)\)|\))$))/i", '', (string) $field->Default);
 				$result[$field->Field] = $field;
 			}
 		}

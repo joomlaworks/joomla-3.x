@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.core');
 
 ?>
-<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo htmlspecialchars((string) JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if ($this->params->get('filter_field') || $this->params->get('show_pagination_limit')) : ?>
 		<fieldset class="filters btn-toolbar">
 			<?php if ($this->params->get('filter_field')) : ?>

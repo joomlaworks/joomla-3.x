@@ -22,7 +22,7 @@ $dispatcher = JEventDispatcher::getInstance();
 		<?php if ($this->canDelete):?>
 		<div class="imgDelete">
 			<a class="close delete-item" target="_top"
-			href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode($this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($img->name); ?>"
+			href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($img->name); ?>"
 			rel="<?php echo $this->escape($img->name); ?>" title="<?php echo JText::_('JACTION_DELETE'); ?>"><span class="icon-delete"> </span></a>
 		</div>
 		<?php endif; ?>
@@ -37,7 +37,7 @@ $dispatcher = JEventDispatcher::getInstance();
 		</div>
 
 		<div class="imgPreview nowrap small">
-			<a href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode($img->path_relative)); ?>" title="<?php echo $this->escape($img->name); ?>" class="preview truncate">
+			<a href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $img->path_relative)); ?>" title="<?php echo $this->escape($img->name); ?>" class="preview truncate">
 				<span class="icon-search" aria-hidden="true"></span><?php echo $this->escape($img->name); ?>
 			</a>
 		</div>

@@ -109,7 +109,7 @@ abstract class JLoader
 				if ($file->isFile() && $file->getExtension() === 'php')
 				{
 					// Get the class name and full path for each file.
-					$class = strtolower($classPrefix . preg_replace('#\.php$#', '', $fileName));
+					$class = strtolower($classPrefix . preg_replace('#\.php$#', '', (string) $fileName));
 
 					// Register the class with the autoloader if not already registered or the force flag is set.
 					if ($force || empty(self::$classes[$class]))
@@ -193,7 +193,7 @@ abstract class JLoader
 			// Handle special case for helper classes.
 			if ($class === 'helper')
 			{
-				$class = ucfirst(array_pop($parts)) . ucfirst($class);
+				$class = ucfirst((string) array_pop($parts)) . ucfirst($class);
 			}
 			// Standard class.
 			else
@@ -606,7 +606,7 @@ abstract class JLoader
 		// Loop through registered namespaces until we find a match.
 		foreach (self::$namespaces['psr0'] as $ns => $paths)
 		{
-			if (strpos($class, $ns) === 0)
+			if (strpos($class, (string) $ns) === 0)
 			{
 				// Loop through paths registered to this namespace until we find a match.
 				foreach ($paths as $path)
@@ -700,11 +700,11 @@ abstract class JLoader
 	{
 		foreach (self::$prefixes as $prefix => $lookup)
 		{
-			$chr = strlen($prefix) < strlen($class) ? $class[strlen($prefix)] : 0;
+			$chr = strlen((string) $prefix) < strlen($class) ? $class[strlen((string) $prefix)] : 0;
 
-			if (strpos($class, $prefix) === 0 && ($chr === strtoupper($chr)))
+			if (strpos($class, (string) $prefix) === 0 && ($chr === strtoupper((string) $chr)))
 			{
-				return self::_load(substr($class, strlen($prefix)), $lookup);
+				return self::_load(substr($class, strlen((string) $prefix)), $lookup);
 			}
 		}
 

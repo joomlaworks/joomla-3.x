@@ -202,9 +202,9 @@ class FOFInput extends JInput
 	 */
 	public function __call($name, $arguments)
 	{
-		if (substr($name, 0, 3) == 'get')
+		if (substr((string) $name, 0, 3) == 'get')
 		{
-			$filter = substr($name, 3);
+			$filter = substr((string) $name, 3);
 
 			$default = null;
 			$mask = 0;

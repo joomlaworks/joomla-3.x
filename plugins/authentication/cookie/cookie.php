@@ -87,7 +87,7 @@ class PlgAuthenticationCookie extends JPlugin
 			return false;
 		}
 
-		$cookieArray = explode('.', $cookieValue);
+		$cookieArray = explode('.', (string) $cookieValue);
 
 		// Check for valid cookie value
 		if (count($cookieArray) !== 2)
@@ -261,7 +261,7 @@ class PlgAuthenticationCookie extends JPlugin
 				$this->app->input->cookie->set($oldCookieName, '', 1, $this->app->get('cookie_path', '/'), $this->app->get('cookie_domain', ''));
 			}
 
-			$cookieArray = explode('.', $cookieValue);
+			$cookieArray = explode('.', (string) $cookieValue);
 
 			// Filter series since we're going to use it in the query
 			$filter = new JFilterInput;
@@ -395,7 +395,7 @@ class PlgAuthenticationCookie extends JPlugin
 			return true;
 		}
 
-		$cookieArray = explode('.', $cookieValue);
+		$cookieArray = explode('.', (string) $cookieValue);
 
 		// Filter series since we're going to use it in the query
 		$filter = new JFilterInput;

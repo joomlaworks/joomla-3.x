@@ -76,7 +76,7 @@ class FOFAutoloaderFof
 
 		// Change from camel cased (e.g. ViewHtml) into a lowercase array (e.g. 'view','html')
 		$class = preg_replace('/(\s)+/', '_', $class);
-		$class = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $class));
+		$class = strtolower((string) preg_replace('/(?<=\\w)([A-Z])/', '_\\1', (string) $class));
 		$class = explode('_', $class);
 
 		// First try finding in structured directory format (preferred)

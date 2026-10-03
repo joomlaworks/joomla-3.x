@@ -13,7 +13,7 @@ $id = '';
 
 if ($tagId = $params->get('tag_id', ''))
 {
-	$id = ' id="' . htmlspecialchars($tagId, ENT_QUOTES, 'UTF-8') . '"';
+	$id = ' id="' . htmlspecialchars((string) $tagId, ENT_QUOTES, 'UTF-8') . '"';
 }
 
 // The menu class is deprecated. Use nav instead

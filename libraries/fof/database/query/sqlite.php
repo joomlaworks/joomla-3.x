@@ -252,7 +252,7 @@ class FOFDatabaseQuerySqlite extends FOFDatabaseQueryPdo implements FOFDatabaseQ
 			$datePart = 'seconds';
 		}
 
-		if (substr($interval, 0, 1) != '-')
+		if (substr((string) $interval, 0, 1) != '-')
 		{
 			return "datetime('" . $date . "', '+" . $interval . " " . $datePart . "')";
 		}

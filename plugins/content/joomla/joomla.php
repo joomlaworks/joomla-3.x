@@ -326,7 +326,7 @@ class PlgContentJoomla extends JPlugin
 		}
 
 		// Display error if catid is not set when enable_category is enabled
-		$params = json_decode($table->params, true);
+		$params = json_decode((string) $table->params, true);
 
 		if ($params['enable_category'] == 1 && empty($params['catid']))
 		{

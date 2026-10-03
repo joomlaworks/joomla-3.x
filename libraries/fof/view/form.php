@@ -42,7 +42,7 @@ class FOFViewForm extends FOFViewHtml
 		$task = $model->getState('task', 'browse');
 
 		// Call the relevant method
-		$method_name = 'on' . ucfirst($task);
+		$method_name = 'on' . ucfirst((string) $task);
 
 		if (method_exists($this, $method_name))
 		{

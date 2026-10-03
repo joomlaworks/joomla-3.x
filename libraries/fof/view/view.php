@@ -358,7 +358,7 @@ abstract class FOFView extends FOFUtilsObject
 
 		foreach ($suffixes as $suffix)
 		{
-			if (substr($path, -strlen($suffix)) == $suffix)
+			if (substr($path, -strlen((string) $suffix)) == $suffix)
 			{
 				$throwErrorIfNotFound = false;
 				break;
@@ -514,7 +514,7 @@ abstract class FOFView extends FOFUtilsObject
 			// Assign public properties
 			foreach (get_object_vars($arg0) as $key => $val)
 			{
-				if (substr($key, 0, 1) != '_')
+				if (substr((string) $key, 0, 1) != '_')
 				{
 					$this->$key = $val;
 				}
@@ -529,7 +529,7 @@ abstract class FOFView extends FOFUtilsObject
 		{
 			foreach ($arg0 as $key => $val)
 			{
-				if (substr($key, 0, 1) != '_')
+				if (substr((string) $key, 0, 1) != '_')
 				{
 					$this->$key = $val;
 				}
@@ -1045,7 +1045,7 @@ abstract class FOFView extends FOFUtilsObject
 	public function loadHelper($hlp = null)
 	{
 		// Clean the file name
-		$file = preg_replace('/[^A-Z0-9_\.-]/i', '', $hlp);
+		$file = preg_replace('/[^A-Z0-9_\.-]/i', '', (string) $hlp);
 
 		// Load the template script using the default Joomla! features
         $filesystem = FOFPlatform::getInstance()->getIntegrationObject('filesystem');
@@ -1135,7 +1135,7 @@ abstract class FOFView extends FOFUtilsObject
 		foreach ($path as $dir)
 		{
 			// No surrounding spaces allowed!
-			$dir = trim($dir);
+			$dir = trim((string) $dir);
 
 			// Add trailing separators as needed
 			if (substr($dir, -1) != DIRECTORY_SEPARATOR)

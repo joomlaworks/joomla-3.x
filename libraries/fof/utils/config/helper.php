@@ -45,7 +45,7 @@ class FOFUtilsConfigHelper
 		$config_ini = $db->loadResult();
 
 		// OK, Joomla! 1.6 stores values JSON-encoded so, what do I do? Right!
-		$config_ini = trim($config_ini);
+		$config_ini = trim((string) $config_ini);
 
 		if ((substr($config_ini, 0, 1) == '{') && substr($config_ini, -1) == '}')
 		{

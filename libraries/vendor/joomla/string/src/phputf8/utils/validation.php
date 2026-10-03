@@ -33,7 +33,7 @@ function utf8_is_valid($str) {
     $mUcs4  = 0;     // cached Unicode character
     $mBytes = 1;     // cached expected number of octets in the current sequence
 
-    $len = strlen($str);
+    $len = strlen((string) $str);
 
     for($i = 0; $i < $len; $i++) {
 
@@ -175,13 +175,13 @@ function utf8_is_valid($str) {
 * @package utf8
 */
 function utf8_compliant($str) {
-    if ( strlen($str) == 0 ) {
+    if ( strlen((string) $str) == 0 ) {
         return TRUE;
     }
     // If even just the first character can be matched, when the /u
     // modifier is used, then it's valid UTF-8. If the UTF-8 is somehow
     // invalid, nothing at all will match, even if the string contains
     // some valid sequences
-    return (preg_match('/^.{1}/us',$str,$ar) == 1);
+    return (preg_match('/^.{1}/us',(string) $str,$ar) == 1);
 }
 

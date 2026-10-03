@@ -289,7 +289,7 @@ class HtmlView extends \JObject
 			// Assign public properties
 			foreach (get_object_vars($arg0) as $key => $val)
 			{
-				if (strpos($key, '_') !== 0)
+				if (strpos((string) $key, '_') !== 0)
 				{
 					$this->$key = $val;
 				}
@@ -303,7 +303,7 @@ class HtmlView extends \JObject
 		{
 			foreach ($arg0 as $key => $val)
 			{
-				if (strpos($key, '_') !== 0)
+				if (strpos((string) $key, '_') !== 0)
 				{
 					$this->$key = $val;
 				}
@@ -527,7 +527,7 @@ class HtmlView extends \JObject
 	 */
 	public function setModel($model, $default = false)
 	{
-		$name = strtolower($model->getName());
+		$name = strtolower((string) $model->getName());
 		$this->_models[$name] = $model;
 
 		if ($default)
@@ -733,7 +733,7 @@ class HtmlView extends \JObject
 	public function loadHelper($hlp = null)
 	{
 		// Clean the file name
-		$file = preg_replace('/[^A-Z0-9_\.-]/i', '', $hlp);
+		$file = preg_replace('/[^A-Z0-9_\.-]/i', '', (string) $hlp);
 
 		// Load the template script
 		jimport('joomla.filesystem.path');

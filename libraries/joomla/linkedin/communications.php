@@ -111,13 +111,13 @@ class JLinkedinCommunications extends JLinkedinObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'GET', $parameters, $data);
 
-		if (strpos($response->body, 'apiStandardProfileRequest') === false)
+		if (strpos((string) $response->body, 'apiStandardProfileRequest') === false)
 		{
 			throw new RuntimeException($response->body);
 		}
 
 		// Get header value.
-		$value = explode('"value": "', $response->body);
+		$value = explode('"value": "', (string) $response->body);
 		$value = explode('"', $value[1]);
 		$value = $value[0];
 

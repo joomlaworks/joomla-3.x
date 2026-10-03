@@ -105,7 +105,7 @@ class MenusControllerItems extends JControllerAdmin
 
 		// Get the arrays from the Request
 		$order = $this->input->post->get('order', null, 'array');
-		$originalOrder = explode(',', $this->input->getString('original_order_values'));
+		$originalOrder = explode(',', (string) $this->input->getString('original_order_values'));
 
 		// Make sure something has changed
 		if (!($order === $originalOrder))

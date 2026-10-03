@@ -139,7 +139,7 @@ class FOFLessParser
 		$lastCount = $this->count;
 		while (false !== $this->parseChunk());
 
-		if ($this->count != strlen($this->buffer))
+		if ($this->count != strlen((string) $this->buffer))
 		{
 			$this->throwError();
 		}
@@ -929,13 +929,13 @@ class FOFLessParser
 
 				if ($nestingOpen)
 				{
-					$nestingLevel += substr_count($m[1], $nestingOpen);
+					$nestingLevel += substr_count($m[1], (string) $nestingOpen);
 				}
 			}
 
 			$tok = $m[2];
 
-			$this->count -= strlen($tok);
+			$this->count -= strlen((string) $tok);
 
 			if ($tok == $end)
 			{
@@ -968,7 +968,7 @@ class FOFLessParser
 			}
 
 			$content[] = $tok;
-			$this->count += strlen($tok);
+			$this->count += strlen((string) $tok);
 		}
 
 		$this->eatWhiteDefault = $oldWhite;
@@ -1912,7 +1912,7 @@ class FOFLessParser
 		if ($until)
 		{
 			// Give back $what
-			$this->count -= strlen($what);
+			$this->count -= strlen((string) $what);
 		}
 
 		$out = $m[1];
@@ -2159,7 +2159,7 @@ class FOFLessParser
 			// Find the next item
 			foreach ($look as $token)
 			{
-				$pos = strpos($text, $token);
+				$pos = strpos((string) $text, $token);
 
 				if ($pos !== false)
 				{
@@ -2181,7 +2181,7 @@ class FOFLessParser
 			{
 				case 'url(':
 
-					if (preg_match('/url\(.*?\)/', $text, $m, 0, $count))
+					if (preg_match('/url\(.*?\)/', (string) $text, $m, 0, $count))
 					{
 						$count += strlen($m[0]) - strlen($min[0]);
 					}
@@ -2190,18 +2190,18 @@ class FOFLessParser
 				case '"':
 				case "'":
 
-					if (preg_match('/' . $min[0] . '.*?' . $min[0] . '/', $text, $m, 0, $count))
+					if (preg_match('/' . $min[0] . '.*?' . $min[0] . '/', (string) $text, $m, 0, $count))
 					{
 						$count += strlen($m[0]) - 1;
 					}
 
 					break;
 				case '//':
-					$skip = strpos($text, "\n", $count);
+					$skip = strpos((string) $text, "\n", $count);
 
 					if ($skip === false)
 					{
-						$skip = strlen($text) - $count;
+						$skip = strlen((string) $text) - $count;
 					}
 					else
 					{
@@ -2211,7 +2211,7 @@ class FOFLessParser
 					break;
 				case '/*':
 
-					if (preg_match('/\/\*.*?\*\//s', $text, $m, 0, $count))
+					if (preg_match('/\/\*.*?\*\//s', (string) $text, $m, 0, $count))
 					{
 						$skip = strlen($m[0]);
 						$newlines = substr_count($m[0], "\n");
@@ -2225,8 +2225,8 @@ class FOFLessParser
 				$count += strlen($min[0]);
 			}
 
-			$out .= substr($text, 0, $count) . str_repeat("\n", $newlines);
-			$text = substr($text, $count + $skip);
+			$out .= substr((string) $text, 0, $count) . str_repeat("\n", $newlines);
+			$text = substr((string) $text, $count + $skip);
 
 			$min = null;
 		}

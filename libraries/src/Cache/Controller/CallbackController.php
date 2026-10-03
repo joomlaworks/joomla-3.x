@@ -65,13 +65,13 @@ class CallbackController extends CacheController
 		{
 			// We have a standard php callback array -- do nothing
 		}
-		elseif (strstr($callback, '::'))
+		elseif (strstr((string) $callback, '::'))
 		{
 			// This is shorthand for a static method callback classname::methodname
-			list ($class, $method) = explode('::', $callback);
+			list ($class, $method) = explode('::', (string) $callback);
 			$callback = array(trim($class), trim($method));
 		}
-		elseif (strstr($callback, '->'))
+		elseif (strstr((string) $callback, '->'))
 		{
 			/*
 			 * This is a really not so smart way of doing this... we provide this for backward compatibility but this
@@ -80,7 +80,7 @@ class CallbackController extends CacheController
 			 *
 			 * We have to use some silly global notation to pull it off and this is very unreliable
 			 */
-			list ($object_123456789, $method) = explode('->', $callback);
+			list ($object_123456789, $method) = explode('->', (string) $callback);
 			global $$object_123456789;
 			$callback = array($$object_123456789, $method);
 		}
@@ -113,7 +113,7 @@ class CallbackController extends CacheController
 				$this->cache->unlock($id);
 			}
 
-			$data = unserialize(trim($data));
+			$data = unserialize(trim((string) $data));
 
 			if ($wrkarounds)
 			{

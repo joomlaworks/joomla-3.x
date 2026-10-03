@@ -99,7 +99,7 @@ JFactory::getDocument()->addScriptDeclaration('
 					</td>
 					<td>
 					<?php
-					if (trim($item->parent_title, '**') === 'Language')
+					if (trim((string) $item->parent_title, '**') === 'Language')
 					{
 						$title = FinderHelperLanguage::branchLanguageTitle($item->title);
 					}

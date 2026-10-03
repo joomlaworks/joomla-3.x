@@ -44,7 +44,7 @@ class ModLoginHelper
 			$url = 'index.php?Itemid=' . $item->id . $lang;
 		}
 
-		return base64_encode($url);
+		return base64_encode((string) $url);
 	}
 
 	/**

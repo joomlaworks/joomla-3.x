@@ -55,7 +55,7 @@ class JGoogleDataAdsense extends JGoogleData
 			$url = 'https://www.googleapis.com/adsense/v1.1/accounts/' . urlencode($accountID) . ($subaccounts ? '?tree=true' : '');
 			$jdata = $this->query($url);
 
-			if ($data = json_decode($jdata->body, true))
+			if ($data = json_decode((string) $jdata->body, true))
 			{
 				return $data;
 			}
@@ -145,7 +145,7 @@ class JGoogleDataAdsense extends JGoogleData
 			$url .= '/adclients/' . urlencode($adclientID) . '/adunits/' . urlencode($adunitID);
 			$jdata = $this->query($url);
 
-			if ($data = json_decode($jdata->body, true))
+			if ($data = json_decode((string) $jdata->body, true))
 			{
 				return $data;
 			}
@@ -211,7 +211,7 @@ class JGoogleDataAdsense extends JGoogleData
 			$url .= urlencode($adclientID) . '/customchannels/' . urlencode($channelID);
 			$jdata = $this->query($url);
 
-			if ($data = json_decode($jdata->body, true))
+			if ($data = json_decode((string) $jdata->body, true))
 			{
 				return $data;
 			}
@@ -394,7 +394,7 @@ class JGoogleDataAdsense extends JGoogleData
 			do
 			{
 				$jdata = $this->query($url . 'startIndex=' . count($data['rows']));
-				$newdata = json_decode($jdata->body, true);
+				$newdata = json_decode((string) $jdata->body, true);
 
 				if ($newdata && array_key_exists('rows', $newdata))
 				{

@@ -77,7 +77,7 @@ class SimplePie_Parser
 	public function parse(&$data, $encoding)
 	{
 		// Use UTF-8 if we get passed US-ASCII, as every US-ASCII character is a UTF-8 character
-		if (strtoupper($encoding) === 'US-ASCII')
+		if (strtoupper((string) $encoding) === 'US-ASCII')
 		{
 			$this->encoding = 'UTF-8';
 		}
@@ -88,37 +88,37 @@ class SimplePie_Parser
 
 		// Strip BOM:
 		// UTF-32 Big Endian BOM
-		if (substr($data, 0, 4) === "\x00\x00\xFE\xFF")
+		if (substr((string) $data, 0, 4) === "\x00\x00\xFE\xFF")
 		{
-			$data = substr($data, 4);
+			$data = substr((string) $data, 4);
 		}
 		// UTF-32 Little Endian BOM
-		elseif (substr($data, 0, 4) === "\xFF\xFE\x00\x00")
+		elseif (substr((string) $data, 0, 4) === "\xFF\xFE\x00\x00")
 		{
-			$data = substr($data, 4);
+			$data = substr((string) $data, 4);
 		}
 		// UTF-16 Big Endian BOM
-		elseif (substr($data, 0, 2) === "\xFE\xFF")
+		elseif (substr((string) $data, 0, 2) === "\xFE\xFF")
 		{
-			$data = substr($data, 2);
+			$data = substr((string) $data, 2);
 		}
 		// UTF-16 Little Endian BOM
-		elseif (substr($data, 0, 2) === "\xFF\xFE")
+		elseif (substr((string) $data, 0, 2) === "\xFF\xFE")
 		{
-			$data = substr($data, 2);
+			$data = substr((string) $data, 2);
 		}
 		// UTF-8 BOM
-		elseif (substr($data, 0, 3) === "\xEF\xBB\xBF")
+		elseif (substr((string) $data, 0, 3) === "\xEF\xBB\xBF")
 		{
-			$data = substr($data, 3);
+			$data = substr((string) $data, 3);
 		}
 
-		if (substr($data, 0, 5) === '<?xml' && strspn(substr($data, 5, 1), "\x09\x0A\x0D\x20") && ($pos = strpos($data, '?>')) !== false)
+		if (substr((string) $data, 0, 5) === '<?xml' && strspn(substr((string) $data, 5, 1), "\x09\x0A\x0D\x20") && ($pos = strpos((string) $data, '?>')) !== false)
 		{
-			$declaration = $this->registry->create('XML_Declaration_Parser', array(substr($data, 5, $pos - 5)));
+			$declaration = $this->registry->create('XML_Declaration_Parser', array(substr((string) $data, 5, $pos - 5)));
 			if ($declaration->parse())
 			{
-				$data = substr($data, $pos + 2);
+				$data = substr((string) $data, $pos + 2);
 				$data = '<?xml version="' . $declaration->version . '" encoding="' . $encoding . '" standalone="' . (($declaration->standalone) ? 'yes' : 'no') . '"?>' . $data;
 			}
 			else
@@ -142,7 +142,7 @@ class SimplePie_Parser
 		// Create the parser
 		if ($xml_is_sane)
 		{
-			$xml = xml_parser_create_ns($this->encoding, $this->separator);
+			$xml = xml_parser_create_ns($this->encoding, (string) $this->separator);
 			xml_parser_set_option($xml, XML_OPTION_SKIP_WHITE, 1);
 			xml_parser_set_option($xml, XML_OPTION_CASE_FOLDING, 0);
 			xml_set_object($xml, $this);
@@ -150,7 +150,7 @@ class SimplePie_Parser
 			xml_set_element_handler($xml, 'tag_open', 'tag_close');
 
 			// Parse!
-			if (!xml_parse($xml, $data, true))
+			if (!xml_parse($xml, (string) $data, true))
 			{
 				$this->error_code = xml_get_error_code($xml);
 				$this->error_string = xml_error_string($this->error_code);
@@ -309,7 +309,7 @@ class SimplePie_Parser
 				{
 					foreach ($attribs[''] as $name => $value)
 					{
-						$this->data['data'] .= ' ' . $name . '="' . htmlspecialchars($value, ENT_COMPAT, $this->encoding) . '"';
+						$this->data['data'] .= ' ' . $name . '="' . htmlspecialchars((string) $value, ENT_COMPAT, $this->encoding) . '"';
 					}
 				}
 				$this->data['data'] .= '>';
@@ -335,7 +335,7 @@ class SimplePie_Parser
 	{
 		if ($this->current_xhtml_construct >= 0)
 		{
-			$this->data['data'] .= htmlspecialchars($cdata, ENT_QUOTES, $this->encoding);
+			$this->data['data'] .= htmlspecialchars((string) $cdata, ENT_QUOTES, $this->encoding);
 		}
 		else
 		{
@@ -371,15 +371,15 @@ class SimplePie_Parser
 		static $cache = array();
 		if (!isset($cache[$string]))
 		{
-			if ($pos = strpos($string, $this->separator))
+			if ($pos = strpos((string) $string, (string) $this->separator))
 			{
 				static $separator_length;
 				if (!$separator_length)
 				{
-					$separator_length = strlen($this->separator);
+					$separator_length = strlen((string) $this->separator);
 				}
-				$namespace = substr($string, 0, $pos);
-				$local_name = substr($string, $pos + $separator_length);
+				$namespace = substr((string) $string, 0, $pos);
+				$local_name = substr((string) $string, $pos + $separator_length);
 				if (strtolower($namespace) === SIMPLEPIE_NAMESPACE_ITUNES)
 				{
 					$namespace = SIMPLEPIE_NAMESPACE_ITUNES;

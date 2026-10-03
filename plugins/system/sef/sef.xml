@@ -19,7 +19,7 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field name="domain" type="url" label="PLG_SEF_DOMAIN_LABEL" description="PLG_SEF_DOMAIN_DESCRIPTION" hint="https://www.example.com" filter="url" validate="url" />
+                <field name="domain" type="url" label="PLG_SEF_DOMAIN_LABEL" description="PLG_SEF_DOMAIN_DESCRIPTION" hint="https://www.example.com" filter="url" validate="url" schemes="http,https" />
             </fieldset>
         </fields>
     </config>

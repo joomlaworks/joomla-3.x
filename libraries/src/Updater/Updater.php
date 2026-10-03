@@ -356,7 +356,7 @@ class Updater extends \JAdapter
 						{
 							// We have an installed extension, check the update is actually newer
 							$extension->load($eid);
-							$data = json_decode($extension->manifest_cache, true);
+							$data = json_decode((string) $extension->manifest_cache, true);
 
 							if (version_compare($current_update->version, $data['version'], $operator) == 1)
 							{

@@ -26,7 +26,7 @@ jQuery(document).ready(function($){
 	<?php $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$video, &$params, 0)); ?>
 	<li class="imgOutline thumbnail height-80 width-80 center">
 		<?php if ($this->canDelete) : ?>
-			<a class="close delete-item" target="_top" href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode($this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($video->name); ?>" rel="<?php echo $this->escape($video->name); ?>" title="<?php echo JText::_('JACTION_DELETE'); ?>">&#215;</a>
+			<a class="close delete-item" target="_top" href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($video->name); ?>" rel="<?php echo $this->escape($video->name); ?>" title="<?php echo JText::_('JACTION_DELETE'); ?>">&#215;</a>
 			<div class="pull-left">
 				<?php echo JHtml::_('grid.id', $i, $this->escape($video->name), false, 'rm', 'cb-video'); ?>
 			</div>
@@ -38,7 +38,7 @@ jQuery(document).ready(function($){
 		</div>
 
 		<div class="small">
-			<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL, '/', rawurlencode($video->path_relative); ?>" title="<?php echo $this->escape($video->name); ?>">
+			<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL, '/', rawurlencode((string) $video->path_relative); ?>" title="<?php echo $this->escape($video->name); ?>">
 				<?php echo JHtml::_('string.truncate', $this->escape($video->name), 10, false); ?>
 			</a>
 		</div>

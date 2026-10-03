@@ -41,9 +41,9 @@ function admin_postinstall_joomla40checks_condition()
 	}
 
 	// Check whether we have a MariaDB version string and extract the proper version from it
-	if ($serverType == 'mysql' && stripos($serverVersion, 'mariadb') !== false)
+	if ($serverType == 'mysql' && stripos((string) $serverVersion, 'mariadb') !== false)
 	{
-		$serverVersion = preg_replace('/^5\.5\.5-/', '', $serverVersion);
+		$serverVersion = preg_replace('/^5\.5\.5-/', '', (string) $serverVersion);
 
 		// MariaDB minimum version is 10.1
 		if (version_compare($serverVersion, '10.1', 'lt'))

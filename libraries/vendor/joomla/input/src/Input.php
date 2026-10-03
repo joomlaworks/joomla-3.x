@@ -138,7 +138,7 @@ class Input implements \Serializable, \Countable
 			return $this->inputs[$name];
 		}
 
-		$className = '\\Joomla\\Input\\' . ucfirst($name);
+		$className = '\\Joomla\\Input\\' . ucfirst((string) $name);
 
 		if (class_exists($className))
 		{
@@ -147,9 +147,9 @@ class Input implements \Serializable, \Countable
 			return $this->inputs[$name];
 		}
 
-		$superGlobal = '_' . strtoupper($name);
+		$superGlobal = '_' . strtoupper((string) $name);
 
-		if (\in_array(strtoupper($name), self::$allowedGlobals, true) && isset($GLOBALS[$superGlobal]))
+		if (\in_array(strtoupper((string) $name), self::$allowedGlobals, true) && isset($GLOBALS[$superGlobal]))
 		{
 			$this->inputs[$name] = new Input($GLOBALS[$superGlobal], $this->options);
 
@@ -467,10 +467,10 @@ class Input implements \Serializable, \Countable
 			foreach ($GLOBALS as $global => $data)
 			{
 				// Check if the global starts with an underscore and is allowed.
-				if (strpos($global, '_') === 0 && \in_array(substr($global, 1), self::$allowedGlobals, true))
+				if (strpos((string) $global, '_') === 0 && \in_array(substr((string) $global, 1), self::$allowedGlobals, true))
 				{
 					// Convert global name to input name.
-					$global = strtolower($global);
+					$global = strtolower((string) $global);
 					$global = substr($global, 1);
 
 					// Get the input.

@@ -86,7 +86,7 @@ class File
 
 		$regex = array('#(\.){2,}#', '#[^A-Za-z0-9\.\_\- ]#', '#^\.#');
 
-		return trim(preg_replace($regex, '', $file));
+		return trim((string) preg_replace($regex, '', $file));
 	}
 
 	/**

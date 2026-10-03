@@ -91,7 +91,7 @@ class idna_convert
     var $_strict_mode    =  false;  // Behave strict or not
 
     // The constructor
-    function idna_convert($options = false)
+    function __construct($options = false)
     {
         $this->slast = $this->_sbase + $this->_lcount * $this->_vcount * $this->_tcount;
         if (function_exists('file_get_contents')) {
@@ -177,41 +177,41 @@ class idna_convert
             }
         }
         // Make sure to drop any newline characters around
-        $input = trim($input);
+        $input = trim((string) $input);
 
         // Negotiate input and try to determine, whether it is a plain string,
         // an email address or something like a complete URL
-        if (strpos($input, '@')) { // Maybe it is an email address
+        if (strpos((string) $input, '@')) { // Maybe it is an email address
             // No no in strict mode
             if ($this->_strict_mode) {
                 $this->_error('Only simple domain name parts can be handled in strict mode');
                 return false;
             }
-            list ($email_pref, $input) = explode('@', $input, 2);
-            $arr = explode('.', $input);
+            list ($email_pref, $input) = explode('@', (string) $input, 2);
+            $arr = explode('.', (string) $input);
             foreach ($arr as $k => $v) {
-                if (preg_match('!^'.preg_quote($this->_punycode_prefix, '!').'!', $v)) {
+                if (preg_match('!^'.preg_quote((string) $this->_punycode_prefix, '!').'!', (string) $v)) {
                     $conv = $this->_decode($v);
                     if ($conv) $arr[$k] = $conv;
                 }
             }
             $input = join('.', $arr);
-            $arr = explode('.', $email_pref);
+            $arr = explode('.', (string) $email_pref);
             foreach ($arr as $k => $v) {
-                if (preg_match('!^'.preg_quote($this->_punycode_prefix, '!').'!', $v)) {
+                if (preg_match('!^'.preg_quote((string) $this->_punycode_prefix, '!').'!', (string) $v)) {
                     $conv = $this->_decode($v);
                     if ($conv) $arr[$k] = $conv;
                 }
             }
             $email_pref = join('.', $arr);
             $return = $email_pref . '@' . $input;
-        } elseif (preg_match('![:\./]!', $input)) { // Or a complete domain name (with or without paths / parameters)
+        } elseif (preg_match('![:\./]!', (string) $input)) { // Or a complete domain name (with or without paths / parameters)
             // No no in strict mode
             if ($this->_strict_mode) {
                 $this->_error('Only simple domain name parts can be handled in strict mode');
                 return false;
             }
-            $parsed = parse_url($input);
+            $parsed = parse_url((string) $input);
             if (isset($parsed['host'])) {
                 $arr = explode('.', $parsed['host']);
                 foreach ($arr as $k => $v) {
@@ -228,7 +228,7 @@ class idna_convert
                         .(empty($parsed['query']) ? '' : '?'.$parsed['query'])
                         .(empty($parsed['fragment']) ? '' : '#'.$parsed['fragment']);
             } else { // parse_url seems to have failed, try without it
-                $arr = explode('.', $input);
+                $arr = explode('.', (string) $input);
                 foreach ($arr as $k => $v) {
                     $conv = $this->_decode($v);
                     $arr[$k] = ($conv) ? $conv : $v;
@@ -360,27 +360,27 @@ class idna_convert
     function _decode($encoded)
     {
         // We do need to find the Punycode prefix
-        if (!preg_match('!^'.preg_quote($this->_punycode_prefix, '!').'!', $encoded)) {
+        if (!preg_match('!^'.preg_quote((string) $this->_punycode_prefix, '!').'!', (string) $encoded)) {
             $this->_error('This is not a punycode string');
             return false;
         }
-        $encode_test = preg_replace('!^'.preg_quote($this->_punycode_prefix, '!').'!', '', $encoded);
+        $encode_test = preg_replace('!^'.preg_quote((string) $this->_punycode_prefix, '!').'!', '', (string) $encoded);
         // If nothing left after removing the prefix, it is hopeless
         if (!$encode_test) {
             $this->_error('The given encoded string was empty');
             return false;
         }
         // Find last occurence of the delimiter
-        $delim_pos = strrpos($encoded, '-');
-        if ($delim_pos > strlen($this->_punycode_prefix)) {
-            for ($k = strlen($this->_punycode_prefix); $k < $delim_pos; ++$k) {
-                $decoded[] = ord($encoded{$k});
+        $delim_pos = strrpos((string) $encoded, '-');
+        if ($delim_pos > strlen((string) $this->_punycode_prefix)) {
+            for ($k = strlen((string) $this->_punycode_prefix); $k < $delim_pos; ++$k) {
+                $decoded[] = ord($encoded[$k]);
             }
         } else {
             $decoded = array();
         }
         $deco_len = count($decoded);
-        $enco_len = strlen($encoded);
+        $enco_len = strlen((string) $encoded);
 
         // Wandering through the strings; init
         $is_first = true;
@@ -390,7 +390,7 @@ class idna_convert
 
         for ($enco_idx = ($delim_pos) ? ($delim_pos + 1) : 0; $enco_idx < $enco_len; ++$deco_len) {
             for ($old_idx = $idx, $w = 1, $k = $this->_base; 1 ; $k += $this->_base) {
-                $digit = $this->_decode_digit($encoded{$enco_idx++});
+                $digit = $this->_decode_digit($encoded[$enco_idx++]);
                 $idx += $digit * $w;
                 $t = ($k <= $bias) ? $this->_tmin :
                         (($k >= $bias + $this->_tmax) ? $this->_tmax : ($k - $bias));
@@ -419,7 +419,7 @@ class idna_convert
     function _encode($decoded)
     {
         // We cannot encode a domain name containing the Punycode prefix
-        $extract = strlen($this->_punycode_prefix);
+        $extract = strlen((string) $this->_punycode_prefix);
         $check_pref = $this->_utf8_to_ucs4($this->_punycode_prefix);
         $check_deco = array_slice($decoded, 0, $extract);
 
@@ -789,11 +789,11 @@ class idna_convert
     {
         $output = array();
         $out_len = 0;
-        $inp_len = strlen($input);
+        $inp_len = strlen((string) $input);
         $mode = 'next';
         $test = 'none';
         for ($k = 0; $k < $inp_len; ++$k) {
-            $v = ord($input{$k}); // Extract byte from input string
+            $v = ord($input[$k]); // Extract byte from input string
 
             if ($v < 128) { // We found an ASCII char - put into stirng as is
                 $output[$out_len] = $v;
@@ -918,7 +918,7 @@ class idna_convert
     function _ucs4_string_to_ucs4($input)
     {
         $output = array();
-        $inp_len = strlen($input);
+        $inp_len = strlen((string) $input);
         // Input length must be dividable by 4
         if ($inp_len % 4) {
             $this->_error('Input UCS4 string is broken');
@@ -932,7 +932,7 @@ class idna_convert
                 $out_len++;
                 $output[$out_len] = 0;
             }
-            $output[$out_len] += ord($input{$i}) << (8 * (3 - ($i % 4) ) );
+            $output[$out_len] += ord($input[$i]) << (8 * (3 - ($i % 4) ) );
         }
         return $output;
     }

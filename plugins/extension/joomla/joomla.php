@@ -263,7 +263,7 @@ class PlgExtensionJoomla extends JPlugin
 			foreach ($children as $child)
 			{
 				$attrs = $child->attributes();
-				$this->addUpdateSite($attrs['name'], $attrs['type'], trim($child), true, $this->installer->extraQuery);
+				$this->addUpdateSite($attrs['name'], $attrs['type'], trim((string) $child), true, $this->installer->extraQuery);
 			}
 		}
 		else

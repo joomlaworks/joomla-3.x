@@ -118,7 +118,7 @@ class JInput implements Serializable, Countable
 			return $this->inputs[$name];
 		}
 
-		$className = 'JInput' . ucfirst($name);
+		$className = 'JInput' . ucfirst((string) $name);
 
 		if (class_exists($className))
 		{
@@ -127,7 +127,7 @@ class JInput implements Serializable, Countable
 			return $this->inputs[$name];
 		}
 
-		$superGlobal = '_' . strtoupper($name);
+		$superGlobal = '_' . strtoupper((string) $name);
 
 		if (isset($GLOBALS[$superGlobal]))
 		{
@@ -366,10 +366,10 @@ class JInput implements Serializable, Countable
 			foreach ($GLOBALS as $global => $data)
 			{
 				// Check if the global starts with an underscore.
-				if (strpos($global, '_') === 0)
+				if (strpos((string) $global, '_') === 0)
 				{
 					// Convert global name to input name.
-					$global = strtolower($global);
+					$global = strtolower((string) $global);
 					$global = substr($global, 1);
 
 					// Get the input.

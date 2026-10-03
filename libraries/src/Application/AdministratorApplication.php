@@ -22,6 +22,16 @@ use Joomla\Registry\Registry;
 class AdministratorApplication extends CMSApplication
 {
 	/**
+	 * The current admin page title, set by ToolbarHelper::title() and read back by mod_title and
+	 * the FOF renderers. Declared here (rather than left as a dynamic property) to avoid the
+	 * PHP 8.2+ deprecation warning.
+	 *
+	 * @var    string
+	 * @since  3.16.0
+	 */
+	public $JComponentTitle;
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param   Input                   $input   An optional argument to provide dependency injection for the application's
@@ -466,7 +476,7 @@ class AdministratorApplication extends CMSApplication
 	{
 		$uri = \JUri::getInstance();
 
-		if ($this->get('force_ssl') >= 1 && strtolower($uri->getScheme()) !== 'https')
+		if ($this->get('force_ssl') >= 1 && strtolower((string) $uri->getScheme()) !== 'https')
 		{
 			// Forward to https
 			$uri->setScheme('https');

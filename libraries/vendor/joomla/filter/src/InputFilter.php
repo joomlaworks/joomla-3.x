@@ -194,6 +194,7 @@ class InputFilter
 	 */
 	private $blockedChars = array(
 		'&tab;',
+		'&newline;',
 		'&space;',
 		'&colon;',
 		'&column;',
@@ -320,22 +321,42 @@ class InputFilter
 	 */
 	public static function checkAttribute($attrSubSet)
 	{
-		$quoteStyle = version_compare(\PHP_VERSION, '5.4', '>=') ? \ENT_QUOTES | \ENT_HTML401 : \ENT_QUOTES;
-
 		$attrSubSet[0] = strtolower($attrSubSet[0]);
-		$attrSubSet[1] = strtolower($attrSubSet[1]);
 
 		// Fully decode nested/double-encoded entities (CVE-2026-48903/CVE-2026-48905) before pattern matching.
 		// A single html_entity_decode() pass leaves constructs like "&amp;#58;" as "&#58;" (still entity-like,
 		// and not matched by the literal-colon check below), which a browser goes on to decode further. Loop to
 		// a fixed point (capped) so any depth of nested encoding is resolved before we inspect the value.
-		$previous = null;
+		// Decode the way a browser does: HTML5 entity table (e.g. "&NewLine;"), BEFORE lowercasing (PHP's entity
+		// tables are case sensitive), plus unterminated numeric references such as "java&#10script:".
+		$quoteStyle = \ENT_QUOTES | \ENT_HTML5;
+		$previous   = null;
 
 		for ($decodePass = 0; $decodePass < 5 && $previous !== $attrSubSet[1]; $decodePass++)
 		{
-			$previous = $attrSubSet[1];
+			$previous      = $attrSubSet[1];
 			$attrSubSet[1] = html_entity_decode($attrSubSet[1], $quoteStyle, 'UTF-8');
+			$attrSubSet[1] = preg_replace_callback(
+				'/&#(x[0-9a-f]+|[0-9]+);?/i',
+				function ($matches)
+				{
+					$reference = $matches[1];
+					$codepoint = ($reference[0] === 'x' || $reference[0] === 'X') ? (int) hexdec(substr($reference, 1)) : (int) $reference;
+
+					// Leave anything that isn't a scalar Unicode value untouched
+					if ($codepoint < 1 || $codepoint > 0x10FFFF || ($codepoint >= 0xD800 && $codepoint <= 0xDFFF))
+					{
+						return $matches[0];
+					}
+
+					// mb_chr() is PHP 7.2+, so decode a well-formed reference instead
+					return html_entity_decode('&#' . $codepoint . ';', \ENT_QUOTES | \ENT_HTML5, 'UTF-8');
+				},
+				$attrSubSet[1]
+			);
 		}
+
+		$attrSubSet[1] = strtolower($attrSubSet[1]);
 
 		// Remove common XSS-evasion characters (CVE-2025-54476); include all ASCII whitespace per WHATWG URL parsing
 		$attrSubSet[1] = str_replace(["\t", "\n", "\r", "\v", "\f", " ", "\0"], '', $attrSubSet[1]);
@@ -703,8 +724,8 @@ class InputFilter
 				$attrSubSet[1] = html_entity_decode($attrSubSet[1], $quoteStyle, 'UTF-8');
 			}
 
-			// Strip normal newline within attr value
-			$attrSubSet[1] = preg_replace('/[\n\r]/', '', $attrSubSet[1]);
+			// Strip tab and newline within attr value (browsers drop these when parsing a URL)
+			$attrSubSet[1] = preg_replace('/[\t\n\r]/', '', $attrSubSet[1]);
 
 			// Strip double quotes
 			$attrSubSet[1] = str_replace('"', '', $attrSubSet[1]);
@@ -842,7 +863,7 @@ class InputFilter
 		$test = preg_replace('#\/\*.*\*\/#U', '', $source);
 
 		// Test for :expression
-		if (!stripos($test, ':expression'))
+		if (!stripos((string) $test, ':expression'))
 		{
 			// Not found, so we are done
 			return $source;
@@ -850,7 +871,7 @@ class InputFilter
 
 		// At this point, we have stripped out the comments and have found :expression
 		// Test stripped string for :expression followed by a '('
-		if (preg_match_all('#:expression\s*\(#', $test, $matches))
+		if (preg_match_all('#:expression\s*\(#', (string) $test, $matches))
 		{
 			// If found, remove :expression
 			return str_ireplace(':expression', '', $test);
@@ -995,7 +1016,7 @@ class InputFilter
 		$pattern = '/[^A-Z0-9_\.-]/i';
 
 		$result = preg_replace($pattern, '', $source);
-		$result = ltrim($result, '.');
+		$result = ltrim((string) $result, '.');
 
 		return $result;
 	}
@@ -1091,7 +1112,7 @@ class InputFilter
 		{
 			$source = preg_replace("/{$pathSeparatorPattern}/", $pathSeparator, $source);
 
-			if (strlen($source) > 4095)
+			if (strlen((string) $source) > 4095)
 			{
 				// Path is too long
 				$source = '';

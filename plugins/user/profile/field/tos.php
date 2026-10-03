@@ -99,7 +99,7 @@ class JFormFieldTos extends JFormFieldRadio
 
 			$currentLang = JFactory::getLanguage()->getTag();
 
-			if (isset($tosAssociated) && $currentLang !== $article->language && array_key_exists($currentLang, $tosAssociated))
+			if (isset($tosAssociated) && $currentLang !== $article->language && array_key_exists((string) $currentLang, $tosAssociated))
 			{
 				$url = ContentHelperRoute::getArticleRoute(
 					$tosAssociated[$currentLang]->id,

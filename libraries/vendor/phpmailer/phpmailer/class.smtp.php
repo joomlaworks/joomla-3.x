@@ -233,7 +233,7 @@ class SMTP
             case 'html':
                 //Cleans up output a bit for a better looking, HTML-safe output
                 echo gmdate('Y-m-d H:i:s') . ' ' . htmlentities(
-                    preg_replace('/[\r\n]+/', '', $str),
+                    (string) preg_replace('/[\r\n]+/', '', $str),
                     ENT_QUOTES,
                     'UTF-8'
                 ) . "<br>\n";
@@ -245,7 +245,7 @@ class SMTP
                 echo gmdate('Y-m-d H:i:s') . "\t" . str_replace(
                     "\n",
                     "\n                   \t                  ",
-                    trim($str)
+                    trim((string) $str)
                 ) . "\n";
         }
     }
@@ -506,7 +506,7 @@ class SMTP
 
                 if (!$this->sendCommand(
                     'AUTH NTLM',
-                    'AUTH NTLM ' . base64_encode($msg1),
+                    'AUTH NTLM ' . base64_encode((string) $msg1),
                     334
                 )
                 ) {
@@ -528,7 +528,7 @@ class SMTP
                     $workstation
                 );
                 // send encoded username
-                return $this->sendCommand('Username', base64_encode($msg3), 235);
+                return $this->sendCommand('Username', base64_encode((string) $msg3), 235);
             case 'CRAM-MD5':
                 // Start authentication
                 if (!$this->sendCommand('AUTH CRAM-MD5', 'AUTH CRAM-MD5', 334)) {
@@ -766,7 +766,7 @@ class SMTP
     protected function parseHelloFields($type)
     {
         $this->server_caps = array();
-        $lines = explode("\n", $this->helo_rply);
+        $lines = explode("\n", (string) $this->helo_rply);
 
         foreach ($lines as $n => $s) {
             //First 4 chars contain response code followed by - or space

@@ -20,25 +20,25 @@
 function encode_utf8($string = '', $encoding = 'iso-8859-1', $safe_mode = false)
 {
     $safe = ($safe_mode) ? $string : false;
-    if (strtoupper($encoding) == 'UTF-8' || strtoupper($encoding) == 'UTF8') {
+    if (strtoupper((string) $encoding) == 'UTF-8' || strtoupper((string) $encoding) == 'UTF8') {
         return $string;
-    } elseif (strtoupper($encoding) == 'ISO-8859-1') {
-        return utf8_encode($string);
-    } elseif (strtoupper($encoding) == 'WINDOWS-1252') {
-        return utf8_encode(map_w1252_iso8859_1($string));
-    } elseif (strtoupper($encoding) == 'UNICODE-1-1-UTF-7') {
+    } elseif (strtoupper((string) $encoding) == 'ISO-8859-1') {
+        return mb_convert_encoding((string) $string, 'UTF-8', 'ISO-8859-1');
+    } elseif (strtoupper((string) $encoding) == 'WINDOWS-1252') {
+        return mb_convert_encoding((string) map_w1252_iso8859_1($string), 'UTF-8', 'ISO-8859-1');
+    } elseif (strtoupper((string) $encoding) == 'UNICODE-1-1-UTF-7') {
         $encoding = 'utf-7';
     }
     if (function_exists('mb_convert_encoding')) {
-        $conv = @mb_convert_encoding($string, 'UTF-8', strtoupper($encoding));
+        $conv = @mb_convert_encoding($string, 'UTF-8', strtoupper((string) $encoding));
         if ($conv) return $conv;
     }
     if (function_exists('iconv')) {
-        $conv = @iconv(strtoupper($encoding), 'UTF-8', $string);
+        $conv = @iconv(strtoupper((string) $encoding), 'UTF-8', (string) $string);
         if ($conv) return $conv;
     }
     if (function_exists('libiconv')) {
-        $conv = @libiconv(strtoupper($encoding), 'UTF-8', $string);
+        $conv = @libiconv(strtoupper((string) $encoding), 'UTF-8', $string);
         if ($conv) return $conv;
     }
     return $safe;
@@ -57,25 +57,25 @@ function decode_utf8($string = '', $encoding = 'iso-8859-1', $safe_mode = false)
 {
     $safe = ($safe_mode) ? $string : false;
     if (!$encoding) $encoding = 'ISO-8859-1';
-    if (strtoupper($encoding) == 'UTF-8' || strtoupper($encoding) == 'UTF8') {
+    if (strtoupper((string) $encoding) == 'UTF-8' || strtoupper((string) $encoding) == 'UTF8') {
         return $string;
-    } elseif (strtoupper($encoding) == 'ISO-8859-1') {
-        return utf8_decode($string);
-    } elseif (strtoupper($encoding) == 'WINDOWS-1252') {
-        return map_iso8859_1_w1252(utf8_decode($string));
-    } elseif (strtoupper($encoding) == 'UNICODE-1-1-UTF-7') {
+    } elseif (strtoupper((string) $encoding) == 'ISO-8859-1') {
+        return mb_convert_encoding((string) $string, 'ISO-8859-1');
+    } elseif (strtoupper((string) $encoding) == 'WINDOWS-1252') {
+        return map_iso8859_1_w1252(mb_convert_encoding((string) $string, 'ISO-8859-1'));
+    } elseif (strtoupper((string) $encoding) == 'UNICODE-1-1-UTF-7') {
         $encoding = 'utf-7';
     }
     if (function_exists('mb_convert_encoding')) {
-        $conv = @mb_convert_encoding($string, strtoupper($encoding), 'UTF-8');
+        $conv = @mb_convert_encoding($string, strtoupper((string) $encoding), 'UTF-8');
         if ($conv) return $conv;
     }
     if (function_exists('iconv')) {
-        $conv = @iconv('UTF-8', strtoupper($encoding), $string);
+        $conv = @iconv('UTF-8', strtoupper((string) $encoding), (string) $string);
         if ($conv) return $conv;
     }
     if (function_exists('libiconv')) {
-        $conv = @libiconv('UTF-8', strtoupper($encoding), $string);
+        $conv = @libiconv('UTF-8', strtoupper((string) $encoding), $string);
         if ($conv) return $conv;
     }
     return $safe;
@@ -92,7 +92,7 @@ function map_w1252_iso8859_1($string = '')
 {
     if ($string == '') return '';
     $return = '';
-    for ($i = 0; $i < strlen($string); ++$i) {
+    for ($i = 0; $i < strlen((string) $string); ++$i) {
         $c = ord($string[$i]);
         switch ($c) {
             case 129: $return .= chr(252); break;
@@ -119,7 +119,7 @@ function map_iso8859_1_w1252($string = '')
 {
     if ($string == '') return '';
     $return = '';
-    for ($i = 0; $i < strlen($string); ++$i) {
+    for ($i = 0; $i < strlen((string) $string); ++$i) {
         $c = ord($string[$i]);
         switch ($c) {
             case 196: $return .= chr(142); break;

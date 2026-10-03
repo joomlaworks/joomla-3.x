@@ -75,7 +75,7 @@ class NewsfeedsRouter extends JComponentRouterView
 			{
 				foreach ($path as &$segment)
 				{
-					list($id, $segment) = explode(':', $segment, 2);
+					list($id, $segment) = explode(':', (string) $segment, 2);
 				}
 			}
 

@@ -41,7 +41,7 @@ class UsersModelLevel extends AdminModel
 	 */
 	protected function canDelete($record)
 	{
-		$groups = json_decode($record->rules);
+		$groups = json_decode((string) $record->rules);
 
 		if ($groups === null)
 		{
@@ -85,7 +85,7 @@ class UsersModelLevel extends AdminModel
 				 * than the 'access' field they are on their own unfortunately.
 				 * Also make sure the table prefix matches the live db prefix (eg, it is not a "bak_" table)
 				 */
-				if (strpos($table, $prefix) === 0 && isset($fields['access']))
+				if (strpos((string) $table, $prefix) === 0 && isset($fields['access']))
 				{
 					// Lookup the distinct values of the field.
 					$query->clear('from')
@@ -158,7 +158,7 @@ class UsersModelLevel extends AdminModel
 		$result = parent::getItem($pk);
 
 		// Convert the params field to an array.
-		$result->rules = json_decode($result->rules);
+		$result->rules = json_decode((string) $result->rules);
 
 		return $result;
 	}
@@ -281,7 +281,7 @@ class UsersModelLevel extends AdminModel
 
 				$table->load($data['id']);
 
-				$rules = json_decode($table->rules);
+				$rules = json_decode((string) $table->rules);
 			}
 
 			$rules = ArrayHelper::toInteger($rules);

@@ -92,7 +92,7 @@ class ContactViewContact extends JViewLegacy
 		if ($active)
 		{
 			// If the current view is the active item and a contact view for this contact, then the menu item params take priority
-			if (strpos($active->link, 'view=contact') && strpos($active->link, '&id=' . (int) $item->id))
+			if (strpos((string) $active->link, 'view=contact') && strpos((string) $active->link, '&id=' . (int) $item->id))
 			{
 				// $item->params are the contact params, $temp are the menu item params
 				// Merge so that the menu item params take priority
@@ -340,7 +340,7 @@ class ContactViewContact extends JViewLegacy
 		}
 
 		// Escape strings for HTML output
-		$this->pageclass_sfx = htmlspecialchars($item->params->get('pageclass_sfx', ''));
+		$this->pageclass_sfx = htmlspecialchars((string) $item->params->get('pageclass_sfx', ''));
 
 		$this->contact     = &$item;
 		$this->params      = &$item->params;
@@ -353,7 +353,7 @@ class ContactViewContact extends JViewLegacy
 
 		// Override the layout only if this is not the active menu item
 		// If it is the active menu item, then the view and item id will match
-		if ((!$active) || ((strpos($active->link, 'view=contact') === false) || (strpos($active->link, '&id=' . (string) $this->item->id) === false)))
+		if ((!$active) || ((strpos((string) $active->link, 'view=contact') === false) || (strpos((string) $active->link, '&id=' . (string) $this->item->id) === false)))
 		{
 			if (($layout = $item->params->get('contact_layout')))
 			{

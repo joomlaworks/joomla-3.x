@@ -54,7 +54,7 @@ if (!empty($groupByFieldset))
 else
 {
 	foreach ($tmpl->getGroup('') as $field) {
-		$table_head .= '<th>' . strip_tags($field->label);
+		$table_head .= '<th>' . strip_tags((string) $field->label);
 
 		if ($field->description)
 		{
@@ -126,7 +126,7 @@ else
 							array('<', '>'),
 							array('SUBFORMLT', 'SUBFORMGT'),
 							trim(
-								$this->sublayout(
+								(string) $this->sublayout(
 									$sublayout,
 									array(
 										'form' => $tmpl,

@@ -464,7 +464,7 @@ class FinderIndexerQuery
 				$term = $this->included[$i]->term;
 
 				// Prepare the container for the term if necessary.
-				if (!array_key_exists($term, $results))
+				if (!array_key_exists((string) $term, $results))
 				{
 					$results[$term] = array();
 				}
@@ -533,7 +533,7 @@ class FinderIndexerQuery
 		$this->dates->def('w2', $params->get('w2'));
 
 		// Remove duplicates and sanitize.
-		$filters = explode(',', $return->data);
+		$filters = explode(',', (string) $return->data);
 		$filters = array_unique($filters);
 		$filters = ArrayHelper::toInteger($filters);
 
@@ -749,7 +749,7 @@ class FinderIndexerQuery
 		$input = html_entity_decode($input, ENT_QUOTES, 'UTF-8');
 		$input = StringHelper::strtolower($input);
 		$input = preg_replace('#\s+#mi', ' ', $input);
-		$input = trim($input);
+		$input = trim((string) $input);
 		$debug = JFactory::getConfig()->get('debug_lang');
 
 		/*
@@ -867,7 +867,7 @@ class FinderIndexerQuery
 				// Clean up the input string again.
 				$input = str_replace($matches[0], '', $input);
 				$input = preg_replace('#\s+#mi', ' ', $input);
-				$input = trim($input);
+				$input = trim((string) $input);
 			}
 		}
 
@@ -904,7 +904,7 @@ class FinderIndexerQuery
 
 					// Clean up the input string again.
 					$input = preg_replace('#\s+#mi', ' ', $input);
-					$input = trim($input);
+					$input = trim((string) $input);
 
 					// Get the number of words in the phrase.
 					$parts = explode(' ', $match);

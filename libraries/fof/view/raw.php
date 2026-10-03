@@ -105,7 +105,7 @@ class FOFViewRaw extends FOFView
 		$task = $model->getState('task', 'browse');
 
 		// Call the relevant method
-		$method_name = 'on' . ucfirst($task);
+		$method_name = 'on' . ucfirst((string) $task);
 
 		if (method_exists($this, $method_name))
 		{
@@ -312,7 +312,7 @@ class FOFViewRaw extends FOFView
 		$orderingColumn = $table->getColumnAlias('ordering');
 		$fields = $table->getTableFields();
 
-		if (!is_array($fields) || !array_key_exists($orderingColumn, $fields))
+		if (!is_array($fields) || !array_key_exists((string) $orderingColumn, $fields))
 		{
 			return false;
 		}
@@ -324,7 +324,7 @@ class FOFViewRaw extends FOFView
 		if ($saveOrder)
 		{
 			$saveOrderingUrl = 'index.php?option=' . $this->config['option'] . '&view=' . $this->config['view'] . '&task=saveorder&format=json';
-			JHtml::_('sortablelist.sortable', 'itemsList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+			JHtml::_('sortablelist.sortable', 'itemsList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 		}
 
 		return array(

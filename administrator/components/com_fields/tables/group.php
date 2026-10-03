@@ -155,7 +155,7 @@ class FieldsTableGroup extends JTable
 	 *
 	 * @since   3.7.0
 	 */
-	protected function _getAssetParentId(JTable $table = null, $id = null)
+	protected function _getAssetParentId(?JTable $table = null, $id = null)
 	{
 		$component = explode('.', $this->context);
 		$db = $this->getDbo();

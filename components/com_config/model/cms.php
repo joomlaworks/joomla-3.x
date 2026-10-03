@@ -43,6 +43,15 @@ abstract class ConfigModelCms extends JModelDatabase
 	protected $text_prefix = null;
 
 	/**
+	 * Event to trigger after cleaning the cache. Declared here (rather than left as a dynamic
+	 * property) to avoid the PHP 8.2+ deprecation warning.
+	 *
+	 * @var    string
+	 * @since  3.16.0
+	 */
+	protected $event_clean_cache;
+
+	/**
 	 * Indicates if the internal state has been set
 	 *
 	 * @var    boolean

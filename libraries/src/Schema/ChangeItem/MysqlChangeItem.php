@@ -49,7 +49,7 @@ class MysqlChangeItem extends ChangeItem
 		$find = array('#((\s*)\(\s*([^)\s]+)\s*)(\))#', '#(\s)(\s*)#');
 		$replace = array('($3)', '$1');
 		$updateQuery = preg_replace($find, $replace, $this->updateQuery);
-		$wordArray = preg_split("~'[^']*'(*SKIP)(*F)|\s+~u", trim($updateQuery, "; \t\n\r\0\x0B"));
+		$wordArray = preg_split("~'[^']*'(*SKIP)(*F)|\s+~u", trim((string) $updateQuery, "; \t\n\r\0\x0B"));
 
 		// First, make sure we have an array of at least 6 elements
 		// if not, we can't make a check query for this one

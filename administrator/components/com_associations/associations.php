@@ -23,7 +23,7 @@ $itemtype = JFactory::getApplication()->input->get('itemtype', '', 'string');
 
 if ($itemtype !== '')
 {
-	list($extensionName, $typeName) = explode('.', $itemtype);
+	list($extensionName, $typeName) = explode('.', (string) $itemtype);
 
 	if (!AssociationsHelper::hasSupport($extensionName))
 	{

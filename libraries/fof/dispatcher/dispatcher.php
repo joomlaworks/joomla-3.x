@@ -216,9 +216,9 @@ class FOFDispatcher extends FOFUtilsObject
 			// Do we have a task formatted as controller.task?
 			$task = $this->input->getCmd('task', '');
 
-			if (!empty($task) && (strstr($task, '.') !== false))
+			if (!empty($task) && (strstr((string) $task, '.') !== false))
 			{
-				list($this->view, $task) = explode('.', $task, 2);
+				list($this->view, $task) = explode('.', (string) $task, 2);
 				$this->input->set('task', $task);
 			}
 		}
@@ -582,7 +582,7 @@ class FOFDispatcher extends FOFUtilsObject
 						continue 2;
 					}
 
-					$authInfo = json_decode($jsonencoded, true);
+					$authInfo = json_decode((string) $jsonencoded, true);
 
 					if (!is_array($authInfo))
 					{

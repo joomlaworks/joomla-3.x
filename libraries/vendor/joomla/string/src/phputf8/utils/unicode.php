@@ -45,7 +45,7 @@ function utf8_to_unicode($str) {
 
     $out = array();
 
-    $len = strlen($str);
+    $len = strlen((string) $str);
 
     for($i = 0; $i < $len; $i++) {
 

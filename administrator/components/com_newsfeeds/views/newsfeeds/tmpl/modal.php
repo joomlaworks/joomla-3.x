@@ -78,14 +78,14 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 				<?php foreach ($this->items as $i => $item) : ?>
 					<?php if ($item->language && JLanguageMultilang::isEnabled())
 					{
-						$tag = strlen($item->language);
+						$tag = strlen((string) $item->language);
 						if ($tag == 5)
 						{
-							$lang = substr($item->language, 0, 2);
+							$lang = substr((string) $item->language, 0, 2);
 						}
 						elseif ($tag == 6)
 						{
-							$lang = substr($item->language, 0, 3);
+							$lang = substr((string) $item->language, 0, 3);
 						}
 						else {
 							$lang = '';
@@ -101,7 +101,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 							<span class="<?php echo $iconStates[$this->escape($item->published)]; ?>" aria-hidden="true"></span>
 						</td>
 						<td>
-							<a href="javascript:void(0)" onclick="if (window.parent) window.parent.<?php echo $this->escape($function); ?>('<?php echo $item->id; ?>', '<?php echo $this->escape(addslashes($item->name)); ?>', '<?php echo $this->escape($item->catid); ?>', null, '<?php echo $this->escape(NewsfeedsHelperRoute::getNewsfeedRoute($item->id, $item->catid, $item->language)); ?>', '<?php echo $this->escape($lang); ?>', null);">
+							<a href="javascript:void(0)" onclick="if (window.parent) window.parent.<?php echo $this->escape($function); ?>('<?php echo $item->id; ?>', '<?php echo $this->escape(addslashes((string) $item->name)); ?>', '<?php echo $this->escape($item->catid); ?>', null, '<?php echo $this->escape(NewsfeedsHelperRoute::getNewsfeedRoute($item->id, $item->catid, $item->language)); ?>', '<?php echo $this->escape($lang); ?>', null);">
 							<?php echo $this->escape($item->name); ?></a>
 							<div class="small">
 								<?php echo JText::_('JCATEGORY') . ': ' . $this->escape($item->category_title); ?>

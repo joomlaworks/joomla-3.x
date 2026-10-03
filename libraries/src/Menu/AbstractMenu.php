@@ -172,9 +172,13 @@ class AbstractMenu
 	{
 		$result = null;
 
-		if (isset($this->_items[$id]))
+		// A null $id would be silently coerced to '' as an array key anyway (unchanged
+		// behaviour) - do it explicitly to avoid the PHP 8.1+ deprecation notice.
+		$key = $id === null ? '' : $id;
+
+		if (isset($this->_items[$key]))
 		{
-			$result = &$this->_items[$id];
+			$result = &$this->_items[$key];
 		}
 
 		return $result;

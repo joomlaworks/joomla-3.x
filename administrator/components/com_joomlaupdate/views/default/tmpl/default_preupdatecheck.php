@@ -226,7 +226,7 @@ if (version_compare($this->updateInfo['latest'], '4', '>=') && $this->isBackendT
 										<?php echo JText::_($extension->name); ?>
 									</td>
 									<td class="extype span4">
-										<?php echo JText::_('COM_INSTALLER_TYPE_' . strtoupper($extension->type)); ?>
+										<?php echo JText::_('COM_INSTALLER_TYPE_' . strtoupper((string) $extension->type)); ?>
 									</td>
 									<td class="instver hidden">
 										<?php echo $extension->version; ?>

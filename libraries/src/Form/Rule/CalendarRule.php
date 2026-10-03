@@ -47,7 +47,7 @@ class CalendarRule extends FormRule
 			return true;
 		}
 
-		if (strtolower($value) == 'now')
+		if (strtolower((string) $value) == 'now')
 		{
 			return true;
 		}

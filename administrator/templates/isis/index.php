@@ -54,7 +54,7 @@ $view     = $input->get('view', '');
 $layout   = $input->get('layout', '');
 $task     = $input->get('task', '');
 $itemid   = $input->get('Itemid', 0, 'int');
-$sitename = htmlspecialchars($app->get('sitename', ''), ENT_QUOTES, 'UTF-8');
+$sitename = htmlspecialchars((string) $app->get('sitename', ''), ENT_QUOTES, 'UTF-8');
 $cpanel   = $option === 'com_cpanel';
 
 $hidden = $app->input->get('hidemainmenu');
@@ -89,7 +89,7 @@ if ($displayHeader)
 	// Logo file
 	if ($this->params->get('logoFile'))
 	{
-		$logo = JUri::root() . htmlspecialchars($this->params->get('logoFile'), ENT_QUOTES);
+		$logo = JUri::root() . htmlspecialchars((string) $this->params->get('logoFile'), ENT_QUOTES);
 	}
 	else
 	{
@@ -99,9 +99,9 @@ if ($displayHeader)
 
 function colorIsLight($color)
 {
-	$r = hexdec(substr($color, 1, 2));
-	$g = hexdec(substr($color, 3, 2));
-	$b = hexdec(substr($color, 5, 2));
+	$r = hexdec(substr((string) $color, 1, 2));
+	$g = hexdec(substr((string) $color, 3, 2));
+	$b = hexdec(substr((string) $color, 5, 2));
 
 	$yiq = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
 
@@ -218,7 +218,7 @@ if ($this->params->get('linkColor'))
 								<li>
 									<span>
 										<span class="icon-user"></span>
-										<strong><?php echo htmlspecialchars($user->name, ENT_QUOTES, 'UTF-8'); ?></strong>
+										<strong><?php echo htmlspecialchars((string) $user->name, ENT_QUOTES, 'UTF-8'); ?></strong>
 									</span>
 								</li>
 								<li class="divider"></li>

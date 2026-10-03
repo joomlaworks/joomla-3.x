@@ -18,6 +18,15 @@ defined('_JEXEC') or die;
 class ContentRouterRulesLegacy implements JComponentRouterRulesInterface
 {
 	/**
+	 * The router this rule belongs to. Declared here (rather than left as a dynamic property)
+	 * to avoid the PHP 8.2+ deprecation warning.
+	 *
+	 * @var    JComponentRouterView
+	 * @since  3.16.0
+	 */
+	protected $router;
+
+	/**
 	 * Constructor for this legacy router
 	 *
 	 * @param   JComponentRouterView  $router  The router this rule belongs to
@@ -189,7 +198,7 @@ class ContentRouterRulesLegacy implements JComponentRouterRulesInterface
 					break;
 				}
 
-				list($tmp, $id) = explode(':', $id, 2);
+				list($tmp, $id) = explode(':', (string) $id, 2);
 
 				$array[] = $id;
 			}

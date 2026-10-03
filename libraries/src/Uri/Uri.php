@@ -282,6 +282,12 @@ class Uri extends \Joomla\Uri\Uri
 	{
 		$url = str_replace('\\', '/', $url);
 
+		// XSS-related plausibility check, no legitimate internal URL contains these unencoded
+		if (preg_match('/["\' <>]/', (string) $url))
+		{
+			return false;
+		}
+
 		$uri = static::getInstance($url);
 		$base = $uri->toString(array('scheme', 'host', 'port', 'path'));
 		$host = $uri->toString(array('scheme', 'host', 'port'));

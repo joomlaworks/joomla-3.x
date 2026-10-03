@@ -42,7 +42,7 @@ class ConfigControllerModulesDisplay extends ConfigControllerDisplay
 		// Construct redirect URI
 		if (!empty($returnUri))
 		{
-			$redirect = base64_decode(urldecode($returnUri));
+			$redirect = base64_decode(urldecode((string) $returnUri));
 
 			// Don't redirect to an external URL.
 			if (!JUri::isInternal($redirect))
@@ -79,7 +79,7 @@ class ConfigControllerModulesDisplay extends ConfigControllerDisplay
 		$paths = new SplPriorityQueue;
 		$paths->insert(JPATH_COMPONENT . '/view/' . $viewName . '/tmpl', 'normal');
 
-		$viewClass  = 'ConfigView' . ucfirst($viewName) . ucfirst($viewFormat);
+		$viewClass  = 'ConfigView' . ucfirst($viewName) . ucfirst((string) $viewFormat);
 		$modelClass = 'ConfigModel' . ucfirst($viewName);
 
 		if (class_exists($viewClass))

@@ -550,7 +550,7 @@ abstract class InstallerAdapter extends \JAdapterInstance
 		}
 
 		// Filter the name for illegal characters
-		return strtolower(\JFilterInput::getInstance()->clean($element, 'cmd'));
+		return strtolower((string) \JFilterInput::getInstance()->clean($element, 'cmd'));
 	}
 
 	/**

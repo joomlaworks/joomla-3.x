@@ -24,7 +24,7 @@ $section   = $this->state->get('filter.section');
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $ordering  = ($listOrder == 'a.ordering');
-$saveOrder = ($listOrder == 'a.ordering' && strtolower($listDirn) == 'asc');
+$saveOrder = ($listOrder == 'a.ordering' && strtolower((string) $listDirn) == 'asc');
 
 // The category object of the component
 $category = JCategories::getInstance(str_replace('com_', '', $component) . '.' . $section);
@@ -38,7 +38,7 @@ if (!$category)
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_fields&task=fields.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'fieldList', 'adminForm', strtolower($listDirn), $saveOrderingUrl, false, true);
+	JHtml::_('sortablelist.sortable', 'fieldList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl, false, true);
 }
 ?>
 

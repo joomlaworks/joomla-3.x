@@ -40,7 +40,7 @@ class LoginModelLogin extends JModelLegacy
 		// Check for return URL from the request first.
 		if ($return = $input->get('return', '', 'BASE64'))
 		{
-			$return = base64_decode($return);
+			$return = base64_decode((string) $return);
 
 			if (!JUri::isInternal($return))
 			{

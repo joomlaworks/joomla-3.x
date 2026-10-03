@@ -124,7 +124,7 @@ class CategoriesViewCategory extends JViewLegacy
 		}
 
 		// The extension can be in the form com_foo.section
-		$parts = explode('.', $extension);
+		$parts = explode('.', (string) $extension);
 		$component = $parts[0];
 		$section = (count($parts) > 1) ? $parts[1] : null;
 		$componentParams = JComponentHelper::getParams($component);

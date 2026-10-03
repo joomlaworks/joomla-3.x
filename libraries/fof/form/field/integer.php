@@ -95,7 +95,7 @@ class FOFFormFieldInteger extends JFormFieldInteger implements FOFFormField
 		$class = $this->element['class'] ? (string) $this->element['class'] : '';
 
 		return '<span class="' . $this->id . ' ' . $class . '">' .
-			htmlspecialchars(FOFFormFieldList::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8') .
+			htmlspecialchars((string) FOFFormFieldList::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8') .
 			'</span>';
 	}
 }

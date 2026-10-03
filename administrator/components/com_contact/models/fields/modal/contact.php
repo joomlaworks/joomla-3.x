@@ -115,7 +115,7 @@ class JFormFieldModal_Contact extends JFormField
 			}
 		}
 
-		$title = empty($title) ? JText::_('COM_CONTACT_SELECT_A_CONTACT') : htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+		$title = empty($title) ? JText::_('COM_CONTACT_SELECT_A_CONTACT') : htmlspecialchars((string) $title, ENT_QUOTES, 'UTF-8');
 
 		// The current contact display field.
 		$html  = '<span class="input-append">';

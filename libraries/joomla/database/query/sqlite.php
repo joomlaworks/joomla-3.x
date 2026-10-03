@@ -334,7 +334,7 @@ class JDatabaseQuerySqlite extends JDatabaseQueryPdo implements JDatabaseQueryPr
 					$table = $this->update->getElements();
 					$table = $table[0];
 
-					$tableName = explode(' ', $table);
+					$tableName = explode(' ', (string) $table);
 					$tableName = $tableName[0];
 
 					if ($this->columns === null)
@@ -354,7 +354,7 @@ class JDatabaseQuerySqlite extends JDatabaseQueryPdo implements JDatabaseQueryPr
 
 					foreach ($elements as $nameValue)
 					{
-						$setArray = explode(' = ', $nameValue, 2);
+						$setArray = explode(' = ', (string) $nameValue, 2);
 
 						if ($setArray[0][0] === '`')
 						{

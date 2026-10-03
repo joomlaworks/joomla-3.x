@@ -40,7 +40,7 @@ class Separator extends Node
 	 */
 	public function __construct($title = null)
 	{
-		$this->title = trim($title, '- ') ? $title : null;
+		$this->title = trim((string) $title, '- ') ? $title : null;
 
 		parent::__construct();
 	}

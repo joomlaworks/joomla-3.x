@@ -36,7 +36,7 @@ class CategoryFeedView extends HtmlView
 
 		$ucmType = new \JUcmType;
 		$ucmRow = $ucmType->getTypeByAlias($contentType);
-		$ucmMapCommon = json_decode($ucmRow->field_mappings)->common;
+		$ucmMapCommon = json_decode((string) $ucmRow->field_mappings)->common;
 		$createdField = null;
 		$titleField = null;
 
@@ -82,7 +82,7 @@ class CategoryFeedView extends HtmlView
 			if ($titleField)
 			{
 				$title = $this->escape($item->$titleField);
-				$title = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
+				$title = html_entity_decode((string) $title, ENT_COMPAT, 'UTF-8');
 			}
 			else
 			{

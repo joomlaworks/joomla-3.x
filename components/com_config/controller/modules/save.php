@@ -19,6 +19,24 @@ defined('_JEXEC') or die;
 class ConfigControllerModulesSave extends JControllerBase
 {
 	/**
+	 * Task options, set externally by ConfigControllerHelper::parseController(). Declared here
+	 * (rather than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
+	 *
+	 * @var    array
+	 * @since  3.16.0
+	 */
+	public $options;
+
+	/**
+	 * Prefix for the view and model classes, set externally by config.php. Declared here (rather
+	 * than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
+	 *
+	 * @var    string
+	 * @since  3.16.0
+	 */
+	public $prefix = 'Config';
+
+	/**
 	 * Method to save module editing.
 	 *
 	 * @return  boolean  True on success.
@@ -104,7 +122,7 @@ class ConfigControllerModulesSave extends JControllerBase
 
 				if (!empty($returnUri))
 				{
-					$redirect = base64_decode(urldecode($returnUri));
+					$redirect = base64_decode(urldecode((string) $returnUri));
 
 					// Don't redirect to an external URL.
 					if (!JUri::isInternal($redirect))

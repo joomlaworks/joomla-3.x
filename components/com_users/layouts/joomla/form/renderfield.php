@@ -38,10 +38,10 @@ $rel   = empty($options['rel']) ? '' : ' ' . $options['rel'];
  * On a side note: Parsing html is seldom a good idea.
  * https://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags/1732454#1732454
  */
-preg_match('/class=\"([^\"]+)\"/i', $input, $match);
+preg_match('/class=\"([^\"]+)\"/i', (string) $input, $match);
 
-$required     = (strpos($input, 'aria-required="true"') !== false || (!empty($match[1]) && strpos($match[1], 'required') !== false));
-$typeOfSpacer = (strpos($label, 'spacer-lbl') !== false);
+$required     = (strpos((string) $input, 'aria-required="true"') !== false || (!empty($match[1]) && strpos($match[1], 'required') !== false));
+$typeOfSpacer = (strpos((string) $label, 'spacer-lbl') !== false);
 
 ?>
 

@@ -24,7 +24,7 @@ $layout   = $app->input->getCmd('layout', '');
 $task     = $app->input->getCmd('task', '');
 $itemid   = $app->input->getCmd('Itemid', '');
 $format   = $app->input->getCmd('format', 'html');
-$sitename = htmlspecialchars($app->get('sitename'), ENT_QUOTES, 'UTF-8');
+$sitename = htmlspecialchars((string) $app->get('sitename'), ENT_QUOTES, 'UTF-8');
 
 // Add JavaScript Frameworks
 JHtml::_('bootstrap.framework');
@@ -36,7 +36,7 @@ if ($params->get('logoFile'))
 }
 elseif ($params->get('sitetitle'))
 {
-	$logo = '<span class="site-title" title="' . $sitename . '">' . htmlspecialchars($params->get('sitetitle')) . '</span>';
+	$logo = '<span class="site-title" title="' . $sitename . '">' . htmlspecialchars((string) $params->get('sitetitle')) . '</span>';
 }
 else
 {
@@ -47,7 +47,7 @@ else
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
 	<meta charset="utf-8" />
-	<title><?php echo $this->title; ?> <?php echo htmlspecialchars($this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
+	<title><?php echo $this->title; ?> <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<?php // Use of Google Font ?>
 	<?php if ($params->get('googleFont')) : ?>
@@ -159,9 +159,9 @@ else
 						<hr />
 						<p><?php echo JText::_('JERROR_LAYOUT_PLEASE_CONTACT_THE_SYSTEM_ADMINISTRATOR'); ?></p>
 						<blockquote>
-							<span class="label label-inverse"><?php echo $this->error->getCode(); ?></span> <?php echo htmlspecialchars($this->error->getMessage(), ENT_QUOTES, 'UTF-8');?>
+							<span class="label label-inverse"><?php echo $this->error->getCode(); ?></span> <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8');?>
 							<?php if ($this->debug) : ?>
-								<br/><?php echo htmlspecialchars($this->error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->error->getLine(); ?>
+								<br/><?php echo htmlspecialchars((string) $this->error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->error->getLine(); ?>
 							<?php endif; ?>
 						</blockquote>
 						<?php if ($this->debug) : ?>
@@ -176,8 +176,8 @@ else
 									<?php while ($loop === true) : ?>
 										<p><strong><?php echo JText::_('JERROR_LAYOUT_PREVIOUS_ERROR'); ?></strong></p>
 										<p>
-											<?php echo htmlspecialchars($this->_error->getMessage(), ENT_QUOTES, 'UTF-8'); ?>
-											<br/><?php echo htmlspecialchars($this->_error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->_error->getLine(); ?>
+											<?php echo htmlspecialchars((string) $this->_error->getMessage(), ENT_QUOTES, 'UTF-8'); ?>
+											<br/><?php echo htmlspecialchars((string) $this->_error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->_error->getLine(); ?>
 										</p>
 										<?php echo $this->renderBacktrace(); ?>
 										<?php $loop = $this->setError($this->_error->getPrevious()); ?>

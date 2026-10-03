@@ -39,7 +39,7 @@ abstract class JHtmlUsers
 
 		elseif (!is_array($value))
 		{
-			return htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
+			return htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8');
 		}
 	}
 
@@ -87,7 +87,7 @@ abstract class JHtmlUsers
 			}
 		}
 
-		$value = htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
+		$value = htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8');
 
 		if (strpos($value, 'http') === 0)
 		{
@@ -124,7 +124,7 @@ abstract class JHtmlUsers
 
 			if ($title)
 			{
-				return htmlspecialchars($title, ENT_COMPAT, 'UTF-8');
+				return htmlspecialchars((string) $title, ENT_COMPAT, 'UTF-8');
 			}
 			else
 			{

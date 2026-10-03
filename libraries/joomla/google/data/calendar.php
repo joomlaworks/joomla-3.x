@@ -82,7 +82,7 @@ class JGoogleDataCalendar extends JGoogleData
 		{
 			$jdata = $this->query('https://www.googleapis.com/calendar/v3/users/me/calendarList/' . urlencode($calendarID));
 
-			if ($data = json_decode($jdata->body, true))
+			if ($data = json_decode((string) $jdata->body, true))
 			{
 				return $data;
 			}
@@ -116,7 +116,7 @@ class JGoogleDataCalendar extends JGoogleData
 			$url = 'https://www.googleapis.com/calendar/v3/users/me/calendarList';
 			$jdata = $this->query($url, json_encode($options), array('Content-type' => 'application/json'), 'post');
 
-			if ($data = json_decode($jdata->body, true))
+			if ($data = json_decode((string) $jdata->body, true))
 			{
 				return $data;
 			}
@@ -176,7 +176,7 @@ class JGoogleDataCalendar extends JGoogleData
 			$url = 'https://www.googleapis.com/calendar/v3/users/me/calendarList/' . urlencode($calendarID);
 			$jdata = $this->query($url, json_encode($options), array('Content-type' => 'application/json'), 'put');
 
-			if ($data = json_decode($jdata->body, true))
+			if ($data = json_decode((string) $jdata->body, true))
 			{
 				return $data;
 			}
@@ -268,7 +268,7 @@ class JGoogleDataCalendar extends JGoogleData
 			$url = 'https://www.googleapis.com/calendar/v3/calendars';
 			$jdata = $this->query($url, json_encode($options), array('Content-type' => 'application/json'), 'post');
 
-			if ($data = json_decode($jdata->body, true))
+			if ($data = json_decode((string) $jdata->body, true))
 			{
 				return $data;
 			}
@@ -300,7 +300,7 @@ class JGoogleDataCalendar extends JGoogleData
 		{
 			$url = 'https://www.googleapis.com/calendar/v3/users/me/calendars/' . urlencode($calendarID);
 			$jdata = $this->query($url, json_encode($options), array('Content-type' => 'application/json'), 'put');
-			$data = json_decode($jdata->body, true);
+			$data = json_decode((string) $jdata->body, true);
 
 			if ($data && array_key_exists('items', $data))
 			{
@@ -368,7 +368,7 @@ class JGoogleDataCalendar extends JGoogleData
 			$url .= urlencode($calendarID) . '/events/' . urlencode($eventID) . '?' . http_build_query($options);
 			$jdata = $this->query($url);
 
-			if ($data = json_decode($jdata->body, true))
+			if ($data = json_decode((string) $jdata->body, true))
 			{
 				return $data;
 			}
@@ -478,7 +478,7 @@ class JGoogleDataCalendar extends JGoogleData
 			$url = 'https://www.googleapis.com/calendar/v3/calendars/' . urlencode($calendarID) . '/events' . ($notify ? '?sendNotifications=true' : '');
 			$jdata = $this->query($url, json_encode($options), array('Content-type' => 'application/json'), 'post');
 
-			if ($data = json_decode($jdata->body, true))
+			if ($data = json_decode((string) $jdata->body, true))
 			{
 				return $data;
 			}
@@ -572,7 +572,7 @@ class JGoogleDataCalendar extends JGoogleData
 			$url .= '?destination=' . $destID . ($notify ? '&sendNotifications=true' : '');
 			$jdata = $this->query($url, null, null, 'post');
 
-			if ($data = json_decode($jdata->body, true))
+			if ($data = json_decode((string) $jdata->body, true))
 			{
 				return $data;
 			}
@@ -608,7 +608,7 @@ class JGoogleDataCalendar extends JGoogleData
 			$url .= urlencode($calendarID) . '/events/' . urlencode($eventID) . ($notify ? '?sendNotifications=true' : '');
 			$jdata = $this->query($url, json_encode($options), array('Content-type' => 'application/json'), 'put');
 
-			if ($data = json_decode($jdata->body, true))
+			if ($data = json_decode((string) $jdata->body, true))
 			{
 				return $data;
 			}

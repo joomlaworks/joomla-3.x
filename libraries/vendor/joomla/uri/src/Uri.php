@@ -79,12 +79,12 @@ class Uri extends AbstractUri
 		}
 		else
 		{
-			if (strpos($query, '&amp;') !== false)
+			if (strpos((string) $query, '&amp;') !== false)
 			{
 				$query = str_replace('&amp;', '&', $query);
 			}
 
-			parse_str($query, $this->vars);
+			parse_str((string) $query, $this->vars);
 		}
 
 		// Empty the query

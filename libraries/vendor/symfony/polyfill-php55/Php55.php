@@ -41,7 +41,7 @@ final class Php55
     public static function hash_pbkdf2($algorithm, $password, $salt, $iterations, $length = 0, $rawOutput = false)
     {
         // Pre-hash for optimization if password length > hash length
-        $hashLength = \strlen(hash($algorithm, '', true));
+        $hashLength = \strlen(hash((string) $algorithm, '', true));
         switch ($algorithm) {
             case 'sha1':
             case 'sha224':
@@ -66,16 +66,16 @@ final class Php55
         // Number of blocks needed to create the derived key
         $blocks = ceil($length / $hashLength);
         $digest = '';
-        if (\strlen($password) > $blockSize) {
-            $password = hash($algorithm, $password, true);
+        if (\strlen((string) $password) > $blockSize) {
+            $password = hash((string) $algorithm, (string) $password, true);
         }
 
         for ($i = 1; $i <= $blocks; ++$i) {
-            $ib = $block = hash_hmac($algorithm, $salt.pack('N', $i), $password, true);
+            $ib = $block = hash_hmac((string) $algorithm, $salt.pack('N', $i), (string) $password, true);
 
             // Iterations
             for ($j = 1; $j < $iterations; ++$j) {
-                $ib ^= ($block = hash_hmac($algorithm, $block, $password, true));
+                $ib ^= ($block = hash_hmac((string) $algorithm, $block, (string) $password, true));
             }
 
             $digest .= $ib;

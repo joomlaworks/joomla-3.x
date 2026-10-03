@@ -33,8 +33,8 @@ if (!empty($description))
 	{
 		JHtml::_('bootstrap.popover');
 		$classes[] = 'hasPopover';
-		$title     = ' title="' . htmlspecialchars(trim($text, ':')) . '"'
-			. ' data-content="'. htmlspecialchars($description) . '"';
+		$title     = ' title="' . htmlspecialchars(trim((string) $text, ':')) . '"'
+			. ' data-content="'. htmlspecialchars((string) $description) . '"';
 
 		if (!$position && JFactory::getLanguage()->isRtl())
 		{
@@ -45,7 +45,7 @@ if (!empty($description))
 	{
 		JHtml::_('bootstrap.tooltip');
 		$classes[] = 'hasTooltip';
-		$title     = ' title="' . JHtml::_('tooltipText', trim($text, ':'), $description, 0) . '"';
+		$title     = ' title="' . JHtml::_('tooltipText', trim((string) $text, ':'), $description, 0) . '"';
 	}
 }
 

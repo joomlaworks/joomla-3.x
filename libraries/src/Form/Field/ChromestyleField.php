@@ -148,7 +148,7 @@ class ChromestyleField extends \JFormFieldGroupedList
 		// Create one new option object for each available style, grouped by templates
 		foreach ($templateStyles as $template => $styles)
 		{
-			$template = ucfirst($template);
+			$template = ucfirst((string) $template);
 			$groups[$template] = array();
 
 			foreach ($styles as $style)
@@ -194,7 +194,7 @@ class ChromestyleField extends \JFormFieldGroupedList
 
 				preg_match_all('/function[\s\t]*modChrome\_([a-z0-9\-\_]*)[\s\t]*\(/i', $modulesFileData, $styles);
 
-				if (!array_key_exists($template->element, $moduleStyles))
+				if (!array_key_exists((string) $template->element, $moduleStyles))
 				{
 					$moduleStyles[$template->element] = array();
 				}

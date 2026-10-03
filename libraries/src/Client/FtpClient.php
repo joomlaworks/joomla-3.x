@@ -1427,7 +1427,7 @@ class FtpClient
 				return false;
 			}
 
-			$list = preg_replace('#^' . preg_quote($path, '#') . '[/\\\\]?#', '', $list);
+			$list = preg_replace('#^' . preg_quote((string) $path, '#') . '[/\\\\]?#', '', $list);
 
 			if ($keys = array_merge(array_keys($list, '.'), array_keys($list, '..')))
 			{
@@ -1485,8 +1485,8 @@ class FtpClient
 			return false;
 		}
 
-		$data = preg_split('/[' . CRLF . ']+/', $data, -1, PREG_SPLIT_NO_EMPTY);
-		$data = preg_replace('#^' . preg_quote(substr($path, 1), '#') . '[/\\\\]?#', '', $data);
+		$data = preg_split('/[' . CRLF . ']+/', (string) $data, -1, PREG_SPLIT_NO_EMPTY);
+		$data = preg_replace('#^' . preg_quote(substr((string) $path, 1), '#') . '[/\\\\]?#', '', $data);
 
 		if ($keys = array_merge(array_keys($data, '.'), array_keys($data, '..')))
 		{
@@ -1580,7 +1580,7 @@ class FtpClient
 				return false;
 			}
 
-			$contents = explode(CRLF, $data);
+			$contents = explode(CRLF, (string) $data);
 		}
 
 		// If only raw output is requested we are done

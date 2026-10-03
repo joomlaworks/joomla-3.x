@@ -12,10 +12,37 @@ defined('_JEXEC') or die;
 /**
  * Prototype admin view.
  *
+ * Subclasses (and their own template files, which execute in the view's own scope via `include`)
+ * freely assign ad-hoc `$this->x` properties to pass per-page data to their templates - a
+ * long-standing, intentional part of this legacy view pattern, not incidental sloppiness. Rather
+ * than chase every such property across every subclass and template one at a time, dynamic
+ * property creation is explicitly allowed here, in this single shared base class, to silence the
+ * PHP 8.2+ deprecation warning for all of them at once.
+ *
  * @since  3.2
  */
+#[\AllowDynamicProperties]
 abstract class ConfigViewCmsHtml extends JViewHtml
 {
+	/**
+	 * The name of the view. Declared here (rather than left as a dynamic property) to avoid
+	 * the PHP 8.2+ deprecation warning.
+	 *
+	 * @var    string
+	 * @since  3.16.0
+	 */
+	protected $_name = null;
+
+	/**
+	 * The document object, set externally by ConfigControllerDisplay::execute() (`$view->document
+	 * = $document;`). Declared here (rather than left as a dynamic property) to avoid the PHP
+	 * 8.2+ deprecation warning.
+	 *
+	 * @var    JDocument
+	 * @since  3.16.0
+	 */
+	public $document;
+
 	/**
 	 * The output of the template script.
 	 *
@@ -56,7 +83,7 @@ abstract class ConfigViewCmsHtml extends JViewHtml
 	 *
 	 * @since   3.2
 	 */
-	public function __construct(JModel $model, SplPriorityQueue $paths = null)
+	public function __construct(JModel $model, ?SplPriorityQueue $paths = null)
 	{
 		$app = JFactory::getApplication();
 		$component = JApplicationHelper::getComponentName();

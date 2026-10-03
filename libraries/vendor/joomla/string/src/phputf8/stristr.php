@@ -17,18 +17,18 @@
 */
 function utf8_stristr($str, $search) {
 
-    if ( strlen($search) == 0 ) {
+    if ( strlen((string) $search) == 0 ) {
         return $str;
     }
 
     $lstr = utf8_strtolower($str);
     $lsearch = utf8_strtolower($search);
     //JOOMLA SPECIFIC FIX - BEGIN
-    preg_match('/^(.*)'.preg_quote($lsearch, '/').'/Us',$lstr, $matches);
+    preg_match('/^(.*)'.preg_quote((string) $lsearch, '/').'/Us',(string) $lstr, $matches);
     //JOOMLA SPECIFIC FIX - END
 
     if ( count($matches) == 2 ) {
-        return substr($str, strlen($matches[1]));
+        return substr((string) $str, strlen($matches[1]));
     }
 
     return FALSE;

@@ -42,7 +42,7 @@ JHtml::_('behavior.keepalive');
 				</div>
 			</div>
 		</fieldset>
-		<input type="hidden" name="layout" value="<?php echo htmlspecialchars($this->getLayout(), ENT_COMPAT, 'UTF-8'); ?>" />
+		<input type="hidden" name="layout" value="<?php echo htmlspecialchars((string) $this->getLayout(), ENT_COMPAT, 'UTF-8'); ?>" />
 		<input type="hidden" name="option" value="com_mailto" />
 		<input type="hidden" name="task" value="send" />
 		<input type="hidden" name="tmpl" value="component" />

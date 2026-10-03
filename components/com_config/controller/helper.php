@@ -40,25 +40,25 @@ class ConfigControllerHelper
 		{
 			// Toolbar expects old style but we are using new style
 			// Remove when toolbar can handle either directly
-			if (strpos($task, '/') !== false)
+			if (strpos((string) $task, '/') !== false)
 			{
-				$tasks = explode('/', $task);
+				$tasks = explode('/', (string) $task);
 			}
 			else
 			{
-				$tasks = explode('.', $task);
+				$tasks = explode('.', (string) $task);
 			}
 		}
 		elseif ($controllerTask = $app->input->get('controller'))
 		{
 			// Temporary solution
-			if (strpos($controllerTask, '/') !== false)
+			if (strpos((string) $controllerTask, '/') !== false)
 			{
-				$tasks = explode('/', $controllerTask);
+				$tasks = explode('/', (string) $controllerTask);
 			}
 			else
 			{
-				$tasks = explode('.', $controllerTask);
+				$tasks = explode('.', (string) $controllerTask);
 			}
 		}
 

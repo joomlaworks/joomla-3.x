@@ -82,7 +82,7 @@ abstract class ModArticlesNewsHelper
 		$ordering = $params->get('ordering', 'a.publish_up');
 		$model->setState('list.ordering', $ordering);
 
-		if (trim($ordering) === 'rand()')
+		if (trim((string) $ordering) === 'rand()')
 		{
 			$model->setState('list.ordering', JFactory::getDbo()->getQuery(true)->Rand());
 		}
@@ -101,7 +101,7 @@ abstract class ModArticlesNewsHelper
 
 		foreach ($items as &$item)
 		{
-			$item->readmore = strlen(trim($item->fulltext));
+			$item->readmore = strlen(trim((string) $item->fulltext));
 			$item->slug     = $item->id . ':' . $item->alias;
 
 			/** @deprecated Catslug is deprecated, use catid instead. 4.0 */
@@ -131,14 +131,14 @@ abstract class ModArticlesNewsHelper
 			// Show the Intro/Full image field of the article
 			if ($params->get('img_intro_full') !== 'none')
 			{
-				$images = json_decode($item->images);
+				$images = json_decode((string) $item->images);
 				$item->imageSrc = '';
 				$item->imageAlt = '';
 				$item->imageCaption = '';
 
 				if ($params->get('img_intro_full') === 'intro' && !empty($images->image_intro))
 				{
-					$item->imageSrc = htmlspecialchars($images->image_intro, ENT_COMPAT, 'UTF-8');
+					$item->imageSrc = htmlspecialchars((string) $images->image_intro, ENT_COMPAT, 'UTF-8');
 					$item->imageAlt = htmlspecialchars($images->image_intro_alt, ENT_COMPAT, 'UTF-8');
 
 					if ($images->image_intro_caption)
@@ -148,7 +148,7 @@ abstract class ModArticlesNewsHelper
 				}
 				elseif ($params->get('img_intro_full') === 'full' && !empty($images->image_fulltext))
 				{
-					$item->imageSrc = htmlspecialchars($images->image_fulltext, ENT_COMPAT, 'UTF-8');
+					$item->imageSrc = htmlspecialchars((string) $images->image_fulltext, ENT_COMPAT, 'UTF-8');
 					$item->imageAlt = htmlspecialchars($images->image_fulltext_alt, ENT_COMPAT, 'UTF-8');
 
 					if ($images->image_intro_caption)

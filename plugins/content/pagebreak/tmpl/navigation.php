@@ -15,7 +15,7 @@ $lang = JFactory::getLanguage();
 	<li>
 		<?php if ($links['previous']) :
 		$direction = $lang->isRtl() ? 'right' : 'left';
-		$title = htmlspecialchars($this->list[$page]->title, ENT_QUOTES, 'UTF-8');
+		$title = htmlspecialchars((string) $this->list[$page]->title, ENT_QUOTES, 'UTF-8');
 		$ariaLabel = JText::_('JPREVIOUS') . ': ' . $title . ' (' . JText::sprintf('JLIB_HTML_PAGE_CURRENT_OF_TOTAL', $page, $n) . ')';
 		?>
 		<a href="<?php echo $links['previous']; ?>" title="<?php echo $title; ?>" aria-label="<?php echo $ariaLabel; ?>" rel="prev">
@@ -26,7 +26,7 @@ $lang = JFactory::getLanguage();
 	<li>
 		<?php if ($links['next']) :
 		$direction = $lang->isRtl() ? 'left' : 'right';
-		$title = htmlspecialchars($this->list[$page + 2]->title, ENT_QUOTES, 'UTF-8');
+		$title = htmlspecialchars((string) $this->list[$page + 2]->title, ENT_QUOTES, 'UTF-8');
 		$ariaLabel = JText::_('JNEXT') . ': ' . $title . ' (' . JText::sprintf('JLIB_HTML_PAGE_CURRENT_OF_TOTAL', ($page + 2), $n) . ')';
 		?>
 		<a href="<?php echo $links['next']; ?>" title="<?php echo $title; ?>" aria-label="<?php echo $ariaLabel; ?>" rel="next">

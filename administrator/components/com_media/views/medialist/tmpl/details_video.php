@@ -29,10 +29,10 @@ jQuery(document).ready(function($){
 
 <tr>
 	<td>
-		<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . rawurlencode($this->_tmp_video->name); ?>" title="<?php echo $this->escape($this->_tmp_video->title); ?>"><?php JHtml::_('image', $this->_tmp_video->icon_16, $this->escape($this->_tmp_video->title), null, true); ?></a>
+		<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . rawurlencode((string) $this->_tmp_video->name); ?>" title="<?php echo $this->escape($this->_tmp_video->title); ?>"><?php JHtml::_('image', $this->_tmp_video->icon_16, $this->escape($this->_tmp_video->title), null, true); ?></a>
 	</td>
 	<td class="description">
-		<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . rawurlencode($this->_tmp_video->name); ?>" title="<?php echo $this->escape($this->_tmp_video->name); ?>">
+		<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . rawurlencode((string) $this->_tmp_video->name); ?>" title="<?php echo $this->escape($this->_tmp_video->name); ?>">
 			<?php echo JHtml::_('string.truncate', $this->escape($this->_tmp_video->name), 10, false); ?>
 		</a>
 	</td>
@@ -44,7 +44,7 @@ jQuery(document).ready(function($){
 	</td>
 	<?php if ($user->authorise('core.delete', 'com_media')):?>
 		<td>
-			<a class="delete-item" target="_top" href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode($this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($this->_tmp_video->name); ?>" rel="<?php echo $this->escape($this->_tmp_video->name); ?>"><span class="icon-remove hasTooltip" title="<?php echo JHtml::_('tooltipText', 'JACTION_DELETE');?>"></span></a>
+			<a class="delete-item" target="_top" href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($this->_tmp_video->name); ?>" rel="<?php echo $this->escape($this->_tmp_video->name); ?>"><span class="icon-remove hasTooltip" title="<?php echo JHtml::_('tooltipText', 'JACTION_DELETE');?>"></span></a>
 			<input type="checkbox" name="rm[]" value="<?php echo $this->escape($this->_tmp_video->name); ?>" />
 		</td>
 	<?php endif;?>

@@ -14,7 +14,7 @@ $class  = $displayData['class'];
 $text   = $displayData['text'];
 
 ?>
-<button onclick="location.href='<?php echo $doTask; ?>';" class="btn btn-small">
-	<span class="<?php echo $class; ?>" aria-hidden="true"></span>
+<button onclick="location.href=<?php echo htmlspecialchars(json_encode((string) $doTask, JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8', false); ?>;" class="btn btn-small">
+	<span class="<?php echo htmlspecialchars((string) $class, ENT_QUOTES, 'UTF-8', false); ?>" aria-hidden="true"></span>
 	<?php echo $text; ?>
 </button>

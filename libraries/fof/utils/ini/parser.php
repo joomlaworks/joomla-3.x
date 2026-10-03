@@ -150,7 +150,7 @@ class FOFUtilsIniParser
 					}
 				}
 			}
-			$value = trim($value);
+			$value = trim((string) $value);
 			$value = trim($value, "'\"");
 
 			if ($i == 0)

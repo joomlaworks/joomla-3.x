@@ -19,9 +19,9 @@ function utf8_ltrim( $str, $charlist = FALSE ) {
     if($charlist === FALSE) return ltrim((string) $str);
 
     //quote charlist for use in a characterclass
-    $charlist = preg_replace('!([\\\\\\-\\]\\[/^])!','\\\${1}',$charlist);
+    $charlist = preg_replace('!([\\\\\\-\\]\\[/^])!','\\\${1}',(string) $charlist);
 
-    return preg_replace('/^['.$charlist.']+/u','',$str);
+    return preg_replace('/^['.$charlist.']+/u','',(string) $str);
 }
 
 //---------------------------------------------------------------
@@ -40,9 +40,9 @@ function utf8_rtrim( $str, $charlist = FALSE ) {
     if($charlist === FALSE) return rtrim((string) $str);
 
     //quote charlist for use in a characterclass
-    $charlist = preg_replace('!([\\\\\\-\\]\\[/^])!','\\\${1}',$charlist);
+    $charlist = preg_replace('!([\\\\\\-\\]\\[/^])!','\\\${1}',(string) $charlist);
 
-    return preg_replace('/['.$charlist.']+$/u','',$str);
+    return preg_replace('/['.$charlist.']+$/u','',(string) $str);
 }
 
 //---------------------------------------------------------------

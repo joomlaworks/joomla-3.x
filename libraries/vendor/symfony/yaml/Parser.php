@@ -347,7 +347,7 @@ class Parser
      */
     private function getCurrentLineIndentation()
     {
-        return \strlen($this->currentLine) - \strlen(ltrim($this->currentLine, ' '));
+        return \strlen((string) $this->currentLine) - \strlen(ltrim((string) $this->currentLine, ' '));
     }
 
     /**
@@ -387,7 +387,7 @@ class Parser
 
         $data = array();
         if ($this->getCurrentLineIndentation() >= $newIndent) {
-            $data[] = substr($this->currentLine, $newIndent);
+            $data[] = substr((string) $this->currentLine, $newIndent);
         } else {
             $this->moveToPreviousLine();
 
@@ -414,7 +414,7 @@ class Parser
             $indent = $this->getCurrentLineIndentation();
 
             // terminate all block scalars that are more indented than the current line
-            if (!empty($blockScalarIndentations) && $indent < $previousLineIndentation && '' !== trim($this->currentLine)) {
+            if (!empty($blockScalarIndentations) && $indent < $previousLineIndentation && '' !== trim((string) $this->currentLine)) {
                 foreach ($blockScalarIndentations as $key => $blockScalarIndentation) {
                     if ($blockScalarIndentation >= $this->getCurrentLineIndentation()) {
                         unset($blockScalarIndentations[$key]);
@@ -434,7 +434,7 @@ class Parser
             }
 
             if ($this->isCurrentLineBlank()) {
-                $data[] = substr($this->currentLine, $newIndent);
+                $data[] = substr((string) $this->currentLine, $newIndent);
                 continue;
             }
 
@@ -452,7 +452,7 @@ class Parser
             }
 
             if ($indent >= $newIndent) {
-                $data[] = substr($this->currentLine, $newIndent);
+                $data[] = substr((string) $this->currentLine, $newIndent);
             } elseif (0 == $indent) {
                 $this->moveToPreviousLine();
 
@@ -535,7 +535,7 @@ class Parser
         try {
             $parsedValue = Inline::parse($value, $exceptionOnInvalidType, $objectSupport, $objectForMap, $this->refs);
 
-            if ('mapping' === $context && '"' !== $value[0] && "'" !== $value[0] && '[' !== $value[0] && '{' !== $value[0] && '!' !== $value[0] && false !== strpos($parsedValue, ': ')) {
+            if ('mapping' === $context && '"' !== $value[0] && "'" !== $value[0] && '[' !== $value[0] && '{' !== $value[0] && '!' !== $value[0] && false !== strpos((string) $parsedValue, ': ')) {
                 @trigger_error(sprintf('Using a colon in the unquoted mapping value "%s" in line %d is deprecated since Symfony 2.8 and will throw a ParseException in 3.0.', $value, $this->getRealCurrentLineNb() + 1), E_USER_DEPRECATED);
 
                 // to be thrown in 3.0
@@ -595,8 +595,8 @@ class Parser
                     self::preg_match($pattern, $this->currentLine, $matches)
                 )
             ) {
-                if ($isCurrentLineBlank && \strlen($this->currentLine) > $indentation) {
-                    $blockLines[] = substr($this->currentLine, $indentation);
+                if ($isCurrentLineBlank && \strlen((string) $this->currentLine) > $indentation) {
+                    $blockLines[] = substr((string) $this->currentLine, $indentation);
                 } elseif ($isCurrentLineBlank) {
                     $blockLines[] = '';
                 } else {
@@ -704,7 +704,7 @@ class Parser
      */
     private function isCurrentLineBlank()
     {
-        return '' == trim($this->currentLine, ' ');
+        return '' == trim((string) $this->currentLine, ' ');
     }
 
     /**
@@ -715,7 +715,7 @@ class Parser
     private function isCurrentLineComment()
     {
         //checking explicitly the first char of the trim is faster than loops or strpos
-        $ltrimmedLine = ltrim($this->currentLine, ' ');
+        $ltrimmedLine = ltrim((string) $this->currentLine, ' ');
 
         return '' !== $ltrimmedLine && '#' === $ltrimmedLine[0];
     }
@@ -742,22 +742,22 @@ class Parser
         $this->offset += $count;
 
         // remove leading comments
-        $trimmedValue = preg_replace('#^(\#.*?\n)+#s', '', $value, -1, $count);
+        $trimmedValue = preg_replace('#^(\#.*?\n)+#s', '', (string) $value, -1, $count);
         if (1 == $count) {
             // items have been removed, update the offset
-            $this->offset += substr_count($value, "\n") - substr_count($trimmedValue, "\n");
+            $this->offset += substr_count((string) $value, "\n") - substr_count((string) $trimmedValue, "\n");
             $value = $trimmedValue;
         }
 
         // remove start of the document marker (---)
-        $trimmedValue = preg_replace('#^\-\-\-.*?\n#s', '', $value, -1, $count);
+        $trimmedValue = preg_replace('#^\-\-\-.*?\n#s', '', (string) $value, -1, $count);
         if (1 == $count) {
             // items have been removed, update the offset
-            $this->offset += substr_count($value, "\n") - substr_count($trimmedValue, "\n");
+            $this->offset += substr_count((string) $value, "\n") - substr_count((string) $trimmedValue, "\n");
             $value = $trimmedValue;
 
             // remove end of the document marker (...)
-            $value = preg_replace('#\.\.\.\s*$#', '', $value);
+            $value = preg_replace('#\.\.\.\s*$#', '', (string) $value);
         }
 
         return $value;
@@ -795,7 +795,7 @@ class Parser
      */
     private function isStringUnIndentedCollectionItem()
     {
-        return '-' === rtrim($this->currentLine) || 0 === strpos($this->currentLine, '- ');
+        return '-' === rtrim((string) $this->currentLine) || 0 === strpos((string) $this->currentLine, '- ');
     }
 
     /**
@@ -823,7 +823,7 @@ class Parser
      */
     public static function preg_match($pattern, $subject, &$matches = null, $flags = 0, $offset = 0)
     {
-        if (false === $ret = preg_match($pattern, $subject, $matches, $flags, $offset)) {
+        if (false === $ret = preg_match($pattern, (string) $subject, $matches, $flags, $offset)) {
             switch (preg_last_error()) {
                 case PREG_INTERNAL_ERROR:
                     $error = 'Internal PCRE error.';

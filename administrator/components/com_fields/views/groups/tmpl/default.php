@@ -30,12 +30,12 @@ if ($parts)
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $ordering  = ($listOrder == 'a.ordering');
-$saveOrder = ($listOrder == 'a.ordering' && strtolower($listDirn) == 'asc');
+$saveOrder = ($listOrder == 'a.ordering' && strtolower((string) $listDirn) == 'asc');
 
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_fields&task=groups.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'groupList', 'adminForm', strtolower($listDirn), $saveOrderingUrl, false, true);
+	JHtml::_('sortablelist.sortable', 'groupList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl, false, true);
 }
 ?>
 

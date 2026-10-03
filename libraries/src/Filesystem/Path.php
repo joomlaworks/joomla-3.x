@@ -316,7 +316,7 @@ class Path
 			$fullname = $path . '/' . $file;
 
 			// Is the path based on a stream?
-			if (strpos($path, '://') === false)
+			if (strpos((string) $path, '://') === false)
 			{
 				// Not a stream, so do a realpath() to avoid directory
 				// traversal attempts on the local file system.
@@ -332,7 +332,7 @@ class Path
 			 * non-registered directories are not accessible via directory
 			 * traversal attempts.
 			 */
-			if (file_exists($fullname) && substr($fullname, 0, strlen($path)) == $path)
+			if (file_exists($fullname) && substr($fullname, 0, strlen((string) $path)) == $path)
 			{
 				return $fullname;
 			}

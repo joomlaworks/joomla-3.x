@@ -176,7 +176,7 @@ class TagsViewTag extends JViewLegacy
 		$this->item       = $item;
 
 		// Escape strings for HTML output
-		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx', ''));
+		$this->pageclass_sfx = htmlspecialchars((string) $params->get('pageclass_sfx', ''));
 
 		// Merge tag params. If this is single-tag view, menu params override tag params
 		// Otherwise, article params override menu item params
@@ -193,7 +193,7 @@ class TagsViewTag extends JViewLegacy
 			$currentLink = $active->link;
 
 			// If the current view is the active item and a tag view for one tag, then the menu item params take priority
-			if (strpos($currentLink, 'view=tag') && strpos($currentLink, '&id[0]=' . (string) $item[0]->id))
+			if (strpos((string) $currentLink, 'view=tag') && strpos((string) $currentLink, '&id[0]=' . (string) $item[0]->id))
 			{
 				// $item[0]->params are the tag params, $temp are the menu item params
 				// Merge so that the menu item params take priority

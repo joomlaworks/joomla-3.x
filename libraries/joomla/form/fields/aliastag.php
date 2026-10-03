@@ -48,7 +48,7 @@ class JFormFieldAliastag extends JFormFieldList
 
 			foreach ($options as $i => $item)
 			{
-				$parts     = explode('.', $item->value);
+				$parts     = explode('.', (string) $item->value);
 				$extension = $parts[0];
 				$lang->load($extension . '.sys', JPATH_ADMINISTRATOR, null, false, true)
 				|| $lang->load($extension, JPath::clean(JPATH_ADMINISTRATOR . '/components/' . $extension), null, false, true);
@@ -63,7 +63,7 @@ class JFormFieldAliastag extends JFormFieldList
 			$options,
 			function($a, $b)
 			{
-				return strcmp($a->text, $b->text);
+				return strcmp((string) $a->text, (string) $b->text);
 			}
 		);
 

@@ -46,7 +46,7 @@ class ApplicationHelper
 		}
 
 		$input = \JFactory::getApplication()->input;
-		$option = strtolower($input->get('option'));
+		$option = strtolower((string) $input->get('option'));
 
 		if (empty($option))
 		{

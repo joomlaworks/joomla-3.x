@@ -343,7 +343,7 @@ class FOFTemplateUtils
 
 		if (in_array($ext, array('css', 'js')))
 		{
-			$file = basename($filesystem->stripExt($ret['normal']));
+			$file = basename((string) $filesystem->stripExt($ret['normal']));
 
 			/*
 			 * Detect if we received a file in the format name.min.ext

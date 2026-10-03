@@ -321,7 +321,7 @@ class Toolbar
 		foreach ((array) $path as $dir)
 		{
 			// No surrounding spaces allowed!
-			$dir = trim($dir);
+			$dir = trim((string) $dir);
 
 			// Add trailing separators as needed.
 			if (substr($dir, -1) !== DIRECTORY_SEPARATOR)

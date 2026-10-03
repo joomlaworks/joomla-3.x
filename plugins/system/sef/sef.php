@@ -99,9 +99,9 @@ class PlgSystemSef extends JPlugin
 		$prefix = $this->app->getDocument()->getType() === 'feed' ? JUri::root() : '';
 
 		// Replace index.php URI by SEF URI.
-		if (strpos($buffer, 'href="' . $prefix . 'index.php?') !== false)
+		if (strpos((string) $buffer, 'href="' . $prefix . 'index.php?') !== false)
 		{
-			preg_match_all('#href="' . $prefix . 'index.php\?([^"]+)"#m', $buffer, $matches);
+			preg_match_all('#href="' . $prefix . 'index.php\?([^"]+)"#m', (string) $buffer, $matches);
 
 			foreach ($matches[1] as $urlQueryString)
 			{
@@ -121,15 +121,15 @@ class PlgSystemSef extends JPlugin
 
 		foreach ($attributes as $attribute)
 		{
-			if (strpos($buffer, $attribute) !== false)
+			if (strpos((string) $buffer, $attribute) !== false)
 			{
 				$regex  = '#\s' . $attribute . '"(?!/|' . $protocols . '|\#|\')([^"]*)"#m';
-				$buffer = preg_replace($regex, ' ' . $attribute . '"' . $base . '$1"', $buffer);
+				$buffer = preg_replace($regex, ' ' . $attribute . '"' . $base . '$1"', (string) $buffer);
 				$this->checkBuffer($buffer);
 			}
 		}
 
-		if (strpos($buffer, 'srcset=') !== false)
+		if (strpos((string) $buffer, 'srcset=') !== false)
 		{
 			$regex = '#\s+srcset="([^"]+)"#m';
 
@@ -146,17 +146,17 @@ class PlgSystemSef extends JPlugin
 
 					return ' srcset="' . implode($matches[0]) . '"';
 				},
-				$buffer
+				(string) $buffer
 			);
 
 			$this->checkBuffer($buffer);
 		}
 
 		// Replace all unknown protocols in javascript window open events.
-		if (strpos($buffer, 'window.open(') !== false)
+		if (strpos((string) $buffer, 'window.open(') !== false)
 		{
 			$regex  = '#onclick="window.open\(\'(?!/|' . $protocols . '|\#)([^/]+[^\']*?\')#m';
-			$buffer = preg_replace($regex, 'onclick="window.open(\'' . $base . '$1', $buffer);
+			$buffer = preg_replace($regex, 'onclick="window.open(\'' . $base . '$1', (string) $buffer);
 			$this->checkBuffer($buffer);
 		}
 
@@ -165,29 +165,29 @@ class PlgSystemSef extends JPlugin
 
 		foreach ($attributes as $attribute)
 		{
-			if (strpos($buffer, $attribute) !== false)
+			if (strpos((string) $buffer, $attribute) !== false)
 			{
 				$regex  = '#' . $attribute . '"this.src=([\']+)(?!/|' . $protocols . '|\#|\')([^"]+)"#m';
-				$buffer = preg_replace($regex, $attribute . '"this.src=$1' . $base . '$2"', $buffer);
+				$buffer = preg_replace($regex, $attribute . '"this.src=$1' . $base . '$2"', (string) $buffer);
 				$this->checkBuffer($buffer);
 			}
 		}
 
 		// Replace all unknown protocols in CSS background image.
-		if (strpos($buffer, 'style=') !== false)
+		if (strpos((string) $buffer, 'style=') !== false)
 		{
 			$regex_url  = '\s*url\s*\(([\'\"]|\&\#0?3[49];)?(?!/|\&\#0?3[49];|' . $protocols . '|\#)([^\)\'\"]+)([\'\"]|\&\#0?3[49];)?\)';
 			$regex  = '#style=\s*([\'\"])(.*):' . $regex_url . '#m';
-			$buffer = preg_replace($regex, 'style=$1$2: url($3' . $base . '$4$5)', $buffer);
+			$buffer = preg_replace($regex, 'style=$1$2: url($3' . $base . '$4$5)', (string) $buffer);
 			$this->checkBuffer($buffer);
 		}
 
 		// Replace all unknown protocols in OBJECT param tag.
-		if (strpos($buffer, '<param') !== false)
+		if (strpos((string) $buffer, '<param') !== false)
 		{
 			// OBJECT <param name="xx", value="yy"> -- fix it only inside the <param> tag.
 			$regex  = '#(<param\s+)name\s*=\s*"(movie|src|url)"[^>]\s*value\s*=\s*"(?!/|' . $protocols . '|\#|\')([^"]*)"#m';
-			$buffer = preg_replace($regex, '$1name="$2" value="' . $base . '$3"', $buffer);
+			$buffer = preg_replace($regex, '$1name="$2" value="' . $base . '$3"', (string) $buffer);
 			$this->checkBuffer($buffer);
 
 			// OBJECT <param value="xx", name="yy"> -- fix it only inside the <param> tag.
@@ -197,10 +197,10 @@ class PlgSystemSef extends JPlugin
 		}
 
 		// Replace all unknown protocols in OBJECT tag.
-		if (strpos($buffer, '<object') !== false)
+		if (strpos((string) $buffer, '<object') !== false)
 		{
 			$regex  = '#(<object\s+[^>]*)data\s*=\s*"(?!/|' . $protocols . '|\#|\')([^"]*)"#m';
-			$buffer = preg_replace($regex, '$1data="' . $base . '$2"', $buffer);
+			$buffer = preg_replace($regex, '$1data="' . $base . '$2"', (string) $buffer);
 			$this->checkBuffer($buffer);
 		}
 

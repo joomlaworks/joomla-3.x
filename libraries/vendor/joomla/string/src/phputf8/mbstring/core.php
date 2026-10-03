@@ -21,7 +21,7 @@ if ( !defined('UTF8_CORE') ) {
 * @package utf8
 */
 function utf8_strlen($str){
-    return mb_strlen($str);
+    return mb_strlen((string) $str);
 }
 
 
@@ -37,10 +37,12 @@ function utf8_strlen($str){
 * @package utf8
 */
 function utf8_strpos($str, $search, $offset = FALSE){
+    // Not every caller guarantees a real string (e.g. a null-valued field being searched).
+    $str = (string) $str;
     if ( $offset === FALSE ) {
-        return mb_strpos($str, $search);
+        return mb_strpos($str, (string) $search);
     } else {
-        return mb_strpos($str, $search, $offset);
+        return mb_strpos($str, (string) $search, $offset);
     }
 }
 
@@ -61,16 +63,16 @@ function utf8_strrpos($str, $search, $offset = FALSE){
         if ( empty($str) ) {
             return FALSE;
         }
-        return mb_strrpos($str, $search);
+        return mb_strrpos((string) $str, (string) $search);
     } else {
         if ( !is_int($offset) ) {
             trigger_error('utf8_strrpos expects parameter 3 to be long',E_USER_WARNING);
             return FALSE;
         }
 
-        $str = mb_substr($str, $offset);
+        $str = mb_substr((string) $str, $offset);
 
-        if ( FALSE !== ( $pos = mb_strrpos($str, $search) ) ) {
+        if ( FALSE !== ( $pos = mb_strrpos($str, (string) $search) ) ) {
             return $pos + $offset;
         }
 
@@ -91,9 +93,9 @@ function utf8_strrpos($str, $search, $offset = FALSE){
 */
 function utf8_substr($str, $offset, $length = FALSE){
     if ( $length === FALSE ) {
-        return mb_substr($str, (int)$offset);
+        return mb_substr((string) $str, (int)$offset);
     } else {
-        return mb_substr($str, (int)$offset, (int)$length);
+        return mb_substr((string) $str, (int)$offset, (int)$length);
     }
 }
 
@@ -111,7 +113,7 @@ function utf8_substr($str, $offset, $length = FALSE){
 * @package utf8
 */
 function utf8_strtolower($str){
-    return mb_strtolower($str);
+    return mb_strtolower((string) $str);
 }
 
 //--------------------------------------------------------------------
@@ -128,5 +130,5 @@ function utf8_strtolower($str){
 * @package utf8
 */
 function utf8_strtoupper($str){
-    return mb_strtoupper($str);
+    return mb_strtoupper((string) $str);
 }

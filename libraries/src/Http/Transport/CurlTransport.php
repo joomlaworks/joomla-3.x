@@ -287,7 +287,7 @@ class CurlTransport implements TransportInterface
 			$return->body = array_pop($response);
 
 			// Get the last set of response headers as an array.
-			$headers = explode("\r\n", array_pop($response));
+			$headers = explode("\r\n", (string) array_pop($response));
 		}
 
 		// Get the response code from the first offset of the response headers.

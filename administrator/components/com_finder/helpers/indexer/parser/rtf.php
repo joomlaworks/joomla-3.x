@@ -35,7 +35,7 @@ class FinderIndexerParserRtf extends FinderIndexerParser
 		// Remove control characters.
 		$input = str_replace(array('{', '}', "\\\n"), array(' ', ' ', "\n"), $input);
 		$input = preg_replace('#\\\([^;]+?);#m', ' ', $input);
-		$input = preg_replace('#\\\[\'a-zA-Z0-9]+#mi', ' ', $input);
+		$input = preg_replace('#\\\[\'a-zA-Z0-9]+#mi', ' ', (string) $input);
 
 		return $input;
 	}

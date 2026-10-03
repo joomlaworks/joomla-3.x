@@ -155,7 +155,7 @@ abstract class JHtmlIcon
 		$overlib .= '&lt;br /&gt;';
 		$overlib .= $date;
 		$overlib .= '&lt;br /&gt;';
-		$overlib .= JText::sprintf('COM_CONTENT_WRITTEN_BY', htmlspecialchars($author, ENT_COMPAT, 'UTF-8'));
+		$overlib .= JText::sprintf('COM_CONTENT_WRITTEN_BY', htmlspecialchars((string) $author, ENT_COMPAT, 'UTF-8'));
 
 		$text = JLayoutHelper::render('joomla.content.icons.edit', array('article' => $article, 'overlib' => $overlib, 'legacy' => $legacy));
 
@@ -184,7 +184,7 @@ abstract class JHtmlIcon
 
 		$text = JLayoutHelper::render('joomla.content.icons.print_popup', array('params' => $params, 'legacy' => $legacy));
 
-		$attribs['title']   = JText::sprintf('JGLOBAL_PRINT_TITLE', htmlspecialchars($article->title, ENT_QUOTES, 'UTF-8'));
+		$attribs['title']   = JText::sprintf('JGLOBAL_PRINT_TITLE', htmlspecialchars((string) $article->title, ENT_QUOTES, 'UTF-8'));
 		$attribs['onclick'] = "window.open(this.href,'win2','" . $status . "'); return false;";
 		$attribs['rel']     = 'nofollow';
 

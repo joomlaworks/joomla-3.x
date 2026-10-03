@@ -34,7 +34,7 @@ $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$this->_
 	</td>
 <?php if ($user->authorise('core.delete', 'com_media')):?>
 	<td>
-		<a class="delete-item" target="_top" href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode($this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($this->_tmp_doc->name); ?>" rel="<?php echo $this->escape($this->_tmp_doc->name); ?>"><span class="icon-remove hasTooltip" title="<?php echo JHtml::_('tooltipText', 'JACTION_DELETE');?>"></span></a>
+		<a class="delete-item" target="_top" href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($this->_tmp_doc->name); ?>" rel="<?php echo $this->escape($this->_tmp_doc->name); ?>"><span class="icon-remove hasTooltip" title="<?php echo JHtml::_('tooltipText', 'JACTION_DELETE');?>"></span></a>
 		<input type="checkbox" name="rm[]" value="<?php echo $this->escape($this->_tmp_doc->name); ?>" />
 	</td>
 <?php endif;?>

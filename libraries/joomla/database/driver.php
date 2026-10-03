@@ -831,7 +831,7 @@ abstract class JDatabaseDriver extends JDatabase implements JDatabaseInterface
 
 				// Default new collation: utf8_unicode_ci or utf8mb4_unicode_ci
 				$newCollation = $charset . '_unicode_ci';
-				$collationParts = explode('_', $col->Collation);
+				$collationParts = explode('_', (string) $col->Collation);
 
 				/**
 				 * If the collation is in the form charset_collationType_ci or charset_collationType we have to change
@@ -855,7 +855,7 @@ abstract class JDatabaseDriver extends JDatabase implements JDatabaseInterface
 				}
 
 				// If the old and new collation is the same we don't have to change the collation type
-				if (strtolower($newCollation) == strtolower($col->Collation))
+				if (strtolower($newCollation) == strtolower((string) $col->Collation))
 				{
 					continue;
 				}
@@ -1884,7 +1884,7 @@ abstract class JDatabaseDriver extends JDatabase implements JDatabaseInterface
 	public function quoteBinary($data)
 	{
 		// SQL standard syntax for hexadecimal literals
-		return "X'" . bin2hex($data) . "'";
+		return "X'" . bin2hex((string) $data) . "'";
 	}
 
 	/**

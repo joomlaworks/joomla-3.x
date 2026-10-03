@@ -12,6 +12,7 @@ defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Schema\ChangeSet;
 use Joomla\CMS\Table\Extension;
 use Joomla\CMS\Table\Table;
 
@@ -956,7 +957,7 @@ class Installer extends \JAdapter
 		$db = & $this->_db;
 
 		// TODO - At 4.0 we can change this to use `getServerType()` since SQL Server will not be supported
-		$dbDriver = strtolower($db->name);
+		$dbDriver = strtolower((string) $db->name);
 
 		if ($db->getServerType() === 'mysql')
 		{
@@ -972,8 +973,8 @@ class Installer extends \JAdapter
 		// Get the name of the sql file to process
 		foreach ($element->children() as $file)
 		{
-			$fCharset = strtolower($file->attributes()->charset) === 'utf8' ? 'utf8' : '';
-			$fDriver  = strtolower($file->attributes()->driver);
+			$fCharset = strtolower((string) $file->attributes()->charset) === 'utf8' ? 'utf8' : '';
+			$fDriver  = strtolower((string) $file->attributes()->driver);
 
 			if ($fDriver === 'mysqli' || $fDriver === 'pdomysql')
 			{
@@ -986,7 +987,7 @@ class Installer extends \JAdapter
 
 			if ($fCharset === 'utf8' && $fDriver == $dbDriver)
 			{
-				$sqlfile = $this->getPath('extension_root') . '/' . trim($file);
+				$sqlfile = $this->getPath('extension_root') . '/' . trim((string) $file);
 
 				// Check that sql files exists before reading. Otherwise raise error for rollback
 				if (!file_exists($sqlfile))
@@ -1063,7 +1064,7 @@ class Installer extends \JAdapter
 
 			if (count($schemapaths))
 			{
-				$dbDriver = strtolower($db->name);
+				$dbDriver = strtolower((string) $db->name);
 
 				if ($db->getServerType() === 'mysql')
 				{
@@ -1135,7 +1136,7 @@ class Installer extends \JAdapter
 			if (count($schemapaths))
 			{
 				// TODO - At 4.0 we can change this to use `getServerType()` since SQL Server will not be supported
-				$dbDriver = strtolower($db->name);
+				$dbDriver = strtolower((string) $db->name);
 
 				if ($db->getServerType() === 'mysql')
 				{
@@ -1196,6 +1197,8 @@ class Installer extends \JAdapter
 						$version = '0.0.0';
 					}
 
+					$removedTables = ChangeSet::getRemovedComponentTablesPattern($db);
+
 					foreach ($files as $file)
 					{
 						if (version_compare($file, $version) > 0)
@@ -1222,6 +1225,12 @@ class Installer extends \JAdapter
 							// Process each query in the $queries array (split out of sql file).
 							foreach ($queries as $query)
 							{
+								// The tables of an uninstalled core component are gone on purpose
+								if (ChangeSet::targetsRemovedComponentTable($query, $removedTables))
+								{
+									continue;
+								}
+
 								$db->setQuery($db->convertUtf8mb4QueryToUtf8($query));
 
 								try
@@ -1999,7 +2008,7 @@ class Installer extends \JAdapter
 					$this->setPath('manifest', $file);
 
 					// Set the installation source path to that of the manifest file
-					$this->setPath('source', dirname($file));
+					$this->setPath('source', dirname((string) $file));
 
 					return true;
 				}
@@ -2389,7 +2398,7 @@ class Installer extends \JAdapter
 			{
 				// Setup the class name
 				// TODO - Can we abstract this to not depend on the Joomla class namespace without PHP namespaces?
-				$class = $this->_classprefix . ucfirst(trim($adapter));
+				$class = $this->_classprefix . ucfirst(trim((string) $adapter));
 
 				// If the class doesn't exist we have nothing left to do but look at the next type. We did our best.
 				if (!class_exists($class))

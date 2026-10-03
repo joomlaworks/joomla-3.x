@@ -47,11 +47,11 @@ class JGithubPackageAuthorization extends JGithubPackage
 		if ($response->code != 201)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -76,11 +76,11 @@ class JGithubPackageAuthorization extends JGithubPackage
 		if ($response->code != 204)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -149,11 +149,11 @@ class JGithubPackageAuthorization extends JGithubPackage
 		if ($response->code != 200)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -179,11 +179,11 @@ class JGithubPackageAuthorization extends JGithubPackage
 		if ($response->code != 200)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -207,11 +207,11 @@ class JGithubPackageAuthorization extends JGithubPackage
 		if ($response->code != 200)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -234,11 +234,11 @@ class JGithubPackageAuthorization extends JGithubPackage
 		if ($response->code != 200)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**

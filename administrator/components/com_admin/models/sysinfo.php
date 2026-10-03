@@ -209,17 +209,17 @@ class AdminModelSysInfo extends JModelLegacy
 	{
 		if (!is_array($sectionValues))
 		{
-			if (strstr($sectionValues, JPATH_ROOT))
+			if (strstr((string) $sectionValues, (string) JPATH_ROOT))
 			{
 				$sectionValues = 'xxxxxx';
 			}
 
-			return strlen($sectionValues) ? 'xxxxxx' : '';
+			return strlen((string) $sectionValues) ? 'xxxxxx' : '';
 		}
 
 		foreach ($sectionValues as $setting => $value)
 		{
-			$sectionValues[$setting] = strlen($value) ? 'xxxxxx' : '';
+			$sectionValues[$setting] = strlen((string) $value) ? 'xxxxxx' : '';
 		}
 
 		return $sectionValues;
@@ -311,7 +311,7 @@ class AdminModelSysInfo extends JModelLegacy
 		$db       = $this->getDbo();
 
 		$this->info = array(
-			'php'                   => php_uname(),
+			'php'                   => function_exists('php_uname') ? php_uname() : '',
 			'dbserver'              => $db->getServerType(),
 			'dbversion'             => $db->getVersion(),
 			'dbcollation'           => $db->getCollation(),
@@ -398,8 +398,8 @@ class AdminModelSysInfo extends JModelLegacy
 		ob_end_clean();
 		preg_match_all('#<body[^>]*>(.*)</body>#siU', $phpInfo, $output);
 		$output = preg_replace('#<table[^>]*>#', '<table class="table table-striped adminlist">', $output[1][0]);
-		$output = preg_replace('#(\w),(\w)#', '\1, \2', $output);
-		$output = preg_replace('#<hr />#', '', $output);
+		$output = preg_replace('#(\w),(\w)#', '\1, \2', (string) $output);
+		$output = preg_replace('#<hr />#', '', (string) $output);
 		$output = str_replace('<div class="center">', '', $output);
 		$output = preg_replace('#<tr class="h">(.*)<\/tr>#', '<thead><tr class="h">$1</tr></thead><tbody>', $output);
 		$output = str_replace('</table>', '</tbody></table>', $output);
@@ -475,7 +475,7 @@ class AdminModelSysInfo extends JModelLegacy
 
 		foreach ($extensions as $extension)
 		{
-			if (strlen($extension->name) == 0)
+			if (strlen((string) $extension->name) == 0)
 			{
 				continue;
 			}
@@ -622,7 +622,7 @@ class AdminModelSysInfo extends JModelLegacy
 		$this->addDirectory('configuration.php', JPATH_CONFIGURATION . '/configuration.php');
 
 		// Is there a cache path in configuration.php?
-		if ($cache_path = trim($registry->get('cache_path', '')))
+		if ($cache_path = trim((string) $registry->get('cache_path', '')))
 		{
 			// Frontend and backend use same directory for caching.
 			$this->addDirectory($cache_path, $cache_path, 'COM_ADMIN_CACHE_DIRECTORY');
@@ -713,8 +713,8 @@ class AdminModelSysInfo extends JModelLegacy
 	{
 		$html = strip_tags($html, '<h2><th><td>');
 		$html = preg_replace('/<th[^>]*>([^<]+)<\/th>/', '<info>\1</info>', $html);
-		$html = preg_replace('/<td[^>]*>([^<]+)<\/td>/', '<info>\1</info>', $html);
-		$t = preg_split('/(<h2[^>]*>[^<]+<\/h2>)/', $html, -1, PREG_SPLIT_DELIM_CAPTURE);
+		$html = preg_replace('/<td[^>]*>([^<]+)<\/td>/', '<info>\1</info>', (string) $html);
+		$t = preg_split('/(<h2[^>]*>[^<]+<\/h2>)/', (string) $html, -1, PREG_SPLIT_DELIM_CAPTURE);
 		$r = array();
 		$count = count($t);
 		$p1 = '<info>([^<]+)<\/info>';

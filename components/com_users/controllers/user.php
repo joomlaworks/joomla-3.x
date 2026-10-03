@@ -35,7 +35,7 @@ class UsersControllerUser extends UsersController
 		// Populate the data array:
 		$data = array();
 
-		$data['return']    = base64_decode($input->get('return', '', 'BASE64'));
+		$data['return']    = base64_decode((string) $input->get('return', '', 'BASE64'));
 		$data['username']  = $input->get('username', '', 'USERNAME');
 		$data['password']  = $input->get('password', '', 'RAW');
 		$data['secretkey'] = $input->get('secretkey', '', 'RAW');
@@ -161,7 +161,7 @@ class UsersControllerUser extends UsersController
 
 		// Get the return URL from the request and validate that it is internal.
 		$return = $input->get('return', '', 'BASE64');
-		$return = base64_decode($return);
+		$return = base64_decode((string) $return);
 
 		// Check for a simple menu item id
 		if (is_numeric($return))

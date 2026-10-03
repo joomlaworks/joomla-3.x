@@ -244,7 +244,7 @@ class TagsModelTag extends JModelList
 		$listOrder = $app->getUserStateFromRequest('com_tags.tag.list.' . $itemid . '.filter_order_direction', 'filter_order_Dir', '', 'string');
 		$listOrder = !$listOrder ? $this->state->params->get('tag_list_orderby_direction', 'ASC') : $listOrder;
 
-		if (!in_array(strtoupper($listOrder), array('ASC', 'DESC', '')))
+		if (!in_array(strtoupper((string) $listOrder), array('ASC', 'DESC', '')))
 		{
 			$listOrder = 'ASC';
 		}

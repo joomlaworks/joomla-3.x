@@ -284,7 +284,7 @@ class Update extends \JObject
 
 				foreach ($attrs as $key => $data)
 				{
-					$key = strtolower($key);
+					$key = strtolower((string) $key);
 					$source->$key = $data;
 				}
 
@@ -309,7 +309,7 @@ class Update extends \JObject
 
 				foreach ($attrs as $key => $data)
 				{
-					$key = strtolower($key);
+					$key = strtolower((string) $key);
 					$this->currentUpdate->$name->$key = $data;
 				}
 				break;
@@ -335,7 +335,7 @@ class Update extends \JObject
 		{
 			// Closing update, find the latest version and check
 			case 'UPDATE':
-				$product = strtolower(InputFilter::getInstance()->clean(Version::PRODUCT, 'cmd'));
+				$product = strtolower((string) InputFilter::getInstance()->clean(Version::PRODUCT, 'cmd'));
 
 				// Support for the min_dev_level and max_dev_level attributes is deprecated, a regexp should be used instead
 				if (isset($this->currentUpdate->targetplatform->min_dev_level) || isset($this->currentUpdate->targetplatform->max_dev_level))

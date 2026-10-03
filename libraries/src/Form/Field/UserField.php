@@ -119,7 +119,7 @@ class UserField extends FormField
 			$name = User::getInstance($this->value)->name;
 		}
 		// Handle the special case for "current".
-		elseif (strtoupper($this->value) === 'CURRENT')
+		elseif (strtoupper((string) $this->value) === 'CURRENT')
 		{
 			// 'CURRENT' is not a reasonable value to be placed in the html
 			$current = Factory::getUser();

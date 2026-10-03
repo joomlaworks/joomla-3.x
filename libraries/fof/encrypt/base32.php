@@ -98,18 +98,18 @@ class FOFEncryptBase32
 		$str = preg_replace('/(.{5})/', '000$1', $str);
 
 		// We need a string divisible by 5
-		$length = strlen($str);
+		$length = strlen((string) $str);
 		$rbits = $length & 7;
 
 		if ($rbits > 0)
 		{
 			// Excessive bits need to be padded
-			$ebits = substr($str, $length - $rbits);
-			$str = substr($str, 0, $length - $rbits);
+			$ebits = substr((string) $str, $length - $rbits);
+			$str = substr((string) $str, 0, $length - $rbits);
 			$str .= "000$ebits" . str_repeat('0', 5 - strlen($ebits));
 		}
 
-		preg_match_all('/.{8}/', $str, $chrs);
+		preg_match_all('/.{8}/', (string) $str, $chrs);
 		$chrs = array_map(array($this, '_mapcharset'), $chrs[0]);
 
 		return join('', $chrs);
@@ -140,12 +140,12 @@ class FOFEncryptBase32
 		$str = preg_replace('/000(.{5})/', '$1', $str);
 
 		// Unpad if necessary
-		$length = strlen($str);
+		$length = strlen((string) $str);
 		$rbits = $length & 7;
 
 		if ($rbits > 0)
 		{
-			$str = substr($str, 0, $length - $rbits);
+			$str = substr((string) $str, 0, $length - $rbits);
 		}
 
 		return $str;

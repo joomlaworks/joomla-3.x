@@ -911,7 +911,7 @@ abstract class FinderIndexerAdapter extends JPlugin
 		switch ($item)
 		{
 			// Published and archived items only should return a published state
-			case 1;
+			case 1:
 			case 2:
 				return 1;
 

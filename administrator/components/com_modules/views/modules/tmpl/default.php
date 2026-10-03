@@ -21,7 +21,7 @@ $saveOrder	= ($listOrder == 'a.ordering');
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_modules&task=modules.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'moduleList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+	JHtml::_('sortablelist.sortable', 'moduleList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 }
 $colSpan = $clientId === 1 ? 8 : 10;
 ?>
@@ -94,7 +94,7 @@ $colSpan = $clientId === 1 ? 8 : 10;
 					$canCheckin = $user->authorise('core.manage',     'com_checkin') || $item->checked_out == $user->get('id')|| $item->checked_out == 0;
 					$canChange  = $user->authorise('core.edit.state', 'com_modules.module.' . $item->id) && $canCheckin;
 				?>
-					<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->position ?: 'none'; ?>">
+					<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $this->escape($item->position) ?: 'none'; ?>">
 						<td class="order nowrap center hidden-phone">
 							<?php
 							$iconClass = '';
@@ -168,7 +168,7 @@ $colSpan = $clientId === 1 ? 8 : 10;
 						<td class="small hidden-phone">
 							<?php if ($item->position) : ?>
 								<span class="label label-info">
-									<?php echo $item->position; ?>
+									<?php echo $this->escape($item->position); ?>
 								</span>
 							<?php else : ?>
 								<span class="label">

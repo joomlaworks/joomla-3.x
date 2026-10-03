@@ -391,7 +391,7 @@ class PlgSystemPrivacyconsent extends JPlugin
 	 */
 	private function getRedirectMessage()
 	{
-		$messageOnRedirect = trim($this->params->get('messageOnRedirect', ''));
+		$messageOnRedirect = trim((string) $this->params->get('messageOnRedirect', ''));
 
 		if (empty($messageOnRedirect))
 		{

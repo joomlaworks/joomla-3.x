@@ -147,7 +147,7 @@ class MenusModelItems extends JModelList
 			$app->input->set('client_id', 1);
 
 			$app->setUserState($this->context . '.menutype', $menuType);
-			$this->setState('menutypetitle', ucfirst($menuType));
+			$this->setState('menutypetitle', ucfirst((string) $menuType));
 			$this->setState('menutypeid', -1);
 		}
 		// Get the menutype object with appropriate checks.

@@ -70,7 +70,7 @@ class PackageAdapter extends InstallerAdapter
 	protected function checkExtensionInFilesystem()
 	{
 		// If the package manifest already exists, then we will assume that the package is already installed.
-		if (file_exists(JPATH_MANIFESTS . '/packages/' . basename($this->parent->getPath('manifest'))))
+		if (file_exists(JPATH_MANIFESTS . '/packages/' . basename((string) $this->parent->getPath('manifest'))))
 		{
 			// Look for an update function or update tag
 			$updateElement = $this->manifest->update;
@@ -240,7 +240,7 @@ class PackageAdapter extends InstallerAdapter
 		// Lastly, we will copy the manifest file to its appropriate place.
 		$manifest = array();
 		$manifest['src'] = $this->parent->getPath('manifest');
-		$manifest['dest'] = JPATH_MANIFESTS . '/packages/' . basename($this->parent->getPath('manifest'));
+		$manifest['dest'] = JPATH_MANIFESTS . '/packages/' . basename((string) $this->parent->getPath('manifest'));
 
 		if (!$this->parent->copyFiles(array($manifest), true))
 		{
@@ -650,7 +650,7 @@ class PackageAdapter extends InstallerAdapter
 				if (!$tmpInstaller->uninstall($extension->type, $id, $client->id))
 				{
 					$error = true;
-					\JLog::add(\JText::sprintf('JLIB_INSTALLER_ERROR_PACK_UNINSTALL_NOT_PROPER', basename($extension->filename)), \JLog::WARNING, 'jerror');
+					\JLog::add(\JText::sprintf('JLIB_INSTALLER_ERROR_PACK_UNINSTALL_NOT_PROPER', basename((string) $extension->filename)), \JLog::WARNING, 'jerror');
 				}
 			}
 			else

@@ -194,7 +194,7 @@ class ActionlogsHelper
 		static $links = array();
 
 		$message     = Text::_($log->message_language_key);
-		$messageData = json_decode($log->message, true);
+		$messageData = json_decode((string) $log->message, true);
 
 		// Special handling for translation extension name
 		if (isset($messageData['extension_name']))
@@ -220,7 +220,7 @@ class ActionlogsHelper
 		foreach ($messageData as $key => $value)
 		{
 			// Escape any markup in the values to prevent XSS attacks
-			$value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+			$value = htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 
 			// Convert relative url to absolute url so that it is clickable in action logs notification email
 			if ($generateLinks && StringHelper::strpos($value, 'index.php?') === 0)

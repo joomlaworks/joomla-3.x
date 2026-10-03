@@ -147,7 +147,7 @@ ENDBLOCK;
 		else
 		{
 			// Try to auto-translate (hopefully you've loaded the language files)
-			$key = strtoupper($this->component);
+			$key = strtoupper((string) $this->component);
 			$description = JText::_($key);
 		}
 
@@ -165,7 +165,7 @@ ENDBLOCK;
 		else
 		{
 			// Convert com_foobar, pkg_foobar etc to "foobar"
-			$this->commonKey = substr($this->component, 4);
+			$this->commonKey = substr((string) $this->component, 4);
 		}
 
 		// Get the update site
@@ -689,7 +689,7 @@ ENDBLOCK;
 
 			if (isset($update->get('downloadurl')->_data))
 			{
-				$url = trim($update->downloadurl->_data);
+				$url = trim((string) $update->downloadurl->_data);
 
 				$extra_query = isset($updateObject->extra_query) ? $updateObject->extra_query : $this->extraQuery;
 
@@ -853,7 +853,7 @@ ENDBLOCK;
 
 		// Get the Joomla! version family (e.g. 2.5)
 		$jVersion = JVERSION;
-		$jVersionParts = explode('.', $jVersion);
+		$jVersionParts = explode('.', (string) $jVersion);
 		$jVersionShort = $jVersionParts[0] . '.' . $jVersionParts[1];
 
 		// Get the PHP version family (e.g. 5.6)
@@ -877,7 +877,7 @@ ENDBLOCK;
 
 			// Get the target Joomla! version
 			$targetJoomlaVersion = $update['targetplatform']['version'];
-			$targetVersionParts = explode('.', $targetJoomlaVersion);
+			$targetVersionParts = explode('.', (string) $targetJoomlaVersion);
 			$targetVersionShort = $targetVersionParts[0] . '.' . $targetVersionParts[1];
 
 			// The target version MUST be in the same Joomla! branch
@@ -901,7 +901,7 @@ ENDBLOCK;
 				{
 					// Get the target PHP version family
 					$targetPHPVersion = $entry['@attributes']['version'];
-					$targetPHPVersionParts = explode('.', $targetPHPVersion);
+					$targetPHPVersionParts = explode('.', (string) $targetPHPVersion);
 					$targetPHPVersionShort = $targetPHPVersionParts[0] . '.' . $targetPHPVersionParts[1];
 
 					// The target PHP version MUST be in the same PHP branch
@@ -1108,7 +1108,7 @@ ENDBLOCK;
 
 		// Get the target filename
 		$filename = $this->component . '.zip';
-		$filename = rtrim($tmp_dest, '\\/') . '/' . $filename;
+		$filename = rtrim((string) $tmp_dest, '\\/') . '/' . $filename;
 
 		try
 		{

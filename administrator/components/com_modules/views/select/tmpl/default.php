@@ -21,8 +21,8 @@ $document = JFactory::getDocument();
 	<?php // Prepare variables for the link. ?>
 	<?php $link       = 'index.php?option=com_modules&task=module.add&eid=' . $item->extension_id; ?>
 	<?php $name       = $this->escape($item->name); ?>
-	<?php $desc       = JHtml::_('string.truncate', $this->escape(strip_tags($item->desc)), 200); ?>
-	<?php $short_desc = JHtml::_('string.truncate', $this->escape(strip_tags($item->desc)), 90); ?>
+	<?php $desc       = JHtml::_('string.truncate', $this->escape(strip_tags((string) $item->desc)), 200); ?>
+	<?php $short_desc = JHtml::_('string.truncate', $this->escape(strip_tags((string) $item->desc)), 90); ?>
 	<li>
 		<a href="<?php echo JRoute::_($link); ?>">
 			<strong><?php echo $name; ?></strong></a>

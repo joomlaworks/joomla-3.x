@@ -161,7 +161,7 @@ class FOFConfigProvider
 
 		foreach ($domains as $dom)
 		{
-			$class = 'FOFConfigDomain' . ucfirst($dom);
+			$class = 'FOFConfigDomain' . ucfirst((string) $dom);
 
 			if (class_exists($class, true))
 			{
@@ -193,7 +193,7 @@ class FOFConfigProvider
 			{
 				foreach ($files as $file)
 				{
-					$domain = basename($file, '.php');
+					$domain = basename((string) $file, '.php');
 
 					if ($domain == 'interface')
 					{

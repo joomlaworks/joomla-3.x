@@ -64,7 +64,7 @@ class CssIdentifierSubstringRule extends FormRule
 		 * - ISO 10646 characters U+00A1 and higher
 		 */
 		// Make sure we allow multiple classes to be added
-		$cssIdentifiers = explode(' ', $value);
+		$cssIdentifiers = explode(' ', (string) $value);
 
 		foreach ($cssIdentifiers as $identifier)
 		{

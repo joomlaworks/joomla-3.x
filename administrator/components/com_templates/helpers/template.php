@@ -58,7 +58,8 @@ abstract class TemplateHelper
 			'exe', 'phtml','java', 'perl', 'py', 'asp','dll', 'go', 'jar',
 			'ade', 'adp', 'bat', 'chm', 'cmd', 'com', 'cpl', 'hta', 'ins', 'isp',
 			'jse', 'lib', 'mde', 'msc', 'msp', 'mst', 'pif', 'scr', 'sct', 'shb',
-			'sys', 'vb', 'vbe', 'vbs', 'vxd', 'wsc', 'wsf', 'wsh'
+			'sys', 'vb', 'vbe', 'vbs', 'vxd', 'wsc', 'wsf', 'wsh',
+			'shtml', 'shtm', 'sht', 'stm'
 		);
 		$explodedFileName = explode('.', $file['name']);
 
@@ -88,10 +89,10 @@ abstract class TemplateHelper
 
 		$format = strtolower(JFile::getExt($file['name']));
 
-		$imageTypes   = explode(',', $params->get('image_formats'));
-		$sourceTypes  = explode(',', $params->get('source_formats'));
-		$fontTypes    = explode(',', $params->get('font_formats'));
-		$archiveTypes = explode(',', $params->get('compressed_formats'));
+		$imageTypes   = explode(',', (string) $params->get('image_formats'));
+		$sourceTypes  = explode(',', (string) $params->get('source_formats'));
+		$fontTypes    = explode(',', (string) $params->get('font_formats'));
+		$archiveTypes = explode(',', (string) $params->get('compressed_formats'));
 
 		$allowable = array_merge($imageTypes, $sourceTypes, $fontTypes, $archiveTypes);
 

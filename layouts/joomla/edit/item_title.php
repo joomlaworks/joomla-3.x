@@ -17,9 +17,9 @@ $name = $displayData->getForm()->getValue('name');
 ?>
 
 <?php if ($title) : ?>
-	<h2><?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?></h2>
+	<h2><?php echo htmlspecialchars((string) $title, ENT_QUOTES, 'UTF-8'); ?></h2>
 <?php endif; ?>
 
 <?php if ($name) : ?>
-	<h2><?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?></h2>
+	<h2><?php echo htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8'); ?></h2>
 <?php endif;

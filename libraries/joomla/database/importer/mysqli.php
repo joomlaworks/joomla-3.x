@@ -250,7 +250,7 @@ class JDatabaseImporterMysqli extends JDatabaseImporter
 		// Any keys left are orphans.
 		foreach ($oldLookup as $name => $keys)
 		{
-			if (strtoupper($name) == 'PRIMARY')
+			if (strtoupper((string) $name) == 'PRIMARY')
 			{
 				$alters[] = $this->getDropPrimaryKeySql($table);
 			}

@@ -930,7 +930,7 @@ class Nested extends Table
 		{
 			if ($this->$k)
 			{
-				$pks = explode(',', $this->$k);
+				$pks = explode(',', (string) $this->$k);
 			}
 			// Nothing to set publishing state on, return false.
 			else

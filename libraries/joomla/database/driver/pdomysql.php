@@ -59,7 +59,7 @@ class JDatabaseDriverPdomysql extends JDatabaseDriverPdo
 	 * @var    string
 	 * @since  3.4
 	 */
-	protected static $dbMinimum = '5.0.4';
+	protected static $dbMinimum = '5.5.3';
 
 	/**
 	 * Constructor.
@@ -338,7 +338,7 @@ class JDatabaseDriverPdomysql extends JDatabaseDriverPdo
 		{
 			foreach ($fields as $field)
 			{
-				$result[$field->Field] = preg_replace('/[(0-9)]/', '', $field->Type);
+				$result[$field->Field] = preg_replace('/[(0-9)]/', '', (string) $field->Type);
 			}
 		}
 		// If we want the whole field data object add that to the list.

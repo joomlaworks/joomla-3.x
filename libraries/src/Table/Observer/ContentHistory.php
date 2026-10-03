@@ -82,7 +82,7 @@ class ContentHistory extends AbstractObserver
 		if ($result)
 		{
 			$this->parseTypeAlias();
-			$aliasParts = explode('.', $this->contenthistoryHelper->typeAlias);
+			$aliasParts = explode('.', (string) $this->contenthistoryHelper->typeAlias);
 
 			if (\JComponentHelper::getParams($aliasParts[0])->get('save_history', 0))
 			{
@@ -104,7 +104,7 @@ class ContentHistory extends AbstractObserver
 	public function onBeforeDelete($pk)
 	{
 		$this->parseTypeAlias();
-		$aliasParts = explode('.', $this->contenthistoryHelper->typeAlias);
+		$aliasParts = explode('.', (string) $this->contenthistoryHelper->typeAlias);
 
 		if (\JComponentHelper::getParams($aliasParts[0])->get('save_history', 0))
 		{

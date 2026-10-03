@@ -28,13 +28,13 @@ $dispatcher = JEventDispatcher::getInstance();
 		<?php endif; ?>
 
 		<td>
-			<a class="img-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode($image->path_relative)); ?>" title="<?php echo $this->escape($image->name); ?>">
+			<a class="img-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $image->path_relative)); ?>" title="<?php echo $this->escape($image->name); ?>">
 				<?php echo JHtml::_('image', COM_MEDIA_BASEURL . '/' . $this->escape($image->path_relative), JText::sprintf('COM_MEDIA_IMAGE_TITLE', $this->escape($image->title), JHtml::_('number.bytes', $image->size)), array('width' => $image->width_16, 'height' => $image->height_16)); ?>
 			</a>
 		</td>
 
 		<td class="description">
-			<a href="<?php echo  COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode($image->path_relative)); ?>" title="<?php echo $this->escape($image->name); ?>" class="preview">
+			<a href="<?php echo  COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $image->path_relative)); ?>" title="<?php echo $this->escape($image->name); ?>" class="preview">
 				<?php echo $this->escape($image->title); ?>
 			</a>
 		</td>
@@ -49,7 +49,7 @@ $dispatcher = JEventDispatcher::getInstance();
 
 		<?php if ($this->canDelete) : ?>
 			<td>
-				<a class="delete-item" target="_top" href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode($this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($image->name); ?>" rel="<?php echo $this->escape($image->name); ?>">
+				<a class="delete-item" target="_top" href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($image->name); ?>" rel="<?php echo $this->escape($image->name); ?>">
 					<span class="icon-remove hasTooltip" title="<?php echo JHtml::tooltipText('JACTION_DELETE'); ?>"></span>
 				</a>
 			</td>

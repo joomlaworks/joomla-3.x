@@ -361,7 +361,7 @@ class ContactModelContact extends JModelAdmin
 	{
 		$date = JFactory::getDate()->toSql();
 
-		$table->name = htmlspecialchars_decode($table->name, ENT_QUOTES);
+		$table->name = htmlspecialchars_decode((string) $table->name, ENT_QUOTES);
 
 		$table->generateAlias();
 

@@ -666,7 +666,7 @@ class Session implements \IteratorAggregate
 		{
 			$data = $_SESSION['joomla'];
 
-			$data = base64_decode($data);
+			$data = base64_decode((string) $data);
 
 			$this->data = unserialize($data);
 		}

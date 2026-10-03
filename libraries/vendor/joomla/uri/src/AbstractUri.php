@@ -122,7 +122,7 @@ abstract class AbstractUri implements UriInterface
 
 		foreach ($parts as $part)
 		{
-			$const = 'static::' . strtoupper($part);
+			$const = 'static::' . strtoupper((string) $part);
 
 			if (\defined($const))
 			{
@@ -399,7 +399,7 @@ abstract class AbstractUri implements UriInterface
 	 */
 	protected function cleanPath($path)
 	{
-		$path = explode('/', preg_replace('#(/+)#', '/', $path));
+		$path = explode('/', (string) preg_replace('#(/+)#', '/', $path));
 
 		for ($i = 0, $n = \count($path); $i < $n; $i++)
 		{

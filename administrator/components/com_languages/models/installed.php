@@ -256,9 +256,9 @@ class LanguagesModelInstalled extends JModelList
 			// Filter by search term.
 			if (!empty($search))
 			{
-				if (stripos($installedLanguage->name, $search) === false
-					&& stripos($installedLanguage->nativeName, $search) === false
-					&& stripos($installedLanguage->language, $search) === false)
+				if (stripos((string) $installedLanguage->name, $search) === false
+					&& stripos((string) $installedLanguage->nativeName, $search) === false
+					&& stripos((string) $installedLanguage->language, $search) === false)
 				{
 					unset($installedLanguages[$key]);
 					continue;
@@ -452,7 +452,7 @@ class LanguagesModelInstalled extends JModelList
 	 */
 	protected function compareLanguages($lang1, $lang2)
 	{
-		return strcmp($lang1->name, $lang2->name);
+		return strcmp((string) $lang1->name, (string) $lang2->name);
 	}
 
 	/**

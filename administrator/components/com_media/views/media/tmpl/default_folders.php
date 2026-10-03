@@ -19,7 +19,7 @@ $ulTarget = str_replace('/', '-', $this->folders['data']->relative);
 	// Get a sanitised name for the target
 	$target = str_replace('/', '-', $folder['data']->relative); ?>
 	<li id="<?php echo $target; ?>" class="folder">
-		<a href="index.php?option=com_media&amp;view=mediaList&amp;tmpl=component&amp;folder=<?php echo rawurlencode($folder['data']->relative); ?>" target="folderframe" class="folder-url" >
+		<a href="index.php?option=com_media&amp;view=mediaList&amp;tmpl=component&amp;folder=<?php echo rawurlencode((string) $folder['data']->relative); ?>" target="folderframe" class="folder-url" >
 			<span class="icon-folder"></span>
 			<?php echo $this->escape($folder['data']->name); ?>
 		</a>

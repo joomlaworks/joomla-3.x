@@ -87,7 +87,7 @@ $version = new JVersion;
 				<?php $currentShortVersion = preg_replace('#^([0-9\.]+)(|.*)$#', '$1', $version->getShortVersion()); ?>
 				<?php foreach ($this->items as $i => $language) : ?>
 					<?php // Get language code and language image. ?>
-					<?php preg_match('#^pkg_([a-z]{2,3}-[A-Z]{2})$#', $language->element, $element); ?>
+					<?php preg_match('#^pkg_([a-z]{2,3}-[A-Z]{2})$#', (string) $language->element, $element); ?>
 					<?php $language->code = $element[1]; ?>
 					<tr>
 						<td>
@@ -102,7 +102,7 @@ $version = new JVersion;
 						<td class="center">
 							<?php $minorVersion = $version::MAJOR_VERSION . '.' . $version::MINOR_VERSION; ?>
 							<?php // Display a Note if language pack version is not equal to Joomla version ?>
-							<?php if (strpos($language->version, $minorVersion) !== 0 || strpos($language->version, $currentShortVersion) !== 0) : ?>
+							<?php if (strpos((string) $language->version, $minorVersion) !== 0 || strpos((string) $language->version, $currentShortVersion) !== 0) : ?>
 								<span class="label label-warning hasTooltip" title="<?php echo JText::_('JGLOBAL_LANGUAGE_VERSION_NOT_PLATFORM'); ?>"><?php echo $language->version; ?></span>
 							<?php else : ?>
 								<span class="label label-success"><?php echo $language->version; ?></span>

@@ -171,7 +171,7 @@ class Access
 	{
 		// Sanitise inputs.
 		$userId = (int) $userId;
-		$action = strtolower(preg_replace('#[\s\-]+#', '.', trim($action)));
+		$action = strtolower((string) preg_replace('#[\s\-]+#', '.', trim($action)));
 
 		if (!isset(self::$identities[$userId]))
 		{
@@ -480,7 +480,7 @@ class Access
 	{
 		// Sanitize input.
 		$groupId = (int) $groupId;
-		$action  = strtolower(preg_replace('#[\s\-]+#', '.', trim($action)));
+		$action  = strtolower((string) preg_replace('#[\s\-]+#', '.', trim($action)));
 
 		return self::getAssetRules($assetKey, true, true, $preload)->allow($action, self::getGroupPath($groupId));
 	}
@@ -727,7 +727,7 @@ class Access
 		// If it's a valid asset key, clean it and return it.
 		if ($assetKey)
 		{
-			return strtolower(preg_replace('#[\s\-]+#', '.', trim($assetKey)));
+			return strtolower((string) preg_replace('#[\s\-]+#', '.', trim((string) $assetKey)));
 		}
 
 		// Return root asset id if already preloaded.

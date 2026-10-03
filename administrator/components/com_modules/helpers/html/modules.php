@@ -171,7 +171,7 @@ abstract class JHtmlModules
 				$options = ArrayHelper::sortObjects($options, 'text');
 			}
 
-			$templateGroups[$template] = ModulesHelper::createOptionGroup(ucfirst($template), $options);
+			$templateGroups[$template] = ModulesHelper::createOptionGroup(ucfirst((string) $template), $options);
 		}
 
 		// Add custom position to options
@@ -234,7 +234,7 @@ abstract class JHtmlModules
 		// Pop the first item off the array if it's blank
 		if (count($options))
 		{
-			if (strlen($options[0]->text) < 1)
+			if (strlen((string) $options[0]->text) < 1)
 			{
 				array_shift($options);
 			}

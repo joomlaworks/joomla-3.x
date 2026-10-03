@@ -322,7 +322,7 @@ class Image implements LoggerAwareInterface
 			foreach ($thumbSizes as $thumbSize)
 			{
 				// Desired thumbnail size
-				$size = explode('x', strtolower($thumbSize));
+				$size = explode('x', strtolower((string) $thumbSize));
 
 				if (\count($size) != 2)
 				{
@@ -1041,7 +1041,7 @@ class Image implements LoggerAwareInterface
 	protected function getFilterInstance($type)
 	{
 		// Sanitize the filter type.
-		$type = strtolower(preg_replace('#[^A-Z0-9_]#i', '', $type));
+		$type = strtolower((string) preg_replace('#[^A-Z0-9_]#i', '', $type));
 
 		// Verify that the filter type exists.
 		$className = 'Joomla\\Image\\Filter\\' . ucfirst($type);
@@ -1138,7 +1138,7 @@ class Image implements LoggerAwareInterface
 		$height = ($height === null) ? $width : $height;
 
 		// If we were given a percentage, calculate the integer value.
-		if (preg_match('/^[0-9]+(\.[0-9]+)?\%$/', $height))
+		if (preg_match('/^[0-9]+(\.[0-9]+)?\%$/', (string) $height))
 		{
 			$height = (int) round($this->getHeight() * (float) str_replace('%', '', $height) / 100);
 		}
@@ -1181,7 +1181,7 @@ class Image implements LoggerAwareInterface
 		$width = ($width === null) ? $height : $width;
 
 		// If we were given a percentage, calculate the integer value.
-		if (preg_match('/^[0-9]+(\.[0-9]+)?\%$/', $width))
+		if (preg_match('/^[0-9]+(\.[0-9]+)?\%$/', (string) $width))
 		{
 			$width = (int) round($this->getWidth() * (float) str_replace('%', '', $width) / 100);
 		}

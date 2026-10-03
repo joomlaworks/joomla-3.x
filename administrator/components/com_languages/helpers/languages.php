@@ -101,7 +101,7 @@ class LanguagesHelper
 	{
 		$filter = JFilterInput::getInstance(null, null, 1, 1);
 
-		return strtoupper($filter->clean($value, 'cmd'));
+		return strtoupper((string) $filter->clean($value, 'cmd'));
 	}
 
 	/**

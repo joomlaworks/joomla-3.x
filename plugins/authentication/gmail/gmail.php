@@ -75,7 +75,7 @@ class PlgAuthenticationGMail extends JPlugin
 			return;
 		}
 
-		$blacklist = explode(',', $this->params->get('user_blacklist', ''));
+		$blacklist = explode(',', (string) $this->params->get('user_blacklist', ''));
 
 		// Check if the username isn't blacklisted
 		if (in_array($credentials['username'], $blacklist))
@@ -178,7 +178,7 @@ class PlgAuthenticationGMail extends JPlugin
 
 		// Extra security checks with existing local accounts
 		$db                  = JFactory::getDbo();
-		$localUsernameChecks = array(strstr($email, '@', true), $email);
+		$localUsernameChecks = array(strstr((string) $email, '@', true), $email);
 
 		$query = $db->getQuery(true)
 			->select('id, activation, username, email, block')

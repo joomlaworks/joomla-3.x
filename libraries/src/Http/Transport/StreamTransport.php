@@ -253,7 +253,7 @@ class StreamTransport implements TransportInterface
 		$return->body = $body;
 
 		// Get the response code from the first offset of the response headers.
-		preg_match('/[0-9]{3}/', array_shift($headers), $matches);
+		preg_match('/[0-9]{3}/', (string) array_shift($headers), $matches);
 		$code = $matches[0];
 
 		if (is_numeric($code))
@@ -270,8 +270,8 @@ class StreamTransport implements TransportInterface
 		// Add the response headers to the response object.
 		foreach ($headers as $header)
 		{
-			$pos = strpos($header, ':');
-			$return->headers[trim(substr($header, 0, $pos))] = trim(substr($header, ($pos + 1)));
+			$pos = strpos((string) $header, ':');
+			$return->headers[trim(substr((string) $header, 0, $pos))] = trim(substr((string) $header, ($pos + 1)));
 		}
 
 		return $return;

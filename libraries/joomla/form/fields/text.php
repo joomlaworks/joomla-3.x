@@ -137,7 +137,7 @@ class JFormFieldText extends JFormField
 
 			$this->inputmode = '';
 			$inputmode = preg_replace('/\s+/', ' ', trim($inputmode));
-			$inputmode = explode(' ', $inputmode);
+			$inputmode = explode(' ', (string) $inputmode);
 
 			if (!empty($inputmode))
 			{

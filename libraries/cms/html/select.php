@@ -325,7 +325,7 @@ abstract class JHtmlSelect
 			else
 			{
 				$html .= $groupIndent . '<optgroup' . (empty($id) ? '' : ' id="' . $id . '"') . ' label="'
-					. ($options['group.label.toHtml'] ? htmlspecialchars($label, ENT_COMPAT, 'UTF-8') : $label) . '">' . $options['format.eol']
+					. ($options['group.label.toHtml'] ? htmlspecialchars((string) $label, ENT_COMPAT, 'UTF-8') : $label) . '">' . $options['format.eol']
 					. static::options($subList, $options) . $groupIndent . '</optgroup>' . $options['format.eol'];
 			}
 		}
@@ -686,7 +686,7 @@ abstract class JHtmlSelect
 			else
 			{
 				// If no string after hyphen - take hyphen out
-				$splitText = explode(' - ', $text, 2);
+				$splitText = explode(' - ', (string) $text, 2);
 				$text = $splitText[0];
 
 				if (isset($splitText[1]) && $splitText[1] !== '' && !preg_match('/^[\s]+$/', $splitText[1]))
@@ -710,7 +710,7 @@ abstract class JHtmlSelect
 				}
 				else
 				{
-					$attr = trim($attr);
+					$attr = trim((string) $attr);
 				}
 
 				$extra = ($id ? ' id="' . $id . '"' : '') . ($label ? ' label="' . $label . '"' : '') . ($attr ? ' ' . $attr : '') . $extra;

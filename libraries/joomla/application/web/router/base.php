@@ -133,7 +133,7 @@ class JApplicationWebRouterBase extends JApplicationWebRouter
 		$route = preg_replace('/([^?]*).*/u', '\1', $route);
 
 		// Sanitize and explode the route.
-		$route = trim(parse_url($route, PHP_URL_PATH), ' /');
+		$route = trim(parse_url((string) $route, PHP_URL_PATH), ' /');
 
 		// If the route is empty then simply return the default route.  No parsing necessary.
 		if ($route == '')

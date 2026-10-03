@@ -86,7 +86,7 @@ class CacheController
 	{
 		self::addIncludePath(__DIR__ . '/Controller');
 
-		$type = strtolower(preg_replace('/[^A-Z0-9_\.-]/i', '', $type));
+		$type = strtolower((string) preg_replace('/[^A-Z0-9_\.-]/i', '', $type));
 
 		$class = __NAMESPACE__ . '\\Controller\\' . ucfirst($type) . 'Controller';
 
@@ -179,7 +179,7 @@ class CacheController
 		if ($data !== false)
 		{
 			// Trim to fix unserialize errors
-			$data = unserialize(trim($data));
+			$data = unserialize(trim((string) $data));
 		}
 
 		return $data;

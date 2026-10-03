@@ -117,7 +117,7 @@ abstract class InstallerHelper
 		}
 		else
 		{
-			$target = $tmpPath . '/' . basename($target);
+			$target = $tmpPath . '/' . basename((string) $target);
 		}
 
 		// Write buffer to file
@@ -314,7 +314,7 @@ abstract class InstallerHelper
 		$filename = preg_replace('/[^a-z0-9\_\-\.]/i', '_', $filename);
 
 		// Replace multiple underscores with just one.
-		$filename = preg_replace('/__+/', '_', trim($filename, '_'));
+		$filename = preg_replace('/__+/', '_', trim((string) $filename, '_'));
 
 		// Return the cleaned filename or, if it is empty, a unique id.
 		return $filename ?: $default;
@@ -395,7 +395,7 @@ abstract class InstallerHelper
 				$hashRemote  = $updateObject->$hash->_data;
 				$hashOnFile  = true;
 
-				if ($hashPackage !== strtolower($hashRemote))
+				if ($hashPackage !== strtolower((string) $hashRemote))
 				{
 					return self::HASH_NOT_VALIDATED;
 				}

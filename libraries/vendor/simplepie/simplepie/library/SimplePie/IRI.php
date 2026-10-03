@@ -469,7 +469,7 @@ class SimplePie_IRI
 		$string = preg_replace_callback('/(?:%[A-Fa-f0-9]{2})+/', array($this, 'remove_iunreserved_percent_encoded'), $string);
 
 		// Replace invalid percent characters
-		$string = preg_replace('/%(?![A-Fa-f0-9]{2})/', '%25', $string);
+		$string = preg_replace('/%(?![A-Fa-f0-9]{2})/', '%25', (string) $string);
 
 		// Add unreserved and % to $extra_chars (the latter is safe because all
 		// pct-encoded sections are now valid).
@@ -477,8 +477,8 @@ class SimplePie_IRI
 
 		// Now replace any bytes that aren't allowed with their pct-encoded versions
 		$position = 0;
-		$strlen = strlen($string);
-		while (($position += strspn($string, $extra_chars, $position)) < $strlen)
+		$strlen = strlen((string) $string);
+		while (($position += strspn((string) $string, $extra_chars, $position)) < $strlen)
 		{
 			$value = ord($string[$position]);
 
@@ -1129,8 +1129,8 @@ class SimplePie_IRI
 		}
 
 		$position = 0;
-		$strlen = strlen($string);
-		while (($position += strcspn($string, $non_ascii, $position)) < $strlen)
+		$strlen = strlen((string) $string);
+		while (($position += strcspn((string) $string, (string) $non_ascii, $position)) < $strlen)
 		{
 			$string = substr_replace($string, sprintf('%%%02X', ord($string[$position])), $position, 1);
 			$position += 3;

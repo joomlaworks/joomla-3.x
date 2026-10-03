@@ -31,7 +31,7 @@ class AssociationsControllerAssociation extends JControllerForm
 	 */
 	public function edit($key = null, $urlVar = null)
 	{
-		list($extensionName, $typeName) = explode('.', $this->input->get('itemtype', '', 'string'));
+		list($extensionName, $typeName) = explode('.', (string) $this->input->get('itemtype', '', 'string'));
 
 		$id = $this->input->get('id', 0, 'int');
 
@@ -60,7 +60,7 @@ class AssociationsControllerAssociation extends JControllerForm
 	{
 		$this->checkToken();
 
-		list($extensionName, $typeName) = explode('.', $this->input->get('itemtype', '', 'string'));
+		list($extensionName, $typeName) = explode('.', (string) $this->input->get('itemtype', '', 'string'));
 
 		// Only check in, if component item type allows to check out.
 		if (AssociationsHelper::typeSupportsCheckout($extensionName, $typeName))
@@ -70,7 +70,7 @@ class AssociationsControllerAssociation extends JControllerForm
 
 			if ($targetId !== '')
 			{
-				$ids = array_unique(explode(',', $targetId));
+				$ids = array_unique(explode(',', (string) $targetId));
 			}
 
 			$ids[] = $this->input->get('id', 0, 'int');

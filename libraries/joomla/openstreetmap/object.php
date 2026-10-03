@@ -52,7 +52,7 @@ abstract class JOpenstreetmapObject
 	 *
 	 * @since   3.2.0
 	 */
-	public function __construct(Registry &$options = null, ?JHttp $client = null, ?JOpenstreetmapOauth $oauth = null)
+	public function __construct(?Registry &$options = null, ?JHttp $client = null, ?JOpenstreetmapOauth $oauth = null)
 	{
 		$this->options = isset($options) ? $options : new Registry;
 		$this->client = isset($client) ? $client : new JHttp($this->options);
@@ -120,12 +120,12 @@ abstract class JOpenstreetmapObject
 		// Validate the response code.
 		if ($response->code != 200)
 		{
-			$error = htmlspecialchars($response->body, ENT_COMPAT, 'UTF-8');
+			$error = htmlspecialchars((string) $response->body, ENT_COMPAT, 'UTF-8');
 
 			throw new DomainException($error, $response->code);
 		}
 
-		$xml_string = simplexml_load_string($response->body);
+		$xml_string = simplexml_load_string((string) $response->body);
 
 		return $xml_string;
 	}

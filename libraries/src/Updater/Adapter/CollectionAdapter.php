@@ -129,7 +129,7 @@ class CollectionAdapter extends UpdateAdapter
 				foreach ($this->updatecols as $col)
 				{
 					// Reset the values if it doesn't exist
-					if (!array_key_exists($col, $attrs))
+					if (!array_key_exists((string) $col, $attrs))
 					{
 						$attrs[$col] = '';
 
@@ -150,14 +150,14 @@ class CollectionAdapter extends UpdateAdapter
 				// Lower case all of the fields
 				foreach ($attrs as $key => $attr)
 				{
-					$values[strtolower($key)] = $attr;
+					$values[strtolower((string) $key)] = $attr;
 				}
 
 				// Only add the update if it is on the same platform and release as we are
 				$ver = new Version;
 
 				// Lower case and remove the exclamation mark
-				$product = strtolower(InputFilter::getInstance()->clean($ver::PRODUCT, 'cmd'));
+				$product = strtolower((string) InputFilter::getInstance()->clean($ver::PRODUCT, 'cmd'));
 
 				/*
 				 * Set defaults, the extension file should clarify in case but it may be only available in one version
@@ -180,7 +180,7 @@ class CollectionAdapter extends UpdateAdapter
 
 				// Set this to ourselves as a default
 				// validate that we can install the extension
-				if ($product == $values['targetplatform'] && preg_match('/^' . $values['targetplatformversion'] . '/', JVERSION))
+				if ($product == $values['targetplatform'] && preg_match('/^' . $values['targetplatformversion'] . '/', (string) JVERSION))
 				{
 					$update->bind($values);
 					$this->updates[] = $update;
@@ -240,7 +240,7 @@ class CollectionAdapter extends UpdateAdapter
 		xml_set_object($this->xmlParser, $this);
 		xml_set_element_handler($this->xmlParser, '_startElement', '_endElement');
 
-		if (!xml_parse($this->xmlParser, $response->body))
+		if (!xml_parse($this->xmlParser, (string) $response->body))
 		{
 			// If the URL is missing the .xml extension, try appending it and retry loading the update
 			if (!$this->appendExtension && (substr($this->_url, -4) != '.xml'))

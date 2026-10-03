@@ -158,7 +158,7 @@ class PlgSystemDebug extends JPlugin
 
 			foreach ($this->params->get('log_priorities', array()) as $p)
 			{
-				$const = 'JLog::' . strtoupper($p);
+				$const = 'JLog::' . strtoupper((string) $p);
 
 				if (!defined($const))
 				{
@@ -169,7 +169,7 @@ class PlgSystemDebug extends JPlugin
 			}
 
 			// Split into an array at any character other than alphabet, numbers, _, ., or -
-			$categories = preg_split('/[^\w.-]+/', $this->params->get('log_categories', ''), -1, PREG_SPLIT_NO_EMPTY);
+			$categories = preg_split('/[^\w.-]+/', (string) $this->params->get('log_categories', ''), -1, PREG_SPLIT_NO_EMPTY);
 			$mode       = $this->params->get('log_category_mode', 0);
 
 			JLog::addLogger(array('logger' => 'callback', 'callback' => array($this, 'logger')), $priority, $categories, $mode);
@@ -866,7 +866,7 @@ class PlgSystemDebug extends JPlugin
 
 		foreach ($log as $id => $query)
 		{
-			$did = md5($query);
+			$did = md5((string) $query);
 
 			if (!isset($duplicates[$did]))
 			{
@@ -891,7 +891,7 @@ class PlgSystemDebug extends JPlugin
 				}
 				else
 				{
-					$explain = JText::sprintf('PLG_DEBUG_QUERY_EXPLAIN_NOT_POSSIBLE', htmlspecialchars($query));
+					$explain = JText::sprintf('PLG_DEBUG_QUERY_EXPLAIN_NOT_POSSIBLE', htmlspecialchars((string) $query));
 				}
 
 				// Run a SHOW PROFILE query.
@@ -905,7 +905,7 @@ class PlgSystemDebug extends JPlugin
 
 				// How heavy should the string length count: 0 - 1.
 				$ratio     = 0.5;
-				$timeScore = $queryTime / ((strlen($query) + 1) * $ratio) * 200;
+				$timeScore = $queryTime / ((strlen((string) $query) + 1) * $ratio) * 200;
 
 				// Determine color of bargraph depending on query speed and presence of warnings in EXPLAIN.
 				if ($timeScore > 10)
@@ -997,20 +997,20 @@ class PlgSystemDebug extends JPlugin
 		foreach ($log as $id => $query)
 		{
 			// Start query type ticker additions.
-			$fromStart  = stripos($query, 'from');
-			$whereStart = stripos($query, 'where', $fromStart);
+			$fromStart  = stripos((string) $query, 'from');
+			$whereStart = stripos((string) $query, 'where', $fromStart);
 
 			if ($whereStart === false)
 			{
-				$whereStart = stripos($query, 'order by', $fromStart);
+				$whereStart = stripos((string) $query, 'order by', $fromStart);
 			}
 
 			if ($whereStart === false)
 			{
-				$whereStart = strlen($query) - 1;
+				$whereStart = strlen((string) $query) - 1;
 			}
 
-			$fromString = substr($query, 0, $whereStart);
+			$fromString = substr((string) $query, 0, $whereStart);
 			$fromString = str_replace(array("\t", "\n"), ' ', $fromString);
 			$fromString = trim($fromString);
 
@@ -1026,7 +1026,7 @@ class PlgSystemDebug extends JPlugin
 			}
 
 			// Increment the count.
-			if (stripos($query, 'select') === 0)
+			if (stripos((string) $query, 'select') === 0)
 			{
 				$selectQueryTypeTicker[$fromString]++;
 				unset($otherQueryTypeTicker[$fromString]);
@@ -1160,7 +1160,7 @@ class PlgSystemDebug extends JPlugin
 
 				$htmlAccordions .= JHtml::_('bootstrap.endAccordion');
 
-				$did = md5($query);
+				$did = md5((string) $query);
 
 				if (isset($duplicates[$did]))
 				{
@@ -1326,7 +1326,7 @@ class PlgSystemDebug extends JPlugin
 				$barClass .= ' dbg-bar-active';
 			}
 
-			$tip = empty($bar->tip) ? '' : ' title="' . htmlspecialchars($bar->tip, ENT_COMPAT, 'UTF-8') . '"';
+			$tip = empty($bar->tip) ? '' : ' title="' . htmlspecialchars((string) $bar->tip, ENT_COMPAT, 'UTF-8') . '"';
 
 			$html[] = '<a class="bar dbg-bar ' . $barClass . '"' . $tip . ' style="width: '
 				. $bar->width . '%;" href="#dbg-' . $class . '-' . ($i + 1) . '"></a>';
@@ -1360,7 +1360,7 @@ class PlgSystemDebug extends JPlugin
 
 		foreach (array_keys($table[0]) as $k)
 		{
-			$html[] = '<th>' . htmlspecialchars($k) . '</th>';
+			$html[] = '<th>' . htmlspecialchars((string) $k) . '</th>';
 		}
 
 		$html[]    = '</tr>';
@@ -1425,7 +1425,7 @@ class PlgSystemDebug extends JPlugin
 					}
 					else
 					{
-						$html[] = '<td><strong>' . htmlspecialchars($td) . '</strong>';
+						$html[] = '<td><strong>' . htmlspecialchars((string) $td) . '</strong>';
 					}
 				}
 				elseif ($k === 'Extra')
@@ -1534,7 +1534,7 @@ class PlgSystemDebug extends JPlugin
 					$dbVersion56 = false;
 				}
 
-				if ((stripos($query, 'select') === 0) || ($dbVersion56 && ((stripos($query, 'delete') === 0) || (stripos($query, 'update') === 0))))
+				if ((stripos((string) $query, 'select') === 0) || ($dbVersion56 && ((stripos((string) $query, 'delete') === 0) || (stripos((string) $query, 'update') === 0))))
 				{
 					try
 					{
@@ -1676,18 +1676,18 @@ class PlgSystemDebug extends JPlugin
 
 					if ($stripPref)
 					{
-						$guess = trim(preg_replace(chr(1) . '^' . $stripPref . chr(1) . 'i', '', $guess));
+						$guess = trim((string) preg_replace(chr(1) . '^' . $stripPref . chr(1) . 'i', '', $guess));
 					}
 
 					if ($stripSuff)
 					{
-						$guess = trim(preg_replace(chr(1) . $stripSuff . '$' . chr(1) . 'i', '', $guess));
+						$guess = trim((string) preg_replace(chr(1) . $stripSuff . '$' . chr(1) . 'i', '', $guess));
 					}
 				}
 
-				$key = strtoupper(trim($key));
+				$key = strtoupper(trim((string) $key));
 				$key = preg_replace('#\s+#', '_', $key);
-				$key = preg_replace('#\W#', '', $key);
+				$key = preg_replace('#\W#', '', (string) $key);
 
 				// Prepare the text.
 				$guesses[$file][] = $key . '="' . $guess . '"';
@@ -1735,7 +1735,7 @@ class PlgSystemDebug extends JPlugin
 
 		);
 
-		$query = preg_replace(array_keys($regex), array_values($regex), $query);
+		$query = preg_replace(array_keys($regex), array_values($regex), (string) $query);
 
 		$query = str_replace('*', '<b style="color: red;">*</b>', $query);
 
@@ -2024,7 +2024,7 @@ class PlgSystemDebug extends JPlugin
 
 		// Add some colors
 		$json = preg_replace('#"([^"]+)":#', '<span class=\'black\'>"</span><span class=\'green\'>$1</span><span class=\'black\'>"</span>:', $json);
-		$json = preg_replace('#"(|[^"]+)"(\n|\r\n|,)#', '<span class=\'grey\'>"$1"</span>$2', $json);
+		$json = preg_replace('#"(|[^"]+)"(\n|\r\n|,)#', '<span class=\'grey\'>"$1"</span>$2', (string) $json);
 		$json = str_replace('null,', '<span class=\'blue\'>null</span>,', $json);
 
 		return $json;

@@ -182,7 +182,7 @@ class PlgSearchTags extends JPlugin
 					foreach ($tagged_items as $k => $item)
 					{
 						// For 3rd party extensions we need to load the component strings from its sys.ini file
-						$parts = explode('.', $item->type_alias);
+						$parts = explode('.', (string) $item->type_alias);
 						$comp = array_shift($parts);
 						$lang->load($comp, JPATH_SITE, null, false, true)
 						|| $lang->load($comp, JPATH_SITE . '/components/' . $comp, null, false, true);

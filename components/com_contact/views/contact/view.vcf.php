@@ -68,7 +68,7 @@ class ContactViewContact extends JViewLegacy
 		JFactory::getDocument()->setMimeEncoding('text/directory', true);
 
 		// Compute lastname, firstname and middlename
-		$item->name = trim($item->name);
+		$item->name = trim((string) $item->name);
 
 		// "Lastname, Firstname Midlename" format support
 		// e.g. "de Gaulle, Charles"
@@ -102,9 +102,13 @@ class ContactViewContact extends JViewLegacy
 			$card_name = $firstname . ($middlename ? ' ' . $middlename : '') . ($lastname ? ' ' . $lastname : '');
 		}
 
-		$rev = date('c', strtotime($item->modified));
+		$rev = date('c', strtotime((string) $item->modified));
 
-		JFactory::getApplication()->setHeader('Content-disposition', 'attachment; filename="' . $card_name . '.vcf"', true);
+		JFactory::getApplication()->setHeader(
+			'Content-disposition',
+			'attachment; filename="' . str_replace('"', '', $card_name) . '.vcf"',
+			true
+		);
 
 		$vcard = array();
 		$vcard[] .= 'BEGIN:VCARD';

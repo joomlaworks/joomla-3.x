@@ -697,7 +697,7 @@ class MenusModelItem extends JModelAdmin
 				$table->component_id = 0;
 				$args = array();
 
-				parse_str(parse_url($table->link, PHP_URL_QUERY), $args);
+				parse_str(parse_url((string) $table->link, PHP_URL_QUERY), $args);
 				break;
 
 			case 'separator':
@@ -711,7 +711,7 @@ class MenusModelItem extends JModelAdmin
 				$table->component_id = 0;
 
 				$args = array();
-				parse_str(parse_url($table->link, PHP_URL_QUERY), $args);
+				parse_str(parse_url((string) $table->link, PHP_URL_QUERY), $args);
 				break;
 
 			case 'component':
@@ -721,7 +721,7 @@ class MenusModelItem extends JModelAdmin
 
 				// Ensure the integrity of the component_id field is maintained, particularly when changing the menu item type.
 				$args = array();
-				parse_str(parse_url($table->link, PHP_URL_QUERY), $args);
+				parse_str(parse_url((string) $table->link, PHP_URL_QUERY), $args);
 
 				if (isset($args['option']))
 				{
@@ -1616,7 +1616,7 @@ class MenusModelItem extends JModelAdmin
 		{
 			if ($table->load($pk))
 			{
-				if (!array_key_exists($table->language, $languages))
+				if (!array_key_exists((string) $table->language, $languages))
 				{
 					$languages[$table->language] = true;
 

@@ -33,7 +33,7 @@ class JInputJSON extends JInput
 	 *
 	 * @since   12.2
 	 */
-	public function __construct(array $source = null, array $options = array())
+	public function __construct(?array $source = null, array $options = array())
 	{
 		if (isset($options['filter']))
 		{

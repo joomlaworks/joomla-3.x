@@ -70,7 +70,7 @@ class FinderIndexerParserHtml extends FinderIndexerParser
 		);
 
 		// Strip HTML tags.
-		$input = strip_tags($input);
+		$input = strip_tags((string) $input);
 
 		return parent::parse($input);
 	}

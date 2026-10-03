@@ -98,12 +98,12 @@ class FOFTableRelations
 				continue;
 			}
 
-			if (substr($field, -3) != '_id')
+			if (substr((string) $field, -3) != '_id')
 			{
 				continue;
 			}
 
-			$parts = explode('_', $field);
+			$parts = explode('_', (string) $field);
 
 			// If the component type of the field is not set assume 'joomla'
 			if (count($parts) == 2)

@@ -26,7 +26,7 @@ defined('_JEXEC') or die;
 		<?php if ($this->contact->address && $this->params->get('show_street_address')) : ?>
 			<dd>
 				<span class="contact-street" itemprop="streetAddress">
-					<?php echo nl2br($this->contact->address); ?>
+					<?php echo nl2br((string) $this->contact->address); ?>
 					<br />
 				</span>
 			</dd>
@@ -69,7 +69,7 @@ defined('_JEXEC') or die;
 <?php if ($this->contact->email_to && $this->params->get('show_email')) : ?>
 	<dt>
 		<span class="<?php echo $this->params->get('marker_class'); ?>" itemprop="email">
-			<?php echo nl2br($this->params->get('marker_email')); ?>
+			<?php echo nl2br((string) $this->params->get('marker_email')); ?>
 		</span>
 	</dt>
 	<dd>

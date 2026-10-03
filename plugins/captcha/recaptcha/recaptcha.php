@@ -252,7 +252,7 @@ class PlgCaptchaRecaptcha extends JPlugin
 
 		foreach ($data as $key => $value)
 		{
-			$req .= $key . '=' . urlencode(stripslashes($value)) . '&';
+			$req .= $key . '=' . urlencode(stripslashes((string) $value)) . '&';
 		}
 
 		// Cut the last '&'
@@ -317,7 +317,7 @@ class PlgCaptchaRecaptcha extends JPlugin
 	{
 		$language = JFactory::getLanguage();
 
-		$tag = explode('-', $language->getTag());
+		$tag = explode('-', (string) $language->getTag());
 		$tag = $tag[0];
 		$available = array('en', 'pt', 'fr', 'de', 'nl', 'ru', 'es', 'tr');
 

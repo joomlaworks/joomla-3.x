@@ -63,7 +63,7 @@ class InstallationModelFtp extends JModelBase
 			return false;
 		}
 
-		$cwd = rtrim($cwd, '/');
+		$cwd = rtrim((string) $cwd, '/');
 
 		// Get a list of folders in the current working directory.
 		$cwdFolders = $ftp->listDetails(null, 'folders');
@@ -91,7 +91,7 @@ class InstallationModelFtp extends JModelBase
 		}
 
 		// Search through the segments of JPATH_SITE looking for root possibilities.
-		$parts = explode(DIRECTORY_SEPARATOR, JPATH_SITE);
+		$parts = explode(DIRECTORY_SEPARATOR, (string) JPATH_SITE);
 		$tmp = '';
 
 		for ($i = count($parts) - 1; $i >= 0; $i--)
@@ -172,7 +172,7 @@ class InstallationModelFtp extends JModelBase
 
 		// Since the root path will be trimmed when it gets saved to configuration.php,
 		// we want to test with the same value as well.
-		$root = rtrim($options->get('ftp_root'), '/');
+		$root = rtrim((string) $options->get('ftp_root'), '/');
 
 		// Verify PWD function.
 		if ($ftp->pwd() === false)

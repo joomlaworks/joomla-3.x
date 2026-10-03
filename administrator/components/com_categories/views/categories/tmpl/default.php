@@ -24,8 +24,8 @@ $userId    = $user->get('id');
 $extension = $this->escape($this->state->get('filter.extension'));
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
-$saveOrder = ($listOrder == 'a.lft' && strtolower($listDirn) == 'asc');
-$parts     = explode('.', $extension, 2);
+$saveOrder = ($listOrder == 'a.lft' && strtolower((string) $listDirn) == 'asc');
+$parts     = explode('.', (string) $extension, 2);
 $component = $parts[0];
 $section   = null;
 $columns   = 7;
@@ -45,7 +45,7 @@ if (count($parts) > 1)
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_categories&task=categories.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'categoryList', 'adminForm', strtolower($listDirn), $saveOrderingUrl, false, true);
+	JHtml::_('sortablelist.sortable', 'categoryList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl, false, true);
 }
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_categories&view=categories'); ?>" method="post" name="adminForm" id="adminForm">

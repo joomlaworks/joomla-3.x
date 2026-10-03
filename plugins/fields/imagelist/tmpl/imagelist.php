@@ -35,14 +35,14 @@ foreach ($value as $path)
 	{
 		$buffer .= sprintf('<img src="images/%s/%s"%s>',
 			$fieldParams->get('directory'),
-			htmlentities($path, ENT_COMPAT, 'UTF-8', true),
+			htmlentities((string) $path, ENT_COMPAT, 'UTF-8', true),
 			$class
 		);
 	}
 	else
 	{
 		$buffer .= sprintf('<img src="images/%s"%s>',
-			htmlentities($path, ENT_COMPAT, 'UTF-8', true),
+			htmlentities((string) $path, ENT_COMPAT, 'UTF-8', true),
 			$class
 		);
 	}

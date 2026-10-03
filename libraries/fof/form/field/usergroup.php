@@ -106,7 +106,7 @@ class FOFFormFieldUsergroup extends JFormFieldUsergroup implements FOFFormField
 		}
 
 		return '<span id="' . $this->id . '" ' . $class . '>' .
-			htmlspecialchars(FOFFormFieldList::getOptionName($options, $this->value), ENT_COMPAT, 'UTF-8') .
+			htmlspecialchars((string) FOFFormFieldList::getOptionName($options, $this->value), ENT_COMPAT, 'UTF-8') .
 			'</span>';
 	}
 
@@ -137,7 +137,7 @@ class FOFFormFieldUsergroup extends JFormFieldUsergroup implements FOFFormField
 
 
 		return '<span class="' . $this->id . ' ' . $class . '">' .
-			htmlspecialchars(FOFFormFieldList::getOptionName($options, $this->value), ENT_COMPAT, 'UTF-8') .
+			htmlspecialchars((string) FOFFormFieldList::getOptionName($options, $this->value), ENT_COMPAT, 'UTF-8') .
 			'</span>';
 	}
 }

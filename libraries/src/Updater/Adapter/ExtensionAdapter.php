@@ -106,7 +106,7 @@ class ExtensionAdapter extends UpdateAdapter
 		{
 			case 'UPDATE':
 				// Lower case and remove the exclamation mark
-				$product = strtolower(InputFilter::getInstance()->clean(Version::PRODUCT, 'cmd'));
+				$product = strtolower((string) InputFilter::getInstance()->clean(Version::PRODUCT, 'cmd'));
 
 				// Support for the min_dev_level and max_dev_level attributes is deprecated, a regexp should be used instead
 				if (isset($this->currentUpdate->targetplatform->min_dev_level) || isset($this->currentUpdate->targetplatform->max_dev_level))
@@ -130,7 +130,7 @@ class ExtensionAdapter extends UpdateAdapter
 					|| Version::PATCH_VERSION <= $this->currentUpdate->targetplatform->max_dev_level;
 
 				if ($product == $this->currentUpdate->targetplatform['NAME']
-					&& preg_match('/^' . $this->currentUpdate->targetplatform['VERSION'] . '/', JVERSION)
+					&& preg_match('/^' . $this->currentUpdate->targetplatform['VERSION'] . '/', (string) JVERSION)
 					&& $patchMinimumSupported
 					&& $patchMaximumSupported)
 				{
@@ -163,7 +163,8 @@ class ExtensionAdapter extends UpdateAdapter
 						$db           = Factory::getDbo();
 						$dbType       = strtolower($db->getServerType());
 						$dbVersion    = $db->getVersion();
-						$supportedDbs = $this->currentUpdate->supported_databases;
+						// The XML parser upper-cases attribute names, while server types are lower case
+						$supportedDbs = array_change_key_case($this->currentUpdate->supported_databases, CASE_LOWER);
 
 						// MySQL and MariaDB use the same database driver but not the same version numbers
 						if ($dbType === 'mysql')
@@ -329,7 +330,7 @@ class ExtensionAdapter extends UpdateAdapter
 		xml_set_element_handler($this->xmlParser, '_startElement', '_endElement');
 		xml_set_character_data_handler($this->xmlParser, '_characterData');
 
-		if (!xml_parse($this->xmlParser, $response->body))
+		if (!xml_parse($this->xmlParser, (string) $response->body))
 		{
 			// If the URL is missing the .xml extension, try appending it and retry loading the update
 			if (!$this->appendExtension && (substr($this->_url, -4) != '.xml'))

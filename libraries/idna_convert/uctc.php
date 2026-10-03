@@ -172,7 +172,7 @@ class uctc {
     {
         $output  = array();
         $out_len = 0;
-        $inp_len = strlen($input);
+        $inp_len = strlen((string) $input);
         $mode    = 'd';
         $b64     = '';
 
@@ -181,7 +181,7 @@ class uctc {
             if (0 == ord($c)) continue; // Ignore zero bytes
             if ('b' == $mode) {
                 // Sequence got terminated
-                if (!preg_match('![A-Za-z0-9/'.preg_quote($sc, '!').']!', $c)) {
+                if (!preg_match('![A-Za-z0-9/'.preg_quote((string) $sc, '!').']!', (string) $c)) {
                     if ('-' == $c) {
                         if ($b64 == '') {
                             $output[$out_len] = ord($sc);
@@ -280,7 +280,7 @@ class uctc {
     {
         $output = array();
 
-        $inp_len = strlen($input);
+        $inp_len = strlen((string) $input);
         // Input length must be dividable by 4
         if ($inp_len % 4) {
             throw new Exception('Input UCS4 string is broken');

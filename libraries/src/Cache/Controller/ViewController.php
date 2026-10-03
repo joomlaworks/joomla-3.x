@@ -67,7 +67,7 @@ class ViewController extends CacheController
 				$this->cache->unlock($id);
 			}
 
-			$data = unserialize(trim($data));
+			$data = unserialize(trim((string) $data));
 
 			if ($wrkarounds)
 			{

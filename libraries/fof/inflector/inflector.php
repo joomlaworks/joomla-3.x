@@ -191,7 +191,7 @@ class FOFInflector
 		foreach (self::$_rules['pluralization'] as $regexp => $replacement)
 		{
 			$matches = null;
-			$plural  = preg_replace($regexp, $replacement, $word, -1, $matches);
+			$plural  = preg_replace($regexp, (string) $replacement, $word, -1, $matches);
 
 			if ($matches > 0)
 			{
@@ -232,7 +232,7 @@ class FOFInflector
 		foreach (self::$_rules['singularization'] as $regexp => $replacement)
 		{
 			$matches  = null;
-			$singular = preg_replace($regexp, $replacement, $word, -1, $matches);
+			$singular = preg_replace($regexp, (string) $replacement, $word, -1, $matches);
 
 			if ($matches > 0)
 			{
@@ -278,7 +278,7 @@ class FOFInflector
 	public static function underscore($word)
 	{
 		$word = preg_replace('/(\s)+/', '_', $word);
-		$word = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $word));
+		$word = strtolower((string) preg_replace('/(?<=\\w)([A-Z])/', '_\\1', (string) $word));
 
 		return $word;
 	}

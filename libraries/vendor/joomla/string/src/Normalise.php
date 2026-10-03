@@ -41,7 +41,7 @@ abstract class Normalise
 	{
 		return $grouped
 			? preg_split('/(?<=[^A-Z_])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][^A-Z_])/x', $input)
-			: trim(preg_replace('#([A-Z])#', ' $1', $input));
+			: trim((string) preg_replace('#([A-Z])#', ' $1', $input));
 	}
 
 	/**
@@ -132,7 +132,7 @@ abstract class Normalise
 		$input = preg_replace('#^[0-9]+#', '', $input);
 
 		// Lowercase the first character.
-		$input = lcfirst($input);
+		$input = lcfirst((string) $input);
 
 		return $input;
 	}

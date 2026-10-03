@@ -335,7 +335,7 @@ class FileLayout extends BaseLayout
 		$lang = \JFactory::getLanguage();
 
 		$langTag = $lang->getTag();
-		$langParts = explode('-', $langTag);
+		$langParts = explode('-', (string) $langTag);
 
 		$suffixes = array($langTag, $langParts[0]);
 		$suffixes[] = $lang->isRTL() ? 'rtl' : 'ltr';
@@ -424,7 +424,7 @@ class FileLayout extends BaseLayout
 		$component = ($option !== null) ? $option : $this->options->get('component', null);
 
 		// Valid option format
-		if (!empty($component) && substr_count($component, 'com_'))
+		if (!empty($component) && substr_count((string) $component, 'com_'))
 		{
 			// Latest check: component exists and is enabled
 			return ComponentHelper::isEnabled($component);

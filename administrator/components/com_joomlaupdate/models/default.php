@@ -60,9 +60,9 @@ class JoomlaupdateModelDefault extends JModelLegacy
 			// "Custom"
 			// TODO: check if the customurl is valid and not just "not empty".
 			case 'custom':
-				if (trim($params->get('customurl', '')) != '')
+				if (trim((string) $params->get('customurl', '')) != '')
 				{
-					$updateURL = trim($params->get('customurl', ''));
+					$updateURL = trim((string) $params->get('customurl', ''));
 				}
 				else
 				{
@@ -298,7 +298,7 @@ class JoomlaupdateModelDefault extends JModelLegacy
 	public function download()
 	{
 		$updateInfo = $this->getUpdateInformation();
-		$packageURL = trim($updateInfo['object']->downloadurl->_data);
+		$packageURL = trim((string) $updateInfo['object']->downloadurl->_data);
 		$sources    = $updateInfo['object']->get('downloadSources', array());
 
 		// We have to manually follow the redirects here so we set the option to false.
@@ -360,7 +360,7 @@ class JoomlaupdateModelDefault extends JModelLegacy
 			while (!($download = $this->downloadPackage($packageURL, $target)) && isset($sources[$mirror]))
 			{
 				$name       = $sources[$mirror];
-				$packageURL = trim($name->url);
+				$packageURL = trim((string) $name->url);
 				$mirror++;
 			}
 
@@ -378,7 +378,7 @@ class JoomlaupdateModelDefault extends JModelLegacy
 				while (!($download = $this->downloadPackage($packageURL, $target)) && isset($sources[$mirror]))
 				{
 					$name       = $sources[$mirror];
-					$packageURL = trim($name->url);
+					$packageURL = trim((string) $name->url);
 					$mirror++;
 				}
 
@@ -516,7 +516,7 @@ class JoomlaupdateModelDefault extends JModelLegacy
 		{
 			$updateInfo = $this->getUpdateInformation();
 			$packageURL = $updateInfo['object']->downloadurl->_data;
-			$basename = basename($packageURL);
+			$basename = basename((string) $packageURL);
 		}
 
 		// Get the package name.
@@ -555,7 +555,7 @@ ENDDATA;
 			$ftp_host = $app->input->get('ftp_host', '');
 			$ftp_port = $app->input->get('ftp_port', '21');
 			$ftp_user = $app->input->get('ftp_user', '');
-			$ftp_pass = addcslashes($app->input->get('ftp_pass', '', 'raw'), "'\\");
+			$ftp_pass = addcslashes((string) $app->input->get('ftp_pass', '', 'raw'), "'\\");
 			$ftp_root = $app->input->get('ftp_root', '');
 
 			// Is the tempdir really writable?
@@ -758,6 +758,11 @@ ENDDATA;
 		JLoader::register('JoomlaInstallerScript', JPATH_ADMINISTRATOR . '/components/com_admin/script.php');
 
 		$manifestClass = new JoomlaInstallerScript;
+
+		// Only a core files reinstall can ask for this, and only once
+		$app = JFactory::getApplication();
+		$manifestClass->restoreCoreExtensions = (bool) $app->getUserState('com_joomlaupdate.restorecore', false);
+		$app->setUserState('com_joomlaupdate.restorecore', null);
 
 		ob_start();
 		ob_implicit_flush(false);
@@ -1088,7 +1093,7 @@ ENDDATA;
 		$username = isset($credentials['username']) ? $credentials['username'] : null;
 		$user     = JFactory::getUser();
 
-		if (strtolower($user->username) != strtolower($username))
+		if (strtolower((string) $user->username) != strtolower((string) $username))
 		{
 			return false;
 		}
@@ -1517,7 +1522,7 @@ ENDDATA;
 
 		foreach ($rows as $extension)
 		{
-			$decode = json_decode($extension->manifest_cache);
+			$decode = json_decode((string) $extension->manifest_cache);
 
 			// Remove unused fields so they do not cause javascript errors during pre-update check
 			unset($decode->description);
@@ -1593,7 +1598,7 @@ ENDDATA;
 
 		foreach ($rows as $plugin)
 		{
-			$decode = json_decode($plugin->manifest_cache);
+			$decode = json_decode((string) $plugin->manifest_cache);
 
 			// Remove unused fields so they do not cause javascript errors during pre-update check
 			unset($decode->description);
@@ -1729,7 +1734,7 @@ ENDDATA;
 			return $return;
 		}
 
-		$updateSiteXML = simplexml_load_string($response->body);
+		$updateSiteXML = simplexml_load_string((string) $response->body);
 
 		foreach ($updateSiteXML->extension as $extension)
 		{

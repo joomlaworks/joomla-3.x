@@ -364,7 +364,7 @@ class JApplication extends BaseApplication
 			else
 			{
 				// It's relative to where we are now, so lets add that.
-				$parts = explode('/', $uri->toString(array('path')));
+				$parts = explode('/', (string) $uri->toString(array('path')));
 				array_pop($parts);
 				$path = implode('/', $parts) . '/';
 				$url = $prefix . $path . $url;

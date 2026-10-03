@@ -50,14 +50,14 @@ class ModBreadCrumbsHelper
 		for ($i = 0; $i < $count; $i ++)
 		{
 			$crumbs[$i]       = new stdClass;
-			$crumbs[$i]->name = stripslashes(htmlspecialchars($items[$i]->name, ENT_COMPAT, 'UTF-8'));
+			$crumbs[$i]->name = stripslashes(htmlspecialchars((string) $items[$i]->name, ENT_COMPAT, 'UTF-8'));
 			$crumbs[$i]->link = !is_null($items[$i]->link) ? JRoute::_($items[$i]->link) : '';
 		}
 
 		if ($params->get('showHome', 1))
 		{
 			$item       = new stdClass;
-			$item->name = htmlspecialchars($params->get('homeText', JText::_('MOD_BREADCRUMBS_HOME')), ENT_COMPAT, 'UTF-8');
+			$item->name = htmlspecialchars((string) $params->get('homeText', JText::_('MOD_BREADCRUMBS_HOME')), ENT_COMPAT, 'UTF-8');
 			$item->link = JRoute::_('index.php?Itemid=' . $home->id);
 			array_unshift($crumbs, $item);
 		}

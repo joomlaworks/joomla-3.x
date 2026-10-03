@@ -413,7 +413,7 @@ class LibraryAdapter extends InstallerAdapter
 		$this->parent->removeFiles($xml->media);
 		$this->parent->removeFiles($xml->languages);
 
-		$elementParts = explode('/', $row->element);
+		$elementParts = explode('/', (string) $row->element);
 
 		// Delete empty vendor folders
 		if (2 === count($elementParts))

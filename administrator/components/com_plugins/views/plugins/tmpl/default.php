@@ -24,7 +24,7 @@ $saveOrder = $listOrder == 'ordering';
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_plugins&task=plugins.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'pluginList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+	JHtml::_('sortablelist.sortable', 'pluginList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 }
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_plugins&view=plugins'); ?>" method="post" name="adminForm" id="adminForm">

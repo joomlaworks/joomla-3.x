@@ -168,7 +168,7 @@ abstract class JArrayHelper
 
 			foreach (get_object_vars($item) as $k => $v)
 			{
-				if (!$regex || preg_match($regex, $k))
+				if (!$regex || preg_match($regex, (string) $k))
 				{
 					if ($recurse)
 					{

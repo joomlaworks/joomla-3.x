@@ -101,6 +101,15 @@ defined('_JEXEC') or die;
 					<input type="text" name="ftp_root" value="<?php echo $this->ftp['directory']; ?>" />
 				</td>
 			</tr>
+			<tr>
+				<td>
+					<label for="restore_core_extensions"><?php echo JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_RESTORE_CORE_EXTENSIONS'); ?></label>
+				</td>
+				<td>
+					<input type="checkbox" name="restore_core_extensions" id="restore_core_extensions" value="1" />
+					<p class="small"><?php echo JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_RESTORE_CORE_EXTENSIONS_DESC'); ?></p>
+				</td>
+			</tr>
 			</tbody>
 			<tfoot>
 			<tr>

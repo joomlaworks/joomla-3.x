@@ -482,9 +482,9 @@ class BannersModelTracks extends JModelList
 
 			foreach ($this->getItems() as $item)
 			{
-				$this->content .= '"' . str_replace('"', '""', $item->banner_name) . '","'
-					. str_replace('"', '""', $item->client_name) . '","'
-					. str_replace('"', '""', $item->category_title) . '","'
+				$this->content .= '"' . str_replace('"', '""', $this->escapeCsvFormula($item->banner_name)) . '","'
+					. str_replace('"', '""', $this->escapeCsvFormula($item->client_name)) . '","'
+					. str_replace('"', '""', $this->escapeCsvFormula($item->category_title)) . '","'
 					. str_replace('"', '""', ($item->track_type == 1 ? JText::_('COM_BANNERS_IMPRESSION') : JText::_('COM_BANNERS_CLICK'))) . '","'
 					. str_replace('"', '""', $item->count) . '","'
 					. str_replace('"', '""', $item->track_date) . '"' . "\n";
@@ -539,5 +539,26 @@ class BannersModelTracks extends JModelList
 		}
 
 		return $this->content;
+	}
+
+	/**
+	 * Prefixes values starting with a spreadsheet formula character, to prevent CSV formula injection
+	 *
+	 * @param   string  $value  The CSV field value
+	 *
+	 * @return  string
+	 *
+	 * @since   3.16.0
+	 */
+	protected function escapeCsvFormula($value)
+	{
+		$value = (string) $value;
+
+		if ($value !== '' && in_array($value[0], array('=', '+', '-', '@'), true))
+		{
+			return ' ' . $value;
+		}
+
+		return $value;
 	}
 }

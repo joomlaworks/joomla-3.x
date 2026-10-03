@@ -37,11 +37,11 @@ class ConfigController extends JControllerLegacy
 		// Set the default view name and format from the Request.
 		$vName = $this->input->get('view', 'application');
 
-		if (ucfirst($vName) == 'Application')
+		if (ucfirst((string) $vName) == 'Application')
 		{
 			$controller = new ConfigControllerApplicationDisplay;
 		}
-		elseif (ucfirst($vName) == 'Component')
+		elseif (ucfirst((string) $vName) == 'Component')
 		{
 			$controller = new ConfigControllerComponentDisplay;
 		}

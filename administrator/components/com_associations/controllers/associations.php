@@ -88,7 +88,7 @@ class AssociationsControllerAssociations extends JControllerAdmin
 		// Figure out if the item supports checking and check it in
 		$type = null;
 
-		list($extensionName, $typeName) = explode('.', $this->input->get('itemtype'));
+		list($extensionName, $typeName) = explode('.', (string) $this->input->get('itemtype'));
 
 		$extension = AssociationsHelper::getSupportedExtension($extensionName);
 		$types     = $extension->get('types');

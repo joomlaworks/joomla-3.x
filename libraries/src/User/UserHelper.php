@@ -557,7 +557,7 @@ abstract class UserHelper
 			case 'crypt-des':
 				if ($seed)
 				{
-					return substr(preg_replace('|^{crypt}|i', '', $seed), 0, 2);
+					return substr((string) preg_replace('|^{crypt}|i', '', $seed), 0, 2);
 				}
 				else
 				{
@@ -579,7 +579,7 @@ abstract class UserHelper
 			case 'crypt-md5':
 				if ($seed)
 				{
-					return substr(preg_replace('|^{crypt}|i', '', $seed), 0, 12);
+					return substr((string) preg_replace('|^{crypt}|i', '', $seed), 0, 12);
 				}
 				else
 				{
@@ -590,7 +590,7 @@ abstract class UserHelper
 			case 'crypt-blowfish':
 				if ($seed)
 				{
-					return substr(preg_replace('|^{crypt}|i', '', $seed), 0, 30);
+					return substr((string) preg_replace('|^{crypt}|i', '', $seed), 0, 30);
 				}
 				else
 				{
@@ -601,7 +601,7 @@ abstract class UserHelper
 			case 'ssha':
 				if ($seed)
 				{
-					return substr(preg_replace('|^{SSHA}|', '', $seed), -20);
+					return substr((string) preg_replace('|^{SSHA}|', '', $seed), -20);
 				}
 				else
 				{
@@ -612,7 +612,7 @@ abstract class UserHelper
 			case 'smd5':
 				if ($seed)
 				{
-					return substr(preg_replace('|^{SMD5}|', '', $seed), -16);
+					return substr((string) preg_replace('|^{SMD5}|', '', $seed), -16);
 				}
 				else
 				{
@@ -625,7 +625,7 @@ abstract class UserHelper
 
 				if ($seed)
 				{
-					return substr(preg_replace('/^\$apr1\$(.{8}).*/', '\\1', $seed), 0, 8);
+					return substr((string) preg_replace('/^\$apr1\$(.{8}).*/', '\\1', $seed), 0, 8);
 				}
 				else
 				{
@@ -807,7 +807,7 @@ abstract class UserHelper
 
 		if (!empty($cookieValue))
 		{
-			return explode('.', $cookieValue);
+			return explode('.', (string) $cookieValue);
 		}
 		else
 		{

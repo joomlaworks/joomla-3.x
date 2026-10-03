@@ -46,7 +46,7 @@ abstract class JTwitterObject
 	 *
 	 * @since   3.1.4
 	 */
-	public function __construct(Registry &$options = null, ?JHttp $client = null, ?JTwitterOAuth $oauth = null)
+	public function __construct(?Registry &$options = null, ?JHttp $client = null, ?JTwitterOAuth $oauth = null)
 	{
 		$this->options = isset($options) ? $options : new Registry;
 		$this->client = isset($client) ? $client : new JHttp($this->options);
@@ -187,12 +187,12 @@ abstract class JTwitterObject
 			}
 		}
 
-		if (strpos($response->body, 'redirected') !== false)
+		if (strpos((string) $response->body, 'redirected') !== false)
 		{
 			return $response->headers['Location'];
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**

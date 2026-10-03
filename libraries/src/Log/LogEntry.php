@@ -112,7 +112,7 @@ class LogEntry
 		// Sanitize category if it exists.
 		if (!empty($category))
 		{
-			$this->category = (string) strtolower(preg_replace('/[^A-Z0-9_\.-]/i', '', $category));
+			$this->category = (string) strtolower((string) preg_replace('/[^A-Z0-9_\.-]/i', '', $category));
 		}
 
 		// Get the current call stack and back trace (without args to save memory).

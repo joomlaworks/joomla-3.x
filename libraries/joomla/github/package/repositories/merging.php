@@ -56,7 +56,7 @@ class JGithubPackageRepositoriesMerging extends JGithubPackage
 		{
 			case '201':
 				// Success
-				return json_decode($response->body);
+				return json_decode((string) $response->body);
 				break;
 
 			case '204':
@@ -66,7 +66,7 @@ class JGithubPackageRepositoriesMerging extends JGithubPackage
 
 			case '404':
 				// Missing base or Missing head response
-				$error = json_decode($response->body);
+				$error = json_decode((string) $response->body);
 
 				$message = (isset($error->message)) ? $error->message : 'Missing base or head: ' . $response->code;
 
@@ -75,7 +75,7 @@ class JGithubPackageRepositoriesMerging extends JGithubPackage
 
 			case '409':
 				// Merge conflict response
-				$error = json_decode($response->body);
+				$error = json_decode((string) $response->body);
 
 				$message = (isset($error->message)) ? $error->message : 'Merge conflict ' . $response->code;
 

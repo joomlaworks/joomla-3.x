@@ -25,7 +25,7 @@ $assoc     = JLanguageAssociations::isEnabled();
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_newsfeeds&task=newsfeeds.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'newsfeedList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+	JHtml::_('sortablelist.sortable', 'newsfeedList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 }
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_newsfeeds&view=newsfeeds'); ?>" method="post" name="adminForm" id="adminForm">

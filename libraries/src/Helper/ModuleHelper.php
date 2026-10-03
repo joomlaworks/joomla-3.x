@@ -225,7 +225,7 @@ abstract class ModuleHelper
 
 		if ($paramsChromeStyle)
 		{
-			$attribs['style'] = preg_replace('/^(system|' . $template . ')\-/i', '', $paramsChromeStyle);
+			$attribs['style'] = preg_replace('/^(system|' . $template . ')\-/i', '', (string) $paramsChromeStyle);
 		}
 
 		// Make sure a style is set
@@ -498,9 +498,9 @@ abstract class ModuleHelper
 				continue;
 			}
 
-			$module->name = substr($module->module, 4);
+			$module->name = substr((string) $module->module, 4);
 			$module->style = null;
-			$module->position = strtolower($module->position);
+			$module->position = strtolower((string) $module->position);
 
 			$clean[$module->id] = $module;
 		}

@@ -48,7 +48,7 @@ class JFormFieldTel extends JFormFieldText
 	protected function getInput()
 	{
 		// Trim the trailing line in the layout file
-		return rtrim($this->getRenderer($this->layout)->render($this->getLayoutData()), PHP_EOL);
+		return rtrim((string) $this->getRenderer($this->layout)->render($this->getLayoutData()), PHP_EOL);
 	}
 
 	/**

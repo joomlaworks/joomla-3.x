@@ -219,7 +219,7 @@ abstract class MediaHelper
 		}
 
 		$link         = 'index.php?option=com_media&view=media';
-		$uploadedPath = substr($mediaObject->get('filepath'), strlen(COM_MEDIA_BASE) + 1);
+		$uploadedPath = substr((string) $mediaObject->get('filepath'), strlen(COM_MEDIA_BASE) + 1);
 
 		// Now remove the filename
 		$uploadedBasePath = substr_replace(

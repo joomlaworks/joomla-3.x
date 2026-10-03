@@ -126,7 +126,7 @@ class JFormFieldModal_Category extends JFormField
 			}
 		}
 
-		$title = empty($title) ? JText::_('COM_CATEGORIES_SELECT_A_CATEGORY') : htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+		$title = empty($title) ? JText::_('COM_CATEGORIES_SELECT_A_CATEGORY') : htmlspecialchars((string) $title, ENT_QUOTES, 'UTF-8');
 
 		// The current category display field.
 		$html  = '<span class="input-append">';

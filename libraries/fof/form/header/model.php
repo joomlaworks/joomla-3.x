@@ -53,7 +53,7 @@ class FOFFormHeaderModel extends FOFFormHeaderFieldselectable
 
 		// Explode model name into model name and prefix
 		$parts = FOFInflector::explode($modelName);
-		$mName = ucfirst(array_pop($parts));
+		$mName = ucfirst((string) array_pop($parts));
 		$mPrefix = FOFInflector::implode($parts);
 
 		// Get the model object

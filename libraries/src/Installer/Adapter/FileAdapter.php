@@ -107,7 +107,7 @@ class FileAdapter extends InstallerAdapter
 		// Lastly, we will copy the manifest file to its appropriate place.
 		$manifest = array();
 		$manifest['src'] = $this->parent->getPath('manifest');
-		$manifest['dest'] = JPATH_MANIFESTS . '/files/' . basename($this->parent->getPath('manifest'));
+		$manifest['dest'] = JPATH_MANIFESTS . '/files/' . basename((string) $this->parent->getPath('manifest'));
 
 		if (!$this->parent->copyFiles(array($manifest), true))
 		{

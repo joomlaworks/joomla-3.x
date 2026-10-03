@@ -104,7 +104,7 @@ class JFormFieldTinymceBuilder extends JFormField
 
 			if (is_object($plugin) && !empty($plugin->params))
 			{
-				$setParams = (object) json_decode($plugin->params);
+				$setParams = (object) json_decode((string) $plugin->params);
 			}
 		}
 
@@ -159,7 +159,7 @@ class JFormFieldTinymceBuilder extends JFormField
 		// Check for TinyMCE language file
 		$language      = JFactory::getLanguage();
 		$languageFile1 = 'media/editors/tinymce/langs/' . $language->getTag() . '.js';
-		$languageFile2 = 'media/editors/tinymce/langs/' . substr($language->getTag(), 0, strpos($language->getTag(), '-')) . '.js';
+		$languageFile2 = 'media/editors/tinymce/langs/' . substr((string) $language->getTag(), 0, strpos((string) $language->getTag(), '-')) . '.js';
 
 		$data['languageFile'] = '';
 

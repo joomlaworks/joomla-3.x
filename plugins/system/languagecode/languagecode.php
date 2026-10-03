@@ -48,8 +48,8 @@ class PlgSystemLanguagecode extends JPlugin
 					chr(1) . '(<html.*\s+lang=")(' . $code . ')(".*>)' . chr(1) . 'i',
 				);
 				$replace = array(
-					'${1}' . strtolower($new_code) . '${3}',
-					'${1}' . strtolower($new_code) . '${3}'
+					'${1}' . strtolower((string) $new_code) . '${3}',
+					'${1}' . strtolower((string) $new_code) . '${3}'
 				);
 			}
 			else
@@ -59,7 +59,7 @@ class PlgSystemLanguagecode extends JPlugin
 			}
 
 			// Replace codes in <link hreflang="" /> attributes.
-			preg_match_all(chr(1) . '(<link.*\s+hreflang=")([0-9a-z\-]*)(".*\s+rel="alternate".*/>)' . chr(1) . 'i', $body, $matches);
+			preg_match_all(chr(1) . '(<link.*\s+hreflang=")([0-9a-z\-]*)(".*\s+rel="alternate".*/>)' . chr(1) . 'i', (string) $body, $matches);
 
 			foreach ($matches[2] as $match)
 			{
@@ -72,7 +72,7 @@ class PlgSystemLanguagecode extends JPlugin
 				}
 			}
 
-			preg_match_all(chr(1) . '(<link.*\s+rel="alternate".*\s+hreflang=")([0-9A-Za-z\-]*)(".*/>)' . chr(1) . 'i', $body, $matches);
+			preg_match_all(chr(1) . '(<link.*\s+rel="alternate".*\s+hreflang=")([0-9A-Za-z\-]*)(".*/>)' . chr(1) . 'i', (string) $body, $matches);
 
 			foreach ($matches[2] as $match)
 			{
@@ -86,7 +86,7 @@ class PlgSystemLanguagecode extends JPlugin
 			}
 
 			// Replace codes in itemprop content
-			preg_match_all(chr(1) . '(<meta.*\s+itemprop="inLanguage".*\s+content=")([0-9A-Za-z\-]*)(".*/>)' . chr(1) . 'i', $body, $matches);
+			preg_match_all(chr(1) . '(<meta.*\s+itemprop="inLanguage".*\s+content=")([0-9A-Za-z\-]*)(".*/>)' . chr(1) . 'i', (string) $body, $matches);
 
 			foreach ($matches[2] as $match)
 			{
@@ -99,7 +99,7 @@ class PlgSystemLanguagecode extends JPlugin
 				}
 			}
 
-			$app->setBody(preg_replace($patterns, $replace, $body));
+			$app->setBody(preg_replace($patterns, $replace, (string) $body));
 		}
 	}
 

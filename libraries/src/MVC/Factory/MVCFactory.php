@@ -67,7 +67,7 @@ class MVCFactory implements MVCFactoryInterface
 		$name   = preg_replace('/[^A-Z0-9_]/i', '', $name);
 		$prefix = preg_replace('/[^A-Z0-9_]/i', '', $prefix);
 
-		$className = $this->getClassName('Model\\' . ucfirst($name) . 'Model', $prefix);
+		$className = $this->getClassName('Model\\' . ucfirst((string) $name) . 'Model', $prefix);
 
 		if (!$className)
 		{
@@ -97,7 +97,7 @@ class MVCFactory implements MVCFactoryInterface
 		$prefix = preg_replace('/[^A-Z0-9_]/i', '', $prefix);
 		$type   = preg_replace('/[^A-Z0-9_]/i', '', $type);
 
-		$className = $this->getClassName('View\\' . ucfirst($name) . '\\' . ucfirst($type) . 'View', $prefix);
+		$className = $this->getClassName('View\\' . ucfirst((string) $name) . '\\' . ucfirst((string) $type) . 'View', $prefix);
 
 		if (!$className)
 		{
@@ -125,8 +125,8 @@ class MVCFactory implements MVCFactoryInterface
 		$name = preg_replace('/[^A-Z0-9_]/i', '', $name);
 		$prefix = preg_replace('/[^A-Z0-9_]/i', '', $prefix);
 
-		$className = $this->getClassName('Table\\' . ucfirst($name) . 'Table', $prefix)
-			?: $this->getClassName('Table\\' . ucfirst($name) . 'Table', 'Administrator');
+		$className = $this->getClassName('Table\\' . ucfirst((string) $name) . 'Table', $prefix)
+			?: $this->getClassName('Table\\' . ucfirst((string) $name) . 'Table', 'Administrator');
 
 		if (!$className)
 		{

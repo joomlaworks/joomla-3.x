@@ -196,7 +196,7 @@ class MemcachedStorage extends CacheStorage
 					continue;
 				}
 
-				$namearr = explode('-', $key->name);
+				$namearr = explode('-', (string) $key->name);
 
 				if ($namearr !== false && $namearr[0] == $secret && $namearr[1] == 'cache')
 				{
@@ -241,20 +241,26 @@ class MemcachedStorage extends CacheStorage
 			return false;
 		}
 
-		$index = static::$_db->get($this->_hash . '-index');
-
-		if (!is_array($index))
+		try
 		{
-			$index = array();
+			$index = static::$_db->get($this->_hash . '-index');
+
+			if (!is_array($index))
+			{
+				$index = array();
+			}
+
+			$tmparr       = new \stdClass;
+			$tmparr->name = $cache_id;
+			$tmparr->size = strlen($data);
+
+			$index[] = $tmparr;
+			static::$_db->set($this->_hash . '-index', $index, 0);
 		}
-
-		$tmparr       = new \stdClass;
-		$tmparr->name = $cache_id;
-		$tmparr->size = strlen($data);
-
-		$index[] = $tmparr;
-		static::$_db->set($this->_hash . '-index', $index, 0);
-		$this->unlockindex();
+		finally
+		{
+			$this->unlockindex();
+		}
 
 		static::$_db->set($cache_id, $data, $this->_lifetime);
 
@@ -280,22 +286,27 @@ class MemcachedStorage extends CacheStorage
 			return false;
 		}
 
-		$index = static::$_db->get($this->_hash . '-index');
-
-		if (is_array($index))
+		try
 		{
-			foreach ($index as $key => $value)
+			$index = static::$_db->get($this->_hash . '-index');
+
+			if (is_array($index))
 			{
-				if ($value->name == $cache_id)
+				foreach ($index as $key => $value)
 				{
-					unset($index[$key]);
-					static::$_db->set($this->_hash . '-index', $index, 0);
-					break;
+					if ($value->name == $cache_id)
+					{
+						unset($index[$key]);
+						static::$_db->set($this->_hash . '-index', $index, 0);
+						break;
+					}
 				}
 			}
 		}
-
-		$this->unlockindex();
+		finally
+		{
+			$this->unlockindex();
+		}
 
 		return static::$_db->delete($cache_id);
 	}
@@ -320,25 +331,30 @@ class MemcachedStorage extends CacheStorage
 			return false;
 		}
 
-		$index = static::$_db->get($this->_hash . '-index');
-
-		if (is_array($index))
+		try
 		{
-			$prefix = $this->_hash . '-cache-' . $group . '-';
+			$index = static::$_db->get($this->_hash . '-index');
 
-			foreach ($index as $key => $value)
+			if (is_array($index))
 			{
-				if (strpos($value->name, $prefix) === 0 xor $mode != 'group')
+				$prefix = $this->_hash . '-cache-' . $group . '-';
+
+				foreach ($index as $key => $value)
 				{
-					static::$_db->delete($value->name);
-					unset($index[$key]);
+					if (strpos((string) $value->name, $prefix) === 0 xor $mode != 'group')
+					{
+						static::$_db->delete($value->name);
+						unset($index[$key]);
+					}
 				}
+
+				static::$_db->set($this->_hash . '-index', $index, 0);
 			}
-
-			static::$_db->set($this->_hash . '-index', $index, 0);
 		}
-
-		$this->unlockindex();
+		finally
+		{
+			$this->unlockindex();
+		}
 
 		return true;
 	}
@@ -357,7 +373,14 @@ class MemcachedStorage extends CacheStorage
 			return false;
 		}
 
-		return static::$_db->flush();
+		try
+		{
+			return static::$_db->flush();
+		}
+		finally
+		{
+			$this->unlockindex();
+		}
 	}
 
 	/**

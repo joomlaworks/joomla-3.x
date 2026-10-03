@@ -329,7 +329,7 @@ class RssParser extends FeedParser
 		if (isset($tmp[1]))
 		{
 			$name = trim(
-				$this->inputFilter->clean($tmp[1], 'html'),
+				(string) $this->inputFilter->clean($tmp[1], 'html'),
 				' ()'
 			);
 		}
@@ -430,7 +430,7 @@ class RssParser extends FeedParser
 		if (isset($data[1]))
 		{
 			$person->name = trim(
-				$this->inputFilter->clean($data[1], 'html'),
+				(string) $this->inputFilter->clean($data[1], 'html'),
 				' ()'
 			);
 		}

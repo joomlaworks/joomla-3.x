@@ -57,7 +57,7 @@ class Image extends \Joomla\Image\Image
 		}
 
 		// Sanitize the filter type.
-		$type = strtolower(preg_replace('#[^A-Z0-9_]#i', '', $type));
+		$type = strtolower((string) preg_replace('#[^A-Z0-9_]#i', '', $type));
 
 		// Verify that the filter type exists.
 		$className = 'JImageFilter' . ucfirst($type);

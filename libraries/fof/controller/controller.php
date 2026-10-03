@@ -537,7 +537,7 @@ class FOFController extends FOFUtilsObject
 		$this->input->set('option', $this->component);
 
 		// Set the bareComponent variable
-		$this->bareComponent = str_replace('com_', '', strtolower($this->component));
+		$this->bareComponent = str_replace('com_', '', strtolower((string) $this->component));
 
 		// Set the $name variable
 		$this->name = $this->bareComponent;
@@ -805,7 +805,7 @@ class FOFController extends FOFUtilsObject
 		foreach ($path as $dir)
 		{
 			// No surrounding spaces allowed!
-			$dir = rtrim($filesystem->pathCheck($dir, '/'), '/') . '/';
+			$dir = rtrim((string) $filesystem->pathCheck($dir, '/'), '/') . '/';
 
 			// Add to the top of the search dirs
 			array_unshift($this->paths[$type], $dir);
@@ -1285,7 +1285,7 @@ class FOFController extends FOFUtilsObject
 
 			if ($customURL = $this->input->get('returnurl', '', 'string'))
 			{
-				$customURL = base64_decode($customURL);
+				$customURL = base64_decode((string) $customURL);
 			}
 
 			$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view) . $this->getItemidURLSuffix();
@@ -1356,7 +1356,7 @@ class FOFController extends FOFUtilsObject
 
 			if ($customURL = $this->input->get('returnurl', '', 'string'))
 			{
-				$customURL = base64_decode($customURL);
+				$customURL = base64_decode((string) $customURL);
 			}
 
 			$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . $this->view . '&task=edit&id=' . $id . $this->getItemidURLSuffix();
@@ -1391,7 +1391,7 @@ class FOFController extends FOFUtilsObject
 		// Redirect
 		if ($customURL = $this->input->get('returnurl', '', 'string'))
 		{
-			$customURL = base64_decode($customURL);
+			$customURL = base64_decode((string) $customURL);
 		}
 
 		$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view) . $this->getItemidURLSuffix();
@@ -1437,7 +1437,7 @@ class FOFController extends FOFUtilsObject
 
 			if ($customURL = $this->input->get('returnurl', '', 'string'))
 			{
-				$customURL = base64_decode($customURL);
+				$customURL = base64_decode((string) $customURL);
 			}
 
 			$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view) . $this->getItemidURLSuffix();
@@ -1470,7 +1470,7 @@ class FOFController extends FOFUtilsObject
 
 			if ($customURL = $this->input->get('returnurl', '', 'string'))
 			{
-				$customURL = base64_decode($customURL);
+				$customURL = base64_decode((string) $customURL);
 			}
 
 			$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . $this->view . '&task=add' . $this->getItemidURLSuffix();
@@ -1503,7 +1503,7 @@ class FOFController extends FOFUtilsObject
 
 		if ($customURL = $this->input->get('returnurl', '', 'string'))
 		{
-			$customURL = base64_decode($customURL);
+			$customURL = base64_decode((string) $customURL);
 		}
 
 		$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view) . $this->getItemidURLSuffix();
@@ -1751,7 +1751,7 @@ class FOFController extends FOFUtilsObject
 		// Redirect
 		if ($customURL = $this->input->get('returnurl', '', 'string'))
 		{
-			$customURL = base64_decode($customURL);
+			$customURL = base64_decode((string) $customURL);
 		}
 
 		$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view) . $this->getItemidURLSuffix();
@@ -1785,7 +1785,7 @@ class FOFController extends FOFUtilsObject
 		// Redirect
 		if ($customURL = $this->input->get('returnurl', '', 'string'))
 		{
-			$customURL = base64_decode($customURL);
+			$customURL = base64_decode((string) $customURL);
 		}
 
 		$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view) . $this->getItemidURLSuffix();
@@ -1827,7 +1827,7 @@ class FOFController extends FOFUtilsObject
 		// Redirect
 		if ($customURL = $this->input->get('returnurl', '', 'string'))
 		{
-			$customURL = base64_decode($customURL);
+			$customURL = base64_decode((string) $customURL);
 		}
 
 		$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view) . $this->getItemidURLSuffix();
@@ -1869,7 +1869,7 @@ class FOFController extends FOFUtilsObject
 		// Redirect
 		if ($customURL = $this->input->get('returnurl', '', 'string'))
 		{
-			$customURL = base64_decode($customURL);
+			$customURL = base64_decode((string) $customURL);
 		}
 
 		$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view) . $this->getItemidURLSuffix();
@@ -2074,7 +2074,7 @@ class FOFController extends FOFUtilsObject
 		// Redirect
 		if ($customURL = $this->input->get('returnurl', '', 'string'))
 		{
-			$customURL = base64_decode($customURL);
+			$customURL = base64_decode((string) $customURL);
 		}
 
 		$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view) . $this->getItemidURLSuffix();
@@ -2132,7 +2132,7 @@ class FOFController extends FOFUtilsObject
 		// Redirect
 		if ($customURL = $this->input->get('returnurl', '', 'string'))
 		{
-			$customURL = base64_decode($customURL);
+			$customURL = base64_decode((string) $customURL);
 		}
 
 		$url = !empty($customURL) ? $customURL : 'index.php?option=' . $this->component . '&view=' . FOFInflector::pluralize($this->view) . $this->getItemidURLSuffix();
@@ -2207,7 +2207,7 @@ class FOFController extends FOFUtilsObject
 
 			if ($customURL = $this->input->get('returnurl', '', 'string'))
 			{
-				$customURL = base64_decode($customURL);
+				$customURL = base64_decode((string) $customURL);
 			}
 
 			if (!empty($customURL))
@@ -2260,7 +2260,7 @@ class FOFController extends FOFUtilsObject
 			if (!empty($this->modelName))
 			{
 				$parts = FOFInflector::explode($this->modelName);
-				$modelName = ucfirst(array_pop($parts));
+				$modelName = ucfirst((string) array_pop($parts));
 				$prefix = FOFInflector::implode($parts);
 			}
 			else
@@ -2368,7 +2368,7 @@ class FOFController extends FOFUtilsObject
 			if (!empty($this->viewName))
 			{
 				$parts = FOFInflector::explode($this->viewName);
-				$viewName = ucfirst(array_pop($parts));
+				$viewName = ucfirst((string) array_pop($parts));
 				$prefix = FOFInflector::implode($parts);
 			}
 			else
@@ -2631,7 +2631,7 @@ class FOFController extends FOFUtilsObject
 
 		$config['option'] = $component;
 
-		$view = strtolower($viewName);
+		$view = strtolower((string) $viewName);
 
 		if (empty($view) && array_key_exists('input', $config))
 		{
@@ -2679,7 +2679,7 @@ class FOFController extends FOFUtilsObject
 		foreach ($suffixes as $suffix)
 		{
 			// Build the view class name
-			$viewClass = $classPrefix . ucfirst($suffix);
+			$viewClass = $classPrefix . ucfirst((string) $suffix);
 
 			if (class_exists($viewClass))
 			{
@@ -2763,7 +2763,7 @@ class FOFController extends FOFUtilsObject
 
 		if ($setFrontendPageTitle)
 		{
-			$setFrontendPageTitle = strtolower($setFrontendPageTitle);
+			$setFrontendPageTitle = strtolower((string) $setFrontendPageTitle);
 			$config['setFrontendPageTitle'][] = in_array($setFrontendPageTitle, array('1', 'yes', 'true', 'on'));
 		}
 

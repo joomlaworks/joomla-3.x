@@ -312,7 +312,7 @@ class NewsfeedsModelNewsfeed extends JModelAdmin
 		$date = JFactory::getDate();
 		$user = JFactory::getUser();
 
-		$table->name = htmlspecialchars_decode($table->name, ENT_QUOTES);
+		$table->name = htmlspecialchars_decode((string) $table->name, ENT_QUOTES);
 		$table->alias = JApplicationHelper::stringURLSafe($table->alias, $table->language);
 
 		if (empty($table->alias))

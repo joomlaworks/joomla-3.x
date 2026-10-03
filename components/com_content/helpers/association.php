@@ -121,13 +121,13 @@ abstract class ContentHelperAssociation extends CategoryHelperAssociation
 				}
 
 				// Do not display language without frontend UI
-				if (!array_key_exists($language->lang_code, JLanguageHelper::getInstalledLanguages(0)))
+				if (!array_key_exists((string) $language->lang_code, JLanguageHelper::getInstalledLanguages(0)))
 				{
 					continue;
 				}
 
 				// Do not display language without specific home menu
-				if (!array_key_exists($language->lang_code, JLanguageMultilang::getSiteHomePages()))
+				if (!array_key_exists((string) $language->lang_code, JLanguageMultilang::getSiteHomePages()))
 				{
 					continue;
 				}

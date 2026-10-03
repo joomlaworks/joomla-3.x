@@ -36,7 +36,7 @@ class JFormFieldFieldlayout extends JFormField
 	 */
 	protected function getInput()
 	{
-		$extension = explode('.', $this->form->getValue('context'));
+		$extension = explode('.', (string) $this->form->getValue('context'));
 		$extension = $extension[0];
 
 		if ($extension)
@@ -115,7 +115,7 @@ class JFormFieldFieldlayout extends JFormField
 
 					foreach ($files as $i => $file)
 					{
-						$value = basename($file, '.php');
+						$value = basename((string) $file, '.php');
 
 						// Remove the default "render.php" or layout files that exist in the component folder
 						if ($value === 'render' || in_array($value, $component_layouts))
@@ -135,7 +135,7 @@ class JFormFieldFieldlayout extends JFormField
 						foreach ($files as $file)
 						{
 							// Add an option to the template group
-							$value = basename($file, '.php');
+							$value = basename((string) $file, '.php');
 							$groups[$template->name]['items'][] = JHtml::_('select.option', $value, $value);
 						}
 					}

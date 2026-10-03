@@ -378,7 +378,7 @@ class FOFDatabaseDriverSqlsrv extends FOFDatabaseDriver
 		{
 			foreach ($fields as $field)
 			{
-				$result[$field->Field] = preg_replace("/[(0-9)]/", '', $field->Type);
+				$result[$field->Field] = preg_replace("/[(0-9)]/", '', (string) $field->Type);
 			}
 		}
 		// If we want the whole field data object add that to the list.
@@ -386,7 +386,7 @@ class FOFDatabaseDriverSqlsrv extends FOFDatabaseDriver
 		{
 			foreach ($fields as $field)
 			{
-				if (stristr(strtolower($field->Type), "nvarchar"))
+				if (stristr(strtolower((string) $field->Type), "nvarchar"))
 				{
 					$field->Default = "";
 				}
@@ -577,7 +577,7 @@ class FOFDatabaseDriverSqlsrv extends FOFDatabaseDriver
 		$this->freeResult($cursor);
 
 		// For SQLServer - we need to strip slashes
-		$ret = stripslashes($ret);
+		$ret = stripslashes((string) $ret);
 
 		return $ret;
 	}

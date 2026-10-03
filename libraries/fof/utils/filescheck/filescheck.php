@@ -82,7 +82,7 @@ class FOFUtilsFilescheck
 
 			if (!empty($manifestCache))
 			{
-				$manifestCache = json_decode($manifestCache, true);
+				$manifestCache = json_decode((string) $manifestCache, true);
 
 				if (is_array($manifestCache) && isset($manifestCache['creationDate']) && isset($manifestCache['version']))
 				{

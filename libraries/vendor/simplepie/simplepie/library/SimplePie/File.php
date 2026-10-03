@@ -74,7 +74,7 @@ class SimplePie_File
 		}
 		$this->url = $url;
 		$this->useragent = $useragent;
-		if (preg_match('/^http(s)?:\/\//i', $url))
+		if (preg_match('/^http(s)?:\/\//i', (string) $url))
 		{
 			if ($useragent === null)
 			{
@@ -147,7 +147,7 @@ class SimplePie_File
 			else
 			{
 				$this->method = SIMPLEPIE_FILE_SOURCE_REMOTE | SIMPLEPIE_FILE_SOURCE_FSOCKOPEN;
-				$url_parts = parse_url($url);
+				$url_parts = parse_url((string) $url);
 				$socket_host = $url_parts['host'];
 				if (isset($url_parts['scheme']) && strtolower($url_parts['scheme']) === 'https')
 				{

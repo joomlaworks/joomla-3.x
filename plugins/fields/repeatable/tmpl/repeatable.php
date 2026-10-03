@@ -17,7 +17,7 @@ if ($fieldValue === '')
 }
 
 // Get the values
-$fieldValues = json_decode($fieldValue, true);
+$fieldValues = json_decode((string) $fieldValue, true);
 
 if (empty($fieldValues))
 {

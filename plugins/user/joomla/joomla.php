@@ -160,7 +160,7 @@ class PlgUserJoomla extends JPlugin
 		}
 
 		// Check if we have a sensible from email address, if not bail out as mail would not be sent anyway
-		if (strpos($this->app->get('mailfrom'), '@') === false)
+		if (strpos((string) $this->app->get('mailfrom'), '@') === false)
 		{
 			$this->app->enqueueMessage(Text::_('JERROR_SENDING_EMAIL'), 'warning');
 

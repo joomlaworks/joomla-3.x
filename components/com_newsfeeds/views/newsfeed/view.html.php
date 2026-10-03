@@ -84,7 +84,7 @@ class NewsfeedsViewNewsfeed extends JViewLegacy
 			$currentLink = $active->link;
 
 			// If the current view is the active item and a newsfeed view for this feed, then the menu item params take priority
-			if (strpos($currentLink, 'view=newsfeed') && strpos($currentLink, '&id=' . (string) $item->id))
+			if (strpos((string) $currentLink, 'view=newsfeed') && strpos((string) $currentLink, '&id=' . (string) $item->id))
 			{
 				// $item->params are the newsfeed params, $temp are the menu item params
 				// Merge so that the menu item params take priority
@@ -170,7 +170,7 @@ class NewsfeedsViewNewsfeed extends JViewLegacy
 		}
 
 		// Escape strings for HTML output
-		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx', ''));
+		$this->pageclass_sfx = htmlspecialchars((string) $params->get('pageclass_sfx', ''));
 
 		$this->params = $params;
 		$this->newsfeed = $newsfeed;

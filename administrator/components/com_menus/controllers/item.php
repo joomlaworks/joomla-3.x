@@ -519,7 +519,7 @@ class MenusControllerItem extends JControllerForm
 		// Get the type.
 		$type = $data['type'];
 
-		$type = json_decode(base64_decode($type));
+		$type = json_decode(base64_decode((string) $type));
 		$title = isset($type->title) ? $type->title : null;
 		$recordId = isset($type->id) ? $type->id : 0;
 

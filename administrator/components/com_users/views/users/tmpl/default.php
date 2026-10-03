@@ -139,10 +139,10 @@ $debugUsers = $this->state->get('params')->get('debugUsers', 1);
 							?>
 						</td>
 						<td>
-							<?php if (substr_count($item->group_names, "\n") > 1) : ?>
-								<span class="hasTooltip" title="<?php echo JHtml::_('tooltipText', JText::_('COM_USERS_HEADING_GROUPS'), nl2br($item->group_names), 0); ?>"><?php echo JText::_('COM_USERS_USERS_MULTIPLE_GROUPS'); ?></span>
+							<?php if (substr_count((string) $item->group_names, "\n") > 1) : ?>
+								<span class="hasTooltip" title="<?php echo JHtml::_('tooltipText', JText::_('COM_USERS_HEADING_GROUPS'), nl2br((string) $item->group_names), 0); ?>"><?php echo JText::_('COM_USERS_USERS_MULTIPLE_GROUPS'); ?></span>
 							<?php else : ?>
-								<?php echo nl2br($item->group_names); ?>
+								<?php echo nl2br((string) $item->group_names); ?>
 							<?php endif; ?>
 						</td>
 						<td class="hidden-phone break-word hidden-tablet">

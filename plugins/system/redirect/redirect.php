@@ -120,28 +120,28 @@ class PlgSystemRedirect extends JPlugin
 		$uri = JUri::getInstance();
 
 		// These are the original URLs
-		$orgurl                = rawurldecode($uri->toString(array('scheme', 'host', 'port', 'path', 'query', 'fragment')));
-		$orgurlRel             = rawurldecode($uri->toString(array('path', 'query', 'fragment')));
+		$orgurl                = rawurldecode((string) $uri->toString(array('scheme', 'host', 'port', 'path', 'query', 'fragment')));
+		$orgurlRel             = rawurldecode((string) $uri->toString(array('path', 'query', 'fragment')));
 
 		// The above doesn't work for sub directories, so do this
 		$orgurlRootRel         = str_replace(JUri::root(), '', $orgurl);
 
 		// For when users have added / to the url
 		$orgurlRootRelSlash    = str_replace(JUri::root(), '/', $orgurl);
-		$orgurlWithoutQuery    = rawurldecode($uri->toString(array('scheme', 'host', 'port', 'path', 'fragment')));
-		$orgurlRelWithoutQuery = rawurldecode($uri->toString(array('path', 'fragment')));
+		$orgurlWithoutQuery    = rawurldecode((string) $uri->toString(array('scheme', 'host', 'port', 'path', 'fragment')));
+		$orgurlRelWithoutQuery = rawurldecode((string) $uri->toString(array('path', 'fragment')));
 
 		// These are the URLs we save and use
-		$url                = StringHelper::strtolower(rawurldecode($uri->toString(array('scheme', 'host', 'port', 'path', 'query', 'fragment'))));
-		$urlRel             = StringHelper::strtolower(rawurldecode($uri->toString(array('path', 'query', 'fragment'))));
+		$url                = StringHelper::strtolower(rawurldecode((string) $uri->toString(array('scheme', 'host', 'port', 'path', 'query', 'fragment'))));
+		$urlRel             = StringHelper::strtolower(rawurldecode((string) $uri->toString(array('path', 'query', 'fragment'))));
 
 		// The above doesn't work for sub directories, so do this
 		$urlRootRel         = str_replace(JUri::root(), '', $url);
 
 		// For when users have added / to the url
 		$urlRootRelSlash    = str_replace(JUri::root(), '/', $url);
-		$urlWithoutQuery    = StringHelper::strtolower(rawurldecode($uri->toString(array('scheme', 'host', 'port', 'path', 'fragment'))));
-		$urlRelWithoutQuery = StringHelper::strtolower(rawurldecode($uri->toString(array('path', 'fragment'))));
+		$urlWithoutQuery    = StringHelper::strtolower(rawurldecode((string) $uri->toString(array('scheme', 'host', 'port', 'path', 'fragment'))));
+		$urlRelWithoutQuery = StringHelper::strtolower(rawurldecode((string) $uri->toString(array('path', 'fragment'))));
 
 		$plugin = JPluginHelper::getPlugin('system', 'redirect');
 
@@ -272,7 +272,7 @@ class PlgSystemRedirect extends JPlugin
 			{
 				$urlQuery = $uri->getQuery();
 
-				$oldUrlParts = parse_url($redirect->old_url);
+				$oldUrlParts = parse_url((string) $redirect->old_url);
 
 				$newUrl = $redirect->new_url;
 
@@ -281,7 +281,7 @@ class PlgSystemRedirect extends JPlugin
 					$newUrl .= '?' . $urlQuery;
 				}
 
-				$dest = JUri::isInternal($newUrl) || strpos($newUrl, 'http') === false ?
+				$dest = JUri::isInternal($newUrl) || strpos((string) $newUrl, 'http') === false ?
 					JRoute::_($newUrl) : $newUrl;
 
 				// In case the url contains double // lets remove it

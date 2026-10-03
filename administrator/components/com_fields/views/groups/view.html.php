@@ -130,10 +130,10 @@ class FieldsViewGroups extends JViewLegacy
 		$lang->load($component, JPATH_ADMINISTRATOR)
 		|| $lang->load($component, JPath::clean(JPATH_ADMINISTRATOR . '/components/' . $component));
 
-		$title = JText::sprintf('COM_FIELDS_VIEW_GROUPS_TITLE', JText::_(strtoupper($component)));
+		$title = JText::sprintf('COM_FIELDS_VIEW_GROUPS_TITLE', JText::_(strtoupper((string) $component)));
 
 		// Prepare the toolbar.
-		JToolbarHelper::title($title, 'puzzle fields ' . substr($component, 4) . '-groups');
+		JToolbarHelper::title($title, 'puzzle fields ' . substr((string) $component, 4) . '-groups');
 
 		if ($canDo->get('core.create'))
 		{

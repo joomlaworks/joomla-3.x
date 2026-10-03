@@ -22,24 +22,24 @@ function utf8_ireplace($search, $replace, $str, $count = NULL){
 
     if ( !is_array($search) ) {
 
-        $slen = strlen($search);
+        $slen = strlen((string) $search);
         if ( $slen == 0 ) {
             return $str;
         }
 
-        $lendif = strlen($replace) - strlen($search);
+        $lendif = strlen((string) $replace) - strlen((string) $search);
         $search = utf8_strtolower($search);
 
-        $search = preg_quote($search, '/');
+        $search = preg_quote((string) $search, '/');
         $lstr = utf8_strtolower($str);
         $i = 0;
         $matched = 0;
-        while ( preg_match('/(.*)'.$search.'/Us',$lstr, $matches) ) {
+        while ( preg_match('/(.*)'.$search.'/Us',(string) $lstr, $matches) ) {
             if ( $i === $count ) {
                 break;
             }
             $mlen = strlen($matches[0]);
-            $lstr = substr($lstr, $mlen);
+            $lstr = substr((string) $lstr, $mlen);
             $str = substr_replace($str, $replace, $matched+strlen($matches[1]), $slen);
             $matched += $mlen + $lendif;
             $i++;

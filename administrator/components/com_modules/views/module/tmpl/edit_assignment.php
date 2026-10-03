@@ -124,7 +124,7 @@ JFactory::getDocument()->addScriptDeclaration($script);
 											<?php echo ' <span class="label">' . JText::_('JUNPUBLISHED') . '</span>'; ?>
 										<?php endif; ?>
 										<?php if ($uselessMenuItem) : ?>
-											<?php echo ' <span class="label">' . JText::_('COM_MODULES_MENU_ITEM_' . strtoupper($link->type)) . '</span>'; ?>
+											<?php echo ' <span class="label">' . JText::_('COM_MODULES_MENU_ITEM_' . strtoupper((string) $link->type)) . '</span>'; ?>
 										<?php endif; ?>
 									</label>
 								</div>

@@ -253,7 +253,7 @@ class JFormFieldModal_Menu extends JFormField
 			}
 		}
 
-		$title = empty($title) ? $title_holder : htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+		$title = empty($title) ? $title_holder : htmlspecialchars((string) $title, ENT_QUOTES, 'UTF-8');
 
 		// The current menu item display field.
 		$html  = '<span class="input-append">';

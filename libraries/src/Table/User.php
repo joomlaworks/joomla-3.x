@@ -341,7 +341,7 @@ class User extends Table
 			{
 				foreach ($result as $map)
 				{
-					if (array_key_exists($map->group_id, $this->groups))
+					if (array_key_exists((string) $map->group_id, $this->groups))
 					{
 						// It already exists, no action required
 						unset($groups[$map->group_id]);

@@ -138,6 +138,15 @@ JFactory::getDocument()->addStyleDeclaration($css);
 			</tr>
 			<tr>
 				<td>
+					<label for="upload_restore_core_extensions"><?php echo JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_RESTORE_CORE_EXTENSIONS'); ?></label>
+				</td>
+				<td>
+					<input type="checkbox" name="restore_core_extensions" id="upload_restore_core_extensions" value="1" />
+					<p class="small"><?php echo JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_RESTORE_CORE_EXTENSIONS_DESC'); ?></p>
+				</td>
+			</tr>
+			<tr>
+				<td>
 					<?php echo JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_METHOD'); ?>
 				</td>
 				<td>

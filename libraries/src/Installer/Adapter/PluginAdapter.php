@@ -501,7 +501,7 @@ class PluginAdapter extends InstallerAdapter
 		}
 
 		// Get the plugin folder so we can properly build the plugin path
-		if (trim($row->folder) === '')
+		if (trim((string) $row->folder) === '')
 		{
 			\JLog::add(\JText::_('JLIB_INSTALLER_ERROR_PLG_UNINSTALL_FOLDER_FIELD_EMPTY'), \JLog::WARNING, 'jerror');
 

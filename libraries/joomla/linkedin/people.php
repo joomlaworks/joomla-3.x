@@ -85,7 +85,7 @@ class JLinkedinPeople extends JLinkedinObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'GET', $parameters, $data, $header);
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -150,7 +150,7 @@ class JLinkedinPeople extends JLinkedinObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'GET', $parameters, $data);
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -357,23 +357,23 @@ class JLinkedinPeople extends JLinkedinObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'GET', $parameters, $data);
 
-		if (strpos($fields, 'api-standard-profile-request') === false)
+		if (strpos((string) $fields, 'api-standard-profile-request') === false)
 		{
-			return json_decode($response->body);
+			return json_decode((string) $response->body);
 		}
 
 		// Get header name.
-		$name = explode('"name": "', $response->body);
+		$name = explode('"name": "', (string) $response->body);
 		$name = explode('"', $name[1]);
 		$name = $name[0];
 
 		// Get header value.
-		$value = explode('"value": "', $response->body);
+		$value = explode('"value": "', (string) $response->body);
 		$value = explode('"', $value[1]);
 		$value = $value[0];
 
 		// Get request url.
-		$url = explode('"url": "', $response->body);
+		$url = explode('"url": "', (string) $response->body);
 		$url = explode('"', $url[1]);
 		$url = $url[0];
 
@@ -383,6 +383,6 @@ class JLinkedinPeople extends JLinkedinObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($url, 'GET', $parameters, $data, $header);
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 }

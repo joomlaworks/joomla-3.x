@@ -392,12 +392,12 @@ abstract class StringHelper
 			// If we successfully set encoding it to utf-8 or encoding is sth weird don't recode
 			if ($encoding == 'UTF-8' || $encoding == 'nonrecodable')
 			{
-				return strcoll(utf8_strtolower($str1), utf8_strtolower($str2));
+				return strcoll((string) utf8_strtolower($str1), (string) utf8_strtolower($str2));
 			}
 
 			return strcoll(
-				static::transcode(utf8_strtolower($str1), 'UTF-8', $encoding),
-				static::transcode(utf8_strtolower($str2), 'UTF-8', $encoding)
+				(string) static::transcode(utf8_strtolower($str1), 'UTF-8', $encoding),
+				(string) static::transcode(utf8_strtolower($str2), 'UTF-8', $encoding)
 			);
 		}
 
@@ -452,7 +452,7 @@ abstract class StringHelper
 				return strcoll($str1, $str2);
 			}
 
-			return strcoll(static::transcode($str1, 'UTF-8', $encoding), static::transcode($str2, 'UTF-8', $encoding));
+			return strcoll((string) static::transcode($str1, 'UTF-8', $encoding), (string) static::transcode($str2, 'UTF-8', $encoding));
 		}
 
 		return strcmp($str1, $str2);

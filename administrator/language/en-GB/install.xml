@@ -2,8 +2,8 @@
 <extension version="3.9" client="administrator" type="language" method="upgrade">
     <name>English (en-GB)</name>
     <tag>en-GB</tag>
-    <version>3.15</version>
-    <creationDate>July 18th, 2026</creationDate>
+    <version>3.16</version>
+    <creationDate>October 3rd, 2026</creationDate>
     <author>Joomla! Project</author>
     <authorEmail>admin@joomla.org</authorEmail>
     <authorUrl>www.joomla.org</authorUrl>
@@ -16,4 +16,3 @@
     </files>
     <params />
 </extension>
-

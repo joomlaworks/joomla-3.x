@@ -142,7 +142,7 @@ class PlgFieldsRepeatable extends FieldsPlugin
 			// Handle json encoded values
 			if (!is_array($value))
 			{
-				$value = json_decode($value, true);
+				$value = json_decode((string) $value, true);
 			}
 
 			// Setting the value for the field and the item

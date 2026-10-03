@@ -38,7 +38,7 @@ class Factory
 	public static function getFormat($type, array $options = array())
 	{
 		// Sanitize format type.
-		$type = strtolower(preg_replace('/[^A-Z0-9_]/i', '', $type));
+		$type = strtolower((string) preg_replace('/[^A-Z0-9_]/i', '', $type));
 
 		/*
 		 * Only instantiate the object if it doesn't already exist.

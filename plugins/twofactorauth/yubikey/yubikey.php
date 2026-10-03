@@ -344,7 +344,7 @@ class PlgTwofactorauthYubikey extends JPlugin
 		}
 
 		// Parse response
-		$lines = explode("\n", $response->body);
+		$lines = explode("\n", (string) $response->body);
 		$data  = array();
 
 		foreach ($lines as $line)

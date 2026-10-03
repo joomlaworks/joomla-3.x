@@ -12,7 +12,7 @@ JHtml::_('bootstrap.tooltip');
 ?>
 
 <?php foreach ($this->folders as $i => $folder) : ?>
-	<?php $link = 'index.php?option=com_media&amp;view=mediaList&amp;tmpl=component&amp;folder=' . rawurlencode($folder->path_relative); ?>
+	<?php $link = 'index.php?option=com_media&amp;view=mediaList&amp;tmpl=component&amp;folder=' . rawurlencode((string) $folder->path_relative); ?>
 	<tr>
 		<?php if ($this->canDelete) : ?>
 			<td>
@@ -33,7 +33,7 @@ JHtml::_('bootstrap.tooltip');
 
 		<?php if ($this->canDelete) : ?>
 			<td>
-				<a class="delete-item" target="_top" href="index.php?option=com_media&amp;task=folder.delete&amp;tmpl=index&amp;folder=<?php echo rawurlencode($this->state->folder); ?>&amp;<?php echo JSession::getFormToken(); ?>=1&amp;rm[]=<?php echo $this->escape($folder->name); ?>" rel="<?php echo $this->escape($folder->name); ?> :: <?php echo $this->escape($folder->files) + $this->escape($folder->folders); ?>">
+				<a class="delete-item" target="_top" href="index.php?option=com_media&amp;task=folder.delete&amp;tmpl=index&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>&amp;<?php echo JSession::getFormToken(); ?>=1&amp;rm[]=<?php echo $this->escape($folder->name); ?>" rel="<?php echo $this->escape($folder->name); ?> :: <?php echo $this->escape($folder->files) + $this->escape($folder->folders); ?>">
 					<span class="icon-remove hasTooltip" title="<?php echo JHtml::tooltipText('JACTION_DELETE'); ?>"></span>
 				</a>
 			</td>

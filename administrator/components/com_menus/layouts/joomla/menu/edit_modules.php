@@ -17,7 +17,7 @@ $component = $input->getCmd('option', 'com_content');
 if ($component == 'com_categories')
 {
 	$extension = $input->getCmd('extension', 'com_content');
-	$parts     = explode('.', $extension);
+	$parts     = explode('.', (string) $extension);
 	$component = $parts[0];
 }
 

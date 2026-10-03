@@ -182,7 +182,7 @@ class CategoriesViewCategories extends JViewLegacy
 		JHtml::_('stylesheet', $component . '/administrator/categories.css', array('version' => 'auto', 'relative' => true));
 
 		// Prepare the toolbar.
-		JToolbarHelper::title($title, 'folder categories ' . substr($component, 4) . ($section ? "-$section" : '') . '-categories');
+		JToolbarHelper::title($title, 'folder categories ' . substr((string) $component, 4) . ($section ? "-$section" : '') . '-categories');
 
 		if ($canDo->get('core.create') || count($user->getAuthorisedCategories($component, 'core.create')) > 0)
 		{
@@ -242,7 +242,7 @@ class CategoriesViewCategories extends JViewLegacy
 		// Compute the ref_key if it does exist in the component
 		if (!$lang->hasKey($ref_key = strtoupper($component . ($section ? "_$section" : '')) . '_CATEGORIES_HELP_KEY'))
 		{
-			$ref_key = 'JHELP_COMPONENTS_' . strtoupper(substr($component, 4) . ($section ? "_$section" : '')) . '_CATEGORIES';
+			$ref_key = 'JHELP_COMPONENTS_' . strtoupper(substr((string) $component, 4) . ($section ? "_$section" : '')) . '_CATEGORIES';
 		}
 
 		/*
@@ -251,7 +251,7 @@ class CategoriesViewCategories extends JViewLegacy
 		 * -locally  searching in a component help file if helpURL param exists in the component and is set to ''
 		 * -remotely searching in a component URL if helpURL param exists in the component and is NOT set to ''
 		 */
-		if ($lang->hasKey($lang_help_url = strtoupper($component) . '_HELP_URL'))
+		if ($lang->hasKey($lang_help_url = strtoupper((string) $component) . '_HELP_URL'))
 		{
 			$debug = $lang->setDebug(false);
 			$url = JText::_($lang_help_url);

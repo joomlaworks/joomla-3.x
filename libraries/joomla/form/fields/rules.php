@@ -310,7 +310,7 @@ class JFormFieldRules extends JFormField
 						JText::sprintf(
 							'JLIB_RULES_SELECT_ALLOW_DENY_GROUP',
 							JText::_($action->title),
-							htmlspecialchars(trim($group->text), ENT_QUOTES, 'UTF-8')
+							htmlspecialchars(trim((string) $group->text), ENT_QUOTES, 'UTF-8')
 						)
 					) . '">';
 

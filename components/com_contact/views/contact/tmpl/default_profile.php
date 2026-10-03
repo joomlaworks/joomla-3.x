@@ -16,11 +16,11 @@ defined('_JEXEC') or die;
 			<?php foreach ($fields as $profile) :
 				if ($profile->value) :
 					echo '<dt>' . $profile->label . '</dt>';
-					$profile->text = htmlspecialchars($profile->value, ENT_COMPAT, 'UTF-8');
+					$profile->text = htmlspecialchars((string) $profile->value, ENT_COMPAT, 'UTF-8');
 
 					switch ($profile->id) :
 						case 'profile_website':
-							$v_http = substr($profile->value, 0, 4);
+							$v_http = substr((string) $profile->value, 0, 4);
 
 							if ($v_http === 'http') :
 								echo '<dd><a href="' . $profile->text . '">' . JStringPunycode::urlToUTF8($profile->text) . '</a></dd>';

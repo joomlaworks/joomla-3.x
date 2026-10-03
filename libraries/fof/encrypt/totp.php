@@ -98,7 +98,10 @@ class FOFEncryptTotp
 
 		for ($i = -1; $i <= 1; $i++)
 		{
-			if ($this->getCode($secret, ($time + $i) * $this->_timeStep) == $code)
+			$expected = (string) $this->getCode($secret, ($time + $i) * $this->_timeStep);
+
+			// Constant-time comparison; pad so an integer code which lost its leading zeros still matches, as it did with ==
+			if (hash_equals($expected, str_pad((string) $code, strlen($expected), '0', STR_PAD_LEFT)))
 			{
 				return true;
 			}
@@ -124,8 +127,8 @@ class FOFEncryptTotp
 		$time = pack("N", $period);
 		$time = str_pad($time, 8, chr(0), STR_PAD_LEFT);
 
-		$hash = hash_hmac('sha1', $time, $secret, true);
-		$offset = ord(substr($hash, -1));
+		$hash = hash_hmac('sha1', $time, (string) $secret, true);
+		$offset = ord(substr($hash, -1)[0]);
 		$offset = $offset & 0xF;
 
 		$truncatedHash = $this->hashToInt($hash, $offset) & 0x7FFFFFFF;

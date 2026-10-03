@@ -81,6 +81,24 @@ class FieldsControllerField extends JControllerForm
 			return parent::allowEdit($data, $key);
 		}
 
+		// Get existing record
+		$record = $this->getModel()->getItem($recordId);
+
+		if (empty($record))
+		{
+			return false;
+		}
+
+		$recordContextParts = explode('.', (string) $record->context);
+		$recordOption       = $recordContextParts[0];
+
+		// Validate the requested context and the record's own context match, so a field ID
+		// belonging to a different component can't be edited via this component's ACL rules
+		if ($recordOption !== $this->component)
+		{
+			return false;
+		}
+
 		// Check edit on the record asset (explicit or inherited)
 		if ($user->authorise('core.edit', $this->component . '.field.' . $recordId))
 		{
@@ -90,14 +108,6 @@ class FieldsControllerField extends JControllerForm
 		// Check edit own on the record asset (explicit or inherited)
 		if ($user->authorise('core.edit.own', $this->component . '.field.' . $recordId))
 		{
-			// Existing record already has an owner, get it
-			$record = $this->getModel()->getItem($recordId);
-
-			if (empty($record))
-			{
-				return false;
-			}
-
 			// Grant if current user is owner of the record
 			return $user->id == $record->created_user_id;
 		}

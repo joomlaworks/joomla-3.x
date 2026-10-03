@@ -22,7 +22,7 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field name="rssurl" type="url" label="MOD_FEED_FIELD_RSSURL_LABEL" description="MOD_FEED_FIELD_RSSURL_DESC" filter="url" size="50" required="true" validate="url" />
+                <field name="rssurl" type="url" label="MOD_FEED_FIELD_RSSURL_LABEL" description="MOD_FEED_FIELD_RSSURL_DESC" filter="url" size="50" required="true" validate="url" schemes="http,https" />
                 <field name="rssrtl" type="radio" label="MOD_FEED_FIELD_RTL_LABEL" description="MOD_FEED_FIELD_RTL_DESC" class="btn-group btn-group-yesno" default="0" filter="integer">
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>

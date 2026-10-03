@@ -63,7 +63,7 @@ class JGithubPackageMarkdown extends JGithubPackage
 		if ($response->code != 200)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			$message = (isset($error->message)) ? $error->message : 'Error: ' . $response->code;
 			throw new DomainException($message, $response->code);
 		}

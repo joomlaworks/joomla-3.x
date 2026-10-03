@@ -324,7 +324,7 @@ class TemplatesModelTemplate extends JModelForm
 		$newName  = strtolower($this->getState('new_name'));
 		$template = $this->getTemplate();
 		$oldName  = $template->element;
-		$manifest = json_decode($template->manifest_cache);
+		$manifest = json_decode((string) $template->manifest_cache);
 
 		jimport('joomla.filesystem.file');
 
@@ -431,7 +431,7 @@ class TemplatesModelTemplate extends JModelForm
 		if ($this->template)
 		{
 			$input    = JFactory::getApplication()->input;
-			$fileName = base64_decode($input->get('file'));
+			$fileName = base64_decode((string) $input->get('file'));
 			$client   = JApplicationHelper::getClientInfo($this->template->client_id);
 
 			try
@@ -482,7 +482,7 @@ class TemplatesModelTemplate extends JModelForm
 		}
 
 		$app = JFactory::getApplication();
-		$fileName = base64_decode($app->input->get('file'));
+		$fileName = base64_decode((string) $app->input->get('file'));
 		$client = JApplicationHelper::getClientInfo($template->client_id);
 		$filePath = JPath::clean($client->path . '/templates/' . $template->element . '/' . $fileName);
 
@@ -862,7 +862,17 @@ class TemplatesModelTemplate extends JModelForm
 			$app      = JFactory::getApplication();
 			$client   = JApplicationHelper::getClientInfo($template->client_id);
 			$path     = JPath::clean($client->path . '/templates/' . $template->element . '/');
-			$filePath = $path . urldecode(base64_decode($file));
+			$relPath  = urldecode(base64_decode($file));
+
+			// Never allow traversal out of the template folder
+			if (strpos(str_replace('\\', '/', $relPath), '..') !== false)
+			{
+				$app->enqueueMessage(JText::_('COM_TEMPLATES_FILE_DELETE_FAIL'), 'error');
+
+				return false;
+			}
+
+			$filePath = $path . $relPath;
 
 			$return = JFile::delete($filePath);
 
@@ -1030,6 +1040,14 @@ class TemplatesModelTemplate extends JModelForm
 			$client = JApplicationHelper::getClientInfo($template->client_id);
 			$path   = JPath::clean($client->path . '/templates/' . $template->element . '/' . $location);
 
+			// Never allow traversal out of the template folder
+			if (strpos(str_replace('\\', '/', (string) $location), '..') !== false)
+			{
+				$app->enqueueMessage(JText::_('COM_TEMPLATES_FOLDER_DELETE_ERROR'), 'error');
+
+				return false;
+			}
+
 			if (!file_exists($path))
 			{
 				$app->enqueueMessage(JText::_('COM_TEMPLATES_FOLDER_NOT_EXISTS'), 'error');
@@ -1104,10 +1122,10 @@ class TemplatesModelTemplate extends JModelForm
 		{
 			$app      = JFactory::getApplication();
 			$client   = JApplicationHelper::getClientInfo($template->client_id);
-			$fileName = base64_decode($app->input->get('file'));
+			$fileName = base64_decode((string) $app->input->get('file'));
 			$path     = JPath::clean($client->path . '/templates/' . $template->element . '/');
 
-			if (stristr($client->path, 'administrator') == false)
+			if (stristr((string) $client->path, 'administrator') == false)
 			{
 				$folder = '/templates/';
 			}
@@ -1289,12 +1307,12 @@ class TemplatesModelTemplate extends JModelForm
 		{
 			$app          = JFactory::getApplication();
 			$client       = JApplicationHelper::getClientInfo($template->client_id);
-			$relPath      = base64_decode($app->input->get('file'));
+			$relPath      = base64_decode((string) $app->input->get('file'));
 			$explodeArray = explode('/', $relPath);
 			$fileName     = end($explodeArray);
 			$path         = JPath::clean($client->path . '/templates/' . $template->element . '/' . $relPath);
 
-			if (stristr($client->path, 'administrator') == false)
+			if (stristr((string) $client->path, 'administrator') == false)
 			{
 				$folder = '/templates/';
 			}
@@ -1381,7 +1399,7 @@ class TemplatesModelTemplate extends JModelForm
 		{
 			$app     = JFactory::getApplication();
 			$client  = JApplicationHelper::getClientInfo($template->client_id);
-			$relPath = base64_decode($app->input->get('file'));
+			$relPath = base64_decode((string) $app->input->get('file'));
 			$path    = JPath::clean($client->path . '/templates/' . $template->element . '/' . $relPath);
 
 			if (file_exists(JPath::clean($path)))
@@ -1488,10 +1506,10 @@ class TemplatesModelTemplate extends JModelForm
 		if (!isset($this->allowedFormats))
 		{
 			$params       = JComponentHelper::getParams('com_templates');
-			$imageTypes   = explode(',', $params->get('image_formats'));
-			$sourceTypes  = explode(',', $params->get('source_formats'));
-			$fontTypes    = explode(',', $params->get('font_formats'));
-			$archiveTypes = explode(',', $params->get('compressed_formats'));
+			$imageTypes   = explode(',', (string) $params->get('image_formats'));
+			$sourceTypes  = explode(',', (string) $params->get('source_formats'));
+			$fontTypes    = explode(',', (string) $params->get('font_formats'));
+			$archiveTypes = explode(',', (string) $params->get('compressed_formats'));
 
 			$this->allowedFormats = array_merge($imageTypes, $sourceTypes, $fontTypes, $archiveTypes);
 		}

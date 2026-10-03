@@ -133,7 +133,7 @@ class TagsHelper extends CMSHelper
 			{
 				if (!empty($tag->path))
 				{
-					if ($pathParts = explode('/', $tag->path))
+					if ($pathParts = explode('/', (string) $tag->path))
 					{
 						$aliases = array_merge($aliases, $pathParts);
 					}
@@ -172,7 +172,7 @@ class TagsHelper extends CMSHelper
 
 						if (!empty($tag->path))
 						{
-							if ($pathParts = explode('/', $tag->path))
+							if ($pathParts = explode('/', (string) $tag->path))
 							{
 								foreach ($pathParts as $alias)
 								{
@@ -223,7 +223,7 @@ class TagsHelper extends CMSHelper
 			foreach ($tags as $key => $tag)
 			{
 				// User is not allowed to create tags, so don't create.
-				if (!$canCreate && strpos($tag, '#new#') !== false)
+				if (!$canCreate && strpos((string) $tag, '#new#') !== false)
 				{
 					continue;
 				}
@@ -646,6 +646,8 @@ class TagsHelper extends CMSHelper
 
 		$groups = '0,' . implode(',', array_unique($user->getAuthorisedViewLevels()));
 		$query->where('c.core_access IN (' . $groups . ')')
+			// Items inside a category the user can't access must not be listed either
+			->where('(c.core_catid = 0 OR tc.access IN (' . $groups . '))')
 			->group('m.type_alias, m.content_item_id, m.core_content_id, core_modified_time, core_created_time, core_created_by_alias, author, author_email');
 
 		// Use HAVING if matching all tags and we are matching more than one tag.

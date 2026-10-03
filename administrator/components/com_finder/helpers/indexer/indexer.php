@@ -155,7 +155,7 @@ abstract class FinderIndexer
 		}
 
 		$path = __DIR__ . '/driver/' . $serverType . '.php';
-		$class = 'FinderIndexerDriver' . ucfirst($serverType);
+		$class = 'FinderIndexerDriver' . ucfirst((string) $serverType);
 
 		// Check if a parser exists for the format.
 		if (file_exists($path))

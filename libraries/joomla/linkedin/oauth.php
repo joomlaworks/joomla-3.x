@@ -101,7 +101,7 @@ class JLinkedinOauth extends JOAuth1Client
 
 		if (strpos($url, '::(~)') === false && $response->code != $code)
 		{
-			if ($error = json_decode($response->body))
+			if ($error = json_decode((string) $response->body))
 			{
 				throw new DomainException('Error code ' . $error->errorCode . ' received with message: ' . $error->message . '.');
 			}

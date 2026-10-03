@@ -853,17 +853,17 @@ class JDatabaseQuerySqlsrv extends JDatabaseQuery implements JDatabaseQueryLimit
 
 			foreach ($column as $j => $block)
 			{
-				if (substr($block, -2) === '.*')
+				if (substr((string) $block, -2) === '.*')
 				{
 					// Found column ends with .*
 					if (isset($iquotes[$block[0]]))
 					{
 						// Quoted table
-						$wildcardTables[] = substr($block, 1, -3);
+						$wildcardTables[] = substr((string) $block, 1, -3);
 					}
 					else
 					{
-						$wildcardTables[] = substr($block, 0, -2);
+						$wildcardTables[] = substr((string) $block, 0, -2);
 					}
 				}
 				elseif (str_ireplace($aFuncs, '', $block) != $block)

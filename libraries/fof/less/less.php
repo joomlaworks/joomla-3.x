@@ -92,7 +92,7 @@ class FOFLess
 	{
 		foreach ((array) $this->importDir as $dir)
 		{
-			$full = $dir . (substr($dir, -1) != '/' ? '/' : '') . $url;
+			$full = $dir . (substr((string) $dir, -1) != '/' ? '/' : '') . $url;
 
 			if ($this->fileExists($file = $full . '.less') || $this->fileExists($file = $full))
 			{
@@ -175,7 +175,7 @@ class FOFLess
 		$url = $this->compileValue($this->lib_e($str));
 
 		// Don't import if it ends in css
-		if (substr_compare($url, '.css', -4, 4) === 0)
+		if (substr_compare((string) $url, '.css', -4, 4) === 0)
 		{
 			return false;
 		}
@@ -707,7 +707,7 @@ class FOFLess
 			if (is_array($s))
 			{
 				list(, $value) = $s;
-				$out[] = trim($this->compileValue($this->reduce($value)));
+				$out[] = trim((string) $this->compileValue($this->reduce($value)));
 			}
 			else
 			{
@@ -1100,7 +1100,7 @@ class FOFLess
 			case "comment":
 				$out->lines[] = $prop[1];
 				break;
-			case "import";
+			case "import":
 				list(, $importPath, $importId) = $prop;
 				$importPath = $this->reduce($importPath);
 
@@ -1417,7 +1417,7 @@ class FOFLess
 
 		$i = 0;
 
-		if (preg_match_all('/%[dsa]/', $template, $m))
+		if (preg_match_all('/%[dsa]/', (string) $template, $m))
 		{
 			foreach ($m[0] as $match)
 			{
@@ -1432,7 +1432,7 @@ class FOFLess
 
 				$i++;
 				$rep = $this->compileValue($this->lib_e($val));
-				$template = preg_replace('/' . self::preg_quote($match) . '/', $rep, $template, 1);
+				$template = preg_replace('/' . self::preg_quote($match) . '/', (string) $rep, (string) $template, 1);
 			}
 		}
 
@@ -2426,7 +2426,7 @@ class FOFLess
 		}
 
 		// Type based operators
-		$fname = "op_${ltype}_${rtype}";
+		$fname = "op_{$ltype}_{$rtype}";
 
 		if (is_callable(array($this, $fname)))
 		{

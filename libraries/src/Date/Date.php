@@ -285,9 +285,9 @@ class Date extends \DateTime
 		{
 			// Do string replacements for date format options that can be translated.
 			$format = preg_replace('/(^|[^\\\])D/', "\\1" . self::DAY_ABBR, $format);
-			$format = preg_replace('/(^|[^\\\])l/', "\\1" . self::DAY_NAME, $format);
-			$format = preg_replace('/(^|[^\\\])M/', "\\1" . self::MONTH_ABBR, $format);
-			$format = preg_replace('/(^|[^\\\])F/', "\\1" . self::MONTH_NAME, $format);
+			$format = preg_replace('/(^|[^\\\])l/', "\\1" . self::DAY_NAME, (string) $format);
+			$format = preg_replace('/(^|[^\\\])M/', "\\1" . self::MONTH_ABBR, (string) $format);
+			$format = preg_replace('/(^|[^\\\])F/', "\\1" . self::MONTH_NAME, (string) $format);
 		}
 
 		// If the returned time should not be local use GMT.

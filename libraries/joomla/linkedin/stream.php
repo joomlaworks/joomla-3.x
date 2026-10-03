@@ -217,7 +217,7 @@ class JLinkedinStream extends JLinkedinObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'GET', $parameters, $data);
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -277,7 +277,7 @@ class JLinkedinStream extends JLinkedinObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'GET', $parameters, $data);
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -373,7 +373,7 @@ class JLinkedinStream extends JLinkedinObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'GET', $parameters, $data);
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -404,7 +404,7 @@ class JLinkedinStream extends JLinkedinObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'GET', $parameters, $data);
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -479,7 +479,7 @@ class JLinkedinStream extends JLinkedinObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'GET', $parameters, $data);
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -553,7 +553,7 @@ class JLinkedinStream extends JLinkedinObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'GET', $parameters, $data);
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**

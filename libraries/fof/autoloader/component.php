@@ -170,7 +170,7 @@ class FOFAutoloaderComponent
 
 		// Change from camel cased into a lowercase array
 		$class_modified = preg_replace('/(\s)+/', '_', $class_name);
-		$class_modified = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $class_modified));
+		$class_modified = strtolower((string) preg_replace('/(?<=\\w)([A-Z])/', '_\\1', (string) $class_modified));
 		$parts = explode('_', $class_modified);
 
 		// We need three parts in the name
@@ -279,7 +279,7 @@ class FOFAutoloaderComponent
 
 		// Change from camel cased into a lowercase array
 		$class_modified = preg_replace('/(\s)+/', '_', $class_name);
-		$class_modified = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $class_modified));
+		$class_modified = strtolower((string) preg_replace('/(?<=\\w)([A-Z])/', '_\\1', (string) $class_modified));
 		$parts = explode('_', $class_modified);
 
 		// We need three parts in the name
@@ -387,7 +387,7 @@ class FOFAutoloaderComponent
 
 		// Change from camel cased into a lowercase array
 		$class_modified = preg_replace('/(\s)+/', '_', $class_name);
-		$class_modified = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $class_modified));
+		$class_modified = strtolower((string) preg_replace('/(?<=\\w)([A-Z])/', '_\\1', (string) $class_modified));
 		$parts = explode('_', $class_modified);
 
 		// We need at least three parts in the name
@@ -529,7 +529,7 @@ class FOFAutoloaderComponent
 
 		// Change from camel cased into a lowercase array
 		$class_modified = preg_replace('/(\s)+/', '_', $class_name);
-		$class_modified = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $class_modified));
+		$class_modified = strtolower((string) preg_replace('/(?<=\\w)([A-Z])/', '_\\1', (string) $class_modified));
 		$parts = explode('_', $class_modified);
 
 		// We need three parts in the name
@@ -625,7 +625,7 @@ class FOFAutoloaderComponent
 
 		// Change from camel cased into a lowercase array
 		$class_modified = preg_replace('/(\s)+/', '_', $class_name);
-		$class_modified = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $class_modified));
+		$class_modified = strtolower((string) preg_replace('/(?<=\\w)([A-Z])/', '_\\1', (string) $class_modified));
 		$parts = explode('_', $class_modified);
 
 		// We need three parts in the name
@@ -719,7 +719,7 @@ class FOFAutoloaderComponent
 
 		// Change from camel cased into a lowercase array
 		$class_modified = preg_replace('/(\s)+/', '_', $class_name);
-		$class_modified = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $class_modified));
+		$class_modified = strtolower((string) preg_replace('/(?<=\\w)([A-Z])/', '_\\1', (string) $class_modified));
 		$parts = explode('_', $class_modified);
 
 		// We need two parts in the name

@@ -26,7 +26,7 @@ class easyparse {
 
     public function __construct($str) {
         $this->count = 0;
-        $this->buffer = trim($str);
+        $this->buffer = trim((string) $str);
     }
 
     public function seek($where = null) {
@@ -38,12 +38,12 @@ class easyparse {
     }
 
     public function preg_quote($what) {
-        return preg_quote($what, '/');
+        return preg_quote((string) $what, '/');
     }
 
     public function match($regex, &$out, $eatWhitespace = true) {
         $r = '/'.$regex.($eatWhitespace ? '\s*' : '').'/Ais';
-        if (preg_match($r, $this->buffer, $out, null, $this->count)) {
+        if (preg_match($r, (string) $this->buffer, $out, null, $this->count)) {
             $this->count += strlen($out[0]);
             return true;
         }
@@ -52,11 +52,11 @@ class easyparse {
 
     public function literal($what, $eatWhitespace = true) {
         // this is here mainly prevent notice from { } string accessor
-        if ($this->count >= strlen($this->buffer)) return false;
+        if ($this->count >= strlen((string) $this->buffer)) return false;
 
         // shortcut on single letter
-        if (!$eatWhitespace and strlen($what) === 1) {
-            if ($this->buffer{$this->count} == $what) {
+        if (!$eatWhitespace and strlen((string) $what) === 1) {
+            if ($this->buffer[$this->count] == $what) {
                 $this->count++;
                 return true;
             }
@@ -81,7 +81,7 @@ class tagparse extends easyparse {
         }
 
         // crush whitespace
-        $this->buffer = preg_replace('/\s+/', ' ', $this->buffer) . ' ';
+        $this->buffer = preg_replace('/\s+/', ' ', (string) $this->buffer) . ' ';
 
         $tags = array();
         while ($this->tag($t)) {
@@ -138,7 +138,7 @@ class tagparse extends easyparse {
             $buff = "";
             $escapeNext = false;
             $finished = false;
-            for ($i = $this->count; $i < strlen($this->buffer); $i++) {
+            for ($i = $this->count; $i < strlen((string) $this->buffer); $i++) {
                 $char = $this->buffer[$i];
                 switch ($char) {
                 case $delim:

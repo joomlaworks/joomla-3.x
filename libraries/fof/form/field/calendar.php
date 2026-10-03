@@ -205,7 +205,7 @@ class FOFFormFieldCalendar extends JFormFieldCalendar implements FOFFormField
 		else
 		{
 			return '<span class="' . $this->id . ' ' . $class . '">' .
-			htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') .
+			htmlspecialchars((string) $this->value, ENT_COMPAT, 'UTF-8') .
 			'</span>';
 		}
 	}

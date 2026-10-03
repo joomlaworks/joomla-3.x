@@ -136,7 +136,7 @@ class SimplePie_Misc
 		$full = "<$element[tag]";
 		foreach ($element['attribs'] as $key => $value)
 		{
-			$key = strtolower($key);
+			$key = strtolower((string) $key);
 			$full .= " $key=\"" . htmlspecialchars($value['data']) . '"';
 		}
 		if ($element['self_closing'])
@@ -368,7 +368,7 @@ class SimplePie_Misc
 
 	protected static function change_encoding_iconv($data, $input, $output)
 	{
-		return @iconv($input, $output, $data);
+		return @iconv((string) $input, (string) $output, (string) $data);
 	}
 
 	/**
@@ -385,7 +385,7 @@ class SimplePie_Misc
 	public static function encoding($charset)
 	{
 		// Normalization from UTS #22
-		switch (strtolower(preg_replace('/(?:[^a-zA-Z0-9]+|([^0-9])0+)/', '\1', $charset)))
+		switch (strtolower((string) preg_replace('/(?:[^a-zA-Z0-9]+|([^0-9])0+)/', '\1', $charset)))
 		{
 			case 'adobestandardencoding':
 			case 'csadobestandardencoding':
@@ -1821,13 +1821,13 @@ class SimplePie_Misc
 
 	public static function parse_mime($mime)
 	{
-		if (($pos = strpos($mime, ';')) === false)
+		if (($pos = strpos((string) $mime, ';')) === false)
 		{
-			return trim($mime);
+			return trim((string) $mime);
 		}
 		else
 		{
-			return trim(substr($mime, 0, $pos));
+			return trim(substr((string) $mime, 0, $pos));
 		}
 	}
 
@@ -1922,23 +1922,23 @@ class SimplePie_Misc
 
 	public static function is_isegment_nz_nc($string)
 	{
-		return (bool) preg_match('/^([A-Za-z0-9\-._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!$&\'()*+,;=@]|(%[0-9ABCDEF]{2}))+$/u', $string);
+		return (bool) preg_match('/^([A-Za-z0-9\-._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!$&\'()*+,;=@]|(%[0-9ABCDEF]{2}))+$/u', (string) $string);
 	}
 
 	public static function space_seperated_tokens($string)
 	{
 		$space_characters = "\x20\x09\x0A\x0B\x0C\x0D";
-		$string_length = strlen($string);
+		$string_length = strlen((string) $string);
 
-		$position = strspn($string, $space_characters);
+		$position = strspn((string) $string, $space_characters);
 		$tokens = array();
 
 		while ($position < $string_length)
 		{
-			$len = strcspn($string, $space_characters, $position);
-			$tokens[] = substr($string, $position, $len);
+			$len = strcspn((string) $string, $space_characters, $position);
+			$tokens[] = substr((string) $string, $position, $len);
 			$position += $len;
-			$position += strspn($string, $space_characters, $position);
+			$position += strspn((string) $string, $space_characters, $position);
 		}
 
 		return $tokens;

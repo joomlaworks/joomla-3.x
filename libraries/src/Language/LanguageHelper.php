@@ -77,13 +77,13 @@ class LanguageHelper
 					// Take off 3 letters iso code languages as they can't match browsers' languages and default them to en
 					$Jinstall_lang = $systemLang->lang_code;
 
-					if (strlen($Jinstall_lang) < 6)
+					if (strlen((string) $Jinstall_lang) < 6)
 					{
-						if (strtolower($browserLang) == strtolower(substr($systemLang->lang_code, 0, strlen($browserLang))))
+						if (strtolower($browserLang) == strtolower(substr((string) $systemLang->lang_code, 0, strlen($browserLang))))
 						{
 							return $systemLang->lang_code;
 						}
-						elseif ($primary_browserLang == substr($systemLang->lang_code, 0, 2))
+						elseif ($primary_browserLang == substr((string) $systemLang->lang_code, 0, 2))
 						{
 							$primaryDetectedLang = $systemLang->lang_code;
 						}
@@ -498,7 +498,7 @@ class LanguageHelper
 		// Escape double quotes.
 		foreach ($strings as $key => $string)
 		{
-			$strings[$key] = addcslashes($string, '"');
+			$strings[$key] = addcslashes((string) $string, '"');
 		}
 
 		// Write override.ini file with the strings.

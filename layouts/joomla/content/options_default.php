@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 	<?php if (!empty($displayData->description)) : ?>
 		<p><?php echo $displayData->description; ?></p>
 	<?php endif; ?>
-	<?php $fieldsnames = explode(',', $displayData->fieldsname); ?>
+	<?php $fieldsnames = explode(',', (string) $displayData->fieldsname); ?>
 	<?php foreach ($fieldsnames as $fieldname) : ?>
 		<?php foreach ($displayData->form->getFieldset($fieldname) as $field) : ?>
 			<?php $datashowon = ''; ?>

@@ -97,8 +97,8 @@ class CacheStorage
 	{
 		$config = \JFactory::getConfig();
 
-		$this->_hash        = md5($config->get('secret'));
-		$this->_application = (isset($options['application'])) ? $options['application'] : md5(JPATH_CONFIGURATION);
+		$this->_hash        = md5((string) $config->get('secret'));
+		$this->_application = (isset($options['application'])) ? $options['application'] : md5((string) JPATH_CONFIGURATION);
 		$this->_language    = (isset($options['language'])) ? $options['language'] : 'en-GB';
 		$this->_locking     = (isset($options['locking'])) ? $options['locking'] : true;
 		$this->_lifetime    = (isset($options['lifetime'])) ? $options['lifetime'] * 60 : $config->get('cachetime') * 60;

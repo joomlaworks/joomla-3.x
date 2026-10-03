@@ -30,7 +30,7 @@ switch ((string) $item->text)
 	// Check for "Start" item
 	case JText::_('JLIB_HTML_START') :
 		$icon = 'icon-backward icon-first';
-		$aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower($item->text));
+		$aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower((string) $item->text));
 		break;
 
 	// Check for "Prev" item
@@ -43,13 +43,13 @@ switch ((string) $item->text)
 	// Check for "Next" item
 	case JText::_('JNEXT') :
 		$icon = 'icon-step-forward icon-next';
-		$aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower($item->text));
+		$aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower((string) $item->text));
 		break;
 
 	// Check for "End" item
 	case JText::_('JLIB_HTML_END') :
 		$icon = 'icon-forward icon-last';
-		$aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower($item->text));
+		$aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower((string) $item->text));
 		break;
 
 	default:

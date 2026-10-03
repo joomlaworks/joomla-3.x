@@ -85,7 +85,7 @@ class Cookie extends Input
 		// Set the cookie
 		if (version_compare(PHP_VERSION, '7.3', '>='))
 		{
-			setcookie($name, $value, $options);
+			setcookie($name, (string) $value, $options);
 		}
 		else
 		{
@@ -115,7 +115,7 @@ class Cookie extends Input
 				$options['httponly'] = false;
 			}
 
-			setcookie($name, $value, $options['expires'], $options['path'], $options['domain'], $options['secure'], $options['httponly']);
+			setcookie($name, (string) $value, $options['expires'], $options['path'], $options['domain'], $options['secure'], $options['httponly']);
 		}
 
 		$this->data[$name] = $value;

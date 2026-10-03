@@ -40,7 +40,7 @@ function utf8_byte_position() {
     $i = utf8_locate_next_chr($str, 300);
 
     // $c -> character offset into $str
-    $c = strlen(utf8_decode(substr($str,0,$i)));
+    $c = strlen(mb_convert_encoding(substr((string) $str,0,$i), 'ISO-8859-1'));
 
     // deal with arguments from lowest to highest
     sort($args);
@@ -59,7 +59,7 @@ function utf8_byte_position() {
             if ( ($c - $prev[1]) == 0 ) {
                 // Hack: gone past end of string
                 $error = 0;
-                $i = strlen($str);
+                $i = strlen((string) $str);
                 break;
             }
 
@@ -73,10 +73,10 @@ function utf8_byte_position() {
 
             if ($j > $i) {
                 // determine new character offset
-                $c += strlen(utf8_decode(substr($str,$i,$j-$i)));
+                $c += strlen(mb_convert_encoding(substr((string) $str,$i,$j-$i), 'ISO-8859-1'));
             } else {
                 // ditto
-                $c -= strlen(utf8_decode(substr($str,$j,$i-$j)));
+                $c -= strlen(mb_convert_encoding(substr((string) $str,$j,$i-$j), 'ISO-8859-1'));
             }
 
             $error = abs($c-$offset);
@@ -128,7 +128,7 @@ function utf8_locate_current_chr( &$str, $idx ) {
 
     if ($idx <= 0) return 0;
 
-    $limit = strlen($str);
+    $limit = strlen((string) $str);
     if ($idx >= $limit) return $limit;
 
     // Binary value for any byte after the first in a multi-byte UTF-8 character
@@ -155,7 +155,7 @@ function utf8_locate_next_chr( &$str, $idx ) {
 
     if ($idx <= 0) return 0;
 
-    $limit = strlen($str);
+    $limit = strlen((string) $str);
     if ($idx >= $limit) return $limit;
 
     // Binary value for any byte after the first in a multi-byte UTF-8 character

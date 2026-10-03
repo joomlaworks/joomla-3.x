@@ -27,7 +27,7 @@ extract($displayData);
 	data-group="<?php echo $group; ?>"
 >
 	<?php foreach ($form->getGroup('') as $field) : ?>
-	<td data-column="<?php echo strip_tags($field->label); ?>">
+	<td data-column="<?php echo strip_tags((string) $field->label); ?>">
 		<?php echo $field->renderField(array('hiddenLabel' => true)); ?>
 	</td>
 	<?php endforeach; ?>

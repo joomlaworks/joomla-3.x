@@ -64,7 +64,7 @@ class JFormFieldRepeatable extends JFormField
 			$field->name = (string) $field->element['name'];
 
 			// Build heading
-			$head_row_str[] = '<th>' . strip_tags($field->getLabel($field->name));
+			$head_row_str[] = '<th>' . strip_tags((string) $field->getLabel($field->name));
 			$head_row_str[] = '<br /><small style="font-weight:normal">' . JText::_($field->description) . '</small>';
 			$head_row_str[] = '</th>';
 

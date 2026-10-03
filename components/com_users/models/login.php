@@ -60,7 +60,7 @@ class UsersModelLogin extends JModelForm
 		// Check for return URL from the request first
 		if ($return = $input->get('return', '', 'BASE64'))
 		{
-			$data['return'] = base64_decode($return);
+			$data['return'] = base64_decode((string) $return);
 
 			if (!JUri::isInternal($data['return']))
 			{

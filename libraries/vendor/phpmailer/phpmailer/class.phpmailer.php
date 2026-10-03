@@ -734,7 +734,7 @@ class PHPMailer
             case 'html':
                 //Cleans up output a bit for a better looking, HTML-safe output
                 echo htmlentities(
-                    preg_replace('/[\r\n]+/', '', $str),
+                    (string) preg_replace('/[\r\n]+/', '', $str),
                     ENT_QUOTES,
                     'UTF-8'
                 )
@@ -747,7 +747,7 @@ class PHPMailer
                 echo gmdate('Y-m-d H:i:s') . "\t" . str_replace(
                     "\n",
                     "\n                   \t                  ",
-                    trim($str)
+                    trim((string) $str)
                 ) . "\n";
         }
     }
@@ -877,7 +877,7 @@ class PHPMailer
     protected function addOrEnqueueAnAddress($kind, $address, $name)
     {
         $address = trim($address);
-        $name = trim(preg_replace('/[\r\n]+/', '', $name)); //Strip breaks and trim
+        $name = trim((string) preg_replace('/[\r\n]+/', '', $name)); //Strip breaks and trim
         if (($pos = strrpos($address, '@')) === false) {
             // At-sign is misssing.
             $error_message = $this->lang('invalid_address') . " (addAnAddress $kind): $address";
@@ -1019,7 +1019,7 @@ class PHPMailer
     public function setFrom($address, $name = '', $auto = true)
     {
         $address = trim($address);
-        $name = trim(preg_replace('/[\r\n]+/', '', $name)); //Strip breaks and trim
+        $name = trim((string) preg_replace('/[\r\n]+/', '', $name)); //Strip breaks and trim
         // Don't validate now addresses with IDN. Will be done in send().
         if (($pos = strrpos($address, '@')) === false or
             (!$this->has8bitChars(substr($address, ++$pos)) or !$this->idnSupported()) and
@@ -2636,7 +2636,7 @@ class PHPMailer
                 $type = $attachment[4];
                 $disposition = $attachment[6];
                 $cid = $attachment[7];
-                if ($disposition == 'inline' && array_key_exists($cid, $cidUniq)) {
+                if ($disposition == 'inline' && array_key_exists((string) $cid, $cidUniq)) {
                     continue;
                 }
                 $cidUniq[$cid] = true;
@@ -3328,7 +3328,7 @@ class PHPMailer
             $result = $_SERVER['SERVER_NAME'];
         } elseif (function_exists('gethostname') && gethostname() !== false) {
             $result = gethostname();
-        } elseif (php_uname('n') !== false) {
+        } elseif (function_exists('php_uname') && php_uname('n') !== false) {
             $result = php_uname('n');
         }
         return $result;
@@ -3489,7 +3489,7 @@ class PHPMailer
                         $message = preg_replace(
                             '/' . $images[1][$imgindex] . '=["\']' . preg_quote($url, '/') . '["\']/Ui',
                             $images[1][$imgindex] . '="cid:' . $cid . '"',
-                            $message
+                            (string) $message
                         );
                     }
                 }
@@ -3532,7 +3532,7 @@ class PHPMailer
             return call_user_func($advanced, $html);
         }
         return html_entity_decode(
-            trim(strip_tags(preg_replace('/<(head|title|style|script)[^>]*>.*?<\/\\1>/si', '', $html))),
+            trim(strip_tags((string) preg_replace('/<(head|title|style|script)[^>]*>.*?<\/\\1>/si', '', $html))),
             ENT_QUOTES,
             $this->CharSet
         );
@@ -3832,7 +3832,7 @@ class PHPMailer
             in_array('sha256WithRSAEncryption', openssl_get_md_methods(true))) {
             if (openssl_sign($signHeader, $signature, $privKey, 'sha256WithRSAEncryption')) {
                 openssl_pkey_free($privKey);
-                return base64_encode($signature);
+                return base64_encode((string) $signature);
             }
         } else {
             $pinfo = openssl_pkey_get_details($privKey);
@@ -3845,7 +3845,7 @@ class PHPMailer
 
             if (openssl_private_encrypt($eb, $signature, $privKey, OPENSSL_NO_PADDING)) {
                 openssl_pkey_free($privKey);
-                return base64_encode($signature);
+                return base64_encode((string) $signature);
             }
         }
         openssl_pkey_free($privKey);
@@ -3861,12 +3861,12 @@ class PHPMailer
     public function DKIM_HeaderC($signHeader)
     {
         $signHeader = preg_replace('/\r\n\s+/', ' ', $signHeader);
-        $lines = explode("\r\n", $signHeader);
+        $lines = explode("\r\n", (string) $signHeader);
         foreach ($lines as $key => $line) {
             list($heading, $value) = explode(':', $line, 2);
             $heading = strtolower($heading);
             $value = preg_replace('/\s{2,}/', ' ', $value); // Compress useless spaces
-            $lines[$key] = $heading . ':' . trim($value); // Don't forget to remove WSP around the value
+            $lines[$key] = $heading . ':' . trim((string) $value); // Don't forget to remove WSP around the value
         }
         $signHeader = implode("\r\n", $lines);
         return $signHeader;

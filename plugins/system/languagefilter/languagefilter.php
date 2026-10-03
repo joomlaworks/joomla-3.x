@@ -107,7 +107,7 @@ class PlgSystemLanguageFilter extends JPlugin
 				// @todo: In Joomla 2.5.4 and earlier access wasn't set. Non modified Content Languages got 0 as access value
 				// we also check if frontend language exists and is enabled
 				if (($language->access && !in_array($language->access, $levels))
-					|| (!array_key_exists($language->lang_code, JLanguageHelper::getInstalledLanguages(0))))
+					|| (!array_key_exists((string) $language->lang_code, JLanguageHelper::getInstalledLanguages(0))))
 				{
 					unset($this->lang_codes[$language->lang_code], $this->sefs[$language->sef]);
 				}
@@ -121,7 +121,7 @@ class PlgSystemLanguageFilter extends JPlugin
 
 			foreach ($this->sefs as $sef => $language)
 			{
-				if (!array_key_exists($language->lang_code, JLanguageHelper::getInstalledLanguages(0)))
+				if (!array_key_exists((string) $language->lang_code, JLanguageHelper::getInstalledLanguages(0)))
 				{
 					unset($this->lang_codes[$language->lang_code]);
 					unset($this->sefs[$language->sef]);
@@ -285,7 +285,7 @@ class PlgSystemLanguageFilter extends JPlugin
 		if ($this->mode_sef)
 		{
 			$path = $uri->getPath();
-			$parts = explode('/', $path);
+			$parts = explode('/', (string) $path);
 
 			$sef = StringHelper::strtolower($parts[0]);
 
@@ -493,9 +493,9 @@ class PlgSystemLanguageFilter extends JPlugin
 
 			foreach ($language->getPaths() as $extension => $files)
 			{
-				if (strpos($extension, 'plg_system') !== false)
+				if (strpos((string) $extension, 'plg_system') !== false)
 				{
-					$extension_name = substr($extension, 11);
+					$extension_name = substr((string) $extension, 11);
 
 					$language_new->load($extension, JPATH_ADMINISTRATOR)
 					|| $language_new->load($extension, JPATH_PLUGINS . '/system/' . $extension_name);
@@ -643,7 +643,7 @@ class PlgSystemLanguageFilter extends JPlugin
 
 				// The language has been deleted/disabled or the related content language does not exist/has been unpublished
 				// or the related home page does not exist/has been unpublished
-				if (!array_key_exists($lang_code, $this->lang_codes)
+				if (!array_key_exists((string) $lang_code, $this->lang_codes)
 					|| !array_key_exists($lang_code, JLanguageMultilang::getSiteHomePages())
 					|| !JFolder::exists(JPATH_SITE . '/language/' . $lang_code))
 				{
@@ -775,7 +775,7 @@ class PlgSystemLanguageFilter extends JPlugin
 
 			// Load component associations.
 			$option = $this->app->input->get('option');
-			$cName = ucfirst(substr($option, 4)) . 'HelperAssociation';
+			$cName = ucfirst(substr((string) $option, 4)) . 'HelperAssociation';
 			JLoader::register($cName, JPath::clean(JPATH_SITE . '/components/' . $option . '/helpers/association.php'));
 
 			if (class_exists($cName) && is_callable(array($cName, 'getAssociations')))
@@ -830,7 +830,7 @@ class PlgSystemLanguageFilter extends JPlugin
 				if ($remove_default_prefix && isset($languages[$this->default_lang]))
 				{
 					$languages[$this->default_lang]->link
-									= preg_replace('|/' . $languages[$this->default_lang]->sef . '/|', '/', $languages[$this->default_lang]->link, 1);
+									= preg_replace('|/' . $languages[$this->default_lang]->sef . '/|', '/', (string) $languages[$this->default_lang]->link, 1);
 				}
 
 				foreach ($languages as $i => $language)
@@ -907,7 +907,7 @@ class PlgSystemLanguageFilter extends JPlugin
 		}
 
 		// Let's be sure we got a valid language code. Fallback to null.
-		if (!array_key_exists($languageCode, $this->lang_codes))
+		if (!array_key_exists((string) $languageCode, $this->lang_codes))
 		{
 			$languageCode = null;
 		}

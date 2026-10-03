@@ -513,10 +513,10 @@ class MenusModelMenutypes extends JModelLegacy
 		foreach ($layouts as $layout)
 		{
 			// Ignore private layouts.
-			if (strpos(basename($layout), '_') === false)
+			if (strpos(basename((string) $layout), '_') === false)
 			{
 				// Get the layout name.
-				$layoutNames[] = basename($layout, '.xml');
+				$layoutNames[] = basename((string) $layout, '.xml');
 			}
 		}
 
@@ -558,12 +558,12 @@ class MenusModelMenutypes extends JModelLegacy
 		foreach ($layouts as $layout)
 		{
 			// Ignore private layouts.
-			if (strpos(basename($layout), '_') === false)
+			if (strpos(basename((string) $layout), '_') === false)
 			{
 				$file = $layout;
 
 				// Get the layout name.
-				$layout = basename($layout, '.xml');
+				$layout = basename((string) $layout, '.xml');
 
 				// Create the menu option for the layout.
 				$o = new JObject;

@@ -13,7 +13,7 @@ JHtml::_('behavior.tabstate');
 $input = JFactory::getApplication()->input;
 
 // If you have a URL like this: com_categories&view=categories&extension=com_example.example_cat
-$parts = explode('.', $input->get('extension'));
+$parts = explode('.', (string) $input->get('extension'));
 $component = $parts[0];
 
 if (!JFactory::getUser()->authorise('core.manage', $component))

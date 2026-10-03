@@ -25,6 +25,24 @@ class ConfigControllerComponentSave extends JControllerBase
 	protected $app;
 
 	/**
+	 * Task options, set externally by ConfigControllerHelper::parseController(). Declared here
+	 * (rather than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
+	 *
+	 * @var    array
+	 * @since  3.16.0
+	 */
+	public $options;
+
+	/**
+	 * Prefix for the view and model classes, set externally by config.php. Declared here (rather
+	 * than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
+	 *
+	 * @var    string
+	 * @since  3.16.0
+	 */
+	public $prefix = 'Config';
+
+	/**
 	 * Method to save global configuration.
 	 *
 	 * @return  mixed  Calls $app->redirect()
@@ -51,7 +69,7 @@ class ConfigControllerComponentSave extends JControllerBase
 		$user   = JFactory::getUser();
 
 		// Make sure com_joomlaupdate and com_privacy can only be accessed by SuperUser
-		if (in_array(strtolower($option), array('com_joomlaupdate', 'com_privacy'))
+		if (in_array(strtolower($option ?? ''), array('com_joomlaupdate', 'com_privacy'))
 			&& !JFactory::getUser()->authorise('core.admin'))
 		{
 			$this->app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
@@ -78,7 +96,7 @@ class ConfigControllerComponentSave extends JControllerBase
 
 		if (!empty($returnUri))
 		{
-			$redirect = '&return=' . urlencode($returnUri);
+			$redirect = '&return=' . urlencode((string) $returnUri);
 		}
 
 		// Validate the posted data.
@@ -135,7 +153,7 @@ class ConfigControllerComponentSave extends JControllerBase
 
 				if (!empty($returnUri))
 				{
-					$redirect = base64_decode($returnUri);
+					$redirect = base64_decode((string) $returnUri);
 				}
 
 				// Don't redirect to an external URL.

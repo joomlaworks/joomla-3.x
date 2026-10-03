@@ -353,7 +353,7 @@ class MenusModelMenu extends JModelForm
 		{
 			$params = new Registry($module->params);
 
-			$menuType = $params->get('menutype');
+			$menuType = (string) $params->get('menutype');
 
 			if (!isset($result[$menuType]))
 			{

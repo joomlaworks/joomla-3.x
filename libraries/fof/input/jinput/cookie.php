@@ -24,7 +24,7 @@ class JInputCookie extends JInput
 	 *
 	 * @since   11.1
 	 */
-	public function __construct(array $source = null, array $options = array())
+	public function __construct(?array $source = null, array $options = array())
 	{
 		if (isset($options['filter']))
 		{
@@ -82,7 +82,7 @@ class JInputCookie extends JInput
 	 */
 	public function set($name, $value, $expire = 0, $path = '', $domain = '', $secure = false, $httpOnly = false)
 	{
-		setcookie($name, $value, $expire, $path, $domain, $secure, $httpOnly);
+		setcookie($name, (string) $value, $expire, $path, $domain, $secure, $httpOnly);
 
 		$this->data[$name] = $value;
 	}

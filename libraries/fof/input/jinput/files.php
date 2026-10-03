@@ -32,7 +32,7 @@ class JInputFiles extends JInput
 	 *
 	 * @since   12.1
 	 */
-	public function __construct(array $source = null, array $options = array())
+	public function __construct(?array $source = null, array $options = array())
 	{
 		if (isset($options['filter']))
 		{

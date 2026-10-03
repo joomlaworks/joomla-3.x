@@ -774,7 +774,7 @@ abstract class FOFDatabaseDriver extends FOFDatabase implements FOFDatabaseInter
 
 				// Default new collation: utf8_general_ci or utf8mb4_general_ci
 				$newCollation = $charset . '_general_ci';
-				$collationParts = explode('_', $col->Collation);
+				$collationParts = explode('_', (string) $col->Collation);
 
 				/**
 				 * If the collation is in the form charset_collationType_ci or charset_collationType we have to change
@@ -798,7 +798,7 @@ abstract class FOFDatabaseDriver extends FOFDatabase implements FOFDatabaseInter
 				}
 
 				// If the old and new collation is the same we don't have to change the collation type
-				if (strtolower($newCollation) == strtolower($col->Collation))
+				if (strtolower($newCollation) == strtolower((string) $col->Collation))
 				{
 					continue;
 				}

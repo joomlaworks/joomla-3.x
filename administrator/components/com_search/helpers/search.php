@@ -189,14 +189,14 @@ class SearchHelper
 	{
 		// Strips tags won't remove the actual jscript.
 		$text = preg_replace("'<script[^>]*>.*?</script>'si", '', $text);
-		$text = preg_replace('/{.+?}/', '', $text);
+		$text = preg_replace('/{.+?}/', '', (string) $text);
 
 		// $text = preg_replace('/<a\s+.*?href="([^"]+)"[^>]*>([^<]+)<\/a>/is','\2', $text);
 
 		// Replace line breaking tags with whitespace.
-		$text = preg_replace("'<(br[^/>]*?/|hr[^/>]*?/|/(div|h[1-6]|li|p|td))>'si", ' ', $text);
+		$text = preg_replace("'<(br[^/>]*?/|hr[^/>]*?/|/(div|h[1-6]|li|p|td))>'si", ' ', (string) $text);
 
-		return self::_smartSubstr(strip_tags($text), $searchword);
+		return self::_smartSubstr(strip_tags((string) $text), $searchword);
 	}
 
 	/**
@@ -234,7 +234,7 @@ class SearchHelper
 
 			foreach ($searchRegex as $regex)
 			{
-				$text = preg_replace($regex, '', $text);
+				$text = preg_replace($regex, '', (string) $text);
 			}
 
 			foreach ($terms as $term)

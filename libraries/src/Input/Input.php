@@ -84,7 +84,7 @@ class Input extends \Joomla\Input\Input
 			return $this->inputs[$name];
 		}
 
-		$className = '\\Joomla\\CMS\\Input\\' . ucfirst($name);
+		$className = '\\Joomla\\CMS\\Input\\' . ucfirst((string) $name);
 
 		if (class_exists($className))
 		{
@@ -93,9 +93,9 @@ class Input extends \Joomla\Input\Input
 			return $this->inputs[$name];
 		}
 
-		$superGlobal = '_' . strtoupper($name);
+		$superGlobal = '_' . strtoupper((string) $name);
 
-		if (in_array(strtoupper($name), self::$allowedGlobals, true) && isset($GLOBALS[$superGlobal]))
+		if (in_array(strtoupper((string) $name), self::$allowedGlobals, true) && isset($GLOBALS[$superGlobal]))
 		{
 			$this->inputs[$name] = new Input($GLOBALS[$superGlobal], $this->options);
 

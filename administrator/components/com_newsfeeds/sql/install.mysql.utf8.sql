@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `#__newsfeeds` (
   `metakey` text NOT NULL,
   `metadesc` text NOT NULL,
   `metadata` text NOT NULL,
-  `xreference` varchar(50) NOT NULL COMMENT 'A reference to enable linkages to external data sets.',
+  `xreference` varchar(50) NOT NULL DEFAULT '' COMMENT 'A reference to enable linkages to external data sets.',
   `publish_up` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `description` text NOT NULL,

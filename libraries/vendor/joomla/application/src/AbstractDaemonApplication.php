@@ -808,7 +808,7 @@ abstract class AbstractDaemonApplication extends AbstractCliApplication implemen
 		}
 
 		// Make sure that the folder where we are writing the process id file exists.
-		$folder = \dirname($file);
+		$folder = \dirname((string) $file);
 
 		if (!is_dir($folder) && !@ mkdir($folder, $this->get('folder_permission', 0755)))
 		{

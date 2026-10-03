@@ -65,7 +65,7 @@ class JAdminCssMenu
 	 *
 	 * @since   3.9.1
 	 */
-	public function __construct(User $user = null)
+	public function __construct(?User $user = null)
 	{
 		if ($user === null)
 		{
@@ -297,9 +297,9 @@ class JAdminCssMenu
 				continue;
 			}
 
-			if (substr($item->link, 0, 8) === 'special:')
+			if (substr((string) $item->link, 0, 8) === 'special:')
 			{
-				$special = substr($item->link, 8);
+				$special = substr((string) $item->link, 8);
 
 				if ($special === 'language-forum')
 				{
@@ -328,12 +328,12 @@ class JAdminCssMenu
 
 			if ($item->element === 'com_categories')
 			{
-				parse_str($item->link, $query);
+				parse_str((string) $item->link, $query);
 				$assetName = isset($query['extension']) ? $query['extension'] : 'com_content';
 			}
 			elseif ($item->element === 'com_fields')
 			{
-				parse_str($item->link, $query);
+				parse_str((string) $item->link, $query);
 
 				// Only display Fields menus when enabled in the component
 				$createFields = null;
@@ -366,7 +366,7 @@ class JAdminCssMenu
 			}
 			elseif ($item->element === 'com_admin')
 			{
-				parse_str($item->link, $query);
+				parse_str((string) $item->link, $query);
 
 				if (isset($query['view']) && $query['view'] === 'sysinfo' && !$this->user->authorise('core.admin'))
 				{

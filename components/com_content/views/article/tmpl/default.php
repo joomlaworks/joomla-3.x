@@ -13,7 +13,7 @@ JHtml::addIncludePath(JPATH_COMPONENT . '/helpers');
 
 // Create shortcuts to some parameters.
 $params  = $this->item->params;
-$urls    = json_decode($this->item->urls);
+$urls    = json_decode((string) $this->item->urls);
 $canEdit = $params->get('access-edit');
 $user    = JFactory::getUser();
 $info    = $params->get('info_block_position', 0);

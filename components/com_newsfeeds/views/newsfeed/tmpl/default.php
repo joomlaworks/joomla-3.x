@@ -30,7 +30,7 @@ defined('_JEXEC') or die;
 	<?php elseif ($myrtl == 2) : ?>
 		<?php $direction = ' redirect-rtl'; ?>
 	<?php endif; ?>
-	<?php $images = json_decode($this->item->images); ?>
+	<?php $images = json_decode((string) $this->item->images); ?>
 	<div class="newsfeed<?php echo $this->pageclass_sfx; ?><?php echo $direction; ?>">
 		<?php if ($this->params->get('display_num')) : ?>
 			<h1 class="<?php echo $direction; ?>">
@@ -52,22 +52,22 @@ defined('_JEXEC') or die;
 		<!-- Show Images from Component -->
 		<?php if (isset($images->image_first) && !empty($images->image_first)) : ?>
 			<?php $imgfloat = empty($images->float_first) ? $this->params->get('float_first') : $images->float_first; ?>
-			<div class="img-intro-<?php echo htmlspecialchars($imgfloat, ENT_COMPAT, 'UTF-8'); ?>">
+			<div class="img-intro-<?php echo htmlspecialchars((string) $imgfloat, ENT_COMPAT, 'UTF-8'); ?>">
 				<img
 				<?php if ($images->image_first_caption) : ?>
 					<?php echo 'class="caption"' . ' title="' . htmlspecialchars($images->image_first_caption, ENT_COMPAT, 'UTF-8') . '"'; ?>
 				<?php endif; ?>
-				src="<?php echo htmlspecialchars($images->image_first, ENT_COMPAT, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($images->image_first_alt, ENT_COMPAT, 'UTF-8'); ?>" />
+				src="<?php echo htmlspecialchars((string) $images->image_first, ENT_COMPAT, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($images->image_first_alt, ENT_COMPAT, 'UTF-8'); ?>" />
 			</div>
 		<?php endif; ?>
 		<?php if (isset($images->image_second) && !empty($images->image_second)) : ?>
 			<?php $imgfloat = empty($images->float_second) ? $this->params->get('float_second') : $images->float_second; ?>
-			<div class="pull-<?php echo htmlspecialchars($imgfloat, ENT_COMPAT, 'UTF-8'); ?> item-image">
+			<div class="pull-<?php echo htmlspecialchars((string) $imgfloat, ENT_COMPAT, 'UTF-8'); ?> item-image">
 				<img
 				<?php if ($images->image_second_caption) : ?>
 					<?php echo 'class="caption"' . ' title="' . htmlspecialchars($images->image_second_caption) . '"'; ?>
 				<?php endif; ?>
-				src="<?php echo htmlspecialchars($images->image_second, ENT_COMPAT, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($images->image_second_alt, ENT_COMPAT, 'UTF-8'); ?>" />
+				src="<?php echo htmlspecialchars((string) $images->image_second, ENT_COMPAT, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($images->image_second_alt, ENT_COMPAT, 'UTF-8'); ?>" />
 			</div>
 		<?php endif; ?>
 		<!-- Show Description from Component -->
@@ -91,18 +91,18 @@ defined('_JEXEC') or die;
 					<?php if (empty($this->rssDoc[$i])) : ?>
 						<?php break; ?>
 					<?php endif; ?>
-					<?php $uri  = $this->rssDoc[$i]->uri || !$this->rssDoc[$i]->isPermaLink ? trim($this->rssDoc[$i]->uri) : trim($this->rssDoc[$i]->guid); ?>
+					<?php $uri  = $this->rssDoc[$i]->uri || !$this->rssDoc[$i]->isPermaLink ? trim((string) $this->rssDoc[$i]->uri) : trim((string) $this->rssDoc[$i]->guid); ?>
 					<?php $uri  = !$uri || stripos($uri, 'http') !== 0 ? $this->item->link : $uri; ?>
-					<?php $text = $this->rssDoc[$i]->content !== '' ? trim($this->rssDoc[$i]->content) : ''; ?>
+					<?php $text = $this->rssDoc[$i]->content !== '' ? trim((string) $this->rssDoc[$i]->content) : ''; ?>
 					<li>
 						<?php if (!empty($uri)) : ?>
 							<h3 class="feed-link">
-								<a href="<?php echo htmlspecialchars($uri, ENT_QUOTES, 'UTF-8'); ?>" target="_blank">
-									<?php echo $this->escape(trim($this->rssDoc[$i]->title)); ?>
+								<a href="<?php echo htmlspecialchars((string) $uri, ENT_QUOTES, 'UTF-8'); ?>" target="_blank">
+									<?php echo $this->escape(trim((string) $this->rssDoc[$i]->title)); ?>
 								</a>
 							</h3>
 						<?php else : ?>
-							<h3 class="feed-link"><?php echo $this->escape(trim($this->rssDoc[$i]->title)); ?></h3>
+							<h3 class="feed-link"><?php echo $this->escape(trim((string) $this->rssDoc[$i]->title)); ?></h3>
 						<?php endif; ?>
 						<?php if ($this->params->get('show_item_description') && $text !== '') : ?>
 							<div class="feed-item-description">

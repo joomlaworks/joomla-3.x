@@ -560,9 +560,9 @@ class JArchiveZip implements JArchiveExtractable
 		$fr .= $hexdtime;
 
 		/* "Local file header" segment. */
-		$unc_len = strlen($data);
-		$crc = crc32($data);
-		$zdata = gzcompress($data);
+		$unc_len = strlen((string) $data);
+		$crc = crc32((string) $data);
+		$zdata = gzcompress((string) $data);
 		$zdata = substr(substr($zdata, 0, strlen($zdata) - 4), 2);
 		$c_len = strlen($zdata);
 

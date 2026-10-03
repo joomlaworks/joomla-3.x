@@ -77,7 +77,7 @@ class NomenuRules implements RulesInterface
 
 				if (isset($views[$vars['view']]->key) && isset($segments[0]))
 				{
-					$vars[$views[$vars['view']]->key] = preg_replace('/-/', ':', array_shift($segments), 1);
+					$vars[$views[$vars['view']]->key] = preg_replace('/-/', ':', (string) array_shift($segments), 1);
 				}
 			}
 		}

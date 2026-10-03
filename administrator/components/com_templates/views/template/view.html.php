@@ -97,8 +97,8 @@ class TemplatesViewTemplate extends JViewLegacy
 	{
 		$app            = JFactory::getApplication();
 		$this->file     = $app->input->get('file');
-		$this->fileName = JFilterInput::getInstance()->clean(base64_decode($this->file), 'string');
-		$explodeArray   = explode('.', $this->fileName);
+		$this->fileName = JFilterInput::getInstance()->clean(base64_decode((string) $this->file), 'string');
+		$explodeArray   = explode('.', (string) $this->fileName);
 		$ext            = end($explodeArray);
 		$this->files    = $this->get('Files');
 		$this->state    = $this->get('State');
@@ -106,10 +106,10 @@ class TemplatesViewTemplate extends JViewLegacy
 		$this->preview  = $this->get('Preview');
 
 		$params       = JComponentHelper::getParams('com_templates');
-		$imageTypes   = explode(',', $params->get('image_formats'));
-		$sourceTypes  = explode(',', $params->get('source_formats'));
-		$fontTypes    = explode(',', $params->get('font_formats'));
-		$archiveTypes = explode(',', $params->get('compressed_formats'));
+		$imageTypes   = explode(',', (string) $params->get('image_formats'));
+		$sourceTypes  = explode(',', (string) $params->get('source_formats'));
+		$fontTypes    = explode(',', (string) $params->get('font_formats'));
+		$archiveTypes = explode(',', (string) $params->get('compressed_formats'));
 
 		if (in_array($ext, $sourceTypes))
 		{
@@ -177,10 +177,10 @@ class TemplatesViewTemplate extends JViewLegacy
 
 		// Get the toolbar object instance
 		$bar = JToolbar::getInstance('toolbar');
-		$explodeArray = explode('.', $this->fileName);
+		$explodeArray = explode('.', (string) $this->fileName);
 		$ext = end($explodeArray);
 
-		JToolbarHelper::title(JText::sprintf('COM_TEMPLATES_MANAGER_VIEW_TEMPLATE', ucfirst($this->template->name)), 'eye thememanager');
+		JToolbarHelper::title(JText::sprintf('COM_TEMPLATES_MANAGER_VIEW_TEMPLATE', ucfirst((string) $this->template->name)), 'eye thememanager');
 
 		// Only show file edit buttons for global SuperUser
 		if ($isSuperUser)

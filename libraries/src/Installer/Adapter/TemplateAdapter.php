@@ -482,7 +482,7 @@ class TemplateAdapter extends InstallerAdapter
 			return false;
 		}
 
-		$this->parent->setPath('extension_root', $client->path . '/templates/' . strtolower($name));
+		$this->parent->setPath('extension_root', $client->path . '/templates/' . strtolower((string) $name));
 		$this->parent->setPath('source', $this->parent->getPath('extension_root'));
 
 		// We do findManifest to avoid problem when uninstalling a list of extensions: getManifest cache its manifest file
@@ -521,7 +521,7 @@ class TemplateAdapter extends InstallerAdapter
 		$subQuery = $db->getQuery(true)
 			->select('s.id')
 			->from($db->qn('#__template_styles', 's'))
-			->where($db->qn('s.template') . ' = ' . $db->q(strtolower($name)))
+			->where($db->qn('s.template') . ' = ' . $db->q(strtolower((string) $name)))
 			->where($db->qn('s.client_id') . ' = ' . $clientId);
 		$query->clear()
 			->update($db->qn('#__menu'))

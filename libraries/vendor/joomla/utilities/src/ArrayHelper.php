@@ -163,7 +163,7 @@ final class ArrayHelper
 
 			foreach (get_object_vars($item) as $k => $v)
 			{
-				if (!$regex || preg_match($regex, $k))
+				if (!$regex || preg_match($regex, (string) $k))
 				{
 					if ($recurse)
 					{
@@ -391,7 +391,7 @@ final class ArrayHelper
 			case 'INT':
 			case 'INTEGER':
 				// Only use the first integer value
-				@preg_match('/-?[0-9]+/', $result, $matches);
+				@preg_match('/-?[0-9]+/', (string) $result, $matches);
 				$result = @(int) $matches[0];
 
 				break;
@@ -399,7 +399,7 @@ final class ArrayHelper
 			case 'FLOAT':
 			case 'DOUBLE':
 				// Only use the first floating point value
-				@preg_match('/-?[0-9]+(\.[0-9]+)?/', $result, $matches);
+				@preg_match('/-?[0-9]+(\.[0-9]+)?/', (string) $result, $matches);
 				$result = @(float) $matches[0];
 
 				break;
@@ -424,7 +424,7 @@ final class ArrayHelper
 				break;
 
 			case 'WORD':
-				$result = (string) preg_replace('#\W#', '', $result);
+				$result = (string) preg_replace('#\W#', '', (string) $result);
 
 				break;
 

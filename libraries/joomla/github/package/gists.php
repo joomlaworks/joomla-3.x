@@ -60,11 +60,11 @@ class JGithubPackageGists extends JGithubPackage
 		if ($response->code != 201)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -89,7 +89,7 @@ class JGithubPackageGists extends JGithubPackage
 		if ($response->code != 204)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 	}
@@ -143,11 +143,11 @@ class JGithubPackageGists extends JGithubPackage
 		if ($response->code != 200)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -173,11 +173,11 @@ class JGithubPackageGists extends JGithubPackage
 		if ($response->code != 201)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -202,11 +202,11 @@ class JGithubPackageGists extends JGithubPackage
 		if ($response->code != 200)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -233,11 +233,11 @@ class JGithubPackageGists extends JGithubPackage
 		if ($response->code != 200)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -264,11 +264,11 @@ class JGithubPackageGists extends JGithubPackage
 		if ($response->code != 200)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -294,11 +294,11 @@ class JGithubPackageGists extends JGithubPackage
 		if ($response->code != 200)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -324,11 +324,11 @@ class JGithubPackageGists extends JGithubPackage
 		if ($response->code != 200)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 
-		return json_decode($response->body);
+		return json_decode((string) $response->body);
 	}
 
 	/**
@@ -361,7 +361,7 @@ class JGithubPackageGists extends JGithubPackage
 		else
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 	}
@@ -388,7 +388,7 @@ class JGithubPackageGists extends JGithubPackage
 		if ($response->code != 204)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 	}
@@ -415,7 +415,7 @@ class JGithubPackageGists extends JGithubPackage
 		if ($response->code != 204)
 		{
 			// Decode the error response and throw an exception.
-			$error = json_decode($response->body);
+			$error = json_decode((string) $response->body);
 			throw new DomainException($error->message, $response->code);
 		}
 	}
@@ -451,7 +451,7 @@ class JGithubPackageGists extends JGithubPackage
 			}
 			else
 			{
-				$data[basename($file)] = array('content' => file_get_contents($file));
+				$data[basename((string) $file)] = array('content' => file_get_contents($file));
 			}
 		}
 

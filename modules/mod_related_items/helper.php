@@ -58,7 +58,7 @@ abstract class ModRelatedItemsHelper
 		}
 
 		$temp = $app->input->getString('id');
-		$temp = explode(':', $temp);
+		$temp = explode(':', (string) $temp);
 		$id   = $temp[0];
 
 		$nullDate = $db->getNullDate();
@@ -76,7 +76,7 @@ abstract class ModRelatedItemsHelper
 
 			try
 			{
-				$metakey = trim($db->loadResult());
+				$metakey = trim((string) $db->loadResult());
 			}
 			catch (RuntimeException $e)
 			{

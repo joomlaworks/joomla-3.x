@@ -121,7 +121,7 @@ class MediaHelper
 		if ($params->get('check_mime', 1))
 		{
 			// Get the mime type configuration
-			$allowedMime = array_map('trim', explode(',', $params->get('upload_mime')));
+			$allowedMime = array_map('trim', explode(',', (string) $params->get('upload_mime')));
 
 			// Mime should be available and in the whitelist
 			return !empty($mime) && in_array($mime, $allowedMime);
@@ -177,7 +177,7 @@ class MediaHelper
 
 		// Media file names should never have executable extensions buried in them.
 		$executable = array(
-			'php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phps', 'phtml', 'phar',
+			'php', 'php3', 'php4', 'php5', 'php6', 'php7', 'php8', 'php9', 'phps', 'pht', 'phtml', 'phar',
 			'js', 'exe', 'java', 'perl', 'py', 'asp', 'dll', 'go', 'ade', 'adp', 'bat', 'chm', 'cmd', 'com', 'cpl', 'hta', 'ins', 'isp',
 			'jse', 'lib', 'mde', 'msc', 'msp', 'mst', 'pif', 'scr', 'sct', 'shb', 'sys', 'vb', 'vbe', 'vbs', 'vxd', 'wsc', 'wsf', 'wsh',
 			'shtml', 'html', 'htm',
@@ -199,8 +199,8 @@ class MediaHelper
 		}
 
 		$filetype  = array_pop($filetypes);
-		$allowable = array_map('trim', explode(',', $params->get('upload_extensions')));
-		$ignored   = array_map('trim', explode(',', $params->get('ignore_extensions')));
+		$allowable = array_map('trim', explode(',', (string) $params->get('upload_extensions')));
+		$ignored   = array_map('trim', explode(',', (string) $params->get('ignore_extensions')));
 
 		if ($filetype == '' || $filetype == false || (!in_array($filetype, $allowable) && !in_array($filetype, $ignored)))
 		{
@@ -220,7 +220,7 @@ class MediaHelper
 
 		if ($params->get('restrict_uploads', 1))
 		{
-			$images = array_map('trim', explode(',', $params->get('image_extensions')));
+			$images = array_map('trim', explode(',', (string) $params->get('image_extensions')));
 
 			if (in_array($filetype, $images))
 			{
@@ -403,7 +403,7 @@ class MediaHelper
 	 */
 	public function toBytes($val)
 	{
-		switch ($val[strlen($val) - 1])
+		switch ($val[strlen((string) $val) - 1])
 		{
 			case 'M':
 			case 'm':

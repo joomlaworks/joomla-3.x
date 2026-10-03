@@ -182,7 +182,7 @@ class FormHelper
 			$name = str_ireplace(' ', '\\', ucwords($name));
 
 			// Compile the classname
-			$class = rtrim($prefix, '\\') . '\\' . ucfirst($name) . ucfirst($entity);
+			$class = rtrim((string) $prefix, '\\') . '\\' . ucfirst($name) . ucfirst($entity);
 
 			// Check if the class exists
 			if (class_exists($class))
@@ -331,7 +331,7 @@ class FormHelper
 		// Add the new paths to the stack if not already there.
 		foreach ($new as $path)
 		{
-			$path = trim($path);
+			$path = trim((string) $path);
 
 			if (!in_array($path, $paths))
 			{
@@ -412,7 +412,7 @@ class FormHelper
 		// Add the new paths to the stack if not already there.
 		foreach ($new as $prefix)
 		{
-			$prefix = trim($prefix);
+			$prefix = trim((string) $prefix);
 
 			if (in_array($prefix, $prefixes))
 			{

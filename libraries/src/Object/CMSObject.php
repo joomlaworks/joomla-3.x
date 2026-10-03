@@ -119,7 +119,7 @@ class CMSObject
 		{
 			foreach ($vars as $key => $value)
 			{
-				if ('_' == substr($key, 0, 1))
+				if ('_' == substr((string) $key, 0, 1))
 				{
 					unset($vars[$key]);
 				}

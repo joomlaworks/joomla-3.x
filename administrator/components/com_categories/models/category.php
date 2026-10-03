@@ -157,7 +157,7 @@ class CategoriesModelCategory extends JModelAdmin
 
 		$extension = $app->input->get('extension', 'com_content');
 		$this->setState('category.extension', $extension);
-		$parts = explode('.', $extension);
+		$parts = explode('.', (string) $extension);
 
 		// Extract the component name
 		$this->setState('category.component', $parts[0]);
@@ -313,7 +313,7 @@ class CategoriesModelCategory extends JModelAdmin
 			if (!$data->id)
 			{
 				// Check for which extension the Category Manager is used and get selected fields
-				$extension = substr($app->getUserState('com_categories.categories.filter.extension'), 4);
+				$extension = substr((string) $app->getUserState('com_categories.categories.filter.extension'), 4);
 				$filters = (array) $app->getUserState('com_categories.categories.' . $extension . '.filter');
 
 				$data->set(
@@ -1022,6 +1022,14 @@ class CategoriesModelCategory extends JModelAdmin
 					$this->setError(JText::sprintf('JGLOBAL_BATCH_MOVE_ROW_NOT_FOUND', $pk));
 					continue;
 				}
+			}
+
+			// Check that the user is allowed to access the item being copied
+			if (!$this->user->authorise('core.edit', $contexts[$pk]))
+			{
+				$this->setError(JText::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_EDIT'));
+
+				return false;
 			}
 
 			// Copy is a bit tricky, because we also need to copy the children

@@ -1721,7 +1721,7 @@ abstract class FOFUtilsInstallscript
 			$data = array();
 			$data['menutype'] = 'main';
 			$data['client_id'] = 1;
-			$data['title'] = (string)trim($menuElement);
+			$data['title'] = (string)trim((string) $menuElement);
 			$data['alias'] = (string)$menuElement;
 			$data['link'] = 'index.php?option=' . $option;
 			$data['type'] = 'component';
@@ -1851,7 +1851,7 @@ abstract class FOFUtilsInstallscript
 			$data = array();
 			$data['menutype'] = 'main';
 			$data['client_id'] = 1;
-			$data['title'] = (string)trim($child);
+			$data['title'] = (string)trim((string) $child);
 			$data['alias'] = (string)$child;
 			$data['type'] = 'component';
 			$data['published'] = 0;

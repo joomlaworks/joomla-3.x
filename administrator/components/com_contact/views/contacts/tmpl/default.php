@@ -25,7 +25,7 @@ $assoc     = JLanguageAssociations::isEnabled();
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_contact&task=contacts.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'contactList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+	JHtml::_('sortablelist.sortable', 'contactList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 }
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_contact'); ?>" method="post" name="adminForm" id="adminForm">

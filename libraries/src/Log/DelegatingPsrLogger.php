@@ -73,7 +73,7 @@ class DelegatingPsrLogger extends AbstractLogger
 	public function log($level, $message, array $context = array())
 	{
 		// Make sure the log level is valid
-		if (!array_key_exists($level, $this->priorityMap))
+		if (!array_key_exists((string) $level, $this->priorityMap))
 		{
 			throw new \InvalidArgumentException('An invalid log level has been given.');
 		}

@@ -88,7 +88,7 @@ class Help
 		$lang    = \JFactory::getLanguage();
 		$version = new \JVersion;
 		$jver    = explode('.', $version->getShortVersion());
-		$jlang   = explode('-', $lang->getTag());
+		$jlang   = explode('-', (string) $lang->getTag());
 
 		$debug  = $lang->setDebug(false);
 		$keyref = \JText::_($ref);

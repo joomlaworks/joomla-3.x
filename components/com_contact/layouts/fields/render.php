@@ -31,7 +31,7 @@ if (!$context)
 
 JLoader::register('FieldsHelper', JPATH_ADMINISTRATOR . '/components/com_fields/helpers/fields.php');
 
-$parts     = explode('.', $context);
+$parts     = explode('.', (string) $context);
 $component = $parts[0];
 $fields    = null;
 
@@ -62,7 +62,7 @@ if (!$isMail)
 foreach ($fields as $field)
 {
 	// If the value is empty do nothing
-	if (!strlen($field->value) && !$isMail)
+	if (!strlen((string) $field->value) && !$isMail)
 	{
 		continue;
 	}

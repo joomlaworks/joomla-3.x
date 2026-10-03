@@ -18,7 +18,7 @@ function utf8_ucwords($str) {
     // form feeds, horizontal tabs, vertical tabs, linefeeds and carriage returns
     // This corresponds to the definition of a "word" defined at http://www.php.net/ucwords
     $pattern = '/(^|([\x0c\x09\x0b\x0a\x0d\x20]+))([^\x0c\x09\x0b\x0a\x0d\x20]{1})[^\x0c\x09\x0b\x0a\x0d\x20]*/u';
-    return preg_replace_callback($pattern, 'utf8_ucwords_callback',$str);
+    return preg_replace_callback($pattern, 'utf8_ucwords_callback',(string) $str);
 }
 
 //---------------------------------------------------------------

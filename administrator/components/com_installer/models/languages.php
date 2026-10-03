@@ -139,7 +139,7 @@ class InstallerModelLanguages extends JModelList
 			return;
 		}
 
-		$updateSiteXML = simplexml_load_string($response->body);
+		$updateSiteXML = simplexml_load_string((string) $response->body);
 		$languages     = array();
 		$search        = strtolower($this->getState('filter.search'));
 
@@ -154,8 +154,8 @@ class InstallerModelLanguages extends JModelList
 
 			if ($search)
 			{
-				if (strpos(strtolower($language->name), $search) === false
-					&& strpos(strtolower($language->element), $search) === false)
+				if (strpos(strtolower((string) $language->name), $search) === false
+					&& strpos(strtolower((string) $language->element), $search) === false)
 				{
 					continue;
 				}
@@ -256,6 +256,6 @@ class InstallerModelLanguages extends JModelList
 	 */
 	protected function compareLanguages($lang1, $lang2)
 	{
-		return strcmp($lang1->name, $lang2->name);
+		return strcmp((string) $lang1->name, (string) $lang2->name);
 	}
 }

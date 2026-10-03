@@ -56,7 +56,7 @@ class Json extends Input
 				$this->raw = $GLOBALS['HTTP_RAW_POST_DATA'];
 			}
 
-			$this->data = json_decode($this->raw, true);
+			$this->data = json_decode((string) $this->raw, true);
 
 			if (!\is_array($this->data))
 			{

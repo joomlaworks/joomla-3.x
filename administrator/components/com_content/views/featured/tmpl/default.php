@@ -26,11 +26,11 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 $saveOrder = $listOrder == 'fp.ordering';
 $columns   = 10;
 
-if (strpos($listOrder, 'publish_up') !== false)
+if (strpos((string) $listOrder, 'publish_up') !== false)
 {
 	$orderingColumn = 'publish_up';
 }
-elseif (strpos($listOrder, 'publish_down') !== false)
+elseif (strpos((string) $listOrder, 'publish_down') !== false)
 {
 	$orderingColumn = 'publish_down';
 }
@@ -42,7 +42,7 @@ else
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_content&task=featured.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'articleList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+	JHtml::_('sortablelist.sortable', 'articleList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 }
 ?>
 

@@ -55,6 +55,19 @@ class ChangeSet
 	protected static $instance;
 
 	/**
+	 * Tables which removable core components drop when they are uninstalled (see their uninstall SQL)
+	 *
+	 * @var    array
+	 * @since  3.16.0
+	 */
+	protected static $removableComponentTables = array(
+		'com_banners'   => '(?:banners|banner_clients|banner_tracks)',
+		'com_contact'   => 'contact_details',
+		'com_finder'    => 'finder_\w+',
+		'com_newsfeeds' => 'newsfeeds',
+	);
+
+	/**
 	 * Constructor: builds array of $changeItems by processing the .sql files in a folder.
 	 * The folder for the Joomla core updates is `administrator/components/com_admin/sql/updates/<database>`.
 	 *
@@ -69,9 +82,16 @@ class ChangeSet
 		$this->folder = $folder;
 		$updateFiles = $this->getUpdateFiles();
 		$updateQueries = $this->getUpdateQueries($updateFiles);
+		$removedTables = static::getRemovedComponentTablesPattern($db);
 
 		foreach ($updateQueries as $obj)
 		{
+			// The tables of an uninstalled core component are gone on purpose, there is nothing to check or fix
+			if (static::targetsRemovedComponentTable($obj->updateQuery, $removedTables))
+			{
+				continue;
+			}
+
 			$changeItem = ChangeItem::getInstance($db, $obj->file, $obj->updateQuery);
 
 			if ($changeItem->queryType === 'UTF8CNV')
@@ -131,6 +151,81 @@ class ChangeSet
 
 			$this->changeItems[] = $tmpSchemaChangeItem;
 		}
+	}
+
+	/**
+	 * Builds a regular expression matching the tables of the removable core components which are not installed.
+	 *
+	 * @param   \JDatabaseDriver  $db  The database driver
+	 *
+	 * @return  string|null  The pattern, or null when all of them are installed or the state can't be read
+	 *
+	 * @since   3.16.0
+	 */
+	public static function getRemovedComponentTablesPattern($db)
+	{
+		$query = $db->getQuery(true)
+			->select($db->quoteName('element'))
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('type') . ' = ' . $db->quote('component'))
+			->where($db->quoteName('element') . ' IN (' . implode(',', $db->quote(array_keys(static::$removableComponentTables))) . ')')
+			->where($db->quoteName('state') . ' <> -1');
+
+		try
+		{
+			$installed = $db->setQuery($query)->loadColumn();
+		}
+		catch (\RuntimeException $e)
+		{
+			return null;
+		}
+
+		$removed = array_diff_key(static::$removableComponentTables, array_flip($installed));
+
+		return $removed ? '/^#__(?:' . implode('|', $removed) . ')$/i' : null;
+	}
+
+	/**
+	 * Checks whether an SQL statement changes one of the given tables. Only the table the statement acts on counts,
+	 * not tables merely mentioned in its data (e.g. "dbtable" entries in #__content_types).
+	 *
+	 * @param   string       $query    The SQL statement
+	 * @param   string|null  $pattern  The pattern from getRemovedComponentTablesPattern()
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.16.0
+	 */
+	public static function targetsRemovedComponentTable($query, $pattern)
+	{
+		if ($pattern === null)
+		{
+			return false;
+		}
+
+		$query = preg_replace(array('#/\*.*?\*/#s', '#^\s*--.*$#m'), '', (string) $query);
+
+		$statements = array(
+			'/^\s*(?:ALTER\s+TABLE|CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|DROP\s+TABLE(?:\s+IF\s+EXISTS)?'
+			. '|(?:INSERT|REPLACE)\s+(?:IGNORE\s+)?INTO|UPDATE|DELETE\s+FROM|TRUNCATE(?:\s+TABLE)?|RENAME\s+TABLE'
+			. '|CREATE\s+(?:UNIQUE\s+)?(?:(?:NON)?CLUSTERED\s+)?INDEX\s+\S+\s+ON|DROP\s+INDEX\s+\S+\s+ON)\s+[`"\[]?(#__\w+)/i',
+
+			// SQL Azure: stored procedure calls such as EXECUTE "#removeDefault" "#__table", 'column'
+			'/^\s*EXEC(?:UTE)?\s+\S+\s+["\[]?(#__\w+)/i',
+
+			// SQL Azure: batches working on a table assigned to a variable first
+			'/^\s*DECLARE\s+@table\b[\s\S]*?SET\s+@table\s*=\s*["\'\[]?(#__\w+)/i',
+		);
+
+		foreach ($statements as $statement)
+		{
+			if (preg_match($statement, $query, $matches))
+			{
+				return (bool) preg_match($pattern, $matches[1]);
+			}
+		}
+
+		return false;
 	}
 
 	/**

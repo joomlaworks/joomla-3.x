@@ -431,7 +431,7 @@ class PrivacyModelRequest extends JModelAdmin
 		$validatedData['status'] = 0;
 
 		// The user cannot create a request for their own account
-		if (strtolower(JFactory::getUser()->email) === strtolower($validatedData['email']))
+		if (strtolower((string) JFactory::getUser()->email) === strtolower($validatedData['email']))
 		{
 			$this->setError(JText::_('COM_PRIVACY_ERROR_CANNOT_CREATE_REQUEST_FOR_SELF'));
 

@@ -317,7 +317,7 @@ class FOFUtilsUpdateJoomla extends FOFUtilsUpdateExtension
 			$jVersion = JVERSION;
 		}
 
-		$versionParts          = explode('.', $jVersion, 4);
+		$versionParts          = explode('.', (string) $jVersion, 4);
 		$platformVersionMajor  = $versionParts[0];
 		$platformVersionMinor  = $platformVersionMajor . '.' . $versionParts[1];
 		$platformVersionNormal = $platformVersionMinor . '.' . $versionParts[2];
@@ -350,7 +350,7 @@ class FOFUtilsUpdateJoomla extends FOFUtilsUpdateExtension
 			}
 
 			// The XML files are ill-maintained. Maybe we already have this update?
-			if (!array_key_exists($updateVersion, $ret))
+			if (!array_key_exists((string) $updateVersion, $ret))
 			{
 				$ret[ $updateVersion ] = array_merge($update, $versionProperties);
 			}
@@ -482,7 +482,7 @@ class FOFUtilsUpdateJoomla extends FOFUtilsUpdateExtension
 		}
 
 		// Get the current branch' min/max versions
-		$versionParts      = explode('.', $jVersion, 4);
+		$versionParts      = explode('.', (string) $jVersion, 4);
 		$currentMinVersion = $versionParts[0] . '.' . $versionParts[1];
 		$currentMaxVersion = $versionParts[0] . '.' . $versionParts[1] . '.9999';
 

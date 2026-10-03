@@ -17,7 +17,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 <?php if (empty($this->items)) : ?>
 	<p><?php echo JText::_('COM_NEWSFEEDS_NO_ARTICLES'); ?></p>
 <?php else : ?>
-	<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString(), ENT_COMPAT, 'UTF-8'); ?>" method="post" name="adminForm" id="adminForm">
+	<form action="<?php echo htmlspecialchars((string) JUri::getInstance()->toString(), ENT_COMPAT, 'UTF-8'); ?>" method="post" name="adminForm" id="adminForm">
 		<?php if ($this->params->get('filter_field') !== 'hide' || $this->params->get('show_pagination_limit')) : ?>
 			<fieldset class="filters btn-toolbar">
 				<?php if ($this->params->get('filter_field') !== 'hide' && $this->params->get('filter_field') == '1') : ?>

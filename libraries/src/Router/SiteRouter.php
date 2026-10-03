@@ -78,7 +78,7 @@ class SiteRouter extends Router
 	{
 		$vars = array();
 
-		if ($this->app->get('force_ssl') == 2 && strtolower($uri->getScheme()) !== 'https')
+		if ($this->app->get('force_ssl') == 2 && strtolower((string) $uri->getScheme()) !== 'https')
 		{
 			// Forward to https
 			$uri->setScheme('https');
@@ -87,7 +87,7 @@ class SiteRouter extends Router
 
 		// Get the path
 		// Decode URL to convert percent-encoding to unicode so that strings match when routing.
-		$path = urldecode($uri->getPath());
+		$path = urldecode((string) $uri->getPath());
 
 		// Remove the base URI path.
 		$path = substr_replace($path, '', 0, strlen(\JUri::base(true)));
@@ -160,7 +160,7 @@ class SiteRouter extends Router
 		// Add the suffix to the uri
 		if ($this->_mode == JROUTER_MODE_SEF && $route)
 		{
-			if ($this->app->get('sef_suffix') && !(substr($route, -9) === 'index.php' || substr($route, -1) === '/'))
+			if ($this->app->get('sef_suffix') && !(substr((string) $route, -9) === 'index.php' || substr((string) $route, -1) === '/'))
 			{
 				if ($format = $uri->getVar('format', 'html'))
 				{
@@ -277,7 +277,7 @@ class SiteRouter extends Router
 		// Remove the suffix
 		if ($this->app->get('sef_suffix'))
 		{
-			if ($suffix = pathinfo($route, PATHINFO_EXTENSION))
+			if ($suffix = pathinfo((string) $route, PATHINFO_EXTENSION))
 			{
 				$route = str_replace('.' . $suffix, '', $route);
 			}
@@ -316,7 +316,7 @@ class SiteRouter extends Router
 		}
 
 		// Parse the application route
-		$segments = explode('/', $route);
+		$segments = explode('/', (string) $route);
 
 		if (count($segments) > 1 && $segments[0] === 'component')
 		{
@@ -384,7 +384,7 @@ class SiteRouter extends Router
 			}
 			else
 			{
-				$route = substr($route, strlen($found->route));
+				$route = substr((string) $route, strlen((string) $found->route));
 
 				if ($route)
 				{
@@ -422,7 +422,7 @@ class SiteRouter extends Router
 		// Parse the component route
 		if (!empty($route) && isset($this->_vars['option']))
 		{
-			$segments = explode('/', $route);
+			$segments = explode('/', (string) $route);
 
 			if (empty($segments[0]))
 			{

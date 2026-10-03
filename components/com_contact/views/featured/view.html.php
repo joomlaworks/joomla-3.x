@@ -105,7 +105,7 @@ class ContactViewFeatured extends JViewLegacy
 
 			if ($item->params->get('show_email', 0) == 1)
 			{
-				$item->email_to = trim($item->email_to);
+				$item->email_to = trim((string) $item->email_to);
 
 				if (!empty($item->email_to) && JMailHelper::isEmailAddress($item->email_to))
 				{
@@ -119,7 +119,7 @@ class ContactViewFeatured extends JViewLegacy
 		}
 
 		// Escape strings for HTML output
-		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx', ''), ENT_COMPAT, 'UTF-8');
+		$this->pageclass_sfx = htmlspecialchars((string) $params->get('pageclass_sfx', ''), ENT_COMPAT, 'UTF-8');
 
 		$maxLevel         = $params->get('maxLevel', -1);
 		$this->maxLevel   = &$maxLevel;

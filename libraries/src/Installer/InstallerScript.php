@@ -306,7 +306,7 @@ class InstallerScript
 		$db->setQuery($query);
 
 		// Load the single cell and json_decode data
-		return json_decode($db->loadResult(), true);
+		return json_decode((string) $db->loadResult(), true);
 	}
 
 	/**
@@ -354,7 +354,7 @@ class InstallerScript
 		{
 			foreach ($this->cliScriptFiles as $file)
 			{
-				$name = basename($file);
+				$name = basename((string) $file);
 
 				if (file_exists(JPATH_ROOT . $file) && !\JFile::move(JPATH_ROOT . $file, JPATH_ROOT . '/cli/' . $name))
 				{

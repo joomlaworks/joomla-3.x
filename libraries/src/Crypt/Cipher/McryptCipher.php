@@ -156,7 +156,7 @@ abstract class McryptCipher implements CipherInterface
 	public function pbkdf2($p, $s, $kl, $c = 10000, $a = 'sha256')
 	{
 		// Hash length.
-		$hl = strlen(hash($a, null, true));
+		$hl = strlen(hash($a, '', true));
 
 		// Key blocks to compute.
 		$kb = ceil($kl / $hl);

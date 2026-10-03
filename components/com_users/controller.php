@@ -46,7 +46,7 @@ class UsersController extends JControllerLegacy
 				case 'login':
 				case 'reset':
 				case 'remind':
-					$model = $this->getModel(ucfirst($vName));
+					$model = $this->getModel(ucfirst((string) $vName));
 					break;
 
 				default:

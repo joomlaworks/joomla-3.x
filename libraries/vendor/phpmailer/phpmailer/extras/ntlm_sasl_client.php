@@ -36,16 +36,16 @@ class ntlm_sasl_client_class
 
     public function ASCIIToUnicode($ascii)
     {
-        for ($unicode = "", $a = 0; $a < strlen($ascii); $a++) {
-            $unicode .= substr($ascii, $a, 1) . chr(0);
+        for ($unicode = "", $a = 0; $a < strlen((string) $ascii); $a++) {
+            $unicode .= substr((string) $ascii, $a, 1) . chr(0);
         }
         return ($unicode);
     }
 
     public function typeMsg1($domain, $workstation)
     {
-        $domain_length = strlen($domain);
-        $workstation_length = strlen($workstation);
+        $domain_length = strlen((string) $domain);
+        $workstation_length = strlen((string) $workstation);
         $workstation_offset = 32;
         $domain_offset = $workstation_offset + $workstation_length;
         return (
@@ -72,7 +72,7 @@ class ntlm_sasl_client_class
         $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
         for ($response = "", $third = 0; $third < 21; $third += 7) {
             for ($packed = "", $p = $third; $p < $third + 7; $p++) {
-                $packed .= str_pad(decbin(ord(substr($padded, $p, 1))), 8, "0", STR_PAD_LEFT);
+                $packed .= str_pad(decbin(ord(substr($padded, $p, 1)[0])), 8, "0", STR_PAD_LEFT);
             }
             for ($key = "", $p = 0; $p < strlen($packed); $p += 7) {
                 $s = substr($packed, $p, 7);
@@ -88,19 +88,19 @@ class ntlm_sasl_client_class
     public function typeMsg3($ntlm_response, $user, $domain, $workstation)
     {
         $domain_unicode = $this->ASCIIToUnicode($domain);
-        $domain_length = strlen($domain_unicode);
+        $domain_length = strlen((string) $domain_unicode);
         $domain_offset = 64;
         $user_unicode = $this->ASCIIToUnicode($user);
-        $user_length = strlen($user_unicode);
+        $user_length = strlen((string) $user_unicode);
         $user_offset = $domain_offset + $domain_length;
         $workstation_unicode = $this->ASCIIToUnicode($workstation);
-        $workstation_length = strlen($workstation_unicode);
+        $workstation_length = strlen((string) $workstation_unicode);
         $workstation_offset = $user_offset + $user_length;
         $lm = "";
         $lm_length = strlen($lm);
         $lm_offset = $workstation_offset + $workstation_length;
         $ntlm = $ntlm_response;
-        $ntlm_length = strlen($ntlm);
+        $ntlm_length = strlen((string) $ntlm);
         $ntlm_offset = $lm_offset + $lm_length;
         $session = "";
         $session_length = strlen($session);
@@ -164,7 +164,7 @@ class ntlm_sasl_client_class
                 $this->state = SASL_NTLM_STATE_RESPOND_CHALLENGE;
                 break;
             case SASL_NTLM_STATE_RESPOND_CHALLENGE:
-                $ntlm_response = $this->NTLMResponse(substr($response, 24, 8), $this->credentials["password"]);
+                $ntlm_response = $this->NTLMResponse(substr((string) $response, 24, 8), $this->credentials["password"]);
                 $message = $this->typeMsg3(
                     $ntlm_response,
                     $this->credentials["user"],

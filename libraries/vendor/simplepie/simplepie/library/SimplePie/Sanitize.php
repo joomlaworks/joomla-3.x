@@ -223,7 +223,7 @@ class SimplePie_Sanitize
 
 	public function sanitize($data, $type, $base = '')
 	{
-		$data = trim($data);
+		$data = trim((string) $data);
 		if ($data !== '' || $type & SIMPLEPIE_CONSTRUCT_IRI)
 		{
 			if ($type & SIMPLEPIE_CONSTRUCT_MAYBE_HTML)
@@ -350,7 +350,7 @@ class SimplePie_Sanitize
 				if ($this->remove_div)
 				{
 					$data = preg_replace('/^<div' . SIMPLEPIE_PCRE_XML_ATTRIBUTE . '>/', '', $data);
-					$data = preg_replace('/<\/div>$/', '', $data);
+					$data = preg_replace('/<\/div>$/', '', (string) $data);
 				}
 				else
 				{
@@ -369,7 +369,7 @@ class SimplePie_Sanitize
 
 			if ($type & (SIMPLEPIE_CONSTRUCT_TEXT | SIMPLEPIE_CONSTRUCT_IRI))
 			{
-				$data = htmlspecialchars($data, ENT_COMPAT, 'UTF-8');
+				$data = htmlspecialchars((string) $data, ENT_COMPAT, 'UTF-8');
 			}
 
 			if ($this->output_encoding !== 'UTF-8')

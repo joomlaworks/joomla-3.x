@@ -13,6 +13,54 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 
 ## CHANGELOG
 
+## Version 3.16 - unreleased [pending]
+Summary of changes:
+- Backported 14 security fixes from the Joomla 6.1.3/5.4.8 and 6.1.4/5.4.9 security releases, each confirmed against this codebase (several were listed upstream as "Joomla 4.0 and later" but the vulnerable code is present in 3.x), plus related hardening
+- Added "Little WAF", a new opt-in system plugin that filters known attack patterns against vulnerable third-party extensions
+- Joomla Update now respects core extensions you've uninstalled, and can bring them back on request
+- Raised the minimum database versions, and cleaned up cache, session and database drivers that can't work on PHP 7.1+
+- Fixed a long list of bugs and PHP 8.x deprecation warnings, several of them in stock Joomla 3.x itself
+
+**Security fixes:**
+- Guest account creation via the frontend profile-save action, even with user registration disabled
+- Arbitrary directory deletion through a path traversal in the file cache's group handling
+- Two XSS-filter bypasses using HTML5 entities and unterminated numeric references (both confirmed against the real filter before fixing)
+- Tagged items in access-restricted categories leaking through tag views and the "Tags - Popular"/"Tags - Similar" modules
+- A missing access check on the second record of a content history comparison
+- XSS gaps in `JHtml::link()`/`JHtml::iframe()`, the module manager's position column, the toolbar link button and the generic image layout's attribute names
+- SSRF: feed, SEF-domain, user-profile website and custom update URL fields are now restricted to web URL schemes
+- HTTP header injection via an unescaped filename in the banner-tracking download and the contact vCard export
+- Missing per-item edit-permission checks in the category and custom-field batch-copy actions
+- A missing SHTML file extension in the Template Manager's upload blacklist
+- Stored XSS: contact name/position/category echoed unescaped into public-facing schema.org markup
+- Smaller hardening: traversal checks in the Template Manager's file/folder delete, CSV formula escaping in the banner tracks export, stricter internal-URL checks, a constant-time TOTP comparison in the bundled FOF library, and a few more blocked executable file extensions
+
+**New features & additions:**
+- "Little WAF" system plugin: filters known attack signatures against abandoned or historically vulnerable third-party extensions before any component runs. Ships with two filters, each named after and toggled per extension: Sourcerer-style `{source}...{/source}` URL injection, and, as a precaution, Modules Anywhere-style `{module}`/`{modulepos}` tags. The plugin is disabled by default; once enabled, its filters are on by default. More filters will be added over time as similar issues are identified.
+- "Restore uninstalled core extensions" option on Joomla Update's "Reinstall Joomla core files" and "Upload & Update" screens, to bring back core extensions you uninstalled earlier, with their database tables, menu items and default settings
+- Joomla Update now checks the site's database type and version before offering an update (from 3.16 onwards)
+- New "Database support" section in this README
+
+**Improvements to existing features:**
+- Joomla Update no longer brings back removable core extensions you've uninstalled (Banners, Contacts, News Feeds, Search, Smart Search, Content History, Multilingual Associations and Fields with their modules and plugins, as well as any other removable core module, plugin or template). Previously their files were restored on every update, showed up under Extensions > Discover, and could cause a "Refresh Manifest Cache failed" warning on every later update.
+- Raised the minimum database versions to MySQL 5.5.3, MariaDB 5.5 and PostgreSQL 9.0 (SQL Server stays at 2008 R2), enforced by the installer and, for sites already on 3.16 or newer, by Joomla Update
+- The update channel now accepts any Joomla 3.x installation, since database migrations go back to Joomla 2.5.0 and support a direct jump to the current version regardless of starting point
+- Removed cache/session drivers that can't work on PHP 7.1+: APC (not APCu), Memcache (not Memcached), XCache and Cache_Lite. WinCache was kept, since it still has genuine PHP 7.x support. Leftover files are cleaned up automatically on upgrade.
+- Removed the legacy `mysql` database driver, which hasn't worked since PHP 7; sites still configured with it keep working as before through the `mysqli` driver
+- The Memcached cache/session driver is no longer labelled "Experimental", after fixing its locking bugs (see below)
+
+**Bug fixes:**
+- Fixed updates failing with "Table '…_banners' doesn't exist" on sites that had uninstalled Banners, Contacts, News Feeds or Smart Search; the same false errors are gone from Extensions > Manage > Database
+- Uninstalling Banners, Contacts or News Feeds no longer leaves a stray "com_..._categories" entry under Components in the backend menu; existing leftovers are cleaned up on update
+- Fixed updates leaving the cache stale on sites using the Redis, Memcached, APCu or WinCache cache handlers (the update's cache cleanup only worked with the File handler); the update now warns if the cache can't be cleared
+- Fixed the update system ignoring database requirements declared in an update feed (it would have refused every update instead)
+- Fixed a dormant bug in the update feed that would have silently stopped this distribution from offering updates once a site reached version 3.20.0
+- Fixed two bugs in the update-extraction engine behind "the archive file is corrupt" false positives when manually uploading an update package. A separate issue remains open for zips built with streaming tools (e.g. GNOME Files' "Compress" action, or Windows 11 24H2+'s native "Compress to ZIP"); a standard `zip`-created archive is unaffected.
+- Fixed the Memcached cache driver's internal locking, which could stall the entire site's cache for up to 30 seconds
+- Fixed restoring News Feeds and Smart Search creating outdated database tables, and Smart Search not installing at all on PostgreSQL
+- Fixed fatal errors on PHP 8 hosts that disable `php_uname()`
+- Silenced a large batch of PHP 8.1–8.5 deprecation warnings, from real production logs plus a curated, individually verified automated sweep of 805 files. Every fix keeps working on PHP 7.1 and up. Cosmetic fixes only, no behaviour change.
+
 ## Version 3.15 - released July 18th, 2026
 Summary of changes:
 - Backported 13 CVEs from official Joomla security advisories, independently confirmed to also affect 3.x (several labelled "affects 4.0.0+ only" upstream, but the vulnerable code is present in 3.x regardless)
@@ -124,6 +172,16 @@ If you are hosting sites for others, consider letting them know they can safely 
 
 Switching to this distribution will also allow you (or take you closer) to upgrade your server(s). E.g. a server hosting Joomla sites using PHP prior to version 7.2 may be stuck in CentOS 7/cPanel, which is no longer supported by either the OS vendor or cPanel, with whatever that entails primarily for security.
 
+
+## DATABASE SUPPORT
+| Database | Minimum version | Status |
+|---|---|---|
+| MySQL | 5.5.3 | Tested and actively supported (5.7 or newer recommended, see notes below for 8.x) |
+| MariaDB | 5.5 | Tested and actively supported |
+| PostgreSQL | 9.0 | Inherited from stock Joomla 3.x, not tested by this project |
+| Microsoft SQL Server / Azure SQL | 2008 R2 (10.50.1600.1) | Inherited from stock Joomla 3.x, not tested by this project |
+
+Database support in Joomla 3.x was always centred on MySQL. PostgreSQL and SQL Server work with the core, but several core and third-party extensions only ship MySQL database scripts, so expect rough edges there. The installer enforces these minimum versions. Once a site runs 3.16 or newer, it won't be offered further updates while its database is below these versions, and sees a notice in Joomla Update instead.
 
 ## NOTES ON MYSQL & MARIADB
 For Joomla 3.x to work flawlessly with MySQL versions 8.0 or newer, you need to have this setting enabled in your my.cnf configuration:

@@ -173,6 +173,13 @@ class WebClient
 		{
 			$this->acceptLanguage = $acceptLanguage;
 		}
+
+		// None of the three above are guaranteed to be set (e.g. a request with no User-Agent header
+		// and no explicit constructor argument leaves $userAgent as the null default). Every detect*()
+		// method below assumes a real string, so normalize once here rather than at every call site.
+		$this->userAgent = (string) $this->userAgent;
+		$this->acceptEncoding = (string) $this->acceptEncoding;
+		$this->acceptLanguage = (string) $this->acceptLanguage;
 	}
 
 	/**
@@ -488,7 +495,7 @@ class WebClient
 	protected function detectLanguage($acceptLanguage)
 	{
 		// Parse the accepted encodings.
-		$this->languages = array_map('trim', (array) explode(',', $acceptLanguage));
+		$this->languages = array_map('trim', (array) explode(',', (string) $acceptLanguage));
 
 		// Mark this detection routine as run.
 		$this->detection['acceptLanguage'] = true;
@@ -631,9 +638,9 @@ class WebClient
 
 			foreach ($_SERVER as $name => $value)
 			{
-				if (substr($name, 0, 5) == 'HTTP_')
+				if (substr((string) $name, 0, 5) == 'HTTP_')
 				{
-					$this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+					$this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr((string) $name, 5)))))] = $value;
 				}
 			}
 		}

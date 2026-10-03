@@ -37,7 +37,7 @@ class OutputFilter
 		{
 			foreach (get_object_vars($mixed) as $k => $v)
 			{
-				if (\is_array($v) || \is_object($v) || $v == null || substr($k, 1, 1) == '_')
+				if (\is_array($v) || \is_object($v) || $v == null || substr((string) $k, 1, 1) == '_')
 				{
 					continue;
 				}
@@ -52,7 +52,7 @@ class OutputFilter
 					continue;
 				}
 
-				$mixed->$k = htmlspecialchars($v, $quoteStyle, 'UTF-8');
+				$mixed->$k = htmlspecialchars((string) $v, $quoteStyle, 'UTF-8');
 			}
 		}
 	}
@@ -109,7 +109,7 @@ class OutputFilter
 		$str = preg_replace('/(\s|[^A-Za-z0-9\-])+/', '-', $str);
 
 		// Trim dashes at beginning and end of alias
-		$str = trim($str, '-');
+		$str = trim((string) $str, '-');
 
 		return $str;
 	}
@@ -174,13 +174,13 @@ class OutputFilter
 	public static function cleanText(&$text)
 	{
 		$text = preg_replace("'<script[^>]*>.*?</script>'si", '', $text);
-		$text = preg_replace('/<a\s+.*?href="([^"]+)"[^>]*>([^<]+)<\/a>/is', '\2 (\1)', $text);
-		$text = preg_replace('/<!--.+?-->/', '', $text);
-		$text = preg_replace('/{.+?}/', '', $text);
-		$text = preg_replace('/&nbsp;/', ' ', $text);
-		$text = preg_replace('/&amp;/', ' ', $text);
-		$text = preg_replace('/&quot;/', ' ', $text);
-		$text = strip_tags($text);
+		$text = preg_replace('/<a\s+.*?href="([^"]+)"[^>]*>([^<]+)<\/a>/is', '\2 (\1)', (string) $text);
+		$text = preg_replace('/<!--.+?-->/', '', (string) $text);
+		$text = preg_replace('/{.+?}/', '', (string) $text);
+		$text = preg_replace('/&nbsp;/', ' ', (string) $text);
+		$text = preg_replace('/&amp;/', ' ', (string) $text);
+		$text = preg_replace('/&quot;/', ' ', (string) $text);
+		$text = strip_tags((string) $text);
 		$text = htmlspecialchars($text, \ENT_COMPAT, 'UTF-8');
 
 		return $text;
@@ -197,9 +197,9 @@ class OutputFilter
 	 */
 	public static function stripImages($string)
 	{
-		while (preg_match('#(<[/]?img.*>)#Ui', $string))
+		while (preg_match('#(<[/]?img.*>)#Ui', (string) $string))
 		{
-			$string = preg_replace('#(<[/]?img.*>)#Ui', '', $string);
+			$string = preg_replace('#(<[/]?img.*>)#Ui', '', (string) $string);
 		}
 
 		return $string;
@@ -216,9 +216,9 @@ class OutputFilter
 	 */
 	public static function stripIframes($string)
 	{
-		while (preg_match('#(<[/]?iframe.*>)#Ui', $string))
+		while (preg_match('#(<[/]?iframe.*>)#Ui', (string) $string))
 		{
-			$string = preg_replace('#(<[/]?iframe.*>)#Ui', '', $string);
+			$string = preg_replace('#(<[/]?iframe.*>)#Ui', '', (string) $string);
 		}
 
 		return $string;

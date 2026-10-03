@@ -55,7 +55,7 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 	 * @var    string
 	 * @since  3.0.0
 	 */
-	protected static $dbMinimum = '8.3.18';
+	protected static $dbMinimum = '9.0.0';
 
 	/**
 	 * Operator used for concatenation
@@ -449,19 +449,19 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 		{
 			foreach ($fields as $field)
 			{
-				$result[$field->column_name] = preg_replace('/[(0-9)]/', '', $field->type);
+				$result[$field->column_name] = preg_replace('/[(0-9)]/', '', (string) $field->type);
 			}
 		}
 		else
 		{
 			foreach ($fields as $field)
 			{
-				if (stristr(strtolower($field->type), 'character varying'))
+				if (stristr(strtolower((string) $field->type), 'character varying'))
 				{
 					$field->Default = '';
 				}
 
-				if (stristr(strtolower($field->type), 'text'))
+				if (stristr(strtolower((string) $field->type), 'text'))
 				{
 					$field->Default = '';
 				}
@@ -485,7 +485,7 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 		/* Change Postgresql's NULL::* type with PHP's null one */
 		foreach ($fields as $field)
 		{
-			if (preg_match('/^NULL::*/', $field->Default))
+			if (preg_match('/^NULL::*/', (string) $field->Default))
 			{
 				$field->Default = null;
 			}
@@ -1622,7 +1622,7 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 	 */
 	public function quoteBinary($data)
 	{
-		return "decode('" . bin2hex($data) . "', 'hex')";
+		return "decode('" . bin2hex((string) $data) . "', 'hex')";
 	}
 
 	/**

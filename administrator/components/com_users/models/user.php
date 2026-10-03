@@ -994,7 +994,7 @@ class UsersModelUser extends JModelAdmin
 		}
 
 		// Get the encrypted data
-		list($method, $config) = explode(':', $item->otpKey, 2);
+		list($method, $config) = explode(':', (string) $item->otpKey, 2);
 		$encryptedOtep = $item->otep;
 
 		// Get the secret key, yes the thing that is saved in the configuration file

@@ -192,7 +192,7 @@ class Tree
 		$identifier = $this->current->get('class');
 
 		// Top level is special
-		if (trim($identifier) == '' || !$this->current->hasParent())
+		if (trim((string) $identifier) == '' || !$this->current->hasParent())
 		{
 			return null;
 		}
@@ -200,15 +200,15 @@ class Tree
 		if (!isset($classes[$identifier]))
 		{
 			// We were passed a class name
-			if (substr($identifier, 0, 6) == 'class:')
+			if (substr((string) $identifier, 0, 6) == 'class:')
 			{
-				$class = substr($identifier, 6);
+				$class = substr((string) $identifier, 6);
 			}
 			// We were passed background icon url. Build the CSS class for the icon
 			else
 			{
-				$class = preg_replace('#\.[^.]*$#', '', basename($identifier));
-				$class = preg_replace('#\.\.[^A-Za-z0-9\.\_\- ]#', '', $class);
+				$class = preg_replace('#\.[^.]*$#', '', basename((string) $identifier));
+				$class = preg_replace('#\.\.[^A-Za-z0-9\.\_\- ]#', '', (string) $class);
 
 				if ($class)
 				{

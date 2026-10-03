@@ -34,7 +34,7 @@ defined('_JEXEC') or die;
 						<?php echo $key; ?>
 					</td>
 					<td>
-						<?php echo htmlspecialchars($value, ENT_QUOTES); ?>
+						<?php echo htmlspecialchars((string) $value, ENT_QUOTES); ?>
 					</td>
 				</tr>
 			<?php endforeach; ?>

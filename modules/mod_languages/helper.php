@@ -77,7 +77,7 @@ abstract class ModLanguagesHelper
 		foreach ($languages as $i => &$language)
 		{
 			// Do not display language without frontend UI
-			if (!array_key_exists($language->lang_code, $sitelangs))
+			if (!array_key_exists((string) $language->lang_code, $sitelangs))
 			{
 				unset($languages[$i]);
 			}

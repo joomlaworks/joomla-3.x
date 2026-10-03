@@ -9,7 +9,7 @@
             <field name="country" type="text" label="PLG_USER_PROFILE_FIELD_COUNTRY_LABEL" description="PLG_USER_PROFILE_FIELD_COUNTRY_DESC" id="country" filter="string" size="30" />
             <field name="postal_code" type="text" label="PLG_USER_PROFILE_FIELD_POSTAL_CODE_LABEL" description="PLG_USER_PROFILE_FIELD_POSTAL_CODE_DESC" id="postal_code" filter="string" size="30" />
             <field name="phone" type="tel" label="PLG_USER_PROFILE_FIELD_PHONE_LABEL" description="PLG_USER_PROFILE_FIELD_PHONE_DESC" id="phone" filter="string" size="30" />
-            <field name="website" type="url" label="PLG_USER_PROFILE_FIELD_WEB_SITE_LABEL" description="PLG_USER_PROFILE_FIELD_WEB_SITE_DESC" id="website" filter="url" size="30" validate="url" />
+            <field name="website" type="url" label="PLG_USER_PROFILE_FIELD_WEB_SITE_LABEL" description="PLG_USER_PROFILE_FIELD_WEB_SITE_DESC" id="website" filter="url" size="30" validate="url" schemes="http,https" />
             <field name="favoritebook" type="text" label="PLG_USER_PROFILE_FIELD_FAVORITE_BOOK_LABEL" description="PLG_USER_PROFILE_FIELD_FAVORITE_BOOK_DESC" filter="string" size="30" />
             <field name="aboutme" type="textarea" label="PLG_USER_PROFILE_FIELD_ABOUT_ME_LABEL" description="PLG_USER_PROFILE_FIELD_ABOUT_ME_DESC" cols="30" rows="5" filter="safehtml" />
             <field name="dob" type="dob" label="PLG_USER_PROFILE_FIELD_DOB_LABEL" description="PLG_USER_PROFILE_FIELD_DOB_DESC" info="PLG_USER_PROFILE_SPACER_DOB" translateformat="true" showtime="false" filter="server_utc" />

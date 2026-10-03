@@ -219,7 +219,7 @@ class JFormFieldFileList extends JFormFieldList
 				// Check to see if the file is in the exclude mask.
 				if ($this->exclude)
 				{
-					if (preg_match(chr(1) . $this->exclude . chr(1), $file))
+					if (preg_match(chr(1) . $this->exclude . chr(1), (string) $file))
 					{
 						continue;
 					}

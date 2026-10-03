@@ -173,7 +173,7 @@ class MessagesModelMessage extends JModelAdmin
 						$this->item->set('user_id_to', $message->user_id_from);
 						$re = JText::_('COM_MESSAGES_RE');
 
-						if (stripos($message->subject, $re) !== 0)
+						if (stripos((string) $message->subject, $re) !== 0)
 						{
 							$this->item->set('subject', $re . ' ' . $message->subject);
 						}
@@ -389,8 +389,8 @@ class MessagesModelMessage extends JModelAdmin
 			$sitename = $app->get('sitename');
 			$fromName = $fromUser->get('name');
 			$siteURL  = JRoute::link('administrator', 'index.php?option=com_messages&view=message&message_id=' . $table->message_id, false, $linkMode, true);
-			$subject  = html_entity_decode($table->subject, ENT_COMPAT, 'UTF-8');
-			$message  = strip_tags(html_entity_decode($table->message, ENT_COMPAT, 'UTF-8'));
+			$subject  = html_entity_decode((string) $table->subject, ENT_COMPAT, 'UTF-8');
+			$message  = strip_tags(html_entity_decode((string) $table->message, ENT_COMPAT, 'UTF-8'));
 
 			$subj	  = sprintf($lang->_('COM_MESSAGES_NEW_MESSAGE'), $fromName, $sitename);
 			$msg 	  = $subject . "\n\n" . $message . "\n\n" . sprintf($lang->_('COM_MESSAGES_PLEASE_LOGIN'), $siteURL);

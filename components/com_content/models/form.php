@@ -62,7 +62,7 @@ class ContentModelForm extends ContentModelArticle
 		$this->setState('article.catid', $app->input->getInt('catid', $catId));
 
 		$return = $app->input->get('return', null, 'base64');
-		$this->setState('return_page', base64_decode($return));
+		$this->setState('return_page', base64_decode((string) $return));
 
 		$this->setState('layout', $app->input->getString('layout'));
 	}

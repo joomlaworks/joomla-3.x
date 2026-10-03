@@ -61,7 +61,7 @@ class JGoogleDataPlusPeople extends JGoogleData
 
 			$jdata = $this->auth->query($url);
 
-			return json_decode($jdata->body, true);
+			return json_decode((string) $jdata->body, true);
 		}
 		else
 		{
@@ -115,7 +115,7 @@ class JGoogleDataPlusPeople extends JGoogleData
 
 			$jdata = $this->auth->query($url);
 
-			return json_decode($jdata->body, true);
+			return json_decode((string) $jdata->body, true);
 		}
 		else
 		{
@@ -165,7 +165,7 @@ class JGoogleDataPlusPeople extends JGoogleData
 
 			$jdata = $this->auth->query($url);
 
-			return json_decode($jdata->body, true);
+			return json_decode((string) $jdata->body, true);
 		}
 		else
 		{

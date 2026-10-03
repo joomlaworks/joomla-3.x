@@ -82,7 +82,7 @@ class RssRenderer extends DocumentRenderer
 		$feed .= "		<title>" . $feed_title . "</title>\n";
 		$feed .= "		<description><![CDATA[" . $data->getDescription() . "]]></description>\n";
 		$feed .= "		<link>" . str_replace(' ', '%20', $url . $datalink) . "</link>\n";
-		$feed .= "		<lastBuildDate>" . htmlspecialchars($now->toRFC822(true), ENT_COMPAT, 'UTF-8') . "</lastBuildDate>\n";
+		$feed .= "		<lastBuildDate>" . htmlspecialchars((string) $now->toRFC822(true), ENT_COMPAT, 'UTF-8') . "</lastBuildDate>\n";
 		$feed .= "		<generator>" . $data->getGenerator() . "</generator>\n";
 		$feed .= "		<atom:link rel=\"self\" type=\"application/rss+xml\" href=\"" . str_replace(' ', '%20', $url . $syndicationURL) . "\"/>\n";
 
@@ -136,7 +136,7 @@ class RssRenderer extends DocumentRenderer
 		{
 			$pubDate = \JFactory::getDate($data->pubDate);
 			$pubDate->setTimeZone($tz);
-			$feed .= "		<pubDate>" . htmlspecialchars($pubDate->toRFC822(true), ENT_COMPAT, 'UTF-8') . "</pubDate>\n";
+			$feed .= "		<pubDate>" . htmlspecialchars((string) $pubDate->toRFC822(true), ENT_COMPAT, 'UTF-8') . "</pubDate>\n";
 		}
 
 		if (!empty($data->category))
@@ -228,7 +228,7 @@ class RssRenderer extends DocumentRenderer
 				{
 					foreach ($data->items[$i]->category as $cat)
 					{
-						$feed .= "			<category>" . htmlspecialchars($cat, ENT_COMPAT, 'UTF-8') . "</category>\n";
+						$feed .= "			<category>" . htmlspecialchars((string) $cat, ENT_COMPAT, 'UTF-8') . "</category>\n";
 					}
 				}
 				else
@@ -246,7 +246,7 @@ class RssRenderer extends DocumentRenderer
 			{
 				$itemDate = \JFactory::getDate($data->items[$i]->date);
 				$itemDate->setTimeZone($tz);
-				$feed .= "			<pubDate>" . htmlspecialchars($itemDate->toRFC822(true), ENT_COMPAT, 'UTF-8') . "</pubDate>\n";
+				$feed .= "			<pubDate>" . htmlspecialchars((string) $itemDate->toRFC822(true), ENT_COMPAT, 'UTF-8') . "</pubDate>\n";
 			}
 
 			if ($data->items[$i]->enclosure != null)

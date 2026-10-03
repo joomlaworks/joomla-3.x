@@ -226,7 +226,7 @@ class InstallationModelLanguages extends JModelBase
 		$instance = JTable::getInstance('update');
 		$instance->load($uid);
 
-		return trim($instance->detailsurl);
+		return trim((string) $instance->detailsurl);
 	}
 
 	/**
@@ -243,7 +243,7 @@ class InstallationModelLanguages extends JModelBase
 		$update = new JUpdate;
 		$update->loadFromXml($remoteManifest);
 
-		return trim($update->get('downloadurl', false)->_data);
+		return trim((string) $update->get('downloadurl', false)->_data);
 	}
 
 	/**
@@ -404,7 +404,7 @@ class InstallationModelLanguages extends JModelBase
 	 */
 	protected function compareLanguages($lang1, $lang2)
 	{
-		return strcmp($lang1->name, $lang2->name);
+		return strcmp((string) $lang1->name, (string) $lang2->name);
 	}
 
 	/**
@@ -746,14 +746,14 @@ class InstallationModelLanguages extends JModelBase
 	 */
 	public function getSefString($itemLanguage, $siteLanguages)
 	{
-		$langs = explode('-', $itemLanguage->language);
+		$langs = explode('-', (string) $itemLanguage->language);
 		$prefixToFind = $langs[0];
 
 		$numberPrefixesFound = 0;
 
 		foreach ($siteLanguages as $siteLang)
 		{
-			$langs = explode('-', $siteLang->language);
+			$langs = explode('-', (string) $siteLang->language);
 			$lang  = $langs[0];
 
 			if ($lang == $prefixToFind)
@@ -767,7 +767,7 @@ class InstallationModelLanguages extends JModelBase
 			return $prefixToFind;
 		}
 
-		return strtolower($itemLanguage->language);
+		return strtolower((string) $itemLanguage->language);
 	}
 
 	/**
@@ -858,7 +858,7 @@ class InstallationModelLanguages extends JModelBase
 
 		$menuData = array(
 			'id'          => 0,
-			'menutype'    => 'mainmenu-' . strtolower($itemLanguage->language),
+			'menutype'    => 'mainmenu-' . strtolower((string) $itemLanguage->language),
 			'title'       => 'Main Menu (' . $itemLanguage->language . ')',
 			'description' => 'The main menu for the site in language ' . $itemLanguage->name,
 		);
@@ -906,7 +906,7 @@ class InstallationModelLanguages extends JModelBase
 		$menuItem = array(
 			'title'        => $title,
 			'alias'        => $alias,
-			'menutype'     => 'mainmenu-' . strtolower($itemLanguage->language),
+			'menutype'     => 'mainmenu-' . strtolower((string) $itemLanguage->language),
 			'type'         => 'component',
 			'link'         => 'index.php?option=com_content&view=featured',
 			'component_id' => 22,
@@ -979,7 +979,7 @@ class InstallationModelLanguages extends JModelBase
 		$menuItem = array(
 			'title'        => $title,
 			'alias'        => $alias,
-			'menutype'     => 'mainmenu-' . strtolower($itemLanguage->language),
+			'menutype'     => 'mainmenu-' . strtolower((string) $itemLanguage->language),
 			'type'         => 'component',
 			'link'         => 'index.php?option=com_content&view=categories&id=0',
 			'component_id' => 22,
@@ -1059,7 +1059,7 @@ class InstallationModelLanguages extends JModelBase
 			'module'    => 'mod_menu',
 			'access'    => 1,
 			'showtitle' => 1,
-			'params'    => '{"menutype":"mainmenu-' . strtolower($itemLanguage->language)
+			'params'    => '{"menutype":"mainmenu-' . strtolower((string) $itemLanguage->language)
 				. '","startLevel":"0","endLevel":"0","showAllChildren":"0","tag_id":"","class_sfx":"","window_open":"",'
 				. '"layout":"","moduleclass_sfx":"_menu","cache":"1","cache_time":"900","cachemode":"itemid"}',
 			'client_id' => 0,
@@ -1179,7 +1179,7 @@ class InstallationModelLanguages extends JModelBase
 
 		$data = array(
 			'extension'       => 'com_content',
-			'title'           => $title . ' (' . strtolower($itemLanguage->language) . ')',
+			'title'           => $title . ' (' . strtolower((string) $itemLanguage->language) . ')',
 			'description'     => '',
 			'published'       => 1,
 			'access'          => 1,
@@ -1244,7 +1244,7 @@ class InstallationModelLanguages extends JModelBase
 		$article = JTable::getInstance('Content');
 
 		$data = array(
-			'title'            => $title . ' (' . strtolower($itemLanguage->language) . ')',
+			'title'            => $title . ' (' . strtolower((string) $itemLanguage->language) . ')',
 			'introtext'        => '<p>Lorem ipsum ad his scripta blandit partiendo, eum fastidii accumsan euripidis'
 										. ' in, eum liber hendrerit an. Qui ut wisi vocibus suscipiantur, quo dicit'
 										. ' ridens inciderint id. Quo mundi lobortis reformidans eu, legimus senserit'
@@ -1334,7 +1334,7 @@ class InstallationModelLanguages extends JModelBase
 		$menuItem = array(
 			'title'        => $title,
 			'alias'        => $alias,
-			'menutype'     => 'mainmenu-' . strtolower($itemLanguage->language),
+			'menutype'     => 'mainmenu-' . strtolower((string) $itemLanguage->language),
 			'type'         => 'component',
 			'link'         => 'index.php?option=com_content&view=category&layout=blog&id=' . $categoryId,
 			'component_id' => 22,

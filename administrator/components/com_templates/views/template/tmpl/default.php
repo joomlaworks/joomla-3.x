@@ -256,10 +256,10 @@ if ($this->type == 'font')
 				<ul class="nav nav-stacked nav-list well">
 					<?php foreach ($this->archive as $file) : ?>
 						<li>
-							<?php if (substr($file, -1) === DIRECTORY_SEPARATOR) : ?>
+							<?php if (substr((string) $file, -1) === DIRECTORY_SEPARATOR) : ?>
 								<span class="icon-folder" aria-hidden="true"></span>&nbsp;<?php echo $file; ?>
 							<?php endif; ?>
-							<?php if (substr($file, -1) != DIRECTORY_SEPARATOR) : ?>
+							<?php if (substr((string) $file, -1) != DIRECTORY_SEPARATOR) : ?>
 								<span class="icon-file" aria-hidden="true"></span>&nbsp;<?php echo $file; ?>
 							<?php endif; ?>
 						</li>

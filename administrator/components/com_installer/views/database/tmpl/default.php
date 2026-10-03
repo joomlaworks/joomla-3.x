@@ -43,7 +43,7 @@ defined('_JEXEC') or die;
 						<?php foreach ($this->errors as $line => $error) : ?>
 							<?php $key = 'COM_INSTALLER_MSG_DATABASE_' . $error->queryType;
 							$msgs = $error->msgElements;
-							$file = basename($error->file);
+							$file = basename((string) $error->file);
 							$msg0 = isset($msgs[0]) ? $msgs[0] : ' ';
 							$msg1 = isset($msgs[1]) ? $msgs[1] : ' ';
 							$msg2 = isset($msgs[2]) ? $msgs[2] : ' ';

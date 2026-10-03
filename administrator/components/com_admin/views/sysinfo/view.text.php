@@ -44,7 +44,7 @@ class AdminViewSysinfo extends JViewLegacy
 
 		foreach ($data as $sectionName => $section)
 		{
-			$customRenderingMethod = 'render' . ucfirst($sectionName);
+			$customRenderingMethod = 'render' . ucfirst((string) $sectionName);
 
 			if (method_exists($this, $customRenderingMethod))
 			{

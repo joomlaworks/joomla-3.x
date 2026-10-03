@@ -97,7 +97,7 @@ class InstallerModel extends JModelList
 
 					foreach ($searchFields as $key => $field)
 					{
-						if (!$found && preg_match('/' . $escapedSearchString . '/i', $item->{$field}))
+						if (!$found && preg_match('/' . $escapedSearchString . '/i', (string) $item->{$field}))
 						{
 							$found = 1;
 						}
@@ -149,7 +149,7 @@ class InstallerModel extends JModelList
 
 		foreach ($items as &$item)
 		{
-			if (strlen($item->manifest_cache) && $data = json_decode($item->manifest_cache))
+			if (strlen((string) $item->manifest_cache) && $data = json_decode((string) $item->manifest_cache))
 			{
 				foreach ($data as $key => $value)
 				{
@@ -168,7 +168,7 @@ class InstallerModel extends JModelList
 			$item->author_info       = @$item->authorEmail . '<br />' . @$item->authorUrl;
 			$item->client            = $item->client_id ? JText::_('JADMINISTRATOR') : JText::_('JSITE');
 			$item->client_translated = $item->client;
-			$item->type_translated   = JText::_('COM_INSTALLER_TYPE_' . strtoupper($item->type));
+			$item->type_translated   = JText::_('COM_INSTALLER_TYPE_' . strtoupper((string) $item->type));
 			$item->folder_translated = @$item->folder ? $item->folder : JText::_('COM_INSTALLER_TYPE_NONAPPLICABLE');
 
 			$path = $item->client_id ? JPATH_ADMINISTRATOR : JPATH_SITE;
@@ -186,7 +186,7 @@ class InstallerModel extends JModelList
 						$lang->load("$extension.sys", JPATH_SITE, null, false, true);
 				break;
 				case 'library':
-					$parts = explode('/', $item->element);
+					$parts = explode('/', (string) $item->element);
 					$vendor = (isset($parts[1]) ? $parts[0] : null);
 					$extension = 'lib_' . ($vendor ? implode('_', $parts) : $item->element);
 

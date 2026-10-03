@@ -24,7 +24,7 @@ $message = JText::_('COM_CONTENTHISTORY_BUTTON_SELECT_ONE', true);
 $compareMessage = JText::_('COM_CONTENTHISTORY_BUTTON_SELECT_TWO', true);
 JText::script('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST');
 $deleteMessage = "alert(Joomla.JText._('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));";
-$aliasArray = explode('.', $this->state->type_alias);
+$aliasArray = explode('.', (string) $this->state->type_alias);
 $option = (end($aliasArray) == 'category') ? 'com_categories&amp;extension=' . implode('.', array_slice($aliasArray, 0, count($aliasArray) - 1)) : $aliasArray[0];
 $filter = JFilterInput::getInstance();
 $task = $filter->clean(end($aliasArray)) . '.loadhistory';
@@ -154,7 +154,7 @@ JFactory::getDocument()->addScriptDeclaration("
 						<?php endif; ?>
 					</td>
 					<td class="hidden-phone">
-						<?php echo htmlspecialchars($item->version_note); ?>
+						<?php echo htmlspecialchars((string) $item->version_note); ?>
 					</td>
 					<td>
 						<?php if ($item->keep_forever) : ?>
@@ -172,7 +172,7 @@ JFactory::getDocument()->addScriptDeclaration("
 						<?php endif; ?>
 					</td>
 					<td class="hidden-phone">
-						<?php echo htmlspecialchars($item->editor); ?>
+						<?php echo htmlspecialchars((string) $item->editor); ?>
 					</td>
 					<td class="center">
 						<?php echo number_format((int) $item->character_count, 0, JText::_('DECIMALS_SEPARATOR'), JText::_('THOUSANDS_SEPARATOR')); ?>

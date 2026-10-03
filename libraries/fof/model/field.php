@@ -41,6 +41,15 @@ abstract class FOFModelField
 	protected $table_alias = false;
 
 	/**
+	 * Should a zero value be treated as an empty filter value? Declared here (rather than left
+	 * as a dynamic property, unlike its declared siblings $name/$type/$table_alias above) to
+	 * avoid the PHP 8.2+ deprecation warning.
+	 *
+	 * @var  boolean
+	 */
+	protected $filterzero = false;
+
+	/**
 	 * The null value for this type
 	 *
 	 * @var  mixed

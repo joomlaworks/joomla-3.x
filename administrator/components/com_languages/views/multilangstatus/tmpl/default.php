@@ -64,7 +64,7 @@ $notice_switchers = !$this->switchers && ($this->homes > 1 || $this->language_fi
 			</tr>
 		<?php endif; ?>
 		<?php foreach ($this->contentlangs as $contentlang) : ?>
-			<?php if (array_key_exists($contentlang->lang_code, $this->homepages) && (!array_key_exists($contentlang->lang_code, $this->site_langs) || !$contentlang->published)) : ?>
+			<?php if (array_key_exists((string) $contentlang->lang_code, $this->homepages) && (!array_key_exists((string) $contentlang->lang_code, $this->site_langs) || !$contentlang->published)) : ?>
 				<tr class="warning">
 					<td>
 						<span class="icon-pending" aria-hidden="true"></span><span class="element-invisible"><?php echo JText::_('WARNING'); ?></span>
@@ -74,7 +74,7 @@ $notice_switchers = !$this->switchers && ($this->homes > 1 || $this->language_fi
 					</td>
 				</tr>
 			<?php endif; ?>
-			<?php if (!array_key_exists($contentlang->lang_code, $this->site_langs)) : ?>
+			<?php if (!array_key_exists((string) $contentlang->lang_code, $this->site_langs)) : ?>
 				<tr class="warning">
 					<td>
 						<span class="icon-pending" aria-hidden="true"></span><span class="element-invisible"><?php echo JText::_('WARNING'); ?></span>
@@ -235,7 +235,7 @@ $notice_switchers = !$this->switchers && ($this->homes > 1 || $this->language_fi
 				</tr>
 			<?php endforeach; ?>
 			<?php foreach ($this->contentlangs as $contentlang) : ?>
-				<?php if (!array_key_exists($contentlang->lang_code, $this->site_langs)) : ?>
+				<?php if (!array_key_exists((string) $contentlang->lang_code, $this->site_langs)) : ?>
 					<tr>
 						<td>
 							<?php echo $contentlang->lang_code; ?>
@@ -246,14 +246,14 @@ $notice_switchers = !$this->switchers && ($this->homes > 1 || $this->language_fi
 						<td class="center">
 							<?php if ($contentlang->published) : ?>
 								<span class="icon-ok" aria-hidden="true"></span><span class="element-invisible"><?php echo JText::_('JYES'); ?></span>
-							<?php elseif (!$contentlang->published && array_key_exists($contentlang->lang_code, $this->homepages)) : ?>
+							<?php elseif (!$contentlang->published && array_key_exists((string) $contentlang->lang_code, $this->homepages)) : ?>
 								<span class="icon-not-ok" aria-hidden="true"></span><span class="element-invisible"><?php echo JText::_('JNO'); ?></span>
 							<?php elseif (!$contentlang->published) : ?>
 								<span class="icon-pending" aria-hidden="true"></span><span class="element-invisible"><?php echo JText::_('WARNING'); ?></span>
 							<?php endif; ?>
 						</td>
 						<td class="center">
-							<?php if (!array_key_exists($contentlang->lang_code, $this->homepages)) : ?>
+							<?php if (!array_key_exists((string) $contentlang->lang_code, $this->homepages)) : ?>
 								<span class="icon-pending" aria-hidden="true"></span><span class="element-invisible"><?php echo JText::_('WARNING'); ?></span>
 							<?php else : ?>
 								<span class="icon-ok" aria-hidden="true"></span><span class="element-invisible"><?php echo JText::_('JYES'); ?></span>

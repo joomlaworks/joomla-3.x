@@ -72,7 +72,7 @@ abstract class HTMLHelper
 		$key = preg_replace('#[^A-Z0-9_\.]#i', '', $key);
 
 		// Check to see whether we need to load a helper file
-		$parts = explode('.', $key);
+		$parts = explode('.', (string) $key);
 
 		$prefix = count($parts) === 3 ? array_shift($parts) : 'JHtml';
 		$file   = count($parts) === 2 ? array_shift($parts) : '';
@@ -100,7 +100,7 @@ abstract class HTMLHelper
 	{
 		list($key, $prefix, $file, $func) = static::extract($key);
 
-		if (array_key_exists($key, static::$registry))
+		if (array_key_exists((string) $key, static::$registry))
 		{
 			$function = static::$registry[$key];
 			$args     = func_get_args();
@@ -111,11 +111,11 @@ abstract class HTMLHelper
 			return static::call($function, $args);
 		}
 
-		$className = $prefix . ucfirst($file);
+		$className = $prefix . ucfirst((string) $file);
 
 		if (!class_exists($className))
 		{
-			$path = \JPath::find(static::$includePaths, strtolower($file) . '.php');
+			$path = \JPath::find(static::$includePaths, strtolower((string) $file) . '.php');
 
 			if (!$path)
 			{
@@ -254,8 +254,10 @@ abstract class HTMLHelper
 	{
 		if (is_array($attribs))
 		{
-			$attribs = ArrayHelper::toString($attribs);
+			$attribs = ArrayHelper::toString(static::escapeAttributesArray($attribs));
 		}
+
+		$url = htmlspecialchars((string) $url, ENT_QUOTES, 'UTF-8', false);
 
 		return '<a href="' . $url . '" ' . $attribs . '>' . $text . '</a>';
 	}
@@ -276,8 +278,11 @@ abstract class HTMLHelper
 	{
 		if (is_array($attribs))
 		{
-			$attribs = ArrayHelper::toString($attribs);
+			$attribs = ArrayHelper::toString(static::escapeAttributesArray($attribs));
 		}
+
+		$url  = htmlspecialchars((string) $url, ENT_QUOTES, 'UTF-8', false);
+		$name = htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8', false);
 
 		return '<iframe src="' . $url . '" ' . $attribs . ' name="' . $name . '">' . $noFrames . '</iframe>';
 	}
@@ -653,9 +658,9 @@ abstract class HTMLHelper
 		foreach ($includes as $include)
 		{
 			// If there is already a version hash in the script reference (by using deprecated MD5SUM).
-			if ($pos = strpos($include, '?') !== false)
+			if ($pos = strpos((string) $include, '?') !== false)
 			{
-				$options['version'] = substr($include, $pos + 1);
+				$options['version'] = substr((string) $include, $pos + 1);
 			}
 
 			$document->addStyleSheet($include, $options, $attribs);
@@ -733,9 +738,9 @@ abstract class HTMLHelper
 		foreach ($includes as $include)
 		{
 			// If there is already a version hash in the script reference (by using deprecated MD5SUM).
-			if ($pos = strpos($include, '?') !== false)
+			if ($pos = strpos((string) $include, '?') !== false)
 			{
-				$options['version'] = substr($include, $pos + 1);
+				$options['version'] = substr((string) $include, $pos + 1);
 			}
 
 			$document->addScript($include, $options, $attribs);
@@ -893,7 +898,7 @@ abstract class HTMLHelper
 
 			if ($title)
 			{
-				$title = htmlspecialchars($title, ENT_COMPAT, 'UTF-8');
+				$title = htmlspecialchars((string) $title, ENT_COMPAT, 'UTF-8');
 				$tooltip = $title . '::' . $tooltip;
 			}
 		}
@@ -961,7 +966,7 @@ abstract class HTMLHelper
 			// Escape everything, if required.
 			if ($escape)
 			{
-				$result = htmlspecialchars($result);
+				$result = htmlspecialchars((string) $result);
 			}
 		}
 
@@ -992,7 +997,7 @@ abstract class HTMLHelper
 	{
 		$tag       = Factory::getLanguage()->getTag();
 		$calendar  = Factory::getLanguage()->getCalendar();
-		$direction = strtolower(Factory::getDocument()->getDirection());
+		$direction = strtolower((string) Factory::getDocument()->getDirection());
 
 		// Get the appropriate file for the current language date helper
 		$helperPath = 'system/fields/calendar-locales/date/gregorian/date-helper.min.js';
@@ -1202,5 +1207,39 @@ abstract class HTMLHelper
 		];
 
 		return strtr($strftimeFormat, $map);
+	}
+
+	/**
+	 * Escapes the names and values of an array of HTML attributes, potentially nested.
+	 * Invalid attribute names are dropped. This only escapes, it does not remove dangerous values.
+	 *
+	 * @param   array  $attributes  The associative array of attributes
+	 *
+	 * @return  array
+	 *
+	 * @since   3.16.0
+	 */
+	protected static function escapeAttributesArray(array $attributes)
+	{
+		foreach ($attributes as $attributeName => $attributeValue)
+		{
+			if (!preg_match('/^[a-zA-Z][a-zA-Z0-9_:.-]*$/', (string) $attributeName))
+			{
+				unset($attributes[$attributeName]);
+
+				continue;
+			}
+
+			if (is_array($attributeValue))
+			{
+				$attributes[$attributeName] = static::escapeAttributesArray($attributeValue);
+
+				continue;
+			}
+
+			$attributes[$attributeName] = htmlspecialchars((string) $attributeValue, ENT_QUOTES, 'UTF-8', false);
+		}
+
+		return $attributes;
 	}
 }

@@ -112,7 +112,7 @@ abstract class JMediawikiObject
 	 */
 	public function validateResponse($response)
 	{
-		$xml = simplexml_load_string($response->body);
+		$xml = simplexml_load_string((string) $response->body);
 
 		if (isset($xml->warnings))
 		{

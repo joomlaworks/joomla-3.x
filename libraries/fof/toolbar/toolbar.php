@@ -61,7 +61,7 @@ class FOFToolbar
 
 		$hash = $option;
 
-		if (!array_key_exists($hash, $instances))
+		if (!array_key_exists((string) $hash, $instances))
 		{
 			if (array_key_exists('input', $config))
 			{
@@ -299,7 +299,7 @@ class FOFToolbar
 		}
 
 		// Check for an onViewTask method
-		$methodName = 'on' . ucfirst($view) . ucfirst($task);
+		$methodName = 'on' . ucfirst($view) . ucfirst((string) $task);
 
 		if (method_exists($this, $methodName))
 		{
@@ -315,7 +315,7 @@ class FOFToolbar
 		}
 
 		// Check for an onTask method
-		$methodName = 'on' . ucfirst($task);
+		$methodName = 'on' . ucfirst((string) $task);
 
 		if (method_exists($this, $methodName))
 		{
@@ -347,7 +347,7 @@ class FOFToolbar
 
 		$option = $this->input->getCmd('option', 'com_foobar');
 
-		JToolbarHelper::title(JText::_(strtoupper($option)), str_replace('com_', '', $option));
+		JToolbarHelper::title(JText::_(strtoupper((string) $option)), str_replace('com_', '', $option));
 		JToolbarHelper::preferences($option, 550, 875);
 	}
 
@@ -372,7 +372,7 @@ class FOFToolbar
 		// Set toolbar title
 		$option = $this->input->getCmd('option', 'com_foobar');
 		$subtitle_key = strtoupper($option . '_TITLE_' . $this->input->getCmd('view', 'cpanel'));
-		JToolbarHelper::title(JText::_(strtoupper($option)) . ': ' . JText::_($subtitle_key), str_replace('com_', '', $option));
+		JToolbarHelper::title(JText::_(strtoupper((string) $option)) . ': ' . JText::_($subtitle_key), str_replace('com_', '', $option));
 
 		// Add toolbar buttons
 		if ($this->perms->create)
@@ -441,7 +441,7 @@ class FOFToolbar
 
 		// Set toolbar title
 		$subtitle_key = strtoupper($option . '_TITLE_' . $this->input->getCmd('view', 'cpanel') . '_READ');
-		JToolbarHelper::title(JText::_(strtoupper($option)) . ': ' . JText::_($subtitle_key), $componentName);
+		JToolbarHelper::title(JText::_(strtoupper((string) $option)) . ': ' . JText::_($subtitle_key), $componentName);
 
 		// Set toolbar icons
 		JToolbarHelper::back();
@@ -465,7 +465,7 @@ class FOFToolbar
 
 		// Set toolbar title
 		$subtitle_key = strtoupper($option . '_TITLE_' . FOFInflector::pluralize($this->input->getCmd('view', 'cpanel'))) . '_EDIT';
-		JToolbarHelper::title(JText::_(strtoupper($option)) . ': ' . JText::_($subtitle_key), $componentName);
+		JToolbarHelper::title(JText::_(strtoupper((string) $option)) . ': ' . JText::_($subtitle_key), $componentName);
 
 		// Set toolbar icons
         if ($this->perms->edit || $this->perms->editown)
@@ -631,7 +631,7 @@ class FOFToolbar
 		foreach ($views as $view)
 		{
 			// Get the view name
-			$key = strtoupper($this->component) . '_TITLE_' . strtoupper($view);
+			$key = strtoupper($this->component) . '_TITLE_' . strtoupper((string) $view);
 
             //Do we have a translation for this key?
 			if (strtoupper(JText::_($key)) == $key)
@@ -643,7 +643,7 @@ class FOFToolbar
 				if (strtoupper(JText::_($key2)) == $key2)
 				{
                     // Nope, let's use the raw name
-					$name = ucfirst($view);
+					$name = ucfirst((string) $view);
 				}
 				else
 				{

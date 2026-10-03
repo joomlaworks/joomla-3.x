@@ -25,6 +25,24 @@ class ConfigControllerConfigSave extends JControllerBase
 	protected $app;
 
 	/**
+	 * Task options, set externally by ConfigControllerHelper::parseController(). Declared here
+	 * (rather than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
+	 *
+	 * @var    array
+	 * @since  3.16.0
+	 */
+	public $options;
+
+	/**
+	 * Prefix for the view and model classes, set externally by config.php. Declared here (rather
+	 * than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
+	 *
+	 * @var    string
+	 * @since  3.16.0
+	 */
+	public $prefix = 'Config';
+
+	/**
 	 * Method to save global configuration.
 	 *
 	 * @return  boolean  True on success.

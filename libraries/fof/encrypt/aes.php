@@ -225,7 +225,7 @@ class FOFEncryptAes
 		{
 			$iterations = 1000;
 			$salt       = $this->adapter->resizeKey($iv, 16);
-			$key        = hash_pbkdf2('sha256', $this->key, $salt, $iterations, $blockSize, true);
+			$key        = hash_pbkdf2('sha256', $this->key, (string) $salt, $iterations, $blockSize, true);
 		}
 
 		return $key;
@@ -236,7 +236,7 @@ if (!function_exists('hash_pbkdf2'))
 {
 	function hash_pbkdf2($algo, $password, $salt, $count, $length = 0, $raw_output = false)
 	{
-		if (!in_array(strtolower($algo), hash_algos()))
+		if (!in_array(strtolower((string) $algo), hash_algos()))
 		{
 			trigger_error(__FUNCTION__ . '(): Unknown hashing algorithm: ' . $algo, E_USER_WARNING);
 		}
@@ -262,15 +262,15 @@ if (!function_exists('hash_pbkdf2'))
 		}
 
 		$output      = '';
-		$block_count = $length ? ceil($length / strlen(hash($algo, '', $raw_output))) : 1;
+		$block_count = $length ? ceil($length / strlen(hash((string) $algo, '', $raw_output))) : 1;
 
 		for ($i = 1; $i <= $block_count; $i++)
 		{
-			$last = $xorsum = hash_hmac($algo, $salt . pack('N', $i), $password, true);
+			$last = $xorsum = hash_hmac((string) $algo, $salt . pack('N', $i), (string) $password, true);
 
 			for ($j = 1; $j < $count; $j++)
 			{
-				$xorsum ^= ($last = hash_hmac($algo, $last, $password, true));
+				$xorsum ^= ($last = hash_hmac((string) $algo, $last, (string) $password, true));
 			}
 
 			$output .= $xorsum;

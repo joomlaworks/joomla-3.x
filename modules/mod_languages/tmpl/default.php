@@ -26,7 +26,7 @@ if ($params->get('dropdown', 0) && !$params->get('dropdownimage', 1))
 	<form name="lang" method="post" action="<?php echo htmlspecialchars_decode(htmlspecialchars(JUri::current(), ENT_COMPAT, 'UTF-8'), ENT_NOQUOTES); ?>">
 	<select class="inputbox advancedSelect" onchange="document.location.replace(this.value);" >
 	<?php foreach ($list as $language) : ?>
-		<option dir=<?php echo $language->rtl ? '"rtl"' : '"ltr"'; ?> value="<?php echo htmlspecialchars_decode(htmlspecialchars($language->link, ENT_QUOTES, 'UTF-8'), ENT_NOQUOTES); ?>" <?php echo $language->active ? 'selected="selected"' : ''; ?>>
+		<option dir=<?php echo $language->rtl ? '"rtl"' : '"ltr"'; ?> value="<?php echo htmlspecialchars_decode(htmlspecialchars((string) $language->link, ENT_QUOTES, 'UTF-8'), ENT_NOQUOTES); ?>" <?php echo $language->active ? 'selected="selected"' : ''; ?>>
 		<?php echo $language->title_native; ?></option>
 	<?php endforeach; ?>
 	</select>
@@ -48,7 +48,7 @@ if ($params->get('dropdown', 0) && !$params->get('dropdownimage', 1))
 		<?php foreach ($list as $language) : ?>
 			<?php if (!$language->active) : ?>
 				<li>
-				<a href="<?php echo htmlspecialchars_decode(htmlspecialchars($language->link, ENT_QUOTES, 'UTF-8'), ENT_NOQUOTES); ?>">
+				<a href="<?php echo htmlspecialchars_decode(htmlspecialchars((string) $language->link, ENT_QUOTES, 'UTF-8'), ENT_NOQUOTES); ?>">
 					<?php if ($language->image) : ?>
 						<?php echo JHtml::_('image', 'mod_languages/' . $language->image . '.gif', '', null, true); ?>
 					<?php endif; ?>
@@ -74,15 +74,15 @@ if ($params->get('dropdown', 0) && !$params->get('dropdownimage', 1))
 	<?php foreach ($list as $language) : ?>
 		<?php if (!$language->active) : ?>
 			<li>
-			<a href="<?php echo htmlspecialchars_decode(htmlspecialchars($language->link, ENT_QUOTES, 'UTF-8'), ENT_NOQUOTES); ?>">
+			<a href="<?php echo htmlspecialchars_decode(htmlspecialchars((string) $language->link, ENT_QUOTES, 'UTF-8'), ENT_NOQUOTES); ?>">
 			<?php if ($params->get('image', 1)) : ?>
 				<?php if ($language->image) : ?>
 					<?php echo JHtml::_('image', 'mod_languages/' . $language->image . '.gif', $language->title_native, array('title' => $language->title_native), true); ?>
 				<?php else : ?>
-					<span class="label"><?php echo strtoupper($language->sef); ?></span>
+					<span class="label"><?php echo strtoupper((string) $language->sef); ?></span>
 				<?php endif; ?>
 			<?php else : ?>
-				<?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef); ?>
+				<?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper((string) $language->sef); ?>
 			<?php endif; ?>
 			</a>
 			</li>
@@ -94,10 +94,10 @@ if ($params->get('dropdown', 0) && !$params->get('dropdownimage', 1))
 				<?php if ($language->image) : ?>
 					<?php echo JHtml::_('image', 'mod_languages/' . $language->image . '.gif', $language->title_native, array('title' => $language->title_native), true); ?>
 				<?php else : ?>
-					<span class="label"><?php echo strtoupper($language->sef); ?></span>
+					<span class="label"><?php echo strtoupper((string) $language->sef); ?></span>
 				<?php endif; ?>
 			<?php else : ?>
-				<?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef); ?>
+				<?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper((string) $language->sef); ?>
 			<?php endif; ?>
 			</a>
 			</li>

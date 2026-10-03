@@ -48,7 +48,7 @@ class File
 		$file = preg_replace($regex, '', $file);
 
 		// Remove any trailing dots, as those aren't ever valid file names.
-		$file = rtrim($file, '.');
+		$file = rtrim((string) $file, '.');
 
 		return $file;
 	}

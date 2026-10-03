@@ -25,7 +25,7 @@ $tparams = $this->item->params;
 				<?php if ($this->item->published == 0) : ?>
 					<span class="label label-warning"><?php echo JText::_('JUNPUBLISHED'); ?></span>
 				<?php endif; ?>
-				<span class="contact-name" itemprop="name"><?php echo $this->contact->name; ?></span>
+				<span class="contact-name" itemprop="name"><?php echo $this->escape($this->contact->name); ?></span>
 			</h2>
 		</div>
 	<?php endif; ?>
@@ -34,7 +34,7 @@ $tparams = $this->item->params;
 
 	<?php if ($show_contact_category === 'show_no_link') : ?>
 		<h3>
-			<span class="contact-category"><?php echo $this->contact->category_title; ?></span>
+			<span class="contact-category"><?php echo $this->escape($this->contact->category_title); ?></span>
 		</h3>
 	<?php elseif ($show_contact_category === 'show_with_link') : ?>
 		<?php $contactLink = ContactHelperRoute::getCategoryRoute($this->contact->catid); ?>
@@ -80,7 +80,7 @@ $tparams = $this->item->params;
 
 		<?php if ($this->contact->image && $tparams->get('show_image')) : ?>
 			<div class="thumbnail pull-right">
-				<?php echo JHtml::_('image', $this->contact->image, htmlspecialchars($this->contact->name,  ENT_QUOTES, 'UTF-8'), array('itemprop' => 'image')); ?>
+				<?php echo JHtml::_('image', $this->contact->image, htmlspecialchars((string) $this->contact->name,  ENT_QUOTES, 'UTF-8'), array('itemprop' => 'image')); ?>
 			</div>
 		<?php endif; ?>
 
@@ -88,7 +88,7 @@ $tparams = $this->item->params;
 			<dl class="contact-position dl-horizontal">
 				<dt><?php echo JText::_('COM_CONTACT_POSITION'); ?>:</dt>
 				<dd itemprop="jobTitle">
-					<?php echo $this->contact->con_position; ?>
+					<?php echo $this->escape($this->contact->con_position); ?>
 				</dd>
 			</dl>
 		<?php endif; ?>

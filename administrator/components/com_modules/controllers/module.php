@@ -302,7 +302,7 @@ class ModulesControllerModule extends JControllerForm
 
 				$orders2[$orders[$i]->position]++;
 				$ord = $orders2[$orders[$i]->position];
-				$title = JText::sprintf('COM_MODULES_OPTION_ORDER_POSITION', $ord, htmlspecialchars($orders[$i]->title, ENT_QUOTES, 'UTF-8'));
+				$title = JText::sprintf('COM_MODULES_OPTION_ORDER_POSITION', $ord, htmlspecialchars((string) $orders[$i]->title, ENT_QUOTES, 'UTF-8'));
 
 				$html[] = $orders[$i]->position . ',' . $ord . ',' . $title;
 			}

@@ -30,6 +30,15 @@ abstract class ConfigModelForm extends ConfigModelCms
 	protected $forms = array();
 
 	/**
+	 * Cache of previously-built form objects, keyed by a signature hash (see getForm()). Declared
+	 * here (rather than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
+	 *
+	 * @var    array
+	 * @since  3.16.0
+	 */
+	protected $_forms = array();
+
+	/**
 	 * Method to checkin a row.
 	 *
 	 * @param   integer  $pk  The numeric id of the primary key.

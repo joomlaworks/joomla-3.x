@@ -468,6 +468,12 @@ class FileStorage extends CacheStorage
 		$name = $this->_getCacheId($id, $group);
 		$dir  = $this->_root . '/' . $group;
 
+		// Prevent traversals out of the cache root via the group name
+		if (preg_match('#(^|[/\\\\])\.\.([/\\\\]|$)#', (string) $group))
+		{
+			return false;
+		}
+
 		// If the folder doesn't exist try to create it
 		if (!is_dir($dir))
 		{
@@ -508,9 +514,11 @@ class FileStorage extends CacheStorage
 		$path = $this->_cleanPath($path);
 
 		// Check to make sure path is inside cache folder, we do not want to delete Joomla root!
-		$pos = strpos($path, $this->_cleanPath($this->_root));
+		// Resolve "..", symlinks etc. first, a plain prefix check is bypassed by e.g. "<root>/../../images"
+		$realPath = realpath($path);
+		$realRoot = realpath($this->_root);
 
-		if ($pos === false || $pos > 0)
+		if ($realPath === false || $realRoot === false || strpos($realPath . DIRECTORY_SEPARATOR, rtrim($realRoot, '/\\') . DIRECTORY_SEPARATOR) !== 0)
 		{
 			Log::add(__METHOD__ . ' ' . \JText::sprintf('JLIB_FILESYSTEM_ERROR_PATH_IS_NOT_A_FOLDER', $path), Log::WARNING, 'jerror');
 

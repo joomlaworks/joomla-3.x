@@ -161,7 +161,7 @@ class FinderIndexerStemmerFr extends FinderIndexerStemmer
 		{
 			// Gets the letters from the current rule
 			$rule = $vars['rules'][$i];
-			$rule = preg_replace($vars['rule_pattern'], "\\1", $rule);
+			$rule = preg_replace($vars['rule_pattern'], "\\1", (string) $rule);
 
 			$ruleISO = mb_convert_encoding($rule, 'ISO-8859-1', 'UTF-8');
 			if (strncasecmp($ruleISO, $reversedInput, strlen($ruleISO)) == 0)
@@ -233,7 +233,7 @@ class FinderIndexerStemmerFr extends FinderIndexerStemmer
 			}
 
 			$rule = $vars['rules'][$rule_number];
-			preg_match($vars['rule_pattern'], $rule, $matches);
+			preg_match($vars['rule_pattern'], (string) $rule, $matches);
 
 			$reversed_stem = mb_convert_encoding($matches[4], 'ISO-8859-1', 'UTF-8') . substr($reversed_input, $matches[3]);
 

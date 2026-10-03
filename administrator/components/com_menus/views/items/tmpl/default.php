@@ -22,13 +22,13 @@ $userId     = $user->get('id');
 $listOrder  = $this->escape($this->state->get('list.ordering'));
 $listDirn   = $this->escape($this->state->get('list.direction'));
 $ordering   = ($listOrder == 'a.lft');
-$saveOrder  = ($listOrder == 'a.lft' && strtolower($listDirn) == 'asc');
+$saveOrder  = ($listOrder == 'a.lft' && strtolower((string) $listDirn) == 'asc');
 $menuType   = (string) $app->getUserState('com_menus.items.menutype', '', 'string');
 
 if ($saveOrder && $menuType)
 {
 	$saveOrderingUrl = 'index.php?option=com_menus&task=items.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'itemList', 'adminForm', strtolower($listDirn), $saveOrderingUrl, false, true);
+	JHtml::_('sortablelist.sortable', 'itemList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl, false, true);
 }
 
 $assoc   = JLanguageAssociations::isEnabled() && $this->state->get('filter.client_id') == 0;
@@ -209,7 +209,7 @@ if ($menuType == '')
 							</div>
 						</td>
 						<td class="small hidden-phone">
-							<?php echo $this->escape($item->menutype_title ?: ucwords($item->menutype)); ?>
+							<?php echo $this->escape($item->menutype_title ?: ucwords((string) $item->menutype)); ?>
 						</td>
 						<?php if ($this->state->get('filter.client_id') == 0) : ?>
 						<td class="center hidden-phone">

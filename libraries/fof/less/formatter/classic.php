@@ -65,7 +65,7 @@ class FOFLessFormatterClassic
 	 */
 	public function indentStr($n = 0)
 	{
-		return str_repeat($this->indentChar, max($this->indentLevel + $n, 0));
+		return str_repeat((string) $this->indentChar, max($this->indentLevel + $n, 0));
 	}
 
 	/**

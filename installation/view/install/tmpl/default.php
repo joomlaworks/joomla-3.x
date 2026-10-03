@@ -24,7 +24,7 @@ defined('_JEXEC') or die;
 				<?php if ($task === 'Email') : ?>
 					<?php echo JText::sprintf('INSTL_INSTALLING_EMAIL', '<span class="label">' . $this->options['admin_email'] . '</span>'); ?>
 				<?php else : ?>
-					<?php echo JText::_('INSTL_INSTALLING_' . strtoupper($task)); ?>
+					<?php echo JText::_('INSTL_INSTALLING_' . strtoupper((string) $task)); ?>
 				<?php endif; ?>
 				</td>
 				<td>

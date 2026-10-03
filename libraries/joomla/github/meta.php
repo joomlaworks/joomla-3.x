@@ -49,7 +49,7 @@ class JGithubMeta extends JGithubObject
 			foreach ($serviceIps as $serviceIp)
 			{
 				// The second level is each individual IP address, strip the mask here
-				$authorizedIps[$key][] = substr($serviceIp, 0, -3);
+				$authorizedIps[$key][] = substr((string) $serviceIp, 0, -3);
 			}
 		}
 

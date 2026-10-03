@@ -213,7 +213,7 @@ class FinderModelIndex extends JModelList
 			$orSearchSql = $db->quoteName('l.title') . ' LIKE ' . $search . ' OR ' . $db->quoteName('l.url') . ' LIKE ' . $search;
 
 			// Filter by indexdate only if $search doesn't contains non-ascii characters
-			if (!preg_match('/[^\x00-\x7F]/', $search))
+			if (!preg_match('/[^\x00-\x7F]/', (string) $search))
 			{
 				$orSearchSql .= ' OR ' . $query->castAsChar($db->quoteName('l.indexdate')) . ' LIKE ' . $search;
 			}

@@ -799,7 +799,7 @@ class JGoogleEmbedMaps extends JGoogleEmbed
 			throw new RuntimeException('Error code ' . $response->code . ' received geocoding address: ' . $response->body . '.');
 		}
 
-		$data = json_decode($response->body, true);
+		$data = json_decode((string) $response->body, true);
 
 		if (!$data)
 		{

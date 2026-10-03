@@ -78,7 +78,7 @@ class SearchModelSearch extends JModelLegacy
 		}
 
 		// Set the search parameters
-		$keyword  = urldecode($app->input->getString('searchword'));
+		$keyword  = urldecode((string) $app->input->getString('searchword'));
 		$match    = $app->input->get('searchphrase', $searchphrase, 'word');
 		$ordering = $app->input->get('ordering', $params->get('ordering', 'newest'), 'word');
 		$this->setSearch($keyword, $match, $ordering);

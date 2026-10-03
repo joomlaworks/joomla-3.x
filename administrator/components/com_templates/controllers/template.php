@@ -324,7 +324,7 @@ class TemplatesControllerTemplate extends JControllerLegacy
 		$app      = JFactory::getApplication();
 		$model    = $this->getModel();
 		$file     = (string) $app->input->get('file', '', 'cmd');
-		$override = (string) InputFilter::getInstance(array(), array(), 1, 1)->clean(base64_decode($app->input->get('folder', '', 'base64')), 'path');
+		$override = (string) InputFilter::getInstance(array(), array(), 1, 1)->clean(base64_decode((string) $app->input->get('folder', '', 'base64')), 'path');
 		$id       = (int) $app->input->get('id', 0, 'int');
 
 		// Access check.
@@ -448,7 +448,7 @@ class TemplatesControllerTemplate extends JControllerLegacy
 		$id       = (int) $app->input->get('id', 0, 'int');
 		$file     = (string) $app->input->get('file', '', 'cmd');
 		$name     = (string) $app->input->get('name', '', 'cmd');
-		$location = (string) InputFilter::getinstance(array(), array(), 1, 1)->clean(base64_decode($app->input->get('address', '', 'base64')), 'path');
+		$location = (string) InputFilter::getinstance(array(), array(), 1, 1)->clean(base64_decode((string) $app->input->get('address', '', 'base64')), 'path');
 		$type     = (string) $app->input->get('type', '', 'cmd');
 
 		// Access check.
@@ -503,7 +503,7 @@ class TemplatesControllerTemplate extends JControllerLegacy
 		$id       = (int) $app->input->get('id', 0, 'int');
 		$file     = (string) $app->input->get('file', '', 'cmd');
 		$upload   = $app->input->files->get('files');
-		$location = (string) InputFilter::getinstance(array(), array(), 1, 1)->clean(base64_decode($app->input->get('address', '', 'base64')), 'path');
+		$location = (string) InputFilter::getinstance(array(), array(), 1, 1)->clean(base64_decode((string) $app->input->get('address', '', 'base64')), 'path');
 
 		// Access check.
 		if (!$this->allowEdit())
@@ -516,7 +516,7 @@ class TemplatesControllerTemplate extends JControllerLegacy
 		if ($return = $model->uploadFile($upload, $location))
 		{
 			$app->enqueueMessage(JText::_('COM_TEMPLATES_FILE_UPLOAD_SUCCESS') . $upload['name']);
-			$redirect = base64_encode($return);
+			$redirect = base64_encode((string) $return);
 			$url = 'index.php?option=com_templates&view=template&id=' . $id . '&file=' . $redirect;
 			$this->setRedirect(JRoute::_($url, false));
 		}
@@ -545,7 +545,7 @@ class TemplatesControllerTemplate extends JControllerLegacy
 		$id       = (int) $app->input->get('id', 0, 'int');
 		$file     = (string) $app->input->get('file', '', 'cmd');
 		$name     = $app->input->get('name');
-		$location = (string) InputFilter::getinstance(array(), array(), 1, 1)->clean(base64_decode($app->input->get('address', '', 'base64')), 'path');
+		$location = (string) InputFilter::getinstance(array(), array(), 1, 1)->clean(base64_decode((string) $app->input->get('address', '', 'base64')), 'path');
 
 		// Access check.
 		if (!$this->allowEdit())
@@ -555,7 +555,7 @@ class TemplatesControllerTemplate extends JControllerLegacy
 			return false;
 		}
 
-		if (!preg_match('/^[a-zA-Z0-9-_.]+$/', $name))
+		if (!preg_match('/^[a-zA-Z0-9-_.]+$/', (string) $name))
 		{
 			$app->enqueueMessage(JText::_('COM_TEMPLATES_INVALID_FOLDER_NAME'), 'error');
 			$url = 'index.php?option=com_templates&view=template&id=' . $id . '&file=' . $file;
@@ -591,7 +591,7 @@ class TemplatesControllerTemplate extends JControllerLegacy
 		$model    = $this->getModel();
 		$id       = (int) $app->input->get('id', 0, 'int');
 		$file     = (string) $app->input->get('file', '', 'cmd');
-		$location = (string) InputFilter::getinstance(array(), array(), 1, 1)->clean(base64_decode($app->input->get('address', '', 'base64')), 'path');
+		$location = (string) InputFilter::getinstance(array(), array(), 1, 1)->clean(base64_decode((string) $app->input->get('address', '', 'base64')), 'path');
 
 		// Access check.
 		if (!$this->allowEdit())
@@ -659,7 +659,7 @@ class TemplatesControllerTemplate extends JControllerLegacy
 			$url = 'index.php?option=com_templates&view=template&id=' . $id . '&file=' . $file;
 			$this->setRedirect(JRoute::_($url, false));
 		}
-		elseif (!preg_match('/^[a-zA-Z0-9-_]+$/', $newName))
+		elseif (!preg_match('/^[a-zA-Z0-9-_]+$/', (string) $newName))
 		{
 			$app->enqueueMessage(JText::_('COM_TEMPLATES_INVALID_FILE_NAME'), 'error');
 			$url = 'index.php?option=com_templates&view=template&id=' . $id . '&file=' . $file;
@@ -785,7 +785,7 @@ class TemplatesControllerTemplate extends JControllerLegacy
 		$id       = (int) $app->input->get('id', 0, 'int');
 		$file     = (string) $app->input->get('file', '', 'cmd');
 		$newName  = $app->input->get('new_name');
-		$location = (string) InputFilter::getinstance(array(), array(), 1, 1)->clean(base64_decode($app->input->get('address', '', 'base64')), 'path');
+		$location = (string) InputFilter::getinstance(array(), array(), 1, 1)->clean(base64_decode((string) $app->input->get('address', '', 'base64')), 'path');
 		$model    = $this->getModel();
 
 		// Access check.
@@ -796,7 +796,7 @@ class TemplatesControllerTemplate extends JControllerLegacy
 			return false;
 		}
 
-		if (!preg_match('/^[a-zA-Z0-9-_]+$/', $newName))
+		if (!preg_match('/^[a-zA-Z0-9-_]+$/', (string) $newName))
 		{
 			$app->enqueueMessage(JText::_('COM_TEMPLATES_INVALID_FILE_NAME'), 'error');
 			$url = 'index.php?option=com_templates&view=template&id=' . $id . '&file=' . $file;

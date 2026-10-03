@@ -129,7 +129,7 @@ abstract class JOAuth1Client
 			$this->token = array('key' => $session->get('key', null, 'oauth_token'), 'secret' => $session->get('secret', null, 'oauth_token'));
 
 			// Verify the returned request token.
-			if (strcmp($this->token['key'], $this->input->get('oauth_token')) !== 0)
+			if (strcmp($this->token['key'], (string) $this->input->get('oauth_token')) !== 0)
 			{
 				throw new DomainException('Bad session!');
 			}
@@ -173,7 +173,7 @@ abstract class JOAuth1Client
 		// Make an OAuth request for the Request Token.
 		$response = $this->oauthRequest($this->getOption('requestTokenURL'), 'POST', $parameters);
 
-		parse_str($response->body, $params);
+		parse_str((string) $response->body, $params);
 
 		if (strcmp($this->version, '1.0a') === 0 && strcmp($params['oauth_callback_confirmed'], 'true') !== 0)
 		{
@@ -203,7 +203,7 @@ abstract class JOAuth1Client
 		if ($this->getOption('scope'))
 		{
 			$scope = is_array($this->getOption('scope')) ? implode(' ', $this->getOption('scope')) : $this->getOption('scope');
-			$url .= '&scope=' . urlencode($scope);
+			$url .= '&scope=' . urlencode((string) $scope);
 		}
 
 		if ($this->getOption('sendheaders'))
@@ -234,7 +234,7 @@ abstract class JOAuth1Client
 		// Make an OAuth request for the Access Token.
 		$response = $this->oauthRequest($this->getOption('accessTokenURL'), 'POST', $parameters);
 
-		parse_str($response->body, $params);
+		parse_str((string) $response->body, $params);
 
 		// Save the access token.
 		$this->token = array('key' => $params['oauth_token'], 'secret' => $params['oauth_token_secret']);
@@ -385,7 +385,7 @@ abstract class JOAuth1Client
 			}
 			else
 			{
-				if (strpos($value, ' ') !== false)
+				if (strpos((string) $value, ' ') !== false)
 				{
 					$value = $this->safeEncode($value);
 				}

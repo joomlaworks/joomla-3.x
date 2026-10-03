@@ -55,7 +55,7 @@ class JFormFieldDatabaseConnection extends JFormFieldList
 
 		if (!empty($supported))
 		{
-			$supported = explode(',', $supported);
+			$supported = explode(',', (string) $supported);
 
 			foreach ($supported as $support)
 			{
@@ -69,7 +69,7 @@ class JFormFieldDatabaseConnection extends JFormFieldList
 		{
 			foreach ($available as $support)
 			{
-				$options[$support] = JText::_(ucfirst($support));
+				$options[$support] = JText::_(ucfirst((string) $support));
 			}
 		}
 

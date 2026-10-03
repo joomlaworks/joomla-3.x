@@ -385,7 +385,7 @@ class CMSApplication extends WebApplication
 		if (empty(static::$instances[$name]))
 		{
 			// Create a CMSApplication object.
-			$classname = '\JApplication' . ucfirst($name);
+			$classname = '\JApplication' . ucfirst((string) $name);
 
 			if (!class_exists($classname))
 			{

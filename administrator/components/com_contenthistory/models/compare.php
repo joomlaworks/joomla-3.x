@@ -49,32 +49,32 @@ class ContenthistoryModelCompare extends JModelItem
 
 		if ($table1->load($id1) && $table2->load($id2))
 		{
-			// Get the first history record's content type record so we can check ACL
-			/** @var JTableContenttype $contentTypeTable */
-			$contentTypeTable = JTable::getInstance('Contenttype');
-			$ucmTypeId        = $table1->ucm_type_id;
-
-			if (!$contentTypeTable->load($ucmTypeId))
-			{
-				$this->setError(\JText::_('COM_CONTENTHISTORY_ERROR_FAILED_LOADING_CONTENT_TYPE'));
-
-				// Assume a failure to load the content type means broken data, abort mission
-				return false;
-			}
-
 			$user = JFactory::getUser();
 
-			// Access check
-			if ($user->authorise('core.edit', $contentTypeTable->type_alias . '.' . (int) $table1->ucm_item_id) || $this->canEdit($table1))
+			// Access check on BOTH records, otherwise a version of an item the user can't edit could be compared against one they can
+			foreach (array($table1, $table2) as $table)
 			{
-				$return = true;
-			}
-			else
-			{
-				$this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
+				// Get the history record's content type record so we can check ACL
+				/** @var JTableContenttype $contentTypeTable */
+				$contentTypeTable = JTable::getInstance('Contenttype');
 
-				return false;
+				if (!$contentTypeTable->load($table->ucm_type_id))
+				{
+					$this->setError(\JText::_('COM_CONTENTHISTORY_ERROR_FAILED_LOADING_CONTENT_TYPE'));
+
+					// Assume a failure to load the content type means broken data, abort mission
+					return false;
+				}
+
+				if (!$user->authorise('core.edit', $contentTypeTable->type_alias . '.' . (int) $table->ucm_item_id) && !$this->canEdit($table))
+				{
+					$this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
+
+					return false;
+				}
 			}
+
+			$return = true;
 
 			// All's well, process the records
 			if ($return == true)

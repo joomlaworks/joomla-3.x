@@ -1724,11 +1724,11 @@ class Stream
 			// Get rid of JPATH_ROOT (legacy compat)
 			if (!$relative && $prefixToUse)
 			{
-				$pos = strpos($filename, JPATH_ROOT);
+				$pos = strpos($filename, (string) JPATH_ROOT);
 
 				if ($pos !== false)
 				{
-					$filename = substr_replace($filename, '', $pos, \strlen(JPATH_ROOT));
+					$filename = substr_replace($filename, '', $pos, \strlen((string) JPATH_ROOT));
 				}
 			}
 

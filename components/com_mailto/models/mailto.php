@@ -55,7 +55,7 @@ class MailtoModelMailto extends JModelForm
 		$app  = JFactory::getApplication();
 		$data = $app->getUserState('mailto.mailto.form.data', array());
 
-		$data['link'] = urldecode($app->input->get('link', '', 'BASE64'));
+		$data['link'] = urldecode((string) $app->input->get('link', '', 'BASE64'));
 
 		if ($data['link'] == '')
 		{

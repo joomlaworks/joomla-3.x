@@ -143,7 +143,7 @@ class FinderViewSearch extends JViewLegacy
 		$this->pagination = &$pagination;
 
 		// Check for a double quote in the query string.
-		if (strpos($this->query->input, '"'))
+		if (strpos((string) $this->query->input, '"'))
 		{
 			// Get the application router.
 			$router = &$app::getRouter();
@@ -164,7 +164,7 @@ class FinderViewSearch extends JViewLegacy
 		$this->explained = JHtml::_('query.explained', $query);
 
 		// Escape strings for HTML output
-		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx', ''));
+		$this->pageclass_sfx = htmlspecialchars((string) $params->get('pageclass_sfx', ''));
 
 		// Check for layout override only if this is not the active menu item
 		// If it is the active menu item, then the view and category id will match
@@ -232,7 +232,7 @@ class FinderViewSearch extends JViewLegacy
 	protected function getLayoutFile($layout = null)
 	{
 		// Create and sanitize the file name.
-		$file = $this->_layout . '_' . preg_replace('/[^A-Z0-9_\.-]/i', '', $layout);
+		$file = $this->_layout . '_' . preg_replace('/[^A-Z0-9_\.-]/i', '', (string) $layout);
 
 		// Check if the file exists.
 		jimport('joomla.filesystem.path');
@@ -295,7 +295,7 @@ class FinderViewSearch extends JViewLegacy
 		// Configure the document meta-description.
 		if (!empty($this->explained))
 		{
-			$explained = $this->escape(html_entity_decode(strip_tags($this->explained), ENT_QUOTES, 'UTF-8'));
+			$explained = $this->escape(html_entity_decode(strip_tags((string) $this->explained), ENT_QUOTES, 'UTF-8'));
 			$this->document->setDescription($explained);
 		}
 		elseif ($this->params->get('menu-meta_description'))

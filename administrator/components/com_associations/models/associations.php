@@ -152,7 +152,7 @@ class AssociationsModelAssociations extends JModelList
 	{
 		$type         = null;
 
-		list($extensionName, $typeName) = explode('.', $this->state->get('itemtype'));
+		list($extensionName, $typeName) = explode('.', (string) $this->state->get('itemtype'));
 
 		$extension = AssociationsHelper::getSupportedExtension($extensionName);
 		$types     = $extension->get('types');

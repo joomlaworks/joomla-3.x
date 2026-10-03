@@ -106,7 +106,7 @@ class FOFFormFieldAccesslevel extends JFormFieldAccessLevel implements FOFFormFi
 		}
 
 		return '<span id="' . $this->id . '" ' . $class . '>' .
-			htmlspecialchars(FOFFormFieldList::getOptionName($options, $this->value), ENT_COMPAT, 'UTF-8') .
+			htmlspecialchars((string) FOFFormFieldList::getOptionName($options, $this->value), ENT_COMPAT, 'UTF-8') .
 			'</span>';
 	}
 
@@ -150,7 +150,7 @@ class FOFFormFieldAccesslevel extends JFormFieldAccessLevel implements FOFFormFi
 		}
 
 		return '<span class="' . $this->id . ' ' . $class . '">' .
-			htmlspecialchars(FOFFormFieldList::getOptionName($options, $this->value), ENT_COMPAT, 'UTF-8') .
+			htmlspecialchars((string) FOFFormFieldList::getOptionName($options, $this->value), ENT_COMPAT, 'UTF-8') .
 			'</span>';
 	}
 }

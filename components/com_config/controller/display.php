@@ -33,6 +33,15 @@ class ConfigControllerDisplay extends JControllerBase
 	public $prefix = 'Config';
 
 	/**
+	 * Task options, set externally by ConfigControllerHelper::parseController(). Declared here
+	 * (rather than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
+	 *
+	 * @var    array
+	 * @since  3.16.0
+	 */
+	public $options;
+
+	/**
 	 * Execute the controller.
 	 *
 	 * @return  mixed  A rendered view or true
@@ -70,7 +79,7 @@ class ConfigControllerDisplay extends JControllerBase
 			$paths->insert(JPATH_BASE . '/components/' . $componentFolder . '/view/' . $viewName . '/tmpl', 1);
 		}
 
-		$viewClass  = $this->prefix . 'View' . ucfirst($viewName) . ucfirst($viewFormat);
+		$viewClass  = $this->prefix . 'View' . ucfirst($viewName) . ucfirst((string) $viewFormat);
 		$modelClass = $this->prefix . 'Model' . ucfirst($viewName);
 
 		if (class_exists($viewClass))
@@ -79,7 +88,7 @@ class ConfigControllerDisplay extends JControllerBase
 			$component = $model->getState()->get('component.option');
 
 			// Make sure com_joomlaupdate and com_privacy can only be accessed by SuperUser
-			if (in_array(strtolower($component), array('com_joomlaupdate', 'com_privacy'))
+			if (in_array(strtolower($component ?? ''), array('com_joomlaupdate', 'com_privacy'))
 				&& !JFactory::getUser()->authorise('core.admin'))
 			{
 				$this->app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');

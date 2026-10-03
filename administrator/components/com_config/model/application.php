@@ -666,7 +666,7 @@ class ConfigModelApplication extends ConfigModelForm
 			else
 			{
 				// Decode the rule settings.
-				$temp = json_decode($asset->rules, true);
+				$temp = json_decode((string) $asset->rules, true);
 
 				// Check if a new value is to be set.
 				if (isset($permission['value']))
@@ -932,11 +932,11 @@ class ConfigModelApplication extends ConfigModelForm
 
 		// Prepare email and send try to send it
 		$mailSubject = JText::sprintf('COM_CONFIG_SENDMAIL_SUBJECT', $app->get('sitename'));
-		$mailBody    = JText::sprintf('COM_CONFIG_SENDMAIL_BODY', JText::_('COM_CONFIG_SENDMAIL_METHOD_' . strtoupper($mail->Mailer)));
+		$mailBody    = JText::sprintf('COM_CONFIG_SENDMAIL_BODY', JText::_('COM_CONFIG_SENDMAIL_METHOD_' . strtoupper((string) $mail->Mailer)));
 
 		if ($mail->sendMail($app->get('mailfrom'), $app->get('fromname'), $app->get('mailfrom'), $mailSubject, $mailBody) === true)
 		{
-			$methodName = JText::_('COM_CONFIG_SENDMAIL_METHOD_' . strtoupper($mail->Mailer));
+			$methodName = JText::_('COM_CONFIG_SENDMAIL_METHOD_' . strtoupper((string) $mail->Mailer));
 
 			// If JMail send the mail using PHP Mail as fallback.
 			if ($mail->Mailer != $app->get('mailer'))

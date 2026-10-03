@@ -511,7 +511,7 @@ class ListModel extends BaseDatabaseModel
 						switch ($name)
 						{
 							case 'fullordering':
-								$orderingParts = explode(' ', $value);
+								$orderingParts = explode(' ', (string) $value);
 
 								if (count($orderingParts) >= 2)
 								{
@@ -577,7 +577,7 @@ class ListModel extends BaseDatabaseModel
 								break;
 
 							case 'select':
-								$explodedValue = explode(',', $value);
+								$explodedValue = explode(',', (string) $value);
 
 								foreach ($explodedValue as &$field)
 								{
@@ -633,7 +633,7 @@ class ListModel extends BaseDatabaseModel
 			// Support old direction field
 			$oldDirection = $app->input->get('filter_order_Dir');
 
-			if (!empty($oldDirection) && in_array(strtoupper($oldDirection), array('ASC', 'DESC', '')))
+			if (!empty($oldDirection) && in_array(strtoupper((string) $oldDirection), array('ASC', 'DESC', '')))
 			{
 				$this->setState('list.direction', $oldDirection);
 			}

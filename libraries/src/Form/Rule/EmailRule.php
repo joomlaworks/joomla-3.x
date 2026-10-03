@@ -81,7 +81,7 @@ class EmailRule extends FormRule
 		}
 		else
 		{
-			$values = explode(',', $value);
+			$values = explode(',', (string) $value);
 
 			foreach ($values as $value)
 			{
@@ -126,7 +126,7 @@ class EmailRule extends FormRule
 
 				foreach ($domains as $domain)
 				{
-					$domainParts = array_reverse(explode('.', $domain->name));
+					$domainParts = array_reverse(explode('.', (string) $domain->name));
 					$status      = 0;
 
 					// Don't run if the email has less segments than the rule.

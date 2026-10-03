@@ -80,7 +80,7 @@ function utf8_specials_pattern() {
     0xf8f1, 0xf8f2, 0xf8f3, 0xf8f4, 0xf8f5, 0xf8f6, 0xf8f7, 0xf8f8, 0xf8f9, 0xf8fa,
     0xf8fb, 0xf8fc, 0xf8fd, 0xf8fe, 0xfe7c, 0xfe7d,
             );
-        $pattern = preg_quote(utf8_from_unicode($UTF8_SPECIAL_CHARS), '/');
+        $pattern = preg_quote((string) utf8_from_unicode($UTF8_SPECIAL_CHARS), '/');
         $pattern = '/[\x00-\x19'.$pattern.']/u';
     }
 
@@ -100,7 +100,7 @@ function utf8_specials_pattern() {
 * @see utf8_specials_pattern
 */
 function utf8_is_word_chars($str) {
-    return !(bool)preg_match(utf8_specials_pattern(),$str);
+    return !(bool)preg_match(utf8_specials_pattern(),(string) $str);
 }
 
 //--------------------------------------------------------------------
@@ -120,7 +120,7 @@ function utf8_is_word_chars($str) {
 * @see utf8_specials_pattern
 */
 function utf8_strip_specials($string, $repl=''){
-    return preg_replace(utf8_specials_pattern(), $repl, $string);
+    return preg_replace(utf8_specials_pattern(), (string) $repl, $string);
 }
 
 

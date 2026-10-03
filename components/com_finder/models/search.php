@@ -777,7 +777,7 @@ class FinderModelSearch extends JModelList
 				{
 					if (!isset($sorted[$results[$i]->link_id]))
 					{
-						$sorted[$results[$i]->link_id] = strtotime($results[$i]->ordering);
+						$sorted[$results[$i]->link_id] = strtotime((string) $results[$i]->ordering);
 					}
 				}
 			}

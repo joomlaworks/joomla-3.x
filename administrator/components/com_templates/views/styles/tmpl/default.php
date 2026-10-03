@@ -130,7 +130,7 @@ $colSpan = $clientId === 1 ? 5 : 6;
 						<td class="hidden-phone hidden-tablet">
 							<label for="cb<?php echo $i; ?>" class="small">
 								<a href="<?php echo JRoute::_('index.php?option=com_templates&view=template&id=' . (int) $item->e_id); ?>  ">
-									<?php echo ucfirst($this->escape($item->template)); ?>
+									<?php echo ucfirst((string) $this->escape($item->template)); ?>
 								</a>
 							</label>
 						</td>

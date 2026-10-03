@@ -173,7 +173,7 @@ class MediaControllerFolder extends JControllerLegacy
 
 		$this->setRedirect('index.php?option=com_media&folder=' . $parent . '&tmpl=' . $this->input->get('tmpl', 'index'));
 
-		if (strlen($folder) > 0)
+		if (strlen((string) $folder) > 0)
 		{
 			if (!$user->authorise('core.create', 'com_media'))
 			{

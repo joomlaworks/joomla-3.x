@@ -103,7 +103,7 @@ class ContentHistory extends Table
 	 */
 	public function getSha1($jsonData, ContentType $typeTable)
 	{
-		$object = is_object($jsonData) ? $jsonData : json_decode($jsonData);
+		$object = is_object($jsonData) ? $jsonData : json_decode((string) $jsonData);
 
 		if (isset($typeTable->content_history_options) && is_object(json_decode($typeTable->content_history_options)))
 		{

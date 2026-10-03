@@ -186,7 +186,7 @@ class Editor extends \JObject
 
 		foreach ($methods as $method)
 		{
-			$method = strtolower($method);
+			$method = strtolower((string) $method);
 
 			if (!isset($this->_methods[$method]))
 			{
@@ -327,7 +327,7 @@ class Editor extends \JObject
 
 		foreach ($results as $result)
 		{
-			if (trim($result))
+			if (trim((string) $result))
 			{
 				$return .= $result;
 			}
@@ -365,7 +365,7 @@ class Editor extends \JObject
 
 		foreach ($results as $result)
 		{
-			if (trim($result))
+			if (trim((string) $result))
 			{
 				$return .= $result;
 			}
@@ -397,7 +397,7 @@ class Editor extends \JObject
 
 		foreach ($results as $result)
 		{
-			if (trim($result))
+			if (trim((string) $result))
 			{
 				$return .= $result;
 			}
@@ -431,7 +431,7 @@ class Editor extends \JObject
 
 		foreach ($results as $result)
 		{
-			if (trim($result))
+			if (trim((string) $result))
 			{
 				$return .= $result;
 			}

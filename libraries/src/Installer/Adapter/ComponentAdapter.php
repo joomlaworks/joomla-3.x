@@ -845,7 +845,7 @@ class ComponentAdapter extends InstallerAdapter
 		}
 
 		// Now we need to delete the installation directories. This is the final step in uninstalling the component.
-		if (trim($this->extension->element))
+		if (trim((string) $this->extension->element))
 		{
 			// Delete the component site directory
 			if (is_dir($this->parent->getPath('extension_site')))

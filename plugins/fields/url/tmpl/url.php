@@ -23,7 +23,7 @@ if (!JUri::isInternal($value))
 }
 
 echo sprintf('<a href="%s"%s>%s</a>',
-	htmlspecialchars($value),
+	htmlspecialchars((string) $value),
 	$attributes,
-	htmlspecialchars($value)
+	htmlspecialchars((string) $value)
 );

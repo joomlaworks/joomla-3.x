@@ -80,7 +80,7 @@ class AssociationsViewAssociations extends JViewLegacy
 		{
 			$type = null;
 
-			list($extensionName, $typeName) = explode('.', $this->state->get('itemtype'));
+			list($extensionName, $typeName) = explode('.', (string) $this->state->get('itemtype'));
 
 			$extension = AssociationsHelper::getSupportedExtension($extensionName);
 

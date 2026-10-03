@@ -330,7 +330,7 @@ class PlgSystemStats extends JPlugin
 			'db_type'     => $this->db->name,
 			'db_version'  => $this->db->getVersion(),
 			'cms_version' => JVERSION,
-			'server_os'   => php_uname('s') . ' ' . php_uname('r')
+			'server_os'   => function_exists('php_uname') ? php_uname('s') . ' ' . php_uname('r') : (getenv('OSTYPE') ?: PHP_OS)
 		);
 
 		// Check if we have a MariaDB version string and extract the proper version from it
@@ -419,7 +419,7 @@ class PlgSystemStats extends JPlugin
 	 */
 	private function isAjaxRequest()
 	{
-		return strtolower($this->app->input->server->get('HTTP_X_REQUESTED_WITH', '')) === 'xmlhttprequest';
+		return strtolower((string) $this->app->input->server->get('HTTP_X_REQUESTED_WITH', '')) === 'xmlhttprequest';
 	}
 
 	/**
@@ -534,7 +534,7 @@ class PlgSystemStats extends JPlugin
 
 		if ($response->code !== 200)
 		{
-			$data = json_decode($response->body);
+			$data = json_decode((string) $response->body);
 
 			throw new RuntimeException('Could not send site statistics to remote server: ' . $data->message, $response->code);
 		}

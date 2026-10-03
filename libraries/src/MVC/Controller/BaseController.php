@@ -257,10 +257,10 @@ class BaseController extends \JObject
 		}
 
 		// Check for a controller.task command.
-		if (strpos($command, '.') !== false)
+		if (strpos((string) $command, '.') !== false)
 		{
 			// Explode the controller.task command.
-			list ($type, $task) = explode('.', $command);
+			list ($type, $task) = explode('.', (string) $command);
 
 			// Define the controller filename and path.
 			$file = self::createFileName('controller', array('name' => $type, 'format' => $format));
@@ -403,7 +403,7 @@ class BaseController extends \JObject
 			}
 			else
 			{
-				$this->model_prefix = ucfirst($this->name) . 'Model';
+				$this->model_prefix = ucfirst((string) $this->name) . 'Model';
 			}
 		}
 

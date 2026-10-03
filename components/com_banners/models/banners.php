@@ -158,7 +158,7 @@ class BannersModelBanners extends JModelList
 						. ' AND cl.metakey_prefix=SUBSTRING(' . $db->quote($keyword) . ',1,LENGTH(cl.metakey_prefix)) '
 						. ' OR a.own_prefix=0 '
 						. ' AND cl.own_prefix=0 '
-						. ' AND ' . ($prefix == substr($keyword, 0, strlen($prefix)) ? '0 = 0' : '0 != 0');
+						. ' AND ' . ($prefix == substr($keyword, 0, strlen((string) $prefix)) ? '0 = 0' : '0 != 0');
 
 					$regexp = $db->quote("[[:<:]]" . $db->escape($keyword) . "[[:>:]]");
 					$condition2 = "a.metakey " . $query->regexp($regexp) . " ";

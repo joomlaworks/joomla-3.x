@@ -159,7 +159,7 @@ class LdapClient
 
 			foreach (array_keys($vars) as $var)
 			{
-				if (substr($var, 0, 1) != '_')
+				if (substr((string) $var, 0, 1) != '_')
 				{
 					$param = $configObj->get($var);
 
@@ -785,7 +785,7 @@ class LdapClient
 			for ($i = 0; $i < $len; $i++)
 			{
 				$byte = substr($networkaddress, $i, 1);
-				$addr .= \ord($byte);
+				$addr .= \ord($byte[0]);
 
 				if (($addrtype == 1) || ($addrtype == 8) || ($addrtype = 9))
 				{

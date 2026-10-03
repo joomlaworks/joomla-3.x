@@ -42,10 +42,10 @@ class ParagonIE_Sodium_Core32_Curve25519_Ge_P1p1
      * @throws TypeError
      */
     public function __construct(
-        ParagonIE_Sodium_Core32_Curve25519_Fe $x = null,
-        ParagonIE_Sodium_Core32_Curve25519_Fe $y = null,
-        ParagonIE_Sodium_Core32_Curve25519_Fe $z = null,
-        ParagonIE_Sodium_Core32_Curve25519_Fe $t = null
+        ?ParagonIE_Sodium_Core32_Curve25519_Fe $x = null,
+        ?ParagonIE_Sodium_Core32_Curve25519_Fe $y = null,
+        ?ParagonIE_Sodium_Core32_Curve25519_Fe $z = null,
+        ?ParagonIE_Sodium_Core32_Curve25519_Fe $t = null
     ) {
         if ($x === null) {
             $x = ParagonIE_Sodium_Core32_Curve25519::fe_0();

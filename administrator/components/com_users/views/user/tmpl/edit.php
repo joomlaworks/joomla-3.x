@@ -115,7 +115,7 @@ $fieldsets = $this->form->getFieldsets();
 			<?php else : ?>
 			<?php foreach ($this->otpConfig->otep as $otep) : ?>
 			<span class="span3">
-				<?php echo substr($otep, 0, 4); ?>-<?php echo substr($otep, 4, 4); ?>-<?php echo substr($otep, 8, 4); ?>-<?php echo substr($otep, 12, 4); ?>
+				<?php echo substr((string) $otep, 0, 4); ?>-<?php echo substr((string) $otep, 4, 4); ?>-<?php echo substr((string) $otep, 8, 4); ?>-<?php echo substr((string) $otep, 12, 4); ?>
 			</span>
 			<?php endforeach; ?>
 			<div class="clearfix"></div>

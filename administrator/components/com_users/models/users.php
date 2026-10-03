@@ -90,7 +90,7 @@ class UsersModelUsers extends JModelList
 			'filter.lastvisitrange', $this->getUserStateFromRequest($this->context . '.filter.lastvisitrange', 'filter_lastvisitrange', '', 'cmd')
 		);
 
-		$groups = json_decode(base64_decode($app->input->get('groups', '', 'BASE64')));
+		$groups = json_decode(base64_decode((string) $app->input->get('groups', '', 'BASE64')));
 
 		if (isset($groups))
 		{
@@ -99,7 +99,7 @@ class UsersModelUsers extends JModelList
 
 		$this->setState('filter.groups', $groups);
 
-		$excluded = json_decode(base64_decode($app->input->get('excluded', '', 'BASE64')));
+		$excluded = json_decode(base64_decode((string) $app->input->get('excluded', '', 'BASE64')));
 
 		if (isset($excluded))
 		{

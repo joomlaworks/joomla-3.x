@@ -554,9 +554,9 @@ class Zip implements ExtractableInterface
 		$fr .= $hexdtime;
 
 		// "Local file header" segment.
-		$uncLen = \strlen($data);
-		$crc    = crc32($data);
-		$zdata  = gzcompress($data);
+		$uncLen = \strlen((string) $data);
+		$crc    = crc32((string) $data);
+		$zdata  = gzcompress((string) $data);
 		$zdata  = substr(substr($zdata, 0, -4), 2);
 		$cLen   = \strlen($zdata);
 

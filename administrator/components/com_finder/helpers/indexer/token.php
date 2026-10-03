@@ -149,7 +149,7 @@ class FinderIndexerToken
 			// Populate the token instance.
 			$this->term = $term;
 			$this->stem = FinderIndexerHelper::stem($this->term, $lang);
-			$this->numeric = (is_numeric($this->term) || (bool) preg_match('#^[0-9,.\-\+]+$#', $this->term));
+			$this->numeric = (is_numeric($this->term) || (bool) preg_match('#^[0-9,.\-\+]+$#', (string) $this->term));
 			$this->common = $this->numeric ? false : FinderIndexerHelper::isCommon($this->term, $lang);
 			$this->phrase = false;
 			$this->length = StringHelper::strlen($this->term);

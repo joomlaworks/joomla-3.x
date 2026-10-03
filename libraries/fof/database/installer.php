@@ -99,7 +99,7 @@ class FOFDatabaseInstaller
 
 			if (!is_array($files))
 			{
-				$files = explode(',', $files);
+				$files = explode(',', (string) $files);
 			}
 
 			$this->xmlFiles = $files;
@@ -386,7 +386,7 @@ class FOFDatabaseInstaller
 		foreach ($this->xmlFiles as $baseName)
 		{
 			// Remove any accidental whitespace
-			$baseName = trim($baseName);
+			$baseName = trim((string) $baseName);
 
 			// Get the full path to the file
 			$fileName = $this->xmlDirectory . '/' . $baseName . '.xml';
@@ -448,9 +448,9 @@ class FOFDatabaseInstaller
 
 				if (
 					// e.g. $driverType = 'mysqlistupid', $thisDriverType = 'mysqli' => driver matched
-					strpos($driverType, $thisDriverType) === 0
+					strpos((string) $driverType, $thisDriverType) === 0
 					// e.g. $driverType = 'stupidmysqli', $thisDriverType = 'mysqli' => driver matched
-					|| (substr($driverType, -strlen($thisDriverType)) == $thisDriverType)
+					|| (substr((string) $driverType, -strlen($thisDriverType)) == $thisDriverType)
 				)
 				{
 					return $xml;
@@ -529,14 +529,14 @@ class FOFDatabaseInstaller
 
 				$condition = false;
 
-				if (array_key_exists($value, $tableColumns))
+				if (array_key_exists((string) $value, $tableColumns))
 				{
 					$coltype = $attributes->coltype ? $attributes->coltype : null;
 
 					if (!empty($coltype))
 					{
 						$coltype = strtolower($coltype);
-						$currentType = strtolower($tableColumns[$value]->Type);
+						$currentType = strtolower((string) $tableColumns[$value]->Type);
 
 						$condition = ($coltype == $currentType);
 					}
@@ -963,7 +963,7 @@ class FOFDatabaseInstaller
 		if (is_null($isMySQL))
 		{
 			$driverType = $this->db->name;
-			$driverType = strtolower($driverType);
+			$driverType = strtolower((string) $driverType);
 			$isMySQL = true;
 
 			if (

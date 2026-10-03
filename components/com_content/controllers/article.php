@@ -330,13 +330,13 @@ class ContentControllerArticle extends JControllerForm
 	{
 		$return = $this->input->get('return', null, 'base64');
 
-		if (empty($return) || !JUri::isInternal(base64_decode($return)))
+		if (empty($return) || !JUri::isInternal(base64_decode((string) $return)))
 		{
 			return JUri::base();
 		}
 		else
 		{
-			return base64_decode($return);
+			return base64_decode((string) $return);
 		}
 	}
 

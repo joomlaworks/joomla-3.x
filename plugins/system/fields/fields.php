@@ -146,7 +146,7 @@ class PlgSystemFields extends JPlugin
 			}
 
 			// If no value set (empty) remove value from database
-			if (is_array($value) ? !count($value) : !strlen($value))
+			if (is_array($value) ? !count($value) : !strlen((string) $value))
 			{
 				$value = null;
 			}
@@ -514,7 +514,7 @@ class PlgSystemFields extends JPlugin
 	 */
 	public function onPrepareFinderContent($item)
 	{
-		$section = strtolower($item->layout);
+		$section = strtolower((string) $item->layout);
 		$tax     = $item->getTaxonomy('Type');
 
 		if ($tax)
@@ -522,9 +522,9 @@ class PlgSystemFields extends JPlugin
 			foreach ($tax as $context => $value)
 			{
 				// This is only a guess, needs to be improved
-				$component = strtolower($context);
+				$component = strtolower((string) $context);
 
-				if (strpos($context, 'com_') !== 0)
+				if (strpos((string) $context, 'com_') !== 0)
 				{
 					$component = 'com_' . $component;
 				}

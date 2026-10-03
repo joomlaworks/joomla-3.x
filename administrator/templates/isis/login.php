@@ -50,13 +50,13 @@ $view     = $app->input->getCmd('view', '');
 $layout   = $app->input->getCmd('layout', '');
 $task     = $app->input->getCmd('task', '');
 $itemid   = $app->input->getCmd('Itemid', '');
-$sitename = htmlspecialchars($app->get('sitename', ''), ENT_QUOTES, 'UTF-8');
+$sitename = htmlspecialchars((string) $app->get('sitename', ''), ENT_QUOTES, 'UTF-8');
 
 function colorIsLight($color)
 {
-	$r = hexdec(substr($color, 1, 2));
-	$g = hexdec(substr($color, 3, 2));
-	$b = hexdec(substr($color, 5, 2));
+	$r = hexdec(substr((string) $color, 1, 2));
+	$g = hexdec(substr((string) $color, 3, 2));
+	$b = hexdec(substr((string) $color, 5, 2));
 
 	$yiq = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
 
@@ -113,7 +113,7 @@ if (JPluginHelper::isEnabled('system', 'debug') && ($app->get('debug_lang', 0) |
 			<!-- Begin Content -->
 			<div id="element-box" class="login well">
 				<?php if ($loginLogoFile = $this->params->get('loginLogoFile')) : ?>
-					<img src="<?php echo JUri::root() . htmlspecialchars($loginLogoFile, ENT_QUOTES); ?>" alt="<?php echo $sitename; ?>" />
+					<img src="<?php echo JUri::root() . htmlspecialchars((string) $loginLogoFile, ENT_QUOTES); ?>" alt="<?php echo $sitename; ?>" />
 				<?php else: ?>
 					<img src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/images/joomla.png" alt="<?php echo $sitename; ?>" />
 				<?php endif; ?>
@@ -132,7 +132,7 @@ if (JPluginHelper::isEnabled('system', 'debug') && ($app->get('debug_lang', 0) |
 			&copy; <?php echo date('Y'); ?> <?php echo $sitename; ?>
 		</p>
 		<a class="login-joomla hasTooltip" href="https://www.joomla.org" target="_blank"  rel="noopener noreferrer" title="<?php echo JHtml::_('tooltipText', 'TPL_ISIS_ISFREESOFTWARE'); ?>"><span class="icon-joomla"></span></a>
-		<a href="<?php echo htmlspecialchars($frontEndUri->toString(), ENT_COMPAT, 'UTF-8'); ?>" target="_blank" class="pull-left">
+		<a href="<?php echo htmlspecialchars((string) $frontEndUri->toString(), ENT_COMPAT, 'UTF-8'); ?>" target="_blank" class="pull-left">
 			<span class="icon-out-2"></span>
 			<?php echo JText::_('COM_LOGIN_RETURN_TO_SITE_HOME_PAGE'); ?>
 		</a>

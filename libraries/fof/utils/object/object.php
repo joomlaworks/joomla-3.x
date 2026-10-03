@@ -18,6 +18,11 @@ defined('FOF_INCLUDED') or die;
  * @deprecated  2.1
  * @codeCoverageIgnore
  */
+// Intentionally dynamic by design (see set()/setProperties() below) - not an omission.
+// #[...] parses as a harmless comment on PHP < 8.0, and an attribute referencing a class
+// that doesn't exist yet (AllowDynamicProperties was added in 8.2) causes no error on 8.0/8.1
+// either, since PHP only resolves attribute classes lazily, when something reflects them.
+#[\AllowDynamicProperties]
 class FOFUtilsObject
 {
     /**
@@ -96,7 +101,7 @@ class FOFUtilsObject
         {
             foreach ($vars as $key => $value)
             {
-                if ('_' == substr($key, 0, 1))
+                if ('_' == substr((string) $key, 0, 1))
                 {
                     unset($vars[$key]);
                 }

@@ -228,7 +228,7 @@ class MenuHelper
 				static::resolveAlias($item);
 			}
 
-			if ($item->link = in_array($item->type, array('separator', 'heading', 'container')) ? '#' : trim($item->link))
+			if ($item->link = in_array($item->type, array('separator', 'heading', 'container')) ? '#' : trim((string) $item->link))
 			{
 				$item->submenu    = array();
 				$item->class      = isset($item->img) ? $item->img : '';

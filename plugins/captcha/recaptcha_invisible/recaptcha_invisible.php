@@ -147,7 +147,7 @@ class PlgCaptchaRecaptcha_Invisible extends \JPlugin
 		}
 
 		// Discard spam submissions
-		if (trim($response) == '')
+		if (trim((string) $response) == '')
 		{
 			throw new \RuntimeException(JText::_('PLG_RECAPTCHA_INVISIBLE_ERROR_EMPTY_SOLUTION'));
 		}

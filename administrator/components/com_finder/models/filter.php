@@ -75,7 +75,7 @@ class FinderModelFilter extends JModelAdmin
 		// Process the filter data.
 		if (!empty($filter->data))
 		{
-			$filter->data = explode(',', $filter->data);
+			$filter->data = explode(',', (string) $filter->data);
 		}
 		elseif (empty($filter->data))
 		{

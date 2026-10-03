@@ -142,6 +142,6 @@ class BannersModelClient extends JModelAdmin
 	 */
 	protected function prepareTable($table)
 	{
-		$table->name = htmlspecialchars_decode($table->name, ENT_QUOTES);
+		$table->name = htmlspecialchars_decode((string) $table->name, ENT_QUOTES);
 	}
 }

@@ -75,7 +75,7 @@ class ActionlogsControllerActionlogs extends JControllerAdmin
 		if ($task == 'exportSelectedLogs')
 		{
 			// Get selected logs
-			$pks = ArrayHelper::toInteger(explode(',', $this->input->post->getString('cids')));
+			$pks = ArrayHelper::toInteger(explode(',', (string) $this->input->post->getString('cids')));
 		}
 
 		/** @var ActionlogsModelActionlogs $model */
@@ -117,7 +117,7 @@ class ActionlogsControllerActionlogs extends JControllerAdmin
 
 			foreach ($rows as $row)
 			{
-				fputcsv($output, $row, $csvDelimiter);
+				fputcsv($output, $row, $csvDelimiter, escape: '\\');
 			}
 
 			fclose($output);

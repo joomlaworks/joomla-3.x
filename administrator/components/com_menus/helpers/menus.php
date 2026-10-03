@@ -486,9 +486,9 @@ class MenusHelper
 			}
 			elseif ($item->type == 'url' || $item->type == 'component')
 			{
-				if (substr($item->link, 0, 8) === 'special:')
+				if (substr((string) $item->link, 0, 8) === 'special:')
 				{
-					$special = substr($item->link, 8);
+					$special = substr((string) $item->link, 8);
 
 					if ($special === 'language-forum')
 					{

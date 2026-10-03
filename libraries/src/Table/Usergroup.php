@@ -266,7 +266,7 @@ class Usergroup extends Table
 		{
 			foreach ($ids as $id)
 			{
-				if (strstr($rule->rules, '[' . $id) || strstr($rule->rules, ',' . $id) || strstr($rule->rules, $id . ']'))
+				if (strstr((string) $rule->rules, '[' . $id) || strstr((string) $rule->rules, ',' . $id) || strstr((string) $rule->rules, $id . ']'))
 				{
 					$match_ids[] = $rule->id;
 				}

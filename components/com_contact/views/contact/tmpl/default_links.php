@@ -33,7 +33,7 @@ defined('_JEXEC') or die;
 			endif;
 
 			// Add 'http://' if not present
-			$link = (0 === strpos($link, 'http')) ? $link : 'http://' . $link;
+			$link = (0 === strpos((string) $link, 'http')) ? $link : 'http://' . $link;
 
 			// If no label is present, take the link
 			$label = $label ?: $link;

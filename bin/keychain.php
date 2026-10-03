@@ -191,7 +191,7 @@ class KeychainManager extends JApplicationCli
 		$passphraseFile = $this->input->get('passphrase', '', 'raw');
 		$privateKeyFile = $this->input->get('private-key', '', 'raw');
 
-		if (!strlen($passphraseFile))
+		if (!strlen((string) $passphraseFile))
 		{
 			$this->out('A passphrase file must be specified with --passphrase');
 			exit(1);

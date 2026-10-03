@@ -183,7 +183,7 @@ abstract class BaseDatabaseModel extends \JObject
 	public static function getInstance($type, $prefix = '', $config = array())
 	{
 		$type = preg_replace('/[^A-Z0-9_\.-]/i', '', $type);
-		$modelClass = $prefix . ucfirst($type);
+		$modelClass = $prefix . ucfirst((string) $type);
 
 		if (!class_exists($modelClass))
 		{
@@ -518,7 +518,7 @@ abstract class BaseDatabaseModel extends \JObject
 			return false;
 		}
 
-		$rowArray = ArrayHelper::fromObject(json_decode($historyTable->version_data));
+		$rowArray = ArrayHelper::fromObject(json_decode((string) $historyTable->version_data));
 		$typeId   = \JTable::getInstance('Contenttype')->getTypeId($this->typeAlias);
 
 		if ($historyTable->ucm_type_id != $typeId)

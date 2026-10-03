@@ -841,7 +841,7 @@ abstract class AbstractWebApplication extends AbstractApplication
 		// @codeCoverageIgnoreEnd
 
 		// Check to see if an explicit base URI has been set.
-		$siteUri = trim($this->get('site_uri'));
+		$siteUri = trim((string) $this->get('site_uri'));
 
 		if ($siteUri != '')
 		{
@@ -886,13 +886,13 @@ abstract class AbstractWebApplication extends AbstractApplication
 		$this->set('uri.base.path', $path . '/');
 
 		// Set the extended (non-base) part of the request URI as the route.
-		if (stripos($this->get('uri.request'), $this->get('uri.base.full')) === 0)
+		if (stripos((string) $this->get('uri.request'), (string) $this->get('uri.base.full')) === 0)
 		{
-			$this->set('uri.route', substr_replace($this->get('uri.request'), '', 0, \strlen($this->get('uri.base.full'))));
+			$this->set('uri.route', substr_replace($this->get('uri.request'), '', 0, \strlen((string) $this->get('uri.base.full'))));
 		}
 
 		// Get an explicitly set media URI is present.
-		$mediaURI = trim($this->get('media_uri'));
+		$mediaURI = trim((string) $this->get('media_uri'));
 
 		if ($mediaURI)
 		{

@@ -63,7 +63,7 @@ class FOFForm extends JForm
 		// Only instantiate the form if it does not already exist.
 		if (!isset($forms[$name]))
 		{
-			$data = trim($data);
+			$data = trim((string) $data);
 
 			if (empty($data))
 			{
@@ -321,7 +321,7 @@ class FOFForm extends JForm
 					// If we want to exclude nested groups then we need to check each field.
 					else
 					{
-						$groupNames = explode('.', $group);
+						$groupNames = explode('.', (string) $group);
 
 						foreach ($tmp as $field)
 						{

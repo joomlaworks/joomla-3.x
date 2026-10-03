@@ -93,7 +93,7 @@ class PlgActionlogJoomla extends ActionLogPlugin
 			return;
 		}
 
-		list(, $contentType) = explode('.', $params->type_alias);
+		list(, $contentType) = explode('.', (string) $params->type_alias);
 
 		if ($isNew)
 		{
@@ -206,7 +206,7 @@ class PlgActionlogJoomla extends ActionLogPlugin
 			return;
 		}
 
-		list(, $contentType) = explode('.', $params->type_alias);
+		list(, $contentType) = explode('.', (string) $params->type_alias);
 
 		switch ($value)
 		{
@@ -503,7 +503,7 @@ class PlgActionlogJoomla extends ActionLogPlugin
 			return;
 		}
 
-		list(, $contentType) = explode('.', $params->type_alias);
+		list(, $contentType) = explode('.', (string) $params->type_alias);
 
 		if ($isNew)
 		{

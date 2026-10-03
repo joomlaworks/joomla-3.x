@@ -44,7 +44,7 @@ class ConfigControllerConfigDisplay extends ConfigControllerDisplay
 		$app->input->set('view', 'application');
 
 		// Execute backend controller
-		$serviceData = json_decode($displayClass->execute(), true);
+		$serviceData = json_decode((string) $displayClass->execute(), true);
 
 		// Reset params back after requesting from service
 		$document->setType('html');
@@ -54,7 +54,7 @@ class ConfigControllerConfigDisplay extends ConfigControllerDisplay
 		$paths = new SplPriorityQueue;
 		$paths->insert(JPATH_COMPONENT . '/view/' . $viewName . '/tmpl', 'normal');
 
-		$viewClass  = 'ConfigView' . ucfirst($viewName) . ucfirst($viewFormat);
+		$viewClass  = 'ConfigView' . ucfirst($viewName) . ucfirst((string) $viewFormat);
 		$modelClass = 'ConfigModel' . ucfirst($viewName);
 
 		if (class_exists($viewClass))

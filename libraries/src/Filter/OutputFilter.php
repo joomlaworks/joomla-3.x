@@ -93,7 +93,7 @@ class OutputFilter extends BaseOutputFilter
 		$str = preg_replace('/(\s|[^A-Za-z0-9\-])+/', '-', $str);
 
 		// Trim dashes at beginning and end of alias
-		$str = trim($str, '-');
+		$str = trim((string) $str, '-');
 
 		return $str;
 	}

@@ -82,7 +82,7 @@ class ContentViewArticle extends JViewLegacy
 			$currentLink = $active->link;
 
 			// If the current view is the active item and an article view for this article, then the menu item params take priority
-			if (strpos($currentLink, 'view=article') && strpos($currentLink, '&id=' . (string) $item->id))
+			if (strpos((string) $currentLink, 'view=article') && strpos((string) $currentLink, '&id=' . (string) $item->id))
 			{
 				// Load layout from active query (in case it is an alternative menu item)
 				if (isset($active->query['layout']))
@@ -145,7 +145,7 @@ class ContentViewArticle extends JViewLegacy
 		 * - Deny access to logged users with 403 code
 		 * NOTE: we do not recheck for no access-view + show_noauth disabled ... since it was checked above
 		 */
-		if ($item->params->get('access-view') == false && !strlen($item->fulltext))
+		if ($item->params->get('access-view') == false && !strlen((string) $item->fulltext))
 		{
 			if ($this->user->get('guest'))
 			{
@@ -203,7 +203,7 @@ class ContentViewArticle extends JViewLegacy
 		$item->event->afterDisplayContent = trim(implode("\n", $results));
 
 		// Escape strings for HTML output
-		$this->pageclass_sfx = htmlspecialchars($this->item->params->get('pageclass_sfx', ''));
+		$this->pageclass_sfx = htmlspecialchars((string) $this->item->params->get('pageclass_sfx', ''));
 
 		$this->_prepareDocument();
 

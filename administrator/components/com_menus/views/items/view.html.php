@@ -197,7 +197,7 @@ class MenusViewItems extends JViewLegacy
 					}
 					else
 					{
-						if (preg_match("/^index.php\?option=([a-zA-Z\-0-9_]*)/", $item->link, $result))
+						if (preg_match("/^index.php\?option=([a-zA-Z\-0-9_]*)/", (string) $item->link, $result))
 						{
 							$value = JText::sprintf('COM_MENUS_TYPE_UNEXISTING', $result[1]);
 						}

@@ -131,7 +131,7 @@ class ActionlogsModelActionlog extends JModelLegacy
 
 		foreach ($users as $user)
 		{
-			$extensions = json_decode($user->extensions, true);
+			$extensions = json_decode((string) $user->extensions, true);
 
 			if ($extensions && in_array(strtok($context, '.'), $extensions))
 			{

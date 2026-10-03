@@ -78,7 +78,7 @@ class PlgContentPagebreak extends JPlugin
 
 		if ($print)
 		{
-			$row->text = preg_replace($regex, '<br />', $row->text);
+			$row->text = preg_replace($regex, '<br />', (string) $row->text);
 
 			return true;
 		}
@@ -104,7 +104,7 @@ class PlgContentPagebreak extends JPlugin
 
 		if ($full || $view !== 'article' || $params->get('intro_only') || $params->get('popup'))
 		{
-			$row->text = preg_replace($regex, '', $row->text);
+			$row->text = preg_replace($regex, '', (string) $row->text);
 
 			return;
 		}
@@ -114,7 +114,7 @@ class PlgContentPagebreak extends JPlugin
 
 		// Find all instances of plugin and put in $matches.
 		$matches = array();
-		preg_match_all($regex, $row->text, $matches, PREG_SET_ORDER);
+		preg_match_all($regex, (string) $row->text, $matches, PREG_SET_ORDER);
 
 		if ($showall && $this->params->get('showall', 1))
 		{
@@ -131,13 +131,13 @@ class PlgContentPagebreak extends JPlugin
 				$row->toc = '';
 			}
 
-			$row->text = preg_replace($regex, '<br />', $row->text);
+			$row->text = preg_replace($regex, '<br />', (string) $row->text);
 
 			return true;
 		}
 
 		// Split the text around the plugin.
-		$text = preg_split($regex, $row->text);
+		$text = preg_split($regex, (string) $row->text);
 
 		if (!isset($text[$page]))
 		{
@@ -277,7 +277,7 @@ class PlgContentPagebreak extends JPlugin
 
 			if ($this->params->get('article_index_text'))
 			{
-				$headingtext = htmlspecialchars($this->params->get('article_index_text'), ENT_QUOTES, 'UTF-8');
+				$headingtext = htmlspecialchars((string) $this->params->get('article_index_text'), ENT_QUOTES, 'UTF-8');
 			}
 		}
 

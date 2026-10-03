@@ -41,7 +41,7 @@ class JOpenstreetmapGps extends JOpenstreetmapObject
 		// Send the request.
 		$response = $this->oauth->oauthRequest($path, 'GET', array());
 
-		$xml_string = simplexml_load_string($response->body);
+		$xml_string = simplexml_load_string((string) $response->body);
 
 		return $xml_string;
 	}

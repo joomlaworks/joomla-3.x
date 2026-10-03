@@ -16,7 +16,7 @@ JLoader::register('ContentHelperRoute', JPATH_SITE . '/components/com_content/he
 
 JLoader::register('JCategoryNode', JPATH_BASE . '/libraries/legacy/categories/categories.php');
 
-$cacheid = md5($module->id);
+$cacheid = md5((string) $module->id);
 
 $cacheparams               = new stdClass;
 $cacheparams->cachemode    = 'id';
@@ -29,7 +29,7 @@ $list = JModuleHelper::moduleCache($module, $params, $cacheparams);
 
 if (!empty($list))
 {
-	$moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx', ''), ENT_COMPAT, 'UTF-8');
+	$moduleclass_sfx = htmlspecialchars((string) $params->get('moduleclass_sfx', ''), ENT_COMPAT, 'UTF-8');
 	$startLevel      = reset($list)->getParent()->level;
 
 	require JModuleHelper::getLayoutPath('mod_articles_categories', $params->get('layout', 'default'));

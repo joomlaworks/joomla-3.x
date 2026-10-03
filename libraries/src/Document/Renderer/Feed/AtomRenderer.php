@@ -83,7 +83,7 @@ class AtomRenderer extends DocumentRenderer
 
 		$feed .= ">\n";
 		$feed .= "	<title type=\"text\">" . $feed_title . "</title>\n";
-		$feed .= "	<subtitle type=\"text\">" . htmlspecialchars($data->getDescription(), ENT_COMPAT, 'UTF-8') . "</subtitle>\n";
+		$feed .= "	<subtitle type=\"text\">" . htmlspecialchars((string) $data->getDescription(), ENT_COMPAT, 'UTF-8') . "</subtitle>\n";
 
 		if (!empty($data->category))
 		{
@@ -102,7 +102,7 @@ class AtomRenderer extends DocumentRenderer
 
 		$feed .= "	<link rel=\"alternate\" type=\"text/html\" href=\"" . $url . "\"/>\n";
 		$feed .= "	<id>" . str_replace(' ', '%20', $data->getBase()) . "</id>\n";
-		$feed .= "	<updated>" . htmlspecialchars($now->toISO8601(true), ENT_COMPAT, 'UTF-8') . "</updated>\n";
+		$feed .= "	<updated>" . htmlspecialchars((string) $now->toISO8601(true), ENT_COMPAT, 'UTF-8') . "</updated>\n";
 
 		if ($data->editor != '')
 		{
@@ -148,8 +148,8 @@ class AtomRenderer extends DocumentRenderer
 
 			$itemDate = \JFactory::getDate($data->items[$i]->date);
 			$itemDate->setTimeZone($tz);
-			$feed .= "		<published>" . htmlspecialchars($itemDate->toISO8601(true), ENT_COMPAT, 'UTF-8') . "</published>\n";
-			$feed .= "		<updated>" . htmlspecialchars($itemDate->toISO8601(true), ENT_COMPAT, 'UTF-8') . "</updated>\n";
+			$feed .= "		<published>" . htmlspecialchars((string) $itemDate->toISO8601(true), ENT_COMPAT, 'UTF-8') . "</published>\n";
+			$feed .= "		<updated>" . htmlspecialchars((string) $itemDate->toISO8601(true), ENT_COMPAT, 'UTF-8') . "</updated>\n";
 
 			if (empty($data->items[$i]->guid))
 			{
@@ -187,7 +187,7 @@ class AtomRenderer extends DocumentRenderer
 				{
 					foreach ($data->items[$i]->category as $cat)
 					{
-						$feed .= "		<category term=\"" . htmlspecialchars($cat, ENT_COMPAT, 'UTF-8') . "\" />\n";
+						$feed .= "		<category term=\"" . htmlspecialchars((string) $cat, ENT_COMPAT, 'UTF-8') . "\" />\n";
 					}
 				}
 				else

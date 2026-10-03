@@ -156,7 +156,7 @@ class SearchViewSearch extends JViewLegacy
 			else
 			{
 				$searchWordA = preg_replace('#\xE3\x80\x80#', ' ', $searchWord);
-				$searchWords = preg_split("/\s+/u", $searchWordA);
+				$searchWords = preg_split("/\s+/u", (string) $searchWordA);
 				$needle      = $searchWords[0];
 			}
 
@@ -196,7 +196,7 @@ class SearchViewSearch extends JViewLegacy
 		}
 
 		// Escape strings for HTML output
-		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx', ''));
+		$this->pageclass_sfx = htmlspecialchars((string) $params->get('pageclass_sfx', ''));
 		$this->pagination    = &$pagination;
 		$this->results       = &$results;
 		$this->lists         = &$lists;
@@ -248,7 +248,7 @@ class SearchViewSearch extends JViewLegacy
 
 			if ($mbString)
 			{
-				$lowerCaseHighlightWord = mb_strtolower($highlightWord);
+				$lowerCaseHighlightWord = mb_strtolower((string) $highlightWord);
 
 				if (($pos = mb_strpos($lowerCaseRow, $lowerCaseHighlightWord)) !== false)
 				{
@@ -309,7 +309,7 @@ class SearchViewSearch extends JViewLegacy
 					// Set highlighter around search-word
 					if ($mbString)
 					{
-						$highlightWordLen = mb_strlen($highlightWord);
+						$highlightWordLen = mb_strlen((string) $highlightWord);
 						$row              = mb_substr($row, 0, $pos) . $hl1 . mb_substr($row, $pos, $highlightWordLen)
 							. $hl2 . mb_substr($row, $pos + $highlightWordLen);
 					}

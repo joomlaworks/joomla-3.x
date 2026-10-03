@@ -124,7 +124,7 @@ JFactory::getDocument()->addScriptDeclaration('
 						<?php endif; ?>
 					</td>
 					<td class="small break-word hidden-phone hidden-tablet">
-						<?php echo (strlen($item->url) > 80) ? substr($item->url, 0, 70) . '...' : $item->url; ?>
+						<?php echo (strlen((string) $item->url) > 80) ? substr((string) $item->url, 0, 70) . '...' : $item->url; ?>
 					</td>
 				</tr>
 

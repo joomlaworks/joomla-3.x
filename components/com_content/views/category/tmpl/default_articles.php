@@ -68,7 +68,7 @@ $nullDate    = JFactory::getDbo()->getNullDate();
 $currentDate = JFactory::getDate()->format('Y-m-d H:i:s');
 
 ?>
-<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" class="form-inline">
+<form action="<?php echo htmlspecialchars((string) JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" class="form-inline">
 <?php if ($this->params->get('filter_field') !== 'hide' || $this->params->get('show_pagination_limit')) : ?>
 	<fieldset class="filters btn-toolbar clearfix">
 		<legend class="hide"><?php echo JText::_('COM_CONTENT_FORM_FILTER_LEGEND'); ?></legend>
@@ -183,7 +183,7 @@ $currentDate = JFactory::getDate()->format('Y-m-d H:i:s');
 								&nbsp;<a href="<?php echo JRoute::_($association['item']); ?>"><?php echo $flag; ?></a>&nbsp;
 							<?php else : ?>
 								<?php $class = 'label label-association label-' . $association['language']->sef; ?>
-								&nbsp;<a class="<?php echo $class; ?>" href="<?php echo JRoute::_($association['item']); ?>"><?php echo strtoupper($association['language']->sef); ?></a>&nbsp;
+								&nbsp;<a class="<?php echo $class; ?>" href="<?php echo JRoute::_($association['item']); ?>"><?php echo strtoupper((string) $association['language']->sef); ?></a>&nbsp;
 							<?php endif; ?>
 						<?php endforeach; ?>
 					<?php endif; ?>
@@ -207,7 +207,7 @@ $currentDate = JFactory::getDate()->format('Y-m-d H:i:s');
 								&nbsp;<a href="<?php echo JRoute::_($association['item']); ?>"><?php echo $flag; ?></a>&nbsp;
 							<?php else : ?>
 								<?php $class = 'label label-association label-' . $association['language']->sef; ?>
-								&nbsp;<a class="' . <?php echo $class; ?> . '" href="<?php echo JRoute::_($association['item']); ?>"><?php echo strtoupper($association['language']->sef); ?></a>&nbsp;
+								&nbsp;<a class="' . <?php echo $class; ?> . '" href="<?php echo JRoute::_($association['item']); ?>"><?php echo strtoupper((string) $association['language']->sef); ?></a>&nbsp;
 							<?php endif; ?>
 						<?php endforeach; ?>
 					<?php endif; ?>

@@ -30,13 +30,13 @@ class InstallationFormRuleUsername extends JFormRule
 	 *
 	 * @return  boolean  True if the value is valid, false otherwise.
 	 */
-	public function test(SimpleXMLElement $element, $value, $group = null, JRegistry $input = null, JForm $form = null)
+	public function test(SimpleXMLElement $element, $value, $group = null, ?JRegistry $input = null, ?JForm $form = null)
 	{
 		$filterInput = InputFilter::getInstance();
 
-		if (preg_match('#[<>"\'%;()&\\\\]|\\.\\./#', $value) || strlen(utf8_decode($value)) < 2
+		if (preg_match('#[<>"\'%;()&\\\\]|\\.\\./#', (string) $value) || strlen(mb_convert_encoding((string) $value, 'ISO-8859-1')) < 2
 			|| $filterInput->clean($value, 'TRIM') !== $value
-			|| strlen(utf8_decode($value)) > $element['size'])
+			|| strlen(mb_convert_encoding((string) $value, 'ISO-8859-1')) > $element['size'])
 		{
 			return false;
 		}

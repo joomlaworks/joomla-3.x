@@ -47,7 +47,7 @@ abstract class MailHelper
 	 */
 	public static function cleanText($value)
 	{
-		return trim(preg_replace('/(%0A|%0D|\n+|\r+)(content-type:|to:|cc:|bcc:)/i', '', $value));
+		return trim((string) preg_replace('/(%0A|%0D|\n+|\r+)(content-type:|to:|cc:|bcc:)/i', '', $value));
 	}
 
 	/**

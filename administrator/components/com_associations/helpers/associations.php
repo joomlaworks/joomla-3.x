@@ -274,7 +274,7 @@ class AssociationsHelper extends JHelperContent
 
 			$url     = JRoute::_('index.php?' . http_build_query($options));
 			$url     = $allow && $addLink ? $url : '';
-			$text    = strtoupper($language->sef);
+			$text    = strtoupper((string) $language->sef);
 
 			$tooltip = htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '<br /><br />' . $additional;
 			$classes = 'hasPopover label ' . $labelClass . ' label-' . $language->sef;

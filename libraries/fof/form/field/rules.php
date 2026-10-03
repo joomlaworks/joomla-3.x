@@ -244,7 +244,7 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
 
                 $html[] = '<select name="' . $this->name . '[' . $action->name . '][' . $group->value . ']" id="' . $this->id . '_' . $action->name
                     . '_' . $group->value . '" title="'
-                    . JText::sprintf('JLIB_RULES_SELECT_ALLOW_DENY_GROUP', JText::_($action->title), trim($group->text)) . '">';
+                    . JText::sprintf('JLIB_RULES_SELECT_ALLOW_DENY_GROUP', JText::_($action->title), trim((string) $group->text)) . '">';
 
                 $inheritedRule = JAccess::checkGroup($group->value, $action->name, $assetId);
 
@@ -515,7 +515,7 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
 
                 $html[] = '<select class="input-small" name="' . $this->name . '[' . $action->name . '][' . $group->value . ']" id="' . $this->id . '_' . $action->name
                     . '_' . $group->value . '" title="'
-                    . JText::sprintf('JLIB_RULES_SELECT_ALLOW_DENY_GROUP', JText::_($action->title), trim($group->text)) . '">';
+                    . JText::sprintf('JLIB_RULES_SELECT_ALLOW_DENY_GROUP', JText::_($action->title), trim((string) $group->text)) . '">';
 
                 $inheritedRule = JAccess::checkGroup($group->value, $action->name, $assetId);
 

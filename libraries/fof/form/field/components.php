@@ -81,7 +81,7 @@ class FOFFormFieldComponents extends JFormFieldList implements FOFFormField
 		$class = $this->element['class'] ? ' class="' . (string) $this->element['class'] . '"' : '';
 
 		return '<span id="' . $this->id . '" ' . $class . '>' .
-			htmlspecialchars(FOFFormFieldList::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8') .
+			htmlspecialchars((string) FOFFormFieldList::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8') .
 			'</span>';
 	}
 
@@ -98,7 +98,7 @@ class FOFFormFieldComponents extends JFormFieldList implements FOFFormField
 		$class = $this->element['class'] ? (string) $this->element['class'] : '';
 
 		return '<span class="' . $this->id . ' ' . $class . '">' .
-			htmlspecialchars(FOFFormFieldList::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8') .
+			htmlspecialchars((string) FOFFormFieldList::getOptionName($this->getOptions(), $this->value), ENT_COMPAT, 'UTF-8') .
 			'</span>';
 	}
 
@@ -202,7 +202,7 @@ class FOFFormFieldComponents extends JFormFieldList implements FOFFormField
 
 		// Map the manifest cache to $item. This is needed to get the name from the
 		// manifest_cache and NOT from the name column, else some JText::_() translations fails.
-		$mData = json_decode($item->manifest_cache);
+		$mData = json_decode((string) $item->manifest_cache);
 
 		if ($mData)
 		{

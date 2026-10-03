@@ -130,7 +130,7 @@ class CacheModelCache extends JModelList
 					{
 						foreach ($data as $key => $cacheItem)
 						{
-							if (stripos($cacheItem->group, $search) === false)
+							if (stripos((string) $cacheItem->group, $search) === false)
 							{
 								unset($data[$key]);
 								continue;

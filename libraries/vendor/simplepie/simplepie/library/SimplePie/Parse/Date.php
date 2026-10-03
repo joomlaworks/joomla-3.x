@@ -645,7 +645,7 @@ class SimplePie_Parse_Date
 			$zone = '(?:(Z)|([+\-])([0-9]{1,2}):?([0-9]{1,2}))';
 			$pcre = '/^' . $year . '(?:-?' . $month . '(?:-?' . $day . '(?:[Tt\x09\x20]+' . $hour . '(?::?' . $minute . '(?::?' . $second . '(?:.' . $decimal . ')?)?)?' . $zone . ')?)?)?$/';
 		}
-		if (preg_match($pcre, $date, $match))
+		if (preg_match($pcre, (string) $date, $match))
 		{
 			/*
 			Capturing subpatterns:
@@ -872,7 +872,7 @@ class SimplePie_Parse_Date
 			$zone = '([A-Z]{1,5})';
 			$pcre = '/^' . $day_name . ',' . $space . $day . '-' . $month . '-' . $year . $space . $hour . ':' . $minute . ':' . $second . $space . $zone . '$/i';
 		}
-		if (preg_match($pcre, $date, $match))
+		if (preg_match($pcre, (string) $date, $match))
 		{
 			/*
 			Capturing subpatterns:
@@ -938,7 +938,7 @@ class SimplePie_Parse_Date
 			$terminator = '\x0A?\x00?';
 			$pcre = '/^' . $wday_name . $space . $mon_name . $space . $day . $space . $hour . ':' . $min . ':' . $sec . $space . $year . $terminator . '$/i';
 		}
-		if (preg_match($pcre, $date, $match))
+		if (preg_match($pcre, (string) $date, $match))
 		{
 			/*
 			Capturing subpatterns:
@@ -968,7 +968,7 @@ class SimplePie_Parse_Date
 	 */
 	public function date_strtotime($date)
 	{
-		$strtotime = strtotime($date);
+		$strtotime = strtotime((string) $date);
 		if ($strtotime === -1 || $strtotime === false)
 		{
 			return false;

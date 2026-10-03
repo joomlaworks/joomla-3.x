@@ -143,7 +143,7 @@ class ConfigModelModules extends ConfigModelForm
 				foreach ($xml->positions[0] as $position)
 				{
 					$value = (string) $position;
-					$text = preg_replace('/[^a-zA-Z0-9_\-]/', '_', 'TPL_' . strtoupper($templateName) . '_POSITION_' . strtoupper($value));
+					$text = preg_replace('/[^a-zA-Z0-9_\-]/', '_', 'TPL_' . strtoupper((string) $templateName) . '_POSITION_' . strtoupper($value));
 
 					// Construct list of positions
 					$currentTemplatePositions[] = self::createOption($value, JText::_($text) . ' [' . $value . ']');

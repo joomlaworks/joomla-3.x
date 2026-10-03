@@ -56,7 +56,7 @@ else
 		// Feed title
 		if (!is_null($feed->title) && $params->get('rsstitle', 1)) : ?>
 			<h2 class="<?php echo $direction; ?>">
-				<a href="<?php echo htmlspecialchars($rssurl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank">
+				<a href="<?php echo htmlspecialchars((string) $rssurl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank">
 				<?php echo htmlspecialchars($feed->title, ENT_QUOTES, 'UTF-8'); ?></a>
 			</h2>
 		<?php endif;
@@ -74,7 +74,7 @@ else
 
 		<!--  Feed image  -->
 		<?php if ($params->get('rssimage', 1) && $feed->image) : ?>
-			<img src="<?php echo htmlspecialchars($feed->image->uri, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($feed->image->title, ENT_QUOTES, 'UTF-8'); ?>"/>
+			<img src="<?php echo htmlspecialchars((string) $feed->image->uri, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) $feed->image->title, ENT_QUOTES, 'UTF-8'); ?>"/>
 		<?php endif; ?>
 
 
@@ -92,17 +92,17 @@ else
 			if (!$feed->offsetExists($i)) :
 				break;
 			endif;
-			$uri  = $feed[$i]->uri || !$feed[$i]->isPermaLink ? trim($feed[$i]->uri) : trim($feed[$i]->guid);
+			$uri  = $feed[$i]->uri || !$feed[$i]->isPermaLink ? trim((string) $feed[$i]->uri) : trim((string) $feed[$i]->guid);
 			$uri  = !$uri || stripos($uri, 'http') !== 0 ? $rssurl : $uri;
-			$text = $feed[$i]->content !== '' ? trim($feed[$i]->content) : '';
+			$text = $feed[$i]->content !== '' ? trim((string) $feed[$i]->content) : '';
 			?>
 				<li>
 					<?php if (!empty($uri)) : ?>
 						<h5 class="feed-link">
-						<a href="<?php echo htmlspecialchars($uri, ENT_QUOTES, 'UTF-8'); ?>" target="_blank">
-						<?php echo htmlspecialchars(trim($feed[$i]->title), ENT_QUOTES, 'UTF-8'); ?></a></h5>
+						<a href="<?php echo htmlspecialchars((string) $uri, ENT_QUOTES, 'UTF-8'); ?>" target="_blank">
+						<?php echo htmlspecialchars(trim((string) $feed[$i]->title), ENT_QUOTES, 'UTF-8'); ?></a></h5>
 					<?php else : ?>
-						<h5 class="feed-link"><?php  echo htmlspecialchars($feed[$i]->title, ENT_QUOTES, 'UTF-8'); ?></h5>
+						<h5 class="feed-link"><?php  echo htmlspecialchars((string) $feed[$i]->title, ENT_QUOTES, 'UTF-8'); ?></h5>
 					<?php  endif; ?>
 					<?php if ($params->get('rssitemdate', 0)) : ?>
 						<div class="feed-item-date">

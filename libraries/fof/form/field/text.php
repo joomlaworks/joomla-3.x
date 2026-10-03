@@ -236,7 +236,7 @@ class FOFFormFieldText extends JFormFieldText implements FOFFormField
 				$fieldname = $fielddata->column_name;
 			}
 
-			$search    = '[ITEM:' . strtoupper($fieldname) . ']';
+			$search    = '[ITEM:' . strtoupper((string) $fieldname) . ']';
 			$replace   = $this->item->$fieldname;
 			$ret  = str_replace($search, $replace, $ret);
 		}

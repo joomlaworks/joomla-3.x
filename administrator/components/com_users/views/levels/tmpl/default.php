@@ -24,7 +24,7 @@ $saveOrder  = $listOrder == 'a.ordering';
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_users&task=levels.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'levelList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+	JHtml::_('sortablelist.sortable', 'levelList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 }
 
 ?>
@@ -80,7 +80,7 @@ if ($saveOrder)
 					$canChange = $user->authorise('core.edit.state', 'com_users');
 
 					// Decode level groups
-					$groups = json_decode($item->rules);
+					$groups = json_decode((string) $item->rules);
 
 					// If this group is super admin and this user is not super admin, $canEdit is false
 					if (!JFactory::getUser()->authorise('core.admin') && JAccess::checkGroup($groups[0], 'core.admin'))

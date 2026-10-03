@@ -177,7 +177,7 @@ class ContentModelCategory extends JModelList
 
 		$listOrder = $app->getUserStateFromRequest('com_content.category.list.' . $itemid . '.filter_order_Dir', 'filter_order_Dir', '', 'cmd');
 
-		if (!in_array(strtoupper($listOrder), array('ASC', 'DESC', '')))
+		if (!in_array(strtoupper((string) $listOrder), array('ASC', 'DESC', '')))
 		{
 			$listOrder = 'ASC';
 		}
@@ -290,7 +290,7 @@ class ContentModelCategory extends JModelList
 			$orderCol = null;
 		}
 
-		if (!in_array(strtoupper($orderDirn), array('ASC', 'DESC', '')))
+		if (!in_array(strtoupper((string) $orderDirn), array('ASC', 'DESC', '')))
 		{
 			$orderDirn = 'ASC';
 		}

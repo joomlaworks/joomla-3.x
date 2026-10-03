@@ -65,7 +65,15 @@ class FOFDatabaseDriverJoomla extends FOFDatabase implements FOFDatabaseInterfac
 		try
 		{
 			$refProp = $reflection->getProperty('nameQuote');
-			$refProp->setAccessible(true);
+
+			// setAccessible() is still required to read a non-public property on PHP < 8.1; it's
+			// been a harmless no-op since 8.1, and PHP 8.5 started deprecating the now-redundant
+			// call on that path, hence the version guard rather than removing it outright.
+			if (PHP_VERSION_ID < 80100)
+			{
+				$refProp->setAccessible(true);
+			}
+
 			$this->nameQuote = $refProp->getValue($this->dbo);
 		}
 		catch (Exception $e)

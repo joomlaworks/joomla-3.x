@@ -49,7 +49,7 @@ class SqlsrvChangeItem extends ChangeItem
 		$find = array('#((\s*)\(\s*([^)\s]+)\s*)(\))#', '#(\s)(\s*)#');
 		$replace = array('($3)', '$1');
 		$updateQuery = preg_replace($find, $replace, $this->updateQuery);
-		$wordArray = explode(' ', $updateQuery);
+		$wordArray = explode(' ', (string) $updateQuery);
 
 		// First, make sure we have an array of at least 6 elements
 		// if not, we can't make a check query for this one

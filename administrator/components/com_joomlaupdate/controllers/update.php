@@ -27,6 +27,10 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 	{
 		$this->checkToken();
 
+		// Only the core files reinstall form has this checkbox, a regular update always keeps removals.
+		// The upload form has its own, see upload().
+		JFactory::getApplication()->setUserState('com_joomlaupdate.restorecore', (bool) $this->input->post->getInt('restore_core_extensions', 0));
+
 		$options['format'] = '{DATE}\t{TIME}\t{LEVEL}\t{CODE}\t{MESSAGE}';
 		$options['text_file'] = 'joomla_update.php';
 		JLog::addLogger($options, JLog::INFO, array('Update', 'databasequery', 'jerror'));
@@ -294,6 +298,8 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 		// Did a non Super User tried to upload something (a.k.a. pathetic hacking attempt)?
 		JFactory::getUser()->authorise('core.admin') or jexit(JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'));
 
+		JFactory::getApplication()->setUserState('com_joomlaupdate.restorecore', (bool) $this->input->post->getInt('restore_core_extensions', 0));
+
 		$this->_applyCredentials();
 
 		/** @var JoomlaupdateModelDefault $model */
@@ -372,8 +378,9 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 		/** @var JoomlaupdateModelDefault $model */
 		$model = $this->getModel('default');
 
-		// Get the captive file before the session resets
-		$tempFile = JFactory::getApplication()->getUserState('com_joomlaupdate.temp_file', null);
+		// Get the captive file and the restore choice before the session resets
+		$tempFile    = JFactory::getApplication()->getUserState('com_joomlaupdate.temp_file', null);
+		$restoreCore = (bool) JFactory::getApplication()->getUserState('com_joomlaupdate.restorecore', false);
 
 		// Do I really have an update package?
 		if (!$model->captiveFileExists())
@@ -398,7 +405,8 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 		}
 
 		// Set the update source in the session
-		JFactory::getApplication()->setUserState('com_joomlaupdate.file', basename($tempFile));
+		JFactory::getApplication()->setUserState('com_joomlaupdate.file', basename((string) $tempFile));
+		JFactory::getApplication()->setUserState('com_joomlaupdate.restorecore', $restoreCore);
 
 		try
 		{

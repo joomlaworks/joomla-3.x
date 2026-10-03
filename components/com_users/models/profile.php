@@ -184,8 +184,8 @@ class UsersModelProfile extends JModelForm
 
 		if ($username)
 		{
-			$isUsernameCompliant  = !(preg_match('#[<>"\';()&\\\\]|\\.\\../#', $username) || mb_strlen($username, 'UTF-8') < 2
-				|| trim($username) !== $username);
+			$isUsernameCompliant  = !(preg_match('#[<>"\';()&\\\\]|\\.\\../#', (string) $username) || mb_strlen((string) $username, 'UTF-8') < 2
+				|| trim((string) $username) !== $username);
 		}
 
 		$this->setState('user.username.compliant', $isUsernameCompliant);

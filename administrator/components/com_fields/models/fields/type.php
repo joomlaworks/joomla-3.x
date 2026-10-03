@@ -64,7 +64,7 @@ class JFormFieldType extends JFormFieldList
 			$options,
 			function ($a, $b)
 			{
-				return strcmp($a->text, $b->text);
+				return strcmp((string) $a->text, (string) $b->text);
 			}
 		);
 

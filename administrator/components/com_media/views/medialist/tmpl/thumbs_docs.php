@@ -19,7 +19,7 @@ $dispatcher = JEventDispatcher::getInstance();
 	<?php $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$doc, &$params, 0)); ?>
 	<li class="imgOutline thumbnail height-80 width-80 center">
 		<?php if ($this->canDelete) : ?>
-			<a class="close delete-item" target="_top" href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode($this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($doc->name); ?>" rel="<?php echo $this->escape($doc->name); ?>" title="<?php echo JText::_('JACTION_DELETE'); ?>">&#215;</a>
+			<a class="close delete-item" target="_top" href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($doc->name); ?>" rel="<?php echo $this->escape($doc->name); ?>" title="<?php echo JText::_('JACTION_DELETE'); ?>">&#215;</a>
 			<div class="pull-left">
 				<?php echo JHtml::_('grid.id', $i, $this->escape($doc->name), false, 'rm', 'cb-document'); ?>
 			</div>

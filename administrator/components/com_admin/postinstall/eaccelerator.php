@@ -31,7 +31,7 @@ function admin_postinstall_eaccelerator_condition()
 	$app = JFactory::getApplication();
 	$cacheHandler = $app->get('cacheHandler', '');
 
-	return (ucfirst($cacheHandler) == 'Eaccelerator');
+	return (ucfirst((string) $cacheHandler) == 'Eaccelerator');
 }
 
 /**

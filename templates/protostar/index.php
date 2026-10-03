@@ -26,7 +26,7 @@ $view     = $app->input->getCmd('view', '');
 $layout   = $app->input->getCmd('layout', '');
 $task     = $app->input->getCmd('task', '');
 $itemid   = $app->input->getCmd('Itemid', '');
-$sitename = htmlspecialchars($app->get('sitename'), ENT_QUOTES, 'UTF-8');
+$sitename = htmlspecialchars((string) $app->get('sitename'), ENT_QUOTES, 'UTF-8');
 
 // Add JavaScript Frameworks
 JHtml::_('bootstrap.framework');
@@ -46,7 +46,7 @@ if ($this->params->get('googleFont'))
 	$font = $this->params->get('googleFontName');
 
 	// Handle fonts with selected weights and styles, e.g. Source+Sans+Condensed:400,400i
-	$fontStyle = str_replace('+', ' ', strstr($font, ':', true) ?: $font);
+	$fontStyle = str_replace('+', ' ', strstr((string) $font, ':', true) ?: $font);
 
 	JHtml::_('stylesheet', 'https://fonts.googleapis.com/css?family=' . $font);
 	$this->addStyleDeclaration("
@@ -115,7 +115,7 @@ if ($this->params->get('logoFile'))
 }
 elseif ($this->params->get('sitetitle'))
 {
-	$logo = '<span class="site-title" title="' . $sitename . '">' . htmlspecialchars($this->params->get('sitetitle'), ENT_COMPAT, 'UTF-8') . '</span>';
+	$logo = '<span class="site-title" title="' . $sitename . '">' . htmlspecialchars((string) $this->params->get('sitetitle'), ENT_COMPAT, 'UTF-8') . '</span>';
 }
 else
 {
@@ -145,7 +145,7 @@ else
 					<a class="brand pull-left" href="<?php echo $this->baseurl; ?>/">
 						<?php echo $logo; ?>
 						<?php if ($this->params->get('sitedescription')) : ?>
-							<?php echo '<div class="site-description">' . htmlspecialchars($this->params->get('sitedescription'), ENT_COMPAT, 'UTF-8') . '</div>'; ?>
+							<?php echo '<div class="site-description">' . htmlspecialchars((string) $this->params->get('sitedescription'), ENT_COMPAT, 'UTF-8') . '</div>'; ?>
 						<?php endif; ?>
 					</a>
 					<div class="header-search pull-right">

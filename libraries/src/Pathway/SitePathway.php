@@ -63,7 +63,7 @@ class SitePathway extends Pathway
 							break;
 
 						case 'url':
-							if ((strpos($link->link, 'index.php?') === 0) && (strpos($link->link, 'Itemid=') === false))
+							if ((strpos((string) $link->link, 'index.php?') === 0) && (strpos((string) $link->link, 'Itemid=') === false))
 							{
 								// If this is an internal Joomla link, ensure the Itemid is set.
 								$url = $link->link . '&Itemid=' . $link->id;

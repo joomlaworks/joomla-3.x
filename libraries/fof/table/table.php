@@ -31,6 +31,12 @@ if (!interface_exists('JTableInterface', true))
  * @package  FrameworkOnFramework
  * @since    1.0
  */
+// Intentionally dynamic by design (see setKnownFields() below, which maps arbitrary,
+// runtime-determined database columns onto object properties) - not an omission. Already
+// inherited from FOFUtilsObject's own #[AllowDynamicProperties], redeclared here too so this
+// is self-evident from this file alone. See FOFUtilsObject's own comment for the PHP < 8.2
+// compatibility note.
+#[\AllowDynamicProperties]
 class FOFTable extends FOFUtilsObject implements JTableInterface
 {
 	/**
@@ -323,7 +329,7 @@ class FOFTable extends FOFUtilsObject implements JTableInterface
 			$type = $config['view'];
 		}
 
-		$type       = preg_replace('/[^A-Z0-9_\.-]/i', '', $type);
+		$type       = preg_replace('/[^A-Z0-9_\.-]/i', '', (string) $type);
 		$tableClass = $prefix . ucfirst($type);
 
 		$config['_table_type'] = $type;
@@ -1051,7 +1057,7 @@ class FOFTable extends FOFUtilsObject implements JTableInterface
 			foreach ($fields as $k => $v)
 			{
 				// If the property is not the primary key or private, reset it.
-				if ($k != $this->_tbl_key && (strpos($k, '_') !== 0))
+				if ($k != $this->_tbl_key && (strpos((string) $k, '_') !== 0))
 				{
 					$this->$k = $v->Default;
 				}
@@ -1217,7 +1223,7 @@ class FOFTable extends FOFUtilsObject implements JTableInterface
 		// If the ignore value is a string, explode it over spaces.
 		if (!is_array($ignore))
 		{
-			$ignore = explode(' ', $ignore);
+			$ignore = explode(' ', (string) $ignore);
 		}
 
 		// Bind the source value, excluding the ignored fields.
@@ -2193,11 +2199,11 @@ class FOFTable extends FOFUtilsObject implements JTableInterface
 			{
 				foreach (self::$tableFieldCache[$tableName] as $field)
 				{
-					if (strtolower($field->type) == 'timestamp without time zone')
+					if (strtolower((string) $field->type) == 'timestamp without time zone')
 					{
-						if (stristr($field->Default, '\'::timestamp without time zone'))
+						if (stristr((string) $field->Default, '\'::timestamp without time zone'))
 						{
-							list ($date, $junk) = explode('::', $field->Default, 2);
+							list ($date, $junk) = explode('::', (string) $field->Default, 2);
 							$field->Default = trim($date, "'");
 						}
 					}
@@ -2221,7 +2227,7 @@ class FOFTable extends FOFUtilsObject implements JTableInterface
 
 	public function setTableAlias($string)
 	{
-		$string = preg_replace('#[^A-Z0-9_]#i', '', $string);
+		$string = preg_replace('#[^A-Z0-9_]#i', '', (string) $string);
 		$this->_tableAlias = $string;
 	}
 
@@ -2245,7 +2251,7 @@ class FOFTable extends FOFUtilsObject implements JTableInterface
 			$return = $column;
 		}
 
-		$return = preg_replace('#[^A-Z0-9_]#i', '', $return);
+		$return = preg_replace('#[^A-Z0-9_]#i', '', (string) $return);
 
 		return $return;
 	}
@@ -2333,7 +2339,7 @@ class FOFTable extends FOFUtilsObject implements JTableInterface
 		// Clean up table names
 		foreach($tables as $table)
 		{
-			preg_match('#(.*)((\w)*(on|using))(.*)#i', $table, $matches);
+			preg_match('#(.*)((\w)*(on|using))(.*)#i', (string) $table, $matches);
 
 			if($matches && isset($matches[1]))
 			{
@@ -2412,7 +2418,7 @@ class FOFTable extends FOFUtilsObject implements JTableInterface
 
 		foreach ($fields as $field)
 		{
-			$t_fields = explode(',', $field);
+			$t_fields = explode(',', (string) $field);
 
 			foreach ($t_fields as $t_field)
 			{
@@ -3300,7 +3306,7 @@ class FOFTable extends FOFUtilsObject implements JTableInterface
 			foreach ($path as $dir)
 			{
 				// Sanitize path.
-				$dir = trim($dir);
+				$dir = trim((string) $dir);
 
 				// Add to the front of the list so that custom paths are searched first.
 				array_unshift(self::$_includePaths, $dir);

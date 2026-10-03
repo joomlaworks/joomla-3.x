@@ -41,7 +41,7 @@ class JInputCli extends JInput
 	 *
 	 * @since   11.1
 	 */
-	public function __construct(array $source = null, array $options = array())
+	public function __construct(?array $source = null, array $options = array())
 	{
 		if (isset($options['filter']))
 		{
@@ -127,14 +127,14 @@ class JInputCli extends JInput
 			$arg = $argv[$i];
 
 			// --foo --bar=baz
-			if (substr($arg, 0, 2) === '--')
+			if (substr((string) $arg, 0, 2) === '--')
 			{
-				$eqPos = strpos($arg, '=');
+				$eqPos = strpos((string) $arg, '=');
 
 				// --foo
 				if ($eqPos === false)
 				{
-					$key = substr($arg, 2);
+					$key = substr((string) $arg, 2);
 
 					// --foo value
 					if ($i + 1 < $j && $argv[$i + 1][0] !== '-')
@@ -153,25 +153,25 @@ class JInputCli extends JInput
 				// --bar=baz
 				else
 				{
-					$key = substr($arg, 2, $eqPos - 2);
-					$value = substr($arg, $eqPos + 1);
+					$key = substr((string) $arg, 2, $eqPos - 2);
+					$value = substr((string) $arg, $eqPos + 1);
 					$out[$key] = $value;
 				}
 			}
-			elseif (substr($arg, 0, 1) === '-')
+			elseif (substr((string) $arg, 0, 1) === '-')
 			// -k=value -abc
 			{
 				// -k=value
-				if (substr($arg, 2, 1) === '=')
+				if (substr((string) $arg, 2, 1) === '=')
 				{
-					$key = substr($arg, 1, 1);
-					$value = substr($arg, 3);
+					$key = substr((string) $arg, 1, 1);
+					$value = substr((string) $arg, 3);
 					$out[$key] = $value;
 				}
 				else
 				// -abc
 				{
-					$chars = str_split(substr($arg, 1));
+					$chars = str_split(substr((string) $arg, 1));
 
 					foreach ($chars as $char)
 					{

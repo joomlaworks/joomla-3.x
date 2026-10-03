@@ -469,7 +469,7 @@ class WebApplication extends BaseApplication
 
 				// Attempt to gzip encode the data with an optimal level 4.
 				$data = $this->getBody();
-				$gzdata = gzencode($data, 4, ($supported[$encoding] == 'gz') ? FORCE_GZIP : FORCE_DEFLATE);
+				$gzdata = gzencode((string) $data, 4, ($supported[$encoding] == 'gz') ? FORCE_GZIP : FORCE_DEFLATE);
 
 				// If there was a problem encoding the data just try the next encoding scheme.
 				if ($gzdata === false)
@@ -587,7 +587,7 @@ class WebApplication extends BaseApplication
 			// It's relative to where we are now, so lets add that.
 			else
 			{
-				$parts = explode('/', $uri->toString(array('path')));
+				$parts = explode('/', (string) $uri->toString(array('path')));
 				array_pop($parts);
 				$path = implode('/', $parts) . '/';
 				$url = $prefix . $path . $url;
@@ -1259,7 +1259,7 @@ class WebApplication extends BaseApplication
 		}
 
 		// Check to see if an explicit base URI has been set.
-		$siteUri = trim($this->get('site_uri', ''));
+		$siteUri = trim((string) $this->get('site_uri', ''));
 
 		if ($siteUri != '')
 		{
@@ -1288,13 +1288,13 @@ class WebApplication extends BaseApplication
 		$host = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port'));
 
 		// Check if the path includes "index.php".
-		if (strpos($path, 'index.php') !== false)
+		if (strpos((string) $path, 'index.php') !== false)
 		{
 			// Remove the index.php portion of the path.
-			$path = substr_replace($path, '', strpos($path, 'index.php'), 9);
+			$path = substr_replace($path, '', strpos((string) $path, 'index.php'), 9);
 		}
 
-		$path = rtrim($path, '/\\');
+		$path = rtrim((string) $path, '/\\');
 
 		// Set the base URI both as just a path and as the full URI.
 		$this->set('uri.base.full', $host . $path . '/');
@@ -1308,7 +1308,7 @@ class WebApplication extends BaseApplication
 		}
 
 		// Get an explicitly set media URI is present.
-		$mediaURI = trim($this->get('media_uri', ''));
+		$mediaURI = trim((string) $this->get('media_uri', ''));
 
 		if ($mediaURI)
 		{

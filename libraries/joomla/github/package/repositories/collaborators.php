@@ -64,11 +64,11 @@ class JGithubPackageRepositoriesCollaborators extends JGithubPackage
 
 		switch ($response->code)
 		{
-			case '204';
+			case '204':
 
 				return true;
 				break;
-			case '404';
+			case '404':
 
 				return false;
 				break;

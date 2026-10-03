@@ -103,9 +103,9 @@ final class InstallationApplicationWeb extends JApplicationCms
 
 				$guess = trim($guess);
 
-				$key = strtoupper(trim($key));
+				$key = strtoupper(trim((string) $key));
 				$key = preg_replace('#\s+#', '_', $key);
-				$key = preg_replace('#\W#', '', $key);
+				$key = preg_replace('#\W#', '', (string) $key);
 
 				// Prepare the text.
 				$guesses[] = $key . '="' . $guess . '"';
@@ -427,7 +427,7 @@ final class InstallationApplicationWeb extends JApplicationCms
 	 *
 	 * @since   3.2
 	 */
-	public function loadDocument(JDocument $document = null)
+	public function loadDocument(?JDocument $document = null)
 	{
 		if ($document === null)
 		{
@@ -468,7 +468,7 @@ final class InstallationApplicationWeb extends JApplicationCms
 	 *
 	 * @since   3.1
 	 */
-	public function loadSession(JSession $session = null)
+	public function loadSession(?JSession $session = null)
 	{
 		// Generate a session name.
 		$name = md5($this->get('secret') . $this->get('session_name', get_class($this)));

@@ -92,12 +92,12 @@ class Cookie extends Input
 		{
 			foreach ($value as $key => $val)
 			{
-				setcookie($name . "[$key]", $val, $expire, $path, $domain, $secure, $httpOnly);
+				setcookie($name . "[$key]", (string) $val, $expire, $path, $domain, $secure, $httpOnly);
 			}
 		}
 		else
 		{
-			setcookie($name, $value, $expire, $path, $domain, $secure, $httpOnly);
+			setcookie($name, (string) $value, $expire, $path, $domain, $secure, $httpOnly);
 		}
 
 		$this->data[$name] = $value;

@@ -119,12 +119,12 @@ class FieldsViewGroup extends JViewLegacy
 		$lang->load($component, JPATH_ADMINISTRATOR)
 		|| $lang->load($component, JPath::clean(JPATH_ADMINISTRATOR . '/components/' . $component));
 
-		$title = JText::sprintf('COM_FIELDS_VIEW_GROUP_' . ($isNew ? 'ADD' : 'EDIT') . '_TITLE', JText::_(strtoupper($component)));
+		$title = JText::sprintf('COM_FIELDS_VIEW_GROUP_' . ($isNew ? 'ADD' : 'EDIT') . '_TITLE', JText::_(strtoupper((string) $component)));
 
 		// Prepare the toolbar.
 		JToolbarHelper::title(
 			$title,
-			'puzzle field-' . ($isNew ? 'add' : 'edit') . ' ' . substr($component, 4) . '-group-' .
+			'puzzle field-' . ($isNew ? 'add' : 'edit') . ' ' . substr((string) $component, 4) . '-group-' .
 			($isNew ? 'add' : 'edit')
 		);
 

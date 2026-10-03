@@ -97,14 +97,14 @@ if (!empty($editor))
 				<?php foreach ($this->items as $i => $item) : ?>
 					<?php if ($item->language && JLanguageMultilang::isEnabled())
 					{
-						$tag = strlen($item->language);
+						$tag = strlen((string) $item->language);
 						if ($tag == 5)
 						{
-							$lang = substr($item->language, 0, 2);
+							$lang = substr((string) $item->language, 0, 2);
 						}
 						elseif ($tag == 6)
 						{
-							$lang = substr($item->language, 0, 3);
+							$lang = substr((string) $item->language, 0, 3);
 						}
 						else {
 							$lang = '';

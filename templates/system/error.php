@@ -23,7 +23,7 @@ $app = JFactory::getApplication();
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
 	<meta charset="utf-8" />
-	<title><?php echo $this->error->getCode(); ?> - <?php echo htmlspecialchars($this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
+	<title><?php echo $this->error->getCode(); ?> - <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
 	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/error.css" rel="stylesheet" />
 	<?php if ($this->direction === 'rtl') : ?>
 		<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/error_rtl.css" rel="stylesheet" />
@@ -37,7 +37,7 @@ $app = JFactory::getApplication();
 	<div class="error">
 		<div id="outline">
 		<div id="errorboxoutline">
-			<div id="errorboxheader"><?php echo $this->error->getCode(); ?> - <?php echo htmlspecialchars($this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></div>
+			<div id="errorboxheader"><?php echo $this->error->getCode(); ?> - <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></div>
 			<div id="errorboxbody">
 			<p><strong><?php echo JText::_('JERROR_LAYOUT_NOT_ABLE_TO_VISIT'); ?></strong></p>
 			<ol>
@@ -55,9 +55,9 @@ $app = JFactory::getApplication();
 			<p><?php echo JText::_('JERROR_LAYOUT_PLEASE_CONTACT_THE_SYSTEM_ADMINISTRATOR'); ?></p>
 			<div id="techinfo">
 			<p>
-				<?php echo htmlspecialchars($this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?>
+				<?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?>
 				<?php if ($this->debug) : ?>
-					<br/><?php echo htmlspecialchars($this->error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->error->getLine(); ?>
+					<br/><?php echo htmlspecialchars((string) $this->error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->error->getLine(); ?>
 				<?php endif; ?>
 			</p>
 			<?php if ($this->debug) : ?>
@@ -72,8 +72,8 @@ $app = JFactory::getApplication();
 						<?php while ($loop === true) : ?>
 							<p><strong><?php echo JText::_('JERROR_LAYOUT_PREVIOUS_ERROR'); ?></strong></p>
 							<p>
-								<?php echo htmlspecialchars($this->_error->getMessage(), ENT_QUOTES, 'UTF-8'); ?>
-								<br/><?php echo htmlspecialchars($this->_error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->_error->getLine(); ?>
+								<?php echo htmlspecialchars((string) $this->_error->getMessage(), ENT_QUOTES, 'UTF-8'); ?>
+								<br/><?php echo htmlspecialchars((string) $this->_error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->_error->getLine(); ?>
 							</p>
 							<?php echo $this->renderBacktrace(); ?>
 							<?php $loop = $this->setError($this->_error->getPrevious()); ?>

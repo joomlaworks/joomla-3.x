@@ -117,7 +117,7 @@ abstract class JGoogleData
 		}
 
 		$jdata = $this->query($qurl);
-		$data = json_decode($jdata->body, true);
+		$data = json_decode((string) $jdata->body, true);
 
 		if ($data && array_key_exists('items', $data))
 		{

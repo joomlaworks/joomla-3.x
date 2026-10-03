@@ -239,8 +239,8 @@ abstract class PluginHelper
 			$paths[$dispatcherHash] = array();
 		}
 
-		$plugin->type = preg_replace('/[^A-Z0-9_\.-]/i', '', $plugin->type);
-		$plugin->name = preg_replace('/[^A-Z0-9_\.-]/i', '', $plugin->name);
+		$plugin->type = preg_replace('/[^A-Z0-9_\.-]/i', '', (string) $plugin->type);
+		$plugin->name = preg_replace('/[^A-Z0-9_\.-]/i', '', (string) $plugin->name);
 
 		$path = JPATH_PLUGINS . '/' . $plugin->type . '/' . $plugin->name . '/' . $plugin->name . '.php';
 

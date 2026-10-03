@@ -56,8 +56,8 @@ if (!function_exists('fnmatch'))
 	function fnmatch($pattern, $string)
 	{
 		return @preg_match(
-			'/^' . strtr(addcslashes($pattern, '/\\.+^$(){}=!<>|'),
-				array('*' => '.*', '?' => '.?')) . '$/i', $string
+			'/^' . strtr(addcslashes((string) $pattern, '/\\.+^$(){}=!<>|'),
+				array('*' => '.*', '?' => '.?')) . '$/i', (string) $string
 		);
 	}
 }
@@ -69,14 +69,14 @@ if (!function_exists('akstringlen'))
 	{
 		function akstringlen($string)
 		{
-			return mb_strlen($string, '8bit');
+			return mb_strlen((string) $string, '8bit');
 		}
 	}
 	else
 	{
 		function akstringlen($string)
 		{
-			return strlen($string);
+			return strlen((string) $string);
 		}
 	}
 }
@@ -87,14 +87,14 @@ if (!function_exists('aksubstr'))
 	{
 		function aksubstr($string, $start, $length = null)
 		{
-			return mb_substr($string, $start, $length, '8bit');
+			return mb_substr((string) $string, $start, $length, '8bit');
 		}
 	}
 	else
 	{
 		function aksubstr($string, $start, $length = null)
 		{
-			return substr($string, $start, $length);
+			return substr((string) $string, $start, $length);
 		}
 	}
 }
@@ -109,13 +109,13 @@ function getQueryParam($key, $default = null)
 {
 	$value = $default;
 
-	if (array_key_exists($key, $_REQUEST))
+	if (array_key_exists((string) $key, $_REQUEST))
 	{
 		$value = $_REQUEST[$key];
 
 		if (PHP_VERSION_ID < 50400 && get_magic_quotes_gpc() && !is_null($value))
 		{
-			$value = stripslashes($value);
+			$value = stripslashes((string) $value);
 		}
 	}
 
@@ -870,7 +870,7 @@ abstract class AKAbstractUnarchiver extends AKAbstractPart
 						// Sanity check
 						if (!empty($value))
 						{
-							$value = strtolower($value);
+							$value = strtolower((string) $value);
 
 							if (strlen($value) > 6)
 							{
@@ -1276,10 +1276,10 @@ abstract class AKAbstractUnarchiver extends AKAbstractPart
 
 		if (is_null($rootDir))
 		{
-			$rootDir = rtrim(AKFactory::get('kickstart.setup.destdir', ''), '/\\');
+			$rootDir = rtrim((string) AKFactory::get('kickstart.setup.destdir', ''), '/\\');
 		}
 
-		$directory = rtrim(dirname($path), '/\\');
+		$directory = rtrim(dirname((string) $path), '/\\');
 		if ($directory != $rootDir)
 		{
 			// Is this an unwritable directory?
@@ -1303,7 +1303,31 @@ abstract class AKAbstractUnarchiver extends AKAbstractPart
 		{
 			if ($length > 0)
 			{
-				$data = fread($fp, $length);
+				// A single fread() call is not guaranteed to return the full requested length
+				// in one go, even when nowhere near EOF - this is well-documented PHP behaviour
+				// for network streams, and empirically confirmed here to also apply to custom
+				// stream wrappers and, by extension, to some non-trivial filesystem backends
+				// (network-mounted storage, FUSE overlays) that a "local" temp path can resolve
+				// to on some hosts. Callers of this method historically treated a short read as
+				// proof of a corrupt/truncated archive; loop here instead, so a short single read
+				// is transparently completed rather than misreported as corruption upstream.
+				$data      = '';
+				$remaining = $length;
+
+				while ($remaining > 0 && !feof($fp))
+				{
+					$chunk = fread($fp, $remaining);
+
+					if ($chunk === false || $chunk === '')
+					{
+						// Genuine error, or no progress possible right now - stop here and let
+						// the caller's own EOF/corruption checks evaluate what we did get.
+						break;
+					}
+
+					$data .= $chunk;
+					$remaining -= strlen($chunk);
+				}
 			}
 			else
 			{
@@ -1749,9 +1773,9 @@ class AKUnarchiverJPA extends AKAbstractUnarchiver
 		$isDirRenamed = false;
 		if (is_array($this->renameDirs) && (count($this->renameDirs) > 0))
 		{
-			if (array_key_exists(dirname($file), $this->renameDirs))
+			if (array_key_exists(dirname((string) $file), $this->renameDirs))
 			{
-				$file         = rtrim($this->renameDirs[dirname($file)], '/') . '/' . basename($file);
+				$file         = rtrim($this->renameDirs[dirname((string) $file)], '/') . '/' . basename((string) $file);
 				$isRenamed    = true;
 				$isDirRenamed = true;
 			}
@@ -1842,7 +1866,7 @@ class AKUnarchiverJPA extends AKAbstractUnarchiver
 		$this->fileHeader->permissions = $header_data['perms'];
 
 		// Find hard-coded banned files
-		if ((basename($this->fileHeader->file) == ".") || (basename($this->fileHeader->file) == ".."))
+		if ((basename((string) $this->fileHeader->file) == ".") || (basename((string) $this->fileHeader->file) == ".."))
 		{
 			$isBannedFile = true;
 		}
@@ -2000,8 +2024,8 @@ class AKUnarchiverJPA extends AKAbstractUnarchiver
 			$this->fileHeader->realFile = $this->fileHeader->file;
 		}
 
-		$lastSlash = strrpos($this->fileHeader->realFile, '/');
-		$dirName   = substr($this->fileHeader->realFile, 0, $lastSlash);
+		$lastSlash = strrpos((string) $this->fileHeader->realFile, '/');
+		$dirName   = substr((string) $this->fileHeader->realFile, 0, $lastSlash);
 		$perms     = $this->flagRestorePermissions ? $this->fileHeader->permissions : 0755;
 		$ignore    = AKFactory::get('kickstart.setup.ignoreerrors', false) || $this->isIgnoredDirectory($dirName);
 
@@ -2123,9 +2147,9 @@ class AKUnarchiverJPA extends AKAbstractUnarchiver
 			}
 
 			// Remove any trailing slash
-			if (substr($filename, -1) == '/')
+			if (substr((string) $filename, -1) == '/')
 			{
-				$filename = substr($filename, 0, -1);
+				$filename = substr((string) $filename, 0, -1);
 			}
 			// Create the symlink - only possible within PHP context. There's no support built in the FTP protocol, so no postproc use is possible here :(
 			@symlink($data, $filename);
@@ -2222,7 +2246,7 @@ class AKUnarchiverJPA extends AKAbstractUnarchiver
 			{
 				if (is_resource($outfp))
 				{
-					@fwrite($outfp, $data);
+					@fwrite($outfp, (string) $data);
 				}
 			}
 		}
@@ -2367,8 +2391,8 @@ class AKUnarchiverZIP extends AKUnarchiverJPA
 		}
 
 		// Read a possible multipart signature
-		$sigBinary  = fread($this->fp, 4);
-		$headerData = unpack('Vsig', $sigBinary);
+		$sigBinary  = $this->fread($this->fp, 4);
+		$headerData = unpack('Vsig', (string) $sigBinary);
 
 		// Roll back if it's not a multipart archive
 		if ($headerData['sig'] == 0x04034b50)
@@ -2448,9 +2472,9 @@ class AKUnarchiverZIP extends AKUnarchiverJPA
 		}
 
 		// Get and decode Local File Header
-		$headerBinary = fread($this->fp, 30);
+		$headerBinary = $this->fread($this->fp, 30);
 		$headerData   =
-			unpack('Vsig/C2ver/vbitflag/vcompmethod/vlastmodtime/vlastmoddate/Vcrc/Vcompsize/Vuncomp/vfnamelen/veflen', $headerBinary);
+			unpack('Vsig/C2ver/vbitflag/vcompmethod/vlastmodtime/vlastmoddate/Vcrc/Vcompsize/Vuncomp/vfnamelen/veflen', (string) $headerBinary);
 
 		// Check signature
 		if (!($headerData['sig'] == 0x04034b50))
@@ -2478,7 +2502,7 @@ class AKUnarchiverZIP extends AKUnarchiverJPA
 		}
 
 		// If bit 3 of the bitflag is set, expectDataDescriptor is true
-		$this->expectDataDescriptor = ($headerData['bitflag'] & 4) == 4;
+		$this->expectDataDescriptor = ($headerData['bitflag'] & 8) == 8;
 
 		$this->fileHeader            = new stdClass();
 		$this->fileHeader->timestamp = 0;
@@ -2511,13 +2535,13 @@ class AKUnarchiverZIP extends AKUnarchiverJPA
 		$extraFieldLength               = $headerData['eflen'];
 
 		// Read filename field
-		$this->fileHeader->file = fread($this->fp, $nameFieldLength);
+		$this->fileHeader->file = $this->fread($this->fp, $nameFieldLength);
 
 		// Handle file renaming
 		$isRenamed = false;
 		if (is_array($this->renameFiles) && (count($this->renameFiles) > 0))
 		{
-			if (array_key_exists($this->fileHeader->file, $this->renameFiles))
+			if (array_key_exists((string) $this->fileHeader->file, $this->renameFiles))
 			{
 				$this->fileHeader->file = $this->renameFiles[$this->fileHeader->file];
 				$isRenamed              = true;
@@ -2528,10 +2552,10 @@ class AKUnarchiverZIP extends AKUnarchiverJPA
 		$isDirRenamed = false;
 		if (is_array($this->renameDirs) && (count($this->renameDirs) > 0))
 		{
-			if (array_key_exists(dirname($this->fileHeader->file), $this->renameDirs))
+			if (array_key_exists(dirname((string) $this->fileHeader->file), $this->renameDirs))
 			{
 				$file         =
-					rtrim($this->renameDirs[dirname($this->fileHeader->file)], '/') . '/' . basename($this->fileHeader->file);
+					rtrim($this->renameDirs[dirname((string) $this->fileHeader->file)], '/') . '/' . basename((string) $this->fileHeader->file);
 				$isRenamed    = true;
 				$isDirRenamed = true;
 			}
@@ -2540,7 +2564,7 @@ class AKUnarchiverZIP extends AKUnarchiverJPA
 		// Read extra field if present
 		if ($extraFieldLength > 0)
 		{
-			$extrafield = fread($this->fp, $extraFieldLength);
+			$extrafield = $this->fread($this->fp, $extraFieldLength);
 		}
 
 		debugMsg('*' . ftell($this->fp) . ' IS START OF ' . $this->fileHeader->file . ' (' . $this->fileHeader->compressed . ' bytes)');
@@ -2548,7 +2572,7 @@ class AKUnarchiverZIP extends AKUnarchiverJPA
 
 		// Decide filetype -- Check for directories
 		$this->fileHeader->type = 'file';
-		if (strrpos($this->fileHeader->file, '/') == strlen($this->fileHeader->file) - 1)
+		if (strrpos((string) $this->fileHeader->file, '/') == strlen((string) $this->fileHeader->file) - 1)
 		{
 			$this->fileHeader->type = 'dir';
 		}
@@ -2569,7 +2593,7 @@ class AKUnarchiverZIP extends AKUnarchiverJPA
 		}
 
 		// Find hard-coded banned files
-		if ((basename($this->fileHeader->file) == ".") || (basename($this->fileHeader->file) == ".."))
+		if ((basename((string) $this->fileHeader->file) == ".") || (basename((string) $this->fileHeader->file) == ".."))
 		{
 			$isBannedFile = true;
 		}
@@ -3116,7 +3140,7 @@ class AKText extends AKAbstractObject
 						}
 					}
 				}
-				$value = trim($value);
+				$value = trim((string) $value);
 				$value = trim($value, "'\"");
 
 				if ($i == 0)
@@ -3225,7 +3249,7 @@ class AKText extends AKAbstractObject
 					if (count($iniFiles) > 0)
 					{
 						$filename       = $iniFiles[0];
-						$filename       = substr($filename, strlen(KSROOTDIR) + 1);
+						$filename       = substr((string) $filename, strlen((string) KSROOTDIR) + 1);
 						$this->language = substr($filename, 0, 5);
 					}
 					else
@@ -3301,7 +3325,7 @@ class AKText extends AKAbstractObject
 	{
 		$text = self::getInstance();
 
-		$key = strtoupper($string);
+		$key = strtoupper((string) $string);
 		$key = substr($key, 0, 1) == '_' ? substr($key, 1) : $key;
 
 		if (isset ($text->strings[$key]))
@@ -3335,8 +3359,8 @@ class AKText extends AKAbstractObject
 		$out = '';
 		foreach ($this->strings as $key => $value)
 		{
-			$key   = addcslashes($key, '\\\'"');
-			$value = addcslashes($value, '\\\'"');
+			$key   = addcslashes((string) $key, '\\\'"');
+			$value = addcslashes((string) $value, '\\\'"');
 			if (!empty($out))
 			{
 				$out .= ",\n";
@@ -3428,7 +3452,7 @@ class AKFactory
 			if (empty($filetype))
 			{
 				$filename      = self::get('kickstart.setup.sourcefile', null);
-				$basename      = basename($filename);
+				$basename      = basename((string) $filename);
 				$baseextension = strtoupper(substr($basename, -3));
 				switch ($baseextension)
 				{
@@ -3450,7 +3474,7 @@ class AKFactory
 				}
 			}
 
-			$class_name = 'AKUnarchiver' . ucfirst($filetype);
+			$class_name = 'AKUnarchiver' . ucfirst((string) $filetype);
 		}
 
 		$destdir = self::get('kickstart.setup.destdir', null);
@@ -3467,7 +3491,7 @@ class AKFactory
 
 			if (!empty($sourcePath))
 			{
-				$sourceFile = rtrim($sourcePath, '/\\') . '/' . $sourceFile;
+				$sourceFile = rtrim((string) $sourcePath, '/\\') . '/' . $sourceFile;
 			}
 
 			// Initialize the object –– Any change here MUST be reflected to echoHeadJavascript (default values)
@@ -3528,7 +3552,7 @@ class AKFactory
 	{
 		$self = self::getInstance();
 
-		if (array_key_exists($key, $self->varlist))
+		if (array_key_exists((string) $key, $self->varlist))
 		{
 			return $self->varlist[$key];
 		}
@@ -3632,7 +3656,7 @@ class AKFactory
 			{
 				$proc_engine = self::get('kickstart.procengine', 'direct');
 			}
-			$class_name = 'AKPostproc' . ucfirst($proc_engine);
+			$class_name = 'AKPostproc' . ucfirst((string) $proc_engine);
 		}
 
 		return self::getClassInstance($class_name);
@@ -4046,7 +4070,7 @@ class AKEncryptionAES
 		$pwBytes = array();
 		for ($i = 0; $i < $nBytes; $i++)
 		{
-			$pwBytes[$i] = ord(substr($password, $i, 1)) & 0xff;
+			$pwBytes[$i] = ord(substr($password, $i, 1)[0]) & 0xff;
 		}
 		$key = self::Cipher($pwBytes, self::KeyExpansion($pwBytes));
 		$key = array_merge($key, array_slice($key, 0, $nBytes - 16));  // expand key to 16/24/32 bytes long
@@ -4100,7 +4124,7 @@ class AKEncryptionAES
 
 			for ($i = 0; $i < $blockLength; $i++)
 			{  // -- xor plaintext with ciphered counter byte-by-byte --
-				$cipherByte[$i] = $cipherCntr[$i] ^ ord(substr($plaintext, $b * $blockSize + $i, 1));
+				$cipherByte[$i] = $cipherCntr[$i] ^ ord(substr($plaintext, $b * $blockSize + $i, 1)[0]);
 				$cipherByte[$i] = chr($cipherByte[$i]);
 			}
 			$ciphertxt[$b] = implode('', $cipherByte);  // escape troublesome characters in ciphertext
@@ -4354,7 +4378,7 @@ class AKEncryptionAES
 
 		for ($i = 0; $i < $nBytes; $i++)
 		{
-			$pwBytes[$i] = ord(substr($password, $i, 1)) & 0xff;
+			$pwBytes[$i] = ord(substr($password, $i, 1)[0]) & 0xff;
 		}
 
 		$key = self::Cipher($pwBytes, self::KeyExpansion($pwBytes));
@@ -4366,7 +4390,7 @@ class AKEncryptionAES
 
 		for ($i = 0; $i < 8; $i++)
 		{
-			$counterBlock[$i] = ord(substr($ctrTxt, $i, 1));
+			$counterBlock[$i] = ord(substr($ctrTxt, $i, 1)[0]);
 		}
 
 		// generate key schedule
@@ -4406,7 +4430,7 @@ class AKEncryptionAES
 			for ($i = 0; $i < strlen($ciphertext[$b]); $i++)
 			{
 				// -- xor plaintext with ciphered counter byte-by-byte --
-				$plaintxtByte[$i] = $cipherCntr[$i] ^ ord(substr($ciphertext[$b], $i, 1));
+				$plaintxtByte[$i] = $cipherCntr[$i] ^ ord(substr($ciphertext[$b], $i, 1)[0]);
 				$plaintxtByte[$i] = chr($plaintxtByte[$i]);
 
 			}
@@ -4529,7 +4553,7 @@ class AKEncryptionAES
 			$pwBytes = array();
 			for ($i = 0; $i < $nBytes; $i++)
 			{
-				$pwBytes[$i] = ord(substr($password, $i, 1)) & 0xff;
+				$pwBytes[$i] = ord(substr($password, $i, 1)[0]) & 0xff;
 			}
 			$iv    = self::Cipher($pwBytes, self::KeyExpansion($pwBytes));
 			$newIV = '';
@@ -4574,7 +4598,7 @@ class AKEncryptionAES
 
 		for ($i = 0; $i < $nBytes; $i++)
 		{
-			$pwBytes[$i] = ord(substr($password, $i, 1)) & 0xff;
+			$pwBytes[$i] = ord(substr($password, $i, 1)[0]) & 0xff;
 		}
 
 		$key    = self::Cipher($pwBytes, self::KeyExpansion($pwBytes));
@@ -4886,7 +4910,7 @@ function masterSetup()
 		}
 
 		// Get the raw data
-		$raw = json_decode($json, true);
+		$raw = json_decode((string) $json, true);
 
 		if (!empty($password) && (empty($raw)))
 		{
@@ -5148,9 +5172,9 @@ if (!defined('KICKSTART'))
 function recursive_remove_directory($directory)
 {
 	// if the path has a slash at the end we remove it here
-	if (substr($directory, -1) == '/')
+	if (substr((string) $directory, -1) == '/')
 	{
-		$directory = substr($directory, 0, -1);
+		$directory = substr((string) $directory, 0, -1);
 	}
 	// if the path is not valid or is not a directory ...
 	if (!file_exists($directory) || !is_dir($directory))

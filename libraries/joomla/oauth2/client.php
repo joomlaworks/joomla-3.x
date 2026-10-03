@@ -83,11 +83,11 @@ class JOAuth2Client
 			{
 				if (strpos($response->headers['Content-Type'], 'application/json') === 0)
 				{
-					$token = array_merge(json_decode($response->body, true), array('created' => time()));
+					$token = array_merge(json_decode((string) $response->body, true), array('created' => time()));
 				}
 				else
 				{
-					parse_str($response->body, $token);
+					parse_str((string) $response->body, $token);
 					$token = array_merge($token, array('created' => time()));
 				}
 
@@ -151,7 +151,7 @@ class JOAuth2Client
 
 		$url = $this->getOption('authurl');
 
-		if (strpos($url, '?'))
+		if (strpos((string) $url, '?'))
 		{
 			$url .= '&';
 		}
@@ -161,29 +161,29 @@ class JOAuth2Client
 		}
 
 		$url .= 'response_type=code';
-		$url .= '&client_id=' . urlencode($this->getOption('clientid'));
+		$url .= '&client_id=' . urlencode((string) $this->getOption('clientid'));
 
 		if ($this->getOption('redirecturi'))
 		{
-			$url .= '&redirect_uri=' . urlencode($this->getOption('redirecturi'));
+			$url .= '&redirect_uri=' . urlencode((string) $this->getOption('redirecturi'));
 		}
 
 		if ($this->getOption('scope'))
 		{
 			$scope = is_array($this->getOption('scope')) ? implode(' ', $this->getOption('scope')) : $this->getOption('scope');
-			$url .= '&scope=' . urlencode($scope);
+			$url .= '&scope=' . urlencode((string) $scope);
 		}
 
 		if ($this->getOption('state'))
 		{
-			$url .= '&state=' . urlencode($this->getOption('state'));
+			$url .= '&state=' . urlencode((string) $this->getOption('state'));
 		}
 
 		if (is_array($this->getOption('requestparams')))
 		{
 			foreach ($this->getOption('requestparams') as $key => $value)
 			{
-				$url .= '&' . $key . '=' . urlencode($value);
+				$url .= '&' . $key . '=' . urlencode((string) $value);
 			}
 		}
 
@@ -368,11 +368,11 @@ class JOAuth2Client
 		{
 			if (strpos($response->headers['Content-Type'], 'application/json') === 0)
 			{
-				$token = array_merge(json_decode($response->body, true), array('created' => time()));
+				$token = array_merge(json_decode((string) $response->body, true), array('created' => time()));
 			}
 			else
 			{
-				parse_str($response->body, $token);
+				parse_str((string) $response->body, $token);
 				$token = array_merge($token, array('created' => time()));
 			}
 

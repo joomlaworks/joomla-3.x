@@ -82,7 +82,7 @@ class PasswordRule extends FormRule
 			return true;
 		}
 
-		$valueLength = strlen($value);
+		$valueLength = strlen((string) $value);
 
 		// Load language file of com_users component
 		\JFactory::getLanguage()->load('com_users');
@@ -94,7 +94,7 @@ class PasswordRule extends FormRule
 		}
 
 		// We don't allow white space inside passwords
-		$valueTrim = trim($value);
+		$valueTrim = trim((string) $value);
 
 		// Set a variable to check if any errors are made in password
 		$validPassword = true;
@@ -112,7 +112,7 @@ class PasswordRule extends FormRule
 		// Minimum number of integers required
 		if (!empty($minimumIntegers))
 		{
-			$nInts = preg_match_all('/[0-9]/', $value, $imatch);
+			$nInts = preg_match_all('/[0-9]/', (string) $value, $imatch);
 
 			if ($nInts < $minimumIntegers)
 			{
@@ -128,7 +128,7 @@ class PasswordRule extends FormRule
 		// Minimum number of symbols required
 		if (!empty($minimumSymbols))
 		{
-			$nsymbols = preg_match_all('[\W]', $value, $smatch);
+			$nsymbols = preg_match_all('[\W]', (string) $value, $smatch);
 
 			if ($nsymbols < $minimumSymbols)
 			{
@@ -144,7 +144,7 @@ class PasswordRule extends FormRule
 		// Minimum number of upper case ASCII characters required
 		if (!empty($minimumUppercase))
 		{
-			$nUppercase = preg_match_all('/[A-Z]/', $value, $umatch);
+			$nUppercase = preg_match_all('/[A-Z]/', (string) $value, $umatch);
 
 			if ($nUppercase < $minimumUppercase)
 			{
@@ -160,7 +160,7 @@ class PasswordRule extends FormRule
 		// Minimum number of lower case ASCII characters required
 		if (!empty($minimumLowercase))
 		{
-			$nLowercase = preg_match_all('/[a-z]/', $value, $umatch);
+			$nLowercase = preg_match_all('/[a-z]/', (string) $value, $umatch);
 
 			if ($nLowercase < $minimumLowercase)
 			{

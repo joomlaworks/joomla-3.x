@@ -16,11 +16,11 @@ $mod          = $displayData['module'];
 $position     = $displayData['position'];
 $menusEditing = $displayData['menusediting'];
 $parameters   = JComponentHelper::getParams('com_modules');
-$redirectUri  = '&return=' . urlencode(base64_encode(JUri::getInstance()->toString()));
+$redirectUri  = '&return=' . urlencode(base64_encode((string) JUri::getInstance()->toString()));
 $target       = '_blank';
 $itemid       = JFactory::getApplication()->input->get('Itemid', '0', 'int');
 
-if (preg_match('/<(?:div|span|nav|ul|ol|h\d) [^>]*class="[^"]* jmoddiv"/', $moduleHtml))
+if (preg_match('/<(?:div|span|nav|ul|ol|h\d) [^>]*class="[^"]* jmoddiv"/', (string) $moduleHtml))
 {
 	// Module has already module edit button:
 	return;
@@ -44,7 +44,7 @@ $moduleHtml = preg_replace(
 	'\\1 jmoddiv" data-jmodediturl="' . $editUrl . '" data-target="' . $target . '" data-jmodtip="'
 	.	JHtml::_('tooltipText',
 			JText::_('JLIB_HTML_EDIT_MODULE'),
-			htmlspecialchars($mod->title, ENT_COMPAT, 'UTF-8') . '<br />' . sprintf(JText::_('JLIB_HTML_EDIT_MODULE_IN_POSITION'), htmlspecialchars($position, ENT_COMPAT, 'UTF-8')),
+			htmlspecialchars((string) $mod->title, ENT_COMPAT, 'UTF-8') . '<br />' . sprintf(JText::_('JLIB_HTML_EDIT_MODULE_IN_POSITION'), htmlspecialchars((string) $position, ENT_COMPAT, 'UTF-8')),
 			0
 		)
 	. '"'
@@ -54,7 +54,7 @@ $moduleHtml = preg_replace(
 			:
 			''
 		),
-	$moduleHtml,
+	(string) $moduleHtml,
 	1,
 	$count
 );

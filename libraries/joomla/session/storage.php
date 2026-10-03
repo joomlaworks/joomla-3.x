@@ -49,7 +49,7 @@ abstract class JSessionStorage implements \SessionHandlerInterface
 	 */
 	public static function getInstance($name = 'none', $options = array())
 	{
-		$name = strtolower(JFilterInput::getInstance()->clean($name, 'word'));
+		$name = strtolower((string) JFilterInput::getInstance()->clean($name, 'word'));
 
 		if (empty(self::$instances[$name]))
 		{

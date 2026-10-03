@@ -198,7 +198,7 @@ class SimplePie_Decode_HTML_Entities
 
 					if ($hex)
 					{
-						$codepoint = hexdec($codepoint);
+						$codepoint = hexdec((string) $codepoint);
 					}
 					else
 					{
@@ -221,7 +221,7 @@ class SimplePie_Decode_HTML_Entities
 
 					$consumed_length = strlen($this->consumed);
 					$this->data = substr_replace($this->data, $replacement, $this->position - $consumed_length, $consumed_length);
-					$this->position += strlen($replacement) - $consumed_length;
+					$this->position += strlen((string) $replacement) - $consumed_length;
 				}
 				break;
 

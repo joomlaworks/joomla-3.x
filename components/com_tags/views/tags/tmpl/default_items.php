@@ -47,7 +47,7 @@ JFactory::getDocument()->addScriptDeclaration("
 ");
 
 ?>
-<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo htmlspecialchars((string) JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if ($this->params->get('filter_field') || $this->params->get('show_pagination_limit')) : ?>
 		<fieldset class="filters btn-toolbar">
 			<?php if ($this->params->get('filter_field')) : ?>
@@ -95,16 +95,16 @@ JFactory::getDocument()->addScriptDeclaration("
 					</h3>
 			<?php endif; ?>
 			<?php if ($this->params->get('all_tags_show_tag_image') && !empty($item->images)) : ?>
-				<?php $images  = json_decode($item->images); ?>
+				<?php $images  = json_decode((string) $item->images); ?>
 				<span class="tag-body">
 					<?php if (!empty($images->image_intro)) : ?>
 						<?php $imgfloat = empty($images->float_intro) ? $this->params->get('float_intro') : $images->float_intro; ?>
-						<div class="pull-<?php echo htmlspecialchars($imgfloat, ENT_QUOTES, 'UTF-8'); ?> item-image">
+						<div class="pull-<?php echo htmlspecialchars((string) $imgfloat, ENT_QUOTES, 'UTF-8'); ?> item-image">
 							<img
 								<?php if ($images->image_intro_caption) : ?>
 									<?php echo 'class="caption"' . ' title="' . htmlspecialchars($images->image_intro_caption, ENT_QUOTES, 'UTF-8') . '"'; ?>
 								<?php endif; ?>
-								src="<?php echo htmlspecialchars($images->image_intro, ENT_QUOTES, 'UTF-8'); ?>"
+								src="<?php echo htmlspecialchars((string) $images->image_intro, ENT_QUOTES, 'UTF-8'); ?>"
 								alt="<?php echo htmlspecialchars($images->image_intro_alt, ENT_QUOTES, 'UTF-8'); ?>" />
 						</div>
 					<?php endif; ?>

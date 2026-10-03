@@ -51,7 +51,7 @@ class JGithubPackageOrgsMembers extends JGithubPackage
 				break;
 
 			case 200 :
-				return json_decode($response->body);
+				return json_decode((string) $response->body);
 				break;
 
 			default :

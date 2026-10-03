@@ -76,7 +76,7 @@ abstract class ModTagsPopularHelper
 
 		if ($timeframe !== 'alltime')
 		{
-			$query->where($db->quoteName('tag_date') . ' > ' . $query->dateAdd($db->quote($nowDate), '-1', strtoupper($timeframe)));
+			$query->where($db->quoteName('tag_date') . ' > ' . $query->dateAdd($db->quote($nowDate), '-1', strtoupper((string) $timeframe)));
 		}
 
 		$query->join('INNER', $db->quoteName('#__tags', 't') . ' ON ' . $db->quoteName('tag_id') . ' = t.id')
@@ -87,6 +87,10 @@ abstract class ModTagsPopularHelper
 		// Only return tags connected to published and authorised items
 		$query->where($db->quoteName('c.core_state') . ' = 1')
 			->where('(' . $db->quoteName('c.core_access') . ' IN (' . $groups . ') OR ' . $db->quoteName('c.core_access') . ' = 0)')
+			// Subquery rather than a join, which would make the unqualified GROUP BY columns ambiguous
+			->where('(' . $db->quoteName('c.core_catid') . ' = 0 OR ' . $db->quoteName('c.core_catid') . ' IN (SELECT '
+				. $db->quoteName('cat.id') . ' FROM ' . $db->quoteName('#__categories', 'cat')
+				. ' WHERE ' . $db->quoteName('cat.access') . ' IN (' . $groups . ')))')
 			->where('(' . $db->quoteName('c.core_publish_up') . ' = ' . $nullDate
 				. ' OR ' . $db->quoteName('c.core_publish_up') . ' <= ' . $db->quote($nowDate) . ')')
 			->where('(' . $db->quoteName('c.core_publish_down') . ' = ' . $nullDate

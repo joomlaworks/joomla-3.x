@@ -17,11 +17,11 @@ if ($item->language === '*')
 }
 elseif ($item->language_image)
 {
-	echo JHtml::_('image', 'mod_languages/' . $item->language_image . '.gif', '', null, true) . '&nbsp;' . htmlspecialchars($item->language_title, ENT_COMPAT, 'UTF-8');
+	echo JHtml::_('image', 'mod_languages/' . $item->language_image . '.gif', '', null, true) . '&nbsp;' . htmlspecialchars((string) $item->language_title, ENT_COMPAT, 'UTF-8');
 }
 elseif ($item->language_title)
 {
-	echo htmlspecialchars($item->language_title, ENT_COMPAT, 'UTF-8');
+	echo htmlspecialchars((string) $item->language_title, ENT_COMPAT, 'UTF-8');
 }
 else
 {

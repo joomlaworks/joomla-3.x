@@ -113,6 +113,41 @@ abstract class JControllerBase implements JController
 	}
 
 	/**
+	 * Serialize the controller (PHP 7.4+ magic method, avoids the PHP 8.1+ deprecation
+	 * warning for classes implementing Serializable without also implementing this).
+	 *
+	 * @return  array  The data to serialize.
+	 *
+	 * @since   3.16.0
+	 */
+	public function __serialize()
+	{
+		return array('input' => $this->input);
+	}
+
+	/**
+	 * Unserialize the controller (PHP 7.4+ magic method counterpart to __serialize()).
+	 *
+	 * @param   array  $data  The unserialized data.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.16.0
+	 * @throws  UnexpectedValueException if input is not the right class.
+	 */
+	public function __unserialize(array $data)
+	{
+		// Setup dependencies.
+		$this->app = $this->loadApplication();
+		$this->input = $data['input'];
+
+		if (!($this->input instanceof JInput))
+		{
+			throw new UnexpectedValueException(sprintf('%s::__unserialize would not accept a `%s`.', get_class($this), gettype($this->input)));
+		}
+	}
+
+	/**
 	 * Load the application object.
 	 *
 	 * @return  AbstractApplication  The application object.

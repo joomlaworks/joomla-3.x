@@ -90,13 +90,13 @@ if ($link = $current->get('link'))
 
 	if ($icon)
 	{
-		if (substr($icon, 0, 6) == 'class:')
+		if (substr((string) $icon, 0, 6) == 'class:')
 		{
-			$icon = '<span class="' . substr($icon, 6) . '"></span>';
+			$icon = '<span class="' . substr((string) $icon, 6) . '"></span>';
 		}
-		elseif (substr($icon, 0, 6) == 'image:')
+		elseif (substr((string) $icon, 0, 6) == 'image:')
 		{
-			$icon = JHtml::_('image', substr($icon, 6), null, null, true);
+			$icon = JHtml::_('image', substr((string) $icon, 6), null, null, true);
 		}
 		else
 		{
@@ -120,7 +120,7 @@ if ($this->enabled && $current->hasChildren())
 {
 	if ($current->getLevel() > 1)
 	{
-		$id = $current->get('id') ? ' id="menu-' . strtolower($current->get('id')) . '"' : '';
+		$id = $current->get('id') ? ' id="menu-' . strtolower((string) $current->get('id')) . '"' : '';
 
 		echo '<ul' . $id . ' class="dropdown-menu menu-scrollable">' . "\n";
 	}

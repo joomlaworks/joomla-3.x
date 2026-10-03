@@ -48,6 +48,10 @@ class Text
 	 */
 	public static function _($string, $jsSafe = false, $interpretBackSlashes = true, $script = false)
 	{
+		// Avoid PHP 8.1+ deprecation notices further down (e.g. strpos() in passSprintf()) for a
+		// null $string - behaviour is unchanged, since a null value was already treated as ''.
+		$string = (string) $string;
+
 		if (is_array($jsSafe))
 		{
 			if (array_key_exists('interpretBackSlashes', $jsSafe))
@@ -115,7 +119,7 @@ class Text
 		$first_part = preg_replace('/\[\[%([0-9]+):[^\]]*\]\]/', '%\1$s', $first_part);
 
 		// Check if string contains sprintf placeholders
-		if (!preg_match('/%([0-9]+\$)?s/', $first_part))
+		if (!preg_match('/%([0-9]+\$)?s/', (string) $first_part))
 		{
 			return false;
 		}

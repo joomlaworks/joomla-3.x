@@ -52,7 +52,7 @@ class FOFFormHeaderFieldsearchable extends FOFFormHeaderField
 		}
 
 		return '<input type="text" name="' . $name . '" id="' . $this->id . '"' . ' value="'
-			. htmlspecialchars($searchvalue, ENT_COMPAT, 'UTF-8') . '"' . $filterclass . $size . $placeholder . $onchange . $maxLength . '/>';
+			. htmlspecialchars((string) $searchvalue, ENT_COMPAT, 'UTF-8') . '"' . $filterclass . $size . $placeholder . $onchange . $maxLength . '/>';
 	}
 
 	/**
