@@ -15,9 +15,9 @@
         3.15 and older can't read that tag correctly and would withhold every update, so rows
         up to and including 3.15 must keep pointing at extension.xml.
 
-    To release a new version (e.g. 3.17.0):
-      1. Bump version="3.16.0" → version="3.17.0" in every <extension> entry below.
-      2. Add a new <extension> row for the new version's targetplatformversion (e.g. "3.17"), so
+    To release a new version (e.g. 3.18.0):
+      1. Bump version="3.17.0" → version="3.18.0" in every <extension> entry below.
+      2. Add a new <extension> row for the new version's targetplatformversion (e.g. "3.18"), so
          sites on it can receive future updates. Rows for 3.16 and newer use extension-db.xml.
       3. Update the <update> block in BOTH docs/extension.xml and docs/extension-db.xml with the
          new version and release notes.
@@ -25,11 +25,12 @@
       5. Commit and push to main — the GitHub Action rebuilds joomla-latest.zip automatically.
 -->
 <extensionset name="Joomla Core" description="Joomla! Core">
-    <extension name="Joomla" element="joomla" type="file" version="3.16.0" targetplatformversion="3.10" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
-    <extension name="Joomla" element="joomla" type="file" version="3.16.0" targetplatformversion="3.11" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
-    <extension name="Joomla" element="joomla" type="file" version="3.16.0" targetplatformversion="3.12" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
-    <extension name="Joomla" element="joomla" type="file" version="3.16.0" targetplatformversion="3.13" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
-    <extension name="Joomla" element="joomla" type="file" version="3.16.0" targetplatformversion="3.14" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
-    <extension name="Joomla" element="joomla" type="file" version="3.16.0" targetplatformversion="3.15" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
-    <extension name="Joomla" element="joomla" type="file" version="3.16.0" targetplatformversion="3.16" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension-db.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.17.0" targetplatformversion="3.10" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.17.0" targetplatformversion="3.11" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.17.0" targetplatformversion="3.12" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.17.0" targetplatformversion="3.13" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.17.0" targetplatformversion="3.14" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.17.0" targetplatformversion="3.15" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.17.0" targetplatformversion="3.16" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension-db.xml" />
+    <extension name="Joomla" element="joomla" type="file" version="3.17.0" targetplatformversion="3.17" detailsurl="https://joomlaworks.github.io/joomla-3.x/extension-db.xml" />
 </extensionset>
