@@ -11,6 +11,25 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 
 ---
 
+## CONTENTS
+- [Changelog](#changelog)
+  - [Version 3.16 - released October 3rd, 2026](#version-316---released-october-3rd-2026)
+  - [Version 3.15 - released July 18th, 2026](#version-315---released-july-18th-2026)
+  - [Version 3.14 - released July 4th, 2026](#version-314---released-july-4th-2026)
+  - [Version 3.13 - released May 31st, 2026](#version-313---released-may-31st-2026)
+  - [Version 3.12 - released May 21st, 2026](#version-312---released-may-21st-2026)
+  - [Version 3.11 - released April 20th, 2026](#version-311---released-april-20th-2026)
+- [How to Upgrade for Existing Joomla 3.x Sites](#how-to-upgrade-for-existing-joomla-3x-sites)
+- [How to Install (for new sites)](#how-to-install-for-new-sites)
+- [PHP Compatibility](#php-compatibility)
+- [Database Support](#database-support)
+- [Notes on MySQL & MariaDB](#notes-on-mysql--mariadb)
+- [Notes on Operating System Support](#notes-on-operating-system-support)
+- [Contribute](#contribute)
+- [Discuss](#discuss)
+- [Code Documentation (AI generated)](#code-documentation-ai-generated)
+- [Longterm Plan (as a different project)](#longterm-plan-as-a-different-project)
+
 ## CHANGELOG
 
 ## Version 3.16 - released October 3rd, 2026
