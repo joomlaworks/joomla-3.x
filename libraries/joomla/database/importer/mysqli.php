@@ -56,7 +56,7 @@ class JDatabaseImporterMysqli extends JDatabaseImporter
 		$existingTables = $this->db->getTableList();
 		$tableName = (string) $table['name'];
 
-		if (in_array($tableName, $existingTables))
+		if (in_array($this->getRealTableName($tableName), $existingTables))
 		{
 			throw new RuntimeException('The table you are trying to create already exists');
 		}
@@ -415,7 +415,6 @@ class JDatabaseImporterMysqli extends JDatabaseImporter
 
 		$kNonUnique = (string) $columns[0]['Non_unique'];
 		$kName = (string) $columns[0]['Key_name'];
-		$kColumn = (string) $columns[0]['Column_name'];
 
 		$prefix = '';
 
@@ -427,20 +426,18 @@ class JDatabaseImporterMysqli extends JDatabaseImporter
 		{
 			$prefix = 'UNIQUE ';
 		}
+		elseif (strtoupper((string) $columns[0]['Index_type']) === 'FULLTEXT')
+		{
+			$prefix = 'FULLTEXT ';
+		}
 
-		$nColumns = count($columns);
 		$kColumns = array();
 
-		if ($nColumns == 1)
+		foreach ($columns as $column)
 		{
-			$kColumns[] = $this->db->quoteName($kColumn);
-		}
-		else
-		{
-			foreach ($columns as $column)
-			{
-				$kColumns[] = (string) $column['Column_name'];
-			}
+			// Sub_part is the length of a prefix index, e.g. on a long VARCHAR column
+			$length     = (int) $column['Sub_part'];
+			$kColumns[] = $this->db->quoteName((string) $column['Column_name']) . ($length ? '(' . $length . ')' : '');
 		}
 
 		$query = $prefix . 'KEY ' . ($kName != 'PRIMARY' ? $this->db->quoteName($kName) : '') . ' (' . implode(',', $kColumns) . ')';

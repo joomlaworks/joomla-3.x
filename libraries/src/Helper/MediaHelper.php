@@ -85,7 +85,11 @@ class MediaHelper
 				// We have fileinfo
 				$finfo = finfo_open(FILEINFO_MIME_TYPE);
 				$mime  = finfo_file($finfo, $file);
-				finfo_close($finfo);
+				// A no-op since PHP 8.1 and deprecated since PHP 8.5
+				if (PHP_VERSION_ID < 80100)
+				{
+					finfo_close($finfo);
+				}
 			}
 		}
 		catch (\Exception $e)

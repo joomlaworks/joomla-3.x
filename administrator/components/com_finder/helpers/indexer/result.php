@@ -405,7 +405,7 @@ class FinderIndexerResult
 		$node->access = (int) $access;
 
 		// Add the node to the taxonomy branch.
-		$this->taxonomy[$branch][$node->title] = $node;
+		$this->taxonomy[$branch][(string) $node->title] = $node;
 	}
 
 	/**

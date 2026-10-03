@@ -19,6 +19,49 @@ defined('JPATH_PLATFORM') or die;
 class JDatabaseImporterPdomysql extends JDatabaseImporter
 {
 	/**
+	 * Get the SQL syntax to add a table.
+	 *
+	 * @param   SimpleXMLElement  $table  The table information.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 * @throws  RuntimeException
+	 */
+	protected function xmlToCreate(SimpleXMLElement $table)
+	{
+		$existingTables = $this->db->getTableList();
+		$tableName = (string) $table['name'];
+
+		if (in_array($this->getRealTableName($tableName), $existingTables))
+		{
+			throw new RuntimeException('The table you are trying to create already exists');
+		}
+
+		$createTableStatement = 'CREATE TABLE ' . $this->db->quoteName($tableName) . ' (';
+
+		foreach ($table->xpath('field') as $field)
+		{
+			$createTableStatement .= $this->getColumnSQL($field) . ', ';
+		}
+
+		$newLookup = $this->getKeyLookup($table->xpath('key'));
+
+		// Loop through each key in the new structure.
+		foreach ($newLookup as $key)
+		{
+			$createTableStatement .= $this->getKeySQL($key) . ', ';
+		}
+
+		// Remove the comma after the last key
+		$createTableStatement = rtrim($createTableStatement, ', ');
+
+		$createTableStatement .= ')';
+
+		return $createTableStatement;
+	}
+
+	/**
 	 * Get the SQL syntax to add a column.
 	 *
 	 * @param   string            $table  The table name.
@@ -378,7 +421,6 @@ class JDatabaseImporterPdomysql extends JDatabaseImporter
 
 		$kNonUnique = (string) $columns[0]['Non_unique'];
 		$kName      = (string) $columns[0]['Key_name'];
-		$kColumn    = (string) $columns[0]['Column_name'];
 		$prefix     = '';
 
 		if ($kName == 'PRIMARY')
@@ -389,20 +431,18 @@ class JDatabaseImporterPdomysql extends JDatabaseImporter
 		{
 			$prefix = 'UNIQUE ';
 		}
+		elseif (strtoupper((string) $columns[0]['Index_type']) === 'FULLTEXT')
+		{
+			$prefix = 'FULLTEXT ';
+		}
 
-		$nColumns = count($columns);
 		$kColumns = array();
 
-		if ($nColumns == 1)
+		foreach ($columns as $column)
 		{
-			$kColumns[] = $this->db->quoteName($kColumn);
-		}
-		else
-		{
-			foreach ($columns as $column)
-			{
-				$kColumns[] = (string) $column['Column_name'];
-			}
+			// Sub_part is the length of a prefix index, e.g. on a long VARCHAR column
+			$length     = (int) $column['Sub_part'];
+			$kColumns[] = $this->db->quoteName((string) $column['Column_name']) . ($length ? '(' . $length . ')' : '');
 		}
 
 		$sql = $prefix . 'KEY ' . ($kName != 'PRIMARY' ? $this->db->quoteName($kName) : '') . ' (' . implode(',', $kColumns) . ')';

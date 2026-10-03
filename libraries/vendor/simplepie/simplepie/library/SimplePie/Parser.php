@@ -135,7 +135,11 @@ class SimplePie_Parser
 		{
 			$parser_check = xml_parser_create();
 			xml_parse_into_struct($parser_check, '<foo>&amp;</foo>', $values);
-			xml_parser_free($parser_check);
+			// A no-op since PHP 8.0 and deprecated since PHP 8.5
+			if (PHP_VERSION_ID < 80000)
+			{
+				xml_parser_free($parser_check);
+			}
 			$xml_is_sane = isset($values[0]['value']);
 		}
 
@@ -145,9 +149,8 @@ class SimplePie_Parser
 			$xml = xml_parser_create_ns($this->encoding, (string) $this->separator);
 			xml_parser_set_option($xml, XML_OPTION_SKIP_WHITE, 1);
 			xml_parser_set_option($xml, XML_OPTION_CASE_FOLDING, 0);
-			xml_set_object($xml, $this);
-			xml_set_character_data_handler($xml, 'cdata');
-			xml_set_element_handler($xml, 'tag_open', 'tag_close');
+			xml_set_character_data_handler($xml, array($this, 'cdata'));
+			xml_set_element_handler($xml, array($this, 'tag_open'), array($this, 'tag_close'));
 
 			// Parse!
 			if (!xml_parse($xml, (string) $data, true))
@@ -159,7 +162,11 @@ class SimplePie_Parser
 			$this->current_line = xml_get_current_line_number($xml);
 			$this->current_column = xml_get_current_column_number($xml);
 			$this->current_byte = xml_get_current_byte_index($xml);
-			xml_parser_free($xml);
+			// A no-op since PHP 8.0 and deprecated since PHP 8.5
+			if (PHP_VERSION_ID < 80000)
+			{
+				xml_parser_free($xml);
+			}
 			return $return;
 		}
 		else

@@ -1219,7 +1219,11 @@ class SimplePie
 			{
 				$parser_check = xml_parser_create();
 				xml_parse_into_struct($parser_check, '<foo>&amp;</foo>', $values);
-				xml_parser_free($parser_check);
+				// A no-op since PHP 8.0 and deprecated since PHP 8.5
+				if (PHP_VERSION_ID < 80000)
+				{
+					xml_parser_free($parser_check);
+				}
 				$xml_is_sane = isset($values[0]['value']);
 			}
 			if (!$xml_is_sane)

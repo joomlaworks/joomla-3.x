@@ -68,7 +68,12 @@ class SessionGcCommand extends AbstractCommand
 
 		$io->title('Running Session Garbage Collection');
 
-		if (Factory::getSession()->gc() === false)
+		// The command line's own session is in memory only, so clean the configured session storage directly
+		$config  = Factory::getConfig();
+		$storage = \JSessionStorage::getInstance($config->get('session_handler', 'none'));
+		$expire  = (int) $config->get('lifetime') ? (int) $config->get('lifetime') * 60 : 900;
+
+		if ($storage->gc($expire) === false)
 		{
 			$io->error('Garbage collection was not completed. Either the operation failed or it is not supported on your platform.');
 

@@ -48,9 +48,11 @@ Summary of changes:
 - Fixed PHP 8.5 deprecation warnings from non-canonical casts (e.g. `(boolean)`, `(integer)`, `(double)`) still present in parts of the code
 - Fixed thousands of PHP 8.5 deprecation warnings while Smart Search indexes content
 - Fixed a PHP warning in command line scripts given an empty argument
+- Fixed PHP 8.4/8.5 deprecation warnings when checking for updates, reading RSS feeds, sending mail with NTLM authentication, connecting to LDAP and using FTP
+- Fixed exporting and importing database tables with Joomla's database exporter/importer (invalid XML for some column defaults, and a fatal error importing new tables with the "MySQL (PDO)" driver)
 
 **New features:**
-- New command line interface, `cli/joomla.php`, using the same command names and options as Joomla 4 and later to manage the configuration, users, extensions, updates, cache, sessions and Smart Search (e.g. `php cli/joomla.php user:add`, `extension:install`, `config:set`, `site:down`, `cache:clean`). Every command can return JSON (`--format=json`), so scripts and AI agents can work with the site directly. Extensions can add their own commands. The existing scripts in `cli/` still work as before (cron jobs need no changes), but now run the new commands.
+- New command line interface, `cli/joomla.php`, using the same command names and options as Joomla 4 and later to update Joomla and manage the configuration, users, extensions, database, cache, sessions and Smart Search (e.g. `php cli/joomla.php core:update`, `database:export`, `user:add`, `extension:install`, `config:set`, `site:down`). Every command can return JSON (`--format=json`), so scripts and AI agents can work with the site directly. Extensions can add their own commands. The existing scripts in `cli/` still work as before (cron jobs need no changes), but now run the new commands.
 
 ## Version 3.16 - released October 3rd, 2026
 Summary of changes:

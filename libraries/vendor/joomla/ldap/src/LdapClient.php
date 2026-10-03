@@ -206,7 +206,22 @@ class LdapClient
 			ldap_set_option(null, LDAP_OPT_DEBUG_LEVEL, 7);
 		}
 
-		$this->resource = ldap_connect($this->host, $this->port);
+		if (PHP_VERSION_ID < 80300)
+		{
+			$this->resource = ldap_connect($this->host, $this->port);
+		}
+		else
+		{
+			// The port argument is deprecated since PHP 8.3; the hosts (a space-separated list is allowed) are given as URIs instead
+			$uris = array();
+
+			foreach (preg_split('/\s+/', trim((string) $this->host)) as $host)
+			{
+				$uris[] = strpos($host, '://') !== false ? $host : 'ldap://' . $host . ':' . (int) ($this->port ?: 389);
+			}
+
+			$this->resource = ldap_connect(implode(' ', $uris));
+		}
 
 		if (!$this->resource)
 		{

@@ -65,7 +65,7 @@ class ListCommand extends AbstractCommand
 
 		foreach ($app->getCommands() as $name => $command)
 		{
-			if ($namespace !== '' && strpos($name, $namespace . ':') !== 0)
+			if ($command->isHidden() || ($namespace !== '' && strpos($name, $namespace . ':') !== 0))
 			{
 				continue;
 			}

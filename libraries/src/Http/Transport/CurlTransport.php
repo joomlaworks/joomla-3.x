@@ -221,7 +221,11 @@ class CurlTransport implements TransportInterface
 		$info = curl_getinfo($ch);
 
 		// Close the connection.
-		curl_close($ch);
+		// A no-op since PHP 8.0 and deprecated since PHP 8.5
+		if (PHP_VERSION_ID < 80000)
+		{
+			curl_close($ch);
+		}
 
 		$response = $this->getResponse($content, $info);
 

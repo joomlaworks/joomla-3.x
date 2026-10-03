@@ -237,8 +237,16 @@ class CollectionAdapter extends UpdateAdapter
 		}
 
 		$this->xmlParser = xml_parser_create('');
-		xml_set_object($this->xmlParser, $this);
-		xml_set_element_handler($this->xmlParser, '_startElement', '_endElement');
+		// xml_set_object() is deprecated since PHP 8.4; method callables work there, including protected ones registered here
+		if (PHP_VERSION_ID < 80400)
+		{
+			xml_set_object($this->xmlParser, $this);
+			xml_set_element_handler($this->xmlParser, '_startElement', '_endElement');
+		}
+		else
+		{
+			xml_set_element_handler($this->xmlParser, array($this, '_startElement'), array($this, '_endElement'));
+		}
 
 		if (!xml_parse($this->xmlParser, (string) $response->body))
 		{

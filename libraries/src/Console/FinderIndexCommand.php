@@ -14,6 +14,7 @@ use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Uri\Uri;
 
 /**
  * Builds the Smart Search index, optionally purging it first.
@@ -135,11 +136,9 @@ class FinderIndexCommand extends AbstractCommand
 
 		// The finder plugins expect the site application, with Smart Search as the active component
 		$console = Factory::$application;
+		$server  = $_SERVER;
 
-		if (!isset($_SERVER['HTTP_HOST']))
-		{
-			$_SERVER['HTTP_HOST'] = 'domain.com';
-		}
+		$this->simulateRequest();
 
 		Factory::$application = CMSApplication::getInstance('site');
 
@@ -166,12 +165,75 @@ class FinderIndexCommand extends AbstractCommand
 		finally
 		{
 			Factory::$application = $console;
+			$_SERVER              = $server;
+			Uri::reset();
+
+			// The site application registered the command line's in-memory session, e.g. for Who's Online; remove it again
+			$db    = Factory::getDbo();
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__session'))
+				->where($db->quoteName('session_id') . ' = ' . $db->quote(Factory::getSession()->getId()));
+
+			try
+			{
+				$db->setQuery($query)->execute();
+			}
+			catch (\RuntimeException $e)
+			{
+				// Not worth failing the indexing for
+			}
 		}
 
 		$io->text(Text::sprintf('FINDER_CLI_PROCESS_COMPLETE', round(microtime(true) - $this->time, 3)));
 		$io->text(Text::sprintf('FINDER_CLI_PEAK_MEMORY_USAGE', number_format(memory_get_peak_usage(true))));
 
 		return $result;
+	}
+
+	/**
+	 * Make the request look like one for the site's home page, as content and finder plugins (including third-party ones)
+	 * often read the request's server variables, which the command line doesn't have, and build URLs from them.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	private function simulateRequest()
+	{
+		$liveSite = (string) Factory::getConfig()->get('live_site');
+		$host     = (string) parse_url($liveSite, PHP_URL_HOST);
+		$port     = parse_url($liveSite, PHP_URL_PORT);
+		$path     = rtrim((string) parse_url($liveSite, PHP_URL_PATH), '/');
+
+		if (!isset($_SERVER['HTTP_HOST']))
+		{
+			$_SERVER['HTTP_HOST'] = $host !== '' ? $host . ($port ? ':' . $port : '') : 'domain.com';
+		}
+
+		if (!isset($_SERVER['HTTPS']) && parse_url($liveSite, PHP_URL_SCHEME) === 'https')
+		{
+			$_SERVER['HTTPS'] = 'on';
+		}
+
+		// On the command line these name the CLI script, which would put "/cli" into the URLs built from them
+		$_SERVER['SCRIPT_NAME']     = $path . '/index.php';
+		$_SERVER['PHP_SELF']        = $path . '/index.php';
+		$_SERVER['SCRIPT_FILENAME'] = JPATH_ROOT . '/index.php';
+		$_SERVER['REQUEST_URI']     = $path . '/';
+		$_SERVER['REQUEST_METHOD']  = 'GET';
+		$_SERVER['QUERY_STRING']    = '';
+
+		if (!isset($_SERVER['SERVER_NAME']))
+		{
+			$_SERVER['SERVER_NAME'] = preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST']);
+		}
+
+		if (!isset($_SERVER['REMOTE_ADDR']))
+		{
+			$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+		}
+
+		Uri::reset();
 	}
 
 	/**

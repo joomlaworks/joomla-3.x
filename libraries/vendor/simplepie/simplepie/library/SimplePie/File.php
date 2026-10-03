@@ -126,7 +126,11 @@ class SimplePie_File
 				else
 				{
 					$info = curl_getinfo($fp);
-					curl_close($fp);
+					// A no-op since PHP 8.0 and deprecated since PHP 8.5
+					if (PHP_VERSION_ID < 80000)
+					{
+						curl_close($fp);
+					}
 					$this->headers = explode("\r\n\r\n", $this->headers, $info['redirect_count'] + 1);
 					$this->headers = array_pop($this->headers);
 					$parser = new SimplePie_HTTP_Parser($this->headers);

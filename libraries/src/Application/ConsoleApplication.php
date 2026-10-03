@@ -12,11 +12,13 @@ defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Console\AbstractCommand;
 use Joomla\CMS\Console\CommandIO;
+use Joomla\CMS\Console\ConsoleSessionHandler;
 use Joomla\CMS\Console\ConsoleUser;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Input\Cli;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Session\Session;
 use Joomla\Registry\Registry;
 
 /**
@@ -98,6 +100,13 @@ class ConsoleApplication extends CliApplication
 		if (!defined('JDEBUG'))
 		{
 			define('JDEBUG', (bool) Factory::getConfig()->get('debug'));
+		}
+
+		// The command line needs no stored session, and must work while the session storage can't (e.g. during database:import)
+		if (!Factory::$session)
+		{
+			$lifetime         = (int) Factory::getConfig()->get('lifetime');
+			Factory::$session = new Session('none', array('expire' => $lifetime ? $lifetime * 60 : 900), new ConsoleSessionHandler);
 		}
 
 		$this->userState = new Registry;
@@ -352,9 +361,18 @@ class ConsoleApplication extends CliApplication
 				$this->commands[$command->getName()] = $command;
 			}
 
-			PluginHelper::importPlugin('console');
+			// Plugins need the database, which may be empty or broken, e.g. before database:import restores it; a broken plugin mustn't take the core commands down with it
+			try
+			{
+				PluginHelper::importPlugin('console');
+				$results = (array) \JEventDispatcher::getInstance()->trigger('onGetConsoleCommands', array($this));
+			}
+			catch (\Throwable $e)
+			{
+				$results = array();
+			}
 
-			foreach ((array) \JEventDispatcher::getInstance()->trigger('onGetConsoleCommands', array($this)) as $result)
+			foreach ($results as $result)
 			{
 				foreach ((array) $result as $command)
 				{

@@ -66,6 +66,14 @@ abstract class AbstractCommand
 	protected $help = '';
 
 	/**
+	 * Leave the command out of "list", e.g. an internal step of another command
+	 *
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $hidden = false;
+
+	/**
 	 * Run as a Super User (see ConsoleApplication::dispatch())
 	 *
 	 * @var    boolean
@@ -155,6 +163,16 @@ abstract class AbstractCommand
 	public function getHelp()
 	{
 		return $this->help;
+	}
+
+	/**
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function isHidden()
+	{
+		return $this->hidden;
 	}
 
 	/**
@@ -253,6 +271,25 @@ abstract class AbstractCommand
 		}
 
 		return $model;
+	}
+
+	/**
+	 * Clean a cache group of the site and the administrator, e.g. "_system", which holds the component and plugin settings.
+	 *
+	 * @param   string  $group  The cache group
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	protected function cleanCacheGroup($group)
+	{
+		$config = \JFactory::getConfig();
+
+		foreach (array($config->get('cache_path', JPATH_SITE . '/cache'), JPATH_ADMINISTRATOR . '/cache') as $cachebase)
+		{
+			\JCache::getInstance('callback', array('defaultgroup' => $group, 'cachebase' => $cachebase))->clean();
+		}
 	}
 
 	/**

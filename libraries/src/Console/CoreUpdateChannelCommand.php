@@ -129,6 +129,9 @@ class CoreUpdateChannelCommand extends AbstractCommand
 			return self::FAILURE;
 		}
 
+		// The component settings are cached
+		$this->cleanCacheGroup('_system');
+
 		/** @var \JoomlaupdateModelDefault $model */
 		$model = $this->getAdministratorModel('com_joomlaupdate', 'Default', 'JoomlaupdateModel');
 		$model->applyUpdateSite();

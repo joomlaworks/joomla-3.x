@@ -326,9 +326,18 @@ class ExtensionAdapter extends UpdateAdapter
 		}
 
 		$this->xmlParser = xml_parser_create('');
-		xml_set_object($this->xmlParser, $this);
-		xml_set_element_handler($this->xmlParser, '_startElement', '_endElement');
-		xml_set_character_data_handler($this->xmlParser, '_characterData');
+		// xml_set_object() is deprecated since PHP 8.4; method callables work there, including protected ones registered here
+		if (PHP_VERSION_ID < 80400)
+		{
+			xml_set_object($this->xmlParser, $this);
+			xml_set_element_handler($this->xmlParser, '_startElement', '_endElement');
+			xml_set_character_data_handler($this->xmlParser, '_characterData');
+		}
+		else
+		{
+			xml_set_element_handler($this->xmlParser, array($this, '_startElement'), array($this, '_endElement'));
+			xml_set_character_data_handler($this->xmlParser, array($this, '_characterData'));
+		}
 
 		if (!xml_parse($this->xmlParser, (string) $response->body))
 		{
@@ -348,7 +357,11 @@ class ExtensionAdapter extends UpdateAdapter
 			return false;
 		}
 
-		xml_parser_free($this->xmlParser);
+		// A no-op since PHP 8.0 and deprecated since PHP 8.5
+		if (PHP_VERSION_ID < 80000)
+		{
+			xml_parser_free($this->xmlParser);
+		}
 
 		if (isset($this->latest))
 		{

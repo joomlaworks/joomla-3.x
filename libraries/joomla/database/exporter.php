@@ -178,6 +178,20 @@ abstract class JDatabaseExporter
 	}
 
 	/**
+	 * Escape a value for an XML attribute; column defaults, for example, can contain quotes.
+	 *
+	 * @param   string  $value  The value
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	protected function escapeXml($value)
+	{
+		return htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8');
+	}
+
+	/**
 	 * Get the generic name of the table, converting the database prefix to the wildcard string.
 	 *
 	 * @param   string  $table  The name of the table.

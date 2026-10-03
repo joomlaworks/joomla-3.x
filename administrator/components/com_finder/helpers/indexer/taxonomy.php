@@ -123,6 +123,9 @@ class FinderIndexerTaxonomy
 	 */
 	public static function addNode($branch, $title, $state = 1, $access = 1)
 	{
+		// Items without e.g. an author give no title; it's a cache key and is stored as an empty string anyway
+		$title = (string) $title;
+
 		// Check to see if the node is in the cache.
 		if (isset(static::$nodes[$branch][$title]))
 		{
