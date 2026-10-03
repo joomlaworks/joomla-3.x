@@ -139,6 +139,9 @@ class FOFDatabaseDriverPdomysql extends FOFDatabaseDriverPdo
 
 		$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		$this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+
+		// Since PHP 8.1, emulated prepares return integers and floats as native types; keep strings, like mysqli
+		$this->connection->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, true);
 	}
 
 	/**

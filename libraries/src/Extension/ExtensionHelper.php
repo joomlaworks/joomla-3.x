@@ -238,6 +238,7 @@ class ExtensionHelper
 		array('plugin', 'highlight', 'system', 0),
 		array('plugin', 'languagecode', 'system', 0),
 		array('plugin', 'languagefilter', 'system', 0),
+		array('plugin', 'littlewaf', 'system', 0),
 		array('plugin', 'log', 'system', 0),
 		array('plugin', 'logout', 'system', 0),
 		array('plugin', 'logrotation', 'system', 0),

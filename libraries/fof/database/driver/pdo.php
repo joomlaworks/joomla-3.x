@@ -1044,8 +1044,8 @@ abstract class FOFDatabaseDriverPdo extends FOFDatabaseDriver
 
 		foreach ($properties as $property)
 		{
-			// Do not serialize properties that are PDO
-			if ($property->isStatic() == false && !($this->{$property->name} instanceof PDO))
+			// Neither the connection nor a statement handle can be serialized, and both are rebuilt as needed
+			if ($property->isStatic() == false && !($this->{$property->name} instanceof PDO) && !($this->{$property->name} instanceof PDOStatement))
 			{
 				array_push($serializedProperties, $property->name);
 			}

@@ -358,7 +358,10 @@ class Updater extends \JAdapter
 							$extension->load($eid);
 							$data = json_decode((string) $extension->manifest_cache, true);
 
-							if (version_compare($current_update->version, $data['version'], $operator) == 1)
+							// An empty or corrupted manifest cache has no version; compare against '' as PHP 7.x silently did
+							$installedVersion = is_array($data) && isset($data['version']) ? (string) $data['version'] : '';
+
+							if (version_compare($current_update->version, $installedVersion, $operator) == 1)
 							{
 								$current_update->extension_id = $eid;
 								$retVal[] = $current_update;

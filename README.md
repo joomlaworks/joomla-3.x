@@ -13,6 +13,7 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 
 ## CONTENTS
 - [Changelog](#changelog)
+  - [Version 3.17 - unreleased [pending]](#version-317---unreleased-pending)
   - [Version 3.16 - released October 3rd, 2026](#version-316---released-october-3rd-2026)
   - [Version 3.15 - released July 18th, 2026](#version-315---released-july-18th-2026)
   - [Version 3.14 - released July 4th, 2026](#version-314---released-july-4th-2026)
@@ -31,6 +32,17 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 - [Longterm Plan (as a different project)](#longterm-plan-as-a-different-project)
 
 ## CHANGELOG
+
+## Version 3.17 - unreleased [pending]
+Summary of changes:
+- Fixed two long-standing issues with the "MySQL (PDO)" database driver
+
+**Bug fixes:**
+- Fixed intermittent "Serialization of 'PDOStatement' is not allowed" errors with the PDO database drivers when caching is enabled (any cache handler), typically right after the site wrote something to the database
+- Fixed the "MySQL (PDO)" database driver returning numbers as numeric types on PHP 8.1+, while the default "MySQL (mysqli)" driver returns them as strings. Code comparing database values strictly could behave differently depending on the driver.
+- Fixed a PHP warning when checking for extension updates while an installed extension's cached manifest data is empty or corrupted, and a potential crash at the start of a Joomla update in the same situation
+- Fixed the "Little WAF" plugin showing no version, date or author in Extensions: Manage on sites upgraded to 3.16 (fresh installs were fine)
+- Fixed Extensions: Install Languages permanently showing "The update table is not up to date" (with no languages listed) on sites missing the English language pack's database record, which some older upgrade paths never created; it's now restored automatically on update
 
 ## Version 3.16 - released October 3rd, 2026
 Summary of changes:

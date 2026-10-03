@@ -43,7 +43,7 @@ class JoomlaInstallerScript
 			{
 				$manifestValues = json_decode((string) $installer->extension->manifest_cache, true);
 
-				if ((array_key_exists('version', $manifestValues)))
+				if (is_array($manifestValues) && array_key_exists('version', $manifestValues))
 				{
 					$this->fromVersion = $manifestValues['version'];
 
@@ -349,6 +349,7 @@ class JoomlaInstallerScript
 		$dataMigrationFiles = array(
 			'3.12.0-2026-05-21.sql',
 			'3.16.0-2026-08-21.sql',
+			'3.17.0-2026-10-04.sql',
 		);
 
 		foreach ($dataMigrationFiles as $file)
