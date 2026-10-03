@@ -181,7 +181,7 @@ To install, just extract the latest rolling release https://github.com/joomlawor
 ## PHP COMPATIBILITY
 This distribution targets at least PHP 7.4. This is the baseline version we use for broader compatibility with hosts and the Joomla 3.x ecosystem (e.g. other extensions and templates that are actively maintained).
 
-Sites on PHP 7.1 through 7.3 will still be offered updates to this distribution through the Joomla Update component — 7.4 is our recommended baseline, not a hard cutoff, so those sites can keep receiving security patches even before upgrading their PHP version. PHP 7.0 and below is not supported; the update won't be offered and installing manually isn't recommended.
+Sites on PHP 7.1 through 7.3 will still be offered updates to this distribution through the Joomla Update component - 7.4 is our recommended baseline, not a hard cutoff - so these sites can keep receiving security patches even before upgrading their PHP version. PHP 7.0 and below is not supported; the update won't be offered and installing manually isn't recommended.
 
 **For end users:**
 If your site's server/webspace is configured with PHP 7.0 to 7.3, upgrading to PHP 7.4 is typically a safe switch. The same applies to sites on PHP 5.6, just make sure your extensions and templates are not holding you back.
@@ -200,7 +200,8 @@ Switching to this distribution will also allow you (or take you closer) to upgra
 | PostgreSQL | 9.0 | Inherited from stock Joomla 3.x, not tested by this project |
 | Microsoft SQL Server / Azure SQL | 2008 R2 (10.50.1600.1) | Inherited from stock Joomla 3.x, not tested by this project |
 
-Database support in Joomla 3.x was always centred on MySQL. PostgreSQL and SQL Server work with the core, but several core and third-party extensions only ship MySQL database scripts, so expect rough edges there. The installer enforces these minimum versions. Once a site runs 3.16 or newer, it won't be offered further updates while its database is below these versions, and sees a notice in Joomla Update instead.
+Database support in Joomla 3.x was always centred on MySQL/MariaDB. PostgreSQL and SQL Server work with the core, but several core and third-party extensions only ship MySQL/MariaDB database scripts, so expect rough edges there. The installer enforces these minimum versions. Once a site runs 3.16 or newer, it won't be offered further updates while its database is below these versions, and sees a notice in Joomla Update instead.
+
 
 ## NOTES ON MYSQL & MARIADB
 For Joomla 3.x to work flawlessly with MySQL versions 8.0 or newer, you need to have this setting enabled in your my.cnf configuration:
