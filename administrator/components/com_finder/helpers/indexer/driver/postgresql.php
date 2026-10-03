@@ -122,8 +122,8 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 		$entry->publish_end_date = $item->publish_end_date;
 		$entry->start_date = $item->start_date;
 		$entry->end_date = $item->end_date;
-		$entry->list_price = (double) ($item->list_price ?: 0);
-		$entry->sale_price = (double) ($item->sale_price ?: 0);
+		$entry->list_price = (float) ($item->list_price ?: 0);
+		$entry->sale_price = (float) ($item->sale_price ?: 0);
 
 		if ($isNew)
 		{

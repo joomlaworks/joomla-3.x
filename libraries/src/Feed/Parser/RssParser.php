@@ -304,7 +304,7 @@ class RssParser extends FeedParser
 	 */
 	protected function handleTtl(Feed $feed, \SimpleXMLElement $el)
 	{
-		$feed->ttl = (integer) $this->inputFilter->clean((string) $el, 'int');
+		$feed->ttl = (int) $this->inputFilter->clean((string) $el, 'int');
 	}
 
 	/**

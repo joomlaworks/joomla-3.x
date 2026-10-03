@@ -17,7 +17,7 @@ extract($displayData);
  * 	$text         : (string)  The label text
  * 	$description  : (string)  An optional description to use in a tooltip
  * 	$for          : (string)  The id of the input this label is for
- * 	$required     : (boolean) True if a required field
+ * 	$required     : (bool) True if a required field
  * 	$classes      : (array)   A list of classes
  * 	$position     : (string)  The tooltip position. Bottom for alias
  */

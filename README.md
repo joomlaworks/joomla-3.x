@@ -35,7 +35,9 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 
 ## Version 3.17 - unreleased [pending]
 Summary of changes:
+- New command line interface (`cli/joomla.php`) with the commands of the Joomla 4+ CLI and JSON output for scripts and AI agents
 - Fixed two long-standing issues with the "MySQL (PDO)" database driver
+- More PHP 8.5 deprecation fixes
 
 **Bug fixes:**
 - Fixed intermittent "Serialization of 'PDOStatement' is not allowed" errors with the PDO database drivers when caching is enabled (any cache handler), typically right after the site wrote something to the database
@@ -43,6 +45,12 @@ Summary of changes:
 - Fixed a PHP warning when checking for extension updates while an installed extension's cached manifest data is empty or corrupted, and a potential crash at the start of a Joomla update in the same situation
 - Fixed the "Little WAF" plugin showing no version, date or author in Extensions: Manage on sites upgraded to 3.16 (fresh installs were fine)
 - Fixed Extensions: Install Languages permanently showing "The update table is not up to date" (with no languages listed) on sites missing the English language pack's database record, which some older upgrade paths never created; it's now restored automatically on update
+- Fixed PHP 8.5 deprecation warnings from non-canonical casts (e.g. `(boolean)`, `(integer)`, `(double)`) still present in parts of the code
+- Fixed thousands of PHP 8.5 deprecation warnings while Smart Search indexes content
+- Fixed a PHP warning in command line scripts given an empty argument
+
+**New features:**
+- New command line interface, `cli/joomla.php`, using the same command names and options as Joomla 4 and later to manage the configuration, users, extensions, updates, cache, sessions and Smart Search (e.g. `php cli/joomla.php user:add`, `extension:install`, `config:set`, `site:down`, `cache:clean`). Every command can return JSON (`--format=json`), so scripts and AI agents can work with the site directly. Extensions can add their own commands. The existing scripts in `cli/` still work as before (cron jobs need no changes), but now run the new commands.
 
 ## Version 3.16 - released October 3rd, 2026
 Summary of changes:

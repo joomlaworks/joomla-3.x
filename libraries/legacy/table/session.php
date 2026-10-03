@@ -169,7 +169,7 @@ class JTableSession extends JTable
 			return false;
 		}
 
-		return (boolean) $result;
+		return (bool) $result;
 	}
 
 	/**

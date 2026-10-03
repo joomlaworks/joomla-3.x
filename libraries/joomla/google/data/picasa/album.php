@@ -180,7 +180,7 @@ class JGoogleDataPicasaAlbum extends JGoogleData
 	 */
 	public function getTime()
 	{
-		return (double) $this->xml->children('gphoto', true)->timestamp / 1000;
+		return (float) $this->xml->children('gphoto', true)->timestamp / 1000;
 	}
 
 	/**

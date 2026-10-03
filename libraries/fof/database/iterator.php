@@ -214,7 +214,7 @@ abstract class FOFDatabaseIterator implements Iterator
 	 */
 	public function valid()
 	{
-		return (boolean) $this->_current;
+		return (bool) $this->_current;
 	}
 
 	/**

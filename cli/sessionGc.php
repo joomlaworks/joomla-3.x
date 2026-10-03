@@ -49,7 +49,8 @@ class SessionGc extends JApplicationCli
 	 */
 	public function doExecute()
 	{
-		JFactory::getSession()->gc();
+		// Same as: php cli/joomla.php session:gc
+		$this->close((new \Joomla\CMS\Application\ConsoleApplication)->runCommand('session:gc', array(), array('quiet' => true)));
 	}
 }
 

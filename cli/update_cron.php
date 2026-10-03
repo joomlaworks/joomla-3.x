@@ -53,18 +53,11 @@ class Updatecron extends JApplicationCli
 	 */
 	public function doExecute()
 	{
-		// Get the update cache time
-		$component = JComponentHelper::getComponent('com_installer');
-
-		$params = $component->params;
-		$cache_timeout = $params->get('cachetimeout', 6, 'int');
-		$cache_timeout = 3600 * $cache_timeout;
-
-		// Find all updates
+		// Same as: php cli/joomla.php update:extensions:check --use-cache
 		$this->out('Fetching updates...');
-		$updater = JUpdater::getInstance();
-		$updater->findUpdates(0, $cache_timeout);
+		$exitCode = (new \Joomla\CMS\Application\ConsoleApplication)->runCommand('update:extensions:check', array(), array('use-cache' => true, 'quiet' => true));
 		$this->out('Finished fetching updates');
+		$this->close($exitCode);
 	}
 }
 

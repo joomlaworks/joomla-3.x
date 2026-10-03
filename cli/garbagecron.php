@@ -47,8 +47,8 @@ class GarbageCron extends JApplicationCli
 	 */
 	public function doExecute()
 	{
-		$cache = JFactory::getCache();
-		$cache->gc();
+		// Same as: php cli/joomla.php cache:clean expired
+		$this->close((new \Joomla\CMS\Application\ConsoleApplication)->runCommand('cache:clean', array('expired' => 'expired'), array('quiet' => true)));
 	}
 }
 

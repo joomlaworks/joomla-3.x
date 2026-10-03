@@ -103,6 +103,6 @@ class ConfigViewComponentHtml extends ConfigViewCmsHtml
 		$helpKey = (string) $this->form->getXml()->config->help['key'];
 		$helpKey = $helpKey ?: 'JHELP_COMPONENTS_' . strtoupper($this->currentComponent) . '_OPTIONS';
 
-		JToolbarHelper::help($helpKey, (boolean) $helpUrl, null, $this->currentComponent);
+		JToolbarHelper::help($helpKey, (bool) $helpUrl, null, $this->currentComponent);
 	}
 }

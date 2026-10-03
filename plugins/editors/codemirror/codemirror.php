@@ -207,10 +207,10 @@ class PlgEditorCodemirror extends JPlugin
 			$autofocused = $options->autofocus;
 		}
 
-		$options->lineWrapping = (boolean) $this->params->get('lineWrapping', 1);
+		$options->lineWrapping = (bool) $this->params->get('lineWrapping', 1);
 
 		// Add styling to the active line.
-		$options->styleActiveLine = (boolean) $this->params->get('activeLine', 1);
+		$options->styleActiveLine = (bool) $this->params->get('activeLine', 1);
 
 		// Do we highlight selection matches?
 		if ($this->params->get('selectionMatches', 1))
@@ -222,19 +222,19 @@ class PlgEditorCodemirror extends JPlugin
 		}
 
 		// Do we use line numbering?
-		if ($options->lineNumbers = (boolean) $this->params->get('lineNumbers', 1))
+		if ($options->lineNumbers = (bool) $this->params->get('lineNumbers', 1))
 		{
 			$options->gutters[] = 'CodeMirror-linenumbers';
 		}
 
 		// Do we use code folding?
-		if ($options->foldGutter = (boolean) $this->params->get('codeFolding', 1))
+		if ($options->foldGutter = (bool) $this->params->get('codeFolding', 1))
 		{
 			$options->gutters[] = 'CodeMirror-foldgutter';
 		}
 
 		// Do we use a marker gutter?
-		if ($options->markerGutter = (boolean) $this->params->get('markerGutter', $this->params->get('marker-gutter', 1)))
+		if ($options->markerGutter = (bool) $this->params->get('markerGutter', $this->params->get('marker-gutter', 1)))
 		{
 			$options->gutters[] = 'CodeMirror-markergutter';
 		}
@@ -256,20 +256,20 @@ class PlgEditorCodemirror extends JPlugin
 		if (in_array($options->mode, array('xml', 'html', 'php')))
 		{
 			// Autogenerate closing tags (html/xml only).
-			$options->autoCloseTags = (boolean) $this->params->get('autoCloseTags', 1);
+			$options->autoCloseTags = (bool) $this->params->get('autoCloseTags', 1);
 
 			// Highlight the matching tag when the cursor is in a tag (html/xml only).
-			$options->matchTags = (boolean) $this->params->get('matchTags', 1);
+			$options->matchTags = (bool) $this->params->get('matchTags', 1);
 		}
 
 		// Special options for non-tagged modes.
 		if (!in_array($options->mode, array('xml', 'html')))
 		{
 			// Autogenerate closing brackets.
-			$options->autoCloseBrackets = (boolean) $this->params->get('autoCloseBrackets', 1);
+			$options->autoCloseBrackets = (bool) $this->params->get('autoCloseBrackets', 1);
 
 			// Highlight the matching bracket.
-			$options->matchBrackets = (boolean) $this->params->get('matchBrackets', 1);
+			$options->matchBrackets = (bool) $this->params->get('matchBrackets', 1);
 		}
 
 		$options->scrollbarStyle = $this->params->get('scrollbarStyle', 'native');

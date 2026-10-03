@@ -246,7 +246,7 @@ class FOFDatabaseDriverMysqli extends FOFDatabaseDriver
 	{
 		$this->connect();
 
-		$result = mysqli_real_escape_string($this->getConnection(), $text);
+		$result = mysqli_real_escape_string($this->getConnection(), (string) $text);
 
 		if ($extra)
 		{

@@ -261,9 +261,9 @@ abstract class JHtmlBootstrap
 			JHtml::_('bootstrap.framework');
 
 			// Setup options object
-			$opt['backdrop'] = isset($params['backdrop']) ? (boolean) $params['backdrop'] : true;
-			$opt['keyboard'] = isset($params['keyboard']) ? (boolean) $params['keyboard'] : true;
-			$opt['show']     = isset($params['show']) ? (boolean) $params['show'] : false;
+			$opt['backdrop'] = isset($params['backdrop']) ? (bool) $params['backdrop'] : true;
+			$opt['keyboard'] = isset($params['keyboard']) ? (bool) $params['keyboard'] : true;
+			$opt['show']     = isset($params['show']) ? (bool) $params['show'] : false;
 			$opt['remote']   = isset($params['remote']) ? $params['remote'] : '';
 
 			$options = JHtml::getJSObject($opt);
@@ -449,8 +449,8 @@ abstract class JHtmlBootstrap
 			JHtml::_('bootstrap.framework');
 
 			// Setup options object
-			$opt['animation'] = isset($params['animation']) ? (boolean) $params['animation'] : null;
-			$opt['html']      = isset($params['html']) ? (boolean) $params['html'] : true;
+			$opt['animation'] = isset($params['animation']) ? (bool) $params['animation'] : null;
+			$opt['html']      = isset($params['html']) ? (bool) $params['html'] : true;
 			$opt['placement'] = isset($params['placement']) ? (string) $params['placement'] : null;
 			$opt['selector']  = isset($params['selector']) ? (string) $params['selector'] : null;
 			$opt['title']     = isset($params['title']) ? (string) $params['title'] : null;
@@ -613,7 +613,7 @@ abstract class JHtmlBootstrap
 
 			// Setup options object
 			$opt['parent'] = isset($params['parent']) ? ($params['parent'] == true ? '#' . $selector : $params['parent']) : false;
-			$opt['toggle'] = isset($params['toggle']) ? (boolean) $params['toggle'] : !($opt['parent'] === false || isset($params['active']));
+			$opt['toggle'] = isset($params['toggle']) ? (bool) $params['toggle'] : !($opt['parent'] === false || isset($params['active']));
 			$onShow = isset($params['onShow']) ? (string) $params['onShow'] : null;
 			$onShown = isset($params['onShown']) ? (string) $params['onShown'] : null;
 			$onHide = isset($params['onHide']) ? (string) $params['onHide'] : null;

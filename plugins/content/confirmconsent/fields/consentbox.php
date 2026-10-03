@@ -196,7 +196,7 @@ class JFormFieldConsentBox extends JFormFieldCheckboxes
 		$data = parent::getLayoutData();
 
 		$extraData = array(
-			'articleid' => (integer) $this->articleid,
+			'articleid' => (int) $this->articleid,
 		);
 
 		return array_merge($data, $extraData);

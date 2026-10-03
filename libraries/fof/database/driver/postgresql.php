@@ -183,7 +183,7 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 	{
 		$this->connect();
 
-		$result = pg_escape_string($this->connection, $text);
+		$result = pg_escape_string($this->connection, (string) $text);
 
 		if ($extra)
 		{

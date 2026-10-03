@@ -202,7 +202,7 @@ class Cli extends Input
 					$key = substr((string) $arg, 2);
 
 					// --foo value
-					if ($i + 1 < $j && $argv[$i + 1][0] !== '-')
+					if ($i + 1 < $j && substr($argv[$i + 1], 0, 1) !== '-')
 					{
 						$value = $argv[$i + 1];
 						$i++;
@@ -246,7 +246,7 @@ class Cli extends Input
 					}
 
 					// -a a-value
-					if ((count($chars) === 1) && ($i + 1 < $j) && ($argv[$i + 1][0] !== '-'))
+					if ((count($chars) === 1) && ($i + 1 < $j) && (substr($argv[$i + 1], 0, 1) !== '-'))
 					{
 						$out[$key] = $argv[$i + 1];
 						$i++;

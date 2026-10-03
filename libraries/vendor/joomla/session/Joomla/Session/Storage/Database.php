@@ -144,7 +144,7 @@ class Database extends Storage
 			// Remove a session from the database.
 			$this->db->setQuery($query);
 
-			return (boolean) $this->db->execute();
+			return (bool) $this->db->execute();
 		}
 		catch (\Exception $e)
 		{
@@ -176,7 +176,7 @@ class Database extends Storage
 			// Remove expired sessions from the database.
 			$this->db->setQuery($query);
 
-			return (boolean) $this->db->execute();
+			return (bool) $this->db->execute();
 		}
 		catch (\Exception $e)
 		{

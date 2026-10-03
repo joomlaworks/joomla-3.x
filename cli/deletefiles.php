@@ -59,18 +59,8 @@ class DeletefilesCli extends JApplicationCli
 	 */
 	public function doExecute()
 	{
-		// Import the dependencies
-		jimport('joomla.filesystem.file');
-		jimport('joomla.filesystem.folder');
-
-		// We need the update script
-		JLoader::register('JoomlaInstallerScript', JPATH_ADMINISTRATOR . '/components/com_admin/script.php');
-
-		// Instantiate the class
-		$class = new JoomlaInstallerScript;
-
-		// Run the delete method
-		$class->deleteUnexistingFiles();
+		// Same as: php cli/joomla.php update:joomla:remove-old-files
+		$this->close((new \Joomla\CMS\Application\ConsoleApplication)->runCommand('update:joomla:remove-old-files', array(), array('quiet' => true)));
 	}
 }
 

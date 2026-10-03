@@ -33,6 +33,9 @@ class FinderIndexerStemmerSnowball extends FinderIndexerStemmer
 		// Language to use if All is specified.
 		static $defaultLang = '';
 
+		// The language is used as a cache key; content without one passes null
+		$lang = (string) $lang;
+
 		// If language is All then try to get site default language.
 		if ($lang === '*' && $defaultLang === '')
 		{

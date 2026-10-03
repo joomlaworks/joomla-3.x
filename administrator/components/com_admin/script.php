@@ -1400,10 +1400,23 @@ class JoomlaInstallerScript
 	/**
 	 * Delete files that should not exist
 	 *
-	 * @return  void
+	 * @param   boolean  $dryRun          If true, only report what exists and would be deleted, without changing anything
+	 * @param   boolean  $suppressOutput  If true, don't echo errors (the caller reports them from the return value)
+	 *
+	 * @return  array  Lists of the files/folders found ('files_exist', 'folders_exist'), deleted
+	 *                 ('files_deleted', 'folders_deleted') and failed to delete ('files_errors', 'folders_errors')
 	 */
-	public function deleteUnexistingFiles()
+	public function deleteUnexistingFiles($dryRun = false, $suppressOutput = false)
 	{
+		$status = array(
+			'files_exist'     => array(),
+			'folders_exist'   => array(),
+			'files_deleted'   => array(),
+			'folders_deleted' => array(),
+			'files_errors'    => array(),
+			'folders_errors'  => array(),
+		);
+
 		$files = array(
 			/*
 			 * Joomla 1.5
@@ -3322,11 +3335,41 @@ class JoomlaInstallerScript
 
 		jimport('joomla.filesystem.file');
 
+		/*
+		 * Needed for updates post-3.4
+		 * If com_weblinks doesn't exist then assume we can delete the weblinks package manifest (included in the update packages)
+		 */
+		if (!JFile::exists(JPATH_ROOT . '/administrator/components/com_weblinks/weblinks.php'))
+		{
+			$files[] = '/administrator/manifests/packages/pkg_weblinks.xml';
+		}
+
 		foreach ($files as $file)
 		{
-			if (JFile::exists(JPATH_ROOT . $file) && !JFile::delete(JPATH_ROOT . $file))
+			if (!JFile::exists(JPATH_ROOT . $file))
 			{
-				echo JText::sprintf('FILES_JOOMLA_ERROR_FILE_FOLDER', $file) . '<br />';
+				continue;
+			}
+
+			$status['files_exist'][] = $file;
+
+			if ($dryRun)
+			{
+				continue;
+			}
+
+			if (JFile::delete(JPATH_ROOT . $file))
+			{
+				$status['files_deleted'][] = $file;
+			}
+			else
+			{
+				$status['files_errors'][] = JText::sprintf('FILES_JOOMLA_ERROR_FILE_FOLDER', $file);
+
+				if (!$suppressOutput)
+				{
+					echo JText::sprintf('FILES_JOOMLA_ERROR_FILE_FOLDER', $file) . '<br />';
+				}
 			}
 		}
 
@@ -3334,23 +3377,39 @@ class JoomlaInstallerScript
 
 		foreach ($folders as $folder)
 		{
-			if (JFolder::exists(JPATH_ROOT . $folder) && !JFolder::delete(JPATH_ROOT . $folder))
+			if (!JFolder::exists(JPATH_ROOT . $folder))
 			{
-				echo JText::sprintf('FILES_JOOMLA_ERROR_FILE_FOLDER', $folder) . '<br />';
+				continue;
+			}
+
+			$status['folders_exist'][] = $folder;
+
+			if ($dryRun)
+			{
+				continue;
+			}
+
+			if (JFolder::delete(JPATH_ROOT . $folder))
+			{
+				$status['folders_deleted'][] = $folder;
+			}
+			else
+			{
+				$status['folders_errors'][] = JText::sprintf('FILES_JOOMLA_ERROR_FILE_FOLDER', $folder);
+
+				if (!$suppressOutput)
+				{
+					echo JText::sprintf('FILES_JOOMLA_ERROR_FILE_FOLDER', $folder) . '<br />';
+				}
 			}
 		}
 
-		/*
-		 * Needed for updates post-3.4
-		 * If com_weblinks doesn't exist then assume we can delete the weblinks package manifest (included in the update packages)
-		 */
-		if (!JFile::exists(JPATH_ROOT . '/administrator/components/com_weblinks/weblinks.php')
-			&& JFile::exists(JPATH_ROOT . '/administrator/manifests/packages/pkg_weblinks.xml'))
+		if (!$dryRun)
 		{
-			JFile::delete(JPATH_ROOT . '/administrator/manifests/packages/pkg_weblinks.xml');
+			$this->fixFilenameCasing();
 		}
 
-		$this->fixFilenameCasing();
+		return $status;
 	}
 
 	/**

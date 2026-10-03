@@ -49,10 +49,8 @@ class SessionMetadataGc extends JApplicationCli
 	 */
 	public function doExecute()
 	{
-		$metadataManager = new \Joomla\CMS\Session\MetadataManager($this, \Joomla\CMS\Factory::getDbo());
-		$sessionExpire   = \Joomla\CMS\Factory::getSession()->getExpire();
-
-		$metadataManager->deletePriorTo(time() - $sessionExpire);
+		// Same as: php cli/joomla.php session:metadata:gc
+		$this->close((new \Joomla\CMS\Application\ConsoleApplication)->runCommand('session:metadata:gc', array(), array('quiet' => true)));
 	}
 }
 
