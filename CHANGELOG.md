@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Version 3.16 - unreleased [pending]
+## Version 3.16 - released October 3rd, 2026
 ### Security fixes
 - Cross-referenced the Joomla 6.1.4/5.4.9 security release (September 2026, 16 items) against this codebase using the real upstream diffs, and backported 10 confirmed-applicable fixes. Several were listed upstream as "Joomla 4.0 and later" but the vulnerable code is present in 3.x:
   - **Unauthorized account creation via `profile.save`:** the frontend profile controller never checked that the caller was logged in. For a guest, the model saved a brand-new, unblocked `JUser`, even with user registration disabled. Guests now get a 403.
@@ -124,7 +124,7 @@ In detail, from most to least severe:
 - **CVE-2026-35221** (com_finder SQLi) — 3.x has the same-*looking* array key/value pattern the upstream fix changes, but tracing every consumer of the affected data structure confirms 3.x's actual query-building code only ever uses the array's values (already safely cast to int), never the keys — the vulnerable path doesn't exist here. (Advisory's own range starts at 5.4.0 and doesn't claim to affect 3.x either.)
 - **CVE-2026-35220** (CSRF in admin activation endpoint) — advisory range (6.0.0–6.1.0 only) confirmed accurate; the affected dispatcher architecture doesn't exist in 3.x.
 
-**Not backported from this review round** (see AGENTS-HISTORY.md for the full 32-advisory breakdown): 13 further advisories confirmed not applicable — they depend on the Joomla 4.0+ webservices/API layer, com_scheduler, com_workflow, or the 4.2+ MFA redesign, none of which exist in 3.x.
+**Not backported from this review round:** 13 further advisories confirmed not applicable — they depend on the Joomla 4.0+ webservices/API layer, com_scheduler, com_workflow, or the 4.2+ MFA redesign, none of which exist in 3.x.
 
 ---
 

@@ -13,7 +13,7 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 
 ## CHANGELOG
 
-## Version 3.16 - unreleased [pending]
+## Version 3.16 - released October 3rd, 2026
 Summary of changes:
 - Backported 14 security fixes from the Joomla 6.1.3/5.4.8 and 6.1.4/5.4.9 security releases, each confirmed against this codebase (several were listed upstream as "Joomla 4.0 and later" but the vulnerable code is present in 3.x), plus related hardening
 - Added "Little WAF", a new opt-in system plugin that filters known attack patterns against vulnerable third-party extensions
