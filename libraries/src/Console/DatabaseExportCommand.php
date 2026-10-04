@@ -36,7 +36,8 @@ class DatabaseExportCommand extends AbstractCommand
 	 * @since  3.17.0
 	 */
 	protected $help = 'Writes each table with the site\'s table prefix to an XML file named after the table, holding its structure and data, '
-		. 'or one table with --table. With --zip the files go into a data_exported_<date>.zip archive instead. '
+		. 'or one table with --table. With --zip the files go into a data_exported_<date>.zip archive instead, or into one named as given, e.g. --zip=mysite.zip '
+		. '(a name without a folder goes into --folder). '
 		. 'The format is the one of the Joomla 4 and later database:export command; on MySQL and MariaDB each table also carries its exact '
 		. 'CREATE TABLE statement, which database:import uses. Rows are read in batches, so large tables don\'t need much memory.';
 
@@ -57,7 +58,7 @@ class DatabaseExportCommand extends AbstractCommand
 	{
 		$this->addOption('folder', null, self::OPTION_REQUIRED, 'Path to write the export files to', '.');
 		$this->addOption('table', null, self::OPTION_REQUIRED, 'The name of the database table to export');
-		$this->addOption('zip', null, self::OPTION_NONE, 'Flag indicating the export will be saved to a ZIP archive');
+		$this->addOption('zip', null, self::OPTION_OPTIONAL, 'Save the export to a ZIP archive, optionally with this file name');
 	}
 
 	/**
@@ -75,7 +76,7 @@ class DatabaseExportCommand extends AbstractCommand
 		$db        = Factory::getDbo();
 		$folder    = rtrim((string) $io->getOption('folder'), '/\\') ?: '.';
 		$tableName = (string) $io->getOption('table');
-		$zip       = (bool) $io->getOption('zip');
+		$zip       = $io->getOption('zip');
 
 		try
 		{
@@ -143,6 +144,12 @@ class DatabaseExportCommand extends AbstractCommand
 		if ($zip)
 		{
 			$zipFile = $folder . '/data_exported_' . date('Y-m-d\TH-i-s') . '.zip';
+
+			if (is_string($zip) && $zip !== '')
+			{
+				$zipFile = strpbrk($zip, '/\\') === false ? $folder . '/' . $zip : $zip;
+				$zipFile = preg_match('/\.zip$/i', $zipFile) ? $zipFile : $zipFile . '.zip';
+			}
 			$archive = new \ZipArchive;
 
 			if ($archive->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true)

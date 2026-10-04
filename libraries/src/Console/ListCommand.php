@@ -138,6 +138,29 @@ class ListCommand extends AbstractCommand
 		$io->writeln();
 		$io->writeln('Run "php cli/joomla.php help <command>" for the details of a command, or "help <group>" (e.g. "help user") for the commands of a group.');
 
+		if ($namespace === '')
+		{
+			$io->writeln();
+			$io->writeln('Examples:');
+
+			foreach (array(
+				'Enable progressive caching'                                               => array('config:set caching=2'),
+				'Update Joomla from a local copy of Joomla 3.x UTD, restoring uninstalled core extensions'
+					=> array('core:update --file=/path/to/joomla-3.x-main.zip --restore-core'),
+				'Export the database to a ZIP file with a custom name'                     => array('database:export --folder=/path/to/backups --zip=mysite-backup.zip'),
+				'Check for extension updates, then update a single extension by its ID'   => array('update:extensions:check', 'extension:update 10188'),
+				'Find a user, then block them'                                             => array('user:list \'*smith*\'', 'user:block --username=jsmith'),
+			) as $label => $lines)
+			{
+				$io->writeln('  ' . $label . ':');
+
+				foreach ($lines as $line)
+				{
+					$io->writeln('    php cli/joomla.php ' . $line);
+				}
+			}
+		}
+
 		return self::SUCCESS;
 	}
 }

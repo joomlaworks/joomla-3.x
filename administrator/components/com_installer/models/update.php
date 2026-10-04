@@ -420,7 +420,7 @@ class InstallerModelUpdate extends JModelList
 
 		if ($extra_query = $update->get('extra_query'))
 		{
-			$url .= (strpos($url, '?') === false) ? '?' : '&amp;';
+			$url .= (strpos($url, '?') === false) ? '?' : '&';
 			$url .= $extra_query;
 		}
 
@@ -433,7 +433,7 @@ class InstallerModelUpdate extends JModelList
 
 			if ($extra_query)
 			{
-				$url .= (strpos($url, '?') === false) ? '?' : '&amp;';
+				$url .= (strpos($url, '?') === false) ? '?' : '&';
 				$url .= $extra_query;
 			}
 
@@ -456,6 +456,9 @@ class InstallerModelUpdate extends JModelList
 
 		if (empty($package))
 		{
+			// Don't leave the download behind, e.g. an error page saved in place of the package
+			InstallerHelper::cleanupInstall($tmp_dest . '/' . $p_file, '');
+
 			$app->enqueueMessage(JText::sprintf('COM_INSTALLER_UNPACK_ERROR', $p_file), 'error');
 
 			return false;

@@ -44,7 +44,9 @@ class CoreUpdateCommand extends AbstractCommand
 		. 'process, so the new code does it, like the separate requests of Joomla Update. With --reinstall, the files of the current '
 		. 'version are installed again when there is no newer one. With --restore-core, core extensions which were uninstalled are '
 		. 'installed again, like the "Restore uninstalled core extensions" option of Joomla Update. The progress is logged to '
-		. 'joomla_update.php in the log folder. If PHP-FPM runs with opcache.validate_timestamps=0, reload it afterwards, '
+		. 'joomla_update.php in the log folder. With --file, a local Joomla package (.zip, .tar, .tar.gz/.tgz or .tar.bz2, also '
+		. 'one with all files in a single top folder, like a GitHub download) is installed instead of the update channel\'s, e.g. to test '
+		. 'a newer or customised build; its version must not be older than the installed one. Zip files need the least memory. If PHP-FPM runs with opcache.validate_timestamps=0, reload it afterwards, '
 		. 'as the command line can\'t clear the web server\'s OPcache.';
 
 	/**
@@ -62,6 +64,7 @@ class CoreUpdateCommand extends AbstractCommand
 	{
 		$this->addOption('reinstall', null, self::OPTION_NONE, 'Reinstall the current version\'s files when there is no update');
 		$this->addOption('restore-core', null, self::OPTION_NONE, 'Install again the core extensions which were uninstalled');
+		$this->addOption('file', null, self::OPTION_REQUIRED, 'Update from this local package file instead of the update channel');
 	}
 
 	/**
@@ -73,6 +76,29 @@ class CoreUpdateCommand extends AbstractCommand
 	 */
 	protected function doExecute(CommandIO $io)
 	{
+		$file = (string) $io->getOption('file');
+
+		if ($file !== '' && $io->getOption('reinstall'))
+		{
+			$io->error('Give either --file or --reinstall, not both.');
+
+			return self::INVALID;
+		}
+
+		if ($file !== '' && (!is_file($file) || !is_readable($file)))
+		{
+			$io->error(sprintf('The file %s does not exist or is not readable.', $file));
+
+			return self::INVALID;
+		}
+
+		if ($file !== '' && !preg_match('/\.(zip|tar|tar\.gz|tgz|tar\.bz2|tbz2)$/i', $file))
+		{
+			$io->error('The package must be a .zip, .tar, .tar.gz, .tgz or .tar.bz2 file.');
+
+			return self::INVALID;
+		}
+
 		$io->title('Updating Joomla');
 
 		static::addLogger();
@@ -80,6 +106,19 @@ class CoreUpdateCommand extends AbstractCommand
 		$oldVersion = (new Version)->getShortVersion();
 
 		Log::add(Text::sprintf('COM_JOOMLAUPDATE_UPDATE_LOG_START', 0, 'Command line', $oldVersion), Log::INFO, 'Update');
+
+		$io->setData('installed', $oldVersion);
+
+		if ($file !== '')
+		{
+			$file = realpath($file);
+			$io->setData('file', $file);
+			Log::add(Text::sprintf('COM_JOOMLAUPDATE_UPDATE_LOG_FILE', $file), Log::INFO, 'Update');
+
+			$this->warnAboutDatabase($io);
+
+			return $this->install($io, $file, false, $oldVersion);
+		}
 
 		/** @var \JoomlaupdateModelDefault $model */
 		$model = $this->getAdministratorModel('com_joomlaupdate', 'Default', 'JoomlaupdateModel');
@@ -91,7 +130,6 @@ class CoreUpdateCommand extends AbstractCommand
 
 		$info = $model->getUpdateInformation();
 
-		$io->setData('installed', $oldVersion);
 		$io->setData('latest', $info['latest']);
 
 		if (!$info['hasUpdate'] && !$io->getOption('reinstall'))
@@ -109,13 +147,8 @@ class CoreUpdateCommand extends AbstractCommand
 			return self::FAILURE;
 		}
 
-		// Joomla Update doesn't refuse to update a site with database problems, and an update often fixes them
-		foreach (MaintenanceDatabaseCommand::getProblems() as $problem)
-		{
-			$io->warning('Database: ' . $problem);
-		}
+		$this->warnAboutDatabase($io);
 
-		$tmpPath = Factory::getConfig()->get('tmp_path');
 		$package = $this->download($io, $info['object']);
 
 		if (!$package)
@@ -123,7 +156,24 @@ class CoreUpdateCommand extends AbstractCommand
 			return self::FAILURE;
 		}
 
-		$folder = $tmpPath . '/' . uniqid('jupdate_');
+		return $this->install($io, $package, true, $oldVersion);
+	}
+
+	/**
+	 * Install a package's files and finalise the update.
+	 *
+	 * @param   CommandIO  $io          The input values and the output
+	 * @param   string     $package     The package file
+	 * @param   boolean    $downloaded  Whether the package was downloaded, so it's deleted afterwards
+	 * @param   string     $oldVersion  The version before the update
+	 *
+	 * @return  integer  The exit code
+	 *
+	 * @since   3.17.0
+	 */
+	protected function install(CommandIO $io, $package, $downloaded, $oldVersion)
+	{
+		$folder = Factory::getConfig()->get('tmp_path') . '/' . uniqid('jupdate_');
 
 		try
 		{
@@ -134,7 +184,8 @@ class CoreUpdateCommand extends AbstractCommand
 				return self::FAILURE;
 			}
 
-			$manifest = @simplexml_load_file($folder . '/administrator/manifests/files/joomla.xml');
+			$root     = $this->findPackageRoot($folder);
+			$manifest = $root ? @simplexml_load_file($root . '/administrator/manifests/files/joomla.xml') : false;
 
 			if (!$manifest)
 			{
@@ -146,11 +197,19 @@ class CoreUpdateCommand extends AbstractCommand
 			$newVersion = (string) $manifest->version;
 			$io->setData('version', $newVersion);
 
+			// Database changes can't be undone, so an older version's code would run on a newer database
+			if (version_compare($newVersion, $oldVersion, '<'))
+			{
+				$io->error(sprintf('The package is Joomla %s, older than the installed %s. Downgrades are not supported.', $newVersion, $oldVersion));
+
+				return self::FAILURE;
+			}
+
 			Log::add(Text::_('COM_JOOMLAUPDATE_UPDATE_LOG_INSTALL'), Log::INFO, 'Update');
 			$io->text(sprintf('Copying the files of Joomla %s ...', $newVersion));
 
 			$errors = array();
-			$count  = $this->copyTree($folder, JPATH_ROOT, $errors, true);
+			$count  = $this->copyTree($root, JPATH_ROOT, $errors, true);
 
 			foreach ($errors as $error)
 			{
@@ -168,8 +227,15 @@ class CoreUpdateCommand extends AbstractCommand
 		}
 		finally
 		{
-			\JFolder::delete($folder);
-			@unlink($package);
+			if (is_dir($folder))
+			{
+				\JFolder::delete($folder);
+			}
+
+			if ($downloaded)
+			{
+				@unlink($package);
+			}
 		}
 
 		Log::add(Text::_('COM_JOOMLAUPDATE_UPDATE_LOG_FINALISE'), Log::INFO, 'Update');
@@ -188,6 +254,51 @@ class CoreUpdateCommand extends AbstractCommand
 		$io->success(sprintf('Joomla updated from %s to %s.', $oldVersion, $newVersion));
 
 		return self::SUCCESS;
+	}
+
+	/**
+	 * Report the database problems Extensions: Database shows. Joomla Update doesn't refuse to update a site with them, and an
+	 * update often fixes them.
+	 *
+	 * @param   CommandIO  $io  The output
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	protected function warnAboutDatabase(CommandIO $io)
+	{
+		foreach (MaintenanceDatabaseCommand::getProblems() as $problem)
+		{
+			$io->warning('Database: ' . $problem);
+		}
+	}
+
+	/**
+	 * Find the folder holding the Joomla files: the extraction folder, or its only subfolder for archives with a top folder
+	 * (e.g. a GitHub download).
+	 *
+	 * @param   string  $folder  The extraction folder
+	 *
+	 * @return  string|null
+	 *
+	 * @since   3.17.0
+	 */
+	protected function findPackageRoot($folder)
+	{
+		if (is_file($folder . '/administrator/manifests/files/joomla.xml'))
+		{
+			return $folder;
+		}
+
+		$entries = array_values(array_diff((array) scandir($folder), array('.', '..')));
+
+		if (count($entries) === 1 && is_file($folder . '/' . $entries[0] . '/administrator/manifests/files/joomla.xml'))
+		{
+			return $folder . '/' . $entries[0];
+		}
+
+		return null;
 	}
 
 	/**
@@ -281,6 +392,41 @@ class CoreUpdateCommand extends AbstractCommand
 	 */
 	protected function extract(CommandIO $io, $package, $folder)
 	{
+		if (preg_match('/\.(tar|tar\.gz|tgz|tar\.bz2|tbz2)$/i', $package))
+		{
+			// Joomla's archive library decompresses and reads tar files in memory, so give it room
+			$limit = trim((string) ini_get('memory_limit'));
+			$units = array('K' => 1024, 'M' => 1048576, 'G' => 1073741824);
+			$unit  = strtoupper(substr($limit, -1));
+			$bytes = (int) $limit * (isset($units[$unit]) ? $units[$unit] : 1);
+
+			if ($limit !== '-1' && $bytes < 268435456)
+			{
+				@ini_set('memory_limit', '256M');
+			}
+
+			// It also refuses entries which would be written outside the folder
+			try
+			{
+				$archive = new \Joomla\Archive\Archive(array('tmp_path' => Factory::getConfig()->get('tmp_path')));
+
+				if (\JFolder::create($folder) && $archive->extract($package, $folder))
+				{
+					return true;
+				}
+			}
+			catch (\Exception $e)
+			{
+				$io->error('The update package could not be extracted: ' . $e->getMessage());
+
+				return false;
+			}
+
+			$io->error('The update package could not be extracted to ' . $folder . '.');
+
+			return false;
+		}
+
 		if (!class_exists('ZipArchive'))
 		{
 			$io->error('The PHP zip extension is needed to extract the update package.');
