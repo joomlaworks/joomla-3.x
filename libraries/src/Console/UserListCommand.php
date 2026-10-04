@@ -35,7 +35,19 @@ class UserListCommand extends AbstractCommand
 	 * @var    string
 	 * @since  3.17.0
 	 */
-	protected $help = 'Lists all users with their ID, username, name, email, blocked state and user groups.';
+	protected $help = 'Lists all users with their ID, username, name, email, blocked state and user groups, or only those whose username, '
+		. 'name or email matches the pattern, e.g. "*@example.com" or "*smith*" (with the wildcards * and ?, quoted so the shell '
+		. 'doesn\'t expand them; without wildcards the match is exact). Matching ignores case.';
+
+	/**
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	protected function configure()
+	{
+		$this->addArgument('pattern', self::ARGUMENT_OPTIONAL, 'Only list users whose username, name or email matches, e.g. "*smith*"');
+	}
 
 	/**
 	 * @param   CommandIO  $io  The input values and the output
@@ -67,10 +79,16 @@ class UserListCommand extends AbstractCommand
 			->select($db->quoteName(array('id', 'username', 'name', 'email', 'block')))
 			->from($db->quoteName('#__users'))
 			->order($db->quoteName('id'));
-		$users = array();
+		$users   = array();
+		$pattern = (string) $io->getArgument('pattern');
 
 		foreach ($db->setQuery($query)->loadObjectList() as $user)
 		{
+			if ($pattern !== '' && !static::matchesPattern($pattern, array($user->username, $user->name, $user->email)))
+			{
+				continue;
+			}
+
 			$users[] = array(
 				'id'       => (int) $user->id,
 				'username' => $user->username,
@@ -82,6 +100,11 @@ class UserListCommand extends AbstractCommand
 		}
 
 		$io->title('List Users');
+
+		if (!$users && $pattern !== '')
+		{
+			$io->text(sprintf('No users match "%s".', $pattern));
+		}
 		$io->table(
 			array('id' => 'ID', 'username' => 'Username', 'name' => 'Name', 'email' => 'Email', 'blocked' => 'Blocked', 'groups' => 'Groups'),
 			$users,

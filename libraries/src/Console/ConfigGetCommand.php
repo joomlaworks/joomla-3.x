@@ -67,10 +67,11 @@ class ConfigGetCommand extends AbstractCommand
 	protected function configure()
 	{
 		$this->help = 'Shows the value of a configuration option, of a group of options (--group), or of all options. '
+			. 'The option name can hold the wildcards * and ?, e.g. "memcached_*" or "*pass*"; quote it, so the shell doesn\'t expand it. '
 			. 'Available groups: ' . implode(', ', array_keys(self::GROUPS)) . '. '
 			. 'Passwords and keys are masked unless --show-secrets is given.';
 
-		$this->addArgument('option', self::ARGUMENT_OPTIONAL, 'Name of the option');
+		$this->addArgument('option', self::ARGUMENT_OPTIONAL, 'Name of the option, or a pattern with * and ?');
 		$this->addOption('group', 'g', self::OPTION_REQUIRED, 'Name of the option group');
 		$this->addOption('show-secrets', null, self::OPTION_NONE, 'Show passwords and keys instead of masking them');
 	}
@@ -106,6 +107,25 @@ class ConfigGetCommand extends AbstractCommand
 			}
 
 			$names = self::GROUPS[$group];
+		}
+		elseif (static::hasWildcards($option))
+		{
+			$names = array();
+
+			foreach (array_keys($configs) as $name)
+			{
+				if (static::matchesPattern($option, $name))
+				{
+					$names[] = $name;
+				}
+			}
+
+			if (!$names)
+			{
+				$io->error(sprintf('No configuration options match "%s".', $option));
+
+				return self::FAILURE;
+			}
 		}
 		elseif ($option !== '')
 		{

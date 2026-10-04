@@ -56,6 +56,12 @@ class HelpCommand extends AbstractCommand
 		$name    = (string) $io->getArgument('command_name');
 		$command = $app->getCommand($name);
 
+		// A group of commands, e.g. "user" for user:*
+		if (!$command && $app->hasNamespace($name))
+		{
+			return ListCommand::listCommands($io, $name);
+		}
+
 		if (!$command)
 		{
 			$io->error(sprintf('Command "%s" is not defined.', $name));

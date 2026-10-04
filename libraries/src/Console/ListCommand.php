@@ -58,10 +58,24 @@ class ListCommand extends AbstractCommand
 	 */
 	protected function doExecute(CommandIO $io)
 	{
+		return static::listCommands($io, (string) $io->getArgument('namespace'));
+	}
+
+	/**
+	 * Show the commands, or those of a namespace; "help <namespace>" uses it too.
+	 *
+	 * @param   CommandIO  $io         The output
+	 * @param   string     $namespace  The namespace, e.g. "user", or '' for all
+	 *
+	 * @return  integer  The exit code
+	 *
+	 * @since   3.17.0
+	 */
+	public static function listCommands(CommandIO $io, $namespace)
+	{
 		/** @var ConsoleApplication $app */
-		$app       = Factory::getApplication();
-		$namespace = (string) $io->getArgument('namespace');
-		$commands  = array();
+		$app      = Factory::getApplication();
+		$commands = array();
 
 		foreach ($app->getCommands() as $name => $command)
 		{
@@ -93,6 +107,9 @@ class ListCommand extends AbstractCommand
 		$io->writeln();
 		$io->writeln('Usage: php cli/joomla.php <command> [options] [arguments]');
 		$io->writeln();
+		$io->writeln('Name filters, e.g. of config:get, user:list and extension:list, accept the wildcards * (any characters) and ? (one');
+		$io->writeln('character), as in config:get \'memcached_*\'. Quote them, so the shell doesn\'t expand them.');
+		$io->writeln();
 		$io->writeln('Global options:');
 
 		foreach (ConsoleApplication::getGlobalOptions() as $name => $global)
@@ -119,7 +136,7 @@ class ListCommand extends AbstractCommand
 		}
 
 		$io->writeln();
-		$io->writeln('Run "php cli/joomla.php help <command>" for the details of a command.');
+		$io->writeln('Run "php cli/joomla.php help <command>" for the details of a command, or "help <group>" (e.g. "help user") for the commands of a group.');
 
 		return self::SUCCESS;
 	}

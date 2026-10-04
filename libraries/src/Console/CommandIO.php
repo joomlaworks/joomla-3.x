@@ -98,6 +98,20 @@ class CommandIO
 	private $errorMessage;
 
 	/**
+	 * The stream written to last and whether that line was empty, for the blank line finish() adds
+	 *
+	 * @var    resource|null
+	 * @since  3.17.0
+	 */
+	private $lastStream;
+
+	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	private $lastLineBlank = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param   string  $command    The command name
@@ -186,7 +200,7 @@ class CommandIO
 	{
 		if (!$this->json && !$this->quiet)
 		{
-			fwrite($this->stdout, $text . "\n");
+			$this->write($this->stdout, $text . "\n");
 		}
 	}
 
@@ -292,7 +306,8 @@ class CommandIO
 			return;
 		}
 
-		if ($this->quiet)
+		// The commands say in words when there's nothing to list
+		if ($this->quiet || !$normalised)
 		{
 			return;
 		}
@@ -467,6 +482,12 @@ class CommandIO
 	{
 		if (!$this->json)
 		{
+			// Keep the shell prompt apart from the output
+			if ($this->lastStream && !$this->lastLineBlank)
+			{
+				fwrite($this->lastStream, "\n");
+			}
+
 			return;
 		}
 
@@ -488,6 +509,24 @@ class CommandIO
 		$json  = json_encode($document, defined('JSON_INVALID_UTF8_SUBSTITUTE') ? $flags | JSON_INVALID_UTF8_SUBSTITUTE : $flags);
 
 		fwrite($this->stdout, ($json === false ? json_encode(array('command' => $this->command, 'success' => false, 'error' => json_last_error_msg())) : $json) . "\n");
+	}
+
+	/**
+	 * Write text output.
+	 *
+	 * @param   resource  $stream  The stream
+	 * @param   string    $text    The text, ending with a line break
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	private function write($stream, $text)
+	{
+		fwrite($stream, $text);
+
+		$this->lastStream    = $stream;
+		$this->lastLineBlank = trim($text) === '';
 	}
 
 	/**
@@ -516,7 +555,7 @@ class CommandIO
 
 		if ($type === 'error')
 		{
-			fwrite($this->stderr, $line . "\n");
+			$this->write($this->stderr, $line . "\n");
 
 			return;
 		}

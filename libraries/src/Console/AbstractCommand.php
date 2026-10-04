@@ -293,6 +293,51 @@ abstract class AbstractCommand
 	}
 
 	/**
+	 * Whether a name filter holds the wildcards * (any characters) or ? (one character).
+	 *
+	 * @param   string  $pattern  The name filter
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public static function hasWildcards($pattern)
+	{
+		return strpbrk((string) $pattern, '*?') !== false;
+	}
+
+	/**
+	 * Whether any of the values matches a name filter: with wildcards (* and ?) as a pattern, otherwise exactly; both ignore case.
+	 * Commands which list things use it for their name filters, so they all behave alike.
+	 *
+	 * @param   string        $pattern  The name filter
+	 * @param   string|array  $values   The value or values to check, e.g. a user's username, name and email
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public static function matchesPattern($pattern, $values)
+	{
+		$pattern = (string) $pattern;
+		$regex   = static::hasWildcards($pattern)
+			? '/^' . str_replace(array('\\*', '\\?'), array('.*', '.'), preg_quote($pattern, '/')) . '$/isu'
+			: null;
+
+		foreach ((array) $values as $value)
+		{
+			$value = (string) $value;
+
+			if ($regex ? preg_match($regex, $value) === 1 : strcasecmp($pattern, $value) === 0)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0

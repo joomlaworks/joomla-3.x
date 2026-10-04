@@ -35,7 +35,9 @@ class ExtensionListCommand extends AbstractCommand
 	 * @var    string
 	 * @since  3.17.0
 	 */
-	protected $help = 'Lists the installed extensions, optionally only those of one type (component, module, plugin, template, language, library, package, file).';
+	protected $help = 'Lists the installed extensions, optionally only those of one type (component, module, plugin, template, language, library, '
+		. 'package, file) and those whose name or element matches the pattern, e.g. "mod_articles_*" or "*k2*" (with the wildcards * and ?, '
+		. 'quoted so the shell doesn\'t expand them; without wildcards the match is exact). Matching ignores case.';
 
 	/**
 	 * @return  void
@@ -44,6 +46,7 @@ class ExtensionListCommand extends AbstractCommand
 	 */
 	protected function configure()
 	{
+		$this->addArgument('pattern', self::ARGUMENT_OPTIONAL, 'Only list extensions whose name or element matches, e.g. "*k2*"');
 		$this->addOption('type', null, self::OPTION_REQUIRED, 'Only list extensions of this type');
 	}
 
@@ -66,7 +69,14 @@ class ExtensionListCommand extends AbstractCommand
 			return self::FAILURE;
 		}
 
+		$extensions = $this->filterExtensions($extensions, (string) $io->getArgument('pattern'));
+
 		$io->title('Installed Extensions');
+
+		if (!$extensions)
+		{
+			$io->text(sprintf('No extensions match "%s".', $io->getArgument('pattern')));
+		}
 		$this->showExtensions($io, $extensions);
 
 		return self::SUCCESS;
@@ -95,6 +105,36 @@ class ExtensionListCommand extends AbstractCommand
 		}
 
 		return $db->setQuery($query)->loadObjectList();
+	}
+
+	/**
+	 * Keep the extensions whose name or element matches a name filter.
+	 *
+	 * @param   array   $extensions  The extension rows
+	 * @param   string  $pattern     The name filter, '' for all
+	 *
+	 * @return  array
+	 *
+	 * @since   3.17.0
+	 */
+	protected function filterExtensions(array $extensions, $pattern)
+	{
+		if ($pattern === '')
+		{
+			return $extensions;
+		}
+
+		$matching = array();
+
+		foreach ($extensions as $extension)
+		{
+			if (static::matchesPattern($pattern, array($extension->name, $extension->element)))
+			{
+				$matching[] = $extension;
+			}
+		}
+
+		return $matching;
 	}
 
 	/**

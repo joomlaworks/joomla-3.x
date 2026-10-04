@@ -33,7 +33,8 @@ class ExtensionDiscoverListCommand extends ExtensionListCommand
 	 * @var    string
 	 * @since  3.17.0
 	 */
-	protected $help = 'Lists the extensions found on disk by extension:discover which are waiting to be installed with extension:discover:install.';
+	protected $help = 'Lists the extensions found on disk by extension:discover which are waiting to be installed with extension:discover:install, '
+		. 'or only those whose name or element matches the pattern (with the wildcards * and ?, quoted; without wildcards the match is exact).';
 
 	/**
 	 * @return  void
@@ -42,6 +43,7 @@ class ExtensionDiscoverListCommand extends ExtensionListCommand
 	 */
 	protected function configure()
 	{
+		$this->addArgument('pattern', self::ARGUMENT_OPTIONAL, 'Only list extensions whose name or element matches, e.g. "*k2*"');
 	}
 
 	/**
@@ -54,11 +56,16 @@ class ExtensionDiscoverListCommand extends ExtensionListCommand
 	protected function doExecute(CommandIO $io)
 	{
 		$io->title('Discovered Extensions');
+		$pattern    = (string) $io->getArgument('pattern');
 		$extensions = $this->getExtensions(true);
 
 		if (!$extensions)
 		{
 			$io->text('There are no pending discovered extensions to install. Perhaps you need to run extension:discover first?');
+		}
+		elseif (!($extensions = $this->filterExtensions($extensions, $pattern)))
+		{
+			$io->text(sprintf('No discovered extensions match "%s".', $pattern));
 		}
 
 		$this->showExtensions($io, $extensions);

@@ -234,6 +234,12 @@ class ConsoleApplication extends CliApplication
 
 		$command = $this->getCommand($name);
 
+		// A group of commands, e.g. "user" for user:*
+		if (!$command && $this->hasNamespace($name))
+		{
+			return $this->runCommand('list', array('namespace' => $name), $global);
+		}
+
 		if (!$command)
 		{
 			$options = $global;
@@ -387,6 +393,28 @@ class ConsoleApplication extends CliApplication
 		}
 
 		return $this->commands;
+	}
+
+	/**
+	 * Whether there are commands in a namespace, e.g. "user" for user:*.
+	 *
+	 * @param   string  $namespace  The namespace
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function hasNamespace($namespace)
+	{
+		foreach ($this->getCommands() as $name => $command)
+		{
+			if (!$command->isHidden() && strpos($name, $namespace . ':') === 0)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
