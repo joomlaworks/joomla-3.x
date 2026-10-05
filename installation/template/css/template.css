@@ -1208,6 +1208,23 @@ fieldset.radio input:checked + label {
 	background: var(--warning-soft);
 }
 
+.callout-info {
+	display: flex;
+	border-color: rgba(37, 99, 235, .25);
+	background: var(--info-soft);
+}
+
+.callout-info p {
+	display: flex;
+	gap: .6rem;
+	margin: 0;
+}
+
+.callout-info .icon {
+	margin-top: .2rem;
+	color: var(--primary);
+}
+
 .callout + .actions,
 .panel > .actions,
 .table-wrap + .actions {

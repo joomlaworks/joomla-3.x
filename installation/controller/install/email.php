@@ -84,20 +84,6 @@ class InstallationControllerInstallEmail extends JControllerBase
 		$body[] = array(JText::_('INSTL_DATABASE_NAME_LABEL'), $options['db_name']);
 		$body[] = array(JText::_('INSTL_DATABASE_PREFIX_LABEL'), $options['db_prefix']);
 
-		if (isset($options['ftp_enable']) && $options['ftp_enable'])
-		{
-			$body[] = $this->emailTitle(JText::_('INSTL_FTP'));
-			$body[] = array(JText::_('INSTL_FTP_USER_LABEL'), $options['ftp_user']);
-
-			if ($options['summary_email_passwords'])
-			{
-				$body[] = array( JText::_('INSTL_FTP_PASSWORD_LABEL'), $options['ftp_pass_plain']);
-			}
-
-			$body[] = array(JText::_('INSTL_FTP_HOST_LABEL'), $options['ftp_host']);
-			$body[] = array(JText::_('INSTL_FTP_PORT_LABEL'), $options['ftp_port']);
-		}
-
 		$max = 0;
 
 		foreach ($body as $line)

@@ -21,12 +21,17 @@ $lang    = JFactory::getLanguage();
 
 $strings = array();
 
-foreach (array('ERROR', 'WARNING', 'NOTICE', 'MESSAGE', 'INSTL_PROCESS_BUSY', 'INSTL_FTP_SETTINGS_CORRECT',
+foreach (array('ERROR', 'WARNING', 'NOTICE', 'MESSAGE', 'INSTL_PROCESS_BUSY',
 	'JLIB_DATABASE_ERROR_DATABASE_CONNECT', 'JLIB_JS_AJAX_ERROR_CONNECTION_ABORT', 'JLIB_JS_AJAX_ERROR_NO_CONTENT',
 	'JLIB_JS_AJAX_ERROR_OTHER', 'JLIB_JS_AJAX_ERROR_PARSE', 'JLIB_JS_AJAX_ERROR_TIMEOUT') as $key)
 {
 	$strings[$key] = JText::_($key);
 }
+
+// Shown when the installer removes its folder on the way out; English for language packs without it yet
+$strings['INSTL_COMPLETE_FOLDER_REMOVED_AUTO'] = $lang->hasKey('INSTL_COMPLETE_FOLDER_REMOVED_AUTO')
+	? JText::sprintf('INSTL_COMPLETE_FOLDER_REMOVED_AUTO', basename(JPATH_INSTALLATION))
+	: 'The "' . basename(JPATH_INSTALLATION) . '" folder was removed automatically.';
 
 $options = array(
 	'url'       => JRoute::_('index.php', false),

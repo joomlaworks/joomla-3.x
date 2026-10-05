@@ -7,7 +7,7 @@
  * The installer's script, without jQuery, Bootstrap or Joomla's core scripts. The views use data attributes:
  *   data-action="next"            submits the step's form (#adminForm)
  *   data-goto="view"              shows another step
- *   data-action="install-languages", "verify-ftp", "detect-ftp-root", "remove-folder"
+ *   data-action="install-languages", "remove-folder", "leave" (removes the folder, then follows the link)
  *   data-show-when="name=value"   shown only while the radio jform[name] has that value
  * Window.Install keeps the methods of the previous script, for markup which still calls them (e.g. onchange="Install.setlanguage()").
  */
@@ -315,48 +315,6 @@
 		next();
 	}
 
-	/* FTP */
-
-	function ftpRequest(button, task, onSuccess) {
-		const form = button.closest('form');
-
-		button.disabled = true;
-
-		post(baseUrl + '?task=' + task, form)
-			.then((r) => {
-				if (r.error === false) {
-					onSuccess(r);
-				} else {
-					renderError(r.message);
-				}
-			})
-			.catch((error) => renderError(error.message))
-			.finally(() => {
-				button.disabled = false;
-			});
-	}
-
-	function detectFtpRoot(button) {
-		ftpRequest(button, 'detectftproot', (r) => {
-			const root = document.getElementById('jform_ftp_root');
-
-			if (root) {
-				root.value = r.data.root;
-			}
-		});
-
-		return false;
-	}
-
-	function verifyFtpSettings(button) {
-		ftpRequest(button, 'verifyftpsettings', () => {
-			removeMessages();
-			renderMessages({ message: [text('INSTL_FTP_SETTINGS_CORRECT', 'Settings correct')] });
-		});
-
-		return false;
-	}
-
 	/* Removing the installation folder */
 
 	function removeFolder(button) {
@@ -402,6 +360,64 @@
 			});
 
 		return false;
+	}
+
+	/**
+	 * Leaving the final page (to the site or its administrator) removes the installation folder first. If that fails, the
+	 * error shows and the next click goes on anyway.
+	 */
+	function leave(link) {
+		const href = link.getAttribute('href');
+
+		if (link.dataset.removed === 'done' || link.dataset.removed === 'failed') {
+			window.location = href;
+
+			return;
+		}
+
+		const form = link.closest('form');
+		const links = document.querySelectorAll('[data-action="leave"]');
+		const errorBox = document.getElementById('theDefaultError');
+		const errorMessage = document.getElementById('theDefaultErrorMessage');
+
+		const mark = (state) => links.forEach((element) => {
+			element.dataset.removed = state;
+			element.removeAttribute('aria-disabled');
+		});
+
+		links.forEach((element) => element.setAttribute('aria-disabled', 'true'));
+		loading(true);
+
+		post(baseUrl + '?task=removefolder', form)
+			.then((r) => {
+				if (r.error !== false) {
+					return Promise.reject(new Error(r.message));
+				}
+
+				loading(false);
+				mark('done');
+				stopKeepAlive();
+				removeMessages();
+				renderMessages({ message: [text('INSTL_COMPLETE_FOLDER_REMOVED_AUTO', r.data.text)] });
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+
+				// Long enough to read the message
+				window.setTimeout(() => {
+					window.location = href;
+				}, 1600);
+			})
+			.catch((error) => {
+				loading(false);
+				mark('failed');
+
+				if (errorBox && errorMessage) {
+					errorMessage.textContent = error.message;
+					errorBox.hidden = false;
+					errorBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				} else {
+					renderError(error.message);
+				}
+			});
 	}
 
 	/* Show and hide parts of a form with a radio's value */
@@ -538,16 +554,12 @@
 				submitform();
 				break;
 
-			case 'verify-ftp':
-				verifyFtpSettings(target);
-				break;
-
-			case 'detect-ftp-root':
-				detectFtpRoot(target);
-				break;
-
 			case 'remove-folder':
 				removeFolder(target);
+				break;
+
+			case 'leave':
+				leave(target);
 				break;
 		}
 	});
@@ -592,8 +604,6 @@
 		setlanguage: setlanguage,
 		goToPage: goToPage,
 		install: install,
-		detectFtpRoot: detectFtpRoot,
-		verifyFtpSettings: verifyFtpSettings,
 		removeFolder: removeFolder,
 		toggle: toggle,
 	};

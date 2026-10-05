@@ -11,10 +11,7 @@ defined('_JEXEC') or die;
 
 /* @var InstallationViewSummaryHtml $this */
 
-// Determine if the configuration file path is writable.
-$path   = JPATH_CONFIGURATION . '/configuration.php';
-$useftp = file_exists($path) ? !is_writable($path) : !is_writable(JPATH_CONFIGURATION . '/');
-$prev   = $useftp ? 'ftp' : 'database';
+$prev   = 'database';
 $o      = $this->options;
 $e      = function ($key) use ($o) {
 	return JHtml::_('InstallationHtml.helper.escape', isset($o[$key]) ? $o[$key] : '');
@@ -92,25 +89,6 @@ $remove = isset($o['db_old']) && $o['db_old'] === 'remove';
 			</div>
 		</section>
 	</div>
-<?php if ($useftp) : ?>
-	<section class="panel">
-		<h2 class="section-title"><?php echo JText::_('INSTL_FTP'); ?></h2>
-		<div class="table-wrap">
-			<table class="table">
-				<tbody>
-					<tr><td class="item"><?php echo JText::_('INSTL_FTP_ENABLE_LABEL'); ?></td><td class=""><?php echo $yesNo(!empty($o['ftp_enable'])); ?></td></tr>
-<?php if (!empty($o['ftp_enable'])) : ?>
-					<tr><td class="item"><?php echo JText::_('INSTL_FTP_USER_LABEL'); ?></td><td class="value"><?php echo $e('ftp_user'); ?></td></tr>
-					<tr><td class="item"><?php echo JText::_('INSTL_FTP_HOST_LABEL'); ?></td><td class="value"><?php echo $e('ftp_host'); ?></td></tr>
-					<tr><td class="item"><?php echo JText::_('INSTL_FTP_PORT_LABEL'); ?></td><td class="value"><?php echo $e('ftp_port'); ?></td></tr>
-					<tr><td class="item"><?php echo JText::_('INSTL_FTP_ROOT_LABEL'); ?></td><td class="value"><?php echo $e('ftp_root'); ?></td></tr>
-					<tr><td class="item"><?php echo JText::_('INSTL_FTP_SAVE_LABEL'); ?></td><td class=""><?php echo $yesNo(!empty($o['ftp_save']), false); ?></td></tr>
-<?php endif; ?>
-				</tbody>
-			</table>
-		</div>
-	</section>
-<?php endif; ?>
 	<div class="grid-2">
 		<section class="panel">
 			<h2 class="section-title"><?php echo JText::_('INSTL_PRECHECK_TITLE'); ?></h2>

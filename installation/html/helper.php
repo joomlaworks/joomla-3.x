@@ -25,22 +25,7 @@ class InstallationHtmlHelper
 	 */
 	public static function stepbar($level = 0)
 	{
-		// Determine if the configuration file path is writable.
-		$path   = JPATH_CONFIGURATION . '/configuration.php';
-		$useftp = file_exists($path) ? !is_writable($path) : !is_writable(JPATH_CONFIGURATION . '/');
-
-		$tabs   = array();
-		$tabs[] = 'site';
-		$tabs[] = 'database';
-
-		if ($useftp)
-		{
-			$tabs[] = 'ftp';
-		}
-
-		$tabs[] = 'summary';
-
-		return static::indent(static::renderSteps($tabs), $level);
+		return static::indent(static::renderSteps(array('site', 'database', 'summary')), $level);
 	}
 
 	/**

@@ -66,10 +66,11 @@ Summary of changes:
 - Fixed the installer stopping after its first step on PHP 8.2+ when PHP is set to display errors
 - Fixed uninstalling Contacts or News Feeds failing (and leaving them half removed) on sites installed with sample data, after Banners had been uninstalled
 - Clear error messages when the database user's authentication method is the reason a connection fails (e.g. `mysql_native_password` on MySQL 8.4/9), saying what to change
-- Fixed several installer bugs: no sample data offered for SQLite, SQLite not hiding the server fields in the browser, the FTP root path field missing, unescaped values on the overview page, and PHP 8.5 deprecation notices (one of them in every select list built from arrays, site-wide)
+- Fixed several installer bugs: no sample data offered for SQLite, SQLite not hiding the server fields in the browser, unescaped values on the overview page, and PHP 8.5 deprecation notices (one of them in every select list built from arrays, site-wide)
 
 **Improvements:**
 - A modernised installer for new sites: new app-style design with a sidebar of steps (with dark mode and right-to-left support), well-formed XHTML-style HTML5, plain HTML/CSS/JavaScript without Bootstrap, jQuery or any other file from outside the `installation` folder, and the same steps as before
+- The installer removes the `installation` folder by itself when you continue to your site or its administrator (only after installing, and only its own folder), and no longer has FTP options
 
 **New features:**
 - New SQLite database driver (experimental): the whole site in one file, with no database server, for small to medium sites, development and testing. Core and extensions work unchanged, as it runs their MySQL SQL. Available on PHP 7.4+ in the installer, and for existing sites through the new `database:convert` command line command (which also moves a site back to MySQL). SQLite sites use PHP sessions, so browsing doesn't write to the database. See [SQLite Support](#sqlite-support)

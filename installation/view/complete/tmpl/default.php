@@ -9,6 +9,8 @@
 defined('_JEXEC') or die;
 
 /* @var InstallationViewCompleteHtml $this */
+
+$autoRemove = JFactory::getLanguage()->hasKey('INSTL_COMPLETE_AUTO_REMOVE') ? JText::sprintf('INSTL_COMPLETE_AUTO_REMOVE', 'installation') : 'For security, the "installation" folder will be removed automatically when you continue to your site or its administrator.';
 ?>
 <form action="index.php" method="post" id="adminForm" class="view">
 	<div class="alert alert-error" id="theDefaultError" hidden="hidden">
@@ -31,14 +33,13 @@ defined('_JEXEC') or die;
 				</table>
 			</div>
 			<div class="actions">
-				<a class="btn btn-ghost" href="<?php echo JUri::root(); ?>"><?php echo JHtml::_('InstallationHtml.helper.icon', 'home'); ?> <span><?php echo JText::_('JSITE'); ?></span></a>
-				<a class="btn btn-primary" href="<?php echo JUri::root(); ?>administrator/"><?php echo JHtml::_('InstallationHtml.helper.icon', 'lock'); ?> <span><?php echo JText::_('JADMINISTRATOR'); ?></span></a>
+				<a class="btn btn-ghost" data-action="leave" href="<?php echo JUri::root(); ?>"><?php echo JHtml::_('InstallationHtml.helper.icon', 'home'); ?> <span><?php echo JText::_('JSITE'); ?></span></a>
+				<a class="btn btn-primary" data-action="leave" href="<?php echo JUri::root(); ?>administrator/"><?php echo JHtml::_('InstallationHtml.helper.icon', 'lock'); ?> <span><?php echo JText::_('JADMINISTRATOR'); ?></span></a>
 			</div>
 		</section>
 		<section class="panel">
-			<div class="callout">
-				<p><?php echo JText::sprintf('INSTL_COMPLETE_REMOVE_INSTALLATION', 'installation'); ?></p>
-				<button type="button" class="btn btn-warning" name="instDefault" data-action="remove-folder"><?php echo JHtml::_('InstallationHtml.helper.icon', 'trash'); ?> <span><?php echo JText::sprintf('INSTL_COMPLETE_REMOVE_FOLDER', 'installation'); ?></span></button>
+			<div class="callout callout-info">
+				<p><?php echo JHtml::_('InstallationHtml.helper.icon', 'lock'); ?> <span><?php echo JHtml::_('InstallationHtml.helper.escape', $autoRemove); ?></span></p>
 			</div>
 			<div id="languages" class="languages-callout">
 				<h2 class="section-title"><?php echo JText::_('INSTL_COMPLETE_LANGUAGE_1'); ?></h2>

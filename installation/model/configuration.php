@@ -59,8 +59,6 @@ class InstallationModelConfiguration extends JModelBase
 	 */
 	public function createConfiguration($options)
 	{
-		$saveFtp = isset($options->ftp_save) && $options->ftp_save;
-
 		// Create a new registry to build the configuration options.
 		$registry = new Registry;
 
@@ -94,12 +92,12 @@ class InstallationModelConfiguration extends JModelBase
 		$registry->set('gzip', 0);
 		$registry->set('error_reporting', 'default');
 		$registry->set('helpurl', $options->helpurl);
-		$registry->set('ftp_host', isset($options->ftp_host) ? $options->ftp_host : '');
-		$registry->set('ftp_port', isset($options->ftp_host) ? $options->ftp_port : '');
-		$registry->set('ftp_user', ($saveFtp && isset($options->ftp_user)) ? $options->ftp_user : '');
-		$registry->set('ftp_pass', ($saveFtp && isset($options->ftp_pass_plain)) ? $options->ftp_pass_plain : '');
-		$registry->set('ftp_root', ($saveFtp && isset($options->ftp_root)) ? $options->ftp_root : '');
-		$registry->set('ftp_enable', isset($options->ftp_host) ? $options->ftp_enable : 0);
+		$registry->set('ftp_host', '');
+		$registry->set('ftp_port', '');
+		$registry->set('ftp_user', '');
+		$registry->set('ftp_pass', '');
+		$registry->set('ftp_root', '');
+		$registry->set('ftp_enable', 0);
 
 		// Locale settings.
 		$registry->set('offset', 'UTC');
@@ -166,62 +164,16 @@ class InstallationModelConfiguration extends JModelBase
 			$canWrite = is_writable(JPATH_CONFIGURATION . '/');
 		}
 
-		/*
-		 * If the file exists but isn't writable OR if the file doesn't exist and the parent directory
-		 * is not writable we need to use FTP.
-		 */
-		$useFTP = false;
-
-		if ((file_exists($path) && !is_writable($path)) || (!file_exists($path) && !is_writable(dirname($path) . '/')))
-		{
-			$useFTP = true;
-		}
-
-		// Check for safe mode.
-		if (ini_get('safe_mode'))
-		{
-			$useFTP = true;
-		}
-
-		// Enable/Disable override.
-		if (!isset($options->ftpEnable) || ($options->ftpEnable != 1))
-		{
-			$useFTP = false;
-		}
-
-		// Get the session
 		$session = JFactory::getSession();
 
-		if ($useFTP == true)
+		if ($canWrite && file_put_contents($path, $buffer) !== false)
 		{
-			// Connect the FTP client.
-			$ftp = JClientFtp::getInstance($options->ftp_host, $options->ftp_port);
-			$ftp->login($options->ftp_user, $options->ftp_pass_plain);
-
-			// Translate path for the FTP account.
-			$file = JPath::clean(str_replace(JPATH_CONFIGURATION, $options->ftp_root, $path), '/');
-
-			// Use FTP write buffer to file.
-			if (!$ftp->write($file, $buffer))
-			{
-				// Set the config string to the session.
-				$session->set('setup.config', $buffer);
-			}
-
-			$ftp->quit();
+			$session->set('setup.config', null);
 		}
 		else
 		{
-			if ($canWrite)
-			{
-				file_put_contents($path, $buffer);
-				$session->set('setup.config', null);
-			}
-			else
-			{
-				// Set the config string to the session.
-				$session->set('setup.config', $buffer);
-			}
+			// The installer shows the configuration code to save manually
+			$session->set('setup.config', $buffer);
 		}
 
 		return true;

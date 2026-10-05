@@ -49,7 +49,7 @@ class InstallationModelSetup extends JModelBase
 		}
 
 		// Store passwords as a separate key that is not used in the forms
-		foreach (array('admin_password', 'db_pass', 'ftp_pass') as $passwordField)
+		foreach (array('admin_password', 'db_pass') as $passwordField)
 		{
 			if (isset($options[$passwordField]))
 			{

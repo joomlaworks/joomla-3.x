@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 /**
- * Controller class to set the FTP data for the Joomla Installer.
+ * Controller class to remove the installation folder for the Joomla Installer.
  *
  * @since  3.1
  */
@@ -29,106 +29,103 @@ class InstallationControllerRemovefolder extends JControllerBase
 		/** @var InstallationApplicationWeb $app */
 		$app = $this->getApplication();
 
-		// Check for request forgeries.
-		JSession::checkToken() or $app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN_NOTICE'), 403));
+		// Only a POST with the form token. Nothing in the request chooses what's removed: the paths below are fixed.
+		if (strtoupper($app->input->getMethod()) !== 'POST' || !JSession::checkToken())
+		{
+			$this->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
+		}
+
+		// Only once Joomla is installed: before that, removing the folder would break an installation in progress
+		$configuration = JPATH_CONFIGURATION . '/configuration.php';
+
+		if (!is_file($configuration) || filesize($configuration) <= 10)
+		{
+			$this->sendJsonResponse(new Exception($this->text('INSTL_COMPLETE_ERROR_NOT_INSTALLED', 'Joomla! isn\'t installed yet, so the "%s" folder can\'t be removed.'), 403));
+		}
 
 		$path = JPATH_INSTALLATION;
+		$name = basename($path);
 
 		// Check whether the folder still exists.
 		if (!file_exists($path))
 		{
-			$app->sendJsonResponse(new Exception(JText::sprintf('INSTL_COMPLETE_ERROR_FOLDER_ALREADY_REMOVED', 'installation'), 500));
+			$this->sendJsonResponse(new Exception(JText::sprintf('INSTL_COMPLETE_ERROR_FOLDER_ALREADY_REMOVED', $name), 500));
 		}
 
-		// Check whether we need to use FTP.
-		$useFTP = false;
+		// Only the folder of this installer, directly in the site's root, and never a link to somewhere else
+		$real = realpath($path);
+		$root = realpath(JPATH_ROOT);
 
-		if (file_exists($path) && !is_writable($path))
+		if (is_link($path) || $real === false || $root === false || !is_dir($real) || dirname($real) !== $root
+			|| strpos(realpath(__FILE__), $real . DIRECTORY_SEPARATOR) !== 0)
 		{
-			$useFTP = true;
+			$this->sendJsonResponse(new Exception(JText::sprintf('INSTL_COMPLETE_ERROR_FOLDER_DELETE', $name), 500));
 		}
 
-		// Check for safe mode.
-		if (ini_get('safe_mode'))
+		// With opcache.validate_timestamps off, PHP could otherwise keep running the deleted scripts from its cache
+		if (function_exists('opcache_invalidate'))
 		{
-			$useFTP = true;
-		}
-
-		// Enable/Disable override.
-		if (!isset($options->ftpEnable) || ($options->ftpEnable != 1))
-		{
-			$useFTP = false;
-		}
-
-		if ($useFTP == true)
-		{
-			// Connect the FTP client.
-			$ftp = JClientFtp::getInstance($options->ftp_host, $options->ftp_port);
-			$ftp->login($options->ftp_user, $options->ftp_pass_plain);
-
-			// Translate path for the FTP account.
-			$file   = JPath::clean(str_replace(JPATH_CONFIGURATION, $options->ftp_root, $path), '/');
-			$return = $ftp->delete($file);
-
-			// Delete the extra XML file while we're at it.
-			if ($return)
+			foreach (JFolder::files($real, '\.php$', true, true) as $file)
 			{
-				$file = JPath::clean($options->ftp_root . '/joomla.xml');
-
-				if (file_exists($file))
-				{
-					$return = $ftp->delete($file);
-				}
+				@opcache_invalidate($file, true);
 			}
-
-			// Rename the robots.txt.dist file to robots.txt.
-			if ($return)
-			{
-				$robotsFile = JPath::clean($options->ftp_root . '/robots.txt');
-				$distFile   = JPath::clean($options->ftp_root . '/robots.txt.dist');
-
-				if (!file_exists($robotsFile) && file_exists($distFile))
-				{
-					$return = $ftp->rename($distFile, $robotsFile);
-				}
-			}
-
-			$ftp->quit();
 		}
-		else
+
+		/*
+		 * Try to delete the folder.
+		 * We use output buffering so that any error message echoed JFolder::delete
+		 * doesn't land in our JSON output.
+		 */
+		ob_start();
+
+		// The framework's File::delete() throws instead of returning false
+		try
 		{
-			/*
-			 * Try to delete the folder.
-			 * We use output buffering so that any error message echoed JFolder::delete
-			 * doesn't land in our JSON output.
-			 */
-			ob_start();
-			$return = JFolder::delete($path) && (!file_exists(JPATH_ROOT . '/joomla.xml') || JFile::delete(JPATH_ROOT . '/joomla.xml'));
+			$return = JFolder::delete($real) && (!file_exists(JPATH_ROOT . '/joomla.xml') || JFile::delete(JPATH_ROOT . '/joomla.xml'));
 
 			// Rename the robots.txt.dist file if robots.txt doesn't exist
 			if ($return && !file_exists(JPATH_ROOT . '/robots.txt') && file_exists(JPATH_ROOT . '/robots.txt.dist'))
 			{
 				$return = JFile::move(JPATH_ROOT . '/robots.txt.dist', JPATH_ROOT . '/robots.txt');
 			}
-
-			ob_end_clean();
 		}
+		catch (Exception $e)
+		{
+			$return = false;
+		}
+
+		ob_end_clean();
 
 		// If an error was encountered return an error.
 		if (!$return)
 		{
-			$app->sendJsonResponse(new Exception(JText::sprintf('INSTL_COMPLETE_ERROR_FOLDER_DELETE', 'installation'), 500));
+			$this->sendJsonResponse(new Exception(JText::sprintf('INSTL_COMPLETE_ERROR_FOLDER_DELETE', $name), 500));
 		}
 
 		// Create a response body.
 		$r = new stdClass;
-		$r->text = JText::sprintf('INSTL_COMPLETE_FOLDER_REMOVED', 'installation');
+		$r->text = JText::sprintf('INSTL_COMPLETE_FOLDER_REMOVED', $name);
 
 		/*
 		 * Send the response.
 		 * This is a hack since by now, the rest of the folder is deleted and we can't make a new request
 		 */
 		$this->sendJsonResponse($r);
+	}
+
+	/**
+	 * A translated text with a "%s" for the folder name, in English when the language pack doesn't have it yet.
+	 *
+	 * @param   string  $key      The language key
+	 * @param   string  $english  The English text
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	protected function text($key, $english)
+	{
+		return sprintf(JFactory::getLanguage()->hasKey($key) ? JText::_($key) : $english, basename(JPATH_INSTALLATION));
 	}
 
 	/**
@@ -148,9 +145,10 @@ class InstallationControllerRemovefolder extends JControllerBase
 		if ($response instanceof Exception)
 		{
 			// Send the appropriate error code response.
-			$this->setHeader('status', $response->getCode());
-			$this->setHeader('Content-Type', 'application/json; charset=utf-8');
-			$this->sendHeaders();
+			$app = $this->getApplication();
+			$app->setHeader('status', $response->getCode());
+			$app->setHeader('Content-Type', 'application/json; charset=utf-8');
+			$app->sendHeaders();
 		}
 
 		// Send the JSON response.
