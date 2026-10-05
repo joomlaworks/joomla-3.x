@@ -28,6 +28,54 @@ class JFormFieldCalendar extends JFormField
 	protected $type = 'Calendar';
 
 	/**
+	 * The time format, 12 or 24 hours
+	 *
+	 * @var    integer
+	 * @since  3.17.0
+	 */
+	protected $timeformat;
+
+	/**
+	 * Show the "Today" button
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $todaybutton;
+
+	/**
+	 * Show a single header row
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $singleheader;
+
+	/**
+	 * Show the week numbers
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $weeknumbers;
+
+	/**
+	 * Show the time
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $showtime;
+
+	/**
+	 * Fill the days of the other months
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $filltable;
+
+	/**
 	 * The allowable maxlength of calendar field.
 	 *
 	 * @var    integer

@@ -47,6 +47,12 @@ class DatabaseConvertCommand extends AbstractCommand
 		. 'which don\'t write to the database on every page view (a Memcached, Redis or APCu session handler is kept).';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -126,6 +132,12 @@ class DatabaseConvertCommand extends AbstractCommand
 			return self::INVALID;
 		}
 
+		// Connecting creates a new SQLite database file
+		if ($io->isDryRun() && $to === 'sqlite')
+		{
+			return $this->planConversion($io, $settings, $current);
+		}
+
 		try
 		{
 			$target = \JDatabaseDriver::getInstance($settings['options']);
@@ -145,6 +157,11 @@ class DatabaseConvertCommand extends AbstractCommand
 			$io->error(sprintf('The new database already has %d table(s) with the prefix "%s". Use an empty database or another prefix.', count($existing), $prefix));
 
 			return self::FAILURE;
+		}
+
+		if ($io->isDryRun())
+		{
+			return $this->planConversion($io, $settings, $current);
 		}
 
 		if ($io->isInteractive() && !$io->confirm(sprintf('Copy the database to %s and switch the site to it?', $settings['description']), false))
@@ -343,6 +360,30 @@ class DatabaseConvertCommand extends AbstractCommand
 	}
 
 	/**
+	 * Report what the conversion would do.
+	 *
+	 * @param   CommandIO  $io        The input values and the output
+	 * @param   array      $settings  The new database's settings
+	 * @param   string     $current   The kind of the current database
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.17.0
+	 */
+	private function planConversion(CommandIO $io, array $settings, $current)
+	{
+		$tables = count(preg_grep('/^' . preg_quote(Factory::getDbo()->getPrefix(), '/') . '/', Factory::getDbo()->getTableList()));
+
+		$io->plan('Take the site offline while copying, unless it already is', array('action' => 'offline'));
+		$io->plan(sprintf('Copy %d table(s) of the %s database to %s, and compare their rows', $tables, $current, $settings['description']),
+			array('action' => 'copy', 'tables' => $tables, 'to' => $settings['description']));
+		$io->plan('Fix the new database\'s structure (maintenance:database --fix)', array('action' => 'fix'));
+		$io->plan('Switch configuration.php to the new database and put the site back online', array('action' => 'switch'));
+
+		return self::SUCCESS;
+	}
+
+	/**
 	 * Get the connection options and configuration of a new SQLite database.
 	 *
 	 * @param   CommandIO  $io      The input values and the output
@@ -372,7 +413,21 @@ class DatabaseConvertCommand extends AbstractCommand
 			return false;
 		}
 
-		if (!is_dir($folder) && !\JFolder::create($folder))
+		$messages = array(
+			'extension' => 'The database file name must end in .sqlite, .sqlite3, .db or .db3.',
+			'root'      => 'The database file can\'t be in the site\'s root folder, where nothing can stop it from being downloaded.',
+			'folder'    => sprintf('The folder %s has other files in it. Inside the site, the database needs a folder of its own (e.g. database/), as web access to the whole folder is blocked.', $folder),
+		);
+		$problem  = \JDatabaseDriverMysqlonsqlite::checkLocation($absolute);
+
+		if ($problem !== '')
+		{
+			$io->error($messages[$problem]);
+
+			return false;
+		}
+
+		if (!is_dir($folder) && !$io->isDryRun() && !\JFolder::create($folder))
 		{
 			$io->error(sprintf('Cannot create the folder %s.', $folder));
 
@@ -385,14 +440,20 @@ class DatabaseConvertCommand extends AbstractCommand
 		// Inside the site, the file needs a folder of its own, whose web access can be blocked
 		if ($root !== false && $real !== false && strpos($real . DIRECTORY_SEPARATOR, $root . DIRECTORY_SEPARATOR) === 0)
 		{
-			if ($real === $root)
+			// The folder may have just been created
+			$problem = \JDatabaseDriverMysqlonsqlite::checkLocation($real . '/' . basename($absolute));
+
+			if ($problem !== '')
 			{
-				$io->error('The database file can\'t be in the site\'s root folder, where nothing can stop it from being downloaded.');
+				$io->error($messages[$problem]);
 
 				return false;
 			}
 
-			\JDatabaseDriverMysqlonsqlite::protectFolder($real);
+			if (!$io->isDryRun())
+			{
+				\JDatabaseDriverMysqlonsqlite::protectFolder($real);
+			}
 		}
 
 		return array(

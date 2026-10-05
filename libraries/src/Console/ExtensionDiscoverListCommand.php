@@ -37,6 +37,12 @@ class ExtensionDiscoverListCommand extends ExtensionListCommand
 		. 'or only those whose name or element matches the pattern (with the wildcards * and ?, quoted; without wildcards the match is exact).';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $readOnly = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0

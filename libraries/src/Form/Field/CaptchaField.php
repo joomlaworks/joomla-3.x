@@ -30,6 +30,22 @@ class CaptchaField extends FormField
 	protected $type = 'Captcha';
 
 	/**
+	 * The captcha plugin
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $plugin;
+
+	/**
+	 * The captcha namespace
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $namespace;
+
+	/**
 	 * The captcha base instance of our type.
 	 *
 	 * @var Captcha

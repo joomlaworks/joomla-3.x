@@ -67,6 +67,13 @@ class InstallationControllerDefault extends JControllerBase
 
 				break;
 
+			case 'locked':
+				$model        = new InstallationModelSetup;
+				$checkOptions = false;
+				$options      = array();
+
+				break;
+
 			case 'languages':
 			case 'defaultlanguage':
 				$model        = new InstallationModelLanguages;

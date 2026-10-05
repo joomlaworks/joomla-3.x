@@ -38,6 +38,19 @@ class InstallationControllerInstallConfig extends JControllerBase
 		// Get the options from the session
 		$options = $model->getOptions();
 
+		/*
+		 * The database step stores the posted settings before checking them, so check them again here, where they are written:
+		 * initialise() enforces the database rules, including the ownership check for remote and SQLite databases.
+		 */
+		$database = new InstallationModelDatabase;
+
+		if (empty($options['db_created']) || !$database->initialise($options))
+		{
+			$r = new stdClass;
+			$r->view = 'database';
+			$app->sendJsonResponse($r);
+		}
+
 		// Get the database model.
 		$configuration = new InstallationModelConfiguration;
 

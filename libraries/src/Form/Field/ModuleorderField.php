@@ -29,6 +29,14 @@ class ModuleorderField extends FormField
 	protected $type = 'ModuleOrder';
 
 	/**
+	 * The field whose value the ordering is linked to
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $linked;
+
+	/**
 	 * Name of the layout being used to render the field
 	 *
 	 * @var    string

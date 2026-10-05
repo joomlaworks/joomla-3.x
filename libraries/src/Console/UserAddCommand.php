@@ -42,6 +42,12 @@ class UserAddCommand extends AbstractUserCommand
 		. 'and the user goes in the "New User Registration Group" of the Users options when --usergroup is not given.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -112,6 +118,24 @@ class UserAddCommand extends AbstractUserCommand
 		);
 
 		$user = new User;
+
+		// The checks of saving (a free username and e-mail address, valid values), without saving
+		if ($io->isDryRun())
+		{
+			$table = \JTable::getInstance('user');
+
+			if (!$table->bind($data) || !$table->check())
+			{
+				$io->error($table->getError() ?: 'The user can\'t be created.');
+
+				return self::INVALID;
+			}
+
+			$io->plan(sprintf('Create the user "%s" (%s) in the groups %s', $data['username'], $data['email'], implode(', ', array_map(array($this, 'getGroupTitle'), $groupIds))),
+				array('action' => 'add', 'username' => $data['username'], 'email' => $data['email'], 'groups' => array_map(array($this, 'getGroupTitle'), $groupIds)));
+
+			return self::SUCCESS;
+		}
 
 		if (!$user->bind($data) || !$user->save())
 		{

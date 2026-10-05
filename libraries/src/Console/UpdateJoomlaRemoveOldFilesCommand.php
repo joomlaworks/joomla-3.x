@@ -37,14 +37,10 @@ class UpdateJoomlaRemoveOldFilesCommand extends AbstractCommand
 		. 'With --dry-run it only lists those which still exist.';
 
 	/**
-	 * @return  void
-	 *
-	 * @since   3.17.0
+	 * @var    boolean
+	 * @since  3.17.0
 	 */
-	protected function configure()
-	{
-		$this->addOption('dry-run', null, self::OPTION_NONE, 'List the files and folders which would be removed, without removing them');
-	}
+	protected $dryRun = true;
 
 	/**
 	 * @param   CommandIO  $io  The input values and the output
@@ -55,7 +51,7 @@ class UpdateJoomlaRemoveOldFilesCommand extends AbstractCommand
 	 */
 	protected function doExecute(CommandIO $io)
 	{
-		$dryRun = (bool) $io->getOption('dry-run');
+		$dryRun = $io->isDryRun();
 
 		$io->title('Removing Unneeded Files & Folders' . ($dryRun ? ' - Dry Run' : ''));
 
@@ -73,7 +69,7 @@ class UpdateJoomlaRemoveOldFilesCommand extends AbstractCommand
 		{
 			foreach (array_merge($status['files_exist'], $status['folders_exist']) as $path)
 			{
-				$io->writeln($path);
+				$io->plan('Remove ' . $path, array('action' => 'remove', 'path' => $path));
 			}
 
 			$io->setData('files', $status['files_exist']);

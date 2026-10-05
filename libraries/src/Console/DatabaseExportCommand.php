@@ -42,6 +42,12 @@ class DatabaseExportCommand extends AbstractCommand
 		. 'CREATE TABLE statement, which database:import uses. Rows are read in batches, so large tables don\'t need much memory.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * Rows read per query
 	 *
 	 * @var    integer
@@ -120,10 +126,28 @@ class DatabaseExportCommand extends AbstractCommand
 			{
 				$io->error(sprintf('The %s table does not exist in the database.', $tableName));
 
-				return self::FAILURE;
+				return self::NOT_FOUND;
 			}
 
 			$tables = array($tableName);
+		}
+
+		if ($io->isDryRun())
+		{
+			foreach ($tables as $table)
+			{
+				$filename = $folder . '/' . $table . '.xml';
+				$io->plan(sprintf('%s %s', is_file($filename) ? 'Overwrite' : 'Write', $filename), array('action' => 'export', 'table' => $table, 'file' => $filename));
+			}
+
+			if ($zip)
+			{
+				$io->plan('Put the files into a ZIP file and delete them', array('action' => 'zip'));
+			}
+
+			$io->setData('tables', $tables);
+
+			return self::SUCCESS;
 		}
 
 		$files = array();

@@ -41,6 +41,12 @@ class UpdateExtensionsCheckCommand extends AbstractCommand
 		. 'With --use-cache, update sites checked within the "Updates Caching" time of the Installer options are not fetched again, which suits frequent cron jobs.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $readOnly = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0

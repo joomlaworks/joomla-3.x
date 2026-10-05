@@ -43,6 +43,12 @@ class CoreUpdateChannelCommand extends AbstractCommand
 	 * @var    boolean
 	 * @since  3.17.0
 	 */
+	protected $dryRun = true;
+
+	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
 	protected $superUser = true;
 
 	/**
@@ -62,6 +68,31 @@ class CoreUpdateChannelCommand extends AbstractCommand
 	{
 		$this->addArgument('channel', self::ARGUMENT_OPTIONAL, 'Name of the update channel [' . implode(', ', self::CHANNELS) . ']');
 		$this->addOption('url', null, self::OPTION_REQUIRED, 'URL to update source. Only for custom update channel');
+	}
+
+	/**
+	 * Read-only when only showing the current channel.
+	 *
+	 * @param   array|null  $options    The options of a run, or null for the command in general
+	 * @param   array|null  $arguments  The arguments of a run
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function isReadOnly(?array $options = null, ?array $arguments = null)
+	{
+		return $arguments !== null && (string) (isset($arguments['channel']) ? $arguments['channel'] : '') === '';
+	}
+
+	/**
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function hasReadOnlyRuns()
+	{
+		return true;
 	}
 
 	/**
@@ -114,6 +145,14 @@ class CoreUpdateChannelCommand extends AbstractCommand
 			}
 
 			$params->set('customurl', $url);
+		}
+
+		if ($io->isDryRun())
+		{
+			$io->plan(sprintf('Set the update channel to "%s"%s (now "%s")', $channel, $channel === 'custom' ? ' with the URL ' . $params->get('customurl') : '',
+				$params->get('updatesource', 'default')), array('action' => 'set-channel', 'channel' => $channel));
+
+			return self::SUCCESS;
 		}
 
 		$params->set('updatesource', $channel);

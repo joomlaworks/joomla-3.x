@@ -27,6 +27,14 @@ class JFormFieldColor extends JFormField
 	protected $type = 'Color';
 
 	/**
+	 * Colours to leave out of the simple control
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $exclude;
+
+	/**
 	 * The control.
 	 *
 	 * @var    mixed

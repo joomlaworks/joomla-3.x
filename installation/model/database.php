@@ -164,23 +164,28 @@ class InstallationModelDatabase extends JModelBase
 			return false;
 		}
 
-		$shouldCheckLocalhost = !$isSqlite && getenv('JOOMLA_INSTALLATION_DISABLE_LOCALHOST_CHECK') !== '1';
+		$shouldCheckLocalhost = getenv('JOOMLA_INSTALLATION_DISABLE_LOCALHOST_CHECK') !== '1';
 
 		// Per default allowed DB hosts: localhost / 127.0.0.1 / ::1 (optionally with port), or a local socket (localhost:/path/to/mysql.sock)
 		$localhost = '/^(((localhost|127\.0\.0\.1|\[\:\:1\])(\:[1-9]{1}[0-9]{0,4})?)|(\:\:1)|(localhost\:\/[^:]+))$/';
 
-		// Check the security file if now switched off and the db_host is not one of the allowed hosts
-		if ($shouldCheckLocalhost && preg_match($localhost, (string) $options->db_host) !== 1)
+		/*
+		 * Check the security file if not switched off and the db_host is not one of the allowed hosts. SQLite always needs it:
+		 * it takes no credentials, so otherwise anyone who finds a new, not yet installed site could install it.
+		 */
+		if ($shouldCheckLocalhost && ($isSqlite || preg_match($localhost, (string) $options->db_host) !== 1))
 		{
 			$remoteDbFileTestsPassed = JFactory::getSession()->get('remoteDbFileTestsPassed', false);
 
 			// When all checks have been passed we don't need to do this here again.
 			if ($remoteDbFileTestsPassed === false)
 			{
-				$generalRemoteDatabaseMessage = JText::sprintf(
-					'INSTL_DATABASE_HOST_IS_NOT_LOCALHOST_GENERAL_MESSAGE',
-					'https://docs.joomla.org/Special:MyLanguage/J3.x:Secured_procedure_for_installing_Joomla_with_a_remote_database'
-				);
+				$generalRemoteDatabaseMessage = $isSqlite
+					? JText::_('INSTL_DATABASE_SQLITE_VERIFY_OWNERSHIP')
+					: JText::sprintf(
+						'INSTL_DATABASE_HOST_IS_NOT_LOCALHOST_GENERAL_MESSAGE',
+						'https://docs.joomla.org/Special:MyLanguage/J3.x:Secured_procedure_for_installing_Joomla_with_a_remote_database'
+					);
 
 				$remoteDbFile = JFactory::getSession()->get('remoteDbFile', false);
 
@@ -291,6 +296,40 @@ class InstallationModelDatabase extends JModelBase
 	}
 
 	/**
+	 * Check the name and folder of a new SQLite database file (see JDatabaseDriverMysqlonsqlite::checkLocation()).
+	 *
+	 * @param   string  $path  The absolute path of the database file
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	protected function checkSqliteLocation($path)
+	{
+		$app = JFactory::getApplication();
+
+		switch (JDatabaseDriverMysqlonsqlite::checkLocation($path))
+		{
+			case 'extension':
+				$app->enqueueMessage(JText::_('INSTL_DATABASE_SQLITE_EXTENSION'), 'warning');
+
+				return false;
+
+			case 'root':
+				$app->enqueueMessage(JText::_('INSTL_DATABASE_SQLITE_IN_SITE_ROOT'), 'warning');
+
+				return false;
+
+			case 'folder':
+				$app->enqueueMessage(JText::sprintf('INSTL_DATABASE_SQLITE_SHARED_FOLDER', dirname($path)), 'warning');
+
+				return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Check the folder of an SQLite database file, creating it if needed. A folder inside the site gets rules which block
 	 * web access to it; the database file must never be downloadable.
 	 *
@@ -315,6 +354,11 @@ class InstallationModelDatabase extends JModelBase
 		$absolute = preg_match('#^([a-z]:)?[/\\\\]#i', $path) ? $path : JPATH_ROOT . '/' . $path;
 		$folder   = dirname($absolute);
 
+		if (!$this->checkSqliteLocation($absolute))
+		{
+			return false;
+		}
+
 		if (!is_dir($folder) && !JFolder::create($folder))
 		{
 			$app->enqueueMessage(JText::sprintf('INSTL_DATABASE_SQLITE_FOLDER_NOT_CREATED', $folder), 'warning');
@@ -336,10 +380,9 @@ class InstallationModelDatabase extends JModelBase
 		// Inside the site, the file needs its own folder, whose web access can be blocked
 		if ($root !== false && $realPath !== false && strpos($realPath . DIRECTORY_SEPARATOR, $root . DIRECTORY_SEPARATOR) === 0)
 		{
-			if ($realPath === $root)
+			// The folder may have just been created
+			if (!$this->checkSqliteLocation($realPath . '/' . basename($absolute)))
 			{
-				$app->enqueueMessage(JText::_('INSTL_DATABASE_SQLITE_IN_SITE_ROOT'), 'warning');
-
 				return false;
 			}
 

@@ -39,6 +39,12 @@ class UserDeleteCommand extends AbstractUserCommand
 	protected $help = 'Deletes a user account, after a confirmation when the command is interactive. The last active Super User can\'t be deleted.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -72,10 +78,10 @@ class UserDeleteCommand extends AbstractUserCommand
 		{
 			$io->error(sprintf('The user "%s" does not exist.', $username));
 
-			return self::FAILURE;
+			return self::NOT_FOUND;
 		}
 
-		if ($io->isInteractive() && !$io->confirm('Are you sure you want to delete this user?', false))
+		if ($io->isInteractive() && !$io->isDryRun() && !$io->confirm('Are you sure you want to delete this user?', false))
 		{
 			$io->text('User not deleted.');
 
@@ -92,9 +98,16 @@ class UserDeleteCommand extends AbstractUserCommand
 				{
 					$io->error('You can\'t delete the last active Super User.');
 
-					return self::FAILURE;
+					return self::REFUSED;
 				}
 			}
+		}
+
+		if ($io->isDryRun())
+		{
+			$io->plan(sprintf('Delete the user "%s" (ID %d)', $username, $userId), array('action' => 'delete', 'username' => $username, 'id' => (int) $userId));
+
+			return self::SUCCESS;
 		}
 
 		if (!$user->delete())

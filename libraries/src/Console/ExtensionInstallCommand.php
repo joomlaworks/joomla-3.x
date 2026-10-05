@@ -40,6 +40,12 @@ class ExtensionInstallCommand extends AbstractExtensionCommand
 	protected $help = 'Installs or updates an extension from a package file (--path, a .zip or .tar.gz file, or an already extracted folder) or from a download URL (--url).';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -93,7 +99,7 @@ class ExtensionInstallCommand extends AbstractExtensionCommand
 		{
 			$io->error('The file path specified does not exist.');
 
-			return self::FAILURE;
+			return self::NOT_FOUND;
 		}
 		elseif (is_file($path))
 		{
@@ -127,6 +133,11 @@ class ExtensionInstallCommand extends AbstractExtensionCommand
 
 		$installer = Installer::getInstance();
 
+		if ($io->isDryRun())
+		{
+			return $this->planInstall($io, $installer, $package, $copy);
+		}
+
 		try
 		{
 			$result = $installer->install($package['dir']);
@@ -153,6 +164,51 @@ class ExtensionInstallCommand extends AbstractExtensionCommand
 		}
 
 		$io->success('Extension installed successfully.');
+
+		return self::SUCCESS;
+	}
+
+	/**
+	 * Report what installing the package would do, from its manifest.
+	 *
+	 * @param   CommandIO    $io         The input values and the output
+	 * @param   Installer    $installer  The installer
+	 * @param   array        $package    The unpacked package
+	 * @param   string|null  $copy       The temporary copy of the package
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.17.0
+	 */
+	private function planInstall(CommandIO $io, Installer $installer, array $package, $copy)
+	{
+		try
+		{
+			$installer->setPath('source', $package['dir']);
+			$found    = $installer->findManifest();
+			$manifest = $found ? $installer->getManifest() : null;
+		}
+		finally
+		{
+			$this->cleanup($copy, $package);
+		}
+
+		if (!$manifest instanceof \SimpleXMLElement)
+		{
+			$io->error('The package has no valid installation manifest.');
+
+			return self::INVALID;
+		}
+
+		$type    = (string) $manifest->attributes()->type;
+		$name    = (string) $manifest->name;
+		$version = (string) $manifest->version;
+
+		$io->setData('name', $name);
+		$io->setData('type', $type);
+		$io->setData('version', $version);
+		$io->plan(sprintf('Install the %s "%s" %s (or update it, when it\'s installed)', $type, $name, $version),
+			array('action' => 'install', 'type' => $type, 'name' => $name, 'version' => $version));
 
 		return self::SUCCESS;
 	}

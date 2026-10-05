@@ -152,7 +152,7 @@ class PlgContentJoomla extends JPlugin
 				if ($count > 0)
 				{
 					$msg = JText::sprintf('COM_CATEGORIES_DELETE_NOT_ALLOWED', $data->get('title'))
-						. JText::plural('COM_CATEGORIES_N_ITEMS_ASSIGNED', $count);
+						. ' ' . JText::plural('COM_CATEGORIES_N_ITEMS_ASSIGNED', $count);
 					JError::raiseWarning(403, $msg);
 					$result = false;
 				}
@@ -169,7 +169,7 @@ class PlgContentJoomla extends JPlugin
 					elseif ($count > 0)
 					{
 						$msg = JText::sprintf('COM_CATEGORIES_DELETE_NOT_ALLOWED', $data->get('title'))
-							. JText::plural('COM_CATEGORIES_HAS_SUBCATEGORY_ITEMS', $count);
+							. ' ' . JText::plural('COM_CATEGORIES_HAS_SUBCATEGORY_ITEMS', $count);
 						JError::raiseWarning(403, $msg);
 						$result = false;
 					}

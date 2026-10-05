@@ -112,6 +112,22 @@ class CommandIO
 	private $lastLineBlank = false;
 
 	/**
+	 * Streams which replace STDOUT and STDERR, e.g. to capture a command's output (see redirect())
+	 *
+	 * @var    resource[]|null
+	 * @since  3.17.0
+	 */
+	private static $streams;
+
+	/**
+	 * Exit code => the name of the error in the JSON document
+	 *
+	 * @var    string[]
+	 * @since  3.17.0
+	 */
+	private static $errorCodes = array(1 => 'failed', 2 => 'invalid', 3 => 'not_found', 4 => 'refused');
+
+	/**
 	 * Constructor.
 	 *
 	 * @param   string  $command    The command name
@@ -128,8 +144,8 @@ class CommandIO
 		$this->json        = isset($options['format']) && $options['format'] === 'json';
 		$this->quiet       = !empty($options['quiet']);
 		$this->interactive = !$this->json && empty($options['no-interaction']) && static::streamIsInteractive(STDIN);
-		$this->stdout      = STDOUT;
-		$this->stderr      = defined('STDERR') ? STDERR : STDOUT;
+		$this->stdout      = self::$streams ? self::$streams[0] : STDOUT;
+		$this->stderr      = self::$streams ? self::$streams[1] : (defined('STDERR') ? STDERR : STDOUT);
 		$this->ansi        = !$this->json && empty($options['no-ansi']) && static::streamIsInteractive($this->stdout);
 	}
 
@@ -185,6 +201,53 @@ class CommandIO
 	public function isInteractive()
 	{
 		return $this->interactive;
+	}
+
+	/**
+	 * Whether this is a dry run (--dry-run): the command reports what it would change, through plan(), and changes nothing.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function isDryRun()
+	{
+		return !empty($this->options['dry-run']);
+	}
+
+	/**
+	 * Report a change a dry run would make: "Would ..." in text mode, and an entry of the "plan" list in JSON mode.
+	 *
+	 * @param   string  $text  What would be done, e.g. "Block the user jdoe"
+	 * @param   array   $item  Details for the JSON entry, e.g. array('action' => 'block', 'user' => 'jdoe')
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	public function plan($text, array $item = array())
+	{
+		$this->data['plan'][] = array_merge(array('description' => $text), $item);
+
+		if (!$this->json && !$this->quiet)
+		{
+			$this->write($this->stdout, $this->style('[DRY RUN] Would: ', '36') . $text . "\n");
+		}
+	}
+
+	/**
+	 * Send the output of every command run from now on to other streams, or back to STDOUT/STDERR with null.
+	 *
+	 * @param   resource|null  $stdout  The stream for output
+	 * @param   resource|null  $stderr  The stream for errors, by default the same as $stdout
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	public static function redirect($stdout = null, $stderr = null)
+	{
+		self::$streams = $stdout ? array($stdout, $stderr ?: $stdout) : null;
 	}
 
 	/**
@@ -499,7 +562,15 @@ class CommandIO
 
 		if ($exitCode !== 0)
 		{
-			$document['error'] = $this->errorMessage;
+			$document['error'] = array(
+				'code'    => isset(self::$errorCodes[$exitCode]) ? self::$errorCodes[$exitCode] : 'failed',
+				'message' => $this->errorMessage,
+			);
+		}
+
+		if ($this->isDryRun())
+		{
+			$document['dryRun'] = true;
 		}
 
 		$document['data']     = (object) $this->data;

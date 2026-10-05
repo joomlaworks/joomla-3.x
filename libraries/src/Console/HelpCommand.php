@@ -33,6 +33,12 @@ class HelpCommand extends AbstractCommand
 	protected $description = 'Show the help of a command';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $readOnly = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -79,6 +85,16 @@ class HelpCommand extends AbstractCommand
 
 		$io->writeln('Description:');
 		$io->writeln('  ' . $command->getDescription());
+
+		if ($command->isReadOnly())
+		{
+			$io->writeln('  Changes nothing.');
+		}
+		elseif ($command->supportsDryRun())
+		{
+			$io->writeln('  Supports --dry-run: shows what it would change, without changing anything.');
+		}
+
 		$io->writeln();
 		$io->writeln('Usage:');
 		$io->writeln('  ' . $app->getUsage($command));
@@ -164,6 +180,8 @@ class HelpCommand extends AbstractCommand
 			'name'        => $command->getName(),
 			'description' => $command->getDescription(),
 			'help'        => $command->getHelp(),
+			'readOnly'    => $command->isReadOnly(),
+			'dryRun'      => $command->supportsDryRun(),
 			'arguments'   => $arguments,
 			'options'     => $options,
 		);

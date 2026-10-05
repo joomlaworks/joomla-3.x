@@ -60,7 +60,10 @@ class SiteUpCommand extends ConfigSetCommand
 			return self::FAILURE;
 		}
 
-		$io->success('Website is now online.');
+		if (!$io->isDryRun())
+		{
+			$io->success('Website is now online.');
+		}
 
 		return self::SUCCESS;
 	}

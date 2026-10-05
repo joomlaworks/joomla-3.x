@@ -166,6 +166,9 @@ class InstallationModelConfiguration extends JModelBase
 
 		$session = JFactory::getSession();
 
+		// From now on the installer only goes on in this browser (see InstallationApplicationWeb::isLocked())
+		$session->set('setup.installed', true);
+
 		if ($canWrite && file_put_contents($path, $buffer) !== false)
 		{
 			$session->set('setup.config', null);
@@ -300,28 +303,28 @@ class InstallationModelConfiguration extends JModelBase
 			}
 		}
 
-		// Map the super admin to the Super Admin Group
+		// Map the super admin to the Super Admin Group, and to nothing else (an old user with this ID may have been in other groups)
 		$query->clear()
-			->select($db->quoteName('user_id'))
-			->from($db->quoteName('#__user_usergroup_map'))
+			->delete($db->quoteName('#__user_usergroup_map'))
 			->where($db->quoteName('user_id') . ' = ' . $db->quote($userId));
 
 		$db->setQuery($query);
 
-		if ($db->loadResult())
+		try
 		{
-			$query->clear()
-				->update($db->quoteName('#__user_usergroup_map'))
-				->set($db->quoteName('user_id') . ' = ' . $db->quote($userId))
-				->set($db->quoteName('group_id') . ' = 8');
+			$db->execute();
 		}
-		else
+		catch (RuntimeException $e)
 		{
-			$query->clear()
-				->insert($db->quoteName('#__user_usergroup_map'), false)
-				->columns(array($db->quoteName('user_id'), $db->quoteName('group_id')))
-				->values($db->quote($userId) . ', 8');
+			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
 		}
+
+		$query->clear()
+			->insert($db->quoteName('#__user_usergroup_map'), false)
+			->columns(array($db->quoteName('user_id'), $db->quoteName('group_id')))
+			->values($db->quote($userId) . ', 8');
 
 		$db->setQuery($query);
 

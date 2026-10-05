@@ -38,6 +38,12 @@ class ExtensionDisableCommand extends AbstractExtensionCommand
 	protected $help = 'Disables an extension, like Extensions: Manage. Protected core extensions and templates used by a default template style can\'t be disabled.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * The state this command sets
 	 *
 	 * @var    integer
@@ -72,14 +78,14 @@ class ExtensionDisableCommand extends AbstractExtensionCommand
 
 		if (!$extension)
 		{
-			return self::FAILURE;
+			return self::NOT_FOUND;
 		}
 
 		if (!$this->state && (int) $extension->protected === 1)
 		{
 			$io->error($this->describe($extension) . ' is protected.');
 
-			return self::FAILURE;
+			return self::REFUSED;
 		}
 
 		if (!$this->state && $extension->type === 'template')
@@ -96,7 +102,7 @@ class ExtensionDisableCommand extends AbstractExtensionCommand
 			{
 				$io->error($this->describe($extension) . ' is used by a default template style.');
 
-				return self::FAILURE;
+				return self::REFUSED;
 			}
 		}
 
@@ -108,6 +114,14 @@ class ExtensionDisableCommand extends AbstractExtensionCommand
 		}
 
 		/** @var \InstallerModelManage $model */
+		if ($io->isDryRun())
+		{
+			$io->plan(($this->state ? 'Enable ' : 'Disable ') . $this->describe($extension),
+				array('action' => $this->state ? 'enable' : 'disable', 'id' => (int) $extension->extension_id, 'name' => $extension->name));
+
+			return self::SUCCESS;
+		}
+
 		$model = $this->getAdministratorModel('com_installer', 'Manage', 'InstallerModel');
 		$ids   = array((int) $extension->extension_id);
 

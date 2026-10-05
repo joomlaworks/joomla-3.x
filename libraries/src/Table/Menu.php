@@ -101,7 +101,7 @@ class Menu extends Nested
 		}
 
 		// Check for a path.
-		if (trim($this->path) === '')
+		if (trim((string) $this->path) === '')
 		{
 			$this->path = $this->alias;
 		}
@@ -113,7 +113,7 @@ class Menu extends Nested
 		}
 
 		// Check for img.
-		if (trim($this->img) === '')
+		if (trim((string) $this->img) === '')
 		{
 			$this->img = ' ';
 		}
@@ -149,7 +149,7 @@ class Menu extends Nested
 		// Verify that the alias is unique
 		$table = Table::getInstance('Menu', 'JTable', array('dbo' => $db));
 
-		$originalAlias = trim($this->alias);
+		$originalAlias = trim((string) $this->alias);
 		$this->alias   = !$originalAlias ? $this->title : $originalAlias;
 		$this->alias   = ApplicationHelper::stringURLSafe(trim($this->alias), $this->language);
 

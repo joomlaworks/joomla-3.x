@@ -38,9 +38,6 @@ class JFormRuleLoginUniqueField extends JFormRule
 	 */
 	public function test(SimpleXMLElement $element, $value, $group = null, ?Registry $input = null, ?JForm $form = null)
 	{
-		$loginRedirectUrl       = $input['params']->login_redirect_url;
-		$loginRedirectMenuitem  = $input['params']->login_redirect_menuitem;
-
 		if ($form === null)
 		{
 			throw new InvalidArgumentException(sprintf('The value for $form must not be null in %s', get_class($this)));

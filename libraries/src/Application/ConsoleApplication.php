@@ -49,6 +49,7 @@ class ConsoleApplication extends CliApplication
 		'no-ansi'        => array(null, false, 'Disable coloured output'),
 		'verbose'        => array('v', false, 'Show the trace of unexpected errors'),
 		'live-site'      => array(null, true, 'The site URL, for commands which build URLs (e.g. https://www.example.com)'),
+		'dry-run'        => array(null, false, 'Show what the command would change, without changing anything (refused by commands which can\'t)'),
 	);
 
 	/**
@@ -82,6 +83,30 @@ class ConsoleApplication extends CliApplication
 	 * @since  3.17.0
 	 */
 	protected $exitCode = 0;
+
+	/**
+	 * How commands are run, for the User Actions Log: "Command line", or e.g. "MCP" for the MCP server (see setInterface())
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $interface = 'Command line';
+
+	/**
+	 * How many commands are running (commands run others, e.g. database:convert runs maintenance:database)
+	 *
+	 * @var    integer
+	 * @since  3.17.0
+	 */
+	protected $depth = 0;
+
+	/**
+	 * The depth of the commands recorded in the User Actions Log: the one which was asked for, not those it runs itself
+	 *
+	 * @var    integer
+	 * @since  3.17.0
+	 */
+	protected $loggedDepth = 1;
 
 	/**
 	 * Constructor.
@@ -119,6 +144,9 @@ class ConsoleApplication extends CliApplication
 
 		// Core code reaches the application through the factory
 		Factory::$application = $this;
+
+		// Old code (e.g. the content plugin refusing to delete a category with items) reports through JError, as on the web
+		\JError::setErrorHandling(E_NOTICE | E_WARNING | E_ERROR, 'message');
 
 		if (method_exists($this, 'setLogger'))
 		{
@@ -313,6 +341,18 @@ class ConsoleApplication extends CliApplication
 		$io       = new CommandIO($command->getName(), $arguments, $options);
 		$previous = $this->io;
 		$this->io = $io;
+		$this->depth++;
+
+		// A dry run must never change anything, so commands which can't do one refuse it rather than run for real
+		if ($io->isDryRun() && !$command->supportsDryRun())
+		{
+			$io->error(sprintf('The %s command doesn\'t support --dry-run, so it wasn\'t run. Nothing was changed.', $command->getName()));
+			$io->finish(AbstractCommand::REFUSED);
+			$this->io = $previous;
+			$this->depth--;
+
+			return AbstractCommand::REFUSED;
+		}
 
 		/*
 		 * Whoever runs the command line can already read and change configuration.php, so commands which change things act
@@ -351,10 +391,137 @@ class ConsoleApplication extends CliApplication
 			}
 		}
 
+		if ($exitCode === AbstractCommand::SUCCESS && $io->isDryRun() && !$command->isReadOnly($options, $arguments))
+		{
+			$io->text('Dry run: nothing was changed.');
+		}
+
+		if ($exitCode === AbstractCommand::SUCCESS && !$io->isDryRun() && !$command->isReadOnly($options, $arguments) && $command->isLogged()
+			&& $this->depth === $this->loggedDepth)
+		{
+			$this->logCommand($command, $arguments, $options);
+		}
+
 		$io->finish($exitCode);
 		$this->io = $previous;
+		$this->depth--;
 
 		return $exitCode;
+	}
+
+	/**
+	 * Set how commands are run, as shown in the User Actions Log (e.g. "MCP").
+	 *
+	 * @param   string  $interface  The name
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	public function setInterface($interface)
+	{
+		$this->interface = (string) $interface;
+
+		// The commands a host such as the MCP server runs are the ones asked for
+		$this->loggedDepth = $this->depth + 1;
+	}
+
+	/**
+	 * Record a command which may have changed the site in the User Actions Log, with secret values left out, so changes made
+	 * from the command line (e.g. by an AI assistant through the MCP server) can be traced.
+	 *
+	 * @param   AbstractCommand  $command    The command
+	 * @param   array            $arguments  Its arguments
+	 * @param   array            $options    Its options
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	protected function logCommand(AbstractCommand $command, array $arguments, array $options)
+	{
+		$model = JPATH_ADMINISTRATOR . '/components/com_actionlogs/models/actionlog.php';
+
+		// The database may not be there yet (e.g. a failed database:import) or the component uninstalled; the log is a record, not a condition
+		try
+		{
+			if (!is_file($model) || !\JComponentHelper::isEnabled('com_actionlogs'))
+			{
+				return;
+			}
+
+			$definitions = $command->getOptions();
+			$parts       = array($command->getName());
+
+			foreach ($arguments as $name => $values)
+			{
+				foreach ((array) $values as $value)
+				{
+					if ($value !== null && $value !== '')
+					{
+						$parts[] = $this->describeValue($command, $name, $value);
+					}
+				}
+			}
+
+			foreach ($options as $name => $value)
+			{
+				if (!isset($definitions[$name]) || $value === $definitions[$name][3] || $value === null || $value === false)
+				{
+					continue;
+				}
+
+				$parts[] = '--' . $name . ($value === true ? '' : '=' . $this->describeValue($command, $name, $value));
+			}
+
+			\JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_actionlogs/models', 'ActionlogsModel');
+
+			// Commands run as the command line's own Super User (ConsoleUser, ID 0), which is no longer the session's user here
+			$log = \JModelLegacy::getInstance('Actionlog', 'ActionlogsModel');
+
+			$log->addLog(
+				array(array('interface' => $this->interface, 'command' => implode(' ', $parts), 'userid' => 0, 'username' => 'cli')),
+				'COM_ACTIONLOGS_CLI_COMMAND',
+				'com_actionlogs.cli'
+			);
+		}
+		catch (\Throwable $e)
+		{
+			// Not worth failing a command which has already done its work
+		}
+	}
+
+	/**
+	 * A value for the User Actions Log: secrets (e.g. --password, or config:set password=...) hidden, long values shortened.
+	 *
+	 * @param   AbstractCommand  $command  The command
+	 * @param   string           $name     The option or argument name
+	 * @param   mixed            $value    The value
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	protected function describeValue(AbstractCommand $command, $name, $value)
+	{
+		$value = is_scalar($value) ? (string) $value : json_encode($value);
+
+		if ($command->isSecret($name))
+		{
+			return '***';
+		}
+
+		if (preg_match('/^([A-Za-z0-9_.\-]+)=/', $value, $match) && $command->isSecret($match[1]))
+		{
+			return $match[1] . '=***';
+		}
+
+		if (function_exists('mb_strlen') ? mb_strlen($value) > 80 : strlen($value) > 80)
+		{
+			$value = (function_exists('mb_substr') ? mb_substr($value, 0, 77) : substr($value, 0, 77)) . '...';
+		}
+
+		return preg_match('/[\s"\'\\\\]/', $value) ? '"' . addcslashes($value, '"\\') . '"' : $value;
 	}
 
 	/**
@@ -488,14 +655,22 @@ class ConsoleApplication extends CliApplication
 		{
 			$class = '\\Joomla\\CMS\\Console\\' . basename($file, '.php');
 
-			if ($class !== '\\Joomla\\CMS\\Console\\AbstractCommand' && class_exists($class))
+			// One broken command file (e.g. from an interrupted update) mustn't take the other commands down
+			try
 			{
-				$reflection = new \ReflectionClass($class);
-
-				if ($reflection->isInstantiable() && $reflection->isSubclassOf('\\Joomla\\CMS\\Console\\AbstractCommand'))
+				if ($class !== '\\Joomla\\CMS\\Console\\AbstractCommand' && class_exists($class))
 				{
-					$commands[] = new $class;
+					$reflection = new \ReflectionClass($class);
+
+					if ($reflection->isInstantiable() && $reflection->isSubclassOf('\\Joomla\\CMS\\Console\\AbstractCommand'))
+					{
+						$commands[] = new $class;
+					}
 				}
+			}
+			catch (\Throwable $e)
+			{
+				fwrite(defined('STDERR') ? STDERR : STDOUT, sprintf('Skipping %s: %s', basename($file), $e->getMessage()) . PHP_EOL);
 			}
 		}
 

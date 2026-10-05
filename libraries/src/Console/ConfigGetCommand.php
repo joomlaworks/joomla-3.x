@@ -32,6 +32,12 @@ class ConfigGetCommand extends AbstractCommand
 	protected $description = 'Display the current value of a configuration option';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $readOnly = true;
+
+	/**
 	 * Option groups, as in Joomla 4 and later
 	 *
 	 * @var    array

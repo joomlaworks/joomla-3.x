@@ -43,6 +43,12 @@ class ConfigSetCommand extends AbstractCommand
 	 * @var    boolean
 	 * @since  3.17.0
 	 */
+	protected $dryRun = true;
+
+	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
 	protected $superUser = true;
 
 	/**
@@ -82,7 +88,7 @@ class ConfigSetCommand extends AbstractCommand
 			{
 				$io->error(sprintf('Can\'t find option "%s" in the configuration.', $option));
 
-				return self::INVALID;
+				return self::NOT_FOUND;
 			}
 
 			if ($value === 'true' || $value === 'false')
@@ -100,7 +106,10 @@ class ConfigSetCommand extends AbstractCommand
 			return self::FAILURE;
 		}
 
-		$io->success('Configuration set.');
+		if (!$io->isDryRun())
+		{
+			$io->success('Configuration set.');
+		}
 
 		return self::SUCCESS;
 	}
@@ -117,6 +126,27 @@ class ConfigSetCommand extends AbstractCommand
 	 */
 	protected function saveConfiguration(CommandIO $io, array $changes)
 	{
+		if ($io->isDryRun())
+		{
+			$current = get_object_vars(new \JConfig);
+
+			foreach ($changes as $option => $value)
+			{
+				$old = isset($current[$option]) ? $current[$option] : null;
+
+				if ((string) $old === (string) $value)
+				{
+					continue;
+				}
+
+				$secret = $this->isSecret($option);
+				$io->plan(sprintf('Set %s to %s (now %s)', $option, $secret ? '***' : var_export($value, true), $secret ? '***' : var_export($old, true)),
+					array('action' => 'set', 'option' => $option, 'value' => $secret ? '***' : $value, 'current' => $secret ? '***' : $old));
+			}
+
+			return true;
+		}
+
 		Factory::getLanguage()->load('com_config', JPATH_ADMINISTRATOR);
 		\JLoader::registerPrefix('Config', JPATH_ADMINISTRATOR . '/components/com_config');
 		\JLoader::registerPrefix('Config', JPATH_ROOT . '/components/com_config');

@@ -53,6 +53,12 @@ class CoreUpdateCommand extends AbstractCommand
 	 * @var    boolean
 	 * @since  3.17.0
 	 */
+	protected $dryRun = true;
+
+	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
 	protected $superUser = true;
 
 	/**
@@ -100,6 +106,11 @@ class CoreUpdateCommand extends AbstractCommand
 		}
 
 		$io->title('Updating Joomla');
+
+		if ($io->isDryRun())
+		{
+			return $this->planUpdate($io, $file);
+		}
 
 		static::addLogger();
 
@@ -157,6 +168,52 @@ class CoreUpdateCommand extends AbstractCommand
 		}
 
 		return $this->install($io, $package, true, $oldVersion);
+	}
+
+	/**
+	 * Report what the update would do, after the same update check.
+	 *
+	 * @param   CommandIO  $io    The input values and the output
+	 * @param   string     $file  The package given with --file, if any
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.17.0
+	 */
+	private function planUpdate(CommandIO $io, $file)
+	{
+		$installed = (new Version)->getShortVersion();
+		$io->setData('installed', $installed);
+
+		if ($file !== '')
+		{
+			$io->plan(sprintf('Install Joomla from %s over the site (version %s now)', realpath($file), $installed), array('action' => 'install', 'file' => realpath($file)));
+		}
+		else
+		{
+			$model = $this->getAdministratorModel('com_joomlaupdate', 'Default', 'JoomlaupdateModel');
+			$model->applyUpdateSite();
+			$model->purge();
+			$model->refreshUpdates(true);
+			$info = $model->getUpdateInformation();
+			$io->setData('latest', $info['latest']);
+
+			if (!$info['hasUpdate'] && !$io->getOption('reinstall'))
+			{
+				$io->success('You already have the latest Joomla! version ' . $info['latest'] . '; nothing would be updated.');
+
+				return self::SUCCESS;
+			}
+
+			$io->plan(sprintf('Download Joomla %s and verify its checksum', $info['latest']), array('action' => 'download', 'version' => $info['latest']));
+			$io->plan(sprintf('Copy its files over the site (version %s now), leaving out installation/', $installed), array('action' => 'install', 'version' => $info['latest']));
+		}
+
+		$io->plan('Finalise: database changes, the update script, removal of obsolete files' . ($io->getOption('restore-core') ? ', restoring uninstalled core extensions' : ''),
+			array('action' => 'finalise', 'restoreCore' => (bool) $io->getOption('restore-core')));
+		$this->warnAboutDatabase($io);
+
+		return self::SUCCESS;
 	}
 
 	/**

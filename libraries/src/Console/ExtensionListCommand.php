@@ -40,6 +40,12 @@ class ExtensionListCommand extends AbstractCommand
 		. 'quoted so the shell doesn\'t expand them; without wildcards the match is exact). Matching ignores case.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $readOnly = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0

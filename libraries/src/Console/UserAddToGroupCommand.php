@@ -39,6 +39,12 @@ class UserAddToGroupCommand extends AbstractUserCommand
 	protected $help = 'Adds a user to one or more user groups, given by title and separated by commas.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -73,7 +79,7 @@ class UserAddToGroupCommand extends AbstractUserCommand
 		{
 			$io->error(sprintf('The user "%s" does not exist.', $username));
 
-			return self::FAILURE;
+			return self::NOT_FOUND;
 		}
 
 		$groups = $this->getRequiredOption($io, 'group', 'Please enter the user groups (separate multiple groups with a comma)');
@@ -88,6 +94,13 @@ class UserAddToGroupCommand extends AbstractUserCommand
 		foreach ($groupIds as $groupId)
 		{
 			$title = $this->getGroupTitle($groupId);
+
+			if ($io->isDryRun())
+			{
+				$io->plan(sprintf('Add "%s" to the group "%s"', $user->username, $title), array('action' => 'addtogroup', 'username' => $user->username, 'group' => $title));
+
+				continue;
+			}
 
 			if (!UserHelper::addUserToGroup($user->id, $groupId))
 			{

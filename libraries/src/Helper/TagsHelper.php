@@ -40,6 +40,30 @@ class TagsHelper extends CMSHelper
 	protected $replaceTags = false;
 
 	/**
+	 * An item's tags: their IDs separated by commas, as getTagIds() found them (read by the item edit forms), or the tag IDs to store
+	 *
+	 * @var    string|array
+	 * @since  3.17.0
+	 */
+	public $tags;
+
+	/**
+	 * The tags of an item before it's saved (see preStoreProcess())
+	 *
+	 * @var    string|array
+	 * @since  3.17.0
+	 */
+	public $oldTags;
+
+	/**
+	 * The new tags of an item being saved (see preStoreProcess())
+	 *
+	 * @var    array
+	 * @since  3.17.0
+	 */
+	public $newTags;
+
+	/**
 	 * Cached item tags.
 	 *
 	 * @var    array

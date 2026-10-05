@@ -39,6 +39,12 @@ class UserResetPasswordCommand extends AbstractUserCommand
 		. 'then --username and --password are required. Give the password at the prompt to keep it out of the shell history.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -73,7 +79,7 @@ class UserResetPasswordCommand extends AbstractUserCommand
 		{
 			$io->error(sprintf('The user "%s" does not exist.', $username));
 
-			return self::FAILURE;
+			return self::NOT_FOUND;
 		}
 
 		$password = $this->getRequiredOption($io, 'password', 'Please enter a new password', true);
@@ -85,6 +91,13 @@ class UserResetPasswordCommand extends AbstractUserCommand
 
 		$user = User::getInstance($userId);
 		$data = array('password' => $password, 'password2' => $password);
+
+		if ($io->isDryRun())
+		{
+			$io->plan(sprintf('Change the password of "%s"', $username), array('action' => 'reset-password', 'username' => $username, 'id' => (int) $userId));
+
+			return self::SUCCESS;
+		}
 
 		if (!$user->bind($data) || !$user->save(true))
 		{

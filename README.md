@@ -27,6 +27,7 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 - [Notes on MySQL & MariaDB](#notes-on-mysql--mariadb)
 - [PostgreSQL Support](#postgresql-support)
 - [SQLite Support](#sqlite-support)
+- [AI Assistants (MCP)](#ai-assistants-mcp)
 - [Notes on Operating System Support](#notes-on-operating-system-support)
 - [Contribute](#contribute)
 - [Discuss](#discuss)
@@ -37,12 +38,19 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 
 ## Version 3.17 - unreleased [pending]
 Summary of changes:
-- New command line interface (`cli/joomla.php`) with the commands of the Joomla 4+ CLI and JSON output for scripts and AI agents
+- New command line interface (`cli/joomla.php`) with the commands of the Joomla 4+ CLI and JSON output for scripts and AI agents, plus content management (articles, categories, modules, menus), dry runs, a health check and log viewers
+- AI assistants (e.g. Claude) can work with a site through the built-in MCP server, read-only unless you allow changes (see [AI Assistants (MCP)](#ai-assistants-mcp))
+- Closed two ways to take over a site through the installer before its folder is removed
 - New SQLite database driver (experimental), and a command to move existing sites to it and back
 - PostgreSQL fully supported, with both drivers, in the installer, updates and the new command line tools (see [PostgreSQL Support](#postgresql-support))
 - MySQL 8.0, 8.4 and 9.x now work on their default settings, with no `my.cnf` changes (see [Notes on MySQL & MariaDB](#notes-on-mysql--mariadb))
 - Fixed database error handling with the "MySQL (mysqli)" driver on PHP 8.1+, and several long-standing issues with the "MySQL (PDO)" driver
 - More PHP 8.5 deprecation fixes
+
+**Security fixes:**
+- Installer: the ownership check for remote databases could be skipped by going straight to the step which writes the configuration (stock Joomla 3)
+- Installer: anyone could run the installer again on an installed site while the `installation` folder remained (stock Joomla 3); now only the browser which installed the site can go on
+- Installer: setting the Super User's group could put every user into the Super Users group when the mapping already existed
 
 **Bug fixes:**
 - Fixed intermittent "Serialization of 'PDOStatement' is not allowed" errors with the PDO database drivers when caching is enabled (any cache handler), typically right after the site wrote something to the database
@@ -67,12 +75,17 @@ Summary of changes:
 - Fixed uninstalling Contacts or News Feeds failing (and leaving them half removed) on sites installed with sample data, after Banners had been uninstalled
 - Clear error messages when the database user's authentication method is the reason a connection fails (e.g. `mysql_native_password` on MySQL 8.4/9), saying what to change
 - Fixed several installer bugs: no sample data offered for SQLite, SQLite not hiding the server fields in the browser, unescaped values on the overview page, a path check on the chosen sample-data file, and PHP 8.5 deprecation notices (one of them in every select list built from arrays, site-wide)
+- Fixed PHP 8.2+ deprecation warnings when editing tagged items and in forms with date, colour, captcha or module ordering fields, and PHP 8.1+/8.5 warnings with menu items linking to external URLs and on pages without a menu item
+- Fixed warnings when saving Login/Logout menu items created by code, and when saving Global Configuration from the command line on new sites
+- The command line now shows the messages of older code (e.g. why a category can't be deleted), and a broken command file no longer stops the other commands
 
 **Improvements:**
 - A modernised installer for new sites: new app-style design with a sidebar of steps (with dark mode and right-to-left support), well-formed XHTML-style HTML5, plain HTML/CSS/JavaScript without Bootstrap, jQuery or any other file from outside the `installation` folder, and the same steps as before
 - The installer removes the `installation` folder by itself when you continue to your site or its administrator (only after installing, and only its own folder), and no longer has FTP options
 
 **New features:**
+- Content management from the command line: list, show, create, change, publish, trash and delete articles, categories, modules and menu items, saved as the administrator saves them, acting as an account whose permissions apply (`--as`); `--dry-run` on every command which changes something; `site:health`; `log:list`/`log:tail` and `actionlog:list`. Changes made from the command line are recorded in the User Actions Log
+- Built-in MCP server (`php cli/joomla.php mcp:serve`) for AI assistants, read-only by default. See [AI Assistants (MCP)](#ai-assistants-mcp)
 - New SQLite database driver (experimental): the whole site in one file, with no database server, for small to medium sites, development and testing. Core and extensions work unchanged, as it runs their MySQL SQL. Available on PHP 7.4+ in the installer, and for existing sites through the new `database:convert` command line command (which also moves a site back to MySQL). SQLite sites use PHP sessions, so browsing doesn't write to the database. See [SQLite Support](#sqlite-support)
 - PostgreSQL in the command line database tools: `database:export` and `database:import` work on PostgreSQL, and `database:convert` moves a site between MySQL/MariaDB, PostgreSQL and SQLite, in any direction. See [PostgreSQL Support](#postgresql-support)
 - PostgreSQL install scripts for Banners, Contacts and News Feeds, so they can be reinstalled after an uninstall (also through "Restore uninstalled core extensions")
@@ -288,6 +301,18 @@ Joomla 3 has always shipped a basic SQLite database driver, but it was never usa
 - **Sessions:** with the "Database" session handler, every page view writes to the database file. A new SQLite site, or one moved with `database:convert`, therefore uses PHP sessions instead (Global Configuration → System → Session Handler → "PHP"), and writes only when content or settings change, or a new visitor arrives. If your server has an object cache such as Memcached, Redis or APCu enabled, prefer that for sessions: it's faster than PHP's session files and also keeps sessions out of the database. `database:convert` keeps those handlers as they are.
 - **Security:** keep the database file out of the web's reach: outside the site's public folder, or in a folder of its own, which Joomla protects for Apache and IIS (with nginx, keep the file's random name too). To move it, change "Path to Database Folder" in Global Configuration → Server → Database (shown for SQLite only): Joomla copies the database there, switches to it and removes the old file.
 - **Backups:** copy the database file while the site is offline (it's a complete copy of the site's data), or use `php cli/joomla.php database:export`.
+
+
+## AI ASSISTANTS (MCP)
+The command line includes an MCP (Model Context Protocol) server, so AI assistants such as Claude Code or Claude Desktop can work with a site directly: check its health, read its logs, and list, write and change content, using the command line's commands as tools.
+
+- **Read-only by default:** the assistant can use every command which only reads, and dry runs of the others (which report what they would change), but can't change anything. Add `--allow-write` to let it make changes.
+- **Narrow it down:** `--allow` and `--deny` choose the commands, with wildcards (e.g. `--allow="article:*,category:*,site:*"`), and `--as=username` makes content changes as that account, whose permissions apply (e.g. an Editor account can write and edit articles but not publish them).
+- **Traceable:** every change is recorded in the User Actions Log, as made through MCP. Secret values (passwords, keys) are left out of the log and aren't shown to the assistant.
+- **Claude Code:** `claude mcp add joomla -- php /path/to/site/cli/joomla.php mcp:serve` (add `--allow-write` and the other options at the end). For a site on another server, run it over SSH: `claude mcp add joomla -- ssh user@example.com php /path/to/site/cli/joomla.php mcp:serve`.
+- **Claude Desktop and other clients:** add a server with the command `php` and the arguments `/path/to/site/cli/joomla.php` and `mcp:serve` to the client's MCP configuration (e.g. `"mcpServers": {"joomla": {"command": "php", "args": ["/path/to/site/cli/joomla.php", "mcp:serve"]}}`).
+
+Run the server as the same system user as the web server (or one with the same file permissions), as for any command. `php cli/joomla.php help mcp:serve` lists its options.
 
 
 ## NOTES ON OPERATING SYSTEM SUPPORT

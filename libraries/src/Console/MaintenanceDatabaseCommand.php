@@ -43,6 +43,12 @@ class MaintenanceDatabaseCommand extends AbstractCommand
 	 * @var    boolean
 	 * @since  3.17.0
 	 */
+	protected $dryRun = true;
+
+	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
 	protected $superUser = true;
 
 	/**
@@ -53,6 +59,31 @@ class MaintenanceDatabaseCommand extends AbstractCommand
 	protected function configure()
 	{
 		$this->addOption('fix', null, self::OPTION_NONE, 'Update Database structure');
+	}
+
+	/**
+	 * Read-only without --fix.
+	 *
+	 * @param   array|null  $options    The options of a run, or null for the command in general
+	 * @param   array|null  $arguments  The arguments of a run
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function isReadOnly(?array $options = null, ?array $arguments = null)
+	{
+		return $options !== null && empty($options['fix']);
+	}
+
+	/**
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function hasReadOnlyRuns()
+	{
+		return true;
 	}
 
 	/**
@@ -68,7 +99,14 @@ class MaintenanceDatabaseCommand extends AbstractCommand
 
 		$problems = static::getProblems();
 
-		if ($problems && $io->getOption('fix'))
+		if ($problems && $io->getOption('fix') && $io->isDryRun())
+		{
+			foreach ($problems as $problem)
+			{
+				$io->plan('Fix: ' . $problem, array('action' => 'fix', 'problem' => $problem));
+			}
+		}
+		elseif ($problems && $io->getOption('fix'))
 		{
 			/** @var \InstallerModelDatabase $model */
 			$model = $this->getAdministratorModel('com_installer', 'Database', 'InstallerModel');
@@ -95,7 +133,7 @@ class MaintenanceDatabaseCommand extends AbstractCommand
 		{
 			$io->warning(Text::_('COM_INSTALLER_MSG_DATABASE_ERRORS'));
 
-			return $io->getOption('fix') ? self::FAILURE : self::SUCCESS;
+			return $io->getOption('fix') && !$io->isDryRun() ? self::FAILURE : self::SUCCESS;
 		}
 
 		$io->success(Text::_('COM_INSTALLER_MSG_DATABASE_OK'));

@@ -39,6 +39,12 @@ class ExtensionDiscoverInstallCommand extends AbstractExtensionCommand
 	protected $help = 'Installs one discovered extension (--eid) or all of them. Run extension:discover first.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -86,7 +92,7 @@ class ExtensionDiscoverInstallCommand extends AbstractExtensionCommand
 			{
 				$io->error(sprintf('There is no discovered extension with ID %s.', $eid));
 
-				return self::FAILURE;
+				return self::NOT_FOUND;
 			}
 
 			$io->text('There are no pending discovered extensions to install. Perhaps you need to run extension:discover first?');
@@ -99,6 +105,14 @@ class ExtensionDiscoverInstallCommand extends AbstractExtensionCommand
 
 		foreach ($discovered as $extension)
 		{
+			if ($io->isDryRun())
+			{
+				$io->plan(sprintf('Install the discovered extension "%s" (ID %d)', $extension->name, $extension->extension_id),
+					array('action' => 'discover-install', 'id' => (int) $extension->extension_id, 'name' => $extension->name));
+
+				continue;
+			}
+
 			$installer = new Installer;
 
 			if ($installer->discover_install($extension->extension_id))
@@ -111,6 +125,11 @@ class ExtensionDiscoverInstallCommand extends AbstractExtensionCommand
 				$failed[] = (int) $extension->extension_id;
 				$io->error(sprintf('Unable to install "%s" (ID %d).', $extension->name, $extension->extension_id));
 			}
+		}
+
+		if ($io->isDryRun())
+		{
+			return self::SUCCESS;
 		}
 
 		$io->setData('installed', $installed);

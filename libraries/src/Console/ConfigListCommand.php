@@ -30,6 +30,12 @@ class ConfigListCommand extends ConfigGetCommand
 	protected $description = 'List all configuration options and their values';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $readOnly = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0

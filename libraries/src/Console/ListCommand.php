@@ -40,6 +40,12 @@ class ListCommand extends AbstractCommand
 	protected $help = 'Lists all commands, or only those of a namespace (e.g. "user" for user:*). With --format=json, each command includes its arguments and options, so the whole interface can be discovered in one call.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $readOnly = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0

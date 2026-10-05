@@ -39,6 +39,12 @@ class CoreUpdateCheckCommand extends AbstractCommand
 	protected $help = 'Fetches the update feed of the configured update channel and reports whether a newer Joomla version is available.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $readOnly = true;
+
+	/**
 	 * @param   CommandIO  $io  The input values and the output
 	 *
 	 * @return  integer

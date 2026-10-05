@@ -39,6 +39,12 @@ class SiteInfoCommand extends AbstractCommand
 	protected $help = 'Shows the Joomla, PHP and database versions, the site paths and the main global settings. A good first call to learn about a site.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $readOnly = true;
+
+	/**
 	 * @param   CommandIO  $io  The input values and the output
 	 *
 	 * @return  integer

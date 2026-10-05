@@ -44,6 +44,18 @@ class FinderIndexCommand extends AbstractCommand
 		. 'or for a fixed number of seconds given with --pause; batches faster than --minproctime seconds are not followed by a pause.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $logged = false;
+
+	/**
 	 * @var    CommandIO
 	 * @since  3.17.0
 	 */
@@ -131,6 +143,21 @@ class FinderIndexCommand extends AbstractCommand
 		$language->load('com_finder', JPATH_ADMINISTRATOR);
 
 		$io->title(Text::_('FINDER_CLI'));
+
+		if ($io->isDryRun())
+		{
+			if ($purge !== '')
+			{
+				$io->plan('Empty the Smart Search index (keeping the saved search filters)', array('action' => 'purge'));
+			}
+
+			foreach (\JPluginHelper::getPlugin('finder') as $plugin)
+			{
+				$io->plan(sprintf('Index the content of the "%s" Smart Search plugin', $plugin->name), array('action' => 'index', 'plugin' => $plugin->name));
+			}
+
+			return self::SUCCESS;
+		}
 
 		@set_time_limit(0);
 

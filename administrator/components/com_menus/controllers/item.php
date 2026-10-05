@@ -382,7 +382,7 @@ class MenusControllerItem extends JControllerForm
 
 			// Parse the submitted link arguments.
 			$args = array();
-			parse_str(parse_url($data['link'], PHP_URL_QUERY), $args);
+			parse_str((string) parse_url((string) $data['link'], PHP_URL_QUERY), $args);
 
 			// Merge in the user supplied request arguments.
 			$args = array_merge($args, $data['request']);

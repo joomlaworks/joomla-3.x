@@ -37,6 +37,18 @@ class CacheCleanCommand extends AbstractCommand
 		. 'With the "expired" argument it only removes expired entries, like System > Clear Expired Cache.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $logged = false;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -75,6 +87,27 @@ class CacheCleanCommand extends AbstractCommand
 		{
 			$cache = $model->getCache($clientId);
 
+			if ($io->isDryRun())
+			{
+				$client = $clientId ? 'administrator' : 'site';
+
+				if ($expired !== '')
+				{
+					$io->plan(sprintf('Remove the expired entries of the %s cache', $client), array('action' => 'gc', 'client' => $client));
+
+					continue;
+				}
+
+				foreach ($cache->getAll() ?: array() as $group)
+				{
+					$groups++;
+					$io->plan(sprintf('Clean the %s cache group "%s" (%d entries)', $client, $group->group, $group->count),
+						array('action' => 'clean', 'client' => $client, 'group' => $group->group, 'entries' => (int) $group->count));
+				}
+
+				continue;
+			}
+
 			if ($expired !== '')
 			{
 				$cleaned = $cache->gc() !== false && $cleaned;
@@ -102,7 +135,10 @@ class CacheCleanCommand extends AbstractCommand
 			return self::FAILURE;
 		}
 
-		$io->success($expired !== '' ? 'Expired cache cleaned.' : 'Cache cleaned.');
+		if (!$io->isDryRun())
+		{
+			$io->success($expired !== '' ? 'Expired cache cleaned.' : 'Cache cleaned.');
+		}
 
 		return self::SUCCESS;
 	}

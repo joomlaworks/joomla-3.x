@@ -41,6 +41,12 @@ class DatabaseImportCommand extends AbstractCommand
 		. 'database:export command can be imported too. Only MySQL and MariaDB are supported. Asks for confirmation when interactive.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * Maximum size of one INSERT statement, well below the smallest default max_allowed_packet (1MB in MySQL 5.5)
 	 *
 	 * @var    integer
@@ -139,7 +145,7 @@ class DatabaseImportCommand extends AbstractCommand
 				{
 					$io->error(sprintf('The %s file does not exist.', basename($files[0])));
 
-					return self::FAILURE;
+					return self::NOT_FOUND;
 				}
 			}
 			else
@@ -153,6 +159,17 @@ class DatabaseImportCommand extends AbstractCommand
 				$io->error(sprintf('There are no .xml files to import in %s.', $folder));
 
 				return self::FAILURE;
+			}
+
+			if ($io->isDryRun())
+			{
+				foreach ($files as $file)
+				{
+					$table = $this->getRealTableName(basename($file, '.xml'));
+					$io->plan(sprintf('Replace the table %s with the contents of %s', $table, basename($file)), array('action' => 'import', 'table' => $table, 'file' => $file));
+				}
+
+				return self::SUCCESS;
 			}
 
 			if ($io->isInteractive()

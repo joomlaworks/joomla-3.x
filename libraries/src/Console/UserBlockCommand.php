@@ -40,6 +40,12 @@ class UserBlockCommand extends AbstractUserCommand
 	protected $help = 'Blocks a user, like Users: Manage > Block, so they can\'t log in, and ends their sessions. The last active Super User can\'t be blocked.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * The blocked state this command sets
 	 *
 	 * @var    integer
@@ -81,7 +87,7 @@ class UserBlockCommand extends AbstractUserCommand
 		{
 			$io->error(sprintf('The user "%s" does not exist.', $username));
 
-			return self::FAILURE;
+			return self::NOT_FOUND;
 		}
 
 		$user = User::getInstance($userId);
@@ -101,9 +107,17 @@ class UserBlockCommand extends AbstractUserCommand
 				{
 					$io->error('You can\'t block the last active Super User.');
 
-					return self::FAILURE;
+					return self::REFUSED;
 				}
 			}
+		}
+
+		if ($io->isDryRun())
+		{
+			$io->plan(sprintf('%s the user "%s"%s', $this->block ? 'Block' : 'Unblock', $username, $this->block ? ' and end their sessions' : ''),
+				array('action' => $this->block ? 'block' : 'unblock', 'username' => $username, 'id' => (int) $userId));
+
+			return self::SUCCESS;
 		}
 
 		$user->block = $this->block;

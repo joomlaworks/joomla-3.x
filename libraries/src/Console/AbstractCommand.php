@@ -35,11 +35,14 @@ abstract class AbstractCommand
 	const OPTION_OPTIONAL = 4;
 
 	/**
-	 * Exit codes
+	 * Exit codes: success, the action failed, invalid input, what was asked for doesn't exist, and refused (e.g. the last
+	 * Super User, or --dry-run on a command which can't do one). In JSON, error.code names them (see CommandIO::finish()).
 	 */
-	const SUCCESS = 0;
-	const FAILURE = 1;
-	const INVALID = 2;
+	const SUCCESS   = 0;
+	const FAILURE   = 1;
+	const INVALID   = 2;
+	const NOT_FOUND = 3;
+	const REFUSED   = 4;
 
 	/**
 	 * The command name, e.g. "user:list"
@@ -80,6 +83,31 @@ abstract class AbstractCommand
 	 * @since  3.17.0
 	 */
 	protected $superUser = false;
+
+	/**
+	 * The command only reads: it changes neither the site nor its files (the MCP server offers only these by default)
+	 *
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $readOnly = false;
+
+	/**
+	 * The command supports --dry-run: it then reports what it would change (CommandIO::plan()) and changes nothing
+	 *
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = false;
+
+	/**
+	 * Successful runs which may change something are recorded in the User Actions Log; routine housekeeping run by cron jobs
+	 * (cleaning the cache or sessions, indexing) isn't, so it doesn't fill the log
+	 *
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $logged = true;
 
 	/**
 	 * @var    array
@@ -183,6 +211,71 @@ abstract class AbstractCommand
 	public function runsAsSuperUser()
 	{
 		return $this->superUser;
+	}
+
+	/**
+	 * Whether the command only reads, given a run's values when known (e.g. maintenance:database only changes with --fix).
+	 *
+	 * @param   array|null  $options    The options of a run, or null for the command in general
+	 * @param   array|null  $arguments  The arguments of a run
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function isReadOnly(?array $options = null, ?array $arguments = null)
+	{
+		return $this->readOnly;
+	}
+
+	/**
+	 * Whether some runs of the command only read (offered by a read-only MCP server, which checks each call's options).
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function hasReadOnlyRuns()
+	{
+		return $this->readOnly;
+	}
+
+	/**
+	 * Whether --dry-run is safe: the command supports it, or never changes anything.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function supportsDryRun()
+	{
+		return $this->readOnly || $this->dryRun;
+	}
+
+	/**
+	 * Whether successful runs are recorded in the User Actions Log.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function isLogged()
+	{
+		return $this->logged;
+	}
+
+	/**
+	 * Whether the value of an option or argument is a secret, kept out of the User Actions Log.
+	 *
+	 * @param   string  $name  The option or argument name
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function isSecret($name)
+	{
+		return (bool) preg_match('/pass(word)?|secret|token|api_?key/i', (string) $name);
 	}
 
 	/**

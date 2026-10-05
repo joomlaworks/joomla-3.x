@@ -103,7 +103,7 @@ class MenusHelper
 
 			if (strpos($request, 'index.php') === 0)
 			{
-				parse_str(parse_url(htmlspecialchars_decode($request), PHP_URL_QUERY), $args);
+				parse_str((string) parse_url(htmlspecialchars_decode((string) $request), PHP_URL_QUERY), $args);
 			}
 			else
 			{

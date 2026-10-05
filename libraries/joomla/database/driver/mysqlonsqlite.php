@@ -181,6 +181,54 @@ class JDatabaseDriverMysqlonsqlite extends JDatabaseDriverPdomysql
 	}
 
 	/**
+	 * Check a new place for a database file: a database file name, and inside the site a folder of its own (not the site's root,
+	 * and no folder which holds anything else, e.g. images/). The database file holds content anyone can write, such as article
+	 * text, so a name a web server would run (e.g. .php) or a folder whose web access can't be blocked would expose or run it.
+	 *
+	 * @param   string  $path  The absolute path of the database file; its folder must exist
+	 *
+	 * @return  string  An empty string when the place is fine, otherwise "extension", "root" or "folder"
+	 *
+	 * @since   3.17.0
+	 */
+	public static function checkLocation($path)
+	{
+		if (!preg_match('#\.(sqlite3?|db3?)$#i', basename($path)))
+		{
+			return 'extension';
+		}
+
+		$root   = realpath(JPATH_ROOT);
+		$folder = realpath(dirname($path));
+
+		if ($root === false || $folder === false || strpos($folder . DIRECTORY_SEPARATOR, $root . DIRECTORY_SEPARATOR) !== 0)
+		{
+			return '';
+		}
+
+		if ($folder === $root)
+		{
+			return 'root';
+		}
+
+		// Only the protection files and database files (with SQLite's -wal, -shm and -journal files) may be there
+		foreach (new DirectoryIterator($folder) as $entry)
+		{
+			$name = $entry->getFilename();
+
+			if ($entry->isDot() || in_array($name, array('.htaccess', 'web.config', 'index.html'), true)
+				|| ($entry->isFile() && preg_match('#\.(sqlite3?|db3?)(-wal|-shm|-journal)?$#i', $name)))
+			{
+				continue;
+			}
+
+			return 'folder';
+		}
+
+		return '';
+	}
+
+	/**
 	 * Block web access to the folder of a database file inside the site, with .htaccess (Apache) and web.config (IIS) rules.
 	 * Servers such as nginx ignore these, so database files there should also have a name nobody can guess.
 	 *

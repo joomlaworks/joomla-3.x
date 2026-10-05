@@ -196,7 +196,8 @@ class AbstractMenu
 	 */
 	public function setDefault($id, $language = '*')
 	{
-		if (isset($this->_items[$id]))
+		// No menu item has a null ID; as an array key it's deprecated since PHP 8.5 (e.g. a URL without Itemid)
+		if ($id !== null && isset($this->_items[$id]))
 		{
 			$this->_default[$language] = $id;
 
@@ -241,7 +242,8 @@ class AbstractMenu
 	 */
 	public function setActive($id)
 	{
-		if (isset($this->_items[$id]))
+		// No menu item has a null ID; as an array key it's deprecated since PHP 8.5 (e.g. a URL without Itemid)
+		if ($id !== null && isset($this->_items[$id]))
 		{
 			$this->_active = $id;
 

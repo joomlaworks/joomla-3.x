@@ -39,6 +39,18 @@ class SessionGcCommand extends AbstractCommand
 		. 'The site and the administrator share the same session storage and lifetime here, so --application only exists for compatibility with Joomla 4 and later.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $logged = false;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -72,6 +84,14 @@ class SessionGcCommand extends AbstractCommand
 		$config  = Factory::getConfig();
 		$storage = \JSessionStorage::getInstance($config->get('session_handler', 'none'));
 		$expire  = (int) $config->get('lifetime') ? (int) $config->get('lifetime') * 60 : 900;
+
+		if ($io->isDryRun())
+		{
+			$io->plan(sprintf('Remove the sessions older than %d minutes from the "%s" session storage', $expire / 60, $config->get('session_handler', 'none')),
+				array('action' => 'gc', 'handler' => $config->get('session_handler', 'none'), 'olderThanSeconds' => $expire));
+
+			return self::SUCCESS;
+		}
 
 		if ($storage->gc($expire) === false)
 		{

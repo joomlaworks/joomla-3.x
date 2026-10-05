@@ -154,10 +154,26 @@ final class InstallationApplicationWeb extends JApplicationCms
 			define('JPATH_COMPONENT_SITE', JPATH_SITE);
 			define('JPATH_COMPONENT_ADMINISTRATOR', JPATH_ADMINISTRATOR);
 
+			// Once installed, only the browser which installed the site may go on; anyone else can only remove the installer
+			$task = $this->input->getCmd('task');
+
+			if ($this->isLocked())
+			{
+				if ($task !== null && !in_array(strtolower($task), array('default', 'removefolder'), true))
+				{
+					$this->sendJsonResponse(new Exception($this->getLockedMessage(), 403));
+				}
+
+				if ($task === null || strtolower($task) === 'default')
+				{
+					$this->input->set('view', 'locked');
+				}
+			}
+
 			// Execute the task.
 			try
 			{
-				$controller = $this->fetchController($this->input->getCmd('task'));
+				$controller = $this->fetchController($task);
 				$contents   = $controller->execute();
 			}
 			catch (RuntimeException $e)
@@ -182,6 +198,36 @@ final class InstallationApplicationWeb extends JApplicationCms
 			echo $e->getMessage();
 			$this->close($e->getCode());
 		}
+	}
+
+	/**
+	 * Whether Joomla! is installed (a configuration file exists) by another browser than this one.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function isLocked()
+	{
+		$file = JPATH_CONFIGURATION . '/configuration.php';
+
+		clearstatcache(true, $file);
+
+		return is_file($file) && filesize($file) > 10 && !$this->getSession()->get('setup.installed', false);
+	}
+
+	/**
+	 * The message for requests refused because Joomla! is already installed, in English for language packs without it yet.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	protected function getLockedMessage()
+	{
+		return JFactory::getLanguage()->hasKey('INSTL_LOCKED_ERROR')
+			? JText::sprintf('INSTL_LOCKED_ERROR', basename(JPATH_INSTALLATION))
+			: 'Joomla! is already installed. For security, the installer only continues in the browser which installed the site.';
 	}
 
 	/**

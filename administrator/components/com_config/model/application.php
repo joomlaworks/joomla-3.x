@@ -177,7 +177,8 @@ class ConfigModelApplication extends ConfigModelForm
 		}
 
 		// Check if we can set the Force SSL option
-		if ((int) $data['force_ssl'] !== 0 && (int) $data['force_ssl'] !== (int) JFactory::getConfig()->get('force_ssl', '0'))
+		// New sites' configuration.php has no force_ssl until it's saved in Global Configuration, so config:set may not send it
+		if (isset($data['force_ssl']) && (int) $data['force_ssl'] !== 0 && (int) $data['force_ssl'] !== (int) JFactory::getConfig()->get('force_ssl', '0'))
 		{
 			try
 			{
@@ -568,6 +569,13 @@ class ConfigModelApplication extends ConfigModelForm
 			return null;
 		}
 
+		if (!$byFolder && !preg_match('#\.(sqlite3?|db3?)$#i', basename($path)))
+		{
+			$app->enqueueMessage(JText::_('COM_CONFIG_ERROR_DATABASE_SQLITE_EXTENSION'), 'error');
+
+			return false;
+		}
+
 		// Another existing database file: the connection check decides
 		if (is_file($path) && !$byFolder)
 		{
@@ -603,11 +611,22 @@ class ConfigModelApplication extends ConfigModelForm
 		// Inside the site, the file needs its own folder, whose web access can be blocked; it's then kept relative to the site's root
 		if ($root !== false && strpos($realFolder . DIRECTORY_SEPARATOR, $root . DIRECTORY_SEPARATOR) === 0)
 		{
-			if ($realFolder === $root)
+			switch (JDatabaseDriverMysqlonsqlite::checkLocation($path))
 			{
-				$app->enqueueMessage(JText::_('COM_CONFIG_ERROR_DATABASE_SQLITE_IN_SITE_ROOT'), 'error');
+				case 'extension':
+					$app->enqueueMessage(JText::_('COM_CONFIG_ERROR_DATABASE_SQLITE_EXTENSION'), 'error');
 
-				return false;
+					return false;
+
+				case 'root':
+					$app->enqueueMessage(JText::_('COM_CONFIG_ERROR_DATABASE_SQLITE_IN_SITE_ROOT'), 'error');
+
+					return false;
+
+				case 'folder':
+					$app->enqueueMessage(JText::sprintf('COM_CONFIG_ERROR_DATABASE_SQLITE_SHARED_FOLDER', $folder), 'error');
+
+					return false;
 			}
 
 			JDatabaseDriverMysqlonsqlite::protectFolder($realFolder);

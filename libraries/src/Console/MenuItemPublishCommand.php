@@ -1,0 +1,43 @@
+<?php
+/**
+ * Joomla! Content Management System
+ *
+ * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
+ */
+
+namespace Joomla\CMS\Console;
+
+defined('JPATH_PLATFORM') or die;
+
+/**
+ * Publish menu items.
+ *
+ * @since  3.17.0
+ */
+class MenuItemPublishCommand extends AbstractMenuItemStateCommand
+{
+	/**
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $name = 'menu:item:publish';
+
+	/**
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $description = 'Publish menu items';
+
+	/**
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $help = 'Publishes the given menu items, as the toolbar button of the Menus manager does, after checking that the acting user (--as) may. The home page can\'t be unpublished or trashed.';
+
+	/**
+	 * @var    integer
+	 * @since  3.17.0
+	 */
+	protected $state = 1;
+}

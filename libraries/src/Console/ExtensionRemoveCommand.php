@@ -37,6 +37,12 @@ class ExtensionRemoveCommand extends AbstractExtensionCommand
 		. 'Protected core extensions can\'t be uninstalled.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -61,14 +67,22 @@ class ExtensionRemoveCommand extends AbstractExtensionCommand
 
 		if (!$extension)
 		{
-			return self::FAILURE;
+			return self::NOT_FOUND;
 		}
 
 		if ((int) $extension->protected === 1)
 		{
 			$io->error($this->describe($extension) . ' is protected and can\'t be removed.');
 
-			return self::FAILURE;
+			return self::REFUSED;
+		}
+
+		if ($io->isDryRun())
+		{
+			$io->plan('Uninstall ' . $this->describe($extension) . ', with its files and database tables',
+				array('action' => 'remove', 'id' => (int) $extension->extension_id, 'name' => $extension->name, 'type' => $extension->type));
+
+			return self::SUCCESS;
 		}
 
 		if ($io->isInteractive() && !$io->confirm('Are you sure you want to remove ' . $this->describe($extension) . '?', false))

@@ -41,6 +41,12 @@ class ExtensionUpdateCommand extends AbstractExtensionCommand
 		. '(which lists their extension IDs). Download keys set for an update site are used. Joomla itself is updated with core:update.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -90,13 +96,24 @@ class ExtensionUpdateCommand extends AbstractExtensionCommand
 			{
 				$io->error(sprintf('There is no update for the extension with ID %d. Run update:extensions:check to look for updates.', $id));
 
-				return self::FAILURE;
+				return self::NOT_FOUND;
 			}
 
 			$updates[(int) $id] = $update;
 		}
 
 		/** @var \InstallerModelUpdate $model */
+		if ($io->isDryRun())
+		{
+			foreach ($updates as $id => $update)
+			{
+				$io->plan(sprintf('Update %s (ID %d) to %s', $update->name, $id, $update->version),
+					array('action' => 'update', 'id' => $id, 'name' => $update->name, 'version' => $update->version));
+			}
+
+			return self::SUCCESS;
+		}
+
 		$model     = $this->getAdministratorModel('com_installer', 'Update', 'InstallerModel');
 		$stability = (int) ComponentHelper::getParams('com_installer')->get('minimum_stability', Updater::STABILITY_STABLE);
 		$updated   = array();

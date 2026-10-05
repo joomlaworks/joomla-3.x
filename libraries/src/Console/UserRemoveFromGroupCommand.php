@@ -40,6 +40,12 @@ class UserRemoveFromGroupCommand extends AbstractUserCommand
 		. 'one group, and the last active Super User can\'t lose Super User rights.';
 
 	/**
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $dryRun = true;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -74,7 +80,7 @@ class UserRemoveFromGroupCommand extends AbstractUserCommand
 		{
 			$io->error(sprintf('The user "%s" does not exist.', $username));
 
-			return self::FAILURE;
+			return self::NOT_FOUND;
 		}
 
 		$groups = $this->getRequiredOption($io, 'group', 'Please enter the user groups (separate multiple groups with a comma)');
@@ -102,7 +108,7 @@ class UserRemoveFromGroupCommand extends AbstractUserCommand
 			{
 				$io->error(sprintf('Can\'t remove "%s" from the group "%s": every user needs to be in at least one group.', $user->username, $title));
 
-				return self::FAILURE;
+				return self::REFUSED;
 			}
 
 			$remaining = array_diff($current, array($groupId));
@@ -112,7 +118,15 @@ class UserRemoveFromGroupCommand extends AbstractUserCommand
 			{
 				$io->error(sprintf('Can\'t remove "%s" from the group "%s": the site needs at least one active Super User.', $user->username, $title));
 
-				return self::FAILURE;
+				return self::REFUSED;
+			}
+
+			if ($io->isDryRun())
+			{
+				$io->plan(sprintf('Remove "%s" from the group "%s"', $user->username, $title), array('action' => 'removefromgroup', 'username' => $user->username, 'group' => $title));
+				$current = array_values($remaining);
+
+				continue;
 			}
 
 			if (!UserHelper::removeUserFromGroup($user->id, $groupId))

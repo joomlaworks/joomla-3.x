@@ -60,7 +60,10 @@ class SiteDownCommand extends ConfigSetCommand
 			return self::FAILURE;
 		}
 
-		$io->success('Website is now offline.');
+		if (!$io->isDryRun())
+		{
+			$io->success('Website is now offline.');
+		}
 
 		return self::SUCCESS;
 	}
