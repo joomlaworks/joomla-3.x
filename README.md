@@ -228,7 +228,7 @@ Switching to this distribution will also allow you (or take you closer) to upgra
 ## DATABASE SUPPORT
 | Database | Minimum version | Status |
 |---|---|---|
-| MySQL | 5.5.3 | Tested and actively supported (5.7 or newer recommended, see notes below for 8.x) |
+| MySQL | 5.5.3 | Tested and actively supported (5.7 or newer recommended, see notes below for 8.x & 9.x) |
 | MariaDB | 5.5 | Tested and actively supported |
 | PostgreSQL | 9.0 | Inherited from stock Joomla 3.x, not tested by this project |
 | Microsoft SQL Server / Azure SQL | 2008 R2 (10.50.1600.1) | Inherited from stock Joomla 3.x, not tested by this project |
@@ -242,7 +242,7 @@ Database support in Joomla 3.x was always centred on MySQL/MariaDB. PostgreSQL a
 ## NOTES ON MYSQL & MARIADB
 Joomla 3.x UTD works with MySQL 8.0, 8.4 and 9.x on their default settings: no `my.cnf` changes are needed for authentication. MySQL's default authentication method since 8.0 (`caching_sha2_password`) is handled by PHP itself, from PHP 7.4 (or at least 7.1.16/7.2.4).
 
-If you followed older advice and enabled `mysql_native_password` (e.g. `default_authentication_plugin` or `mysql_native_password = ON` with `authentication_policy`), it keeps working on MySQL 8.0 and 8.4, but MySQL 9.0 removed it. Before upgrading to MySQL 9, or to drop those settings, switch your sites' database users to the default method (users created while the settings were on keep `mysql_native_password`):
+If you previously enabled `mysql_native_password` (e.g. `default_authentication_plugin` or `mysql_native_password = ON` with `authentication_policy`), it keeps working on MySQL 8.0 and 8.4, but MySQL 9.0 removed it. Before upgrading to MySQL 9, or to drop these settings, switch your sites' database users to the default method (users created while the my.cnf had `mysql_native_password` enabled):
 ```
 ALTER USER 'username'@'host' IDENTIFIED WITH caching_sha2_password BY 'password';
 ```
@@ -254,6 +254,7 @@ We also recommend the following setting for maximum compatibility in both MySQL 
 ```
 sql_mode = ""
 ```
+
 
 ## NOTES ON OPERATING SYSTEM SUPPORT
 This distribution is built solely for Linux/BSD based systems, cause let's be honest, you'll be hosting this on some Linux/BSD flavour, not Windows or macOS. As such, we don't test on Windows or macOS. Things ***should*** work just fine if you use something like XAMPP or MAMP respectively, but just know that we don't test against these two operating systems.
