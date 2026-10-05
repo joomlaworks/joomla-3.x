@@ -90,7 +90,7 @@ Summary of changes:
 
 **New features:**
 - "Install from Web" (the Joomla! Extensions Directory browser) is included and enabled, as the first tab of Extensions: Install; it can't be installed from the JED any more, whose feed stops at Joomla 3.10
-- Quick install from the command line: `php cli/joomla.php core:install` sets up a new site on SQLite from just the site's name and the administrator's email address and username, with a generated password (see [Quick install from the command line](#quick-install-from-the-command-line-sqlite))
+- Quick install from the command line: `php cli/joomla.php core:install` sets up a new site on SQLite from just the site's name and the administrator's email address and username, with a generated password and, optionally, sample data (see [Quick install from the command line](#quick-install-from-the-command-line-sqlite))
 - Content management from the command line: list, show, create, change, publish, trash and delete articles, categories, modules and menu items, saved as the administrator saves them, acting as an account whose permissions apply (`--as`); `--dry-run` on every command which changes something; `database:optimize`; `extension:reinstall` (overwrites an extension's files with its original package, from its update site or a given file, and lists or removes files the package doesn't have, e.g. on a hacked site); `site:health`; `log:list`/`log:tail` and `actionlog:list`. Changes made from the command line are recorded in the User Actions Log
 - Built-in MCP server (`php cli/joomla.php mcp:serve`) for AI assistants, read-only by default. See [AI Assistants (MCP)](#ai-assistants-mcp)
 - New SQLite database driver (experimental): the whole site in one file, with no database server, for small to medium sites, development and testing. Core and extensions work unchanged, as it runs their MySQL SQL. Available on PHP 7.4+ in the installer, and for existing sites through the new `database:convert` command line command (which also moves a site back to MySQL). SQLite sites use PHP sessions, so browsing doesn't write to the database. See [SQLite Support](#sqlite-support)
@@ -250,7 +250,7 @@ A new site on SQLite takes one command: give it the site's name, the administrat
 wget -q https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip && unzip -q joomla-latest.zip && rm joomla-latest.zip && php cli/joomla.php core:install --site-name="My Site" --admin-email=me@example.com --admin-username=admin
 ```
 
-It needs PHP 7.4 or newer with the `pdo_sqlite` extension. `--format=json` returns the details (including the password) for scripts.
+Add `--sample-data=blog` (or `brochure`, `default`, `learn`) to start with one of the installer's sample data sets. It needs PHP 7.4 or newer with the `pdo_sqlite` extension. `--format=json` returns the details (including the password) for scripts.
 
 
 ## PHP COMPATIBILITY

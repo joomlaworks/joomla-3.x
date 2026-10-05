@@ -39,7 +39,8 @@ class CoreInstallCommand extends AbstractCommand
 	protected $help = 'Installs Joomla on a new SQLite database, from the files of a Joomla 3.x UTD package which wasn\'t installed yet '
 		. '(no configuration.php), using the installer of its "installation" folder. Only the site\'s name, the administrator\'s email '
 		. 'address and username are needed; when they aren\'t given, they\'re asked for one by one. The administrator\'s password is '
-		. 'generated (16 letters and digits) and shown at the end. The database file gets an unguessable name in the "database" '
+		. 'generated (16 letters and digits) and shown at the end. --sample-data also installs one of the installer\'s sample data '
+		. 'sets (blog, brochure, default or learn). The database file gets an unguessable name in the "database" '
 		. 'folder, which is protected from web access, and the "installation" folder is removed afterwards. Like the web installer, '
 		. 'it checks that whoever installs can change the site\'s files, by deleting a file it creates in the "installation" folder. '
 		. 'Run it as the user the web server runs PHP as, so that the site can write to the files it creates. Needs PHP 7.4 or newer '
@@ -69,6 +70,7 @@ class CoreInstallCommand extends AbstractCommand
 		$this->addOption('site-name', null, self::OPTION_REQUIRED, 'The site\'s name');
 		$this->addOption('admin-email', null, self::OPTION_REQUIRED, 'The administrator\'s email address');
 		$this->addOption('admin-username', null, self::OPTION_REQUIRED, 'The administrator\'s username');
+		$this->addOption('sample-data', null, self::OPTION_OPTIONAL, 'Also install sample data: blog, brochure, default or learn (without a name, it asks which)');
 	}
 
 	/**
@@ -134,6 +136,31 @@ class CoreInstallCommand extends AbstractCommand
 			return self::INVALID;
 		}
 
+		// Optional, so only asked for when --sample-data is given without a name
+		$sampleData = '';
+
+		if ($io->getOption('sample-data') === true && !$io->isInteractive())
+		{
+			$io->error('--sample-data needs the name of a set: ' . implode(', ', array_keys($this->getSampleDataSets())) . '.');
+
+			return self::INVALID;
+		}
+
+		if ($io->getOption('sample-data') !== null)
+		{
+			$sampleData = $this->getValue($io, 'sample-data', 'Which sample data should be installed (' . implode(', ', array_keys($this->getSampleDataSets()))
+				. ' or none)?', array($this, 'checkSampleData'));
+
+			if ($sampleData === null)
+			{
+				return self::INVALID;
+			}
+
+			$sampleData = strtolower($sampleData) === 'none' ? '' : strtolower($sampleData);
+		}
+
+		$sampleSets = $this->getSampleDataSets();
+
 		if (!is_writable(JPATH_CONFIGURATION))
 		{
 			$io->error(sprintf('The site\'s folder (%s) isn\'t writable, so configuration.php can\'t be written.', JPATH_CONFIGURATION));
@@ -158,6 +185,12 @@ class CoreInstallCommand extends AbstractCommand
 		{
 			$io->plan(sprintf('Create the SQLite database %s (table prefix %s) and its tables', $database, $prefix),
 				array('action' => 'database', 'database' => $database, 'prefix' => $prefix));
+			if ($sampleData !== '')
+			{
+				$io->plan(sprintf('Install the sample data "%s" (%s)', $sampleData, $sampleSets[$sampleData]['label']),
+					array('action' => 'sampleData', 'sampleData' => $sampleData));
+			}
+
 			$io->plan(sprintf('Write configuration.php for "%s"', $siteName), array('action' => 'configuration', 'siteName' => $siteName));
 			$io->plan(sprintf('Create the Super User %s (%s) with a generated password', $username, $email),
 				array('action' => 'user', 'username' => $username, 'email' => $email));
@@ -183,6 +216,7 @@ class CoreInstallCommand extends AbstractCommand
 			'db_prefix'            => $prefix,
 			'db_select'            => true,
 			'db_old'               => 'remove',
+			'sample_file'          => $sampleData === '' ? '' : $sampleSets[$sampleData]['file'],
 		);
 
 		$result = $this->install($io, $options);
@@ -206,6 +240,7 @@ class CoreInstallCommand extends AbstractCommand
 		$io->setData('adminPassword', $password);
 		$io->setData('database', $database);
 		$io->setData('prefix', $prefix);
+		$io->setData('sampleData', $sampleData === '' ? null : $sampleData);
 		$io->setData('installationFolderRemoved', $removed);
 
 		$io->success(sprintf('Joomla is installed: "%s", on the SQLite database %s.', $siteName, $database));
@@ -338,6 +373,54 @@ class CoreInstallCommand extends AbstractCommand
 	}
 
 	/**
+	 * @param   string  $value  A sample data set's name, or "none"
+	 *
+	 * @return  string|null  What's wrong with it
+	 *
+	 * @since   3.17.0
+	 */
+	public function checkSampleData($value)
+	{
+		$sets = $this->getSampleDataSets();
+
+		if (strtolower($value) === 'none' || isset($sets[strtolower($value)]))
+		{
+			return null;
+		}
+
+		return sprintf('"%s" isn\'t a sample data set; choose %s or none.', $value, implode(', ', array_keys($sets)));
+	}
+
+	/**
+	 * The installer's sample data sets (installation/sql/mysql/sample_*.sql), by the name used here: the part after "sample_",
+	 * with "data" (the installer's default set) called "default".
+	 *
+	 * @return  array  name => array(file, label)
+	 *
+	 * @since   3.17.0
+	 */
+	protected function getSampleDataSets()
+	{
+		$sets = array();
+
+		foreach (glob(JPATH_INSTALLATION . '/sql/mysql/sample_*.sql') as $file)
+		{
+			$file = basename($file);
+			$name = substr($file, 7, -4);
+			$key  = 'INSTL_' . strtoupper(substr($file, 0, -4)) . '_SET';
+
+			$sets[$name === 'data' ? 'default' : $name] = array(
+				'file'  => $file,
+				'label' => Factory::getLanguage()->hasKey($key) ? \JText::_($key) : $file,
+			);
+		}
+
+		ksort($sets);
+
+		return $sets;
+	}
+
+	/**
 	 * Load the installer's code from the "installation" folder.
 	 *
 	 * @return  void
@@ -423,6 +506,18 @@ class CoreInstallCommand extends AbstractCommand
 				$this->reportErrors($io, $installer, 'The tables couldn\'t be created.');
 
 				return self::FAILURE;
+			}
+
+			if ($options['sample_file'] !== '')
+			{
+				$io->text('Installing the sample data ...');
+
+				if (!$database->installSampleData($options))
+				{
+					$this->reportErrors($io, $installer, 'The sample data couldn\'t be installed.');
+
+					return self::FAILURE;
+				}
 			}
 
 			$io->text('Writing the configuration and creating the Super User ...');
