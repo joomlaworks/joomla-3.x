@@ -4,8 +4,8 @@
  */
 
 /*
- * TinyMCE 8 for Joomla 3: starts the editors and connects them to Joomla's editor API (Joomla.editors.instances), the editor
- * buttons (the "CMS Content" menu), the HTML templates and image uploads through the Media Manager.
+ * TinyMCE 8 for Joomla 3: starts the editors and connects them to Joomla's editor API (Joomla.editors.instances), which the
+ * editor buttons below the editor use, the HTML templates and image uploads through the Media Manager.
  */
 ((window, document, Joomla) => {
 	'use strict';
@@ -17,61 +17,11 @@
 	const tinymce = window.tinymce;
 	const text = (key, fallback) => (Joomla.JText && Joomla.JText._(key, fallback)) || fallback;
 
-	// The dialog an editor button opened, so its page can close it (jModalClose(), SqueezeBox.close())
-	let openDialog = null;
-
-	const closeDialog = () => {
-		if (openDialog) {
-			const dialog = openDialog;
-
-			openDialog = null;
-			dialog.close();
-		}
-	};
-
 	// Older extensions insert through this
 	window.jInsertEditorText = (content, editor) => {
 		if (Joomla.editors.instances[editor]) {
 			Joomla.editors.instances[editor].replaceSelection(content);
 		}
-	};
-
-	const joomlaIcon = '<svg viewBox="0 0 32 32" width="24" height="24"><path d="M8.3 8.6c1-1 2.7-1 3.7 0l.3.3 3.1-3.2-.2-.2a7 7 0 0 0-6.6-1.9 4.3 4.3 0 1 0-4.9 4.8 7.3 7.3 0 0 0 1.8 7l7.1 7.2 3.2-3.2-7.1-7.1a2.6 2.6 0 0 1 0-3.7Zm23.7-4.3a4.3 4.3 0 0 0-8.5-.6 7.2 7.2 0 0 0-7 1.8l-7.1 7.1 3.1 3.2 7.2-7.1a2.6 2.6 0 0 1 3.7 3.7l-.3.3 3.2 3.1.2-.2a7 7 0 0 0 1.8-7 4.3 4.3 0 0 0 3.7-4.3Zm-3.7 19.2a7.2 7.2 0 0 0-1.9-6.7l-7.1-7.1-3.2 3.1 7.1 7.2a2.6 2.6 0 0 1-3.7 3.7l-.2-.3-3.2 3.2.3.2a7.2 7.2 0 0 0 7.1 1.8 4.3 4.3 0 1 0 4.8-5.1Zm-9.2-7-7.1 7.2a2.6 2.6 0 0 1-3.7-3.7l.2-.3-3.1-3.1-.3.2a7.2 7.2 0 0 0-1.8 6.8 4.3 4.3 0 1 0 5.2 5 7.2 7.2 0 0 0 6.7-1.8l7.1-7.1-3.2-3.2Z"/></svg>';
-
-	/**
-	 * The editor buttons (editors-xtd plugins) as a menu: a button with a page opens it in a dialog, the others run their script
-	 */
-	const addEditorButtons = (editor, buttons) => {
-		editor.ui.registry.addIcon('joomla', joomlaIcon);
-		editor.ui.registry.addMenuButton('jxtdbuttons', {
-			text: text('PLG_TINYMCE_LATEST_CMS_CONTENT', 'CMS Content'),
-			icon: 'joomla',
-			fetch: (callback) => {
-				callback(buttons.map((button) => ({
-					type: 'menuitem',
-					text: button.text,
-					onAction: () => {
-						if (button.url) {
-							openDialog = editor.windowManager.openUrl({
-								title: button.text,
-								url: button.url,
-								width: button.width || 800,
-								height: button.height || 500,
-								buttons: [{ type: 'cancel', text: 'Close' }],
-								onClose: () => {
-									openDialog = null;
-								},
-							});
-						}
-
-						if (button.onclick) {
-							// The editor buttons' own scripts, as plg_editors_tinymce runs them
-							new Function(button.onclick).call(editor.getElement()); // eslint-disable-line no-new-func
-						}
-					},
-				})));
-			},
-		});
 	};
 
 	/**
@@ -283,8 +233,6 @@
 			}
 
 			options.setup = (editor) => {
-				addEditorButtons(editor, joomla.buttons || []);
-
 				if (joomla.templates) {
 					addTemplates(editor, joomla.templates);
 				}
@@ -348,28 +296,6 @@
 
 	document.addEventListener('DOMContentLoaded', () => {
 		Joomla.JoomlaTinyMCELatest.setupEditors(document);
-
-		// Editor buttons' pages close their modal with these: close the dialog too
-		const modalClose = typeof window.jModalClose === 'function' ? window.jModalClose : null;
-
-		window.jModalClose = function jModalClose(...args) {
-			if (modalClose) {
-				modalClose.apply(this, args);
-			}
-
-			closeDialog();
-		};
-
-		window.SqueezeBox = window.SqueezeBox || {};
-		const squeezeBoxClose = typeof window.SqueezeBox.close === 'function' ? window.SqueezeBox.close : null;
-
-		window.SqueezeBox.close = function close(...args) {
-			if (squeezeBoxClose) {
-				squeezeBoxClose.apply(this, args);
-			}
-
-			closeDialog();
-		};
 
 		// Toggle editor
 		document.addEventListener('click', (event) => {

@@ -55,8 +55,6 @@ window.tinymce = window.tinymce || {
 		jtemplate: 'template',
 	};
 
-	const joomlaIcon = '<svg viewBox="0 0 32 32" width="20" height="20"><path d="M8.3 8.6c1-1 2.7-1 3.7 0l.3.3 3.1-3.2-.2-.2a7 7 0 0 0-6.6-1.9 4.3 4.3 0 1 0-4.9 4.8 7.3 7.3 0 0 0 1.8 7l7.1 7.2 3.2-3.2-7.1-7.1a2.6 2.6 0 0 1 0-3.7Zm23.7-4.3a4.3 4.3 0 0 0-8.5-.6 7.2 7.2 0 0 0-7 1.8l-7.1 7.1 3.1 3.2 7.2-7.1a2.6 2.6 0 0 1 3.7 3.7l-.3.3 3.2 3.1.2-.2a7 7 0 0 0 1.8-7 4.3 4.3 0 0 0 3.7-4.3Zm-3.7 19.2a7.2 7.2 0 0 0-1.9-6.7l-7.1-7.1-3.2 3.1 7.1 7.2a2.6 2.6 0 0 1-3.7 3.7l-.2-.3-3.2 3.2.3.2a7.2 7.2 0 0 0 7.1 1.8 4.3 4.3 0 1 0 4.8-5.1Zm-9.2-7-7.1 7.2a2.6 2.6 0 0 1-3.7-3.7l.2-.3-3.1-3.1-.3.2a7.2 7.2 0 0 0-1.8 6.8 4.3 4.3 0 1 0 5.2 5 7.2 7.2 0 0 0 6.7-1.8l7.1-7.1-3.2-3.2Z"/></svg>';
-
 	const translate = (string) => window.tinymce.strings[string] || string;
 
 	class TinyMCELatestBuilder {
@@ -105,10 +103,7 @@ window.tinymce = window.tinymce || {
 
 			content.className = 'tmb-item-content';
 
-			if (name === 'jxtdbuttons') {
-				content.innerHTML = joomlaIcon;
-				content.appendChild(document.createTextNode(` ${label}`));
-			} else if (isMenu || info.text || !icon) {
+			if (isMenu || info.text || !icon) {
 				content.textContent = info.text ? translate(info.text) : label;
 			} else {
 				content.innerHTML = icon;

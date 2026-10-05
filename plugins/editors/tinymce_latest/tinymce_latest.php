@@ -141,15 +141,19 @@ class PlgEditorTinymce_latest extends JPlugin
 		$textarea->content  = $content;
 		$textarea->readonly = !empty($params['readonly']);
 
+		// The editor buttons (editors-xtd plugins) below the editor, as with Joomla's other editors
+		$xtd = is_array($buttons) || $buttons === true
+			? JLayoutHelper::render('joomla.editors.buttons', $this->_subject->getButtons($id, $buttons, $asset, $author)) : '';
+
 		$editor = '<div class="js-editor-tinymce-latest">'
 			. JLayoutHelper::render('joomla.tinymce.textarea', $textarea)
+			. $xtd
 			. JLayoutHelper::render('plugins.editors.tinymce_latest.togglebutton', $id)
 			. '</div>';
 
-		// Per editor: its editor buttons and read-only state, by the field's name
-		if (empty($options['tinyMCE'][$fieldName]['joomla']['buttons']))
+		// Per editor: its read-only state, by the field's name
+		if (!isset($options['tinyMCE'][$fieldName]['joomla']['readonly']))
 		{
-			$options['tinyMCE'][$fieldName]['joomla']['buttons']  = $this->getEditorButtons($id, $buttons);
 			$options['tinyMCE'][$fieldName]['joomla']['readonly'] = !empty($params['readonly']);
 			$options['tinyMCE'][$fieldName]['joomlaMergeDefaults'] = true;
 
@@ -316,12 +320,8 @@ class PlgEditorTinymce_latest extends JPlugin
 			$toolbar = array_merge($toolbar, preg_split('/[\s,]+/', $customButton, -1, PREG_SPLIT_NO_EMPTY));
 		}
 
-		// The editor buttons' menu goes at the end unless the set places it
-		if (!in_array('jxtdbuttons', $toolbar, true))
-		{
-			$toolbar[] = '|';
-			$toolbar[] = 'jxtdbuttons';
-		}
+		// Sets saved when the editor buttons were a toolbar menu ("CMS Content") may still have it: they're below the editor now
+		$toolbar = array_values(array_diff($toolbar, array('jxtdbuttons')));
 
 		// Templates (TinyMCE dropped its template plugin; the Joomla one inserts the HTML files of the templates folder)
 		if (in_array('jtemplate', $toolbar, true))
@@ -350,7 +350,6 @@ class PlgEditorTinymce_latest extends JPlugin
 			JText::script('PLG_TINYMCE_LATEST_UPLOAD_FAILED');
 		}
 
-		JText::script('PLG_TINYMCE_LATEST_CMS_CONTENT');
 		JText::script('PLG_TINYMCE_LATEST_BUTTON_TOGGLE_EDITOR');
 
 		$joomla['baseURL'] = JUri::root(true) . '/' . self::MEDIA;
@@ -407,6 +406,8 @@ class PlgEditorTinymce_latest extends JPlugin
 
 			// Layout
 			'content_css'      => $contentCss,
+			// Large images and embeds stay within the editing area (no sideways scrolling); only in the editor, not on the site
+			'content_style'    => 'img, video { max-width: 100%; height: auto; } iframe { max-width: 100%; }',
 			'importcss_append' => true,
 			'height'           => $this->params->get('html_height', '550px') ?: '550px',
 			'width'            => $this->params->get('html_width', '') ?: null,
@@ -608,45 +609,6 @@ class PlgEditorTinymce_latest extends JPlugin
 	}
 
 	/**
-	 * The editor buttons (editors-xtd plugins), for the "CMS Content" menu: their text, and the page their modal opens
-	 * or the script they run.
-	 *
-	 * @param   string         $id       The editor's id
-	 * @param   boolean|array  $buttons  True, false or the buttons to leave out
-	 *
-	 * @return  array
-	 *
-	 * @since   3.17.0
-	 */
-	protected function getEditorButtons($id, $buttons)
-	{
-		$list = array();
-
-		foreach ((array) $this->_subject->getButtons($id, $buttons) as $button)
-		{
-			if (!$button || !$button->get('name'))
-			{
-				continue;
-			}
-
-			$link    = (string) $button->get('link');
-			$options = (string) (is_scalar($button->get('options')) ? $button->get('options') : '');
-			$width   = preg_match('/\bx\s*:\s*(\d+)/', $options, $match) ? (int) $match[1] : null;
-			$height  = preg_match('/\by\s*:\s*(\d+)/', $options, $match) ? (int) $match[1] : null;
-
-			$list[] = array(
-				'text'    => (string) $button->get('text'),
-				'url'     => $link !== '' && $link !== '#' ? JUri::base() . htmlspecialchars_decode($link) : null,
-				'onclick' => $button->get('onclick') ? (string) $button->get('onclick') : null,
-				'width'   => $width,
-				'height'  => $height,
-			);
-		}
-
-		return $list;
-	}
-
-	/**
 	 * The global text filters for the user's groups (as in plg_editors_tinymce).
 	 *
 	 * @return  JFilterInput|false  False when the user's content isn't filtered
@@ -812,7 +774,6 @@ class PlgEditorTinymce_latest extends JPlugin
 			'insertdatetime' => array('label' => 'Insert date/time', 'plugin' => 'insertdatetime'),
 			'help'           => array('label' => 'Help', 'plugin' => 'help'),
 			'jtemplate'      => array('label' => JText::_('PLG_TINYMCE_LATEST_TOOLBAR_BUTTON_TEMPLATE')),
-			'jxtdbuttons'    => array('label' => JText::_('PLG_TINYMCE_LATEST_CMS_CONTENT')),
 		);
 	}
 
@@ -832,7 +793,7 @@ class PlgEditorTinymce_latest extends JPlugin
 					'bold', 'underline', 'strikethrough', '|',
 					'undo', 'redo', '|',
 					'bullist', 'numlist', '|',
-					'pastetext', 'jxtdbuttons',
+					'pastetext',
 				),
 				'toolbar2' => array(),
 			),
@@ -848,7 +809,7 @@ class PlgEditorTinymce_latest extends JPlugin
 					'link', 'unlink', 'anchor', 'code', '|',
 					'hr', 'table', '|',
 					'subscript', 'superscript', '|',
-					'charmap', 'pastetext', 'preview', 'jxtdbuttons',
+					'charmap', 'pastetext', 'preview',
 				),
 				'toolbar2' => array(),
 			),
@@ -873,7 +834,7 @@ class PlgEditorTinymce_latest extends JPlugin
 					'charmap', 'emoticons', 'media', 'hr', 'ltr', 'rtl', '|',
 					'cut', 'copy', 'paste', 'pastetext', '|',
 					'visualchars', 'visualblocks', 'nonbreaking', 'blockquote', 'jtemplate', '|',
-					'print', 'preview', 'codesample', 'insertdatetime', 'removeformat', 'jxtdbuttons',
+					'print', 'preview', 'codesample', 'insertdatetime', 'removeformat',
 				),
 				'toolbar2' => array(),
 			),
