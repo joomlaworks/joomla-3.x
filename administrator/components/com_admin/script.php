@@ -248,7 +248,8 @@ class JoomlaInstallerScript
 	 */
 	protected function updateDatabase()
 	{
-		if (JFactory::getDbo()->getServerType() === 'mysql')
+		// The SQLite driver runs MySQL SQL, but storage engines don't exist there
+		if (JFactory::getDbo()->getServerType() === 'mysql' && !(JFactory::getDbo() instanceof JDatabaseDriverMysqlonsqlite))
 		{
 			$this->updateDatabaseMysql();
 		}
@@ -3562,6 +3563,14 @@ class JoomlaInstallerScript
 
 		if ($serverType != 'mysql')
 		{
+			return;
+		}
+
+		// SQLite stores all text as UTF-8, so there is nothing to convert; record it as done, for Extensions: Database
+		if ($db instanceof JDatabaseDriverMysqlonsqlite)
+		{
+			$db->setQuery('UPDATE ' . $db->quoteName('#__utf8_conversion') . ' SET ' . $db->quoteName('converted') . ' = 5')->execute();
+
 			return;
 		}
 

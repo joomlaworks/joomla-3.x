@@ -1,0 +1,391 @@
+<?php
+/**
+ * @package     Joomla.Platform
+ * @subpackage  Database
+ *
+ * @copyright   (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
+ */
+
+defined('JPATH_PLATFORM') or die;
+
+/**
+ * SQLite database driver which runs MySQL SQL, so core and extensions work unchanged, through the "MySQL on SQLite"
+ * emulation layer (libraries/vendor/wordpress/mysql-on-sqlite). It reports itself as a MySQL server: code chooses its
+ * MySQL queries and SQL files, and the layer translates them.
+ *
+ * The "database" option is the path of the SQLite file; relative paths are relative to the site's root folder.
+ *
+ * @since  3.17.0
+ */
+class JDatabaseDriverMysqlonsqlite extends JDatabaseDriverPdomysql
+{
+	/**
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	public $name = 'mysqlonsqlite';
+
+	/**
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	public $serverType = 'mysql';
+
+	/**
+	 * The collation the layer gives text columns, which compares like MySQL's utf8mb4_unicode_ci
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	const COLLATION = 'utf8mb4_unicode_ci';
+
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $options  List of options used to configure the connection
+	 *
+	 * @since   3.17.0
+	 */
+	public function __construct($options)
+	{
+		// The SQLite file is created only when asked to, e.g. by the installer; a wrong path must not give a site an empty database
+		$options['create'] = !empty($options['create']);
+
+		parent::__construct($options);
+	}
+
+	/**
+	 * Test to see if the driver can be used: PHP 7.4 or newer, the PDO SQLite extension and SQLite 3.37.0 or newer.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public static function isSupported()
+	{
+		static $supported = null;
+
+		if ($supported === null)
+		{
+			$supported = false;
+
+			if (PHP_VERSION_ID >= 70400 && class_exists('PDO') && in_array('sqlite', PDO::getAvailableDrivers(), true))
+			{
+				try
+				{
+					$pdo       = new PDO('sqlite::memory:');
+					$supported = version_compare($pdo->query('SELECT sqlite_version()')->fetchColumn(), '3.37.0', '>=');
+				}
+				catch (Exception $e)
+				{
+					$supported = false;
+				}
+			}
+		}
+
+		return $supported;
+	}
+
+	/**
+	 * Get the absolute path of the SQLite file.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public function getDatabasePath()
+	{
+		$path = trim((string) $this->options['database']);
+
+		if ($path !== '' && !preg_match('#^([a-z]:)?[/\\\\]#i', $path) && defined('JPATH_ROOT'))
+		{
+			$path = JPATH_ROOT . '/' . $path;
+		}
+
+		return $path;
+	}
+
+	/**
+	 * Block web access to the folder of a database file inside the site, with .htaccess (Apache) and web.config (IIS) rules.
+	 * Servers such as nginx ignore these, so database files there should also have a name nobody can guess.
+	 *
+	 * @param   string  $folder  The folder
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	public static function protectFolder($folder)
+	{
+		$files = array(
+			'.htaccess'  => "# Blocks web access to the database in this folder\n<IfModule mod_authz_core.c>\n\tRequire all denied\n</IfModule>\n"
+				. "<IfModule !mod_authz_core.c>\n\tOrder deny,allow\n\tDeny from all\n</IfModule>\n",
+			'web.config' => "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<configuration>\n\t<system.webServer>\n\t\t<security>\n"
+				. "\t\t\t<requestFiltering>\n\t\t\t\t<fileExtensions allowUnlisted=\"false\" />\n\t\t\t</requestFiltering>\n"
+				. "\t\t</security>\n\t</system.webServer>\n</configuration>\n",
+			'index.html' => '<!DOCTYPE html><title></title>',
+		);
+
+		foreach ($files as $name => $content)
+		{
+			if (!is_file($folder . '/' . $name))
+			{
+				file_put_contents($folder . '/' . $name, $content);
+			}
+		}
+	}
+
+	/**
+	 * Open the SQLite file.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 * @throws  JDatabaseExceptionConnecting
+	 */
+	public function connect()
+	{
+		if ($this->connection)
+		{
+			return;
+		}
+
+		if (!static::isSupported())
+		{
+			throw new JDatabaseExceptionUnsupported('The SQLite database driver needs PHP 7.4 or newer and the PDO SQLite extension with SQLite 3.37.0 or newer.');
+		}
+
+		$path = $this->getDatabasePath();
+
+		if ($path === '' || (!$this->options['create'] && !is_file($path)))
+		{
+			throw new JDatabaseExceptionConnecting(sprintf('The SQLite database file "%s" does not exist.', $path), 1);
+		}
+
+		if (!class_exists('WP_MySQL_On_SQLite', false))
+		{
+			require_once JPATH_PLATFORM . '/vendor/wordpress/mysql-on-sqlite/src/load.php';
+		}
+
+		try
+		{
+			$this->connection = new WP_MySQL_On_SQLite('mysql-on-sqlite:path=' . str_replace(';', ';;', $path) . ';dbname=joomla');
+			$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->connection->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, true);
+
+			// Joomla's MySQL drivers turn strict mode off: Joomla 3 stores zero dates, which MySQL 8's defaults reject
+			$this->connection->query("SET @@SESSION.sql_mode = ''");
+
+			JDatabaseMysqlonsqliteFunctions::register($this->connection);
+		}
+		catch (Exception $e)
+		{
+			$this->connection = null;
+
+			throw new JDatabaseExceptionConnecting('Could not open the SQLite database: ' . $e->getMessage(), 2, $e);
+		}
+
+		$this->utf8mb4 = true;
+	}
+
+	/**
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	public function disconnect()
+	{
+		$this->freeResult();
+		$this->connection = null;
+	}
+
+	/**
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function connected()
+	{
+		return is_object($this->connection);
+	}
+
+	/**
+	 * There is one database, the file.
+	 *
+	 * @param   string  $database  Ignored
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function select($database)
+	{
+		$this->connect();
+
+		return true;
+	}
+
+	/**
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function setUtf()
+	{
+		return true;
+	}
+
+	/**
+	 * The layer doesn't report the collation variables, so give the one it uses.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public function getCollation()
+	{
+		return static::COLLATION;
+	}
+
+	/**
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public function getConnectionCollation()
+	{
+		return static::COLLATION;
+	}
+
+	/**
+	 * Set the query to run. The layer has no prepared statements, so the query is only stored; execute() runs it.
+	 *
+	 * @param   mixed    $query          The SQL statement to set either as a JDatabaseQuery object or a string.
+	 * @param   integer  $offset         The affected row offset to set.
+	 * @param   integer  $limit          The maximum affected rows to set.
+	 * @param   array    $driverOptions  Ignored
+	 *
+	 * @return  JDatabaseDriver  This object to support method chaining.
+	 *
+	 * @since   3.17.0
+	 */
+	public function setQuery($query, $offset = null, $limit = null, $driverOptions = array())
+	{
+		$this->connect();
+		$this->freeResult();
+
+		if (is_string($query))
+		{
+			// Allows bound variables in a direct query
+			$query = $this->getQuery(true)->setQuery($query);
+		}
+
+		if ($query instanceof JDatabaseQueryLimitable && !is_null($offset) && !is_null($limit))
+		{
+			$query = $query->processLimit($query, $limit, $offset);
+		}
+
+		return JDatabaseDriver::setQuery($query, $offset, $limit);
+	}
+
+	/**
+	 * Execute the SQL statement.
+	 *
+	 * @return  mixed  A database cursor resource on success, boolean false on failure.
+	 *
+	 * @since   3.17.0
+	 * @throws  RuntimeException
+	 */
+	public function execute()
+	{
+		$this->connect();
+
+		$sql = $this->replacePrefix((string) $this->sql);
+
+		// The layer resets its last insert ID when a statement starts, so keep the one LAST_INSERT_ID() must return
+		if (stripos($sql, 'last_insert_id') !== false)
+		{
+			JDatabaseMysqlonsqliteFunctions::$lastInsertId = (int) $this->connection->lastInsertId();
+		}
+
+		$this->count++;
+		$this->errorNum = 0;
+		$this->errorMsg = '';
+
+		if ($this->debug)
+		{
+			$this->log[] = $sql;
+
+			JLog::add($sql, JLog::DEBUG, 'databasequery');
+
+			$this->timings[] = microtime(true);
+		}
+
+		try
+		{
+			$this->prepared = $this->connection->query($sql);
+			$this->executed = true;
+		}
+		catch (Exception $e)
+		{
+			$this->executed = false;
+			$this->errorNum = (int) $e->getCode();
+			$this->errorMsg = $e->getMessage();
+
+			JLog::add(JText::sprintf('JLIB_DATABASE_QUERY_FAILED', $this->errorNum, $this->errorMsg), JLog::ERROR, 'database-error');
+
+			throw new JDatabaseExceptionExecuting($sql, $this->errorMsg, $this->errorNum, $e);
+		}
+
+		if ($this->debug)
+		{
+			$this->timings[] = microtime(true);
+			$this->callStacks[] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		}
+
+		return $this->prepared;
+	}
+
+	/**
+	 * Get the number of rows affected by the last INSERT, UPDATE, REPLACE or DELETE.
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.17.0
+	 */
+	public function getAffectedRows()
+	{
+		$this->connect();
+
+		return $this->prepared instanceof PDOStatement ? $this->prepared->rowCount() : 0;
+	}
+
+	/**
+	 * Get the version of the emulated MySQL server, e.g. "8.0.38-mysql-on-sqlite-3.0.2".
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public function getVersion()
+	{
+		$this->connect();
+
+		return (string) $this->connection->query('SELECT VERSION()')->fetchColumn();
+	}
+
+	/**
+	 * Get the version of the SQLite library.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public function getSqliteVersion()
+	{
+		$this->connect();
+
+		return $this->connection->get_sqlite_version();
+	}
+}

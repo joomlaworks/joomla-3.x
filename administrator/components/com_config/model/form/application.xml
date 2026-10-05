@@ -45,9 +45,9 @@
     <fieldset name="memcache" label="COM_CONFIG_MEMCACHE_SETTINGS_LABEL">
     </fieldset>
     <fieldset name="database" label="CONFIG_DATABASE_SETTINGS_LABEL">
-        <field name="dbtype" type="databaseconnection" label="COM_CONFIG_FIELD_DATABASE_TYPE_LABEL" description="COM_CONFIG_FIELD_DATABASE_TYPE_DESC" supported="mysql,mysqli,pgsql,pdomysql,postgresql,sqlsrv,sqlazure" filter="string" />
+        <field name="dbtype" type="databaseconnection" label="COM_CONFIG_FIELD_DATABASE_TYPE_LABEL" description="COM_CONFIG_FIELD_DATABASE_TYPE_DESC" supported="mysql,mysqli,pgsql,pdomysql,postgresql,sqlsrv,sqlazure,mysqlonsqlite" filter="string" />
         <field name="host" type="text" label="COM_CONFIG_FIELD_DATABASE_HOST_LABEL" description="COM_CONFIG_FIELD_DATABASE_HOST_DESC" required="true" filter="string" size="30" />
-        <field name="user" type="text" label="COM_CONFIG_FIELD_DATABASE_USERNAME_LABEL" description="COM_CONFIG_FIELD_DATABASE_USERNAME_DESC" required="true" filter="string" size="30" />
+        <field name="user" type="text" label="COM_CONFIG_FIELD_DATABASE_USERNAME_LABEL" description="COM_CONFIG_FIELD_DATABASE_USERNAME_DESC" filter="string" size="30" />
         <field name="password" type="password" label="COM_CONFIG_FIELD_DATABASE_PASSWORD_LABEL" description="COM_CONFIG_FIELD_DATABASE_PASSWORD_DESC" filter="raw" autocomplete="off" size="30" lock="true" />
         <field name="db" type="text" label="COM_CONFIG_FIELD_DATABASE_NAME_LABEL" description="COM_CONFIG_FIELD_DATABASE_NAME_DESC" required="true" filter="string" size="30" />
         <field name="dbprefix" type="text" label="COM_CONFIG_FIELD_DATABASE_PREFIX_LABEL" description="COM_CONFIG_FIELD_DATABASE_PREFIX_DESC" default="jos_" filter="string" size="10" />

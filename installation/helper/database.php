@@ -45,6 +45,9 @@ abstract class InstallationHelperDatabase
 				'database' => $database,
 				'prefix' => $prefix,
 				'select' => $select,
+
+				// The SQLite driver only creates its database file when asked to
+				'create' => $driver === 'mysqlonsqlite',
 			);
 
 			// Get a database object.

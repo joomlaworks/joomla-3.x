@@ -116,8 +116,11 @@ class InstallationModelDatabase extends JModelBase
 			return false;
 		}
 
+		// The SQLite driver uses neither a server nor a user; its "database name" is the database file
+		$isSqlite = $options->db_type === 'mysqlonsqlite';
+
 		// Ensure that a hostname and user name were input.
-		if (empty($options->db_host) || empty($options->db_user))
+		if (!$isSqlite && (empty($options->db_host) || empty($options->db_user)))
 		{
 			JFactory::getApplication()->enqueueMessage(JText::_('INSTL_DATABASE_INVALID_DB_DETAILS'), 'warning');
 
@@ -141,7 +144,7 @@ class InstallationModelDatabase extends JModelBase
 		}
 
 		// Validate length of database name.
-		if (strlen($options->db_name) > 64)
+		if (!$isSqlite && strlen($options->db_name) > 64)
 		{
 			JFactory::getApplication()->enqueueMessage(JText::_('INSTL_DATABASE_NAME_TOO_LONG'), 'warning');
 
@@ -156,7 +159,12 @@ class InstallationModelDatabase extends JModelBase
 			return false;
 		}
 
-		$shouldCheckLocalhost = getenv('JOOMLA_INSTALLATION_DISABLE_LOCALHOST_CHECK') !== '1';
+		if ($isSqlite && !$this->prepareSqliteFolder($options->db_name))
+		{
+			return false;
+		}
+
+		$shouldCheckLocalhost = !$isSqlite && getenv('JOOMLA_INSTALLATION_DISABLE_LOCALHOST_CHECK') !== '1';
 
 		// Per default allowed DB hosts: localhost / 127.0.0.1 / ::1 (optionally with port)
 		$localhost = '/^(((localhost|127\.0\.0\.1|\[\:\:1\])(\:[1-9]{1}[0-9]{0,4})?)|(\:\:1))$/';
@@ -280,6 +288,65 @@ class InstallationModelDatabase extends JModelBase
 
 			return false;
 		}
+	}
+
+	/**
+	 * Check the folder of an SQLite database file, creating it if needed. A folder inside the site gets rules which block
+	 * web access to it; the database file must never be downloadable.
+	 *
+	 * @param   string  $path  The database file, absolute or relative to the site's root folder
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	protected function prepareSqliteFolder($path)
+	{
+		$app  = JFactory::getApplication();
+		$path = trim((string) $path);
+
+		if ($path === '' || substr($path, -1) === '/' || substr($path, -1) === '\\')
+		{
+			$app->enqueueMessage(JText::_('INSTL_DATABASE_SQLITE_FILE_EMPTY'), 'warning');
+
+			return false;
+		}
+
+		$absolute = preg_match('#^([a-z]:)?[/\\\\]#i', $path) ? $path : JPATH_ROOT . '/' . $path;
+		$folder   = dirname($absolute);
+
+		if (!is_dir($folder) && !JFolder::create($folder))
+		{
+			$app->enqueueMessage(JText::sprintf('INSTL_DATABASE_SQLITE_FOLDER_NOT_CREATED', $folder), 'warning');
+
+			return false;
+		}
+
+		// SQLite also writes temporary files next to the database
+		if (!is_writable($folder) || (is_file($absolute) && !is_writable($absolute)))
+		{
+			$app->enqueueMessage(JText::sprintf('INSTL_DATABASE_SQLITE_FOLDER_NOT_WRITABLE', $folder), 'warning');
+
+			return false;
+		}
+
+		$root     = realpath(JPATH_ROOT);
+		$realPath = realpath($folder);
+
+		// Inside the site, the file needs its own folder, whose web access can be blocked
+		if ($root !== false && $realPath !== false && strpos($realPath . DIRECTORY_SEPARATOR, $root . DIRECTORY_SEPARATOR) === 0)
+		{
+			if ($realPath === $root)
+			{
+				$app->enqueueMessage(JText::_('INSTL_DATABASE_SQLITE_IN_SITE_ROOT'), 'warning');
+
+				return false;
+			}
+
+			JDatabaseDriverMysqlonsqlite::protectFolder($realPath);
+		}
+
+		return true;
 	}
 
 	/**

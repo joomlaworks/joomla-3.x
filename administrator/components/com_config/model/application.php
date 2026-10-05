@@ -126,6 +126,14 @@ class ConfigModelApplication extends ConfigModelForm
 			}
 		}
 
+		// Switching between SQLite and a database server would leave the site's data behind, in the old database
+		if (($config->get('dbtype') === 'mysqlonsqlite') !== ($data['dbtype'] === 'mysqlonsqlite'))
+		{
+			$app->enqueueMessage(JText::_('COM_CONFIG_ERROR_DATABASE_SQLITE_SWITCH'), 'error');
+
+			return false;
+		}
+
 		// Check that we aren't setting wrong database configuration
 		$options = array(
 			'driver'   => $data['dbtype'],

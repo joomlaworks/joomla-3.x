@@ -35,6 +35,7 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 
 ## Version 3.17 - unreleased [pending]
 Summary of changes:
+- New SQLite database driver (experimental), and a command to move existing sites to it and back
 - New command line interface (`cli/joomla.php`) with the commands of the Joomla 4+ CLI and JSON output for scripts and AI agents
 - Fixed two long-standing issues with the "MySQL (PDO)" database driver
 - More PHP 8.5 deprecation fixes
@@ -52,9 +53,11 @@ Summary of changes:
 - Fixed extension updates losing their download key when the package URL already had a query string
 - Update notification emails for a new Joomla version are now sent once a day, at a time you choose in the plugin's options (10:00 by default); they used to go out every 6 hours until the site was updated
 - Fixed a fatal error on PHP 8 when the "File" cache handler can't create a cache folder
+- Fixed Global Configuration requiring a database user name
 - Fixed exporting and importing database tables with Joomla's database exporter/importer (invalid XML for some column defaults, and a fatal error importing new tables with the "MySQL (PDO)" driver)
 
 **New features:**
+- New SQLite database driver (experimental): the whole site in one file, with no database server, for small to medium sites, development and testing. Core and extensions work unchanged, as it runs their MySQL SQL. Available on PHP 7.4+ in the installer, and for existing sites through the new `database:convert` command line command (which also moves a site back to MySQL)
 - New command line interface, `cli/joomla.php`, using the same command names and options as Joomla 4 and later to update Joomla and manage the configuration, users, extensions, database, cache, sessions and Smart Search (e.g. `php cli/joomla.php core:update`, `database:export`, `user:add`, `extension:install`, `config:set`, `site:down`). Every command can return JSON (`--format=json`), so scripts and AI agents can work with the site directly. Extensions can add their own commands. The existing scripts in `cli/` still work as before (cron jobs need no changes), but now run the new commands.
 
 ## Version 3.16 - released October 3rd, 2026
@@ -224,6 +227,9 @@ Switching to this distribution will also allow you (or take you closer) to upgra
 | MariaDB | 5.5 | Tested and actively supported |
 | PostgreSQL | 9.0 | Inherited from stock Joomla 3.x, not tested by this project |
 | Microsoft SQL Server / Azure SQL | 2008 R2 (10.50.1600.1) | Inherited from stock Joomla 3.x, not tested by this project |
+| SQLite (experimental) | 3.37.0, with PHP 7.4+ | New in 3.17: runs MySQL SQL through an emulation layer, so core and extensions work unchanged; tested with core and common extensions |
+
+SQLite keeps the whole site in one file, with no database server, which suits small to medium sites, development and testing; it handles one write at a time, so busy sites should stay on MySQL/MariaDB. Choose it in the installer, or move an existing site with `php cli/joomla.php database:convert --to=sqlite` (and back with `--to=mysqli`). Keep the database file out of the web's reach: outside the web root, or in a folder of its own, which the installer protects for Apache and IIS (with nginx, keep the file's random name too).
 
 Database support in Joomla 3.x was always centred on MySQL/MariaDB. PostgreSQL and SQL Server work with the core, but several core and third-party extensions only ship MySQL/MariaDB database scripts, so expect rough edges there. The installer enforces these minimum versions. Once a site runs 3.16 or newer, it won't be offered further updates while its database is below these versions, and sees a notice in Joomla Update instead.
 
