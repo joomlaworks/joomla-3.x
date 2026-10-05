@@ -1,9 +1,9 @@
-"""Imports the News content (content.json) into a site through the CLI: tags, categories and articles, with the images on
-the project's GitHub Pages. Then hits and two archived articles (for the archive view)."""
+"""Imports the News content (content.json) into a site through the CLI: tags, categories and articles, with the images of
+images/sampledata/news (bundled). Then hits and two archived articles (for the archive view)."""
 import json, os, re, subprocess, sys
 PHP = os.environ.get('PHP', 'php')
 D, Q = sys.argv[1], sys.argv[2]
-BASE = 'https://joomlaworks.github.io/joomla-3.x/sample-data/news/'
+BASE = 'images/sampledata/news/'
 HERE = __file__.rsplit('/', 1)[0]
 
 def cli(*args, stdin=None):
@@ -20,7 +20,7 @@ def sql(*queries):
     return subprocess.run([PHP, Q, D, *queries], cwd=D, capture_output=True, text=True).stdout
 
 def img(path):
-    # images/news/politics/politics-01.jpg -> the hosted WebP
+    # images/news/politics/politics-01.jpg -> the bundled WebP
     return re.sub(r'images/news/([a-z]+/[a-z]+-\d+)\.jpg', lambda m: BASE + m.group(1) + '.webp', path)
 
 c = json.load(open(HERE + '/content.json'))

@@ -27,8 +27,7 @@ and posts (`media.json`) are real and were checked to exist and allow embedding 
 
 ## The images
 
-The images are hosted next to this folder (`docs/sample-data/news/<section>/<section>-NN.webp`, published by GitHub Pages at
-`https://joomlaworks.github.io/joomla-3.x/sample-data/news/`), so the release package doesn't carry them. They're all CC0 (public
+The images are bundled, in `images/sampledata/news/<section>/<section>-NN.webp` (about 11 MB). They're all CC0 (public
 domain), found through Openverse (`fetch_images.py`, then `replace_images.py` for the ones showing real people, events, paintings or
 archive photos), cropped to 16:9 at 1280 × 720 and converted to WebP (`convert_images.py`). `../CREDITS.md` and `../credits.json`
 credit each one.

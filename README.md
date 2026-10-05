@@ -39,7 +39,7 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 ## Version 3.17 - unreleased [pending]
 Summary of changes:
 - New default template for new sites, **Hammond**: a modern, light news and magazine design with a frontpage made of modules, built with plain CSS and JavaScript
-- New **News** sample data set, a complete news site for Hammond (its images are hosted online, not in the package); the installer now offers just News and Blog, and both can also be added later from the Control Panel
+- New **News** sample data set, a complete news site for Hammond, with its images; the installer now offers just News and Blog, and both can also be added later from the Control Panel
 - TinyMCE 8, the current TinyMCE, as a new editor ("Editor - TinyMCE", the default for new sites); TinyMCE 4 stays as "Editor - TinyMCE (legacy)", and existing sites keep it until they switch in Global Configuration
 - New command line interface (`cli/joomla.php`) with the commands of the Joomla 4+ CLI and JSON output for scripts and AI agents, plus content management (articles, categories, modules, menus), dry runs, a health check and log viewers
 - AI assistants (e.g. Claude) can work with a site through the built-in MCP server, read-only unless you allow changes (see [AI Assistants (MCP)](#ai-assistants-mcp))
@@ -94,7 +94,7 @@ Summary of changes:
 - The "Joomla! Statistics" plugin and its request to send statistics are off on new and updated sites (joomla.org's statistics don't cover this distribution)
 - A modernised installer for new sites: new app-style design with a sidebar of steps (with dark mode and right-to-left support), well-formed XHTML-style HTML5, plain HTML/CSS/JavaScript without Bootstrap, jQuery or any other file from outside the `installation` folder, and the same steps as before
 - The installer removes the `installation` folder by itself when you continue to your site or its administrator (only after installing, and only its own folder), and no longer has FTP options
-- The installer offers two sample data sets, News and Blog; Brochure, Default and Learn are removed
+- The installer offers two sample data sets, News and Blog; Brochure, Default and Learn (and the Learn set's images) are removed
 - The "Sample Data" plugin (formerly "Sample Data - Blog") and Control Panel module install either set, News first, with a button per set
 
 **New features:**

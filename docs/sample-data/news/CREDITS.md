@@ -1,7 +1,7 @@
 # News sample data: image credits
 
-The images of the "News" sample data set (installed with Joomla 3.x UTD, or from the Sample Data module) are hosted here, so the
-release package doesn't carry them. All of them are dedicated to the public domain under
+The images of the "News" sample data set (installed with Joomla 3.x UTD, or from the Sample Data module), bundled in
+`images/sampledata/news/` (the paths below are relative to it). All of them are dedicated to the public domain under
 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/): free to use, change and distribute, without attribution. They're
 credited anyway. Each one was cropped to 16:9 (1280 × 720) and saved as WebP. They were found through [Openverse](https://openverse.org/).
 

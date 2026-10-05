@@ -93,7 +93,7 @@ foreach ($nullDates as $dialect => $nullDate)
 	$q   = $dialect === 'mysql' ? '`' : '"';
 	$out = "--\n-- IMPORTANT - THIS FILE MUST BE SAVED WITH UTF-8 ENCODING ONLY. BEWARE IF EDITING!\n--\n"
 		. "-- The News sample data: the Hammond template's news site. Built from a fresh install with the command line (articles,\n"
-		. "-- categories, tags, menus and modules), its images are hosted on the project's site. The installer moves its dates\n"
+		. "-- categories, tags, menus and modules), with its images in images/sampledata/news. The installer moves its dates\n"
 		. "-- forward, keeping the time between them.\n--\n\n";
 	if ($dialect === 'mysql')
 	{

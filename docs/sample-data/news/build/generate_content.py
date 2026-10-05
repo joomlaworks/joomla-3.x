@@ -5,7 +5,7 @@ import json, random, datetime, html, sys
 
 random.seed(20261005)
 MEDIA = json.load(open('media.json'))
-IMG_BASE = sys.argv[1] if len(sys.argv) > 1 else 'images/news'   # import_news.py turns images/news/... into the hosted WebP files
+IMG_BASE = sys.argv[1] if len(sys.argv) > 1 else 'images/news'   # import_news.py turns images/news/... into the bundled WebP files
 
 CATS = [
  ('politics', 'Politics', 'Parliament, government and the people who run them.'),
