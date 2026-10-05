@@ -819,6 +819,7 @@ class JoomlaInstallerScript
 		'plugin:0:system:littlewaf',
 		'plugin:0:system:p3p',
 		'plugin:0:system:privacyconsent',
+		'plugin:0:system:stats',
 		'plugin:0:twofactorauth:totp',
 		'plugin:0:twofactorauth:yubikey',
 		'plugin:0:user:contactcreator',

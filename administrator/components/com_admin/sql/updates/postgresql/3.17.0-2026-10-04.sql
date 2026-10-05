@@ -33,3 +33,7 @@ WHERE "type" = 'language' AND "element" = 'en-GB' AND "package_id" = 0;
 -- The installer creates the Super User with a random ID, which PostgreSQL doesn't move the users' ID sequence past:
 -- creating the user whose turn reaches that ID then failed with a duplicate key. Only ever moves the sequence forward.
 SELECT setval('#__users_id_seq', MAX("id")) FROM "#__users" HAVING MAX("id") >= (SELECT "last_value" FROM "#__users_id_seq");
+
+-- "System - Joomla! Statistics" stays installed but off: joomla.org's statistics don't cover this distribution. Runs on every
+-- update and reinstall (runDataMigrations()), as asked by the maintainer.
+UPDATE "#__extensions" SET "enabled" = 0 WHERE "type" = 'plugin' AND "folder" = 'system' AND "element" = 'stats' AND "enabled" = 1;

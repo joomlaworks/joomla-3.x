@@ -31,3 +31,7 @@ UPDATE `#__extensions` AS `e1`
 INNER JOIN (SELECT `extension_id` FROM `#__extensions` WHERE `type` = 'package' AND `element` = 'pkg_en-GB') AS `e2`
 SET `e1`.`package_id` = `e2`.`extension_id`
 WHERE `e1`.`type` = 'language' AND `e1`.`element` = 'en-GB' AND `e1`.`package_id` = 0;
+
+-- "System - Joomla! Statistics" stays installed but off: joomla.org's statistics don't cover this distribution. Runs on every
+-- update and reinstall (runDataMigrations()), as asked by the maintainer.
+UPDATE `#__extensions` SET `enabled` = 0 WHERE `type` = 'plugin' AND `folder` = 'system' AND `element` = 'stats' AND `enabled` = 1;

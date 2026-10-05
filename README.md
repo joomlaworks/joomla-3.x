@@ -86,6 +86,7 @@ Summary of changes:
 - The command line now shows the messages of older code (e.g. why a category can't be deleted), and a broken command file no longer stops the other commands
 
 **Improvements:**
+- The "Joomla! Statistics" plugin and its request to send statistics are off on new and updated sites (joomla.org's statistics don't cover this distribution)
 - A modernised installer for new sites: new app-style design with a sidebar of steps (with dark mode and right-to-left support), well-formed XHTML-style HTML5, plain HTML/CSS/JavaScript without Bootstrap, jQuery or any other file from outside the `installation` folder, and the same steps as before
 - The installer removes the `installation` folder by itself when you continue to your site or its administrator (only after installing, and only its own folder), and no longer has FTP options
 
