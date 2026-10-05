@@ -1129,7 +1129,9 @@ class ComponentAdapter extends InstallerAdapter
 			->from('#__menu')
 			->where($db->quoteName('client_id') . ' = 1')
 			->where($db->quoteName('menutype') . ' = ' . $db->q('main'))
-			->where($db->quoteName('component_id') . ' = ' . (int) $id);
+			->where($db->quoteName('component_id') . ' = ' . (int) $id)
+			// Children first: deleting a parent first moves its children up a level, where their alias can clash (e.g. "Categories")
+			->order($db->quoteName('lft') . ' DESC');
 
 		$db->setQuery($query);
 

@@ -73,6 +73,12 @@ class JFormFieldDatabaseConnection extends JFormFieldList
 			}
 		}
 
+		// Alphabetical, by the name shown
+		if (!empty($options))
+		{
+			natcasesort($options);
+		}
+
 		// This will come into play if an application is installed that requires
 		// a database that is not available on the server.
 		if (empty($options))

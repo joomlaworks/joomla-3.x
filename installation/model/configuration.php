@@ -332,6 +332,22 @@ class InstallationModelConfiguration extends JModelBase
 			return false;
 		}
 
+		// PostgreSQL doesn't move the ID sequence past an ID given explicitly: creating the user whose turn reaches it would fail
+		if ($db->getServerType() === 'postgresql')
+		{
+			try
+			{
+				$db->setQuery('SELECT setval(\'#__users_id_seq\', MAX("id")) FROM "#__users" HAVING MAX("id") >= (SELECT "last_value" FROM "#__users_id_seq")')
+					->execute();
+			}
+			catch (RuntimeException $e)
+			{
+				JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
+		}
+
 		// Map the super admin to the Super Admin Group
 		$query->clear()
 			->select($db->quoteName('user_id'))

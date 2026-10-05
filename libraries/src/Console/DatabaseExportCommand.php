@@ -266,6 +266,7 @@ class DatabaseExportCommand extends AbstractCommand
 		$db      = Factory::getDbo();
 		$columns = $db->getTableColumns($table, false);
 		$mysql   = $db->getServerType() === 'mysql';
+		$pgsql   = $db->getServerType() === 'postgresql';
 		$binary  = array();
 		$primary = array();
 		$select  = array();
@@ -302,11 +303,19 @@ class DatabaseExportCommand extends AbstractCommand
 
 			ksort($primary);
 		}
+		elseif ($pgsql)
+		{
+			$primary = $db->setQuery(
+				'SELECT a.attname FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)'
+				. ' WHERE i.indisprimary AND i.indrelid = ' . $db->quote($db->quoteName($table)) . '::regclass ORDER BY a.attnum'
+			)->loadColumn();
+		}
 
 		$count  = 0;
 		$offset = 0;
 		$last   = null;
-		$single = count($primary) === 1 && preg_match('/int/i', $columns[reset($primary)]->Type);
+		$first  = $primary ? $columns[reset($primary)] : null;
+		$single = count($primary) === 1 && preg_match('/int/i', isset($first->Type) ? $first->Type : (isset($first->type) ? $first->type : ''));
 
 		do
 		{
@@ -349,6 +358,11 @@ class DatabaseExportCommand extends AbstractCommand
 
 				foreach ($row as $name => $value)
 				{
+					if ($pgsql)
+					{
+						$value = $this->normalisePostgresqlValue($value, in_array($name, $binary, true));
+					}
+
 					fwrite($handle, $this->field($name, $value, in_array($name, $binary, true)));
 				}
 
@@ -372,6 +386,36 @@ class DatabaseExportCommand extends AbstractCommand
 		}
 
 		return $count;
+	}
+
+	/**
+	 * PostgreSQL returns bytea as a stream (PDO) or in its hex notation (pgsql extension), and booleans as PHP booleans (PDO).
+	 *
+	 * @param   mixed    $value   The value
+	 * @param   boolean  $binary  Whether the column holds binary data
+	 *
+	 * @return  string|null
+	 *
+	 * @since   3.17.0
+	 */
+	protected function normalisePostgresqlValue($value, $binary)
+	{
+		if (is_resource($value))
+		{
+			return stream_get_contents($value);
+		}
+
+		if (is_bool($value))
+		{
+			return $value ? '1' : '0';
+		}
+
+		if ($binary && is_string($value) && strpos($value, '\\x') === 0)
+		{
+			return (string) hex2bin(substr($value, 2));
+		}
+
+		return $value;
 	}
 
 	/**

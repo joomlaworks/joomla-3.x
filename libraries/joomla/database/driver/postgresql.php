@@ -164,6 +164,18 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 			throw new JDatabaseExceptionConnecting('Error connecting to PGSQL database.');
 		}
 
+		$this->initialiseConnection();
+	}
+
+	/**
+	 * Set the connection's options, after connecting and after reconnecting.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	protected function initialiseConnection()
+	{
 		pg_set_error_verbosity($this->connection, PGSQL_ERRORS_DEFAULT);
 		pg_query($this->connection, 'SET standard_conforming_strings=off');
 		pg_query($this->connection, 'SET escape_string_warning=off');
@@ -179,7 +191,7 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 	public function disconnect()
 	{
 		// Close the connection.
-		if (is_resource($this->connection))
+		if (static::isPgsqlHandle($this->connection))
 		{
 			foreach ($this->disconnectHandlers as $h)
 			{
@@ -250,7 +262,7 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 	{
 		$this->connect();
 
-		if (is_resource($this->connection))
+		if (static::isPgsqlHandle($this->connection))
 		{
 			return pg_ping($this->connection);
 		}
@@ -305,10 +317,10 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 	{
 		$this->connect();
 
-		$this->setQuery('SHOW LC_COLLATE');
-		$array = $this->loadAssocList();
+		// SHOW LC_COLLATE fails since PostgreSQL 16; pg_database has the collation in every version
+		$this->setQuery('SELECT datcollate FROM pg_database WHERE datname = current_database()');
 
-		return $array[0]['lc_collate'];
+		return $this->loadResult();
 	}
 
 	/**
@@ -718,7 +730,7 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 			$query .= ' LIMIT ' . $this->limit . ' OFFSET ' . $this->offset;
 		}
 
-		if (!is_resource($this->connection))
+		if (!static::isPgsqlHandle($this->connection))
 		{
 			JLog::add(JText::sprintf('JLIB_DATABASE_QUERY_FAILED', $this->errorNum, $this->errorMsg), JLog::ERROR, 'database');
 			throw new JDatabaseExceptionExecuting($query, $this->errorMsg, $this->errorNum);
@@ -769,7 +781,7 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 			$this->callStacks[count($this->callStacks) - 1][0]['memory'] = array(
 				$memoryBefore,
 				memory_get_usage(),
-				is_resource($this->cursor) ? $this->getNumRows($this->cursor) : null,
+				static::isPgsqlHandle($this->cursor) ? $this->getNumRows($this->cursor) : null,
 			);
 		}
 
@@ -780,26 +792,24 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 			$errorNum = $this->getErrorNumber();
 			$errorMsg = $this->getErrorMessage();
 
-			// Check if the server was disconnected.
-			if (!$this->connected())
+			/*
+			 * Check if the server was disconnected. Not with connected(): pg_ping() reconnects a dropped connection and reports
+			 * success. Reconnect with pg_connection_reset(), as pg_connect() would return the same dropped connection.
+			 */
+			if (pg_connection_status($this->connection) !== PGSQL_CONNECTION_OK)
 			{
-				try
+				if (!@pg_connection_reset($this->connection))
 				{
-					// Attempt to reconnect.
-					$this->connection = null;
-					$this->connect();
-				}
-				// If connect fails, ignore that exception and throw the normal exception.
-				catch (RuntimeException $e)
-				{
-					$this->errorNum = $this->getErrorNumber();
-					$this->errorMsg = $this->getErrorMessage();
+					$this->errorNum = $errorNum;
+					$this->errorMsg = $errorMsg;
 
 					// Throw the normal query exception.
 					JLog::add(JText::sprintf('JLIB_DATABASE_QUERY_FAILED', $this->errorNum, $this->errorMsg), JLog::ERROR, 'database-error');
 
-					throw new JDatabaseExceptionExecuting($query, $this->errorMsg, null, $e);
+					throw new JDatabaseExceptionExecuting($query, $this->errorMsg);
 				}
+
+				$this->initialiseConnection();
 
 				// Since we were able to reconnect, run the query again.
 				return $this->execute();
@@ -1550,11 +1560,10 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 	 */
 	protected function getErrorNumber()
 	{
+		// No result to read the error code from; execute() reports the error with its message
 		if ($this->cursor === false)
 		{
-			$this->errorMsg = pg_last_error($this->connection);
-
-			throw new JDatabaseExceptionExecuting($this->sql, $this->errorMsg);
+			return 0;
 		}
 
 		return (int) pg_result_error_field($this->cursor, PGSQL_DIAG_SQLSTATE) . ' ';
@@ -1640,5 +1649,19 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 		$this->setQuery('SELECT (current_schemas(false))[1]');
 		return $this->loadResult();
 
+	}
+
+	/**
+	 * Whether a value is a PostgreSQL connection or result: a resource before PHP 8.1, a PgSql\Connection or PgSql\Result object since.
+	 *
+	 * @param   mixed  $handle  The value
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	protected static function isPgsqlHandle($handle)
+	{
+		return is_resource($handle) || $handle instanceof \PgSql\Connection || $handle instanceof \PgSql\Result;
 	}
 }

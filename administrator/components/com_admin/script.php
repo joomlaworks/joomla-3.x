@@ -3624,6 +3624,9 @@ class JoomlaInstallerScript
 		$converted = $convertedDB;
 		$hasErrors = false;
 
+		// The tables of uninstalled core components (Banners, Contacts, News Feeds, Smart Search) are gone, as during updates
+		$removedTables = \Joomla\CMS\Schema\ChangeSet::getRemovedComponentTablesPattern($db);
+
 		// Steps 1 and 2: Convert core tables if necessary and not to be done at later steps
 		if ($convertedDB < $convertedStep1 || ($convertedRequired == 5 && ($convertedDB == 3 || $convertedDB == 4)))
 		{
@@ -3639,6 +3642,11 @@ class JoomlaInstallerScript
 				{
 					foreach ($queries1 as $query1)
 					{
+						if (\Joomla\CMS\Schema\ChangeSet::targetsRemovedComponentTable($query1, $removedTables))
+						{
+							continue;
+						}
+
 						try
 						{
 							$db->setQuery($query1)->execute();
@@ -3663,6 +3671,11 @@ class JoomlaInstallerScript
 				{
 					foreach ($queries2 as $query2)
 					{
+						if (\Joomla\CMS\Schema\ChangeSet::targetsRemovedComponentTable($query2, $removedTables))
+						{
+							continue;
+						}
+
 						try
 						{
 							$db->setQuery($db->convertUtf8mb4QueryToUtf8($query2))->execute();

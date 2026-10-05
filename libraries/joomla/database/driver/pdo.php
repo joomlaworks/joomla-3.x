@@ -463,6 +463,18 @@ abstract class JDatabaseDriverPdo extends JDatabaseDriver
 					$errorMsg = str_replace($this->tablePrefix, '#__', $errorMsg);
 				}
 			}
+			// Without exceptions, the error is on the statement which failed, not on the connection
+			elseif ($this->prepared instanceof PDOStatement && $this->prepared->errorCode() !== '00000')
+			{
+				$errorInfo = $this->prepared->errorInfo();
+				$errorNum  = isset($errorInfo[1]) ? (int) $errorInfo[1] : 0;
+				$errorMsg  = implode(', ', $errorInfo);
+
+				if (!$this->debug)
+				{
+					$errorMsg = str_replace($this->tablePrefix, '#__', $errorMsg);
+				}
+			}
 			else
 			{
 				$errorNum = $this->getErrorNumber();
@@ -472,6 +484,9 @@ abstract class JDatabaseDriverPdo extends JDatabaseDriver
 			// Check if the server was disconnected.
 			if (!$this->connected())
 			{
+				// Connecting can run queries of its own (pgsql does), which replace the current one
+				$sql = $this->sql;
+
 				try
 				{
 					// Attempt to reconnect.
@@ -481,9 +496,9 @@ abstract class JDatabaseDriverPdo extends JDatabaseDriver
 				// If connect fails, ignore that exception and throw the normal exception.
 				catch (RuntimeException $e)
 				{
-					// Get the error number and message.
-					$this->errorNum = $this->getErrorNumber();
-					$this->errorMsg = $this->getErrorMessage();
+					// The error of the query: there's no connection to ask any more
+					$this->errorNum = $errorNum;
+					$this->errorMsg = $errorMsg;
 
 					// Throw the normal query exception.
 					JLog::add(JText::sprintf('JLIB_DATABASE_QUERY_FAILED', $this->errorNum, $this->errorMsg), JLog::ERROR, 'database-error');
@@ -492,7 +507,7 @@ abstract class JDatabaseDriverPdo extends JDatabaseDriver
 				}
 
 				// Since we were able to reconnect, prepare the query on the new connection and run it again.
-				$this->setQuery($this->sql);
+				$this->setQuery($sql);
 
 				return $this->execute();
 			}

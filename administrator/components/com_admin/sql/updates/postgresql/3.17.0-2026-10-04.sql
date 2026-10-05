@@ -29,3 +29,7 @@ UPDATE "#__extensions"
 SET "package_id" = sub.extension_id
 FROM (SELECT "extension_id" FROM "#__extensions" WHERE "type" = 'package' AND "element" = 'pkg_en-GB') AS sub
 WHERE "type" = 'language' AND "element" = 'en-GB' AND "package_id" = 0;
+
+-- The installer creates the Super User with a random ID, which PostgreSQL doesn't move the users' ID sequence past:
+-- creating the user whose turn reaches that ID then failed with a duplicate key. Only ever moves the sequence forward.
+SELECT setval('#__users_id_seq', MAX("id")) FROM "#__users" HAVING MAX("id") >= (SELECT "last_value" FROM "#__users_id_seq");

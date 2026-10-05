@@ -65,6 +65,14 @@ class DatabaseImportCommand extends AbstractCommand
 	private $pending = array('table' => null, 'columns' => null, 'values' => array(), 'size' => 0);
 
 	/**
+	 * Table name => DatabaseTableDefinition, for tables whose values are converted (from another kind of database, or into PostgreSQL)
+	 *
+	 * @var    DatabaseTableDefinition[]
+	 * @since  3.17.0
+	 */
+	private $definitions = array();
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -93,9 +101,9 @@ class DatabaseImportCommand extends AbstractCommand
 		$zipFile   = (string) $io->getOption('zip');
 		$tableName = (string) $io->getOption('table');
 
-		if ($db->getServerType() !== 'mysql')
+		if (!in_array($db->getServerType(), array('mysql', 'postgresql'), true))
 		{
-			$io->error(sprintf('Importing is only supported on MySQL and MariaDB, not with the "%s" database driver.', $db->getName()));
+			$io->error(sprintf('Importing is only supported on MySQL/MariaDB, PostgreSQL and SQLite, not with the "%s" database driver.', $db->getName()));
 
 			return self::FAILURE;
 		}
@@ -276,19 +284,31 @@ class DatabaseImportCommand extends AbstractCommand
 	 */
 	protected function importFile($file)
 	{
-		$file   = $this->compatibleFile($file);
-		$result = array();
+		$file              = $this->compatibleFile($file);
+		$result            = array();
+		$this->definitions = array();
 
 		try
 		{
 			// First the structures, then the data
-			$reader = $this->open($file);
+			$reader  = $this->open($file);
+			$dialect = 'mysql';
 
 			while ($reader->read())
 			{
-				if ($reader->nodeType === \XMLReader::ELEMENT && $reader->name === 'table_structure')
+				if ($reader->nodeType !== \XMLReader::ELEMENT)
 				{
-					$table          = $this->createTable(simplexml_import_dom($reader->expand(new \DOMDocument)));
+					continue;
+				}
+
+				// The root element tells which kind of database the file comes from
+				if ($reader->depth === 0)
+				{
+					$dialect = $reader->name === 'postgresqldump' ? 'postgresql' : 'mysql';
+				}
+				elseif ($reader->name === 'table_structure')
+				{
+					$table          = $this->createTable(simplexml_import_dom($reader->expand(new \DOMDocument)), $dialect);
 					$result[$table] = 0;
 				}
 			}
@@ -323,6 +343,7 @@ class DatabaseImportCommand extends AbstractCommand
 
 			$this->flush();
 			$reader->close();
+			$this->resetSequences();
 		}
 		finally
 		{
@@ -415,17 +436,19 @@ class DatabaseImportCommand extends AbstractCommand
 	 * Drop a table and create it from its exported structure.
 	 *
 	 * @param   \SimpleXMLElement  $structure  The table_structure element
+	 * @param   string             $dialect    The kind of database of the file: mysql or postgresql
 	 *
 	 * @return  string  The table name
 	 *
 	 * @since   3.17.0
 	 * @throws  \RuntimeException
 	 */
-	protected function createTable(\SimpleXMLElement $structure)
+	protected function createTable(\SimpleXMLElement $structure, $dialect = 'mysql')
 	{
 		$db      = Factory::getDbo();
 		$generic = (string) $structure['name'];
 		$table   = $this->getRealTableName($generic);
+		$target  = $db->getServerType();
 
 		if ($table === '')
 		{
@@ -433,6 +456,21 @@ class DatabaseImportCommand extends AbstractCommand
 		}
 
 		$db->dropTable($table, true);
+
+		// From another kind of database, or into PostgreSQL: the structure is translated, and the values converted
+		if ($dialect !== 'mysql' || $target !== 'mysql')
+		{
+			$definition = DatabaseTableDefinition::fromXml($structure, $dialect);
+
+			foreach ($definition->getCreateStatements($target, $db) as $statement)
+			{
+				$db->setQuery($statement)->execute();
+			}
+
+			$this->definitions[$table] = $definition;
+
+			return $table;
+		}
 
 		if (isset($structure->create_statement) && trim((string) $structure->create_statement) !== '')
 		{
@@ -461,29 +499,35 @@ class DatabaseImportCommand extends AbstractCommand
 	 */
 	protected function addRow($table, \SimpleXMLElement $row)
 	{
-		$db      = Factory::getDbo();
-		$columns = array();
-		$values  = array();
+		$db         = Factory::getDbo();
+		$columns    = array();
+		$values     = array();
+		$definition = isset($this->definitions[$table]) ? $this->definitions[$table] : null;
 
 		foreach ($row->field as $field)
 		{
-			$columns[] = (string) $field['name'];
+			$name      = (string) $field['name'];
+			$columns[] = $name;
+			$value     = null;
 
-			if (isset($field['value_is_null']))
+			if (!isset($field['value_is_null']))
 			{
-				$values[] = 'NULL';
+				$value = (string) $field;
 
-				continue;
+				if ((string) $field['encoding'] === 'base64')
+				{
+					$value = base64_decode($value);
+				}
 			}
 
-			$value = (string) $field;
-
-			if ((string) $field['encoding'] === 'base64')
+			if ($definition)
 			{
-				$value = base64_decode($value);
+				$values[] = $definition->convertValue($name, $value, $db->getServerType(), $db);
 			}
-
-			$values[] = $db->quote($value);
+			else
+			{
+				$values[] = $value === null ? 'NULL' : $db->quote($value);
+			}
 		}
 
 		$columns = implode(',', $db->quoteName($columns));
@@ -520,6 +564,34 @@ class DatabaseImportCommand extends AbstractCommand
 		}
 
 		$this->pending = array('table' => null, 'columns' => null, 'values' => array(), 'size' => 0);
+	}
+
+	/**
+	 * PostgreSQL doesn't move a sequence past IDs which are given in an INSERT, so move each one past the imported rows.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	protected function resetSequences()
+	{
+		$db = Factory::getDbo();
+
+		if ($db->getServerType() !== 'postgresql')
+		{
+			return;
+		}
+
+		foreach ($this->definitions as $table => $definition)
+		{
+			foreach ($definition->getAutoIncrementColumns() as $column)
+			{
+				$db->setQuery(
+					'SELECT setval(pg_get_serial_sequence(' . $db->quote($db->quoteName($table)) . ', ' . $db->quote($column) . '), '
+					. 'COALESCE(MAX(' . $db->quoteName($column) . '), 0) + 1, false) FROM ' . $db->quoteName($table)
+				)->execute();
+			}
+		}
 	}
 
 	/**

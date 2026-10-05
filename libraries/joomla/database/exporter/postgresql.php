@@ -57,15 +57,23 @@ class JDatabaseExporterPostgresql extends JDatabaseExporter
 
 		foreach ($this->from as $table)
 		{
-			// Replace the magic prefix if found.
-			$table = $this->getGenericTableName($table);
+			// The driver's lookups need the real table name; the file uses the generic one, as for MySQL
+			$realTable = $this->db->replacePrefix((string) $table);
+			$table     = $this->getGenericTableName($realTable);
 
 			// Get the details columns information.
-			$fields = $this->db->getTableColumns($table, false);
-			$keys = $this->db->getTableKeys($table);
-			$sequences = $this->db->getTableSequences($table);
+			$fields    = $this->db->getTableColumns($realTable, false);
+			$keys      = $this->db->getTableKeys($realTable) ?: array();
+			$sequences = $this->db->getTableSequences($realTable) ?: array();
 
-			$buffer[] = '  <table_structure name="' . $table . '">';
+			// getTableColumns() leaves out the defaults of text columns, so read them all from the catalog
+			$defaults = $this->db->setQuery(
+				'SELECT a.attname, pg_catalog.pg_get_expr(d.adbin, d.adrelid, true) AS expr FROM pg_catalog.pg_attrdef d'
+				. ' JOIN pg_catalog.pg_attribute a ON a.attrelid = d.adrelid AND a.attnum = d.adnum'
+				. ' WHERE d.adrelid = ' . $this->db->quote($this->db->quoteName($realTable)) . '::regclass'
+			)->loadAssocList('attname', 'expr');
+
+			$buffer[] = '  <table_structure name="' . $this->escapeXml($table) . '">';
 
 			foreach ($sequences as $sequence)
 			{
@@ -74,25 +82,32 @@ class JDatabaseExporterPostgresql extends JDatabaseExporter
 					$sequence->start_value = null;
 				}
 
-				$buffer[] = '   <sequence Name="' . $sequence->sequence . '"' . ' Schema="' . $sequence->schema . '"' .
-					' Table="' . $sequence->table . '"' . ' Column="' . $sequence->column . '"' . ' Type="' . $sequence->data_type . '"' .
-					' Start_Value="' . $sequence->start_value . '"' . ' Min_Value="' . $sequence->minimum_value . '"' .
-					' Max_Value="' . $sequence->maximum_value . '"' . ' Increment="' . $sequence->increment . '"' .
-					' Cycle_option="' . $sequence->cycle_option . '"' .
-					' />';
+				$buffer[] = '   <sequence Name="' . $this->escapeXml($this->getGenericTableName($sequence->sequence)) . '"'
+					. ' Schema="' . $this->escapeXml($sequence->schema) . '"'
+					. ' Table="' . $this->escapeXml($this->getGenericTableName($sequence->table)) . '"'
+					. ' Column="' . $this->escapeXml($sequence->column) . '"' . ' Type="' . $this->escapeXml($sequence->data_type) . '"'
+					. ' Start_Value="' . $this->escapeXml($sequence->start_value) . '"' . ' Min_Value="' . $this->escapeXml($sequence->minimum_value) . '"'
+					. ' Max_Value="' . $this->escapeXml($sequence->maximum_value) . '"' . ' Increment="' . $this->escapeXml($sequence->increment) . '"'
+					. ' Cycle_option="' . $this->escapeXml($sequence->cycle_option) . '"'
+					. ' />';
 			}
 
 			foreach ($fields as $field)
 			{
-				$buffer[] = '   <field Field="' . $field->column_name . '"' . ' Type="' . $field->type . '"' . ' Null="' . $field->null . '"' .
-							(isset($field->default) ? ' Default="' . $field->default . '"' : '') . ' Comments="' . $field->comments . '"' .
-					' />';
+				$default = isset($defaults[$field->column_name]) ? (string) $defaults[$field->column_name] : null;
+
+				$buffer[] = '   <field Field="' . $this->escapeXml($field->column_name) . '"' . ' Type="' . $this->escapeXml($field->type) . '"'
+					. ' Null="' . $this->escapeXml($field->null) . '"'
+					. ($default !== null ? ' Default="' . $this->escapeXml($default) . '"' : '')
+					. ' Comments="' . $this->escapeXml($field->comments) . '"'
+					. ' />';
 			}
 
 			foreach ($keys as $key)
 			{
-				$buffer[] = '   <key Index="' . $key->idxName . '"' . ' is_primary="' . $key->isPrimary . '"' . ' is_unique="' . $key->isUnique . '"' .
-					' Query="' . $key->Query . '" />';
+				$buffer[] = '   <key Index="' . $this->escapeXml($this->getGenericTableName($key->idxName)) . '"'
+					. ' is_primary="' . $this->escapeXml($key->isPrimary) . '"' . ' is_unique="' . $this->escapeXml($key->isUnique) . '"'
+					. ' Query="' . $this->escapeXml(str_replace($this->db->getPrefix(), '#__', $key->Query)) . '" />';
 			}
 
 			$buffer[] = '  </table_structure>';

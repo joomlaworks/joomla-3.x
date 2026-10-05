@@ -156,7 +156,7 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 	public function disconnect()
 	{
 		// Close the connection.
-		if (is_resource($this->connection))
+		if (static::isPgsqlHandle($this->connection))
 		{
 			foreach ($this->disconnectHandlers as $h)
 			{
@@ -216,7 +216,7 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 	{
 		$this->connect();
 
-		if (is_resource($this->connection))
+		if (static::isPgsqlHandle($this->connection))
 		{
 			return pg_ping($this->connection);
 		}
@@ -271,10 +271,10 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 	{
 		$this->connect();
 
-		$this->setQuery('SHOW LC_COLLATE');
-		$array = $this->loadAssocList();
+		// SHOW LC_COLLATE fails since PostgreSQL 16; pg_database has the collation in every version
+		$this->setQuery('SELECT datcollate FROM pg_database WHERE datname = current_database()');
 
-		return $array[0]['lc_collate'];
+		return $this->loadResult();
 	}
 
 	/**
@@ -671,7 +671,7 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 	{
 		$this->connect();
 
-		if (!is_resource($this->connection))
+		if (!static::isPgsqlHandle($this->connection))
 		{
 			if (class_exists('JLog'))
 			{
@@ -1526,5 +1526,19 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 		}
 
 		return $errorMessage . "SQL=" . $query;
+	}
+
+	/**
+	 * Whether a value is a PostgreSQL connection or result: a resource before PHP 8.1, a PgSql\Connection or PgSql\Result object since.
+	 *
+	 * @param   mixed  $handle  The value
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	protected static function isPgsqlHandle($handle)
+	{
+		return is_resource($handle) || $handle instanceof \PgSql\Connection || $handle instanceof \PgSql\Result;
 	}
 }

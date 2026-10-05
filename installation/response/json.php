@@ -14,6 +14,7 @@ defined('_JEXEC') or die;
  *
  * @since  3.1
  */
+#[\AllowDynamicProperties]
 class InstallationResponseJson
 {
 	/**

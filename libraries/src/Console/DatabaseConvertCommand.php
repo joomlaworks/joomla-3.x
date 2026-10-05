@@ -30,7 +30,7 @@ class DatabaseConvertCommand extends AbstractCommand
 	 * @var    string
 	 * @since  3.17.0
 	 */
-	protected $description = 'Move the site\'s database between MySQL/MariaDB and SQLite';
+	protected $description = 'Move the site\'s database between MySQL/MariaDB, PostgreSQL and SQLite';
 
 	/**
 	 * @var    string
@@ -39,9 +39,11 @@ class DatabaseConvertCommand extends AbstractCommand
 	protected $help = 'Copies every table with the site\'s table prefix into a new database, checks that each table has the same number of '
 		. 'rows there, and only then points configuration.php at it. The old database is left as it is, so going back is a matter of '
 		. 'converting again or restoring configuration.php. With --to=sqlite, the database goes into a new file (--file, by default '
-		. 'database/joomla-<random>.sqlite); a folder inside the site gets rules which block web access to it. With --to=mysqli or '
-		. '--to=pdomysql, the database (--database) must already exist and have no tables with the prefix. Put the site offline first '
-		. '(site:down), so nothing changes while it\'s copied. Moving to SQLite also switches database sessions to PHP sessions, '
+		. 'database/joomla-<random>.sqlite); a folder inside the site gets rules which block web access to it. With --to=mysqli, '
+		. '--to=pdomysql (MySQL/MariaDB), --to=postgresql or --to=pgsql (PostgreSQL), the database (--database) must already exist '
+		. 'and have no tables with the prefix. Between MySQL and PostgreSQL, column types are translated and Joomla\'s "no date" '
+		. 'values (0000-00-00 00:00:00 and 1970-01-01 00:00:00) converted. The site is offline while its database is copied '
+		. '(unless it already was), and online again after the switch, or with its current database if the conversion fails. Moving to SQLite also switches database sessions to PHP sessions, '
 		. 'which don\'t write to the database on every page view (a Memcached, Redis or APCu session handler is kept).';
 
 	/**
@@ -51,12 +53,12 @@ class DatabaseConvertCommand extends AbstractCommand
 	 */
 	protected function configure()
 	{
-		$this->addOption('to', null, self::OPTION_REQUIRED, 'The new database type: sqlite, mysqli or pdomysql');
+		$this->addOption('to', null, self::OPTION_REQUIRED, 'The new database type: sqlite, mysqli, pdomysql, postgresql or pgsql');
 		$this->addOption('file', null, self::OPTION_REQUIRED, 'SQLite: the new database file, absolute or relative to the site\'s root folder');
-		$this->addOption('host', null, self::OPTION_REQUIRED, 'MySQL: the server', 'localhost');
-		$this->addOption('user', null, self::OPTION_REQUIRED, 'MySQL: the user name');
-		$this->addOption('password', null, self::OPTION_REQUIRED, 'MySQL: the password (asked for when interactive and not given)');
-		$this->addOption('database', null, self::OPTION_REQUIRED, 'MySQL: the database name');
+		$this->addOption('host', null, self::OPTION_REQUIRED, 'MySQL/PostgreSQL: the server', 'localhost');
+		$this->addOption('user', null, self::OPTION_REQUIRED, 'MySQL/PostgreSQL: the user name');
+		$this->addOption('password', null, self::OPTION_REQUIRED, 'MySQL/PostgreSQL: the password (asked for when interactive and not given)');
+		$this->addOption('database', null, self::OPTION_REQUIRED, 'MySQL/PostgreSQL: the database name');
 		$this->addOption('prefix', null, self::OPTION_REQUIRED, 'The table prefix in the new database (by default the current one)');
 	}
 
@@ -75,25 +77,37 @@ class DatabaseConvertCommand extends AbstractCommand
 		$source  = Factory::getDbo();
 		$to      = strtolower((string) $io->getOption('to'));
 		$prefix  = (string) ($io->getOption('prefix') ?: $config->get('dbprefix'));
-		$sqlite  = $source instanceof \JDatabaseDriverMysqlonsqlite;
+		$families = array('sqlite' => 'SQLite', 'mysqli' => 'MySQL/MariaDB', 'pdomysql' => 'MySQL/MariaDB', 'postgresql' => 'PostgreSQL', 'pgsql' => 'PostgreSQL');
 
-		if (!in_array($to, array('sqlite', 'mysqli', 'pdomysql'), true))
+		if (!isset($families[$to]))
 		{
-			$io->error('Give the new database type with --to: sqlite, mysqli or pdomysql.');
+			$io->error('Give the new database type with --to: sqlite, mysqli, pdomysql, postgresql or pgsql.');
 
 			return self::INVALID;
 		}
 
-		if ($source->getServerType() !== 'mysql')
+		if ($source instanceof \JDatabaseDriverMysqlonsqlite)
 		{
-			$io->error('Only MySQL/MariaDB and SQLite databases can be converted.');
+			$current = 'SQLite';
+		}
+		elseif ($source->getServerType() === 'mysql')
+		{
+			$current = 'MySQL/MariaDB';
+		}
+		elseif ($source->getServerType() === 'postgresql')
+		{
+			$current = 'PostgreSQL';
+		}
+		else
+		{
+			$io->error('Only MySQL/MariaDB, PostgreSQL and SQLite databases can be converted.');
 
 			return self::FAILURE;
 		}
 
-		if (($to === 'sqlite') === $sqlite)
+		if ($families[$to] === $current)
 		{
-			$io->error($sqlite ? 'The site already uses SQLite.' : 'The site already uses a MySQL server; only the move to SQLite and back is supported.');
+			$io->error(sprintf('The site already uses %s; convert it to another kind of database.', $current));
 
 			return self::INVALID;
 		}
@@ -105,7 +119,7 @@ class DatabaseConvertCommand extends AbstractCommand
 			return self::INVALID;
 		}
 
-		$settings = $to === 'sqlite' ? $this->getSqliteSettings($io, $prefix) : $this->getMysqlSettings($io, $to, $prefix);
+		$settings = $to === 'sqlite' ? $this->getSqliteSettings($io, $prefix) : $this->getServerSettings($io, $to, $families[$to], $prefix);
 
 		if (!$settings)
 		{
@@ -140,6 +154,62 @@ class DatabaseConvertCommand extends AbstractCommand
 			return self::SUCCESS;
 		}
 
+		// Offline while the database is copied, so nothing changes in it meanwhile; back online with the switch
+		$takeOffline = !$config->get('offline');
+
+		if ($takeOffline)
+		{
+			if (!$this->writeConfiguration($io, array('offline' => 1), 'Cannot take the site offline, as configuration.php can\'t be written.'))
+			{
+				return self::FAILURE;
+			}
+
+			$io->text('The site is offline while its database is copied.');
+		}
+
+		$result = self::FAILURE;
+
+		try
+		{
+			$result = $this->copyAndSwitch($io, $config, $source, $target, $settings, $to, $prefix);
+		}
+		finally
+		{
+			// The switch writes configuration.php online again; otherwise restore it as it was
+			if ($takeOffline && $result !== self::SUCCESS)
+			{
+				if ($this->writeConfiguration($io, array(), 'Cannot put the site back online: set "offline" to 0 in configuration.php.'))
+				{
+					$io->text('The site is online again, still with its current database.');
+				}
+			}
+		}
+
+		if ($takeOffline && $result === self::SUCCESS)
+		{
+			$io->text('The site is online again.');
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Copy the database, compare the copy, fix its structure and switch configuration.php to it.
+	 *
+	 * @param   CommandIO         $io        The input values and the output
+	 * @param   Registry          $config    The site's configuration
+	 * @param   \JDatabaseDriver  $source    The current database
+	 * @param   \JDatabaseDriver  $target    The new database
+	 * @param   array             $settings  The new database's options and configuration
+	 * @param   string            $to        The new database type
+	 * @param   string            $prefix    The table prefix in the new database
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.17.0
+	 */
+	private function copyAndSwitch(CommandIO $io, $config, $source, $target, array $settings, $to, $prefix)
+	{
 		/** @var \Joomla\CMS\Application\ConsoleApplication $app */
 		$app    = Factory::getApplication();
 		$folder = $config->get('tmp_path') . '/' . uniqid('dbconvert_');
@@ -206,6 +276,46 @@ class DatabaseConvertCommand extends AbstractCommand
 			$io->error('The copy differs from the current database, so the site still uses its current database.');
 
 			return self::FAILURE;
+		}
+
+		// The core tables differ between MySQL and PostgreSQL (types, indexes, the utf8mb4 conversion record): give the new database
+		// the structure Joomla expects there, as Extensions: Database > Fix does
+		$io->text('Checking the structure of the new database ...');
+
+		// PostgreSQL has no record of MySQL's utf8mb4 conversion; the tables were just created with utf8mb4 (SQLite is UTF-8 anyway)
+		if ($target->getServerType() === 'mysql' && !in_array($prefix . 'utf8_conversion', $target->getTableList(), true))
+		{
+			$target->setQuery(
+				'CREATE TABLE ' . $target->quoteName('#__utf8_conversion') . ' (' . $target->quoteName('converted') . ' tinyint NOT NULL DEFAULT 0)'
+				. ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci'
+			)->execute();
+			$target->setQuery(
+				'INSERT INTO ' . $target->quoteName('#__utf8_conversion') . ' (' . $target->quoteName('converted') . ') VALUES ('
+				. ($target->hasUTF8mb4Support() ? 5 : 3) . ')'
+			)->execute();
+		}
+
+		// ... and MySQL's record of it has no use on PostgreSQL, whose Joomla schema doesn't have it
+		if ($target->getServerType() === 'postgresql' && in_array($prefix . 'utf8_conversion', $target->getTableList(), true))
+		{
+			$target->dropTable($prefix . 'utf8_conversion');
+		}
+
+		$previous          = Factory::$database;
+		Factory::$database = $target;
+
+		try
+		{
+			$checked = $app->runCommand('maintenance:database', array(), array('fix' => true, 'quiet' => true));
+		}
+		finally
+		{
+			Factory::$database = $previous;
+		}
+
+		if ($checked !== self::SUCCESS)
+		{
+			$io->warning('Joomla\'s database check still reports problems in the new database. After the switch, see them with: php cli/joomla.php maintenance:database');
 		}
 
 		// Database sessions would write to SQLite's single database file on every page view
@@ -293,17 +403,18 @@ class DatabaseConvertCommand extends AbstractCommand
 	}
 
 	/**
-	 * Get the connection options and configuration of a MySQL database.
+	 * Get the connection options and configuration of a database on a MySQL/MariaDB or PostgreSQL server.
 	 *
 	 * @param   CommandIO  $io      The input values and the output
-	 * @param   string     $driver  mysqli or pdomysql
+	 * @param   string     $driver  mysqli, pdomysql, postgresql or pgsql
+	 * @param   string     $kind    The kind of database, for messages
 	 * @param   string     $prefix  The table prefix
 	 *
 	 * @return  array|false
 	 *
 	 * @since   3.17.0
 	 */
-	private function getMysqlSettings(CommandIO $io, $driver, $prefix)
+	private function getServerSettings(CommandIO $io, $driver, $kind, $prefix)
 	{
 		$host     = (string) $io->getOption('host');
 		$user     = (string) $io->getOption('user');
@@ -312,18 +423,18 @@ class DatabaseConvertCommand extends AbstractCommand
 
 		if ($user === '' || $database === '')
 		{
-			$io->error('Give the MySQL user and database with --user and --database.');
+			$io->error(sprintf('Give the %s user and database with --user and --database.', $kind));
 
 			return false;
 		}
 
 		if ($password === null && $io->isInteractive())
 		{
-			$password = $io->ask('Please enter the password of the MySQL user', '', true);
+			$password = $io->ask(sprintf('Please enter the password of the %s user', $kind), '', true);
 		}
 
 		return array(
-			'description'   => sprintf('the MySQL database %s on %s', $database, $host),
+			'description'   => sprintf('the %s database %s on %s', $kind, $database, $host),
 			'options'       => array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => (string) $password, 'database' => $database, 'prefix' => $prefix),
 			'configuration' => array('dbtype' => $driver, 'db' => $database, 'host' => $host, 'user' => $user, 'password' => (string) $password, 'dbprefix' => $prefix),
 		);
@@ -379,7 +490,7 @@ class DatabaseConvertCommand extends AbstractCommand
 	 *
 	 * @since   3.17.0
 	 */
-	private function writeConfiguration(CommandIO $io, array $changes)
+	private function writeConfiguration(CommandIO $io, array $changes, $failure = null)
 	{
 		$file   = JPATH_CONFIGURATION . '/configuration.php';
 		$config = new Registry(get_object_vars(new \JConfig));
@@ -397,7 +508,7 @@ class DatabaseConvertCommand extends AbstractCommand
 
 		if (!\JFile::write($file, $config->toString('PHP', array('class' => 'JConfig', 'closingtag' => false))))
 		{
-			$io->error('Cannot write configuration.php. The new database is ready; set these options by hand: '
+			$io->error($failure ?: 'Cannot write configuration.php. The new database is ready; set these options by hand: '
 				. json_encode(array_diff_key($changes, array('password' => true))));
 
 			return false;

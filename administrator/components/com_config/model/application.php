@@ -132,10 +132,10 @@ class ConfigModelApplication extends ConfigModelForm
 			}
 		}
 
-		// Switching between SQLite and a database server would leave the site's data behind, in the old database
-		if (($config->get('dbtype') === 'mysqlonsqlite') !== ($data['dbtype'] === 'mysqlonsqlite'))
+		// Switching to another kind of database would leave the site's data behind, in the old database
+		if ($this->getDatabaseFamily($config->get('dbtype')) !== $this->getDatabaseFamily($data['dbtype']))
 		{
-			$app->enqueueMessage(JText::_('COM_CONFIG_ERROR_DATABASE_SQLITE_SWITCH'), 'error');
+			$app->enqueueMessage(JText::_('COM_CONFIG_ERROR_DATABASE_TYPE_SWITCH'), 'error');
 
 			return false;
 		}
@@ -510,6 +510,31 @@ class ConfigModelApplication extends ConfigModelForm
 		$dispatcher->trigger('onApplicationAfterSave', array($config));
 
 		return $result;
+	}
+
+	/**
+	 * Get the kind of database of a database driver: MySQL (mysql, mysqli, pdomysql), PostgreSQL (postgresql, pgsql), SQLite or another.
+	 *
+	 * @param   string  $driver  The driver name
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	private function getDatabaseFamily($driver)
+	{
+		$families = array(
+			'mysql'         => 'mysql',
+			'mysqli'        => 'mysql',
+			'pdomysql'      => 'mysql',
+			'postgresql'    => 'postgresql',
+			'pgsql'         => 'postgresql',
+			'mysqlonsqlite' => 'sqlite',
+			'sqlsrv'        => 'sqlserver',
+			'sqlazure'      => 'sqlserver',
+		);
+
+		return isset($families[$driver]) ? $families[$driver] : (string) $driver;
 	}
 
 	/**

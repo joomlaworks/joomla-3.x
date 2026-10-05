@@ -129,10 +129,10 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 	 */
 	public function getCollation()
 	{
-		$this->setQuery('SHOW LC_COLLATE');
-		$array = $this->loadAssocList();
+		// SHOW LC_COLLATE fails since PostgreSQL 16; pg_database has the collation in every version
+		$this->setQuery('SELECT datcollate FROM pg_database WHERE datname = current_database()');
 
-		return $array[0]['lc_collate'];
+		return $this->loadResult();
 	}
 
 	/**
@@ -145,10 +145,10 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 	 */
 	public function getConnectionCollation()
 	{
-		$this->setQuery('SHOW LC_COLLATE');
-		$array = $this->loadAssocList();
+		// SHOW LC_COLLATE fails since PostgreSQL 16; pg_database has the collation in every version
+		$this->setQuery('SELECT datcollate FROM pg_database WHERE datname = current_database()');
 
-		return $array[0]['lc_collate'];
+		return $this->loadResult();
 	}
 
 	/**
