@@ -25,6 +25,7 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 - [PHP Compatibility](#php-compatibility)
 - [Database Support](#database-support)
 - [Notes on MySQL & MariaDB](#notes-on-mysql--mariadb)
+- [SQLite Support](#sqlite-support)
 - [Notes on Operating System Support](#notes-on-operating-system-support)
 - [Contribute](#contribute)
 - [Discuss](#discuss)
@@ -62,7 +63,7 @@ Summary of changes:
 - Clear error messages when the database user's authentication method is the reason a connection fails (e.g. `mysql_native_password` on MySQL 8.4/9), saying what to change
 
 **New features:**
-- New SQLite database driver (experimental): the whole site in one file, with no database server, for small to medium sites, development and testing. Core and extensions work unchanged, as it runs their MySQL SQL. Available on PHP 7.4+ in the installer, and for existing sites through the new `database:convert` command line command (which also moves a site back to MySQL)
+- New SQLite database driver (experimental): the whole site in one file, with no database server, for small to medium sites, development and testing. Core and extensions work unchanged, as it runs their MySQL SQL. Available on PHP 7.4+ in the installer, and for existing sites through the new `database:convert` command line command (which also moves a site back to MySQL). SQLite sites use PHP sessions, so browsing doesn't write to the database. See [SQLite Support](#sqlite-support)
 - New command line interface, `cli/joomla.php`, using the same command names and options as Joomla 4 and later to update Joomla and manage the configuration, users, extensions, database, cache, sessions and Smart Search (e.g. `php cli/joomla.php core:update`, `database:export`, `user:add`, `extension:install`, `config:set`, `site:down`). Every command can return JSON (`--format=json`), so scripts and AI agents can work with the site directly. Extensions can add their own commands. The existing scripts in `cli/` still work as before (cron jobs need no changes), but now run the new commands.
 
 ## Version 3.16 - released October 3rd, 2026
@@ -234,7 +235,7 @@ Switching to this distribution will also allow you (or take you closer) to upgra
 | Microsoft SQL Server / Azure SQL | 2008 R2 (10.50.1600.1) | Inherited from stock Joomla 3.x, not tested by this project |
 | SQLite (experimental) | 3.37.0, with PHP 7.4+ | New in 3.17: runs MySQL SQL through an emulation layer, so core and extensions work unchanged; tested with core and common extensions |
 
-SQLite keeps the whole site in one file, with no database server, which suits small to medium sites, development and testing; it handles one write at a time, so busy sites should stay on MySQL/MariaDB. Choose it in the installer, or move an existing site with `php cli/joomla.php database:convert --to=sqlite` (and back with `--to=mysqli`). Keep the database file out of the web's reach: outside the web root, or in a folder of its own, which the installer protects for Apache and IIS (with nginx, keep the file's random name too).
+For SQLite, see [SQLite Support](#sqlite-support).
 
 Database support in Joomla 3.x was always centred on MySQL/MariaDB. PostgreSQL and SQL Server work with the core, but several core and third-party extensions only ship MySQL/MariaDB database scripts, so expect rough edges there. The installer enforces these minimum versions. Once a site runs 3.16 or newer, it won't be offered further updates while its database is below these versions, and sees a notice in Joomla Update instead.
 
@@ -254,6 +255,17 @@ We also recommend the following setting for maximum compatibility in both MySQL 
 ```
 sql_mode = ""
 ```
+
+
+## SQLITE SUPPORT
+Joomla 3 has always shipped a basic SQLite database driver, but it was never usable for a site: the installer didn't offer it, and Joomla and its extensions only ship MySQL database scripts. Version 3.17 completes it with the "SQLite (experimental)" driver, which runs Joomla's and extensions' MySQL SQL through an emulation layer (from WordPress's SQLite Database Integration project). Core and extensions work unchanged, with no SQLite-specific scripts.
+
+- **What it's for:** the whole site's data in one portable (cloud-synchronizable) file, with no database server, for small to medium sites, development and testing. SQLite handles one write at a time (read operations never wait & write operations queue briefly), so busy sites with many simultaneous writers should stay on MySQL/MariaDB.
+- **Requirements:** PHP 7.4 or newer, and the PDO SQLite extension with SQLite 3.37.0 or newer. It's only offered where these are available. Most shared hosting environments should have SQLite bundled by default or activated on-demand as an option in their respective control panel.
+- **Getting there:** choose it in the installer, or move an existing site with `php cli/joomla.php database:convert --to=sqlite` (and back with `--to=mysqli`). The process takes the site offline first (`site:down`), so nothing changes while it's copied.
+- **Sessions:** with the "Database" session handler, every page view writes to the database file. A new SQLite site, or one moved with `database:convert`, therefore uses PHP sessions instead (Global Configuration → System → Session Handler → "PHP"), and writes only when content or settings change, or a new visitor arrives. If your server has an object cache such as Memcached, Redis or APCu enabled, prefer that for sessions: it's faster than PHP's session files and also keeps sessions out of the database. `database:convert` keeps those handlers as they are.
+- **Security:** keep the database file out of the web's reach: outside the web root, or in a folder of its own, which the installer protects for Apache and IIS (with nginx, keep the file's random name too).
+- **Backups:** copy the database file while the site is offline (it's a complete copy of the site's data), or use `php cli/joomla.php database:export`. Don't keep a live site's database file in a synced folder (e.g. Dropbox): syncing it while the site writes to it can leave conflicting copies.
 
 
 ## NOTES ON OPERATING SYSTEM SUPPORT

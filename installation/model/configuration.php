@@ -146,7 +146,8 @@ class InstallationModelConfiguration extends JModelBase
 
 		// Session setting.
 		$registry->set('lifetime', 15);
-		$registry->set('session_handler', 'database');
+		// Database sessions would write to SQLite's single database file on every page view
+		$registry->set('session_handler', $options->db_type === 'mysqlonsqlite' ? 'none' : 'database');
 		$registry->set('shared_session', 0);
 
 		// Generate the configuration class string buffer.

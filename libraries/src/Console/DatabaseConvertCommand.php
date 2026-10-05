@@ -41,7 +41,8 @@ class DatabaseConvertCommand extends AbstractCommand
 		. 'converting again or restoring configuration.php. With --to=sqlite, the database goes into a new file (--file, by default '
 		. 'database/joomla-<random>.sqlite); a folder inside the site gets rules which block web access to it. With --to=mysqli or '
 		. '--to=pdomysql, the database (--database) must already exist and have no tables with the prefix. Put the site offline first '
-		. '(site:down), so nothing changes while it\'s copied.';
+		. '(site:down), so nothing changes while it\'s copied. Moving to SQLite also switches database sessions to PHP sessions, '
+		. 'which don\'t write to the database on every page view (a Memcached, Redis or APCu session handler is kept).';
 
 	/**
 	 * @return  void
@@ -207,6 +208,12 @@ class DatabaseConvertCommand extends AbstractCommand
 			return self::FAILURE;
 		}
 
+		// Database sessions would write to SQLite's single database file on every page view
+		if ($to === 'sqlite' && $config->get('session_handler') === 'database')
+		{
+			$settings['configuration']['session_handler'] = 'none';
+		}
+
 		if (!$this->writeConfiguration($io, $settings['configuration']))
 		{
 			return self::FAILURE;
@@ -214,7 +221,13 @@ class DatabaseConvertCommand extends AbstractCommand
 
 		$io->setData('database', $settings['configuration']['db']);
 		$io->setData('dbtype', $settings['configuration']['dbtype']);
+		$io->setData('sessionHandler', isset($settings['configuration']['session_handler']) ? $settings['configuration']['session_handler'] : $config->get('session_handler'));
 		$io->success(sprintf('The site now uses %s. The old database was left as it is.', $settings['description']));
+
+		if (isset($settings['configuration']['session_handler']))
+		{
+			$io->text('Sessions are now stored by PHP instead of the database, so everyone has to log in again.');
+		}
 
 		return self::SUCCESS;
 	}
