@@ -9,6 +9,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
+
 // Uncomment the following line to enable debug mode (update notification email sent every single time)
 // define('PLG_SYSTEM_UPDATENOTIFICATION_DEBUG', 1);
 
@@ -50,102 +52,61 @@ class PlgSystemUpdatenotification extends JPlugin
 		$cache_timeout = (int) $params->get('cachetimeout', 6);
 		$cache_timeout = 3600 * $cache_timeout;
 
-		// Do we need to run? Compare the last run timestamp stored in the plugin's options with the current
-		// timestamp. If the difference is greater than the cache timeout we shall not execute again.
-		$now  = time();
-		$last = (int) $this->params->get('lastrun', 0);
-
-		if (!defined('PLG_SYSTEM_UPDATENOTIFICATION_DEBUG') && (abs($now - $last) < $cache_timeout))
-		{
-			return;
-		}
-
-		// Update last run status
-		// If I have the time of the last run, I can update, otherwise insert
-		$this->params->set('lastrun', $now);
-
-		$db = JFactory::getDbo();
-		$query = $db->getQuery(true)
-					->update($db->qn('#__extensions'))
-					->set($db->qn('params') . ' = ' . $db->q($this->params->toString('JSON')))
-					->where($db->qn('type') . ' = ' . $db->q('plugin'))
-					->where($db->qn('folder') . ' = ' . $db->q('system'))
-					->where($db->qn('element') . ' = ' . $db->q('updatenotification'));
-
-		try
-		{
-			// Lock the tables to prevent multiple plugin executions causing a race condition
-			$db->lockTable('#__extensions');
-		}
-		catch (Exception $e)
-		{
-			// If we can't lock the tables it's too risky to continue execution
-			return;
-		}
-
-		try
-		{
-			// Update the plugin parameters
-			$result = $db->setQuery($query)->execute();
-
-			$this->clearCacheGroups(array('com_plugins'), array(0, 1));
-		}
-		catch (Exception $exc)
-		{
-			// If we failed to execute
-			$db->unlockTables();
-			$result = false;
-		}
-
-		try
-		{
-			// Unlock the tables after writing
-			$db->unlockTables();
-		}
-		catch (Exception $e)
-		{
-			// If we can't lock the tables assume we have somehow failed
-			$result = false;
-		}
-
-		// Abort on failure
-		if (!$result)
-		{
-			return;
-		}
+		$debug = defined('PLG_SYSTEM_UPDATENOTIFICATION_DEBUG');
 
 		// This is the extension ID for Joomla! itself
 		$eid = 700;
 
-		// Get any available updates
-		$updater = JUpdater::getInstance();
-		$results = $updater->findUpdates(array($eid), $cache_timeout);
+		// Check for updates every "Updates Caching" interval of the Installer options
+		$now = time();
 
-		// If there are no updates our job is done. We need BOTH this check AND the one below.
-		if (!$results)
+		$update  = null;
+		$checked = $this->claimRun('lastrun', function ($last) use ($now, $cache_timeout, $debug) {
+			return $debug || abs($now - $last) >= $cache_timeout;
+		});
+
+		if ($checked)
+		{
+			JUpdater::getInstance()->findUpdates(array($eid), $cache_timeout);
+		}
+
+		// The version the last check found, kept in the plugin's options, so most page loads decide without the database
+		$pending = $this->params->get('pendingversion', null);
+
+		if ($checked || $pending === null)
+		{
+			$update  = $this->getPendingUpdate($eid);
+			$pending = $update ? (string) $update->version : '';
+			$this->setOption('pendingversion', $pending);
+		}
+
+		/*
+		 * Email once a day while an update is pending. From the chosen hour on (in the site's time zone), the first visit
+		 * which finds an update pending sends the email; then the next one waits for the chosen hour of the next day. An update
+		 * found after the chosen hour is reported straight away, on the first visit after the check which found it.
+		 */
+		$slot  = $this->getNotificationTime($now);
+		$isDue = function ($last) use ($now, $slot, $debug) {
+			return $debug || ($now >= $slot && $last < $slot);
+		};
+
+		if ($pending === '' || !$isDue((int) $this->params->get('lastnotified', 0)))
 		{
 			return;
 		}
 
-		// Unfortunately Joomla! MVC doesn't allow us to autoload classes
-		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_installer/models', 'InstallerModel');
+		// Confirm it, e.g. the site may have been updated since the check
+		$update = $update ?: $this->getPendingUpdate($eid);
 
-		// Get the update model and retrieve the Joomla! core updates
-		$model = JModelLegacy::getInstance('Update', 'InstallerModel');
-		$model->setState('filter.extension_id', $eid);
-		$updates = $model->getItems();
-
-		// If there are no updates we don't have to notify anyone about anything. This is NOT a duplicate check.
-		if (empty($updates))
+		if (!$update)
 		{
+			$this->setOption('pendingversion', '');
+
 			return;
 		}
 
-		// Get the available update
-		$update = array_pop($updates);
-
-		// Check the available version. If it's the same or less than the installed version we have no updates to notify about.
-		if (version_compare($update->version, JVERSION, 'le'))
+		// Lock until the chosen hour of the next day; simultaneous visits can't both get here
+		if (!$this->claimRun('lastnotified', $isDue))
 		{
 			return;
 		}
@@ -232,7 +193,7 @@ class PlgSystemUpdatenotification extends JPlugin
 			'[SITENAME]'    => $sitename,
 			'[URL]'         => JUri::base(),
 			'[LINK]'        => $uri->toString(),
-			'[RELEASENEWS]' => 'https://www.joomla.org/announcements/release-news/',
+			'[RELEASENEWS]' => 'https://github.com/joomlaworks/joomla-3.x',
 			'\\n'           => "\n",
 		);
 
@@ -378,6 +339,172 @@ class PlgSystemUpdatenotification extends JPlugin
 		}
 
 		return $ret;
+	}
+
+	/**
+	 * Get the pending Joomla update, from the update information stored by the last update check.
+	 *
+	 * @param   integer  $eid  The extension ID of Joomla itself
+	 *
+	 * @return  object|null  The update, null if there is no newer version
+	 *
+	 * @since   3.17.0
+	 */
+	private function getPendingUpdate($eid)
+	{
+		// Unfortunately Joomla! MVC doesn't allow us to autoload classes
+		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_installer/models', 'InstallerModel');
+
+		// Get the update model and retrieve the Joomla! core updates
+		$model = JModelLegacy::getInstance('Update', 'InstallerModel');
+		$model->setState('filter.extension_id', $eid);
+		$updates = $model->getItems();
+
+		if (empty($updates))
+		{
+			return null;
+		}
+
+		$update = array_pop($updates);
+
+		// If it's the same or less than the installed version we have no updates to notify about
+		return version_compare($update->version, JVERSION, 'le') ? null : $update;
+	}
+
+	/**
+	 * Store a value in the plugin's options, when it changed.
+	 *
+	 * @param   string  $key    The option
+	 * @param   mixed   $value  The value
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	private function setOption($key, $value)
+	{
+		if ($this->params->get($key, null) !== $value)
+		{
+			$this->claimRun($key, function () {
+				return true;
+			}, $value);
+		}
+	}
+
+	/**
+	 * Today's email time, as a timestamp: the "Email Time" hour in the time zone of the Global Configuration.
+	 *
+	 * @param   integer  $now  The current timestamp
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.17.0
+	 */
+	private function getNotificationTime($now)
+	{
+		$hour = min(23, max(0, (int) $this->params->get('notification_hour', 10)));
+
+		try
+		{
+			$timezone = new DateTimeZone((string) JFactory::getConfig()->get('offset', 'UTC'));
+		}
+		catch (Exception $e)
+		{
+			$timezone = new DateTimeZone('UTC');
+		}
+
+		$time = new DateTime('@' . $now);
+		$time->setTimezone($timezone);
+		$time->setTime($hour, 0, 0);
+
+		return $time->getTimestamp();
+	}
+
+	/**
+	 * Record that a task runs now, if it's due. The time is read and written while the table is locked, so simultaneous
+	 * requests can't both run it, and only this value is written, so the other values stored in the plugin's options
+	 * aren't overwritten with older ones. setOption() uses it to store other values the same way.
+	 *
+	 * @param   string    $key    The option holding the task's last run time, e.g. "lastrun"
+	 * @param   callable  $isDue  Gets the last run time and tells whether the task is due
+	 * @param   mixed     $value  The value to store instead of the current time
+	 *
+	 * @return  boolean  True if the task should run now
+	 *
+	 * @since   3.17.0
+	 */
+	private function claimRun($key, $isDue, $value = null)
+	{
+		$stored = $value === null ? time() : $value;
+
+		// Most requests stop here, without touching the database
+		if (!$isDue((int) $this->params->get($key, 0)))
+		{
+			return false;
+		}
+
+		$db = JFactory::getDbo();
+
+		$where = array(
+			$db->qn('type') . ' = ' . $db->q('plugin'),
+			$db->qn('folder') . ' = ' . $db->q('system'),
+			$db->qn('element') . ' = ' . $db->q('updatenotification'),
+		);
+
+		try
+		{
+			// Lock the tables to prevent multiple plugin executions causing a race condition
+			$db->lockTable('#__extensions');
+		}
+		catch (Exception $e)
+		{
+			// If we can't lock the tables it's too risky to continue execution
+			return false;
+		}
+
+		try
+		{
+			$query = $db->getQuery(true)
+				->select($db->qn('params'))
+				->from($db->qn('#__extensions'))
+				->where($where);
+			$params = new Registry((string) $db->setQuery($query)->loadResult());
+			$claimed = $isDue((int) $params->get($key, 0));
+
+			if ($claimed)
+			{
+				$params->set($key, $stored);
+
+				$query = $db->getQuery(true)
+					->update($db->qn('#__extensions'))
+					->set($db->qn('params') . ' = ' . $db->q($params->toString('JSON')))
+					->where($where);
+				$claimed = (bool) $db->setQuery($query)->execute();
+			}
+		}
+		catch (Exception $exc)
+		{
+			$claimed = false;
+		}
+
+		try
+		{
+			// Unlock the tables after writing
+			$db->unlockTables();
+		}
+		catch (Exception $e)
+		{
+			// If we can't unlock the tables assume we have somehow failed
+			return false;
+		}
+
+		if ($claimed)
+		{
+			$this->params->set($key, $stored);
+			$this->clearCacheGroups(array('com_plugins'), array(0, 1));
+		}
+
+		return $claimed;
 	}
 
 	/**

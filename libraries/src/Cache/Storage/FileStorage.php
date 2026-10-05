@@ -108,6 +108,12 @@ class FileStorage extends CacheStorage
 		$path  = $this->_getFilePath($id, $group);
 		$close = false;
 
+		// No path when the cache folder can't be created; PHP 8 throws on an empty path even with @
+		if ($path === false)
+		{
+			return false;
+		}
+
 		if ($checkTime == false || ($checkTime == true && $this->_checkExpire($id, $group) === true))
 		{
 			if (file_exists($path))
@@ -190,6 +196,12 @@ class FileStorage extends CacheStorage
 	{
 		$path  = $this->_getFilePath($id, $group);
 		$close = false;
+
+		// No path when the cache folder can't be created; PHP 8 throws on an empty path even with @
+		if ($path === false)
+		{
+			return false;
+		}
 
 		// Prepend a die string
 		$data = '<?php die("Access Denied"); ?>#x#' . $data;
@@ -343,7 +355,9 @@ class FileStorage extends CacheStorage
 
 		$looptime  = $locktime * 10;
 		$path      = $this->_getFilePath($id, $group);
-		$_fileopen = @fopen($path, 'c+b');
+
+		// No path when the cache folder can't be created; PHP 8 throws on an empty path even with @
+		$_fileopen = $path === false ? false : @fopen($path, 'c+b');
 
 		if (!$_fileopen)
 		{

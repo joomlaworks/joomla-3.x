@@ -50,6 +50,8 @@ Summary of changes:
 - Fixed a PHP warning in command line scripts given an empty argument
 - Fixed PHP 8.4/8.5 deprecation warnings when checking for updates, reading RSS feeds, sending mail with NTLM authentication, connecting to LDAP and using FTP
 - Fixed extension updates losing their download key when the package URL already had a query string
+- Update notification emails for a new Joomla version are now sent once a day, at a time you choose in the plugin's options (10:00 by default); they used to go out every 6 hours until the site was updated
+- Fixed a fatal error on PHP 8 when the "File" cache handler can't create a cache folder
 - Fixed exporting and importing database tables with Joomla's database exporter/importer (invalid XML for some column defaults, and a fatal error importing new tables with the "MySQL (PDO)" driver)
 
 **New features:**
