@@ -1,0 +1,11 @@
+{
+	"title": "News",
+	"siteName": "Hammond News",
+	"template": "hammond",
+	"pagesCategory": "company",
+	"archive": ["monsoon-rains-bring-relief-to-parched-farmland", "two-nations-reopen-land-border-after-long-closure"],
+	"menus": {
+		"mainmenu": {"type": "newsmenu", "title": "News Menu", "description": "The sections of the news site"},
+		"companymenu": {"type": "newscompany", "title": "News Company Menu", "description": "About, contact and legal pages"}
+	}
+}

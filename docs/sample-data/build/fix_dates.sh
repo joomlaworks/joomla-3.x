@@ -1,7 +1,8 @@
-# Dates of the News build: articles created (and last changed) when published; the info pages, categories and tags before them
-HERE=$(dirname "$0"); B=$1; PHP=${PHP:-php}; OLD='2026-09-01 09:00:00'
+# Dates of a sample data build: articles created (and last changed) when published; the info pages (their category's alias is
+# the second argument), categories and tags before them. Usage: fix_dates.sh <site> <pages category alias>
+HERE=$(dirname "$0"); B=$1; PAGES=$2; PHP=${PHP:-php}; OLD='2026-08-01 09:00:00'
 $PHP $HERE/q.php $B \
- "UPDATE #__content SET publish_up = '$OLD' WHERE catid = (SELECT id FROM #__categories WHERE alias = 'company' AND extension = 'com_content')" \
+ "UPDATE #__content SET publish_up = '$OLD' WHERE catid = (SELECT id FROM #__categories WHERE alias = '$PAGES' AND extension = 'com_content')" \
  "UPDATE #__content SET created = publish_up, modified = publish_up" \
  "UPDATE #__ucm_content SET core_publish_up = (SELECT publish_up FROM #__content WHERE #__content.id = #__ucm_content.core_content_item_id) WHERE core_type_alias = 'com_content.article'" \
  "UPDATE #__ucm_content SET core_created_time = core_publish_up, core_modified_time = core_publish_up WHERE core_type_alias = 'com_content.article'" \

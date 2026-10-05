@@ -39,6 +39,7 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 ## Version 3.17 - unreleased [pending]
 Summary of changes:
 - New default template for new sites, **Hammond**: a modern, light news and magazine design with a frontpage made of modules, built with plain CSS and JavaScript
+- New **Finch** blog template, with a new **Blog** sample data set (a personal blog of 20 essays)
 - New **News** sample data set, a complete news site for Hammond, with its images; the installer now offers just News and Blog, and both can also be added later from the Control Panel
 - TinyMCE 8, the current TinyMCE, as a new editor ("Editor - TinyMCE", the default for new sites); TinyMCE 4 stays as "Editor - TinyMCE (legacy)", and existing sites keep it until they switch in Global Configuration
 - New command line interface (`cli/joomla.php`) with the commands of the Joomla 4+ CLI and JSON output for scripts and AI agents, plus content management (articles, categories, modules, menus), dry runs, a health check and log viewers
@@ -88,7 +89,6 @@ Summary of changes:
 - The command line now shows the messages of older code (e.g. why a category can't be deleted), and a broken command file no longer stops the other commands
 - Fixed tags given by ID from the command line being created as new tags named after the number
 - Fixed date calculations with negative intervals failing on the SQLite database driver
-- Fixed the Blog sample data leaving out the Control Panel's Sample Data, Joomla Version and Privacy Dashboard modules
 
 **Improvements:**
 - The "Joomla! Statistics" plugin and its request to send statistics are off on new and updated sites (joomla.org's statistics don't cover this distribution)
@@ -109,6 +109,8 @@ Summary of changes:
 - New command line interface, `cli/joomla.php`, using the same command names and options as Joomla 4 and later to update Joomla and manage the configuration, users, extensions, database, cache, sessions and Smart Search (e.g. `php cli/joomla.php core:update`, `database:export`, `user:add`, `extension:install`, `config:set`, `site:down`). Every command can return JSON (`--format=json`), so scripts and AI agents can work with the site directly. Extensions can add their own commands. The existing scripts in `cli/` still work as before (cron jobs need no changes), but now run the new commands.
 - Hammond, a news and magazine template: a 12-column frontpage of modules (main story, latest news, sections, opinion, most read, ad slots), a sticky header with a combined menu and search panel, list, article and info page layouts, share popups, system fonts and SVG icons, sized for readability and Core Web Vitals. The default template of new sites without sample data or with the News set; installed but not activated on existing sites
 - News sample data: 227 articles in ten sections with tags, menus and modules, and images, videos and posts matching each section. From the installer, `core:install --sample-data=news` or the Control Panel's Sample Data module (which also makes a Hammond style the site's default template)
+- Finch, a blog template: the latest post large and the others as cards beside a sidebar, posts in a calm reading column with a drop cap, author box and links to the previous and next posts, standalone pages, system fonts and SVG icons. The default template of new sites with the Blog set; installed but not activated on existing sites
+- Blog sample data: 20 essays by one author in four topics, with tags, pages and the sidebar's modules, using the News set's images. From the installer, `core:install --sample-data=blog` or the Control Panel's Sample Data module (which also makes a Finch style the site's default template)
 
 ## Version 3.16 - released October 3rd, 2026
 Summary of changes:
@@ -262,7 +264,7 @@ A new site on SQLite takes one command: give it the site's name, the administrat
 wget -q https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip && unzip -q joomla-latest.zip && rm joomla-latest.zip && php cli/joomla.php core:install --site-name="My Site" --admin-email=me@example.com --admin-username=admin
 ```
 
-Add `--sample-data=news` (or `blog`) to start with one of the installer's sample data sets; the news set comes with the Hammond template as the site's template. It needs PHP 7.4 or newer with the `pdo_sqlite` extension. `--format=json` returns the details (including the password) for scripts.
+Add `--sample-data=news` (or `blog`) to start with one of the installer's sample data sets; the news set comes with the Hammond template as the site's template, the blog set with Finch. It needs PHP 7.4 or newer with the `pdo_sqlite` extension. `--format=json` returns the details (including the password) for scripts.
 
 
 ## PHP COMPATIBILITY

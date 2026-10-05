@@ -1,9 +1,9 @@
 """Converts the fetched images (JPEG, <images>/<section>/<section>-NN.jpg, with credits.json) to the bundled WebP files of
-images/sampledata/news/, and writes credits.json and CREDITS.md next to this folder. Usage: python3 convert_images.py <images folder>"""
+images/sampledata/news/, and writes credits.json and CREDITS.md in this folder. Usage: python3 convert_images.py <images folder>"""
 import json, os, sys
 from PIL import Image
 SRC = sys.argv[1]
-DOCS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DOCS = os.path.dirname(os.path.abspath(__file__))
 DST = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(DOCS))), 'images', 'sampledata', 'news')
 credits = json.load(open(os.path.join(SRC, 'credits.json')))
 out = {}

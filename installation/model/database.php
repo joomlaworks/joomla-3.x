@@ -995,8 +995,12 @@ class InstallationModelDatabase extends JModelBase
 		// Update the sample data user ids.
 		$this->updateUserIds($db);
 
-		// The News set keeps its articles hours and days apart (the latest few minutes old), as on a news site
-		if ($sampleFileName === 'sample_news.sql')
+		// The sets made for this distribution's templates; any other set (e.g. of a language pack) gets Protostar, made for the
+		// stock ones. Hammond, the default template of a new site, stays for the News set.
+		$templates = array('sample_news.sql' => 'hammond', 'sample_blog.sql' => 'finch');
+
+		// These keep their articles hours and days apart (the latest few minutes old), as on a news site or a blog
+		if (isset($templates[$sampleFileName]))
 		{
 			$this->shiftDates($db);
 		}
@@ -1006,11 +1010,7 @@ class InstallationModelDatabase extends JModelBase
 			$this->updateDates($db);
 		}
 
-		// Hammond, the default template of a new site, is made for the News set: the other sets get Protostar, made for them
-		if ($sampleFileName !== 'sample_news.sql')
-		{
-			$this->setDefaultSiteTemplate($db, 'protostar');
-		}
+		$this->setDefaultSiteTemplate($db, isset($templates[$sampleFileName]) ? $templates[$sampleFileName] : 'protostar');
 	}
 
 	/**

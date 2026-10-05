@@ -269,6 +269,7 @@ class ExtensionHelper
 
 		// Core template extensions - site
 		array('template', 'beez3', '', 0),
+		array('template', 'finch', '', 0),
 		array('template', 'hammond', '', 0),
 		array('template', 'protostar', '', 0),
 	);

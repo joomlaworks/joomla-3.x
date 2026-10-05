@@ -14,13 +14,13 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Multilanguage;
 
 /**
- * The News sample data set of the Sample Data plugin: the news site of the installer's News sample data (data/news.json, made
- * from the same site as installation/sql/<dialect>/sample_news.sql), added to an existing site, with a style of the Hammond
- * template for it which becomes the site's default.
+ * A sample data set of the Sample Data plugin (News, Blog): the content of the installer's set (data/<set>.json, made from the
+ * same site as installation/sql/<dialect>/sample_<set>.sql, by docs/sample-data/build/build.sh), added to an existing site,
+ * with a style of the set's template (Hammond, Finch) which becomes the site's default.
  *
  * @since  3.17.0
  */
-class PlgSampledataBlogNews
+class PlgSampledataBlogSet
 {
 	/**
 	 * Database object
@@ -39,12 +39,39 @@ class PlgSampledataBlogNews
 	protected $app;
 
 	/**
-	 * The articles are added in this many steps, so that no request runs too long
+	 * The sets: their template and the number of steps adding their articles, so that no request runs too long
+	 *
+	 * @var    array
+	 * @since  3.17.0
+	 */
+	const SETS = array(
+		'news' => array('template' => 'hammond', 'articleSteps' => 4),
+		'blog' => array('template' => 'finch', 'articleSteps' => 1),
+	);
+
+	/**
+	 * The set: news or blog
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	private $name;
+
+	/**
+	 * The set's template
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	private $template;
+
+	/**
+	 * The steps adding articles
 	 *
 	 * @var    integer
 	 * @since  3.17.0
 	 */
-	const ARTICLE_STEPS = 4;
+	private $articleSteps;
 
 	/**
 	 * The sample data
@@ -57,15 +84,19 @@ class PlgSampledataBlogNews
 	/**
 	 * Constructor.
 	 *
-	 * @param   JApplicationCms  $app  The application
-	 * @param   JDatabaseDriver  $db   The database
+	 * @param   JApplicationCms  $app   The application
+	 * @param   JDatabaseDriver  $db    The database
+	 * @param   string           $name  The set (a key of SETS)
 	 *
 	 * @since   3.17.0
 	 */
-	public function __construct($app, $db)
+	public function __construct($app, $db, $name)
 	{
-		$this->app = $app;
-		$this->db  = $db;
+		$this->app          = $app;
+		$this->db           = $db;
+		$this->name         = $name;
+		$this->template     = self::SETS[$name]['template'];
+		$this->articleSteps = self::SETS[$name]['articleSteps'];
 	}
 
 	/**
@@ -78,11 +109,11 @@ class PlgSampledataBlogNews
 	public function getOverview()
 	{
 		$data              = new stdClass;
-		$data->name        = 'news';
-		$data->title       = JText::_('PLG_SAMPLEDATA_BLOG_NEWS_OVERVIEW_TITLE');
-		$data->description = JText::_('PLG_SAMPLEDATA_BLOG_NEWS_OVERVIEW_DESC');
-		$data->icon        = 'stack';
-		$data->steps       = self::ARTICLE_STEPS + 3;
+		$data->name        = $this->name;
+		$data->title       = JText::_('PLG_SAMPLEDATA_BLOG_' . strtoupper($this->name) . '_OVERVIEW_TITLE');
+		$data->description = JText::_('PLG_SAMPLEDATA_BLOG_' . strtoupper($this->name) . '_OVERVIEW_DESC');
+		$data->icon        = $this->name === 'news' ? 'stack' : 'pencil-2';
+		$data->steps       = $this->articleSteps + 3;
 
 		return $data;
 	}
@@ -98,11 +129,11 @@ class PlgSampledataBlogNews
 	 */
 	public function step($step)
 	{
-		$component = $step <= self::ARTICLE_STEPS + 1 ? 'com_content' : ($step === self::ARTICLE_STEPS + 2 ? 'com_menus' : 'com_modules');
+		$component = $step <= $this->articleSteps + 1 ? 'com_content' : ($step === $this->articleSteps + 2 ? 'com_menus' : 'com_modules');
 
 		if (!ComponentHelper::isEnabled($component) || !Factory::getUser()->authorise('core.create', $component))
 		{
-			return array('success' => true, 'message' => JText::sprintf('PLG_SAMPLEDATA_BLOG_NEWS_STEP_SKIPPED', $step, $component));
+			return array('success' => true, 'message' => JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_STEP_SKIPPED', $step, $component));
 		}
 
 		try
@@ -111,11 +142,11 @@ class PlgSampledataBlogNews
 			{
 				$message = $this->addCategoriesAndTags();
 			}
-			elseif ($step <= self::ARTICLE_STEPS + 1)
+			elseif ($step <= $this->articleSteps + 1)
 			{
 				$message = $this->addArticles($step - 1);
 			}
-			elseif ($step === self::ARTICLE_STEPS + 2)
+			elseif ($step === $this->articleSteps + 2)
 			{
 				$message = $this->addMenus();
 			}
@@ -126,7 +157,7 @@ class PlgSampledataBlogNews
 		}
 		catch (Exception $e)
 		{
-			return array('success' => false, 'message' => JText::sprintf('PLG_SAMPLEDATA_BLOG_NEWS_STEP_FAILED', $step, $e->getMessage()));
+			return array('success' => false, 'message' => JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_STEP_FAILED', $step, $e->getMessage()));
 		}
 
 		return array('success' => true, 'message' => $message);
@@ -144,11 +175,11 @@ class PlgSampledataBlogNews
 	{
 		if ($this->data === null)
 		{
-			$this->data = json_decode((string) @file_get_contents(__DIR__ . '/data/news.json'), true);
+			$this->data = json_decode((string) @file_get_contents(__DIR__ . '/data/' . $this->name . '.json'), true);
 
 			if (!is_array($this->data))
 			{
-				throw new RuntimeException('data/news.json');
+				throw new RuntimeException('data/' . $this->name . '.json');
 			}
 		}
 
@@ -166,7 +197,7 @@ class PlgSampledataBlogNews
 	 */
 	private function getMap($name)
 	{
-		return (array) $this->app->getUserState('sampledata.news.' . $name, array());
+		return (array) $this->app->getUserState('sampledata.' . $this->name . '.' . $name, array());
 	}
 
 	/**
@@ -196,7 +227,7 @@ class PlgSampledataBlogNews
 	{
 		$alias = $data['alias'];
 
-		foreach (array('', '-news', '-news-2', '-news-3') as $suffix)
+		foreach (array('', '-' . $this->name, '-' . $this->name . '-2', '-' . $this->name . '-3') as $suffix)
 		{
 			// The model takes an empty ID for "the item saved last": always start a new one
 			$model->setState($model->getName() . '.id', 0);
@@ -275,17 +306,17 @@ class PlgSampledataBlogNews
 			));
 		}
 
-		$this->app->setUserState('sampledata.news.tags', $tags);
-		$this->app->setUserState('sampledata.news.categories', $categories);
-		$this->app->setUserState('sampledata.news.articles', array());
+		$this->app->setUserState('sampledata.' . $this->name . '.tags', $tags);
+		$this->app->setUserState('sampledata.' . $this->name . '.categories', $categories);
+		$this->app->setUserState('sampledata.' . $this->name . '.articles', array());
 
-		return JText::sprintf('PLG_SAMPLEDATA_BLOG_NEWS_STEP1_SUCCESS', count($categories), count($tags));
+		return JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_STEP1_SUCCESS', count($categories), count($tags));
 	}
 
 	/**
 	 * Add a part of the articles.
 	 *
-	 * @param   integer  $part  The part (1 to ARTICLE_STEPS)
+	 * @param   integer  $part  The part (1 to the set's article steps)
 	 *
 	 * @return  string  The step's message
 	 *
@@ -303,7 +334,7 @@ class PlgSampledataBlogNews
 
 		if (!$categories)
 		{
-			throw new RuntimeException(JText::_('PLG_SAMPLEDATA_BLOG_NEWS_NO_CATEGORIES'));
+			throw new RuntimeException(JText::_('PLG_SAMPLEDATA_BLOG_SET_NO_CATEGORIES'));
 		}
 
 		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_content/models/', 'ContentModel');
@@ -312,7 +343,7 @@ class PlgSampledataBlogNews
 
 		// As in the installer: the latest article was published 25 minutes ago, the others hours and days before it
 		$latest = Factory::getDate('now')->toUnix() - 25 * 60;
-		$chunk  = array_chunk($data['articles'], (int) ceil(count($data['articles']) / self::ARTICLE_STEPS));
+		$chunk  = array_chunk($data['articles'], (int) ceil(count($data['articles']) / $this->articleSteps));
 		$chunk  = isset($chunk[$part - 1]) ? $chunk[$part - 1] : array();
 
 		foreach ($chunk as $article)
@@ -342,13 +373,13 @@ class PlgSampledataBlogNews
 			$articles[$article['alias']] = $id;
 		}
 
-		$this->app->setUserState('sampledata.news.articles', $articles);
+		$this->app->setUserState('sampledata.' . $this->name . '.articles', $articles);
 
-		return JText::sprintf('PLG_SAMPLEDATA_BLOG_NEWS_STEP_ARTICLES_SUCCESS', count($chunk));
+		return JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_STEP_ARTICLES_SUCCESS', count($chunk));
 	}
 
 	/**
-	 * Add the menus and the Hammond template's style for the news site.
+	 * Add the menus and the set's style of its template.
 	 *
 	 * @return  string  The step's message
 	 *
@@ -370,7 +401,7 @@ class PlgSampledataBlogNews
 
 		foreach ($data['menus'] as $menutype => $menu)
 		{
-			// A menu type of its own: newsmenu, else newsmenu2 ...
+			// A menu type of its own: e.g. newsmenu, else newsmenu2 ...
 			$table = JTable::getInstance('Type', 'JTableMenu');
 
 			for ($i = 1; $table->load(array('menutype' => $menutype . ($i > 1 ? $i : ''))); $i++)
@@ -404,34 +435,40 @@ class PlgSampledataBlogNews
 			}
 		}
 
-		$this->app->setUserState('sampledata.news.menus', $menus);
+		$this->app->setUserState('sampledata.' . $this->name . '.menus', $menus);
 
-		// The news site's settings in a style of Hammond's own, which becomes the site's default template
-		$hammond = (int) $this->db->setQuery(
+		// The set's settings in a style of its template, which becomes the site's default template
+		$installed = (int) $this->db->setQuery(
 			$this->db->getQuery(true)
 				->select($this->db->quoteName('extension_id'))
 				->from($this->db->quoteName('#__extensions'))
 				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('template'))
-				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('hammond'))
+				->where($this->db->quoteName('element') . ' = ' . $this->db->quote($this->template))
 				->where($this->db->quoteName('client_id') . ' = 0')
 		)->loadResult();
 
-		if (!$hammond)
+		$menusAdded = JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_STEP_MENUS_SUCCESS', implode(', ', array_map(function ($menu)
 		{
-			return JText::_('PLG_SAMPLEDATA_BLOG_NEWS_STEP_MENUS_SUCCESS') . ' ' . JText::_('PLG_SAMPLEDATA_BLOG_NEWS_NO_HAMMOND');
+			return $menu['title'];
+		}, $data['menus'])));
+
+		if (!$installed)
+		{
+			return $menusAdded . ' ' . JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_NO_TEMPLATE', ucfirst($this->template));
 		}
 
 		$params              = $data['template'];
 		$params['pagesMenu'] = isset($menus[$params['pagesMenu']]) ? $menus[$params['pagesMenu']] : '';
 		$style               = (object) array(
-			'id' => null, 'template' => 'hammond', 'client_id' => 0, 'home' => '0', 'title' => JText::_('PLG_SAMPLEDATA_BLOG_NEWS_TEMPLATE_STYLE'),
+			'id' => null, 'template' => $this->template, 'client_id' => 0, 'home' => '0',
+			'title' => JText::_('PLG_SAMPLEDATA_BLOG_' . strtoupper($this->name) . '_TEMPLATE_STYLE'),
 			'params' => json_encode($params),
 		);
 		$this->db->insertObject('#__template_styles', $style, 'id');
 
 		if (!Factory::getUser()->authorise('core.edit.state', 'com_templates'))
 		{
-			return JText::_('PLG_SAMPLEDATA_BLOG_NEWS_STEP_MENUS_SUCCESS') . ' ' . JText::sprintf('PLG_SAMPLEDATA_BLOG_NEWS_STYLE_ADDED', $style->title);
+			return $menusAdded . ' ' . JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_STYLE_ADDED', $style->title);
 		}
 
 		// The site's default style (of all languages: "1") becomes this one
@@ -449,11 +486,11 @@ class PlgSampledataBlogNews
 				->where($this->db->quoteName('id') . ' = ' . (int) $style->id)
 		)->execute();
 
-		return JText::_('PLG_SAMPLEDATA_BLOG_NEWS_STEP_MENUS_SUCCESS') . ' ' . JText::sprintf('PLG_SAMPLEDATA_BLOG_NEWS_STYLE_DEFAULT', $style->title);
+		return $menusAdded . ' ' . JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_STYLE_DEFAULT', $style->title);
 	}
 
 	/**
-	 * Add the modules, in the Hammond template's positions.
+	 * Add the modules, in the positions of the set's template.
 	 *
 	 * @return  string  The step's message
 	 *
@@ -511,6 +548,6 @@ class PlgSampledataBlogNews
 			}
 		}
 
-		return JText::_('PLG_SAMPLEDATA_BLOG_NEWS_STEP_MODULES_SUCCESS');
+		return JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_STEP_MODULES_SUCCESS', ucfirst($this->template));
 	}
 }

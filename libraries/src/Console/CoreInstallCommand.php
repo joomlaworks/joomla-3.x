@@ -40,7 +40,7 @@ class CoreInstallCommand extends AbstractCommand
 		. '(no configuration.php), using the installer of its "installation" folder. Only the site\'s name, the administrator\'s email '
 		. 'address and username are needed; when they aren\'t given, they\'re asked for one by one. The administrator\'s password is '
 		. 'generated (16 letters and digits) and shown at the end. --sample-data also installs one of the installer\'s sample data '
-		. 'sets (news or blog). The site\'s template is Hammond, with no sample data or the news set, and Protostar with the '
+		. 'sets (news or blog). The site\'s template is Hammond, with no sample data or the news set, and Finch with the '
 		. 'blog set. The database file gets an unguessable name in the "database" '
 		. 'folder, which is protected from web access, and the "installation" folder is removed afterwards. Like the web installer, '
 		. 'it checks that whoever installs can change the site\'s files, by deleting a file it creates in the "installation" folder. '

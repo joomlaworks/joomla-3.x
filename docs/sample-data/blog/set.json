@@ -1,0 +1,11 @@
+{
+	"title": "Blog",
+	"siteName": "Field Notes",
+	"template": "finch",
+	"pagesCategory": "pages",
+	"archive": [],
+	"menus": {
+		"mainmenu": {"type": "blogmenu", "title": "Blog Menu", "description": "The topics of the blog"},
+		"footermenu": {"type": "blogfooter", "title": "Blog Footer Menu", "description": "About, contact and privacy pages"}
+	}
+}

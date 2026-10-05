@@ -1,5 +1,5 @@
-"""Builds the Hammond News structure on the dev site: template, menus, info pages and modules. Re-runnable: it trashes and
-deletes what it created before (modules in the template's positions, the company menu's items) and creates them again."""
+"""Builds the News set's structure on its build site: the Hammond template's settings, menus, info pages and modules. Re-runnable: it
+deletes what it created before (modules in the template's positions) and creates them again. Usage: setup.py <site> <q.php>"""
 import json, os, subprocess, sys
 PHP = os.environ.get('PHP', 'php')
 

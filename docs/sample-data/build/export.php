@@ -1,10 +1,12 @@
 <?php
-// Writes plugins/sampledata/blog/data/news.json (the Sample Data plugin's News set) from the News build site (the same content as sample_news.sql), with
-// categories, tags, articles and menu items referred to by alias: php export_plugin_data.php <site> <repo>
+// Writes plugins/sampledata/blog/data/<set>.json (a set of the Sample Data plugin) from the set's build site (the same content as
+// sample_<set>.sql), with categories, tags, articles and menu items referred to by alias: php export.php <site> <repo> <set>
 define('_JEXEC', 1); define('JPATH_BASE', $argv[1]);
 require JPATH_BASE . '/includes/defines.php'; require JPATH_BASE . '/libraries/import.legacy.php'; require JPATH_BASE . '/libraries/cms.php';
 require_once JPATH_BASE . '/configuration.php'; JFactory::$config = new Joomla\Registry\Registry(new JConfig);
-$db = JFactory::getDbo();
+$db     = JFactory::getDbo();
+$set    = $argv[3];
+$config = json_decode(file_get_contents(__DIR__ . '/../' . $set . '/set.json'), true);
 
 $cats    = $db->setQuery("SELECT id, title, alias, description, params, metadata FROM #__categories WHERE extension = 'com_content' AND level = 1 AND alias != 'uncategorised' ORDER BY lft")->loadObjectList('id');
 $catById = array_map(function ($c) { return $c->alias; }, $cats);
@@ -39,13 +41,15 @@ foreach ($db->setQuery("SELECT * FROM #__content ORDER BY id")->loadObjectList()
 	);
 }
 
-// Menus: the main menu (without its home item: the site keeps its own) and the company menu, with links by alias
-$types = array('mainmenu' => 'newsmenu', 'companymenu' => 'newscompany');
-foreach ($db->setQuery("SELECT menutype, title, description FROM #__menu_types WHERE menutype IN ('mainmenu', 'companymenu')")->loadObjectList() as $t)
+// Menus: the set's menus under menu types of their own (set.json), without the home item (the site keeps its own), with links by alias
+$types = array();
+foreach ($config['menus'] as $menutype => $menu)
 {
-	$data['menus'][$types[$t->menutype]] = array('title' => $t->menutype === 'mainmenu' ? 'News Menu' : 'News Company Menu', 'description' => $t->menutype === 'mainmenu' ? 'The sections of the news site' : $t->description, 'items' => array());
+	$types[$menutype]              = $menu['type'];
+	$data['menus'][$menu['type']] = array('title' => $menu['title'], 'description' => $menu['description'], 'items' => array());
 }
-foreach ($db->setQuery("SELECT * FROM #__menu WHERE client_id = 0 AND menutype IN ('mainmenu', 'companymenu') AND home = 0 ORDER BY lft")->loadObjectList() as $i)
+$quoted = implode(', ', array_map(array($db, 'quote'), array_keys($types)));
+foreach ($db->setQuery("SELECT * FROM #__menu WHERE client_id = 0 AND menutype IN ($quoted) AND home = 0 ORDER BY lft")->loadObjectList() as $i)
 {
 	$link = preg_replace_callback('/view=(category|article)(&layout=blog)?&id=(\d+)/', function ($m) use ($catById, $artById) {
 		return 'view=' . $m[1] . $m[2] . '&id={' . $m[1] . ':' . ($m[1] === 'category' ? $catById[$m[3]] : $artById[$m[3]]) . '}';
@@ -57,7 +61,7 @@ foreach ($db->setQuery("SELECT * FROM #__menu WHERE client_id = 0 AND menutype I
 foreach ($db->setQuery("SELECT * FROM #__modules WHERE client_id = 0 ORDER BY position, ordering")->loadObjectList() as $m)
 {
 	$params = json_decode($m->params, true);
-	if (isset($params['menutype']))
+	if (isset($params['menutype'], $types[$params['menutype']]))
 	{
 		$params['menutype'] = $types[$params['menutype']];
 	}
@@ -69,11 +73,14 @@ foreach ($db->setQuery("SELECT * FROM #__modules WHERE client_id = 0 ORDER BY po
 		'showtitle' => (int) $m->showtitle, 'ordering' => (int) $m->ordering, 'params' => $params);
 }
 
-$style = json_decode($db->setQuery("SELECT params FROM #__template_styles WHERE template = 'hammond' AND client_id = 0")->loadResult(), true);
-$style['pagesMenu'] = $types[$style['pagesMenu']];
+$style = json_decode($db->setQuery("SELECT params FROM #__template_styles WHERE template = " . $db->quote($config['template']) . " AND client_id = 0")->loadResult(), true);
+if (isset($style['pagesMenu'], $types[$style['pagesMenu']]))
+{
+	$style['pagesMenu'] = $types[$style['pagesMenu']];
+}
 $data['template'] = $style;
 
 $json = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-file_put_contents($argv[2] . '/plugins/sampledata/blog/data/news.json', $json);
+file_put_contents($argv[2] . '/plugins/sampledata/blog/data/' . $set . '.json', $json);
 printf("%d categories, %d tags, %d articles, %d menu items, %d modules, %d bytes\n", count($data['categories']), count($data['tags']), count($data['articles']),
 	array_sum(array_map(function ($m) { return count($m['items']); }, $data['menus'])), count($data['modules']), strlen($json));

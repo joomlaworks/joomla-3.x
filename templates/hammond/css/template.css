@@ -163,10 +163,20 @@ body.isStuck .mainNav .logoSmall {display:inline-flex;}
 body.isStuck .mainNav .stuckToggle {display:inline-flex;}
 body.isStuck .mainNav > .container ul.menu {justify-content:flex-start;flex-wrap:nowrap;overflow:hidden;}
 
+/* Breadcrumbs */
+.breadcrumb {display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0;padding:0;list-style:none;font-size:.85rem;color:var(--c-muted);}
+.breadcrumb li {display:inline-flex;align-items:center;gap:8px;}
+.breadcrumb .divider img {display:none;}
+.breadcrumb .divider::before {content:'/';color:var(--c-line-d);}
+.breadcrumb a {color:var(--c-muted);}
+.breadcrumb a:hover {color:var(--c-ink);}
+
 /* Search form */
 .searchForm {display:flex;gap:10px;}
-.searchForm input[type=search] {flex:1;min-width:0;font-size:1.25rem;padding:.65em 1em;border-radius:999px;border-color:var(--c-ink);}
-.searchForm button {display:grid;place-items:center;width:56px;flex:none;border:0;border-radius:50%;background:var(--c-ink);color:var(--c-white);}
+.searchForm input[type=search] {flex:1;min-width:0;height:56px;font-size:1.25rem;padding:0 1em;border-radius:999px;border-color:var(--c-ink);}
+/* A circle as tall as the field (a stretched button would be an oval) */
+.searchForm button {display:grid;place-items:center;width:56px;height:56px;flex:none;align-self:center;padding:0;border:0;border-radius:50%;background:var(--c-ink);color:var(--c-white);}
+.searchForm button .icon {width:22px;height:22px;}
 .searchForm button:hover {background:var(--c-accent);}
 
 /* Mega menu */
@@ -174,10 +184,10 @@ body.isStuck .mainNav > .container ul.menu {justify-content:flex-start;flex-wrap
 .megaMenu {position:absolute;z-index:10;left:0;right:0;top:100%;max-height:calc(100vh - var(--header-h) - 40px);max-height:calc(100dvh - var(--header-h) - 40px);overflow-y:auto;overscroll-behavior:contain;background:var(--c-ink);color:var(--c-white);padding:40px 0 56px;box-shadow:0 0 0 100vmax rgba(10,10,12,.45);}
 .megaMenu .container {display:grid;grid-template-columns:3fr 1fr;gap:40px 48px;}
 .megaMenuSearch {grid-column:1 / -1;}
-.megaMenuSearch .searchForm input[type=search] {background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.35);color:var(--c-white);font-size:1.4rem;}
+.megaMenuSearch .searchForm input[type=search] {height:62px;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.35);color:var(--c-white);font-size:1.4rem;}
 .megaMenuSearch .searchForm input[type=search]::placeholder {color:rgba(255,255,255,.55);}
 .megaMenuSearch .searchForm input[type=search]:focus {border-color:var(--c-white);outline:none;}
-.megaMenuSearch .searchForm button {width:62px;background:var(--c-white);color:var(--c-ink);}
+.megaMenuSearch .searchForm button {width:62px;height:62px;background:var(--c-white);color:var(--c-ink);}
 .megaMenuSearch .searchForm button:hover {background:var(--c-accent);color:var(--c-white);}
 .megaMenu a {color:var(--c-white);}
 .megaMenu a:hover {color:var(--c-accent);}
