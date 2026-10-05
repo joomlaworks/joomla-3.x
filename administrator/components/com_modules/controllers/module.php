@@ -258,10 +258,15 @@ class ModulesControllerModule extends JControllerForm
 		$position = $jinput->getValue('position');
 		$moduleId = $jinput->getValue('module_id');
 
-		// Access check.
-		if (!JFactory::getUser()->authorise('core.create', 'com_modules')
-			&& !JFactory::getUser()->authorise('core.edit.state', 'com_modules')
-			&& ($moduleId && !JFactory::getUser()->authorise('core.edit.state', 'com_modules.module.' . $moduleId)))
+		/*
+		 * Access check: whoever may use the edit form the ordering list belongs to, i.e. edit (or change the state of) the module,
+		 * or create one when it's new. A user who may edit but not publish was refused, so "Access forbidden" showed every time
+		 * the edit form loaded, also right after a successful save.
+		 */
+		$user  = JFactory::getUser();
+		$asset = 'com_modules.module.' . (int) $moduleId;
+
+		if ($moduleId ? !$user->authorise('core.edit', $asset) && !$user->authorise('core.edit.state', $asset) : !$user->authorise('core.create', 'com_modules'))
 		{
 			$app->enqueueMessage(\JText::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 'error');
 			echo new JResponseJson;

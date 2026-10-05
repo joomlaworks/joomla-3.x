@@ -51,6 +51,7 @@ Summary of changes:
 - Installer: the ownership check for remote databases could be skipped by going straight to the step which writes the configuration (stock Joomla 3)
 - Installer: anyone could run the installer again on an installed site while the `installation` folder remained (stock Joomla 3); now only the browser which installed the site can go on
 - Installer: setting the Super User's group could put every user into the Super Users group when the mapping already existed
+- Module Manager: the ordering list of the module edit form could be read by anyone, listing the titles of the modules in any position
 
 **Bug fixes:**
 - Fixed intermittent "Serialization of 'PDOStatement' is not allowed" errors with the PDO database drivers when caching is enabled (any cache handler), typically right after the site wrote something to the database
@@ -77,6 +78,7 @@ Summary of changes:
 - Fixed several installer bugs: no sample data offered for SQLite, SQLite not hiding the server fields in the browser, unescaped values on the overview page, a path check on the chosen sample-data file, missing, empty, wrong and malformed translations (every installation language now has every string, including those of this version), and PHP 8.5 deprecation notices (one of them in every select list built from arrays, site-wide)
 - Fixed PHP 8.2+ deprecation warnings when editing tagged items and in forms with date, colour, captcha or module ordering fields, and PHP 8.1+/8.5 warnings with menu items linking to external URLs and on pages without a menu item
 - Fixed warnings when saving Login/Logout menu items created by code, and when saving Global Configuration from the command line on new sites
+- Fixed "Access forbidden." showing in the Module Manager after saving a module, for users who may edit modules but not publish them (the module was saved)
 - The command line now shows the messages of older code (e.g. why a category can't be deleted), and a broken command file no longer stops the other commands
 
 **Improvements:**
