@@ -37,8 +37,8 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 
 ## Version 3.17 - unreleased [pending]
 Summary of changes:
-- New SQLite database driver (experimental), and a command to move existing sites to it and back
 - New command line interface (`cli/joomla.php`) with the commands of the Joomla 4+ CLI and JSON output for scripts and AI agents
+- New SQLite database driver (experimental), and a command to move existing sites to it and back
 - PostgreSQL fully supported, with both drivers, in the installer, updates and the new command line tools (see [PostgreSQL Support](#postgresql-support))
 - MySQL 8.0, 8.4 and 9.x now work on their default settings, with no `my.cnf` changes (see [Notes on MySQL & MariaDB](#notes-on-mysql--mariadb))
 - Fixed database error handling with the "MySQL (mysqli)" driver on PHP 8.1+, and several long-standing issues with the "MySQL (PDO)" driver
@@ -66,7 +66,7 @@ Summary of changes:
 - Fixed the installer stopping after its first step on PHP 8.2+ when PHP is set to display errors
 - Fixed uninstalling Contacts or News Feeds failing (and leaving them half removed) on sites installed with sample data, after Banners had been uninstalled
 - Clear error messages when the database user's authentication method is the reason a connection fails (e.g. `mysql_native_password` on MySQL 8.4/9), saying what to change
-- Fixed several installer bugs: no sample data offered for SQLite, SQLite not hiding the server fields in the browser, unescaped values on the overview page, and PHP 8.5 deprecation notices (one of them in every select list built from arrays, site-wide)
+- Fixed several installer bugs: no sample data offered for SQLite, SQLite not hiding the server fields in the browser, unescaped values on the overview page, a path check on the chosen sample-data file, and PHP 8.5 deprecation notices (one of them in every select list built from arrays, site-wide)
 
 **Improvements:**
 - A modernised installer for new sites: new app-style design with a sidebar of steps (with dark mode and right-to-left support), well-formed XHTML-style HTML5, plain HTML/CSS/JavaScript without Bootstrap, jQuery or any other file from outside the `installation` folder, and the same steps as before

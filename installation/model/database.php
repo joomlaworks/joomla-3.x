@@ -901,23 +901,37 @@ class InstallationModelDatabase extends JModelBase
 			$type = 'postgresql';
 		}
 
-		$data = JPATH_INSTALLATION . '/sql/' . $type . '/' . $options->sample_file;
+		$sampleFile = (string) $options->sample_file;
+
+		// The sample file is posted with the form; only ever a bare "sample*.sql" name in the dialect's folder, never a path
+		if ($sampleFile !== '' && (basename($sampleFile) !== $sampleFile || !preg_match('#^sample[^/\\\\]*\.sql$#', $sampleFile)))
+		{
+			JFactory::getApplication()->enqueueMessage(JText::sprintf('INSTL_DATABASE_FILE_DOES_NOT_EXIST', $sampleFile), 'error');
+
+			return false;
+		}
+
+		$dir  = JPATH_INSTALLATION . '/sql/' . $type;
+		$data = $dir . '/' . $sampleFile;
 
 		// Attempt to import the database schema if one is chosen.
-		if ($options->sample_file != '')
+		if ($sampleFile != '')
 		{
-			if (!file_exists($data))
+			$real = realpath($data);
+
+			if ($real === false || strpos($real, realpath($dir) . DIRECTORY_SEPARATOR) !== 0)
 			{
 				JFactory::getApplication()->enqueueMessage(JText::sprintf('INSTL_DATABASE_FILE_DOES_NOT_EXIST', $data), 'error');
 
 				return false;
 			}
-			elseif (!$this->populateDatabase($db, $data))
+
+			if (!$this->populateDatabase($db, $data))
 			{
 				return false;
 			}
 
-			$this->postInstallSampleData($db, $options->sample_file);
+			$this->postInstallSampleData($db, $sampleFile);
 		}
 
 		return true;

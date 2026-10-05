@@ -43,8 +43,11 @@ class InstallationControllerInstallEmail extends JControllerBase
 		/** @var InstallationApplicationWeb $app */
 		$app = $this->getApplication();
 
-		// Check for request forgeries. - @TODO - Restore this check
-		// JSession::checkToken() or $app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
+		/*
+		 * No token check here: this step runs after the configuration file is written with a fresh "secret", which this
+		 * controller then loads, so the install-time form token can no longer validate. It only mails the admin the
+		 * summary of their own just-finished installation.
+		 */
 
 		// Get the setup model.
 		$model = new InstallationModelSetup;
