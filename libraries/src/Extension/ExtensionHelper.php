@@ -161,6 +161,7 @@ class ExtensionHelper
 		array('plugin', 'codemirror', 'editors', 0),
 		array('plugin', 'none', 'editors', 0),
 		array('plugin', 'tinymce', 'editors', 0),
+		array('plugin', 'tinymce_latest', 'editors', 0),
 
 		// Core plugin extensions - editors xtd
 		array('plugin', 'article', 'editors-xtd', 0),

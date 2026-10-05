@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.9" type="plugin" group="editors" method="upgrade">
+    <name>plg_editors_tinymce_latest</name>
+    <version>8.9.2</version>
+    <creationDate>October 2026</creationDate>
+    <author>JoomlaWorks Ltd. (Joomla integration), Tiny Technologies, Inc. (TinyMCE)</author>
+    <authorEmail>N/A</authorEmail>
+    <authorUrl>https://www.tiny.cloud</authorUrl>
+    <copyright>(C) 2026 JoomlaWorks Ltd. and this project's contributors; TinyMCE (C) Tiny Technologies, Inc.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.md</license>
+    <description>PLG_TINYMCE_LATEST_XML_DESCRIPTION</description>
+    <files>
+        <filename plugin="tinymce_latest">tinymce_latest.php</filename>
+        <folder>field</folder>
+        <folder>form</folder>
+    </files>
+    <media destination="editors" folder="media">
+        <folder>tinymce_latest</folder>
+    </media>
+    <languages>
+        <language tag="en-GB">en-GB.plg_editors_tinymce_latest.ini</language>
+        <language tag="en-GB">en-GB.plg_editors_tinymce_latest.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params" addfieldpath="/plugins/editors/tinymce_latest/field">
+            <fieldset name="basic">
+                <field name="configuration" type="tinymcelatestbuilder" hiddenLabel="true" />
+            </fieldset>
+            <fieldset name="advanced" label="PLG_TINYMCE_LATEST_FIELD_LABEL_ADVANCEDPARAMS">
+                <field name="sets_amount" type="number" label="PLG_TINYMCE_LATEST_FIELD_NUMBER_OF_SETS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_NUMBER_OF_SETS_DESC" filter="int" validate="number" min="3" default="3" />
+                <field name="html_height" type="text" label="PLG_TINYMCE_LATEST_FIELD_HTMLHEIGHT_LABEL" description="PLG_TINYMCE_LATEST_FIELD_HTMLHEIGHT_DESC" default="550px" />
+                <field name="html_width" type="text" label="PLG_TINYMCE_LATEST_FIELD_HTMLWIDTH_LABEL" description="PLG_TINYMCE_LATEST_FIELD_HTMLWIDTH_DESC" default="" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

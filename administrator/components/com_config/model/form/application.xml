@@ -229,7 +229,7 @@
             <option value="1">COM_CONFIG_FRONTEDITING_MODULES</option>
             <option value="0">JNONE</option>
         </field>
-        <field name="editor" type="plugins" label="COM_CONFIG_FIELD_DEFAULT_EDITOR_LABEL" description="COM_CONFIG_FIELD_DEFAULT_EDITOR_DESC" folder="editors" default="tinymce" filter="cmd" />
+        <field name="editor" type="plugins" label="COM_CONFIG_FIELD_DEFAULT_EDITOR_LABEL" description="COM_CONFIG_FIELD_DEFAULT_EDITOR_DESC" folder="editors" default="tinymce_latest" filter="cmd" />
         <field name="captcha" type="plugins" label="COM_CONFIG_FIELD_DEFAULT_CAPTCHA_LABEL" description="COM_CONFIG_FIELD_DEFAULT_CAPTCHA_DESC" folder="captcha" default="0" filter="cmd">
             <option value="0">JOPTION_DO_NOT_USE</option>
         </field>

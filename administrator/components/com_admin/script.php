@@ -360,6 +360,8 @@ class JoomlaInstallerScript
 			'3.17.0-2026-10-04.sql' => null,
 			// Install from Web
 			'3.17.0-2026-10-05.sql' => '3.17.0',
+			// TinyMCE 8
+			'3.17.0-2026-10-06.sql' => '3.17.0',
 		);
 
 		foreach ($dataMigrationFiles as $file => $addedIn)
@@ -746,6 +748,7 @@ class JoomlaInstallerScript
 			array('plugin', 'pagenavigation', 'content'),
 			array('plugin', 'vote', 'content'),
 			array('plugin', 'tinymce', 'editors'),
+			array('plugin', 'tinymce_latest', 'editors'),
 			array('plugin', 'article', 'editors-xtd'),
 			array('plugin', 'image', 'editors-xtd'),
 			array('plugin', 'menu', 'editors-xtd'),
@@ -794,6 +797,7 @@ class JoomlaInstallerScript
 		'component:0::com_finder'         => '/media/com_finder',
 		'module:1::mod_sampledata'        => '/media/mod_sampledata',
 		'plugin:0:installer:webinstaller' => '/media/plg_installer_webinstaller',
+		'plugin:0:editors:tinymce_latest' => '/media/editors/tinymce_latest',
 	);
 
 	/**

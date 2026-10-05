@@ -54,10 +54,21 @@ class MediaControllerFile extends JControllerLegacy
 		// Instantiate the media helper
 		$mediaHelper = new JHelperMedia;
 
-		if ($_SERVER['CONTENT_LENGTH'] > ($params->get('upload_maxsize', 0) * 1024 * 1024)
-			|| $_SERVER['CONTENT_LENGTH'] > $mediaHelper->toBytes(ini_get('upload_max_filesize'))
-			|| $_SERVER['CONTENT_LENGTH'] > $mediaHelper->toBytes(ini_get('post_max_size'))
-			|| $_SERVER['CONTENT_LENGTH'] > $mediaHelper->toBytes(ini_get('memory_limit')))
+		// Limits of 0 or -1 (the Media Manager's "no limit", PHP's unlimited memory_limit or post_max_size) don't apply, as in file.php
+		$contentLength = (int) $this->input->server->get('CONTENT_LENGTH', 0, 'INT');
+		$tooLarge      = false;
+
+		foreach (array(
+			$params->get('upload_maxsize', 0) * 1024 * 1024,
+			$mediaHelper->toBytes(ini_get('upload_max_filesize')),
+			$mediaHelper->toBytes(ini_get('post_max_size')),
+			$mediaHelper->toBytes(ini_get('memory_limit')),
+		) as $limit)
+		{
+			$tooLarge = $tooLarge || ((int) $limit > 0 && $contentLength > (int) $limit);
+		}
+
+		if ($tooLarge)
 		{
 			$response = array(
 				'status'  => '0',
