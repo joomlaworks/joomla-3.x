@@ -307,7 +307,7 @@
 					next();
 				})
 				.catch((error) => {
-					renderError(text('JLIB_DATABASE_ERROR_DATABASE_CONNECT', 'A database error occurred.') + ' ' + error.message);
+					renderError(text('JLIB_DATABASE_ERROR_DATABASE', 'A database error occurred.') + ' ' + error.message);
 					goToPage('summary');
 				});
 		};

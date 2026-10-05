@@ -22,10 +22,14 @@ $lang    = JFactory::getLanguage();
 $strings = array();
 
 foreach (array('ERROR', 'WARNING', 'NOTICE', 'MESSAGE', 'INSTL_PROCESS_BUSY',
-	'JLIB_DATABASE_ERROR_DATABASE_CONNECT', 'JLIB_JS_AJAX_ERROR_CONNECTION_ABORT', 'JLIB_JS_AJAX_ERROR_NO_CONTENT',
+	'JLIB_DATABASE_ERROR_DATABASE', 'JLIB_JS_AJAX_ERROR_CONNECTION_ABORT', 'JLIB_JS_AJAX_ERROR_NO_CONTENT',
 	'JLIB_JS_AJAX_ERROR_OTHER', 'JLIB_JS_AJAX_ERROR_PARSE', 'JLIB_JS_AJAX_ERROR_TIMEOUT') as $key)
 {
-	$strings[$key] = JText::_($key);
+	// Only translated strings: the script has English fallbacks, and a missing key would otherwise show as the key itself
+	if ($lang->hasKey($key))
+	{
+		$strings[$key] = JText::_($key);
+	}
 }
 
 // Shown when the installer removes its folder on the way out; English for language packs without it yet

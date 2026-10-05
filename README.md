@@ -74,7 +74,7 @@ Summary of changes:
 - Fixed the installer stopping after its first step on PHP 8.2+ when PHP is set to display errors
 - Fixed uninstalling Contacts or News Feeds failing (and leaving them half removed) on sites installed with sample data, after Banners had been uninstalled
 - Clear error messages when the database user's authentication method is the reason a connection fails (e.g. `mysql_native_password` on MySQL 8.4/9), saying what to change
-- Fixed several installer bugs: no sample data offered for SQLite, SQLite not hiding the server fields in the browser, unescaped values on the overview page, a path check on the chosen sample-data file, and PHP 8.5 deprecation notices (one of them in every select list built from arrays, site-wide)
+- Fixed several installer bugs: no sample data offered for SQLite, SQLite not hiding the server fields in the browser, unescaped values on the overview page, a path check on the chosen sample-data file, missing, empty, wrong and malformed translations (every installation language now has every string, including those of this version), and PHP 8.5 deprecation notices (one of them in every select list built from arrays, site-wide)
 - Fixed PHP 8.2+ deprecation warnings when editing tagged items and in forms with date, colour, captcha or module ordering fields, and PHP 8.1+/8.5 warnings with menu items linking to external URLs and on pages without a menu item
 - Fixed warnings when saving Login/Logout menu items created by code, and when saving Global Configuration from the command line on new sites
 - The command line now shows the messages of older code (e.g. why a category can't be deleted), and a broken command file no longer stops the other commands
