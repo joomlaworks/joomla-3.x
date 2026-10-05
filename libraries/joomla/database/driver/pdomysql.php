@@ -105,29 +105,65 @@ class JDatabaseDriverPdomysql extends JDatabaseDriverPdo
 			return;
 		}
 
+		// Like the MySQLi driver, accept a port or socket in the host, e.g. "127.0.0.1:3307" or "localhost:/path/to/mysql.sock"
+		list($host, $port, $socket) = JDatabaseDriverMysqli::parseHost(
+			$this->options['host'], isset($this->options['port']) ? $this->options['port'] : 3306
+		);
+
+		$this->options['host'] = $host;
+
+		if ($socket !== null)
+		{
+			$this->options['socket'] = $socket;
+		}
+		else
+		{
+			$this->options['port'] = $port;
+		}
+
 		try
 		{
-			// Try to connect to MySQL
-			parent::connect();
+			try
+			{
+				// Try to connect to MySQL
+				parent::connect();
+			}
+			catch (\RuntimeException $e)
+			{
+				// If the connection failed, but not because of the wrong character set, then bubble up the exception.
+				if (!$this->utf8mb4)
+				{
+					throw $e;
+				}
+
+				/*
+				 * Otherwise, try connecting again without using
+				 * utf8mb4 and see if maybe that was the problem. If the
+				 * connection succeeds, then we will have learned that the
+				 * client end of the connection does not support utf8mb4.
+				 */
+				$this->utf8mb4 = false;
+				$this->options['charset'] = 'utf8';
+
+				parent::connect();
+			}
 		}
-		catch (\RuntimeException $e)
+		catch (JDatabaseExceptionConnecting $e)
 		{
-			// If the connection failed, but not because of the wrong character set, then bubble up the exception.
-			if (!$this->utf8mb4)
+			$previous = $e->getPrevious();
+			$hint     = '';
+
+			if ($previous && preg_match('/\[(\d+)\]/', $previous->getMessage(), $matches))
+			{
+				$hint = JDatabaseDriverMysqli::getConnectionErrorHint($matches[1], $previous->getMessage());
+			}
+
+			if ($hint === '')
 			{
 				throw $e;
 			}
 
-			/*
-			 * Otherwise, try connecting again without using
-			 * utf8mb4 and see if maybe that was the problem. If the
-			 * connection succeeds, then we will have learned that the
-			 * client end of the connection does not support utf8mb4.
-  			 */
-			$this->utf8mb4 = false;
-			$this->options['charset'] = 'utf8';
-
-			parent::connect();
+			throw new JDatabaseExceptionConnecting($e->getMessage() . $hint, $e->getCode(), $previous);
 		}
 
 		if ($this->utf8mb4)

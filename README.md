@@ -37,7 +37,8 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 Summary of changes:
 - New SQLite database driver (experimental), and a command to move existing sites to it and back
 - New command line interface (`cli/joomla.php`) with the commands of the Joomla 4+ CLI and JSON output for scripts and AI agents
-- Fixed two long-standing issues with the "MySQL (PDO)" database driver
+- MySQL 8.0, 8.4 and 9.x now work on their default settings, with no `my.cnf` changes (see [Notes on MySQL & MariaDB](#notes-on-mysql--mariadb))
+- Fixed database error handling with the "MySQL (mysqli)" driver on PHP 8.1+, and several long-standing issues with the "MySQL (PDO)" driver
 - More PHP 8.5 deprecation fixes
 
 **Bug fixes:**
@@ -55,6 +56,10 @@ Summary of changes:
 - Fixed a fatal error on PHP 8 when the "File" cache handler can't create a cache folder
 - Fixed Global Configuration requiring a database user name
 - Fixed exporting and importing database tables with Joomla's database exporter/importer (invalid XML for some column defaults, and a fatal error importing new tables with the "MySQL (PDO)" driver)
+- Fixed database errors on PHP 8.1+ with the default "MySQL (mysqli)" driver turning into fatal errors where Joomla and extensions expected to handle them, and lost database connections no longer being reconnected
+- Fixed the same with the "MySQL (PDO)" driver on every PHP version, plus an abrupt "Recursion trying to check if connected" stop when its connection was lost
+- Fixed the "MySQL (PDO)" driver ignoring a port or socket in the database host (e.g. `localhost:/path/to/mysql.sock`); the installer now also accepts a local socket without asking to verify the site's ownership
+- Clear error messages when the database user's authentication method is the reason a connection fails (e.g. `mysql_native_password` on MySQL 8.4/9), saying what to change
 
 **New features:**
 - New SQLite database driver (experimental): the whole site in one file, with no database server, for small to medium sites, development and testing. Core and extensions work unchanged, as it runs their MySQL SQL. Available on PHP 7.4+ in the installer, and for existing sites through the new `database:convert` command line command (which also moves a site back to MySQL)
@@ -235,16 +240,15 @@ Database support in Joomla 3.x was always centred on MySQL/MariaDB. PostgreSQL a
 
 
 ## NOTES ON MYSQL & MARIADB
-For Joomla 3.x to work flawlessly with MySQL versions 8.0 or newer, you need to have this setting enabled in your my.cnf configuration:
-```
-# For MySQL 8.0 only
-default_authentication_plugin = mysql_native_password
+Joomla 3.x UTD works with MySQL 8.0, 8.4 and 9.x on their default settings: no `my.cnf` changes are needed for authentication. MySQL's default authentication method since 8.0 (`caching_sha2_password`) is handled by PHP itself, from PHP 7.4 (or at least 7.1.16/7.2.4).
 
-# For MySQL 8.4+
-mysql_native_password         = ON
-authentication_policy         = mysql_native_password
+If you followed older advice and enabled `mysql_native_password` (e.g. `default_authentication_plugin` or `mysql_native_password = ON` with `authentication_policy`), it keeps working on MySQL 8.0 and 8.4, but MySQL 9.0 removed it. Before upgrading to MySQL 9, or to drop those settings, switch your sites' database users to the default method (users created while the settings were on keep `mysql_native_password`):
 ```
-Use one or the other, not both. The above settings do not apply to MariaDB.
+ALTER USER 'username'@'host' IDENTIFIED WITH caching_sha2_password BY 'password';
+```
+If a site can't connect because of the authentication method, its error message says so and what to change.
+
+MariaDB still uses `mysql_native_password` by default, which works as before. PHP can't use MariaDB's optional `ed25519` and `PARSEC` authentication methods, so keep the database users of your sites on `mysql_native_password`.
 
 We also recommend the following setting for maximum compatibility in both MySQL and MariaDB:
 ```

@@ -166,8 +166,8 @@ class InstallationModelDatabase extends JModelBase
 
 		$shouldCheckLocalhost = !$isSqlite && getenv('JOOMLA_INSTALLATION_DISABLE_LOCALHOST_CHECK') !== '1';
 
-		// Per default allowed DB hosts: localhost / 127.0.0.1 / ::1 (optionally with port)
-		$localhost = '/^(((localhost|127\.0\.0\.1|\[\:\:1\])(\:[1-9]{1}[0-9]{0,4})?)|(\:\:1))$/';
+		// Per default allowed DB hosts: localhost / 127.0.0.1 / ::1 (optionally with port), or a local socket (localhost:/path/to/mysql.sock)
+		$localhost = '/^(((localhost|127\.0\.0\.1|\[\:\:1\])(\:[1-9]{1}[0-9]{0,4})?)|(\:\:1)|(localhost\:\/[^:]+))$/';
 
 		// Check the security file if now switched off and the db_host is not one of the allowed hosts
 		if ($shouldCheckLocalhost && preg_match($localhost, (string) $options->db_host) !== 1)

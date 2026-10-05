@@ -102,59 +102,18 @@ class JDatabaseDriverMysqli extends JDatabaseDriver
 			return;
 		}
 
-		/*
-		 * Unlike mysql_connect(), mysqli_connect() takes the port and socket as separate arguments. Therefore, we
-		 * have to extract them from the host string.
-		 */
-		$port = isset($this->options['port']) ? $this->options['port'] : 3306;
-		$regex = '/^(?P<host>((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(:(?P<port>.+))?$/';
+		// Unlike mysql_connect(), mysqli_connect() takes the port and socket as separate arguments
+		list($host, $port, $socket) = static::parseHost($this->options['host'], isset($this->options['port']) ? $this->options['port'] : 3306);
 
-		if (preg_match($regex, $this->options['host'], $matches))
-		{
-			// It's an IPv4 address with or without port
-			$this->options['host'] = $matches['host'];
+		$this->options['host'] = $host;
 
-			if (!empty($matches['port']))
-			{
-				$port = $matches['port'];
-			}
-		}
-		elseif (preg_match('/^(?P<host>\[.*\])(:(?P<port>.+))?$/', $this->options['host'], $matches))
+		if ($socket !== null)
 		{
-			// We assume square-bracketed IPv6 address with or without port, e.g. [fe80:102::2%eth1]:3306
-			$this->options['host'] = $matches['host'];
-
-			if (!empty($matches['port']))
-			{
-				$port = $matches['port'];
-			}
-		}
-		elseif (preg_match('/^(?P<host>(\w+:\/{2,3})?[a-z0-9\.\-]+)(:(?P<port>[^:]+))?$/i', $this->options['host'], $matches))
-		{
-			// Named host (e.g example.com or localhost) with or without port
-			$this->options['host'] = $matches['host'];
-
-			if (!empty($matches['port']))
-			{
-				$port = $matches['port'];
-			}
-		}
-		elseif (preg_match('/^:(?P<port>[^:]+)$/', $this->options['host'], $matches))
-		{
-			// Empty host, just port, e.g. ':3306'
-			$this->options['host'] = 'localhost';
-			$port = $matches['port'];
-		}
-		// ... else we assume normal (naked) IPv6 address, so host and port stay as they are or default
-
-		// Get the port number or socket name
-		if (is_numeric($port))
-		{
-			$this->options['port'] = (int) $port;
+			$this->options['socket'] = $socket;
 		}
 		else
 		{
-			$this->options['socket'] = $port;
+			$this->options['port'] = $port;
 		}
 
 		// Make sure the MySQLi extension for PHP is installed and enabled.
@@ -163,6 +122,9 @@ class JDatabaseDriverMysqli extends JDatabaseDriver
 			throw new JDatabaseExceptionUnsupported('The MySQLi extension for PHP is not installed or enabled.');
 		}
 
+		// PHP 8.1+ makes mysqli throw its own exceptions by default; this driver checks return values and throws Joomla's
+		mysqli_report(MYSQLI_REPORT_OFF);
+
 		$this->connection = @mysqli_connect(
 			$this->options['host'], $this->options['user'], $this->options['password'], null, $this->options['port'], $this->options['socket']
 		);
@@ -170,7 +132,9 @@ class JDatabaseDriverMysqli extends JDatabaseDriver
 		// Attempt to connect to the server.
 		if (!$this->connection)
 		{
-			throw new JDatabaseExceptionConnecting('Could not connect to MySQL server.');
+			throw new JDatabaseExceptionConnecting(
+				'Could not connect to MySQL server.' . static::getConnectionErrorHint(mysqli_connect_errno(), mysqli_connect_error())
+			);
 		}
 
 		// Set sql_mode to non_strict mode
@@ -264,6 +228,113 @@ class JDatabaseDriverMysqli extends JDatabaseDriver
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Splits a database host string into the host and the port or socket, e.g. "localhost", "db.example.com:3307",
+	 * "127.0.0.1:3307", "[::1]:3307", "localhost:/path/to/mysql.sock" or ":3307".
+	 *
+	 * @param   string   $host  The host string
+	 * @param   integer  $port  The port to use when the host string has none
+	 *
+	 * @return  array  The host, the port (or null with a socket) and the socket (or null)
+	 *
+	 * @since   3.17.0
+	 */
+	public static function parseHost($host, $port = 3306)
+	{
+		$regex = '/^(?P<host>((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(:(?P<port>.+))?$/';
+
+		if (preg_match($regex, $host, $matches))
+		{
+			// It's an IPv4 address with or without port
+			$host = $matches['host'];
+
+			if (!empty($matches['port']))
+			{
+				$port = $matches['port'];
+			}
+		}
+		elseif (preg_match('/^(?P<host>\[.*\])(:(?P<port>.+))?$/', $host, $matches))
+		{
+			// We assume square-bracketed IPv6 address with or without port, e.g. [fe80:102::2%eth1]:3306
+			$host = $matches['host'];
+
+			if (!empty($matches['port']))
+			{
+				$port = $matches['port'];
+			}
+		}
+		elseif (preg_match('/^(?P<host>(\w+:\/{2,3})?[a-z0-9\.\-]+)(:(?P<port>[^:]+))?$/i', $host, $matches))
+		{
+			// Named host (e.g example.com or localhost) with or without port
+			$host = $matches['host'];
+
+			if (!empty($matches['port']))
+			{
+				$port = $matches['port'];
+			}
+		}
+		elseif (preg_match('/^:(?P<port>[^:]+)$/', $host, $matches))
+		{
+			// Empty host, just port, e.g. ':3306'
+			$host = 'localhost';
+			$port = $matches['port'];
+		}
+		// ... else we assume normal (naked) IPv6 address, so host and port stay as they are or default
+
+		if (is_numeric($port))
+		{
+			return array($host, (int) $port, null);
+		}
+
+		return array($host, null, $port);
+	}
+
+	/**
+	 * Explains MySQL connection errors caused by the database user's authentication method, which the server's
+	 * error message alone doesn't make clear.
+	 *
+	 * @param   integer  $number   The MySQL error number
+	 * @param   string   $message  The MySQL error message
+	 *
+	 * @return  string  The explanation, with a leading space, or an empty string
+	 *
+	 * @since   3.17.0
+	 */
+	public static function getConnectionErrorHint($number, $message)
+	{
+		$number = (int) $number;
+
+		if ($number === 2054 && stripos($message, 'charset') !== false)
+		{
+			return ' This PHP version doesn\'t know the default character set of MySQL 8.0 and newer. Update PHP to 7.4 or newer.';
+		}
+
+		if (in_array($number, array(1251, 2054, 2059), true))
+		{
+			return ' The database server asked for an authentication method that this PHP version can\'t use. MySQL 8.0 and newer default to'
+				. ' caching_sha2_password, which needs PHP 7.4 or newer (at least 7.1.16 or 7.2.4). MariaDB\'s ed25519 and PARSEC methods'
+				. ' aren\'t supported by PHP at all: switch the database user to mysql_native_password instead.';
+		}
+
+		if ($number === 1524 && stripos($message, 'mysql_native_password') !== false)
+		{
+			return ' The database user is set to the mysql_native_password authentication method, which MySQL 8.4 disables by default'
+				. ' and MySQL 9.0 removed. Switch the user to caching_sha2_password,'
+				. ' e.g. ALTER USER \'username\'@\'host\' IDENTIFIED WITH caching_sha2_password BY \'password\';';
+		}
+
+		if ($number === 1524 && preg_match('/Plugin \'([a-z0-9_]+)\'/i', $message, $matches))
+		{
+			return sprintf(
+				' The database user is set to the %s authentication method, which isn\'t enabled on this database server.'
+				. ' Enable it on the server, or switch the user to another authentication method.',
+				$matches[1]
+			);
+		}
+
+		return '';
 	}
 
 	/**

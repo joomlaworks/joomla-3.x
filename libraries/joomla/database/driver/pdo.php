@@ -208,6 +208,16 @@ abstract class JDatabaseDriverPdo extends JDatabaseDriver
 			case 'mysql':
 				$this->options['port'] = (isset($this->options['port'])) ? $this->options['port'] : 3306;
 
+				if (!empty($this->options['socket']))
+				{
+					$format = 'mysql:unix_socket=#SOCKET#;dbname=#DBNAME#;charset=#CHARSET#';
+
+					$replace = array('#SOCKET#', '#DBNAME#', '#CHARSET#');
+					$with = array($this->options['socket'], $this->options['database'], $this->options['charset']);
+
+					break;
+				}
+
 				$format = 'mysql:host=#HOST#;port=#PORT#;dbname=#DBNAME#;charset=#CHARSET#';
 
 				$replace = array('#HOST#', '#PORT#', '#DBNAME#', '#CHARSET#');
@@ -399,6 +409,7 @@ abstract class JDatabaseDriverPdo extends JDatabaseDriver
 
 		// Execute the query.
 		$this->executed = false;
+		$exception      = null;
 
 		if ($this->prepared instanceof PDOStatement)
 		{
@@ -413,7 +424,15 @@ abstract class JDatabaseDriverPdo extends JDatabaseDriver
 				}
 			}
 
-			$this->executed = $this->prepared->execute();
+			// Drivers that set PDO::ERRMODE_EXCEPTION (pdomysql) get the error handling below, like the other drivers
+			try
+			{
+				$this->executed = $this->prepared->execute();
+			}
+			catch (PDOException $exception)
+			{
+				$this->executed = false;
+			}
 		}
 
 		if ($this->debug)
@@ -434,8 +453,21 @@ abstract class JDatabaseDriverPdo extends JDatabaseDriver
 		if (!$this->executed)
 		{
 			// Get the error number and message before we execute any more queries.
-			$errorNum = $this->getErrorNumber();
-			$errorMsg = $this->getErrorMessage();
+			if ($exception)
+			{
+				$errorNum = isset($exception->errorInfo[1]) ? (int) $exception->errorInfo[1] : (int) $exception->getCode();
+				$errorMsg = $exception->getMessage();
+
+				if (!$this->debug)
+				{
+					$errorMsg = str_replace($this->tablePrefix, '#__', $errorMsg);
+				}
+			}
+			else
+			{
+				$errorNum = $this->getErrorNumber();
+				$errorMsg = $this->getErrorMessage();
+			}
 
 			// Check if the server was disconnected.
 			if (!$this->connected())
@@ -459,7 +491,9 @@ abstract class JDatabaseDriverPdo extends JDatabaseDriver
 					throw new JDatabaseExceptionExecuting($query, $this->errorMsg, $this->errorNum, $e);
 				}
 
-				// Since we were able to reconnect, run the query again.
+				// Since we were able to reconnect, prepare the query on the new connection and run it again.
+				$this->setQuery($this->sql);
+
 				return $this->execute();
 			}
 			// The server was not disconnected.
@@ -566,43 +600,22 @@ abstract class JDatabaseDriverPdo extends JDatabaseDriver
 	 */
 	public function connected()
 	{
-		// Flag to prevent recursion into this function.
-		static $checkingConnected = false;
-
-		if ($checkingConnected)
+		if (!is_object($this->connection))
 		{
-			// Reset this flag and throw an exception.
-			$checkingConnected = true;
-			die('Recursion trying to check if connected.');
+			return false;
 		}
 
-		// Backup the query state.
-		$query = $this->sql;
-		$limit = $this->limit;
-		$offset = $this->offset;
-		$prepared = $this->prepared;
-
+		// Query the connection directly: going through execute() would come back here when the query fails
 		try
 		{
-			// Set the checking connection flag.
-			$checkingConnected = true;
-
-			// Run a simple query to check the connection.
-			$this->setQuery($this->getConnectedQuery());
-			$status = (bool) $this->loadResult();
+			$result = @$this->connection->query($this->getConnectedQuery());
+			$status = $result !== false && (bool) $result->fetchColumn();
 		}
 		// If we catch an exception here, we must not be connected.
 		catch (Exception $e)
 		{
 			$status = false;
 		}
-
-		// Restore the query state.
-		$this->sql = $query;
-		$this->limit = $limit;
-		$this->offset = $offset;
-		$this->prepared = $prepared;
-		$checkingConnected = false;
 
 		return $status;
 	}

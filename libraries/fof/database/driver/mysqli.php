@@ -176,6 +176,9 @@ class FOFDatabaseDriverMysqli extends FOFDatabaseDriver
 			throw new RuntimeException('The MySQL adapter mysqli is not available');
 		}
 
+		// PHP 8.1+ makes mysqli throw its own exceptions by default; this driver checks return values and throws Joomla's
+		mysqli_report(MYSQLI_REPORT_OFF);
+
 		$this->connection = @mysqli_connect(
 			$this->options['host'], $this->options['user'], $this->options['password'], null, $this->options['port'], $this->options['socket']
 		);
