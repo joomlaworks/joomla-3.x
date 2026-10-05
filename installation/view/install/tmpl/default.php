@@ -10,48 +10,26 @@ defined('_JEXEC') or die;
 
 /* @var InstallationViewInstallHtml $this */
 ?>
-<form action="index.php" method="post" id="adminForm" class="form-validate form-horizontal">
-	<h3><?php echo JText::_('INSTL_INSTALLING'); ?></h3>
-	<hr class="hr-condensed" />
-	<div class="progress progress-striped active" id="install_progress">
-		<div class="bar" style="width: 0%;"></div>
-	</div>
-	<table class="table">
-		<tbody>
-		<?php foreach ($this->tasks as $task) : ?>
-			<tr id="install_<?php echo $task; ?>">
-				<td class="item" nowrap="nowrap" width="10%">
-				<?php if ($task === 'Email') : ?>
-					<?php echo JText::sprintf('INSTL_INSTALLING_EMAIL', '<span class="label">' . $this->options['admin_email'] . '</span>'); ?>
-				<?php else : ?>
-					<?php echo JText::_('INSTL_INSTALLING_' . strtoupper((string) $task)); ?>
-				<?php endif; ?>
-				</td>
-				<td>
-					<div class="spinner spinner-img" style="visibility: hidden;"></div>
-				</td>
-			</tr>
-		<?php endforeach; ?>
-		</tbody>
-		<tfoot>
-			<tr>
-				<td colspan="2"></td>
-			</tr>
-		</tfoot>
-	</table>
+<form action="index.php" method="post" id="adminForm" class="view">
+	<header class="view-header">
+		<div class="view-title">
+			<p class="eyebrow"><?php echo JText::_('INSTL_STEP_SUMMARY_LABEL'); ?></p>
+			<h1><?php echo JText::_('INSTL_INSTALLING'); ?></h1>
+		</div>
+	</header>
+	<section class="panel install-panel">
+		<div class="install-meter">
+			<span class="install-percent" id="install_percent">0%</span>
+			<div class="progress" id="install_progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-tasks="<?php echo htmlspecialchars(json_encode(array_values($this->tasks)), ENT_COMPAT, 'UTF-8'); ?>">
+				<div class="progress-bar"></div>
+			</div>
+		</div>
+		<ol class="tasks">
+<?php foreach ($this->tasks as $task) : ?>
+			<li class="task" id="install_<?php echo htmlspecialchars($task, ENT_COMPAT, 'UTF-8'); ?>"><?php if ($task === 'Email') : ?><?php echo JText::sprintf('INSTL_INSTALLING_EMAIL', '<code>' . JHtml::_('InstallationHtml.helper.escape', $this->options['admin_email']) . '</code>'); ?><?php else : ?><?php echo JText::_('INSTL_INSTALLING_' . strtoupper((string) $task)); ?><?php endif; ?></li>
+<?php endforeach; ?>
+		</ol>
+	</section>
 	<?php echo JHtml::_('form.token'); ?>
-</form>
 
-<script type="text/javascript">
-	jQuery(function()
-	{
-		doInstall();
-	});
-	function doInstall() {
-		if(document.getElementById('install_progress') != null) {
-			Install.install(['<?php echo implode("','", $this->tasks); ?>']);
-		} else {
-			(function(){doInstall();}).delay(500);
-		}
-	}
-</script>
+</form>

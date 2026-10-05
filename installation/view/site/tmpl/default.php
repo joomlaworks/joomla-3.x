@@ -12,112 +12,51 @@ defined('_JEXEC') or die;
 /* @var InstallationViewDefault $this */
 ?>
 <?php echo JHtml::_('InstallationHtml.helper.stepbar'); ?>
-<div class="btn-toolbar">
-	<div class="btn-group pull-right">
-		<a href="#" class="btn btn-primary" onclick="Install.submitform();" rel="next" title="<?php echo JText::_('JNEXT'); ?>"><span class="icon-arrow-right icon-white"></span> <?php echo JText::_('JNEXT'); ?></a>
-	</div>
-</div>
-<form action="index.php" method="post" id="languageForm" class="form-horizontal">
-	<div class="control-group">
-		<label for="jform_language" class="control-label"><?php echo JText::_('INSTL_SELECT_LANGUAGE_TITLE'); ?></label>
-		<div class="controls">
-			<?php echo $this->form->getInput('language'); ?>
-		</div>
-	</div>
+
+<form action="index.php" method="post" id="languageForm" class="language-picker">
+	<label for="jform_language"><?php echo JHtml::_('InstallationHtml.helper.icon', 'globe'); ?><span><?php echo JText::_('INSTL_SELECT_LANGUAGE_TITLE'); ?></span></label>
+<?php echo JHtml::_('InstallationHtml.helper.indent', JHtml::_('InstallationHtml.helper.normalize', $this->form->getInput('language')), 1); ?>
+
 	<input type="hidden" name="task" value="setlanguage" />
 	<?php echo JHtml::_('form.token'); ?>
+
 </form>
-<form action="index.php" method="post" id="adminForm" class="form-validate form-horizontal">
-	<h3><?php echo JText::_('INSTL_SITE'); ?></h3>
-	<hr class="hr-condensed" />
-	<div class="row-fluid">
-		<div class="span6">
-			<div class="control-group">
-				<div class="control-label">
-					<?php echo $this->form->getLabel('site_name'); ?>
-				</div>
-				<div class="controls">
-					<?php echo $this->form->getInput('site_name'); ?>
-					<p class="help-block"><?php echo JText::_('INSTL_SITE_NAME_DESC'); ?></p>
-				</div>
-			</div>
-			<div class="control-group">
-				<div class="control-label">
-					<?php echo $this->form->getLabel('site_metadesc'); ?>
-				</div>
-				<div class="controls">
-					<?php echo $this->form->getInput('site_metadesc'); ?>
-					<p class="help-block">
-						<?php echo JText::_('INSTL_SITE_METADESC_TITLE_LABEL'); ?>
-					</p>
-				</div>
-			</div>
+<form action="index.php" method="post" id="adminForm" class="view" novalidate="novalidate">
+	<header class="view-header">
+		<div class="view-title">
+			<p class="eyebrow"><?php echo JText::_('INSTL_STEP_SITE_LABEL'); ?></p>
+			<h1><?php echo JText::_('INSTL_SITE'); ?></h1>
 		</div>
-		<div class="span6">
-			<div class="center">
-				<h4><?php echo JText::_('INSTL_SUPER_USER_TITLE'); ?></h4>
-			</div>
-			<div class="control-group">
-				<div class="control-label">
-					<?php echo $this->form->getLabel('admin_email'); ?>
-				</div>
-				<div class="controls">
-					<?php echo $this->form->getInput('admin_email'); ?>
-					<p class="help-block"><?php echo JText::_('INSTL_ADMIN_EMAIL_DESC'); ?></p>
-				</div>
-			</div>
-			<div class="control-group">
-				<div class="control-label">
-					<?php echo $this->form->getLabel('admin_user'); ?>
-				</div>
-				<div class="controls">
-					<?php echo $this->form->getInput('admin_user'); ?>
-					<p class="help-block"><?php echo JText::_('INSTL_ADMIN_USER_DESC'); ?></p>
-				</div>
-			</div>
-			<div class="control-group">
-				<div class="control-label">
-					<?php echo $this->form->getLabel('admin_password'); ?>
-				</div>
-				<div class="controls">
-					<?php // Disables autocomplete ?> <input type="password" style="display:none">
-					<?php echo $this->form->getInput('admin_password'); ?>
-					<p class="help-block"><?php echo JText::_('INSTL_ADMIN_PASSWORD_DESC'); ?></p>
-				</div>
-			</div>
-			<div class="control-group">
-				<div class="control-label">
-					<?php echo $this->form->getLabel('admin_password2'); ?>
-				</div>
-				<div class="controls">
-					<?php // Disables autocomplete ?> <input type="password" style="display:none">
-					<?php echo $this->form->getInput('admin_password2'); ?>
-				</div>
-			</div>
-		</div>
+<?php echo JHtml::_('InstallationHtml.helper.nav', null, 'JNEXT', 2); ?>
+
+	</header>
+	<div class="grid-2">
+		<section class="panel">
+			<h2 class="section-title"><?php echo JText::_('INSTL_STEP_SITE_LABEL'); ?></h2>
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'site_name', 'INSTL_SITE_NAME_DESC', '', null, 3); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'site_metadesc', 'INSTL_SITE_METADESC_TITLE_LABEL', '', null, 3); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'site_offline', 'INSTL_SITE_OFFLINE_TITLE_LABEL', '', null, 3); ?>
+
+		</section>
+		<section class="panel">
+			<h2 class="section-title"><?php echo JText::_('INSTL_SUPER_USER_TITLE'); ?></h2>
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'admin_email', 'INSTL_ADMIN_EMAIL_DESC', '', null, 3); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'admin_user', 'INSTL_ADMIN_USER_DESC', '', null, 3); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'admin_password', 'INSTL_ADMIN_PASSWORD_DESC', '', null, 3); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'admin_password2', null, '', null, 3); ?>
+
+		</section>
 	</div>
-	<div class="row-fluid">
-		<div class="span12">
-			<div class="control-group">
-				<div class="control-label">
-					<?php echo $this->form->getLabel('site_offline'); ?>
-				</div>
-				<div class="controls">
-					<?php echo $this->form->getInput('site_offline'); ?>
-					<p class="help-block">
-						<?php echo JText::_('INSTL_SITE_OFFLINE_TITLE_LABEL'); ?>
-					</p>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="row-fluid">
-		<div class="btn-toolbar">
-			<div class="btn-group pull-right">
-				<a href="#" class="btn btn-primary" onclick="Install.submitform();" rel="next" title="<?php echo JText::_('JNEXT'); ?>"><span class="icon-arrow-right icon-white"></span> <?php echo JText::_('JNEXT'); ?></a>
-			</div>
-		</div>
-	</div>
+	<footer class="view-footer">
+<?php echo JHtml::_('InstallationHtml.helper.nav', null, 'JNEXT', 2); ?>
+
+	</footer>
 	<input type="hidden" name="task" value="site" />
 	<?php echo JHtml::_('form.token'); ?>
+
 </form>

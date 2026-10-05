@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
     <fieldset>
-        <field name="language" type="installation.language" label="INSTL_LANGUAGE_LABEL" id="language" class="chzn-select-deselect" size="20" default="en-GB" onchange="Install.setlanguage();" />
+        <field name="language" type="installation.language" label="INSTL_LANGUAGE_LABEL" id="language" default="en-GB" onchange="Install.setlanguage();" />
         <field name="site_name" type="text" label="INSTL_SITE_NAME_LABEL" id="site_name" class="inputbox" required="true" />
         <field name="admin_email" type="email" label="INSTL_ADMIN_EMAIL_LABEL" id="admin_email" class="inputbox" validate="email" required="true" />
         <field name="admin_user" type="text" label="INSTL_ADMIN_USER_LABEL" id="admin_user" class="inputbox" required="true" validate="installation.username" size="30" />

@@ -38,7 +38,7 @@ class InstallationFormFieldSample extends JFormFieldRadio
 		$type    = $this->form->getValue('db_type');
 
 		// Some database drivers share DDLs; point these drivers to the correct parent
-		if ($type === 'mysqli' || $type === 'pdomysql')
+		if ($type === 'mysqli' || $type === 'pdomysql' || $type === 'mysqlonsqlite')
 		{
 			$type = 'mysql';
 		}
@@ -54,21 +54,21 @@ class InstallationFormFieldSample extends JFormFieldRadio
 		// Get a list of files in the search path with the given filter.
 		$files = JFolder::files(JPATH_INSTALLATION . '/sql/' . $type, '^sample.*\.sql$');
 
-		// Add option to not install sample data.
-		$options[] = JHtml::_('select.option', '',
-			JHtml::_('tooltip', JText::_('INSTL_SITE_INSTALL_SAMPLE_NONE_DESC'), '', '', JText::_('INSTL_SITE_INSTALL_SAMPLE_NONE'))
-		);
+		// Each choice shows its name and description (the installer's styles turn them into cards)
+		$options[] = JHtml::_('select.option', '', $this->choice('INSTL_SITE_INSTALL_SAMPLE_NONE', 'INSTL_SITE_INSTALL_SAMPLE_NONE_DESC'));
 
 		// Build the options list from the list of files.
 		if (is_array($files))
 		{
+			$lang = JFactory::getLanguage();
+
 			foreach ($files as $file)
 			{
-				$options[] = JHtml::_('select.option', $file, JFactory::getLanguage()->hasKey($key = 'INSTL_' . ($file = JFile::stripExt($file)) . '_SET') ?
-					JHtml::_('tooltip', JText::_('INSTL_' . strtoupper($file = JFile::stripExt($file)) . '_SET_DESC'), '', '',
-						JText::_('INSTL_' . ($file = JFile::stripExt($file)) . '_SET')
-					) : $file
-				);
+				$name = strtoupper(JFile::stripExt($file));
+
+				$options[] = JHtml::_('select.option', $file, $lang->hasKey('INSTL_' . $name . '_SET')
+					? $this->choice('INSTL_' . $name . '_SET', 'INSTL_' . $name . '_SET_DESC')
+					: htmlspecialchars($file, ENT_COMPAT, 'UTF-8'));
 			}
 		}
 
@@ -76,6 +76,21 @@ class InstallationFormFieldSample extends JFormFieldRadio
 		$options = array_merge(parent::getOptions(), $options);
 
 		return $options;
+	}
+
+	/**
+	 * The label of a choice: its name and description.
+	 *
+	 * @param   string  $title        The language key of the name
+	 * @param   string  $description  The language key of the description
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	protected function choice($title, $description)
+	{
+		return '<span class="sample-title">' . JText::_($title) . '</span><span class="sample-desc">' . JText::_($description) . '</span>';
 	}
 
 	/**

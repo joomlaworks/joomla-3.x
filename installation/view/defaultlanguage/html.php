@@ -26,6 +26,14 @@ class InstallationViewDefaultlanguageHtml extends JViewHtml
 	public $items;
 
 	/**
+	 * The form with the multilingual options
+	 *
+	 * @var    JForm
+	 * @since  3.17.0
+	 */
+	protected $form;
+
+	/**
 	 * Redefine the model so the correct type hinting is available.
 	 *
 	 * @var     InstallationModelLanguages

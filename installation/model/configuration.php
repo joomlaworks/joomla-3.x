@@ -124,7 +124,7 @@ class InstallationModelConfiguration extends JModelBase
 		$registry->set('cache_platformprefix', 0);
 
 		// Meta settings.
-		$registry->set('MetaDesc', $options->site_metadesc);
+		$registry->set('MetaDesc', isset($options->site_metadesc) ? $options->site_metadesc : '');
 		$registry->set('MetaKeys', '');
 		$registry->set('MetaTitle', 1);
 		$registry->set('MetaAuthor', 1);

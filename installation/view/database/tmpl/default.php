@@ -10,164 +10,42 @@
 defined('_JEXEC') or die;
 
 /* @var InstallationViewDefault $this */
+
+$sqlite = 'data-sqlite-label="' . htmlspecialchars(JText::_('INSTL_DATABASE_SQLITE_FILE_LABEL'), ENT_COMPAT, 'UTF-8') . '"'
+	. ' data-sqlite-desc="' . htmlspecialchars(JText::_('INSTL_DATABASE_SQLITE_FILE_DESC'), ENT_COMPAT, 'UTF-8') . '"';
 ?>
 <?php echo JHtml::_('InstallationHtml.helper.stepbar'); ?>
-<form action="index.php" method="post" id="adminForm" class="form-validate form-horizontal">
-	<div class="btn-toolbar">
-		<div class="btn-group pull-right">
-			<a class="btn" href="#" onclick="return Install.goToPage('site');" rel="prev" title="<?php echo JText::_('JPREVIOUS'); ?>"><span class="icon-arrow-left"></span> <?php echo JText::_('JPREVIOUS'); ?></a>
-			<a  class="btn btn-primary" href="#" onclick="Install.submitform();" rel="next" title="<?php echo JText::_('JNEXT'); ?>"><span class="icon-arrow-right icon-white"></span> <?php echo JText::_('JNEXT'); ?></a>
-		</div>
-	</div>
-	<h3><?php echo JText::_('INSTL_DATABASE'); ?></h3>
-	<hr class="hr-condensed" />
-	<div class="control-group">
-		<div class="control-label">
-			<?php echo $this->form->getLabel('db_type'); ?>
-		</div>
-		<div class="controls">
-			<?php echo $this->form->getInput('db_type'); ?>
-			<p class="help-block">
-				<?php echo JText::_('INSTL_DATABASE_TYPE_DESC'); ?>
-			</p>
-		</div>
-	</div>
-	<div class="control-group" data-sqlite="hide">
-		<div class="control-label">
-			<?php echo $this->form->getLabel('db_host'); ?>
-		</div>
-		<div class="controls">
-			<?php echo $this->form->getInput('db_host'); ?>
-			<p class="help-block">
-				<?php echo JText::_('INSTL_DATABASE_HOST_DESC'); ?>
-			</p>
-		</div>
-	</div>
-	<div class="control-group" data-sqlite="hide">
-		<div class="control-label">
-			<?php echo $this->form->getLabel('db_user'); ?>
-		</div>
-		<div class="controls">
-			<?php echo $this->form->getInput('db_user'); ?>
-			<p class="help-block">
-				<?php echo JText::_('INSTL_DATABASE_USER_DESC'); ?>
-			</p>
-		</div>
-	</div>
-	<div class="control-group" data-sqlite="hide">
-		<div class="control-label">
-			<?php echo $this->form->getLabel('db_pass'); ?>
-		</div>
-		<div class="controls">
-			<?php // Disables autocomplete ?> <input type="password" style="display:none">
-			<?php echo $this->form->getInput('db_pass'); ?>
-			<p class="help-block">
-				<?php echo JText::_('INSTL_DATABASE_PASSWORD_DESC'); ?>
-			</p>
-		</div>
-	</div>
-	<div class="control-group">
-		<div class="control-label">
-			<?php echo $this->form->getLabel('db_name'); ?>
-		</div>
-		<div class="controls">
-			<?php echo $this->form->getInput('db_name'); ?>
-			<p class="help-block" id="db_name_desc">
-				<?php echo JText::_('INSTL_DATABASE_NAME_DESC'); ?>
-			</p>
-		</div>
-	</div>
-	<div class="control-group">
-		<div class="control-label">
-			<?php echo $this->form->getLabel('db_prefix'); ?>
-		</div>
-		<div class="controls">
-			<?php echo $this->form->getInput('db_prefix'); ?>
-			<p class="help-block">
-				<?php echo JText::_('INSTL_DATABASE_PREFIX_DESC'); ?>
-			</p>
-		</div>
-	</div>
-	<div class="control-group">
-		<div class="control-label">
-			<?php echo $this->form->getLabel('db_old'); ?>
-		</div>
-		<div class="controls">
-			<?php echo $this->form->getInput('db_old'); ?>
-			<p class="help-block">
-				<?php echo JText::_('INSTL_DATABASE_OLD_PROCESS_DESC'); ?>
-			</p>
-		</div>
-	</div>
-	<div class="row-fluid">
-		<div class="btn-toolbar">
-			<div class="btn-group pull-right">
-				<a class="btn" href="#" onclick="return Install.goToPage('site');" rel="prev" title="<?php echo JText::_('JPREVIOUS'); ?>"><span class="icon-arrow-left"></span> <?php echo JText::_('JPREVIOUS'); ?></a>
-				<a  class="btn btn-primary" href="#" onclick="Install.submitform();" rel="next" title="<?php echo JText::_('JNEXT'); ?>"><span class="icon-arrow-right icon-white"></span> <?php echo JText::_('JNEXT'); ?></a>
-			</div>
-		</div>
-	</div>
 
+<form action="index.php" method="post" id="adminForm" class="view" novalidate="novalidate" <?php echo $sqlite; ?>>
+	<header class="view-header">
+		<div class="view-title">
+			<p class="eyebrow"><?php echo JText::_('INSTL_STEP_DATABASE_LABEL'); ?></p>
+			<h1><?php echo JText::_('INSTL_DATABASE'); ?></h1>
+		</div>
+<?php echo JHtml::_('InstallationHtml.helper.nav', 'site', 'JNEXT', 2); ?>
+
+	</header>
+	<section class="panel">
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'db_type', 'INSTL_DATABASE_TYPE_DESC', '', null, 2); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'db_host', 'INSTL_DATABASE_HOST_DESC', 'data-sqlite="hide"', null, 2); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'db_user', 'INSTL_DATABASE_USER_DESC', 'data-sqlite="hide"', null, 2); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'db_pass', 'INSTL_DATABASE_PASSWORD_DESC', 'data-sqlite="hide"', null, 2); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'db_name', 'INSTL_DATABASE_NAME_DESC', '', 'db_name_desc', 2); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'db_prefix', 'INSTL_DATABASE_PREFIX_DESC', '', null, 2); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'db_old', 'INSTL_DATABASE_OLD_PROCESS_DESC', '', null, 2); ?>
+
+	</section>
+	<footer class="view-footer">
+<?php echo JHtml::_('InstallationHtml.helper.nav', 'site', 'JNEXT', 2); ?>
+
+	</footer>
 	<input type="hidden" name="task" value="database" />
-	<script>
-		// The SQLite driver needs no server or user, and its "database name" is the database file
-		(function () {
-			var type   = document.getElementById('jform_db_type'),
-				name   = document.getElementById('jform_db_name'),
-				label  = document.getElementById('jform_db_name-lbl'),
-				desc   = document.getElementById('db_name_desc'),
-				groups = document.querySelectorAll('[data-sqlite="hide"]'),
-				texts  = {
-					label: label ? label.innerHTML : '',
-					desc: desc ? desc.innerHTML : '',
-					sqliteLabel: <?php echo json_encode(JText::_('INSTL_DATABASE_SQLITE_FILE_LABEL')); ?>,
-					sqliteDesc: <?php echo json_encode(JText::_('INSTL_DATABASE_SQLITE_FILE_DESC')); ?>
-				},
-				serverName = '';
-
-			if (!type || !name) {
-				return;
-			}
-
-			function randomName() {
-				var bytes = new Uint8Array(8), hex = '';
-
-				(window.crypto || window.msCrypto).getRandomValues(bytes);
-
-				for (var i = 0; i < bytes.length; i++) {
-					hex += ('0' + bytes[i].toString(16)).slice(-2);
-				}
-
-				return 'database/joomla-' + hex + '.sqlite';
-			}
-
-			function update() {
-				var sqlite = type.value === 'mysqlonsqlite';
-
-				for (var i = 0; i < groups.length; i++) {
-					groups[i].style.display = sqlite ? 'none' : '';
-				}
-
-				if (label) {
-					label.innerHTML = sqlite ? texts.sqliteLabel : texts.label;
-				}
-
-				if (desc) {
-					desc.innerHTML = sqlite ? texts.sqliteDesc : texts.desc;
-				}
-
-				// Suggest a file with a name nobody can guess, keeping a database name typed for the other types
-				if (sqlite && !/[\\/.]/.test(name.value)) {
-					serverName = name.value;
-					name.value = randomName();
-				} else if (!sqlite && /\.sqlite$/.test(name.value)) {
-					name.value = serverName;
-				}
-			}
-
-			type.addEventListener('change', update);
-			update();
-		})();
-	</script>
 	<?php echo JHtml::_('form.token'); ?>
+
 </form>

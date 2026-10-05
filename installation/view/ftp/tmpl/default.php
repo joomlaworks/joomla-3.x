@@ -11,87 +11,51 @@ defined('_JEXEC') or die;
 /* @var InstallationViewDefault $this */
 ?>
 <?php echo JHtml::_('InstallationHtml.helper.stepbar'); ?>
-<form action="index.php" method="post" id="adminForm" class="form-validate form-horizontal">
-	<div class="btn-toolbar">
-		<div class="btn-group pull-right">
-			<a class="btn" href="#" onclick="return Install.goToPage('database');" rel="prev" title="<?php echo JText::_('JPREVIOUS'); ?>"><span class="icon-arrow-left"></span> <?php echo JText::_('JPREVIOUS'); ?></a>
-			<a class="btn btn-primary" href="#" onclick="Install.submitform();" rel="next" title="<?php echo JText::_('JNEXT'); ?>"><span class="icon-arrow-right icon-white"></span> <?php echo JText::_('JNEXT'); ?></a>
-		</div>
-	</div>
-	<h3><?php echo JText::_('INSTL_FTP'); ?></h3>
-	<hr class="hr-condensed" />
-	<div class="control-group">
-		<div class="control-label">
-			<?php echo $this->form->getLabel('ftp_enable'); ?>
-		</div>
-		<div class="controls">
-			<?php echo $this->form->getInput('ftp_enable'); ?>
-		</div>
-	</div>
-	<div class="control-group">
-		<div class="control-label">
-			<?php echo $this->form->getLabel('ftp_user'); ?>
-		</div>
-		<div class="controls">
-			<?php echo $this->form->getInput('ftp_user'); ?>
-			<p class="help-block">
-				<?php echo JText::_('INSTL_FTP_USER_DESC'); ?>
-			</p>
-		</div>
-	</div>
-	<div class="control-group">
-		<div class="control-label">
-			<?php echo $this->form->getLabel('ftp_pass'); ?>
-		</div>
-		<div class="controls">
-			<?php echo $this->form->getInput('ftp_pass'); ?>
-			<p class="help-block">
-				<?php echo JText::_('INSTL_FTP_PASSWORD_DESC'); ?>
-			</p>
-		</div>
-	</div>
-	<div class="control-group">
-		<div class="control-label">
-		</div>
-		<div class="controls">
-			<button id="verifybutton" class="btn btn-success" onclick="Install.verifyFtpSettings(this);"><span class="icon-ok icon-white"></span> <?php echo JText::_('INSTL_VERIFY_FTP_SETTINGS'); ?></button>
-		</div>
-	</div>
-	<div class="control-group">
-		<div class="control-label">
-			<?php echo $this->form->getLabel('ftp_host'); ?>
-		</div>
-		<div class="controls">
-			<div class="input-append">
-				<?php echo $this->form->getInput('ftp_host'); ?><button id="findbutton" class="btn" onclick="Install.detectFtpRoot(this);"><span class="icon-folder-open"></span> <?php echo JText::_('INSTL_AUTOFIND_FTP_PATH'); ?></button>
-			</div>
-		</div>
-	</div>
-	<div class="control-group">
-		<div class="control-label">
-			<?php echo $this->form->getLabel('ftp_port'); ?>
-		</div>
-		<div class="controls">
-			<?php echo $this->form->getInput('ftp_port'); ?>
-		</div>
-	</div>
-	<div class="control-group">
-		<div class="control-label">
-			<?php echo $this->form->getLabel('ftp_save'); ?>
-		</div>
-		<div class="controls">
-			<?php echo $this->form->getInput('ftp_save'); ?>
-		</div>
-	</div>
-	<div class="row-fluid">
-		<div class="btn-toolbar">
-			<div class="btn-group pull-right">
-				<a class="btn" href="#" onclick="return Install.goToPage('database');" rel="prev" title="<?php echo JText::_('JPREVIOUS'); ?>"><span class="icon-arrow-left"></span> <?php echo JText::_('JPREVIOUS'); ?></a>
-				<a class="btn btn-primary" href="#" onclick="Install.submitform();" rel="next" title="<?php echo JText::_('JNEXT'); ?>"><span class="icon-arrow-right icon-white"></span> <?php echo JText::_('JNEXT'); ?></a>
-			</div>
-		</div>
-	</div>
 
+<form action="index.php" method="post" id="adminForm" class="view" novalidate="novalidate">
+	<header class="view-header">
+		<div class="view-title">
+			<p class="eyebrow"><?php echo JText::_('INSTL_STEP_FTP_LABEL'); ?></p>
+			<h1><?php echo JText::_('INSTL_FTP'); ?></h1>
+		</div>
+<?php echo JHtml::_('InstallationHtml.helper.nav', 'database', 'JNEXT', 2); ?>
+
+	</header>
+	<section class="panel">
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'ftp_enable', null, '', null, 2); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'ftp_user', 'INSTL_FTP_USER_DESC', '', null, 2); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'ftp_pass', 'INSTL_FTP_PASSWORD_DESC', '', null, 2); ?>
+
+		<div class="field">
+			<div class="field-label"></div>
+			<div class="field-control">
+				<button type="button" id="verifybutton" class="btn btn-success" data-action="verify-ftp"><?php echo JHtml::_('InstallationHtml.helper.icon', 'check'); ?> <span><?php echo JText::_('INSTL_VERIFY_FTP_SETTINGS'); ?></span></button>
+			</div>
+		</div>
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'ftp_host', null, '', null, 2); ?>
+
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'ftp_port', null, '', null, 2); ?>
+
+		<div class="field">
+			<div class="field-label"><?php echo trim($this->form->getLabel('ftp_root')); ?></div>
+			<div class="field-control">
+				<div class="input-group">
+<?php echo JHtml::_('InstallationHtml.helper.indent', JHtml::_('InstallationHtml.helper.normalize', $this->form->getInput('ftp_root')), 5); ?>
+
+					<button type="button" id="findbutton" class="btn btn-ghost" data-action="detect-ftp-root"><?php echo JHtml::_('InstallationHtml.helper.icon', 'folder'); ?> <span><?php echo JText::_('INSTL_AUTOFIND_FTP_PATH'); ?></span></button>
+				</div>
+			</div>
+		</div>
+<?php echo JHtml::_('InstallationHtml.helper.field', $this->form, 'ftp_save', null, '', null, 2); ?>
+
+	</section>
+	<footer class="view-footer">
+<?php echo JHtml::_('InstallationHtml.helper.nav', 'database', 'JNEXT', 2); ?>
+
+	</footer>
 	<input type="hidden" name="task" value="ftp" />
 	<?php echo JHtml::_('form.token'); ?>
+
 </form>

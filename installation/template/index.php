@@ -10,79 +10,98 @@ defined('_JEXEC') or die;
 
 /** @var JDocumentHtml $this */
 
-// Output as HTML5
-$this->setHtml5(true);
+/*
+ * The installer brings its own styles and script (template/css, template/js) and writes its own head: nothing is loaded from
+ * the rest of Joomla (Bootstrap, jQuery, Chosen, core scripts), including what form fields would add to the document.
+ */
+$version = md5_file(__DIR__ . '/css/template.css') . md5_file(__DIR__ . '/js/installation.js');
+$version = substr(md5($version), 0, 12);
+$app     = JFactory::getApplication();
+$lang    = JFactory::getLanguage();
 
-// Load the JavaScript behaviors
-JHtml::_('bootstrap.framework');
-JHtml::_('formbehavior.chosen', 'select');
-JHtml::_('behavior.keepalive');
-JHtml::_('behavior.formvalidator');
-JHtml::_('behavior.core');
-JHtml::_('behavior.polyfill', array('event'), 'lt IE 9');
+$strings = array();
 
-// Add installation js
-JHtml::_('script', 'installation/template/js/installation.js', array('version' => 'auto'));
+foreach (array('ERROR', 'WARNING', 'NOTICE', 'MESSAGE', 'INSTL_PROCESS_BUSY', 'INSTL_FTP_SETTINGS_CORRECT',
+	'JLIB_DATABASE_ERROR_DATABASE_CONNECT', 'JLIB_JS_AJAX_ERROR_CONNECTION_ABORT', 'JLIB_JS_AJAX_ERROR_NO_CONTENT',
+	'JLIB_JS_AJAX_ERROR_OTHER', 'JLIB_JS_AJAX_ERROR_PARSE', 'JLIB_JS_AJAX_ERROR_TIMEOUT') as $key)
+{
+	$strings[$key] = JText::_($key);
+}
 
-// Add html5 shiv
-JHtml::_('script', 'jui/html5.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
+$options = array(
+	'url'       => JRoute::_('index.php', false),
+	'view'      => $app->input->getWord('view'),
+	'keepalive' => max(60, (int) JFactory::getSession()->getExpire() - 60),
+	'strings'   => $strings,
+);
 
-// Add Stylesheets
-JHtml::_('bootstrap.loadCss', true, $this->direction);
-JHtml::_('stylesheet', 'installation/template/css/template.css', array('version' => 'auto'));
+$messages = array();
 
-// Load JavaScript message titles
-JText::script('ERROR');
-JText::script('WARNING');
-JText::script('NOTICE');
-JText::script('MESSAGE');
+foreach ($app->getMessageQueue() as $message)
+{
+	if (isset($message['type'], $message['message']))
+	{
+		$messages[$message['type']][] = $message['message'];
+	}
+}
 
-// Add strings for JavaScript error translations.
-JText::script('JLIB_JS_AJAX_ERROR_CONNECTION_ABORT');
-JText::script('JLIB_JS_AJAX_ERROR_NO_CONTENT');
-JText::script('JLIB_JS_AJAX_ERROR_OTHER');
-JText::script('JLIB_JS_AJAX_ERROR_PARSE');
-JText::script('JLIB_JS_AJAX_ERROR_TIMEOUT');
+$alertTypes = array('message' => 'success', 'notice' => 'info', 'warning' => 'warning', 'error' => 'error');
 
-// Load the JavaScript translated messages
-JText::script('INSTL_PROCESS_BUSY');
-JText::script('INSTL_FTP_SETTINGS_CORRECT');
+// The logo inline, its wordmark in the text colour (white on the sidebar); the mark keeps Joomla's colours
+$logo = (string) file_get_contents(__DIR__ . '/images/joomla-logo.svg');
+$logo = str_replace(array('fill="#3b3a40"', '<svg '), array('fill="currentColor"', '<svg class="logo-svg" role="img" aria-label="Joomla!" focusable="false" '), $logo);
 
-// Add script options
-$this->addScriptOptions('system.installation', array('url' => JRoute::_('index.php')));
+// The step's markup, indented to its place in the page source
+$this->setBuffer(JHtml::_('InstallationHtml.helper.indent', (string) $this->getBuffer('component'), 4), 'component');
+
+// Fix wrong display of Joomla!® in RTL language
+$joomla  = '<a href="https://www.joomla.org" target="_blank" rel="noopener noreferrer">Joomla!</a><sup>' . ($lang->isRtl() ? '&#x200E;' : '') . '</sup>';
+$license = '<a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html" target="_blank" rel="noopener noreferrer">' . JText::_('INSTL_GNU_GPL_LICENSE') . '</a>';
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
-	<head>
-		<jdoc:include type="head" />
-		<!--[if lt IE 9]><script src="<?php echo JUri::root(true); ?>/media/jui/js/html5.js"></script><![endif]-->
-	</head>
-	<body data-basepath="<?php echo JUri::root(true); ?>">
-		<!-- Header -->
-		<div class="header">
-			<img src="<?php echo $this->baseurl; ?>/template/images/joomla.png" alt="Joomla" />
-			<hr />
-			<h5>
-				<?php // Fix wrong display of Joomla!® in RTL language ?>
-				<?php $joomla  = '<a href="https://www.joomla.org" target="_blank">Joomla!</a><sup>' . (JFactory::getLanguage()->isRtl() ? '&#x200E;' : '') . '</sup>'; ?>
-				<?php $license = '<a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html" target="_blank" rel="noopener noreferrer">' . JText::_('INSTL_GNU_GPL_LICENSE') . '</a>'; ?>
-				<?php echo JText::sprintf('JGLOBAL_ISFREESOFTWARE', $joomla, $license); ?>
-			</h5>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="robots" content="noindex, nofollow" />
+	<meta name="color-scheme" content="light dark" />
+	<meta name="theme-color" content="#0f2a5c" />
+	<title><?php echo htmlspecialchars($this->getTitle(), ENT_COMPAT, 'UTF-8'); ?></title>
+	<link rel="icon" href="<?php echo $this->baseurl; ?>/favicon.ico" sizes="any" />
+	<link rel="icon" href="<?php echo $this->baseurl; ?>/template/images/joomla-logo-icon.svg" type="image/svg+xml" />
+	<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/template/css/template.css?<?php echo $version; ?>" />
+	<script type="application/json" id="installation-options"><?php echo json_encode($options, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES); ?></script>
+	<script src="<?php echo $this->baseurl; ?>/template/js/installation.js?<?php echo $version; ?>" defer="defer"></script>
+</head>
+<body>
+	<aside class="sidebar">
+		<div class="brand">
+			<span class="logo"><?php echo trim($logo); ?></span>
 		</div>
-		<!-- Container -->
-		<div class="container">
-			<jdoc:include type="message" />
-			<div id="javascript-warning">
-				<noscript>
-					<div class="alert alert-error">
-						<?php echo JText::_('INSTL_WARNJAVASCRIPT'); ?>
-					</div>
-				</noscript>
-			</div>
+	</aside>
+	<div class="main">
+		<main class="content">
+			<div id="system-message-container" aria-live="polite"><?php foreach ($messages as $type => $list) : ?>
+
+				<div class="alert alert-<?php echo isset($alertTypes[$type]) ? $alertTypes[$type] : 'info'; ?>" role="alert">
+<?php foreach ($list as $text) : ?>
+					<p><?php echo $text; ?></p>
+<?php endforeach; ?>
+				</div>
+<?php endforeach; ?></div>
+			<noscript>
+				<div class="alert alert-error"><p><?php echo JText::_('INSTL_WARNJAVASCRIPT'); ?></p></div>
+			</noscript>
 			<div id="container-installation">
-				<jdoc:include type="component" />
+<jdoc:include type="component" />
 			</div>
-			<hr />
-		</div>
-	</body>
+		</main>
+		<footer class="footer">
+			<p><?php echo JText::sprintf('JGLOBAL_ISFREESOFTWARE', $joomla, $license); ?></p>
+		</footer>
+	</div>
+	<div class="loading-layer" id="loading-layer" hidden="hidden">
+		<div class="spinner" role="status" aria-label="<?php echo htmlspecialchars(JText::_('INSTL_PROCESS_BUSY'), ENT_COMPAT, 'UTF-8'); ?>"></div>
+	</div>
+</body>
 </html>

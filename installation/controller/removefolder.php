@@ -168,6 +168,7 @@ class InstallationControllerRemovefolder extends JControllerBase
  *
  * @since  3.1
  */
+#[\AllowDynamicProperties]
 class InstallationResponseJson
 {
 	/**
