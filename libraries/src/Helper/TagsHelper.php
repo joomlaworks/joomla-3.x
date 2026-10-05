@@ -255,7 +255,8 @@ class TagsHelper extends CMSHelper
 				// Remove the #new# prefix that identifies new tags
 				$tagText = str_replace('#new#', '', $tag);
 
-				if ($tagText === $tag)
+				// IDs can come as integers (e.g. from code rather than a form): never take them for the title of a new tag
+				if ($tagText === (string) $tag)
 				{
 					$newTags[] = (int) $tag;
 				}
@@ -343,7 +344,8 @@ class TagsHelper extends CMSHelper
 				// Remove the #new# prefix that identifies new tags
 				$tagText = str_replace('#new#', '', $tag);
 
-				if ($tagText === $tag)
+				// IDs can come as integers (e.g. from code rather than a form): never take them for the title of a new tag
+				if ($tagText === (string) $tag)
 				{
 					$newTags[] = (int) $tag;
 				}

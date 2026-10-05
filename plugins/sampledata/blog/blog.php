@@ -14,7 +14,7 @@ use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Session\Session;
 
 /**
- * Sampledata - Blog Plugin
+ * Sample Data plugin: the News and Blog sample data sets, installed from the Sample Data module
  *
  * @since  3.8.0
  */
@@ -70,6 +70,9 @@ class PlgSampledataBlog extends JPlugin
 			return;
 		}
 
+		// The sets of this plugin: News first, then Blog
+		$sets = array($this->news()->getOverview());
+
 		$data              = new stdClass;
 		$data->name        = $this->_name;
 		$data->title       = JText::_('PLG_SAMPLEDATA_BLOG_OVERVIEW_TITLE');
@@ -77,7 +80,43 @@ class PlgSampledataBlog extends JPlugin
 		$data->icon        = 'broadcast';
 		$data->steps       = 3;
 
-		return $data;
+		$sets[] = $data;
+
+		return $sets;
+	}
+
+	/**
+	 * The News set.
+	 *
+	 * @return  PlgSampledataBlogNews
+	 *
+	 * @since   3.17.0
+	 */
+	private function news()
+	{
+		JLoader::register('PlgSampledataBlogNews', __DIR__ . '/news.php');
+
+		return new PlgSampledataBlogNews($this->app, $this->db);
+	}
+
+	/**
+	 * Run a step of the News set.
+	 *
+	 * @param   integer  $step  The step
+	 *
+	 * @return  array|void  The JSON response to the module (nothing for the other sets)
+	 *
+	 * @since   3.17.0
+	 */
+	private function newsStep($step)
+	{
+		// From the Sample Data module only (com_ajax also runs plugins on the site)
+		if (!$this->app->isClient('administrator') || !Session::checkToken('get') || $this->app->input->get('type') !== 'news')
+		{
+			return;
+		}
+
+		return $this->news()->step($step);
 	}
 
 	/**
@@ -89,6 +128,11 @@ class PlgSampledataBlog extends JPlugin
 	 */
 	public function onAjaxSampledataApplyStep1()
 	{
+		if ($this->app->input->get('type') === 'news')
+		{
+			return $this->newsStep(1);
+		}
+
 		if (!Session::checkToken('get') || $this->app->input->get('type') != $this->_name)
 		{
 			return;
@@ -312,6 +356,11 @@ class PlgSampledataBlog extends JPlugin
 	 */
 	public function onAjaxSampledataApplyStep2()
 	{
+		if ($this->app->input->get('type') === 'news')
+		{
+			return $this->newsStep(2);
+		}
+
 		if (!Session::checkToken('get') || $this->app->input->get('type') != $this->_name)
 		{
 			return;
@@ -613,6 +662,11 @@ class PlgSampledataBlog extends JPlugin
 	 */
 	public function onAjaxSampledataApplyStep3()
 	{
+		if ($this->app->input->get('type') === 'news')
+		{
+			return $this->newsStep(3);
+		}
+
 		if (!Session::checkToken('get') || $this->app->input->get('type') != $this->_name)
 		{
 			return;
@@ -966,6 +1020,54 @@ class PlgSampledataBlog extends JPlugin
 		$response['message'] = JText::_('PLG_SAMPLEDATA_BLOG_STEP3_SUCCESS');
 
 		return $response;
+	}
+
+	/**
+	 * Step 4 of the News set.
+	 *
+	 * @return  array|void  The JSON response to the module
+	 *
+	 * @since   3.17.0
+	 */
+	public function onAjaxSampledataApplyStep4()
+	{
+		return $this->newsStep(4);
+	}
+
+	/**
+	 * Step 5 of the News set.
+	 *
+	 * @return  array|void  The JSON response to the module
+	 *
+	 * @since   3.17.0
+	 */
+	public function onAjaxSampledataApplyStep5()
+	{
+		return $this->newsStep(5);
+	}
+
+	/**
+	 * Step 6 of the News set.
+	 *
+	 * @return  array|void  The JSON response to the module
+	 *
+	 * @since   3.17.0
+	 */
+	public function onAjaxSampledataApplyStep6()
+	{
+		return $this->newsStep(6);
+	}
+
+	/**
+	 * Step 7 of the News set.
+	 *
+	 * @return  array|void  The JSON response to the module
+	 *
+	 * @since   3.17.0
+	 */
+	public function onAjaxSampledataApplyStep7()
+	{
+		return $this->newsStep(7);
 	}
 
 	/**

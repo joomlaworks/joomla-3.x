@@ -38,6 +38,8 @@ If you are a Joomla extension developer reading this, ensure your extension upda
 
 ## Version 3.17 - unreleased [pending]
 Summary of changes:
+- New default template for new sites, **Hammond**: a modern, light news and magazine design with a frontpage made of modules, built with plain CSS and JavaScript
+- New **News** sample data set, a complete news site for Hammond (its images are hosted online, not in the package); the installer now offers just News and Blog, and both can also be added later from the Control Panel
 - TinyMCE 8, the current TinyMCE, as a new editor ("Editor - TinyMCE", the default for new sites); TinyMCE 4 stays as "Editor - TinyMCE (legacy)", and existing sites keep it until they switch in Global Configuration
 - New command line interface (`cli/joomla.php`) with the commands of the Joomla 4+ CLI and JSON output for scripts and AI agents, plus content management (articles, categories, modules, menus), dry runs, a health check and log viewers
 - AI assistants (e.g. Claude) can work with a site through the built-in MCP server, read-only unless you allow changes (see [AI Assistants (MCP)](#ai-assistants-mcp))
@@ -84,11 +86,16 @@ Summary of changes:
 - The Site Information/Statistics modules show the operating system's name (e.g. "Ubuntu 26.04.1 LTS", or "Linux" on the frontend) instead of a cut-off "Linux" plus the start of the server's host name, and the web server (e.g. "Apache 2.4.58"; only the name on the frontend)
 - Fixed "Access forbidden." showing in the Module Manager after saving a module, for users who may edit modules but not publish them (the module was saved)
 - The command line now shows the messages of older code (e.g. why a category can't be deleted), and a broken command file no longer stops the other commands
+- Fixed tags given by ID from the command line being created as new tags named after the number
+- Fixed date calculations with negative intervals failing on the SQLite database driver
+- Fixed the Blog sample data leaving out the Control Panel's Sample Data, Joomla Version and Privacy Dashboard modules
 
 **Improvements:**
 - The "Joomla! Statistics" plugin and its request to send statistics are off on new and updated sites (joomla.org's statistics don't cover this distribution)
 - A modernised installer for new sites: new app-style design with a sidebar of steps (with dark mode and right-to-left support), well-formed XHTML-style HTML5, plain HTML/CSS/JavaScript without Bootstrap, jQuery or any other file from outside the `installation` folder, and the same steps as before
 - The installer removes the `installation` folder by itself when you continue to your site or its administrator (only after installing, and only its own folder), and no longer has FTP options
+- The installer offers two sample data sets, News and Blog; Brochure, Default and Learn are removed
+- The "Sample Data" plugin (formerly "Sample Data - Blog") and Control Panel module install either set, News first, with a button per set
 
 **New features:**
 - TinyMCE 8 editor ("Editor - TinyMCE"), next to the TinyMCE 4 one, now "Editor - TinyMCE (legacy)": the editor buttons in a "CMS Content" menu, image uploads by dropping, pasting or the image dialog, templates, a toolbar builder per user group, 61 languages. New sites use it; existing sites switch in Global Configuration (and can switch back)
@@ -100,6 +107,8 @@ Summary of changes:
 - PostgreSQL in the command line database tools: `database:export` and `database:import` work on PostgreSQL, and `database:convert` moves a site between MySQL/MariaDB, PostgreSQL and SQLite, in any direction. See [PostgreSQL Support](#postgresql-support)
 - PostgreSQL install scripts for Banners, Contacts and News Feeds, so they can be reinstalled after an uninstall (also through "Restore uninstalled core extensions")
 - New command line interface, `cli/joomla.php`, using the same command names and options as Joomla 4 and later to update Joomla and manage the configuration, users, extensions, database, cache, sessions and Smart Search (e.g. `php cli/joomla.php core:update`, `database:export`, `user:add`, `extension:install`, `config:set`, `site:down`). Every command can return JSON (`--format=json`), so scripts and AI agents can work with the site directly. Extensions can add their own commands. The existing scripts in `cli/` still work as before (cron jobs need no changes), but now run the new commands.
+- Hammond, a news and magazine template: a 12-column frontpage of modules (main story, latest news, sections, opinion, most read, ad slots), a sticky header with a combined menu and search panel, list, article and info page layouts, share popups, system fonts and SVG icons, sized for readability and Core Web Vitals. The default template of new sites without sample data or with the News set; installed but not activated on existing sites
+- News sample data: 227 articles in ten sections with tags, menus and modules, and images, videos and posts matching each section. From the installer, `core:install --sample-data=news` or the Control Panel's Sample Data module (which also makes a Hammond style the site's default template)
 
 ## Version 3.16 - released October 3rd, 2026
 Summary of changes:
@@ -253,7 +262,7 @@ A new site on SQLite takes one command: give it the site's name, the administrat
 wget -q https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip && unzip -q joomla-latest.zip && rm joomla-latest.zip && php cli/joomla.php core:install --site-name="My Site" --admin-email=me@example.com --admin-username=admin
 ```
 
-Add `--sample-data=blog` (or `brochure`, `default`, `learn`) to start with one of the installer's sample data sets. It needs PHP 7.4 or newer with the `pdo_sqlite` extension. `--format=json` returns the details (including the password) for scripts.
+Add `--sample-data=news` (or `blog`) to start with one of the installer's sample data sets; the news set comes with the Hammond template as the site's template. It needs PHP 7.4 or newer with the `pdo_sqlite` extension. `--format=json` returns the details (including the password) for scripts.
 
 
 ## PHP COMPATIBILITY

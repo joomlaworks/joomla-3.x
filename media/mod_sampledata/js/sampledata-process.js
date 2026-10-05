@@ -3,94 +3,120 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-!(function ($) {
-	"use strict";
+/* Sample Data module: installs a set step by step, each step a request to the set's plugin */
+((document, window) => {
+	'use strict';
 
-	var inProgress = false;
+	let inProgress = false;
 
-	var sampledataAjax = function(type, steps, step) {
-		if (step > steps) {
-			$('.sampledata-' + type + ' .row-title').append('<span class="icon-publish"> </span>');
-			inProgress = false;
-			return;
-		}
-		var stepClass = 'sampledata-steps-' + type + '-' + step,
-			$stepLi = $('<li class="' + stepClass + '"><p class="loader-image text-center"><img src="' + window.modSampledataIconProgress + '" width="30" height="30" ></p></li>'),
-			$progress = $(".sampledata-progress-" + type + " progress");
+	const message = (list, text, type) => {
+		const item = document.createElement('li');
 
-		$("div.sampledata-progress-" + type + " ul").append($stepLi);
+		item.className = `alert alert-${type}`;
+		item.innerHTML = text;
+		list.appendChild(item);
 
-		var request = $.ajax({
-			url: window.modSampledataUrl,
-			type: 'POST',
-			dataType: 'json',
-			data: {
-				type: type,
-				plugin: 'SampledataApplyStep' + step,
-				step: step
-			}
-		});
-		request.done(function(response){
-			$stepLi.children('.loader-image').remove();
-
-			if (response.success && response.data && response.data.length > 0) {
-				var success, value, resultClass, $msg;
-
-				// Display all messages that we got
-				for(var i = 0, l = response.data.length; i < l; i++) {
-					value   = response.data[i];
-					success = value.success;
-					resultClass = success ? 'success' : 'error';
-					$stepLi.append($('<div>', {
-						html: value.message,
-						'class': 'alert alert-' + resultClass,
-					}));
-				}
-
-				// Update progress
-				$progress.val(step/steps);
-
-				// Move on next step
-				if (success) {
-					step++;
-					sampledataAjax(type, steps, step);
-				}
-
-			} else {
-				$stepLi.addClass('alert alert-error');
-				$stepLi.html(Joomla.JText._('MOD_SAMPLEDATA_INVALID_RESPONSE'));
-				inProgress = false;
-			}
-		});
-		request.fail(function(jqXHR, textStatus){
-			alert('Something went wrong! Please close and reopen the browser and try again!');
-		});
+		return item;
 	};
 
-	window.sampledataApply = function(el) {
-		var $el = $(el), type = $el.data('type'), steps = $el.data('steps');
+	const runStep = (set, button, type, steps, step) => {
+		const progress = set.querySelector('.sampledata-progress');
+		const list = set.querySelector('.sampledata-messages');
 
-		// Check whether the work in progress or we alredy proccessed with current item
-		if (inProgress) {
+		if (step > steps) {
+			inProgress = false;
+			button.disabled = true;
+			button.classList.add('btn-success');
+			button.innerHTML = `<span class="icon-publish" aria-hidden="true"></span> ${Joomla.JText._('MOD_SAMPLEDATA_INSTALLED')}`;
+
 			return;
 		}
-		if ($el.data('processed')) {
-			alert(Joomla.JText._('MOD_SAMPLEDATA_ITEM_ALREADY_PROCESSED'));
+
+		const loader = document.createElement('li');
+
+		loader.innerHTML = `<img src="${window.modSampledataIconProgress}" width="30" height="30" alt="">`;
+		list.appendChild(loader);
+
+		const body = new FormData();
+
+		body.append('type', type);
+		body.append('plugin', `SampledataApplyStep${step}`);
+		body.append('step', step);
+
+		fetch(window.modSampledataUrl, { method: 'POST', body, credentials: 'same-origin' })
+			.then((response) => response.json())
+			.then((response) => {
+				loader.remove();
+
+				// Every sample data plugin answers; only the set's own plugin gives a result
+				const results = (response && response.success && Array.isArray(response.data) ? response.data : []).filter((result) => result && typeof result === 'object');
+
+				if (!results.length) {
+					message(list, Joomla.JText._('MOD_SAMPLEDATA_INVALID_RESPONSE'), 'error');
+					inProgress = false;
+
+					return;
+				}
+
+				let success = true;
+
+				results.forEach((result) => {
+					success = success && !!result.success;
+					message(list, result.message, result.success ? 'success' : 'error');
+				});
+
+				progress.value = step / steps;
+
+				if (success) {
+					runStep(set, button, type, steps, step + 1);
+				} else {
+					inProgress = false;
+				}
+			})
+			.catch(() => {
+				loader.remove();
+				message(list, Joomla.JText._('MOD_SAMPLEDATA_REQUEST_FAILED'), 'error');
+				inProgress = false;
+			});
+	};
+
+	const apply = (button) => {
+		const set = button.closest('.sampledata-set');
+
+		if (inProgress || !set) {
 			return;
 		}
 
-		// Make sure that use run this not by random clicking on the page links
-		if (!confirm(Joomla.JText._('MOD_SAMPLEDATA_CONFIRM_START'))) {
-			return false;
+		if (button.dataset.processed) {
+			window.alert(Joomla.JText._('MOD_SAMPLEDATA_ITEM_ALREADY_PROCESSED'));
+
+			return;
 		}
 
-		// Turn on the progress container
-		$('.sampledata-progress-' + type).show();
-		$el.data('processed', true)
+		if (!window.confirm(Joomla.JText._('MOD_SAMPLEDATA_CONFIRM_START'))) {
+			return;
+		}
 
+		button.dataset.processed = '1';
+		set.querySelector('.sampledata-progress').hidden = false;
+		set.querySelector('.sampledata-messages').hidden = false;
 		inProgress = true;
-		sampledataAjax(type, steps, 1);
+		runStep(set, button, button.dataset.type, parseInt(button.dataset.steps, 10), 1);
+	};
+
+	document.addEventListener('click', (event) => {
+		const button = event.target instanceof Element ? event.target.closest('.sampledata-apply') : null;
+
+		if (button) {
+			event.preventDefault();
+			apply(button);
+		}
+	});
+
+	// The old name, for overrides of the module's layout
+	window.sampledataApply = (element) => {
+		apply(element);
+
 		return false;
 	};
-
-})(jQuery);
+})(document, window);

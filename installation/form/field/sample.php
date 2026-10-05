@@ -54,6 +54,13 @@ class InstallationFormFieldSample extends JFormFieldRadio
 		// Get a list of files in the search path with the given filter.
 		$files = JFolder::files(JPATH_INSTALLATION . '/sql/' . $type, '^sample.*\.sql$');
 
+		// The News set (with the Hammond template, the default of a new site) comes first, right after "None"
+		if (is_array($files) && ($key = array_search('sample_news.sql', $files, true)) !== false)
+		{
+			unset($files[$key]);
+			array_unshift($files, 'sample_news.sql');
+		}
+
 		// Each choice shows its name and description (the installer's styles turn them into cards)
 		$options[] = JHtml::_('select.option', '', $this->choice('INSTL_SITE_INSTALL_SAMPLE_NONE', 'INSTL_SITE_INSTALL_SAMPLE_NONE_DESC'));
 

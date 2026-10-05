@@ -5118,11 +5118,14 @@ class WP_MySQL_On_SQLite extends PDO {
 					$unit  = 'DAY';
 					$value = 7 * $value;
 				}
+				/*
+				 * Joomla 3.x UTD patch: the interval can be negative, which MySQL takes, but a '+' before it made
+				 * an invalid SQLite modifier ('+-3600 SECOND') and a NULL result. SQLite takes signed numbers.
+				 */
 				return sprintf(
-					"DATETIME(%s, '%s' || %s || ' %s')",
+					"DATETIME(%s, %s || ' %s')",
 					$this->translate( $nodes[0] ),
-					WP_MySQL_Lexer::DATE_SUB_SYMBOL === $child->id ? '-' : '+',
-					$value,
+					WP_MySQL_Lexer::DATE_SUB_SYMBOL === $child->id ? '(-(' . $value . '))' : '(' . $value . ')',
 					$unit
 				);
 			case WP_MySQL_Lexer::LEFT_SYMBOL:

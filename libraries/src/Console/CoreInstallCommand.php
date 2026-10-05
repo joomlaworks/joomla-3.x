@@ -40,7 +40,8 @@ class CoreInstallCommand extends AbstractCommand
 		. '(no configuration.php), using the installer of its "installation" folder. Only the site\'s name, the administrator\'s email '
 		. 'address and username are needed; when they aren\'t given, they\'re asked for one by one. The administrator\'s password is '
 		. 'generated (16 letters and digits) and shown at the end. --sample-data also installs one of the installer\'s sample data '
-		. 'sets (blog, brochure, default or learn). The database file gets an unguessable name in the "database" '
+		. 'sets (news or blog). The site\'s template is Hammond, with no sample data or the news set, and Protostar with the '
+		. 'blog set. The database file gets an unguessable name in the "database" '
 		. 'folder, which is protected from web access, and the "installation" folder is removed afterwards. Like the web installer, '
 		. 'it checks that whoever installs can change the site\'s files, by deleting a file it creates in the "installation" folder. '
 		. 'Run it as the user the web server runs PHP as, so that the site can write to the files it creates. Needs PHP 7.4 or newer '
@@ -70,7 +71,7 @@ class CoreInstallCommand extends AbstractCommand
 		$this->addOption('site-name', null, self::OPTION_REQUIRED, 'The site\'s name');
 		$this->addOption('admin-email', null, self::OPTION_REQUIRED, 'The administrator\'s email address');
 		$this->addOption('admin-username', null, self::OPTION_REQUIRED, 'The administrator\'s username');
-		$this->addOption('sample-data', null, self::OPTION_OPTIONAL, 'Also install sample data: blog, brochure, default or learn (without a name, it asks which)');
+		$this->addOption('sample-data', null, self::OPTION_OPTIONAL, 'Also install sample data: news or blog (without a name, it asks which)');
 	}
 
 	/**
@@ -392,8 +393,7 @@ class CoreInstallCommand extends AbstractCommand
 	}
 
 	/**
-	 * The installer's sample data sets (installation/sql/mysql/sample_*.sql), by the name used here: the part after "sample_",
-	 * with "data" (the installer's default set) called "default".
+	 * The installer's sample data sets (installation/sql/mysql/sample_*.sql), by the name used here: the part after "sample_".
 	 *
 	 * @return  array  name => array(file, label)
 	 *
@@ -409,13 +409,19 @@ class CoreInstallCommand extends AbstractCommand
 			$name = substr($file, 7, -4);
 			$key  = 'INSTL_' . strtoupper(substr($file, 0, -4)) . '_SET';
 
-			$sets[$name === 'data' ? 'default' : $name] = array(
+			$sets[$name] = array(
 				'file'  => $file,
 				'label' => Factory::getLanguage()->hasKey($key) ? \JText::_($key) : $file,
 			);
 		}
 
 		ksort($sets);
+
+		// The news set first, as in the installer
+		if (isset($sets['news']))
+		{
+			$sets = array('news' => $sets['news']) + $sets;
+		}
 
 		return $sets;
 	}

@@ -541,7 +541,8 @@ abstract class AbstractContentCommand extends AbstractCommand
 				return false;
 			}
 
-			$ids[] = $id;
+			// As strings, like a form posts them: TagsHelper::createTagsFromField() takes anything else for a new tag's title
+			$ids[] = (string) $id;
 		}
 
 		return array_values(array_unique($ids));

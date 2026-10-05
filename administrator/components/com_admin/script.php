@@ -362,6 +362,8 @@ class JoomlaInstallerScript
 			'3.17.0-2026-10-05.sql' => '3.17.0',
 			// TinyMCE 8
 			'3.17.0-2026-10-06.sql' => '3.17.0',
+			// Hammond template
+			'3.17.0-2026-10-07.sql' => '3.17.0',
 		);
 
 		foreach ($dataMigrationFiles as $file => $addedIn)
@@ -781,6 +783,7 @@ class JoomlaInstallerScript
 			array('plugin', 'terms', 'user'),
 		),
 		'Templates' => array(
+			array('template', 'hammond', ''),
 			array('template', 'protostar', ''),
 			array('template', 'isis', '', 1),
 		),

@@ -11,6 +11,8 @@
     <description>PLG_SAMPLEDATA_BLOG_XML_DESCRIPTION</description>
     <files>
         <filename plugin="blog">blog.php</filename>
+        <filename>news.php</filename>
+        <folder>data</folder>
     </files>
     <languages>
         <language tag="en-GB">en-GB.plg_sampledata_blog.ini</language>

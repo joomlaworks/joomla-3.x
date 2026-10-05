@@ -995,11 +995,155 @@ class InstallationModelDatabase extends JModelBase
 		// Update the sample data user ids.
 		$this->updateUserIds($db);
 
+		// The News set keeps its articles hours and days apart (the latest few minutes old), as on a news site
+		if ($sampleFileName === 'sample_news.sql')
+		{
+			$this->shiftDates($db);
+		}
 		// If not joomla sample data for testing, update the sample data dates.
-		if ($sampleFileName !== 'sample_testing.sql')
+		elseif ($sampleFileName !== 'sample_testing.sql')
 		{
 			$this->updateDates($db);
 		}
+
+		// Hammond, the default template of a new site, is made for the News set: the other sets get Protostar, made for them
+		if ($sampleFileName !== 'sample_news.sql')
+		{
+			$this->setDefaultSiteTemplate($db, 'protostar');
+		}
+	}
+
+	/**
+	 * Make a template's first style the site's default.
+	 *
+	 * @param   JDatabaseDriver  $db        Database connector object $db*.
+	 * @param   string           $template  The template
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	protected function setDefaultSiteTemplate($db, $template)
+	{
+		try
+		{
+			$id = (int) $db->setQuery(
+				$db->getQuery(true)
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__template_styles'))
+					->where($db->quoteName('client_id') . ' = 0')
+					->where($db->quoteName('template') . ' = ' . $db->quote($template))
+					->order($db->quoteName('id'))
+				, 0, 1)->loadResult();
+
+			if (!$id)
+			{
+				return;
+			}
+
+			$db->setQuery(
+				$db->getQuery(true)
+					->update($db->quoteName('#__template_styles'))
+					->set($db->quoteName('home') . ' = CASE WHEN ' . $db->quoteName('id') . ' = ' . $id . ' THEN ' . $db->quote('1') . ' ELSE ' . $db->quote('0') . ' END')
+					->where($db->quoteName('client_id') . ' = 0')
+			)->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+		}
+	}
+
+	/**
+	 * Move the sample data's dates forward, keeping the time between them: the latest article is published 25 minutes ago.
+	 *
+	 * @param   JDatabaseDriver  $db  Database connector object $db*.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	protected function shiftDates($db)
+	{
+		$nullDate = $db->getNullDate();
+
+		try
+		{
+			$latest = $db->setQuery(
+				$db->getQuery(true)
+					->select('MAX(' . $db->quoteName('publish_up') . ')')
+					->from($db->quoteName('#__content'))
+					->where($db->quoteName('publish_up') . ' != ' . $db->quote($nullDate))
+			)->loadResult();
+		}
+		catch (RuntimeException $e)
+		{
+			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+
+			return;
+		}
+
+		if (!$latest)
+		{
+			return;
+		}
+
+		$seconds = (int) (JFactory::getDate('now')->toUnix() - 25 * 60 - JFactory::getDate($latest)->toUnix());
+
+		foreach ($this->getSampleDateFields() as $table => $fields)
+		{
+			foreach ($fields as $field)
+			{
+				$column = $db->quoteName($field);
+
+				switch ($db->getServerType())
+				{
+					case 'postgresql':
+						$shifted = $column . ' + INTERVAL ' . $db->quote($seconds . ' seconds');
+						break;
+
+					case 'mssql':
+						$shifted = 'DATEADD(second, ' . $seconds . ', ' . $column . ')';
+						break;
+
+					default:
+						$shifted = 'DATE_ADD(' . $column . ', INTERVAL ' . $seconds . ' SECOND)';
+				}
+
+				$query = $db->getQuery(true)
+					->update($db->quoteName($table))
+					->set($column . ' = ' . $shifted)
+					->where($column . ' != ' . $db->quote($nullDate));
+
+				try
+				{
+					$db->setQuery($query)->execute();
+				}
+				catch (RuntimeException $e)
+				{
+					JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+				}
+			}
+		}
+	}
+
+	/**
+	 * The date fields of the tables sample data fills.
+	 *
+	 * @return  array  Table => fields
+	 *
+	 * @since   3.17.0
+	 */
+	protected function getSampleDateFields()
+	{
+		return array(
+			'#__categories'          => array('created_time', 'modified_time'),
+			'#__content'             => array('publish_up', 'publish_down', 'created', 'modified'),
+			'#__contentitem_tag_map' => array('tag_date'),
+			'#__modules'             => array('publish_up', 'publish_down'),
+			'#__tags'                => array('publish_up', 'publish_down', 'created_time', 'modified_time'),
+			'#__ucm_content'         => array('core_created_time', 'core_modified_time', 'core_publish_up', 'core_publish_down'),
+		);
 	}
 
 	/**

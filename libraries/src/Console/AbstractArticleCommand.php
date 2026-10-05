@@ -191,7 +191,7 @@ abstract class AbstractArticleCommand extends AbstractContentCommand
 		$data = get_object_vars($item);
 
 		// The form takes the tags as IDs
-		$data['tags'] = isset($item->tags) && is_object($item->tags) && $item->tags->tags !== '' ? array_map('intval', explode(',', $item->tags->tags)) : array();
+		$data['tags'] = isset($item->tags) && is_object($item->tags) && $item->tags->tags !== '' ? array_map('strval', array_map('intval', explode(',', $item->tags->tags))) : array();
 
 		return $data;
 	}

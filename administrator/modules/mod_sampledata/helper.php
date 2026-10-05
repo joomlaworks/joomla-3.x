@@ -27,8 +27,20 @@ abstract class ModSampledataHelper
 	{
 		JPluginHelper::importPlugin('sampledata');
 		$dispatcher = JEventDispatcher::getInstance();
-		$data = $dispatcher->trigger('onSampledataGetOverview', array('test', 'foo'));
+		$items = array();
 
-		return $data;
+		// A plugin gives one set, or several (the Sample Data plugin: News and Blog)
+		foreach ($dispatcher->trigger('onSampledataGetOverview', array('test', 'foo')) as $result)
+		{
+			foreach (is_array($result) ? $result : array($result) as $item)
+			{
+				if (is_object($item) && !empty($item->name))
+				{
+					$items[] = $item;
+				}
+			}
+		}
+
+		return $items;
 	}
 }

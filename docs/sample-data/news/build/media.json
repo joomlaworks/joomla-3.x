@@ -1,0 +1,326 @@
+{
+ "youtube": {
+  "technology": [
+   {
+    "id": "_eeZQw9PBc0",
+    "title": "Artemis II Launches Astronauts to the Moon (Official NASA Recap)",
+    "author": "NASA"
+   },
+   {
+    "id": "aqfNDZlGrpc",
+    "title": "Wow! Epic Artemis II launch footage released by NASA",
+    "author": "VideoFromSpace"
+   },
+   {
+    "id": "ZcXvA5ECVjc",
+    "title": "Artemis II launch and landing: Relive NASA moon mission's Florida start and Pacific splashdown end",
+    "author": "USA TODAY"
+   },
+   {
+    "id": "Nw6uUQTq2Uw",
+    "title": "Artemis II Launch From Every Angle \u2013 New Footage & Cinematic Views",
+    "author": "Scientia Plus"
+   }
+  ],
+  "sports": [
+   {
+    "id": "x-cpRHf4xd4",
+    "title": "Spain vs Argentina Highlights \ud83c\udf0e\ud83c\udfc6 2026 FIFA World Cup\u2122 | Final",
+    "author": "FOX Sports"
+   },
+   {
+    "id": "jcB7QA5N7CE",
+    "title": "THANK YOU PARIS! Closing Ceremony Highlights | #Paris2024",
+    "author": "Olympic Games"
+   },
+   {
+    "id": "Ql03zcBjqvc",
+    "title": "Highlights from the final day of the Games | #Tokyo2020 Highlights",
+    "author": "Olympic Games"
+   },
+   {
+    "id": "ZXvFKZM1nL4",
+    "title": "Uruguay vs Cape Verde Extended Highlights \ud83c\udf0e\ud83c\udfc6 2026 FIFA World Cup\u2122",
+    "author": "FOX Sports"
+   }
+  ],
+  "world": [
+   {
+    "id": "vZUmiPQcAuY",
+    "title": "\ud83c\uddfa\ud83c\uddf3 UN Secretary-General Addresses United Nations General Debate, 81st Session | #UNGA",
+    "author": "United Nations"
+   },
+   {
+    "id": "-wO3goJYy8M",
+    "title": "LIVE: World leaders address the UN General Assembly",
+    "author": "Reuters"
+   }
+  ],
+  "politics": [
+   {
+    "id": "-wO3goJYy8M",
+    "title": "LIVE: World leaders address the UN General Assembly",
+    "author": "Reuters"
+   },
+   {
+    "id": "vZUmiPQcAuY",
+    "title": "\ud83c\uddfa\ud83c\uddf3 UN Secretary-General Addresses United Nations General Debate, 81st Session | #UNGA",
+    "author": "United Nations"
+   },
+   {
+    "id": "Uep8HSrPGiY",
+    "title": "UNGA LIVE: World Leaders Deliver Speeches at UN General Assembly | Day 5 | Russia | China",
+    "author": "ALERT News"
+   }
+  ],
+  "finance": [
+   {
+    "id": "J9mltmK4EOI",
+    "title": "Press Briefing: World Economic Outlook, April 2025",
+    "author": "IMF"
+   },
+   {
+    "id": "kZdJdz908DU",
+    "title": "Press Briefing: World Economic Outlook Update - July 2025",
+    "author": "IMF"
+   },
+   {
+    "id": "AUdW3IbavYw",
+    "title": "Press Briefing: World Economic Outlook Update - January 2025",
+    "author": "IMF"
+   }
+  ],
+  "energy": [
+   {
+    "id": "Ajpn4BBshgE",
+    "title": "Renewables 2024",
+    "author": "International Energy Agency"
+   },
+   {
+    "id": "Sqr8ZLU1GSo",
+    "title": "Tripling Renewable Capacity by 2030 | IEA Report Summary #renewableenergy",
+    "author": "Energy Tracker Asia"
+   },
+   {
+    "id": "2BovWr5ZiWo",
+    "title": "Global Energy Review 2025",
+    "author": "International Energy Agency"
+   },
+   {
+    "id": "zUZqQClUU4A",
+    "title": "Special Report on Solar PV Global Supply Chains",
+    "author": "International Energy Agency"
+   }
+  ],
+  "education": [
+   {
+    "id": "OxPlCkTKhzY",
+    "title": "The science of skin - Emma Bryce",
+    "author": "TED-Ed"
+   },
+   {
+    "id": "fPnwBITSmgU",
+    "title": "The genius of Mendeleev's periodic table - Lou Serico",
+    "author": "TED-Ed"
+   },
+   {
+    "id": "jLOuMXnM5wk",
+    "title": "The best way to become good at something might surprise you - David Epstein",
+    "author": "TED-Ed"
+   }
+  ],
+  "health": [
+   {
+    "id": "uYTfSPy_5kk",
+    "title": "World Health Day 2024: My health, my right",
+    "author": "World Health Organization (WHO)"
+   },
+   {
+    "id": "p7liQk45fFk",
+    "title": "WHO: Guardian of Health",
+    "author": "World Health Organization (WHO)"
+   },
+   {
+    "id": "nZYN-1S-Sdo",
+    "title": "#3Minutes | How WHO works for global health",
+    "author": "UN Geneva"
+   }
+  ],
+  "culture": [
+   {
+    "id": "aqz-KE-bpKQ",
+    "title": "Big Buck Bunny 60fps 4K - Official Blender Foundation Short Film",
+    "author": "Blender"
+   },
+   {
+    "id": "eRsGyueVLvQ",
+    "title": "Sintel - Open Movie by Blender Foundation",
+    "author": "Blender"
+   },
+   {
+    "id": "R6MlUcmOul8",
+    "title": "Tears of Steel - Blender VFX Open Movie",
+    "author": "Blender"
+   }
+  ],
+  "opinion": [
+   {
+    "id": "5duz42kHqPs",
+    "title": "Teaching science: we're doing it wrong | Danny Doucette | TEDxRiga",
+    "author": "TEDx Talks"
+   },
+   {
+    "id": "jLOuMXnM5wk",
+    "title": "The best way to become good at something might surprise you - David Epstein",
+    "author": "TED-Ed"
+   }
+  ]
+ },
+ "x": {
+  "technology": [
+   {
+    "url": "https://x.com/NASA/status/2039387543544758736",
+    "author": "NASA",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">We&#39;re going around the Moon. Come watch with us. Artemis II&#39;s four-astronaut crew is lifting off from <a href=\"https://x.com/NASAKennedy?ref_src=twsrc%5Etfw\">@NASAKennedy</a> on an approximately 10-day mission that will bring us closer to living on the Moon and Mars. The launch window opens at 6:24pm ET (2224 UTC). <a href=\"https://t.co/X27QJejNDt\">https://t.co/X27QJejNDt</a></p>&mdash; NASA (@NASA) <a href=\"https://x.com/NASA/status/2039387543544758736?ref_src=twsrc%5Etfw\">April 1, 2026</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/NASA/status/2041199374827409801",
+    "author": "NASA",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">LIVE: Watch with us as the Artemis II astronauts make their closest approach to the Moon, traveling farther from Earth than ever before. <a href=\"https://t.co/Zpy7GdTqA8\">https://t.co/Zpy7GdTqA8</a></p>&mdash; NASA (@NASA) <a href=\"https://x.com/NASA/status/2041199374827409801?ref_src=twsrc%5Etfw\">April 6, 2026</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/NASA/status/2040393011616452726",
+    "author": "NASA",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">Lock in, we\u2019re Moonbound.<br><br>Artemis II astronauts are more than halfway to their destination, and preparations for lunar flyby are underway. During their trip around the far side of the Moon, they will capture imagery to share with scientists (and you, too!). <a href=\"https://t.co/T2z4W2XLCt\">pic.twitter.com/T2z4W2XLCt</a></p>&mdash; NASA (@NASA) <a href=\"https://x.com/NASA/status/2040393011616452726?ref_src=twsrc%5Etfw\">April 4, 2026</a></blockquote>"
+   }
+  ],
+  "sports": [
+   {
+    "url": "https://x.com/FIFAWorldCup/status/2071672297728172300",
+    "author": "FIFA World Cup",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">A late goal sees Brazil into the next round! \ud83c\udde7\ud83c\uddf7<a href=\"https://x.com/hashtag/FIFAWorldCup?src=hash&amp;ref_src=twsrc%5Etfw\">#FIFAWorldCup</a></p>&mdash; FIFA World Cup (@FIFAWorldCup) <a href=\"https://x.com/FIFAWorldCup/status/2071672297728172300?ref_src=twsrc%5Etfw\">June 29, 2026</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/FIFAWorldCup/status/2067309343117066589",
+    "author": "FIFA World Cup",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">A first-ever FIFA World Cup goal for Congo DR \ud83e\udd79<a href=\"https://x.com/hashtag/FIFAWorldCup?src=hash&amp;ref_src=twsrc%5Etfw\">#FIFAWorldCup</a> <a href=\"https://t.co/Ap2BYAyOoV\">pic.twitter.com/Ap2BYAyOoV</a></p>&mdash; FIFA World Cup (@FIFAWorldCup) <a href=\"https://x.com/FIFAWorldCup/status/2067309343117066589?ref_src=twsrc%5Etfw\">June 17, 2026</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/FIFAWorldCup/status/2071350323029975545",
+    "author": "FIFA World Cup",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">A history-making goal for Canada \ud83c\udde8\ud83c\udde6<a href=\"https://x.com/hashtag/FIFAWorldCup?src=hash&amp;ref_src=twsrc%5Etfw\">#FIFAWorldCup</a> <a href=\"https://t.co/Mq2U2nDHMn\">pic.twitter.com/Mq2U2nDHMn</a></p>&mdash; FIFA World Cup (@FIFAWorldCup) <a href=\"https://x.com/FIFAWorldCup/status/2071350323029975545?ref_src=twsrc%5Etfw\">June 28, 2026</a></blockquote>"
+   }
+  ],
+  "world": [
+   {
+    "url": "https://x.com/UN/status/1778332406774128734",
+    "author": "United Nations",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">\u274cMyth: A few degrees of global warming are not a big deal.<br><br>\u2705Fact: Every bit of warming worsens the impacts of the climate crisis on people &amp; planet.<br><br>Climate change misinformation is a risk to everyone.<br>We can all help stop it.</p>&mdash; United Nations (@UN) <a href=\"https://x.com/UN/status/1778332406774128734?ref_src=twsrc%5Etfw\">April 11, 2024</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/UN/status/1989861475629048303",
+    "author": "United Nations",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">As world leaders meet at the <a href=\"https://x.com/hashtag/COP30?src=hash&amp;ref_src=twsrc%5Etfw\">#COP30</a> climate conference, our <a href=\"https://x.com/hashtag/ActNow?src=hash&amp;ref_src=twsrc%5Etfw\">#ActNow</a> challenge has already surpassed its 100,000 actions goal.<br><br>Every action\u2014big or small\u2014helps protect the places &amp; people we love.<br><br>Let&#39;s keep the momentum going: <a href=\"https://t.co/UfRMNthdeY\">https://t.co/UfRMNthdeY</a> <a href=\"https://t.co/FBwfbggXLu\">pic.twitter.com/FBwfbggXLu</a></p>&mdash; United Nations (@UN) <a href=\"https://x.com/UN/status/1989861475629048303?ref_src=twsrc%5Etfw\">November 16, 2025</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/UNFCCC/status/1981744781966352654",
+    "author": "UN Climate Change",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">United Nations Climate Conferences, or COPs, are the world\u2019s only multilateral decision-making forum on climate change that brings together almost every country on Earth. \ud83c\udf0e\ud83c\udf0d\ud83c\udf0f<a href=\"https://x.com/hashtag/COP30?src=hash&amp;ref_src=twsrc%5Etfw\">#COP30</a> in Brazil in November is the world\u2019s moment to double down on climate action. \ud83d\udc9a <a href=\"https://t.co/xEAoFizXlF\">pic.twitter.com/xEAoFizXlF</a></p>&mdash; UN Climate Change (@UNFCCC) <a href=\"https://x.com/UNFCCC/status/1981744781966352654?ref_src=twsrc%5Etfw\">October 24, 2025</a></blockquote>"
+   }
+  ],
+  "politics": [
+   {
+    "url": "https://x.com/WHO/status/2103488508396442075",
+    "author": "World Health Organization (WHO)",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\"><a href=\"https://x.com/hashtag/UNGA81?src=hash&amp;ref_src=twsrc%5Etfw\">#UNGA81</a> is calling on world leaders for stronger global cooperation to make the world safer from future pandemics.  <br><br>It\u2019s about restoring trust, championing science, solutions and solidarity. <a href=\"https://t.co/wvBWei6Ihw\">pic.twitter.com/wvBWei6Ihw</a></p>&mdash; World Health Organization (WHO) (@WHO) <a href=\"https://x.com/WHO/status/2103488508396442075?ref_src=twsrc%5Etfw\">September 25, 2026</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/UN/status/1989861475629048303",
+    "author": "United Nations",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">As world leaders meet at the <a href=\"https://x.com/hashtag/COP30?src=hash&amp;ref_src=twsrc%5Etfw\">#COP30</a> climate conference, our <a href=\"https://x.com/hashtag/ActNow?src=hash&amp;ref_src=twsrc%5Etfw\">#ActNow</a> challenge has already surpassed its 100,000 actions goal.<br><br>Every action\u2014big or small\u2014helps protect the places &amp; people we love.<br><br>Let&#39;s keep the momentum going: <a href=\"https://t.co/UfRMNthdeY\">https://t.co/UfRMNthdeY</a> <a href=\"https://t.co/FBwfbggXLu\">pic.twitter.com/FBwfbggXLu</a></p>&mdash; United Nations (@UN) <a href=\"https://x.com/UN/status/1989861475629048303?ref_src=twsrc%5Etfw\">November 16, 2025</a></blockquote>"
+   }
+  ],
+  "finance": [
+   {
+    "url": "https://x.com/IMFNews/status/1848714673891275086",
+    "author": "IMF",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">The global economy has shown resilience. But at 3.2 percent projected for 2024 and 2025, global growth remains below historical average. Reforms that foster productivity can help boost growth over the medium term. More in our latest World Economic Outlook. <a href=\"https://t.co/sDv9tK6r0D\">https://t.co/sDv9tK6r0D</a> <a href=\"https://t.co/8b6LIhTzSw\">pic.twitter.com/8b6LIhTzSw</a></p>&mdash; IMF (@IMFNews) <a href=\"https://x.com/IMFNews/status/1848714673891275086?ref_src=twsrc%5Etfw\">October 22, 2024</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/WorldBankGroup/status/2048552740607901959",
+    "author": "World Bank Group",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">Throughout the <a href=\"https://x.com/hashtag/WBGMeetings?src=hash&amp;ref_src=twsrc%5Etfw\">#WBGMeetings</a>, the crisis in the Middle East remained central, with focus on supporting affected countries and communities.<br><br>A phased approach of up to $80\u2013100 billion aims to address urgent needs while advancing long term job creation and stability.<br><br>Read more:\u2026 <a href=\"https://t.co/38wg39sHdy\">pic.twitter.com/38wg39sHdy</a></p>&mdash; World Bank Group (@WorldBankGroup) <a href=\"https://x.com/WorldBankGroup/status/2048552740607901959?ref_src=twsrc%5Etfw\">April 27, 2026</a></blockquote>"
+   }
+  ],
+  "energy": [
+   {
+    "url": "https://x.com/IEA/status/1844479279985303863",
+    "author": "International Energy Agency",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">Solar is powering renewables growth worldwide \u2600\ufe0f<br><br>Solar PV alone is set to account for 80% of new renewable capacity added globally between now &amp; 2030<br><br>This comes from new large power plants &amp; rooftop solar panel installations by households &amp; businesses \ud83d\udc49 <a href=\"https://t.co/cNttkq43dT\">https://t.co/cNttkq43dT</a> <a href=\"https://t.co/YLNkR5jofO\">pic.twitter.com/YLNkR5jofO</a></p>&mdash; International Energy Agency (@IEA) <a href=\"https://x.com/IEA/status/1844479279985303863?ref_src=twsrc%5Etfw\">October 10, 2024</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/IEA/status/2013296658335818094",
+    "author": "International Energy Agency",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">Global renewable capacity is set to double by 2030 amid headwinds from supply chains, grid integration &amp; financing.<br><br>Solar PV makes up about 80% of the rise \u2013 growing in established markets, but also surging in Saudi Arabia, Pakistan &amp; Southeast Asia \ud83d\udc49 <a href=\"https://t.co/21Ctb3driv\">https://t.co/21Ctb3driv</a> <a href=\"https://t.co/Zkx6vD0tdK\">pic.twitter.com/Zkx6vD0tdK</a></p>&mdash; International Energy Agency (@IEA) <a href=\"https://x.com/IEA/status/2013296658335818094?ref_src=twsrc%5Etfw\">January 19, 2026</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/IEA/status/1975448544640213246",
+    "author": "International Energy Agency",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">Renewables 2025 is out!<br><br>It shows renewable power is continuing to grow strongly around the world, with global capacity set to more than double by 2030<br><br>As it grows, the sector is navigating headwinds in supply chains, grid integration &amp; financing<br><br>More \u27a1\ufe0f <a href=\"https://t.co/RfNAhq2uco\">https://t.co/RfNAhq2uco</a> <a href=\"https://t.co/nfWoF0gLIp\">pic.twitter.com/nfWoF0gLIp</a></p>&mdash; International Energy Agency (@IEA) <a href=\"https://x.com/IEA/status/1975448544640213246?ref_src=twsrc%5Etfw\">October 7, 2025</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/IEA/status/1853483607429386672",
+    "author": "International Energy Agency",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">The shift from fossil fuel imports to clean tech imports can improve energy resilience<br><br>A large container ship of solar panels can provide the means to produce as much electricity as gas from over 50 large LNG tankers or coal from over 100 large ships \u27a1\ufe0f <a href=\"https://t.co/KpF4b9T5bM\">https://t.co/KpF4b9T5bM</a> <a href=\"https://t.co/Qs3IUCrJDP\">pic.twitter.com/Qs3IUCrJDP</a></p>&mdash; International Energy Agency (@IEA) <a href=\"https://x.com/IEA/status/1853483607429386672?ref_src=twsrc%5Etfw\">November 4, 2024</a></blockquote>"
+   }
+  ],
+  "education": [
+   {
+    "url": "https://x.com/UNESCO/status/1960915345331359957",
+    "author": "UNESCO",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">Education isn\u2019t built on code. It\u2019s built on human connection.<br><br>The future of education is not only about AI, but also about those who must lead the change<br><br>Because no tech can replace a teacher. See how UNESCO is doing that: <a href=\"https://t.co/ll5sDQxLYo\">https://t.co/ll5sDQxLYo</a>  <a href=\"https://x.com/hashtag/TeachersCannotBeCoded?src=hash&amp;ref_src=twsrc%5Etfw\">#TeachersCannotBeCoded</a> <a href=\"https://t.co/fFejsaWd5F\">pic.twitter.com/fFejsaWd5F</a></p>&mdash; UNESCO (@UNESCO) <a href=\"https://x.com/UNESCO/status/1960915345331359957?ref_src=twsrc%5Etfw\">August 28, 2025</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/UNESCO/status/1882654622084432146",
+    "author": "UNESCO",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">Today is <a href=\"https://x.com/hashtag/EducationDay?src=hash&amp;ref_src=twsrc%5Etfw\">#EducationDay</a>!\u270f\ufe0f<br><br>AI transforms education. We must ensure it enhances human potential without replacing it.<a href=\"https://x.com/UNESCO?ref_src=twsrc%5Etfw\">@UNESCO</a> calls for all learners, teachers &amp; educators to gain critical AI skills while preserving creativity &amp; human agency.<a href=\"https://t.co/JPXfabARCo\">https://t.co/JPXfabARCo</a> <a href=\"https://t.co/vczCTUmPX4\">pic.twitter.com/vczCTUmPX4</a></p>&mdash; UNESCO (@UNESCO) <a href=\"https://x.com/UNESCO/status/1882654622084432146?ref_src=twsrc%5Etfw\">January 24, 2025</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/UNESCO/status/2042517295038124402",
+    "author": "UNESCO",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">Fewer than 5 years remain to reach 2030. Yet 273 million children and youth are still out of school.<br><br>Time is running out. But the idea that progress is not possible no longer holds.<br><br>Across the world, countries are already showing that access can expand at scale, when equity is\u2026 <a href=\"https://t.co/Gt3htaZAoc\">pic.twitter.com/Gt3htaZAoc</a></p>&mdash; UNESCO (@UNESCO) <a href=\"https://x.com/UNESCO/status/2042517295038124402?ref_src=twsrc%5Etfw\">April 10, 2026</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/UNESCO/status/1995538811665650016",
+    "author": "UNESCO",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">.<a href=\"https://x.com/UNESCO?ref_src=twsrc%5Etfw\">@UNESCO</a> is training teachers in Kenya with cutting-edge digital tools, from 3D printing and robotics to coding and AI,  to make science education more engaging and inclusive.<br><br>Building digital skills today means empowering the next generation of scientists across Africa.\u2026 <a href=\"https://t.co/ip5TcDrrXM\">pic.twitter.com/ip5TcDrrXM</a></p>&mdash; UNESCO (@UNESCO) <a href=\"https://x.com/UNESCO/status/1995538811665650016?ref_src=twsrc%5Etfw\">December 1, 2025</a></blockquote>"
+   }
+  ],
+  "health": [
+   {
+    "url": "https://x.com/WHO/status/2103488508396442075",
+    "author": "World Health Organization (WHO)",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\"><a href=\"https://x.com/hashtag/UNGA81?src=hash&amp;ref_src=twsrc%5Etfw\">#UNGA81</a> is calling on world leaders for stronger global cooperation to make the world safer from future pandemics.  <br><br>It\u2019s about restoring trust, championing science, solutions and solidarity. <a href=\"https://t.co/wvBWei6Ihw\">pic.twitter.com/wvBWei6Ihw</a></p>&mdash; World Health Organization (WHO) (@WHO) <a href=\"https://x.com/WHO/status/2103488508396442075?ref_src=twsrc%5Etfw\">September 25, 2026</a></blockquote>"
+   },
+   {
+    "url": "https://x.com/WHO/status/1795952211014414822",
+    "author": "World Health Organization (WHO)",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">Member States at <a href=\"https://x.com/hashtag/WHA77?src=hash&amp;ref_src=twsrc%5Etfw\">#WHA77</a> have agreed on a first-ever resolution on social participation in national health planning &amp; implementation, which paves the way for people, communities, and civil society to have a stronger voice in influencing the decisions that affect their health and\u2026 <a href=\"https://t.co/zUz1UYfQt5\">pic.twitter.com/zUz1UYfQt5</a></p>&mdash; World Health Organization (WHO) (@WHO) <a href=\"https://x.com/WHO/status/1795952211014414822?ref_src=twsrc%5Etfw\">May 29, 2024</a></blockquote>"
+   }
+  ],
+  "culture": [
+   {
+    "url": "https://x.com/UNESCO/status/1995538811665650016",
+    "author": "UNESCO",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">.<a href=\"https://x.com/UNESCO?ref_src=twsrc%5Etfw\">@UNESCO</a> is training teachers in Kenya with cutting-edge digital tools, from 3D printing and robotics to coding and AI,  to make science education more engaging and inclusive.<br><br>Building digital skills today means empowering the next generation of scientists across Africa.\u2026 <a href=\"https://t.co/ip5TcDrrXM\">pic.twitter.com/ip5TcDrrXM</a></p>&mdash; UNESCO (@UNESCO) <a href=\"https://x.com/UNESCO/status/1995538811665650016?ref_src=twsrc%5Etfw\">December 1, 2025</a></blockquote>"
+   }
+  ],
+  "opinion": [
+   {
+    "url": "https://x.com/UN/status/1778332406774128734",
+    "author": "United Nations",
+    "html": "<blockquote class=\"twitter-tweet\" data-dnt=\"true\"><p lang=\"en\" dir=\"ltr\">\u274cMyth: A few degrees of global warming are not a big deal.<br><br>\u2705Fact: Every bit of warming worsens the impacts of the climate crisis on people &amp; planet.<br><br>Climate change misinformation is a risk to everyone.<br>We can all help stop it.</p>&mdash; United Nations (@UN) <a href=\"https://x.com/UN/status/1778332406774128734?ref_src=twsrc%5Etfw\">April 11, 2024</a></blockquote>"
+   }
+  ]
+ }
+}
