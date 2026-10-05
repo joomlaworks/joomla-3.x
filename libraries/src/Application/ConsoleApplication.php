@@ -111,6 +111,12 @@ class ConsoleApplication extends CliApplication
 
 		$this->userState = new Registry;
 
+		// Core code, e.g. the installer, reports problems through the "jerror" log; libraries/cms.php only shows them for web requests
+		if (!array_key_exists('REQUEST_METHOD', $_SERVER))
+		{
+			Log::addLogger(array('logger' => 'messagequeue'), Log::ALL, array('jerror'));
+		}
+
 		// Core code reaches the application through the factory
 		Factory::$application = $this;
 
