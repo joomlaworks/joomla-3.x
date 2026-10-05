@@ -204,6 +204,7 @@ class ExtensionHelper
 		array('plugin', 'folderinstaller', 'installer', 0),
 		array('plugin', 'packageinstaller', 'installer', 0),
 		array('plugin', 'urlinstaller', 'installer', 0),
+		array('plugin', 'webinstaller', 'installer', 0),
 
 		// Core plugin extensions - privacy
 		array('plugin', 'actionlogs', 'privacy', 0),

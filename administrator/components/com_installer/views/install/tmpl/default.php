@@ -31,14 +31,6 @@ JFactory::getDocument()->addScriptDeclaration(
 		}
 	};
 
-	Joomla.submitbuttonInstallWebInstaller = function() {
-		var form = document.getElementById("adminForm");
-
-		form.install_url.value = "https://appscdn.joomla.org/webapps/jedapps/webinstaller.xml";
-
-		Joomla.submitbutton4();
-	};
-
 	// Add spindle-wheel for installations:
 	jQuery(document).ready(function($) {
 		var outerDiv = $("#installer-install");
@@ -122,9 +114,8 @@ JFactory::getDocument()->addStyleDeclaration(
 						?>
 						<p><?php echo JText::_('COM_INSTALLER_INSTALL_FROM_WEB_INFO'); ?>
 							<?php echo JText::_('COM_INSTALLER_INSTALL_FROM_WEB_TOS'); ?></p>
-						<input class="btn" type="button"
-							value="<?php echo JText::_('COM_INSTALLER_INSTALL_FROM_WEB_ADD_TAB'); ?>"
-							onclick="Joomla.submitbuttonInstallWebInstaller()"/>
+						<a class="btn" href="<?php echo JRoute::_('index.php?option=com_plugins&view=plugins&filter_folder=installer&filter_element=webinstaller&filter_enabled=&filter_search='); ?>">
+							<?php echo JText::_('COM_INSTALLER_INSTALL_FROM_WEB_ADD_TAB'); ?></a>
 					</div>
 				<?php endif; ?>
 				<?php echo JHtml::_('bootstrap.startTabSet', 'myTab'); ?>

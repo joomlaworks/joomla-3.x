@@ -31,6 +31,14 @@ class ConfigControllerComponentCancel extends ConfigControllerCanceladmin
 
 		$this->redirect = 'index.php?option=' . $this->component;
 
+		// Back to the page the Options button was used on, as Save & Close does (the parent checks the token, clears the form data and refuses external URLs)
+		$returnUri = $this->input->post->get('return', null, 'base64');
+
+		if (!empty($returnUri))
+		{
+			$this->redirect = base64_decode($returnUri);
+		}
+
 		parent::execute();
 	}
 }

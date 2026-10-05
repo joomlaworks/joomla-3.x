@@ -330,6 +330,11 @@ class JoomlaInstallerScript
 	 * than tracking "already applied" state separately. Sites already stuck with orphaned
 	 * rows from before this fix existed self-heal on their next update.
 	 *
+	 * Files adding a removable core extension are the exception: they only run for sites
+	 * updating from a version older than the one which added it. On later updates a missing
+	 * row means an admin uninstalled the extension, and inserting it again would bring it
+	 * back (deleteFilesOfRemovedCoreExtensions() would then keep its files too).
+	 *
 	 * @return  void
 	 *
 	 * @since   3.15.0
@@ -346,15 +351,24 @@ class JoomlaInstallerScript
 		}
 
 		// Migration files that are plain data-cleanup DML, not schema DDL — add to this list
-		// whenever a future release ships a similar data-only migration file.
+		// whenever a future release ships a similar data-only migration file. The value is null,
+		// or for files adding a removable core extension the version which added it.
 		$dataMigrationFiles = array(
-			'3.12.0-2026-05-21.sql',
-			'3.16.0-2026-08-21.sql',
-			'3.17.0-2026-10-04.sql',
+			'3.12.0-2026-05-21.sql' => null,
+			// Little WAF
+			'3.16.0-2026-08-21.sql' => '3.16.0',
+			'3.17.0-2026-10-04.sql' => null,
+			// Install from Web
+			'3.17.0-2026-10-05.sql' => '3.17.0',
 		);
 
-		foreach ($dataMigrationFiles as $file)
+		foreach ($dataMigrationFiles as $file => $addedIn)
 		{
+			if ($addedIn !== null && !empty($this->fromVersion) && version_compare($this->fromVersion, $addedIn, '>='))
+			{
+				continue;
+			}
+
 			$path = JPATH_ADMINISTRATOR . '/components/com_admin/sql/updates/' . $sqlFolder . '/' . $file;
 
 			if (!is_file($path))
@@ -738,6 +752,7 @@ class JoomlaInstallerScript
 			array('plugin', 'module', 'editors-xtd'),
 			array('plugin', 'pagebreak', 'editors-xtd'),
 			array('plugin', 'readmore', 'editors-xtd'),
+			array('plugin', 'webinstaller', 'installer'),
 			array('plugin', 'actionlogs', 'privacy'),
 			array('plugin', 'consents', 'privacy'),
 			array('plugin', 'content', 'privacy'),
@@ -776,8 +791,9 @@ class JoomlaInstallerScript
 	 * @since  3.16.0
 	 */
 	protected $removableCoreExtensionMedia = array(
-		'component:0::com_finder'   => '/media/com_finder',
-		'module:1::mod_sampledata'  => '/media/mod_sampledata',
+		'component:0::com_finder'         => '/media/com_finder',
+		'module:1::mod_sampledata'        => '/media/mod_sampledata',
+		'plugin:0:installer:webinstaller' => '/media/plg_installer_webinstaller',
 	);
 
 	/**
@@ -3082,6 +3098,16 @@ class JoomlaInstallerScript
 			'/libraries/fof/database/driver/mysql.php',
 			'/libraries/fof/database/iterator/mysql.php',
 			'/libraries/fof/database/query/mysql.php',
+
+			// Joomla 3.17.0: files of Install from Web plugin versions installed from the JED, which the bundled copy doesn't have
+			'/plugins/installer/webinstaller/css/client.css',
+			'/plugins/installer/webinstaller/css/client.min.css',
+			'/plugins/installer/webinstaller/css/index.html',
+			'/plugins/installer/webinstaller/index.html',
+			'/plugins/installer/webinstaller/js/client.js',
+			'/plugins/installer/webinstaller/js/client.min.js',
+			'/plugins/installer/webinstaller/tmpl/hathor.php',
+			'/plugins/installer/webinstaller/webinstaller.script.php',
 		);
 
 		// TODO There is an issue while deleting folders using the ftp mode
@@ -3332,6 +3358,9 @@ class JoomlaInstallerScript
 			'/plugins/quickicon/eos310',
 			'/plugins/quickicon/phpversioncheck',
 			'/templates/beez3',
+			// Joomla 3.17.0
+			'/plugins/installer/webinstaller/css',
+			'/plugins/installer/webinstaller/js',
 		);
 
 		jimport('joomla.filesystem.file');

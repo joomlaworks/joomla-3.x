@@ -48,6 +48,25 @@ class InstallerViewInstall extends InstallerViewDefault
 		$dispatcher = JEventDispatcher::getInstance();
 		$dispatcher->trigger('onInstallerBeforeDisplay', array(&$this->showJedAndWebInstaller, $this));
 
+		/*
+		 * The Install from Web plugin is bundled (and hides this message while enabled). It used to be installed from a JED feed
+		 * which offers no version for Joomla 3.11 and later, so the message's button now leads to the plugin in the Plugin
+		 * Manager to enable it; when the plugin was uninstalled, there is nothing to enable.
+		 */
+		if ($this->showJedAndWebInstaller)
+		{
+			$db = JFactory::getDbo();
+			$this->showJedAndWebInstaller = (bool) $db->setQuery(
+				$db->getQuery(true)
+					->select('COUNT(*)')
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+					->where($db->quoteName('folder') . ' = ' . $db->quote('installer'))
+					->where($db->quoteName('element') . ' = ' . $db->quote('webinstaller'))
+					->where($db->quoteName('state') . ' >= 0')
+			)->loadResult();
+		}
+
 		parent::display($tpl);
 	}
 
