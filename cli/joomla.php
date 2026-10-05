@@ -37,9 +37,11 @@ if (!defined('_JDEFINES'))
 	require_once JPATH_BASE . '/includes/defines.php';
 }
 
-if (!file_exists(JPATH_CONFIGURATION . '/configuration.php'))
+// Before installation only core:install runs (and its help)
+if (!file_exists(JPATH_CONFIGURATION . '/configuration.php') && !in_array('core:install', array_slice($_SERVER['argv'], 1), true))
 {
-	fwrite(STDERR, 'No configuration file found at ' . JPATH_CONFIGURATION . '/configuration.php. Install Joomla first.' . PHP_EOL);
+	fwrite(STDERR, 'No configuration file found at ' . JPATH_CONFIGURATION . '/configuration.php. Install Joomla first, e.g. with:'
+		. PHP_EOL . '  php cli/joomla.php core:install' . PHP_EOL);
 	exit(1);
 }
 

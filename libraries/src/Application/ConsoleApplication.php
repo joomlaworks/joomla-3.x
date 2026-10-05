@@ -546,6 +546,12 @@ class ConsoleApplication extends CliApplication
 			// Plugins need the database, which may be empty or broken, e.g. before database:import restores it; a broken plugin mustn't take the core commands down with it
 			try
 			{
+				// Not installed yet (core:install): there's no database
+				if (!is_file(JPATH_CONFIGURATION . '/configuration.php'))
+				{
+					throw new \RuntimeException('Not installed');
+				}
+
 				PluginHelper::importPlugin('console');
 				$results = (array) \JEventDispatcher::getInstance()->trigger('onGetConsoleCommands', array($this));
 			}

@@ -492,7 +492,8 @@ class CommandIO
 			return $default;
 		}
 
-		$prompt = $this->style($question, '32') . ($default !== null && !$hidden ? ' [' . $default . ']' : '') . ': ';
+		// A question ("What is ...?") needs no colon after it
+		$prompt = $this->style($question, '32') . ($default !== null && !$hidden ? ' [' . $default . ']' : '') . (substr($question, -1) === '?' && ($default === null || $hidden) ? ' ' : ': ');
 		fwrite($this->stdout, $prompt);
 
 		$stty = $hidden && DIRECTORY_SEPARATOR === '/' && function_exists('shell_exec') ? @shell_exec('stty -g 2>/dev/null') : null;

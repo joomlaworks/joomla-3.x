@@ -1033,7 +1033,7 @@ class InstallationModelDatabase extends JModelBase
 	 *
 	 * @param   JDatabaseDriver  $db  Database connector object $db*.
 	 *
-	 * @return  void
+	 * @return  boolean  True (installCmsData() returns it)
 	 *
 	 * @since   3.6.1
 	 */
@@ -1044,6 +1044,8 @@ class InstallationModelDatabase extends JModelBase
 
 		// Update the cms data dates.
 		$this->updateDates($db);
+
+		return true;
 	}
 
 	/**
