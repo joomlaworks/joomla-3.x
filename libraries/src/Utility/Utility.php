@@ -78,4 +78,99 @@ class Utility
 		// The minimum of these is the limiting factor
 		return min($sizes);
 	}
+
+	/**
+	 * The name of the server's operating system: its family (Linux, macOS, FreeBSD, Windows, ...), or with $detailed the Linux
+	 * distribution (from os-release) or the BSD release. Never php_uname()'s full text, which includes the server's host name.
+	 *
+	 * @param   boolean  $detailed  Include the distribution or release
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public static function getOperatingSystem($detailed = false)
+	{
+		$os = PHP_OS;
+
+		if (stripos($os, 'WIN') === 0)
+		{
+			return 'Windows';
+		}
+
+		if ($os === 'Darwin')
+		{
+			return 'macOS';
+		}
+
+		if ($os === 'SunOS')
+		{
+			return 'Solaris';
+		}
+
+		if (stripos($os, 'BSD') !== false || $os === 'DragonFly')
+		{
+			$release = $detailed && function_exists('php_uname') ? php_uname('r') : '';
+
+			return $release !== '' ? $os . ' ' . $release : $os;
+		}
+
+		if ($os !== 'Linux' || !$detailed)
+		{
+			return $os;
+		}
+
+		// open_basedir may keep the files out of reach
+		foreach (array('/etc/os-release', '/usr/lib/os-release') as $file)
+		{
+			$contents = @is_readable($file) ? @file_get_contents($file) : false;
+
+			foreach (array('PRETTY_NAME', 'NAME') as $key)
+			{
+				if (is_string($contents) && preg_match('/^' . $key . '=["\']?([^"\'\r\n]*)/m', $contents, $match) && trim($match[1]) !== '')
+				{
+					return trim($match[1]);
+				}
+			}
+		}
+
+		return 'Linux';
+	}
+
+	/**
+	 * The name of the web server, from SERVER_SOFTWARE (e.g. "Apache 2.4.58", "nginx", "IIS 10.0"), without the extra details servers
+	 * add (operating system, modules). Servers set to hide their version (Apache's ServerTokens Prod, nginx's server_tokens off) give
+	 * none. Empty on the command line.
+	 *
+	 * @param   boolean  $withVersion  Include the version
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public static function getWebServer($withVersion = false)
+	{
+		$software = isset($_SERVER['SERVER_SOFTWARE']) ? trim((string) $_SERVER['SERVER_SOFTWARE']) : '';
+
+		if ($software === '')
+		{
+			return '';
+		}
+
+		if (preg_match('/^PHP ([0-9][0-9.]*)\b.*Development Server/i', $software, $match))
+		{
+			return 'PHP built-in server' . ($withVersion ? ' ' . $match[1] : '');
+		}
+
+		// "Name/version (details) more/1.0" or "Name"
+		preg_match('/^([^\/\s(]+)(?:\/([^\s(]+))?/', $software, $match);
+
+		$names   = array('microsoft-iis' => 'IIS', 'apache' => 'Apache', 'nginx' => 'nginx', 'litespeed' => 'LiteSpeed', 'openlitespeed' => 'OpenLiteSpeed',
+			'caddy' => 'Caddy', 'lighttpd' => 'lighttpd', 'openresty' => 'OpenResty');
+		$name    = isset($match[1]) ? $match[1] : $software;
+		$name    = isset($names[strtolower($name)]) ? $names[strtolower($name)] : $name;
+		$version = $withVersion && !empty($match[2]) ? ' ' . $match[2] : '';
+
+		return $name . $version;
+	}
 }

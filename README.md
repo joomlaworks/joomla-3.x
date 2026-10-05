@@ -78,6 +78,7 @@ Summary of changes:
 - Fixed several installer bugs: no sample data offered for SQLite, SQLite not hiding the server fields in the browser, unescaped values on the overview page, a path check on the chosen sample-data file, missing, empty, wrong and malformed translations (every installation language now has every string, including those of this version), and PHP 8.5 deprecation notices (one of them in every select list built from arrays, site-wide)
 - Fixed PHP 8.2+ deprecation warnings when editing tagged items and in forms with date, colour, captcha or module ordering fields, and PHP 8.1+/8.5 warnings with menu items linking to external URLs and on pages without a menu item
 - Fixed warnings when saving Login/Logout menu items created by code, and when saving Global Configuration from the command line on new sites
+- The Site Information/Statistics modules show the operating system's name (e.g. "Ubuntu 26.04.1 LTS", or "Linux" on the frontend) instead of a cut-off "Linux" plus the start of the server's host name, and the web server (e.g. "Apache 2.4.58"; only the name on the frontend)
 - Fixed "Access forbidden." showing in the Module Manager after saving a module, for users who may edit modules but not publish them (the module was saved)
 - The command line now shows the messages of older code (e.g. why a category can't be deleted), and a broken command file no longer stops the other commands
 

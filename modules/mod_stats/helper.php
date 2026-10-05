@@ -40,8 +40,18 @@ class ModStatsHelper
 		{
 			$rows[$i] = new stdClass;
 			$rows[$i]->title = JText::_('MOD_STATS_OS');
-			$rows[$i]->data  = function_exists('php_uname') ? substr(php_uname(), 0, 7) : '';
+			$rows[$i]->data  = JUtility::getOperatingSystem(false);
 			$i++;
+
+			$webServer = JUtility::getWebServer(false);
+
+			if ($webServer !== '')
+			{
+				$rows[$i] = new stdClass;
+				$rows[$i]->title = JText::_('MOD_STATS_WEBSERVER');
+				$rows[$i]->data  = htmlspecialchars($webServer, ENT_QUOTES, 'UTF-8');
+				$i++;
+			}
 
 			$rows[$i] = new stdClass;
 			$rows[$i]->title = JText::_('MOD_STATS_PHP');
