@@ -107,6 +107,80 @@ class JDatabaseDriverMysqlonsqlite extends JDatabaseDriverPdomysql
 	}
 
 	/**
+	 * Write a consistent copy of the database to a new file, also while other requests use it.
+	 *
+	 * @param   string  $path  The absolute path of the new file, which must not exist
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 * @throws  RuntimeException
+	 */
+	public function copyTo($path)
+	{
+		$this->connect();
+
+		if (file_exists($path))
+		{
+			throw new RuntimeException(sprintf('The file "%s" already exists.', $path));
+		}
+
+		$this->connection->get_sqlite_pdo()->exec('VACUUM INTO ' . $this->connection->get_sqlite_pdo()->quote($path));
+
+		$copy  = new PDO('sqlite:' . $path);
+		$check = $copy->query('PRAGMA quick_check')->fetchColumn();
+		$copy  = null;
+
+		if ($check !== 'ok')
+		{
+			static::deleteDatabaseFiles($path);
+
+			throw new RuntimeException(sprintf('The copy of the database failed its integrity check: %s', $check));
+		}
+	}
+
+	/**
+	 * Use another database file from now on, e.g. after copyTo(). Objects holding this driver follow it.
+	 *
+	 * @param   string  $path  The absolute path of the file
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 * @throws  JDatabaseExceptionConnecting
+	 */
+	public function switchTo($path)
+	{
+		$this->disconnect();
+		$this->options['database'] = $path;
+		$this->connect();
+	}
+
+	/**
+	 * Delete a database file and the files SQLite keeps next to it.
+	 *
+	 * @param   string  $path  The absolute path of the file
+	 *
+	 * @return  boolean  True if none of them is left
+	 *
+	 * @since   3.17.0
+	 */
+	public static function deleteDatabaseFiles($path)
+	{
+		foreach (array('', '-wal', '-shm', '-journal') as $suffix)
+		{
+			if (file_exists($path . $suffix))
+			{
+				@unlink($path . $suffix);
+			}
+		}
+
+		clearstatcache();
+
+		return !file_exists($path) && !file_exists($path . '-wal');
+	}
+
+	/**
 	 * Block web access to the folder of a database file inside the site, with .htaccess (Apache) and web.config (IIS) rules.
 	 * Servers such as nginx ignore these, so database files there should also have a name nobody can guess.
 	 *
@@ -373,6 +447,19 @@ class JDatabaseDriverMysqlonsqlite extends JDatabaseDriverPdomysql
 		$this->connect();
 
 		return (string) $this->connection->query('SELECT VERSION()')->fetchColumn();
+	}
+
+	/**
+	 * Describe the database version for site administrators, e.g. "3.46.1 (MySQL 8.0.38 emulation)". getVersion() returns the
+	 * emulated MySQL version, which the code needs (e.g. for minimum version checks), but which isn't what stores the data.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public function getVersionDescription()
+	{
+		return sprintf('%s (MySQL %s emulation)', $this->getSqliteVersion(), strtok($this->getVersion(), '-'));
 	}
 
 	/**

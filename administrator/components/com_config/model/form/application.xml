@@ -46,10 +46,11 @@
     </fieldset>
     <fieldset name="database" label="CONFIG_DATABASE_SETTINGS_LABEL">
         <field name="dbtype" type="databaseconnection" label="COM_CONFIG_FIELD_DATABASE_TYPE_LABEL" description="COM_CONFIG_FIELD_DATABASE_TYPE_DESC" supported="mysql,mysqli,pgsql,pdomysql,postgresql,sqlsrv,sqlazure,mysqlonsqlite" filter="string" />
-        <field name="host" type="text" label="COM_CONFIG_FIELD_DATABASE_HOST_LABEL" description="COM_CONFIG_FIELD_DATABASE_HOST_DESC" required="true" filter="string" size="30" />
-        <field name="user" type="text" label="COM_CONFIG_FIELD_DATABASE_USERNAME_LABEL" description="COM_CONFIG_FIELD_DATABASE_USERNAME_DESC" filter="string" size="30" />
-        <field name="password" type="password" label="COM_CONFIG_FIELD_DATABASE_PASSWORD_LABEL" description="COM_CONFIG_FIELD_DATABASE_PASSWORD_DESC" filter="raw" autocomplete="off" size="30" lock="true" />
-        <field name="db" type="text" label="COM_CONFIG_FIELD_DATABASE_NAME_LABEL" description="COM_CONFIG_FIELD_DATABASE_NAME_DESC" required="true" filter="string" size="30" />
+        <field name="host" type="text" label="COM_CONFIG_FIELD_DATABASE_HOST_LABEL" description="COM_CONFIG_FIELD_DATABASE_HOST_DESC" required="true" filter="string" showon="dbtype!:mysqlonsqlite" size="30" />
+        <field name="user" type="text" label="COM_CONFIG_FIELD_DATABASE_USERNAME_LABEL" description="COM_CONFIG_FIELD_DATABASE_USERNAME_DESC" filter="string" showon="dbtype!:mysqlonsqlite" size="30" />
+        <field name="password" type="password" label="COM_CONFIG_FIELD_DATABASE_PASSWORD_LABEL" description="COM_CONFIG_FIELD_DATABASE_PASSWORD_DESC" filter="raw" autocomplete="off" showon="dbtype!:mysqlonsqlite" size="30" lock="true" />
+        <field name="db" type="text" label="COM_CONFIG_FIELD_DATABASE_NAME_LABEL" description="COM_CONFIG_FIELD_DATABASE_NAME_DESC" required="true" filter="string" showon="dbtype!:mysqlonsqlite" size="30" />
+        <field name="db_folder" type="text" label="COM_CONFIG_FIELD_DATABASE_FOLDER_LABEL" description="COM_CONFIG_FIELD_DATABASE_FOLDER_DESC" filter="string" showon="dbtype:mysqlonsqlite" size="50" />
         <field name="dbprefix" type="text" label="COM_CONFIG_FIELD_DATABASE_PREFIX_LABEL" description="COM_CONFIG_FIELD_DATABASE_PREFIX_DESC" default="jos_" filter="string" size="10" />
     </fieldset>
     <fieldset name="debug" label="CONFIG_DEBUG_SETTINGS_LABEL">

@@ -324,6 +324,13 @@ class AdminModelSysInfo extends JModelLegacy
 			'useragent'             => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '',
 		);
 
+		// The SQLite driver reports MySQL to the code; show what really stores the data
+		if ($db instanceof JDatabaseDriverMysqlonsqlite)
+		{
+			$this->info['dbserver']  = 'SQLite';
+			$this->info['dbversion'] = $db->getVersionDescription();
+		}
+
 		return $this->info;
 	}
 

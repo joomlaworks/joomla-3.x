@@ -70,6 +70,12 @@ class ConfigModelApplication extends ConfigModelForm
 		// Get the correct driver at runtime
 		$data['dbtype'] = JFactory::getDbo()->getName();
 
+		// SQLite: the folder of the database file, as an absolute path like the log and temp folders
+		if ($data['dbtype'] === 'mysqlonsqlite')
+		{
+			$data['db_folder'] = dirname(JFactory::getDbo()->getDatabasePath());
+		}
+
 		// Prime the asset_id for the rules.
 		$data['asset_id'] = 1;
 
@@ -134,13 +140,28 @@ class ConfigModelApplication extends ConfigModelForm
 			return false;
 		}
 
+		// A new SQLite database folder (or file, e.g. from the command line) moves the database there
+		$sqliteMove = null;
+
+		if ($data['dbtype'] === 'mysqlonsqlite')
+		{
+			$sqliteMove = $this->getSqliteMoveTarget($data);
+
+			if ($sqliteMove === false)
+			{
+				return false;
+			}
+		}
+
+		unset($data['db_folder']);
+
 		// Check that we aren't setting wrong database configuration
 		$options = array(
 			'driver'   => $data['dbtype'],
 			'host'     => $data['host'],
 			'user'     => $data['user'],
 			'password' => $data['password'],
-			'database' => $data['db'],
+			'database' => $sqliteMove ? JFactory::getDbo()->getDatabasePath() : $data['db'],
 			'prefix'   => $data['dbprefix']
 		);
 
@@ -438,13 +459,179 @@ class ConfigModelApplication extends ConfigModelForm
 			throw new RuntimeException(JText::_('COM_CONFIG_ERROR_UNKNOWN_BEFORE_SAVING'));
 		}
 
+		if ($sqliteMove)
+		{
+			$db      = JFactory::getDbo();
+			$oldPath = $db->getDatabasePath();
+
+			try
+			{
+				$db->copyTo($sqliteMove);
+
+				// The rest of this request (e.g. the action log) then writes to the new file
+				$db->switchTo($sqliteMove);
+			}
+			catch (Exception $e)
+			{
+				if ($db->getDatabasePath() !== $oldPath)
+				{
+					$db->switchTo($oldPath);
+				}
+
+				JDatabaseDriverMysqlonsqlite::deleteDatabaseFiles($sqliteMove);
+				$app->enqueueMessage(JText::sprintf('COM_CONFIG_ERROR_DATABASE_SQLITE_MOVE', $e->getMessage()), 'error');
+
+				return false;
+			}
+		}
+
 		// Write the configuration file.
-		$result = $this->writeConfigFile($config);
+		try
+		{
+			$result = $this->writeConfigFile($config);
+		}
+		catch (RuntimeException $e)
+		{
+			if ($sqliteMove)
+			{
+				$db->switchTo($oldPath);
+				JDatabaseDriverMysqlonsqlite::deleteDatabaseFiles($sqliteMove);
+			}
+
+			throw $e;
+		}
+
+		if ($sqliteMove)
+		{
+			$this->removeOldSqliteDatabase($oldPath, $sqliteMove);
+		}
 
 		// Trigger the after save event.
 		$dispatcher->trigger('onApplicationAfterSave', array($config));
 
 		return $result;
+	}
+
+	/**
+	 * Get where to move the SQLite database to, from a new database folder (Global Configuration) or file (e.g. config:set db=...),
+	 * and prepare its folder. Sets the configuration's database file to the new place, relative to the site's root inside the site.
+	 *
+	 * @param   array  &$data  The configuration data
+	 *
+	 * @return  string|null|false  The absolute path of the new database file, null when it doesn't move, false on error
+	 *
+	 * @since   3.17.0
+	 */
+	private function getSqliteMoveTarget(array &$data)
+	{
+		$app      = JFactory::getApplication();
+		$current  = JFactory::getDbo()->getDatabasePath();
+		$folder   = isset($data['db_folder']) ? trim((string) $data['db_folder']) : '';
+		$byFolder = $folder !== '';
+		$path     = $byFolder ? rtrim($folder, '/\\') . '/' . basename($current) : trim((string) $data['db']);
+
+		if (!preg_match('#^([a-z]:)?[/\\\\]#i', $path))
+		{
+			$path = JPATH_ROOT . '/' . $path;
+		}
+
+		$folder     = dirname($path);
+		$realFolder = realpath($folder);
+
+		if ($realFolder !== false && $realFolder === realpath(dirname($current)) && basename($path) === basename($current))
+		{
+			return null;
+		}
+
+		// Another existing database file: the connection check decides
+		if (is_file($path) && !$byFolder)
+		{
+			return null;
+		}
+
+		if (is_file($path))
+		{
+			$app->enqueueMessage(JText::sprintf('COM_CONFIG_ERROR_DATABASE_SQLITE_FILE_EXISTS', $folder, basename($path)), 'error');
+
+			return false;
+		}
+
+		if (!is_dir($folder) && !JFolder::create($folder))
+		{
+			$app->enqueueMessage(JText::sprintf('COM_CONFIG_ERROR_DATABASE_SQLITE_FOLDER_NOT_CREATED', $folder), 'error');
+
+			return false;
+		}
+
+		$realFolder = realpath($folder);
+
+		if ($realFolder === false || !is_writable($realFolder))
+		{
+			$app->enqueueMessage(JText::sprintf('COM_CONFIG_ERROR_DATABASE_SQLITE_FOLDER_NOT_WRITABLE', $folder), 'error');
+
+			return false;
+		}
+
+		$root = realpath(JPATH_ROOT);
+		$path = $realFolder . DIRECTORY_SEPARATOR . basename($path);
+
+		// Inside the site, the file needs its own folder, whose web access can be blocked; it's then kept relative to the site's root
+		if ($root !== false && strpos($realFolder . DIRECTORY_SEPARATOR, $root . DIRECTORY_SEPARATOR) === 0)
+		{
+			if ($realFolder === $root)
+			{
+				$app->enqueueMessage(JText::_('COM_CONFIG_ERROR_DATABASE_SQLITE_IN_SITE_ROOT'), 'error');
+
+				return false;
+			}
+
+			JDatabaseDriverMysqlonsqlite::protectFolder($realFolder);
+			$data['db'] = str_replace(DIRECTORY_SEPARATOR, '/', substr($path, strlen($root) + 1));
+		}
+		else
+		{
+			$data['db'] = $path;
+		}
+
+		return $path;
+	}
+
+	/**
+	 * Delete the old SQLite database after a move, and its folder inside the site when nothing else is left in it.
+	 *
+	 * @param   string  $oldPath  The absolute path of the old database file
+	 * @param   string  $newPath  The absolute path of the new database file
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	private function removeOldSqliteDatabase($oldPath, $newPath)
+	{
+		$app = JFactory::getApplication();
+
+		if (!JDatabaseDriverMysqlonsqlite::deleteDatabaseFiles($oldPath))
+		{
+			$app->enqueueMessage(JText::sprintf('COM_CONFIG_DATABASE_SQLITE_OLD_NOT_DELETED', $oldPath), 'warning');
+
+			return;
+		}
+
+		$app->enqueueMessage(JText::sprintf('COM_CONFIG_DATABASE_SQLITE_MOVED', dirname($newPath)));
+
+		$oldFolder = realpath(dirname($oldPath));
+		$root      = realpath(JPATH_ROOT);
+
+		if ($oldFolder === false || $root === false || $oldFolder === $root
+			|| strpos($oldFolder . DIRECTORY_SEPARATOR, $root . DIRECTORY_SEPARATOR) !== 0)
+		{
+			return;
+		}
+
+		if (!array_diff(scandir($oldFolder), array('.', '..', '.htaccess', 'web.config', 'index.html')))
+		{
+			JFolder::delete($oldFolder);
+		}
 	}
 
 	/**

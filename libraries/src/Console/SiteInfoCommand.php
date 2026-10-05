@@ -60,6 +60,15 @@ class SiteInfoCommand extends AbstractCommand
 			$dbVersion = null;
 		}
 
+		$dbServer = $db->getServerType();
+
+		// The SQLite driver reports MySQL to the code; show what really stores the data
+		if ($db instanceof \JDatabaseDriverMysqlonsqlite)
+		{
+			$dbServer  = 'sqlite';
+			$dbVersion = $dbVersion !== null ? $db->getVersionDescription() : null;
+		}
+
 		$io->title('Site Information');
 		$io->definitionList(array(
 			'sitename'        => $config->get('sitename'),
@@ -68,7 +77,7 @@ class SiteInfoCommand extends AbstractCommand
 			'phpSapi'         => PHP_SAPI,
 			'os'              => PHP_OS,
 			'databaseType'    => $config->get('dbtype'),
-			'databaseServer'  => $db->getServerType(),
+			'databaseServer'  => $dbServer,
 			'databaseVersion' => $dbVersion,
 			'databaseName'    => $config->get('db'),
 			'tablePrefix'     => $config->get('dbprefix'),
