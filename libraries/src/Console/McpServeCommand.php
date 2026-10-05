@@ -322,7 +322,7 @@ class McpServeCommand extends AbstractCommand
 				. ($this->allowWrite ? '' : '. Required: this server is read-only'));
 		}
 
-		$destructive = (bool) preg_match('/(delete|remove|trash|convert|import|core:update$|reset-password|block$)/', $command->getName());
+		$destructive = (bool) preg_match('/(delete|remove|trash|convert|import|reinstall|core:update$|reset-password|block$)/', $command->getName());
 
 		return array(
 			'name'        => $name,
@@ -339,7 +339,7 @@ class McpServeCommand extends AbstractCommand
 				'readOnlyHint'    => $readOnly,
 				'destructiveHint' => !$readOnly && $destructive,
 				'idempotentHint'  => $readOnly,
-				'openWorldHint'   => (bool) preg_match('/^(core:update|extension:install|extension:update|update:extensions:check|core:update:check)/', $command->getName()),
+				'openWorldHint'   => (bool) preg_match('/^(core:update|extension:install|extension:update|extension:reinstall|update:extensions:check|core:update:check)/', $command->getName()),
 			),
 		);
 	}

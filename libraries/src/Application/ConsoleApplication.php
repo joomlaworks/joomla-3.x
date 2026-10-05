@@ -516,6 +516,9 @@ class ConsoleApplication extends CliApplication
 			return $match[1] . '=***';
 		}
 
+		// Download keys and tokens in URLs (e.g. extension:reinstall --url=...?dlid=...)
+		$value = preg_replace('/([?&](?:dlid|key|download_id|downloadid|token|password|pass|secret|api_?key)=)[^&#\s]+/i', '$1***', $value);
+
 		if (function_exists('mb_strlen') ? mb_strlen($value) > 80 : strlen($value) > 80)
 		{
 			$value = (function_exists('mb_substr') ? mb_substr($value, 0, 77) : substr($value, 0, 77)) . '...';

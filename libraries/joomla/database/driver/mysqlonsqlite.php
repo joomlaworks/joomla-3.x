@@ -140,6 +140,36 @@ class JDatabaseDriverMysqlonsqlite extends JDatabaseDriverPdomysql
 	}
 
 	/**
+	 * Optimise the database file: update the query planner's statistics (ANALYZE) and, unless only that is asked for, rebuild the
+	 * file without its free pages (VACUUM). Native SQLite statements, which the MySQL translation layer doesn't know. VACUUM needs
+	 * a moment with no other writes; other requests wait for it (busy timeout).
+	 *
+	 * @param   boolean  $analyzeOnly  Only update the statistics
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 * @throws  RuntimeException
+	 */
+	public function optimize($analyzeOnly = false)
+	{
+		$this->connect();
+
+		$pdo = $this->connection->get_sqlite_pdo();
+		$pdo->exec('ANALYZE');
+
+		if (!$analyzeOnly)
+		{
+			$pdo->exec('VACUUM');
+
+			// In WAL mode the rebuilt database is in the write-ahead log until a checkpoint copies it back and empties the log
+			$pdo->query('PRAGMA wal_checkpoint(TRUNCATE)')->fetchAll();
+		}
+
+		$pdo->exec('PRAGMA optimize');
+	}
+
+	/**
 	 * Use another database file from now on, e.g. after copyTo(). Objects holding this driver follow it.
 	 *
 	 * @param   string  $path  The absolute path of the file

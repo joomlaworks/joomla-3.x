@@ -306,6 +306,14 @@ abstract class InstallerHelper
 			return $default;
 		}
 
+		// Only the path: a query string (e.g. a download key) would otherwise end up in the name, hiding the archive's extension
+		$path = parse_url($url, PHP_URL_PATH);
+
+		if (is_string($path) && $path !== '')
+		{
+			$url = $path;
+		}
+
 		// Get last part of the url (after the last slash).
 		$parts    = explode('/', $url);
 		$filename = array_pop($parts);
