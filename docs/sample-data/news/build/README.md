@@ -14,7 +14,7 @@ PHP=php8.5 docs/sample-data/news/build/build.sh /path/to/an/empty/work/folder
 ```
 
 It copies this repository to `<work folder>/newsbuild`, installs it on SQLite with `core:install`, adds the content with the command
-line (`import_news.py`: tags, categories, articles; `setup_site.py`: the Hammond template's settings, menus, info pages, modules),
+line (`import_news.py`: tags, categories, articles, with `tag:create`, `category:create` and `article:create`; `setup_site.py`: the Hammond template's settings, menus, info pages, modules),
 archives two articles, normalises the dates (`fix_dates.sh`: every article created when published, the rest older), and writes the
 three SQL files (`dump_news.php`) and the plugin's data (`export_plugin_data.php`). The installer and the plugin move the dates
 forward when they install the set, so that the latest article is 25 minutes old.

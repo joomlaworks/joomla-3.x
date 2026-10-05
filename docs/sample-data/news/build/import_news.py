@@ -1,4 +1,4 @@
-"""Imports the News content (content.json) into a site through the CLI: tags, categories and articles, with the images of
+"""Imports the News content (content.json) into a site through the command line: tags, categories and articles, with the images of
 images/sampledata/news (bundled). Then hits and two archived articles (for the archive view)."""
 import json, os, re, subprocess, sys
 PHP = os.environ.get('PHP', 'php')
@@ -25,7 +25,8 @@ def img(path):
 
 c = json.load(open(HERE + '/content.json'))
 tags = sorted({t for a in c['articles'] for t in a['tags']})
-print(subprocess.run([PHP, HERE + '/create_tags.php', D, *tags], capture_output=True, text=True).stdout.strip().replace('\n', ', '))
+for tag in tags:
+    cli('tag:create', '--title=' + tag)
 
 for cat in c['categories']:
     cli('category:create', '--title=' + cat['title'], '--alias=' + cat['alias'], '--description=' + cat['description'], '--state=published')
