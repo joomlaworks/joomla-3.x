@@ -9,7 +9,8 @@
 
 defined('_JEXEC') or die;
 
-require_once dirname(__DIR__, 3) . '/helper.php';
+// A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
+class_exists('FinchHelper', false) || require_once dirname(__DIR__, 3) . '/helper.php';
 
 /** @var ContentViewCategory $this */
 $items = array_merge((array) $this->lead_items, (array) $this->intro_items);

@@ -9,7 +9,8 @@
 
 defined('_JEXEC') or die;
 
-require_once dirname(__DIR__, 3) . '/helper.php';
+// A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
+class_exists('HammondHelper', false) || require_once dirname(__DIR__, 3) . '/helper.php';
 
 // Featured articles as a list: the frontpage when the module grid has no modules (e.g. a new site without sample data)
 /** @var ContentViewFeatured $this */

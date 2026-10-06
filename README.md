@@ -52,6 +52,7 @@ Summary of changes:
 - Fixed database error handling with the "MySQL (mysqli)" driver on PHP 8.1+, and several long-standing issues with the "MySQL (PDO)" driver
 - More PHP 8.5 deprecation fixes
 - Fixed Joomla Update failing with a PHP error when Joomla's own update site had been deleted
+- Fixed the administrator's Help buttons, which showed "not found" since 3.11
 
 **Security fixes:**
 - Installer: the ownership check for remote databases could be skipped by going straight to the step which writes the configuration (stock Joomla 3)

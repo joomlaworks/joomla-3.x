@@ -131,8 +131,8 @@ class Help
 			$jlang[1],
 			// {major}
 			$jver[0],
-			// {minor}
-			$jver[1],
+			// {minor}: the help wiki's last Joomla 3 screens are 3.10's (keyref Help310), it has none for 3.11 and later
+			(int) $jver[0] === 3 && (int) $jver[1] > 10 ? '10' : $jver[1],
 			// {maintenance}
 			$jver[2],
 		);

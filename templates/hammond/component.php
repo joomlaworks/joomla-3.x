@@ -9,7 +9,8 @@
 
 defined('_JEXEC') or die;
 
-require_once __DIR__ . '/helper.php';
+// A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
+class_exists('HammondHelper', false) || require_once __DIR__ . '/helper.php';
 
 /** @var JDocumentHtml $this */
 HammondHelper::prepare($this, 'component');

@@ -488,9 +488,15 @@ class PlgSampledataBlogSet
 			return $menusAdded . ' ' . JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_NO_TEMPLATE', ucfirst($this->template));
 		}
 
-		$params              = $data['template'];
-		$params['pagesMenu'] = isset($menus[$params['pagesMenu']]) ? $menus[$params['pagesMenu']] : '';
-		$style               = (object) array(
+		$params = $data['template'];
+
+		// Hammond's pages menu option names one of the set's menus (Finch's options have none)
+		if (isset($params['pagesMenu']))
+		{
+			$params['pagesMenu'] = isset($menus[$params['pagesMenu']]) ? $menus[$params['pagesMenu']] : '';
+		}
+
+		$style = (object) array(
 			'id' => null, 'template' => $this->template, 'client_id' => 0, 'home' => '0',
 			'title' => JText::_('PLG_SAMPLEDATA_BLOG_' . strtoupper($this->name) . '_TEMPLATE_STYLE'),
 			'params' => json_encode($params),

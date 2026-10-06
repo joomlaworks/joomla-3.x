@@ -9,7 +9,8 @@
 
 defined('_JEXEC') or die;
 
-require_once dirname(__DIR__, 2) . '/helper.php';
+// A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
+class_exists('FinchHelper', false) || require_once dirname(__DIR__, 2) . '/helper.php';
 
 // Three posts as cards (e.g. "Read next" under a post, the module set to four), without the post being read
 /** @var array $list */

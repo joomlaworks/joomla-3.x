@@ -9,7 +9,8 @@
 
 defined('_JEXEC') or die;
 
-require_once dirname(__DIR__) . '/helper.php';
+// A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
+class_exists('FinchHelper', false) || require_once dirname(__DIR__) . '/helper.php';
 
 /**
  * Module chrome: a section with the module's class suffix and its title.
