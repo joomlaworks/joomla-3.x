@@ -39,7 +39,7 @@ class CoreInstallCommand extends AbstractCommand
 	protected $help = 'Installs Joomla on a new SQLite database, from the files of a Joomla 3.x UTD package which wasn\'t installed yet '
 		. '(no configuration.php), using the installer of its "installation" folder. Only the site\'s name, the administrator\'s email '
 		. 'address and username are needed; when they aren\'t given, they\'re asked for one by one. The administrator\'s password is '
-		. 'generated (16 letters and digits) and shown at the end. --sample-data also installs one of the installer\'s sample data '
+		. 'generated (16 letters and digits) and shown at the end, unless --admin-password sets it. --sample-data also installs one of the installer\'s sample data '
 		. 'sets (news or blog). The site\'s template is Hammond, with no sample data or the news set, and Finch with the '
 		. 'blog set. The database file gets an unguessable name in the "database" '
 		. 'folder, which is protected from web access, and the "installation" folder is removed afterwards. Like the web installer, '
@@ -71,6 +71,7 @@ class CoreInstallCommand extends AbstractCommand
 		$this->addOption('site-name', null, self::OPTION_REQUIRED, 'The site\'s name');
 		$this->addOption('admin-email', null, self::OPTION_REQUIRED, 'The administrator\'s email address');
 		$this->addOption('admin-username', null, self::OPTION_REQUIRED, 'The administrator\'s username');
+		$this->addOption('admin-password', null, self::OPTION_REQUIRED, 'The administrator\'s password (generated when not given)');
 		$this->addOption('sample-data', null, self::OPTION_OPTIONAL, 'Also install sample data: news or blog (without a name, it asks which)');
 	}
 
@@ -137,6 +138,18 @@ class CoreInstallCommand extends AbstractCommand
 			return self::INVALID;
 		}
 
+		// Optional and never asked for: without it, a password is generated. Taken as given, like the web installer's field
+		$password = $io->getOption('admin-password');
+
+		if ($password !== null && ($password === true || (string) $password === ''))
+		{
+			$io->error('--admin-password needs a password (leave the option out to have one generated).');
+
+			return self::INVALID;
+		}
+
+		$generated = $password === null;
+
 		// Optional, so only asked for when --sample-data is given without a name
 		$sampleData = '';
 
@@ -193,14 +206,14 @@ class CoreInstallCommand extends AbstractCommand
 			}
 
 			$io->plan(sprintf('Write configuration.php for "%s"', $siteName), array('action' => 'configuration', 'siteName' => $siteName));
-			$io->plan(sprintf('Create the Super User %s (%s) with a generated password', $username, $email),
-				array('action' => 'user', 'username' => $username, 'email' => $email));
+			$io->plan(sprintf('Create the Super User %s (%s) with %s password', $username, $email, $generated ? 'a generated' : 'the given'),
+				array('action' => 'user', 'username' => $username, 'email' => $email, 'passwordGenerated' => $generated));
 			$io->plan('Remove the "installation" folder', array('action' => 'remove', 'folder' => 'installation'));
 
 			return self::SUCCESS;
 		}
 
-		$password = $this->generatePassword();
+		$password = $generated ? $this->generatePassword() : (string) $password;
 		$options  = array(
 			'language'             => 'en-GB',
 			'helpurl'              => 'https://help.joomla.org/proxy?keyref=Help{major}{minor}:{keyref}&lang={langcode}',
@@ -239,6 +252,7 @@ class CoreInstallCommand extends AbstractCommand
 		$io->setData('adminUsername', $username);
 		$io->setData('adminEmail', $email);
 		$io->setData('adminPassword', $password);
+		$io->setData('adminPasswordGenerated', $generated);
 		$io->setData('database', $database);
 		$io->setData('prefix', $prefix);
 		$io->setData('sampleData', $sampleData === '' ? null : $sampleData);
@@ -252,12 +266,19 @@ class CoreInstallCommand extends AbstractCommand
 			$io->definitionList(array(
 				'Administrator' => $username,
 				'Email'         => $email,
-				'Password'      => $password,
+				'Password'      => $generated ? $password : '(as given with --admin-password)',
 			));
 		}
 
-		$io->text('Keep the password somewhere safe: it isn\'t stored anywhere readable and isn\'t shown again. Log in to the '
-			. 'administrator at /administrator/ on the site, and change it there if you like.');
+		if ($generated)
+		{
+			$io->text('Keep the password somewhere safe: it isn\'t stored anywhere readable and isn\'t shown again. Log in to the '
+				. 'administrator at /administrator/ on the site, and change it there if you like.');
+		}
+		else
+		{
+			$io->text('Log in to the administrator at /administrator/ on the site with the password given.');
+		}
 
 		return self::SUCCESS;
 	}

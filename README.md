@@ -108,9 +108,9 @@ Summary of changes:
 - PostgreSQL install scripts for Banners, Contacts and News Feeds, so they can be reinstalled after an uninstall (also through "Restore uninstalled core extensions")
 - New command line interface, `cli/joomla.php`, using the same command names and options as Joomla 4 and later to update Joomla and manage the configuration, users, extensions, database, cache, sessions and Smart Search (e.g. `php cli/joomla.php core:update`, `database:export`, `user:add`, `extension:install`, `config:set`, `site:down`). Every command can return JSON (`--format=json`), so scripts and AI agents can work with the site directly. Extensions can add their own commands. The existing scripts in `cli/` still work as before (cron jobs need no changes), but now run the new commands.
 - Hammond, a news and magazine template: a 12-column frontpage of modules (main story, latest news, sections, opinion, most read, ad slots), a sticky header with a combined menu and search panel, list, article and info page layouts, share popups, system fonts and SVG icons, sized for readability and Core Web Vitals. The default template of new sites without sample data or with the News set; installed but not activated on existing sites
-- News sample data: 227 articles in ten sections with tags, menus and modules, and images, videos and posts matching each section. From the installer, `core:install --sample-data=news` or the Control Panel's Sample Data module (which also makes a Hammond style the site's default template)
+- News sample data: 227 articles in ten sections with tags, menus and modules, and images, videos and posts matching each section. From the installer, `core:install --sample-data=news` or the Control Panel's Sample Data module (Super Users only; it also makes a Hammond style the site's default template, and replaces the sample data set installed before)
 - Finch, a blog template: the latest post large and the others as cards beside a sidebar, posts in a calm reading column with a drop cap, author box and links to the previous and next posts, standalone pages, system fonts and SVG icons. The default template of new sites with the Blog set; installed but not activated on existing sites
-- Blog sample data: 20 essays by one author in four topics, with tags, pages and the sidebar's modules, using the News set's images. From the installer, `core:install --sample-data=blog` or the Control Panel's Sample Data module (which also makes a Finch style the site's default template)
+- Blog sample data: 20 essays by one author in four topics, with tags, pages and the sidebar's modules, using the News set's images. From the installer, `core:install --sample-data=blog` or the Control Panel's Sample Data module (Super Users only; it also makes a Finch style the site's default template, and replaces the sample data set installed before)
 
 ## Version 3.16 - released October 3rd, 2026
 Summary of changes:
@@ -258,17 +258,19 @@ wget -qO- https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.tar.
 To install, just extract the latest rolling release https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip where you want the site to be and then follow the normal Joomla installation process.
 
 ### Quick install from the command line (SQLite)
-A new site on SQLite takes one command: give it the site's name, the administrator's email address and username (or leave them out, and it asks for them), and it installs Joomla, generates the administrator's password and shows it at the end, then removes the `installation` folder. Run it in the (empty) folder for the site, as the user the web server runs PHP as:
+A new site on SQLite takes one command with a few flags: give it the site's name, the administrator's email address and username (or leave them out, and it asks for them), and it installs Joomla, generates the administrator's password and shows it at the end (or you can set a custom password with the optional `--admin-password` flag), then removes the `installation` folder. Execute the command in an empty folder (that will host the site), as the user the web server runs PHP (so there are no permission issues) as:
 
 ```bash
 wget -q https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip && unzip -q joomla-latest.zip && rm joomla-latest.zip && php cli/joomla.php core:install --site-name="My Site" --admin-email=me@example.com --admin-username=admin
 ```
 
-Add `--sample-data=news` (or `blog`) to start with one of the installer's sample data sets; the news set comes with the Hammond template as the site's template, the blog set with Finch. It needs PHP 7.4 or newer with the `pdo_sqlite` extension. `--format=json` returns the details (including the password) for scripts.
+Add `--sample-data=news` or `--sample-data=blog` to start with one of the installer's sample data sets; the news set comes with the Hammond template as the site's template, the blog set with Finch, 2 brand new, modern and Core Web Vitals friendly templates, (derived from years of experience building content-heavy sites by the project maintainers).
+
+Installing sites like this needs PHP 7.4 or newer with the `pdo_sqlite` extension. If you also add the flag `--format=json`, you'll get installation details in JSON format (including the password), which is ideal for scripts (using jq) and LLMs.
 
 
 ## PHP COMPATIBILITY
-This distribution targets at least PHP 7.4. This is the baseline version we use for broader compatibility with hosts and the Joomla 3.x ecosystem (e.g. other extensions and templates that are actively maintained).
+This distribution targets at least PHP 7.4. This is the baseline version we use for broader compatibility with hosts and the Joomla 3.x ecosystem (e.g. other extensions and templates that are actively maintained). Using at least PHP 7.4 we can also guarantee compatibility with all supported databases (as of v3.17): MySQL/MariaDB, Postgres & SQLite.
 
 Sites on PHP 7.1 through 7.3 will still be offered updates to this distribution through the Joomla Update component - 7.4 is our recommended baseline, not a hard cutoff - so these sites can keep receiving security patches even before upgrading their PHP version. PHP 7.0 and below is not supported; the update won't be offered and installing manually isn't recommended.
 

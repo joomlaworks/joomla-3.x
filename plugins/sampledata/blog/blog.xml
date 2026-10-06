@@ -20,6 +20,10 @@
     </languages>
     <config>
         <fields name="params">
+            <fieldset name="basic">
+                <!-- The record of the installed sample data set (set.php), kept when the plugin is saved -->
+                <field name="installed" type="hidden" filter="raw" />
+            </fieldset>
         </fields>
     </config>
 </extension>

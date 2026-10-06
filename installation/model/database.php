@@ -1011,6 +1011,22 @@ class InstallationModelDatabase extends JModelBase
 		}
 
 		$this->setDefaultSiteTemplate($db, isset($templates[$sampleFileName]) ? $templates[$sampleFileName] : 'protostar');
+
+		// The Sample Data plugin's record of the set, so that installing a set from the Control Panel replaces this one
+		$plugin = JPATH_SITE . '/plugins/sampledata/blog/set.php';
+
+		if (isset($templates[$sampleFileName]) && is_file($plugin))
+		{
+			try
+			{
+				JLoader::register('PlgSampledataBlogSet', $plugin);
+				PlgSampledataBlogSet::recordInstallerSet($db, substr($sampleFileName, 7, -4));
+			}
+			catch (RuntimeException $e)
+			{
+				JFactory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
+			}
+		}
 	}
 
 	/**

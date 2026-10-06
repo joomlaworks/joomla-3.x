@@ -18,6 +18,9 @@ use Joomla\CMS\Language\Multilanguage;
  * same site as installation/sql/<dialect>/sample_<set>.sql, by docs/sample-data/build/build.sh), added to an existing site,
  * with a style of the set's template (Hammond, Finch) which becomes the site's default.
  *
+ * The plugin records what the installed set added (the installer records its own set too), and installing a set first removes
+ * the recorded one: the site holds one set at a time, never two mixed. The site's own content is never removed.
+ *
  * @since  3.17.0
  */
 class PlgSampledataBlogSet
@@ -48,6 +51,14 @@ class PlgSampledataBlogSet
 		'news' => array('template' => 'hammond', 'articleSteps' => 4),
 		'blog' => array('template' => 'finch', 'articleSteps' => 1),
 	);
+
+	/**
+	 * The record's lists of IDs (menutypes: names)
+	 *
+	 * @var    string[]
+	 * @since  3.17.0
+	 */
+	const RECORD_LISTS = array('categories', 'tags', 'articles', 'menutypes', 'menuitems', 'modules', 'styles');
 
 	/**
 	 * The set: news or blog
@@ -113,7 +124,9 @@ class PlgSampledataBlogSet
 		$data->title       = JText::_('PLG_SAMPLEDATA_BLOG_' . strtoupper($this->name) . '_OVERVIEW_TITLE');
 		$data->description = JText::_('PLG_SAMPLEDATA_BLOG_' . strtoupper($this->name) . '_OVERVIEW_DESC');
 		$data->icon        = $this->name === 'news' ? 'stack' : 'pencil-2';
-		$data->steps       = $this->articleSteps + 3;
+		$data->steps       = $this->articleSteps + 4;
+		$record            = self::getRecord($this->db);
+		$data->installed   = $record !== null && $record['set'] === $this->name;
 
 		return $data;
 	}
@@ -129,9 +142,9 @@ class PlgSampledataBlogSet
 	 */
 	public function step($step)
 	{
-		$component = $step <= $this->articleSteps + 1 ? 'com_content' : ($step === $this->articleSteps + 2 ? 'com_menus' : 'com_modules');
+		$component = $step <= $this->articleSteps + 2 ? 'com_content' : ($step === $this->articleSteps + 3 ? 'com_menus' : 'com_modules');
 
-		if (!ComponentHelper::isEnabled($component) || !Factory::getUser()->authorise('core.create', $component))
+		if ($step > 1 && (!ComponentHelper::isEnabled($component) || !Factory::getUser()->authorise('core.create', $component)))
 		{
 			return array('success' => true, 'message' => JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_STEP_SKIPPED', $step, $component));
 		}
@@ -140,13 +153,17 @@ class PlgSampledataBlogSet
 		{
 			if ($step === 1)
 			{
+				$message = $this->removeInstalled();
+			}
+			elseif ($step === 2)
+			{
 				$message = $this->addCategoriesAndTags();
 			}
-			elseif ($step <= $this->articleSteps + 1)
+			elseif ($step <= $this->articleSteps + 2)
 			{
-				$message = $this->addArticles($step - 1);
+				$message = $this->addArticles($step - 2);
 			}
-			elseif ($step === $this->articleSteps + 2)
+			elseif ($step === $this->articleSteps + 3)
 			{
 				$message = $this->addMenus();
 			}
@@ -257,8 +274,12 @@ class PlgSampledataBlogSet
 		$access   = (int) $this->app->get('access', 1);
 		$language = $this->getItemLanguage();
 
-		// Tags: the site's own when it has them already
-		$tags = array();
+		// A new record: the site's default template style now is the one to go back to when the set's style is removed
+		self::saveRecord($this->db, array('set' => $this->name, 'previousStyle' => $this->getDefaultStyle()));
+
+		// Tags: the site's own when it has them already (those are never removed with the set)
+		$tags    = array();
+		$created = array();
 
 		if (ComponentHelper::isEnabled('com_tags') && $user->authorise('core.create', 'com_tags'))
 		{
@@ -285,6 +306,7 @@ class PlgSampledataBlogSet
 					}
 
 					$table->rebuildPath($table->id);
+					$created[] = (int) $table->id;
 				}
 
 				$tags[$tag['alias']] = (string) $table->id;
@@ -305,6 +327,9 @@ class PlgSampledataBlogSet
 				'created_user_id' => $user->id, 'associations' => array(), 'note' => '', 'metadesc' => '', 'metakey' => '',
 			));
 		}
+
+		$this->addToRecord('tags', $created);
+		$this->addToRecord('categories', array_values($categories));
 
 		$this->app->setUserState('sampledata.' . $this->name . '.tags', $tags);
 		$this->app->setUserState('sampledata.' . $this->name . '.categories', $categories);
@@ -345,6 +370,7 @@ class PlgSampledataBlogSet
 		$latest = Factory::getDate('now')->toUnix() - 25 * 60;
 		$chunk  = array_chunk($data['articles'], (int) ceil(count($data['articles']) / $this->articleSteps));
 		$chunk  = isset($chunk[$part - 1]) ? $chunk[$part - 1] : array();
+		$added  = array();
 
 		foreach ($chunk as $article)
 		{
@@ -371,8 +397,10 @@ class PlgSampledataBlogSet
 			}
 
 			$articles[$article['alias']] = $id;
+			$added[]                     = $id;
 		}
 
+		$this->addToRecord('articles', $added);
 		$this->app->setUserState('sampledata.' . $this->name . '.articles', $articles);
 
 		return JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_STEP_ARTICLES_SUCCESS', count($chunk));
@@ -398,6 +426,7 @@ class PlgSampledataBlogSet
 		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_menus/tables/');
 		$model       = JModelLegacy::getInstance('Item', 'MenusModel', array('ignore_request' => true));
 		$componentId = ComponentHelper::getComponent('com_content')->id;
+		$items       = array();
 
 		foreach ($data['menus'] as $menutype => $menu)
 		{
@@ -419,6 +448,7 @@ class PlgSampledataBlogSet
 			}
 
 			$menus[$menutype] = $table->menutype;
+			$this->addToRecord('menutypes', array($table->menutype));
 
 			foreach ($menu['items'] as $item)
 			{
@@ -426,7 +456,7 @@ class PlgSampledataBlogSet
 					return $m[1] === 'category' ? $categories[$m[2]] : $articles[$m[2]];
 				}, $item['link']);
 
-				$this->save($model, array(
+				$items[] = $this->save($model, array(
 					'menutype' => $table->menutype, 'title' => $item['title'], 'alias' => $item['alias'], 'link' => $link, 'type' => 'component',
 					'component_id' => $componentId, 'published' => 1, 'parent_id' => 1, 'level' => 1, 'home' => 0, 'browserNav' => 0,
 					'access' => $access, 'language' => $language, 'template_style_id' => 0, 'params' => json_decode($item['params'], true),
@@ -435,6 +465,7 @@ class PlgSampledataBlogSet
 			}
 		}
 
+		$this->addToRecord('menuitems', $items);
 		$this->app->setUserState('sampledata.' . $this->name . '.menus', $menus);
 
 		// The set's settings in a style of its template, which becomes the site's default template
@@ -465,6 +496,7 @@ class PlgSampledataBlogSet
 			'params' => json_encode($params),
 		);
 		$this->db->insertObject('#__template_styles', $style, 'id');
+		$this->addToRecord('styles', array((int) $style->id));
 
 		if (!Factory::getUser()->authorise('core.edit.state', 'com_templates'))
 		{
@@ -546,8 +578,401 @@ class PlgSampledataBlogSet
 			{
 				throw new RuntimeException($module['title'] . ': ' . JText::_($model->getError()));
 			}
+
+			$this->addToRecord('modules', array((int) $model->getState($model->getName() . '.id')));
 		}
 
 		return JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_STEP_MODULES_SUCCESS', ucfirst($this->template));
+	}
+
+	/**
+	 * The record of the installed set: its name and the IDs of what it added. Kept in the plugin's parameters, in a hidden
+	 * field of its form, so that saving the plugin keeps it.
+	 *
+	 * @param   JDatabaseDriver  $db  The database
+	 *
+	 * @return  array|null  set, previousStyle and the RECORD_LISTS; null when no set is recorded
+	 *
+	 * @since   3.17.0
+	 */
+	public static function getRecord($db)
+	{
+		$params = json_decode((string) $db->setQuery(self::getPluginQuery($db)->select($db->quoteName('params')))->loadResult(), true);
+		$record = is_array($params) && isset($params['installed']) ? json_decode((string) $params['installed'], true) : null;
+
+		if (!is_array($record) || !isset(self::SETS[isset($record['set']) ? $record['set'] : '']))
+		{
+			return null;
+		}
+
+		foreach (self::RECORD_LISTS as $list)
+		{
+			$record[$list] = isset($record[$list]) ? array_values(array_unique((array) $record[$list])) : array();
+		}
+
+		$record['previousStyle'] = isset($record['previousStyle']) ? (int) $record['previousStyle'] : 0;
+
+		return $record;
+	}
+
+	/**
+	 * Save the record of the installed set.
+	 *
+	 * @param   JDatabaseDriver  $db      The database
+	 * @param   array|null       $record  The record; null for none
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	public static function saveRecord($db, $record)
+	{
+		$params = json_decode((string) $db->setQuery(self::getPluginQuery($db)->select($db->quoteName('params')))->loadResult(), true);
+		$params = is_array($params) ? $params : array();
+
+		$params['installed'] = $record === null ? '' : json_encode($record);
+
+		$db->setQuery(
+			self::getPluginQuery($db)
+				->clear('from')
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+		)->execute();
+	}
+
+	/**
+	 * A query on the plugin's row of #__extensions.
+	 *
+	 * @param   JDatabaseDriver  $db  The database
+	 *
+	 * @return  JDatabaseQuery
+	 *
+	 * @since   3.17.0
+	 */
+	private static function getPluginQuery($db)
+	{
+		return $db->getQuery(true)
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+			->where($db->quoteName('folder') . ' = ' . $db->quote('sampledata'))
+			->where($db->quoteName('element') . ' = ' . $db->quote('blog'));
+	}
+
+	/**
+	 * Add what a step added to the record.
+	 *
+	 * @param   string  $list    One of RECORD_LISTS
+	 * @param   array   $values  The IDs (menu types: names)
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	private function addToRecord($list, array $values)
+	{
+		$record = self::getRecord($this->db);
+
+		// Steps run in order, the second starting the record: without it, the steps were run out of order
+		if ($record === null || $record['set'] !== $this->name)
+		{
+			throw new RuntimeException(JText::_('PLG_SAMPLEDATA_BLOG_SET_NO_CATEGORIES'));
+		}
+
+		$record[$list] = array_values(array_unique(array_merge($record[$list], $values)));
+
+		self::saveRecord($this->db, $record);
+	}
+
+	/**
+	 * The site's default template style (of all languages).
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.17.0
+	 */
+	private function getDefaultStyle()
+	{
+		return (int) $this->db->setQuery(
+			$this->db->getQuery(true)
+				->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('#__template_styles'))
+				->where($this->db->quoteName('client_id') . ' = 0')
+				->where($this->db->quoteName('home') . ' = ' . $this->db->quote('1'))
+		)->loadResult();
+	}
+
+	/**
+	 * Record the set the installer has just installed (on a new site, so everything matching the set is the set's).
+	 *
+	 * @param   JDatabaseDriver  $db    The database
+	 * @param   string           $name  The set
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 */
+	public static function recordInstallerSet($db, $name)
+	{
+		$data = isset(self::SETS[$name]) ? json_decode((string) @file_get_contents(__DIR__ . '/data/' . $name . '.json'), true) : null;
+
+		if (!is_array($data))
+		{
+			return;
+		}
+
+		$quote = function ($values) use ($db)
+		{
+			return implode(',', array_map(array($db, 'quote'), $values ?: array('')));
+		};
+
+		$record = array('set' => $name, 'previousStyle' => 0);
+
+		$record['categories'] = $db->setQuery(
+			$db->getQuery(true)
+				->select($db->quoteName('id'))
+				->from($db->quoteName('#__categories'))
+				->where($db->quoteName('extension') . ' = ' . $db->quote('com_content'))
+				->where($db->quoteName('parent_id') . ' = 1')
+				->where($db->quoteName('alias') . ' IN (' . $quote(array_column($data['categories'], 'alias')) . ')')
+		)->loadColumn();
+
+		$record['articles'] = $db->setQuery(
+			$db->getQuery(true)
+				->select($db->quoteName('id'))
+				->from($db->quoteName('#__content'))
+				->where($db->quoteName('catid') . ' IN (' . implode(',', array_map('intval', $record['categories'] ?: array(0))) . ')')
+		)->loadColumn();
+
+		$record['tags'] = $db->setQuery(
+			$db->getQuery(true)
+				->select($db->quoteName('id'))
+				->from($db->quoteName('#__tags'))
+				->where($db->quoteName('id') . ' > 1')
+				->where($db->quoteName('alias') . ' IN (' . $quote(array_column($data['tags'], 'alias')) . ')')
+		)->loadColumn();
+
+		// The menu items (never the home page, which a new site has without sample data too) and the menus holding them
+		$aliases = array();
+
+		foreach ($data['menus'] as $menu)
+		{
+			$aliases = array_merge($aliases, array_column($menu['items'], 'alias'));
+		}
+
+		$items = $db->setQuery(
+			$db->getQuery(true)
+				->select($db->quoteName(array('id', 'menutype')))
+				->from($db->quoteName('#__menu'))
+				->where($db->quoteName('client_id') . ' = 0')
+				->where($db->quoteName('home') . ' = 0')
+				->where($db->quoteName('alias') . ' IN (' . $quote($aliases) . ')')
+		)->loadObjectList();
+
+		$record['menuitems'] = array_column($items, 'id');
+		$record['menutypes'] = array_values(array_unique(array_column($items, 'menutype')));
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName('id'))
+			->from($db->quoteName('#__modules'))
+			->where($db->quoteName('client_id') . ' = 0');
+		$where = array();
+
+		foreach ($data['modules'] as $module)
+		{
+			$where[] = '(' . $db->quoteName('module') . ' = ' . $db->quote($module['module']) . ' AND ' . $db->quoteName('title') . ' = '
+				. $db->quote($module['title']) . ' AND ' . $db->quoteName('position') . ' = ' . $db->quote($module['position']) . ')';
+		}
+
+		$record['modules'] = $where ? $db->setQuery($query->where('(' . implode(' OR ', $where) . ')'))->loadColumn() : array();
+		$record['styles']  = array();
+
+		foreach (self::RECORD_LISTS as $list)
+		{
+			if ($list !== 'menutypes')
+			{
+				$record[$list] = array_map('intval', $record[$list]);
+			}
+		}
+
+		self::saveRecord($db, $record);
+	}
+
+	/**
+	 * Remove the recorded set: everything it added, except categories and tags other content still uses.
+	 *
+	 * @return  string  The step's message
+	 *
+	 * @since   3.17.0
+	 */
+	private function removeInstalled()
+	{
+		$record = self::getRecord($this->db);
+
+		if ($record === null)
+		{
+			return JText::_('PLG_SAMPLEDATA_BLOG_SET_STEP_NOTHING_REMOVED');
+		}
+
+		$db      = $this->db;
+		$ints    = function ($values)
+		{
+			return implode(',', array_map('intval', $values ?: array(0)));
+		};
+		$count   = array_fill_keys(self::RECORD_LISTS, 0);
+		$kept    = 0;
+		$context = array('articles' => 'com_content.article', 'categories' => 'com_categories.category');
+
+		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_tags/tables');
+		JPluginHelper::importPlugin('content');
+		$dispatcher = JEventDispatcher::getInstance();
+
+		$delete = function ($table, $list, $id) use (&$count, $dispatcher, $context)
+		{
+			if (!$table->load($id))
+			{
+				return;
+			}
+
+			if (!$table->delete($id))
+			{
+				throw new RuntimeException($table->getError());
+			}
+
+			$count[$list]++;
+
+			// E.g. Smart Search removes them from its index
+			if (isset($context[$list]))
+			{
+				$dispatcher->trigger('onContentAfterDelete', array($context[$list], $table));
+			}
+		};
+
+		// Modules, and their menu assignments
+		$table = JTable::getInstance('Module', 'JTable');
+
+		foreach ($record['modules'] as $id)
+		{
+			$delete($table, 'modules', $id);
+		}
+
+		$db->setQuery($db->getQuery(true)->delete($db->quoteName('#__modules_menu'))
+			->where($db->quoteName('moduleid') . ' IN (' . $ints($record['modules']) . ')'))->execute();
+
+		// Menu items, the assignments of modules to them, then the set's menus when nothing else is left in them
+		$table = JTable::getInstance('Menu', 'JTable');
+
+		foreach ($record['menuitems'] as $id)
+		{
+			$delete($table, 'menuitems', $id);
+		}
+
+		$db->setQuery($db->getQuery(true)->delete($db->quoteName('#__modules_menu'))
+			->where('ABS(' . $db->quoteName('menuid') . ') IN (' . $ints($record['menuitems']) . ')'))->execute();
+
+		foreach ($record['menutypes'] as $menutype)
+		{
+			$items = (int) $db->setQuery($db->getQuery(true)->select('COUNT(*)')->from($db->quoteName('#__menu'))
+				->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype)))->loadResult();
+			$table = JTable::getInstance('MenuType', 'JTable');
+
+			if ($items === 0 && $table->load(array('menutype' => $menutype)))
+			{
+				$delete($table, 'menutypes', $table->id);
+			}
+		}
+
+		// Articles
+		$table = JTable::getInstance('Content', 'JTable');
+
+		foreach ($record['articles'] as $id)
+		{
+			$delete($table, 'articles', $id);
+		}
+
+		foreach (array('#__content_frontpage', '#__content_rating') as $name)
+		{
+			$db->setQuery($db->getQuery(true)->delete($db->quoteName($name))
+				->where($db->quoteName('content_id') . ' IN (' . $ints($record['articles']) . ')'))->execute();
+		}
+
+		// Categories and tags, unless other content still uses them
+		$table = JTable::getInstance('Category', 'JTable');
+
+		foreach ($record['categories'] as $id)
+		{
+			$used = (int) $db->setQuery($db->getQuery(true)->select('COUNT(*)')->from($db->quoteName('#__content'))
+				->where($db->quoteName('catid') . ' = ' . (int) $id))->loadResult()
+				+ (int) $db->setQuery($db->getQuery(true)->select('COUNT(*)')->from($db->quoteName('#__categories'))
+				->where($db->quoteName('parent_id') . ' = ' . (int) $id))->loadResult();
+
+			if ($used)
+			{
+				$kept++;
+
+				continue;
+			}
+
+			$delete($table, 'categories', $id);
+		}
+
+		$table = JTable::getInstance('Tag', 'TagsTable');
+
+		foreach ($record['tags'] as $id)
+		{
+			$used = (int) $db->setQuery($db->getQuery(true)->select('COUNT(*)')->from($db->quoteName('#__contentitem_tag_map'))
+				->where($db->quoteName('tag_id') . ' = ' . (int) $id))->loadResult();
+
+			if ($used)
+			{
+				$kept++;
+
+				continue;
+			}
+
+			$delete($table, 'tags', $id);
+		}
+
+		// The set's template style; when it's the site's default, the one before it (or the oldest left) takes its place
+		foreach ($record['styles'] as $id)
+		{
+			$style = $db->setQuery($db->getQuery(true)->select($db->quoteName(array('id', 'home')))->from($db->quoteName('#__template_styles'))
+				->where($db->quoteName('id') . ' = ' . (int) $id)->where($db->quoteName('client_id') . ' = 0'))->loadObject();
+
+			if (!$style)
+			{
+				continue;
+			}
+
+			if ($style->home !== '0')
+			{
+				$query = $db->getQuery(true)
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__template_styles'))
+					->where($db->quoteName('client_id') . ' = 0')
+					->where($db->quoteName('id') . ' NOT IN (' . $ints($record['styles']) . ')')
+					->order('CASE WHEN ' . $db->quoteName('id') . ' = ' . $record['previousStyle'] . ' THEN 0 ELSE 1 END, ' . $db->quoteName('id'));
+				$home  = (int) $db->setQuery($query, 0, 1)->loadResult();
+
+				if ($home)
+				{
+					$db->setQuery($db->getQuery(true)->update($db->quoteName('#__template_styles'))
+						->set($db->quoteName('home') . ' = ' . $db->quote($style->home))->where($db->quoteName('id') . ' = ' . $home))->execute();
+				}
+			}
+
+			$db->setQuery($db->getQuery(true)->update($db->quoteName('#__menu'))->set($db->quoteName('template_style_id') . ' = 0')
+				->where($db->quoteName('template_style_id') . ' = ' . (int) $id))->execute();
+			$db->setQuery($db->getQuery(true)->delete($db->quoteName('#__template_styles'))
+				->where($db->quoteName('id') . ' = ' . (int) $id))->execute();
+			$count['styles']++;
+		}
+
+		self::saveRecord($db, null);
+		$this->app->setUserState('sampledata', null);
+
+		$message = JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_STEP_REMOVED', JText::_('PLG_SAMPLEDATA_BLOG_' . strtoupper($record['set']) . '_OVERVIEW_TITLE'),
+			$count['articles'], $count['categories'], $count['tags'], $count['menutypes'], $count['menuitems'], $count['modules'], $count['styles']);
+
+		return $kept ? $message . ' ' . JText::sprintf('PLG_SAMPLEDATA_BLOG_SET_STEP_KEPT', $kept) : $message;
 	}
 }

@@ -62,7 +62,8 @@ class PlgSampledataBlog extends JPlugin
 	 */
 	public function onSampledataGetOverview()
 	{
-		if (!Factory::getUser()->authorise('core.create', 'com_content'))
+		// Only for Super Users: a set replaces the one installed before and changes the site's template
+		if (!Factory::getUser()->authorise('core.admin'))
 		{
 			return;
 		}
@@ -162,6 +163,18 @@ class PlgSampledataBlog extends JPlugin
 	}
 
 	/**
+	 * Step 8 of a set.
+	 *
+	 * @return  array|void  The JSON response to the module
+	 *
+	 * @since   3.17.0
+	 */
+	public function onAjaxSampledataApplyStep8()
+	{
+		return $this->step(8);
+	}
+
+	/**
 	 * A set.
 	 *
 	 * @param   string  $name  The set
@@ -191,7 +204,8 @@ class PlgSampledataBlog extends JPlugin
 		$name = $this->app->input->get('type');
 
 		// From the Sample Data module only (com_ajax also runs plugins on the site)
-		if (!$this->app->isClient('administrator') || !Session::checkToken('get') || !in_array($name, self::SETS, true))
+		if (!$this->app->isClient('administrator') || !Session::checkToken('get') || !in_array($name, self::SETS, true)
+			|| !Factory::getUser()->authorise('core.admin'))
 		{
 			return;
 		}

@@ -24,6 +24,13 @@
 		const list = set.querySelector('.sampledata-messages');
 
 		if (step > steps) {
+			const container = set.closest('.sampledata-container');
+
+			// Installing another set now replaces this one
+			if (container) {
+				container.dataset.installed = button.dataset.title || '';
+			}
+
 			inProgress = false;
 			button.disabled = true;
 			button.classList.add('btn-success');
@@ -93,7 +100,11 @@
 			return;
 		}
 
-		if (!window.confirm(Joomla.JText._('MOD_SAMPLEDATA_CONFIRM_START'))) {
+		const container = set.closest('.sampledata-container');
+		const installed = container ? container.dataset.installed : '';
+		const question = installed ? Joomla.JText._('MOD_SAMPLEDATA_CONFIRM_REPLACE').replace('%s', installed) : Joomla.JText._('MOD_SAMPLEDATA_CONFIRM_START');
+
+		if (!window.confirm(question)) {
 			return;
 		}
 
