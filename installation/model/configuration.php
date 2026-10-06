@@ -70,7 +70,8 @@ class InstallationModelConfiguration extends JModelBase
 		$registry->set('sitename', $options->site_name);
 		$registry->set('editor', 'tinymce_latest');
 		$registry->set('captcha', '0');
-		$registry->set('list_limit', 20);
+		// 50 items per list page: 20 means a lot of paging through the managers
+		$registry->set('list_limit', 50);
 		$registry->set('access', 1);
 
 		// Debug settings.

@@ -43,6 +43,7 @@ Summary of changes:
 - New **News** sample data set, a complete news site for Hammond, with its images; the installer now offers just News and Blog, and both can also be added later from the Control Panel
 - TinyMCE 8, the current TinyMCE, as a new editor ("Editor - TinyMCE", the default for new sites); TinyMCE 4 stays as "Editor - TinyMCE (legacy)", and existing sites keep it until they switch in Global Configuration
 - New command line interface (`cli/joomla.php`) with the commands of the Joomla 4+ CLI and JSON output for scripts and AI agents, plus content management (articles, categories, modules, menus), dry runs, a health check and log viewers
+- One-click **Clean Cache** in the administrator's status bar for everyone with backend access; administrators also get **Clean Everything** (the main site cache, anything inside the /cache folder and temporary folders as defined in configuration.php) and **Global Check-in** from the same spot
 - AI assistants (e.g. Claude) can work with a site through the built-in MCP server, read-only unless you allow changes (see [AI Assistants (MCP)](#ai-assistants-mcp))
 - Closed two ways to take over a site through the installer before its folder is removed
 - New SQLite database driver (experimental), and a command to move existing sites to it and back
@@ -105,6 +106,7 @@ Summary of changes:
 - Content management from the command line: list, show, create, change, publish, trash and delete articles, categories, tags, modules and menu items, saved as the administrator saves them, acting as an account whose permissions apply (`--as`); `--dry-run` on every command which changes something; `database:optimize`; `extension:reinstall` (overwrites an extension's files with its original package, from its update site or a given file, and lists or removes files the package doesn't have, e.g. on a hacked site); `site:health`; `log:list`/`log:tail` and `actionlog:list`. Changes made from the command line are recorded in the User Actions Log
 - Template management from the command line: a template's positions, options and design tokens (`template:info`), its options, and its files (list, read, write, delete), with every change undoable, syntax checks for PHP, and full template backups and restores (`template:backup`, `template:restore`)
 - Hammond and Finch load `css/custom.css` when it exists: the place for a site's own CSS, never touched by updates
+- New sites list 50 items per page in the administrator's managers (Global Configuration's Default List Limit) instead of 20
 - New sites show the site's name after page titles ("Home - My Site" instead of "Home")
 - Clean Cache in the administrator's status bar for everyone with backend access, plus Clean Everything (cache, cache and temporary folders) and Global Check-in for administrators
 - Hammond and Finch print articles on A4 with just the logo and the article, without splitting paragraphs between pages
