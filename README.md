@@ -106,6 +106,7 @@ Summary of changes:
 - Template management from the command line: a template's positions, options and design tokens (`template:info`), its options, and its files (list, read, write, delete), with every change undoable, syntax checks for PHP, and full template backups and restores (`template:backup`, `template:restore`)
 - Hammond and Finch load `css/custom.css` when it exists: the place for a site's own CSS, never touched by updates
 - New sites show the site's name after page titles ("Home - My Site" instead of "Home")
+- Clean Cache in the administrator's status bar for everyone with backend access, plus Clean Everything (cache, cache and temporary folders) and Global Check-in for administrators
 - Hammond and Finch print articles on A4 with just the logo and the article, without splitting paragraphs between pages
 - Hammond and Finch: lean `index.php` files (the setup is in each template's helper), their own offline page, lazy images below the top of each page, and social links shown out of the box (`#` until set)
 - Built-in MCP server (`php cli/joomla.php mcp:serve`) for AI assistants, read-only by default. See [AI Assistants (MCP)](#ai-assistants-mcp)

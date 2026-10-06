@@ -366,6 +366,8 @@ class JoomlaInstallerScript
 			'3.17.0-2026-10-07.sql' => '3.17.0',
 			// Finch template
 			'3.17.0-2026-10-08.sql' => '3.17.0',
+			// Housekeeping module
+			'3.17.0-2026-10-09.sql' => '3.17.0',
 		);
 
 		foreach ($dataMigrationFiles as $file => $addedIn)
@@ -723,6 +725,7 @@ class JoomlaInstallerScript
 		),
 		'Other administrator modules' => array(
 			array('module', 'mod_feed', '', 1),
+			array('module', 'mod_housekeeping', '', 1),
 			array('module', 'mod_latest', '', 1),
 			array('module', 'mod_latestactions', '', 1),
 			array('module', 'mod_logged', '', 1),
@@ -801,6 +804,7 @@ class JoomlaInstallerScript
 	 */
 	protected $removableCoreExtensionMedia = array(
 		'component:0::com_finder'         => '/media/com_finder',
+		'module:1::mod_housekeeping'      => '/media/mod_housekeeping',
 		'module:1::mod_sampledata'        => '/media/mod_sampledata',
 		'plugin:0:installer:webinstaller' => '/media/plg_installer_webinstaller',
 		'plugin:0:editors:tinymce_latest' => '/media/editors/tinymce_latest',
@@ -843,6 +847,7 @@ class JoomlaInstallerScript
 	 * @since  3.16.0
 	 */
 	protected $stockAdministratorModules = array(
+		'mod_housekeeping'      => array('Housekeeping', 'status', 3, 1, 1, ''),
 		'mod_latest'            => array('Recently Added Articles', 'cpanel', 4, 1, 3, '{"count":"5","ordering":"c_dsc","catid":"","user_id":"0","layout":"_:default","moduleclass_sfx":"","cache":"0"}'),
 		'mod_latestactions'     => array('Latest Actions', 'cpanel', 0, 1, 6, '{}'),
 		'mod_logged'            => array('Logged-in Users', 'cpanel', 2, 1, 3, '{"count":"5","name":"1","layout":"_:default","moduleclass_sfx":"","cache":"0"}'),

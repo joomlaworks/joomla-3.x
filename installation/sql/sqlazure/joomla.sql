@@ -902,6 +902,7 @@ INSERT INTO "#__extensions" ("extension_id", "package_id", "name", "type", "elem
 (507, 0, 'isis', 'template', 'isis', '', 1, 1, 1, 0, '', '{"templateColor":"","logoFile":""}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (508, 0, 'hammond', 'template', 'hammond', '', 0, 1, 1, 0, '', '{"siteName":"","tagline":"","footerText":"","pagesMenu":"companymenu","social_facebook":"#","social_x":"#","social_instagram":"#","social_youtube":"#","social_linkedin":"#","social_rss":""}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (509, 0, 'finch', 'template', 'finch', '', 0, 1, 1, 0, '', '{"siteName":"","tagline":"","authorBio":"","footerText":"","social_x":"#","social_instagram":"#","social_facebook":"#","social_linkedin":"#","social_rss":""}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
+(510, 0, 'mod_housekeeping', 'module', 'mod_housekeeping', '', 1, 1, 1, 0, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (600, 802, 'English (en-GB)', 'language', 'en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (601, 802, 'English (en-GB)', 'language', 'en-GB', '', 1, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
@@ -2201,7 +2202,8 @@ INSERT INTO "#__modules" ("id", "asset_id", "title", "note", "content", "orderin
 (86, 53, 'Joomla Version', '', '', 1, 'footer', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_version', 3, 1, '{"format":"short","product":"1","layout":"_:default","moduleclass_sfx":"","cache":"0"}', 1, '*'),
 (87, 55, 'Sample Data', '', '', 0, 'cpanel', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_sampledata', 6, 1, '{}', 1, '*'),
 (88, 58, 'Latest Actions', '', '', 0, 'cpanel', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_latestactions', 6, 1, '{}', 1, '*'),
-(89, 59, 'Privacy Dashboard', '', '', 0, 'cpanel', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_privacy_dashboard', 6, 1, '{}', 1, '*');
+(89, 59, 'Privacy Dashboard', '', '', 0, 'cpanel', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_privacy_dashboard', 6, 1, '{}', 1, '*'),
+(90, 0, 'Housekeeping', '', '', 3, 'status', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_housekeeping', 1, 1, '', 1, '*');
 
 SET IDENTITY_INSERT "#__modules" OFF;
 
@@ -2243,7 +2245,8 @@ INSERT INTO "#__modules_menu" ("moduleid", "menuid") VALUES
 (86, 0),
 (87, 0),
 (88, 0),
-(89, 0);
+(89, 0),
+(90, 0);
 
 --
 -- Table structure for table `#__newsfeeds`
