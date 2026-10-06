@@ -98,7 +98,7 @@ $hasOptions = $this->params->get('search_phrases', 1) || $this->params->get('sea
 	</div>
 	<?php if ($this->pagination->pagesTotal > 1) : ?>
 	<nav class="pagination" aria-label="<?php echo JText::_('JLIB_HTML_PAGINATION'); ?>">
-		<?php echo $this->pagination->getPagesLinks(); ?>
+		<?php echo FinchHelper::pagination($this->pagination); ?>
 	</nav>
 	<?php endif; ?>
 	<?php endif; ?>

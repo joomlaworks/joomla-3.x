@@ -30,6 +30,6 @@ $items = array_map(array('FinchHelper', 'fromTagItem'), (array) $this->items);
 	<?php echo FinchHelper::postList($items, false); ?>
 
 	<?php if ($this->pagination->pagesTotal > 1) : ?>
-	<nav class="pagination" aria-label="<?php echo JText::_('JLIB_HTML_PAGINATION'); ?>"><?php echo $this->pagination->getPagesLinks(); ?></nav>
+	<nav class="pagination" aria-label="<?php echo JText::_('JLIB_HTML_PAGINATION'); ?>"><?php echo FinchHelper::pagination($this->pagination); ?></nav>
 	<?php endif; ?>
 </div>

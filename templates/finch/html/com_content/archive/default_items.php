@@ -15,5 +15,5 @@ require_once JPATH_THEMES . '/finch/helper.php';
 echo FinchHelper::postList((array) $this->items, false);
 ?>
 <?php if ($this->pagination->pagesTotal > 1) : ?>
-<nav class="pagination" aria-label="<?php echo JText::_('JLIB_HTML_PAGINATION'); ?>"><?php echo $this->pagination->getPagesLinks(); ?></nav>
+<nav class="pagination" aria-label="<?php echo JText::_('JLIB_HTML_PAGINATION'); ?>"><?php echo FinchHelper::pagination($this->pagination); ?></nav>
 <?php endif; ?>

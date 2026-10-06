@@ -400,4 +400,49 @@ abstract class HammondHelper
 			. '<div class="itemMeta">' . ($author !== '' ? '<span class="itemAuthor">' . static::e($author) . '</span>' : '') . static::date($item) . '</div>'
 			. '</div></article>';
 	}
+
+	/**
+	 * The page links of a list, from the pagination's data: getPagesLinks() would load Bootstrap's tooltips, and with them
+	 * jQuery, for the Start/Prev/Next/End links' titles.
+	 *
+	 * @param   JPagination  $pagination  The list's pagination
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public static function pagination($pagination)
+	{
+		$data  = $pagination->getData();
+		$items = array(array($data->start, 'pagination-start'), array($data->previous, 'pagination-prev'));
+
+		foreach ($data->pages as $page)
+		{
+			$items[] = array($page, '');
+		}
+
+		$items[] = array($data->next, 'pagination-next');
+		$items[] = array($data->end, 'pagination-end');
+		$html    = '<ul>';
+
+		foreach ($items as $entry)
+		{
+			list($item, $class) = $entry;
+
+			if ($item->link !== null)
+			{
+				$html .= '<li' . ($class ? ' class="' . $class . '"' : '') . '><a href="' . $item->link . '" class="pagenav">' . $item->text . '</a></li>';
+			}
+			elseif (!empty($item->active))
+			{
+				$html .= '<li class="' . trim($class . ' active') . '"><span class="pagenav" aria-current="page">' . $item->text . '</span></li>';
+			}
+			else
+			{
+				$html .= '<li class="' . trim($class . ' disabled') . '"><span class="pagenav">' . $item->text . '</span></li>';
+			}
+		}
+
+		return $html . '</ul>';
+	}
 }

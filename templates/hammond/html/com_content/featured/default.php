@@ -32,6 +32,6 @@ $first = $this->pagination->limitstart == 0;
 	<?php endif; ?>
 
 	<?php if ($this->pagination->pagesTotal > 1) : ?>
-	<nav class="pagination" aria-label="<?php echo JText::_('JLIB_HTML_PAGINATION'); ?>"><?php echo $this->pagination->getPagesLinks(); ?></nav>
+	<nav class="pagination" aria-label="<?php echo JText::_('JLIB_HTML_PAGINATION'); ?>"><?php echo HammondHelper::pagination($this->pagination); ?></nav>
 	<?php endif; ?>
 </div>

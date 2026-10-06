@@ -414,6 +414,20 @@ body.megaOpen {overflow:hidden;}
 .highlight {padding:0 2px;border-radius:3px;background:#fde68a;color:inherit;}
 .searchError {padding:18px 22px;border-radius:var(--radius);background:var(--c-paper);font-size:1.05rem;}
 
+/* All tags */
+.tagsFilter {margin-bottom:32px;}
+.tagsFilter .searchForm {max-width:none;}
+.tagsViewImage {margin-top:16px;border-radius:var(--radius);}
+.tagsIndex {display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,calc(50% - 8px)),1fr));gap:16px;margin:0;padding:0;list-style:none;}
+.tagsIndexItem {display:flex;flex-direction:column;gap:8px;height:100%;min-width:0;padding:18px;border:1px solid var(--c-line);border-radius:var(--radius);}
+.tagsIndexItem:hover {border-color:var(--c-ink);}
+.tagsIndexItem img {width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:calc(var(--radius) / 2);}
+.tagsIndexItem strong {display:block;font-size:clamp(1rem,4.2vw,1.2rem);font-weight:800;letter-spacing:-0.01em;overflow-wrap:break-word;}
+.tagsIndexItem strong .icon {margin-right:4px;color:var(--c-accent);}
+.tagsIndexText {font-size:.95rem;color:var(--c-muted);}
+.tagsIndexMeta {margin-top:auto;font-size:.8rem;font-weight:700;color:var(--c-muted);}
+.tagsView .noResults {padding:18px 22px;border-radius:var(--radius);background:var(--c-paper);font-size:1.05rem;}
+
 /* Pagination */
 .pagination {margin-top:40px;}
 .pagination ul {display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0;padding:0;list-style:none;}
