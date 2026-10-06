@@ -514,6 +514,52 @@ class JDatabaseDriverMysqlonsqlite extends JDatabaseDriverPdomysql
 	}
 
 	/**
+	 * Get the number of rows the last statement returned (or changed, for INSERT, UPDATE, REPLACE or DELETE).
+	 *
+	 * @param   PDOStatement  $cursor  An optional result set; its query must be known (the last one, or PHP 8.1+).
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.17.0
+	 */
+	public function getNumRows($cursor = null)
+	{
+		$this->connect();
+
+		$cursor = $cursor instanceof PDOStatement ? $cursor : $this->prepared;
+
+		if (!$cursor instanceof PDOStatement)
+		{
+			return 0;
+		}
+
+		// SQLite counts no rows for a SELECT, so lists counted this way (those grouping rows) would be empty: run it again and count
+		if ($cursor->columnCount() === 0)
+		{
+			return $cursor->rowCount();
+		}
+
+		$sql = $cursor === $this->prepared ? $this->replacePrefix((string) $this->sql) : (string) $cursor->queryString;
+
+		if ($sql === '')
+		{
+			return $cursor->rowCount();
+		}
+
+		$rows   = 0;
+		$result = $this->connection->query($sql);
+
+		while ($result->fetch(PDO::FETCH_NUM) !== false)
+		{
+			$rows++;
+		}
+
+		$result->closeCursor();
+
+		return $rows;
+	}
+
+	/**
 	 * Get the version of the emulated MySQL server, e.g. "8.0.38-mysql-on-sqlite-3.0.2".
 	 *
 	 * @return  string
