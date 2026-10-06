@@ -48,5 +48,5 @@ function modChrome_hammond($module, &$params, &$attribs)
 			. ($link ? '<a class="moduleMore" href="' . $link . '">' . JText::_('TPL_HAMMOND_MORE') . HammondHelper::icon('arrow-right') . '</a>' : '') . '</header>';
 	}
 
-	echo '<div class="moduleContent">' . $module->content . '</div></section>';
+	echo '<div class="moduleContent">' . HammondHelper::lazyImages($module->content) . '</div></section>';
 }

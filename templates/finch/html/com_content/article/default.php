@@ -21,7 +21,7 @@ if (FinchHelper::isPage()) : ?>
 <article class="pageView">
 	<h1 class="pageTitle"><?php echo FinchHelper::e($item->title); ?></h1>
 	<?php echo $item->event->beforeDisplayContent; ?>
-	<div class="postContent"><?php echo $item->text; ?></div>
+	<div class="postContent"><?php echo FinchHelper::lazyImages($item->text, true); ?></div>
 	<?php echo $item->event->afterDisplayContent; ?>
 </article>
 <?php return; endif;
@@ -67,7 +67,7 @@ $standfirst = !$params->get('show_intro', 1) ? FinchHelper::excerpt($item) : '';
 	<?php endif; ?>
 
 	<?php echo $item->event->beforeDisplayContent; ?>
-	<div class="postContent" itemprop="articleBody"><?php echo $item->text; ?></div>
+	<div class="postContent" itemprop="articleBody"><?php echo FinchHelper::lazyImages($item->text, $image['src'] === ''); ?></div>
 	<?php echo $item->event->afterDisplayContent; ?>
 
 	<footer class="postFooter">

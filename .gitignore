@@ -1,3 +1,8 @@
+### Local site files ###
+# The backups of the command line's template commands, and sites' own CSS for Hammond and Finch
+/backup/
+templates/*/css/custom.css
+
 ### IDEs ###
 .ftpconfig
 .idea

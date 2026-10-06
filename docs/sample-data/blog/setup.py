@@ -34,7 +34,7 @@ params = json.dumps({
     'tagline': 'Essays on cities, ideas and the way we live, by Ada Linden.',
     'authorBio': 'Ada Linden writes about cities, classrooms and the small technologies that shape everyday life. She has kept this notebook since 2016.',
     'footerText': 'Field Notes is a placeholder blog made for demonstrating Joomla. Ada Linden and everything written here are fictional.',
-    'social_x': '#', 'social_instagram': '#', 'social_facebook': '', 'social_linkedin': '', 'social_rss': '',
+    'social_x': '#', 'social_instagram': '#', 'social_facebook': '#', 'social_linkedin': '#', 'social_rss': '',
 })
 sql("UPDATE #__template_styles SET home = '0' WHERE client_id = 0",
     "UPDATE #__template_styles SET home = '1', title = 'Finch - Default', params = '%s' WHERE client_id = 0 AND template = 'finch'" % params.replace("'", "''"))

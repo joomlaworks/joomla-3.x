@@ -20,13 +20,13 @@ $first = $this->pagination->limitstart == 0;
 		<p class="listKicker"><?php echo JText::_('TPL_HAMMOND_LATEST'); ?></p>
 		<h1 class="listTitle"><?php echo HammondHelper::e($this->category->title); ?></h1>
 		<?php if ($this->params->get('show_description', 1) && $this->category->description) : ?>
-		<div class="listDescription"><?php echo JHtml::_('content.prepare', $this->category->description, '', 'com_content.category'); ?></div>
+		<div class="listDescription"><?php echo HammondHelper::lazyImages(JHtml::_('content.prepare', $this->category->description, '', 'com_content.category')); ?></div>
 		<?php endif; ?>
 	</header>
 
 	<div class="items layout-list">
 		<?php foreach ($items as $i => $item) : ?>
-		<?php echo HammondHelper::listItem($item, $first && !$i); ?>
+		<?php echo HammondHelper::listItem($item, $first && !$i, !$i); ?>
 		<?php endforeach; ?>
 	</div>
 

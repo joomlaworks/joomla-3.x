@@ -19,7 +19,7 @@ $items = array_merge((array) $this->lead_items, (array) $this->intro_items);
 		<p class="listKicker"><?php echo JText::_('TPL_FINCH_TOPIC'); ?></p>
 		<h1 class="listTitle"><?php echo FinchHelper::e($this->category->title); ?></h1>
 		<?php if ($this->params->get('show_description', 1) && $this->category->description) : ?>
-		<div class="listDescription"><?php echo JHtml::_('content.prepare', $this->category->description, '', 'com_content.category'); ?></div>
+		<div class="listDescription"><?php echo FinchHelper::lazyImages(JHtml::_('content.prepare', $this->category->description, '', 'com_content.category')); ?></div>
 		<?php endif; ?>
 	</header>
 

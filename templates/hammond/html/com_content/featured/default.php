@@ -26,7 +26,7 @@ $first = $this->pagination->limitstart == 0;
 	<?php if ($items) : ?>
 	<div class="items layout-list">
 		<?php foreach ($items as $i => $item) : ?>
-		<?php echo HammondHelper::listItem($item, $first && !$i); ?>
+		<?php echo HammondHelper::listItem($item, $first && !$i, !$i); ?>
 		<?php endforeach; ?>
 	</div>
 	<?php endif; ?>

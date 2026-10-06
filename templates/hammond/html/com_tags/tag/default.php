@@ -26,8 +26,8 @@ foreach ((array) $this->item as $tag)
 	</header>
 
 	<div class="items layout-list">
-		<?php foreach ((array) $this->items as $item) : ?>
-		<?php echo HammondHelper::listItem(HammondHelper::fromTagItem($item)); ?>
+		<?php foreach (array_values((array) $this->items) as $i => $item) : ?>
+		<?php echo HammondHelper::listItem(HammondHelper::fromTagItem($item), false, !$i); ?>
 		<?php endforeach; ?>
 	</div>
 

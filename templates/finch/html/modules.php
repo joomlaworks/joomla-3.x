@@ -37,5 +37,5 @@ function modChrome_finch($module, &$params, &$attribs)
 		echo '<h2 class="moduleTitle">' . FinchHelper::e($module->title) . '</h2>';
 	}
 
-	echo '<div class="moduleContent">' . $module->content . '</div></section>';
+	echo '<div class="moduleContent">' . FinchHelper::lazyImages($module->content) . '</div></section>';
 }

@@ -672,8 +672,8 @@ INSERT INTO `#__extensions` (`extension_id`, `package_id`, `name`, `type`, `elem
 (498, 0, 'plg_editors_tinymce_latest', 'plugin', 'tinymce_latest', 'editors', 0, 1, 1, 0, '', '{}', '', '', 0, '0000-00-00 00:00:00', 4, 0),
 (506, 0, 'protostar', 'template', 'protostar', '', 0, 1, 1, 0, '', '{"templateColor":"","logoFile":"","googleFont":"0","googleFontName":"Open+Sans","fluidContainer":"0"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (507, 0, 'isis', 'template', 'isis', '', 1, 1, 1, 0, '', '{"templateColor":"","logoFile":""}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(508, 0, 'hammond', 'template', 'hammond', '', 0, 1, 1, 0, '', '{"siteName":"","tagline":"","footerText":"","pagesMenu":"companymenu","social_facebook":"","social_x":"","social_instagram":"","social_youtube":"","social_linkedin":"","social_rss":""}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(509, 0, 'finch', 'template', 'finch', '', 0, 1, 1, 0, '', '{"siteName":"","tagline":"","authorBio":"","footerText":"","social_x":"","social_instagram":"","social_facebook":"","social_linkedin":"","social_rss":""}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(508, 0, 'hammond', 'template', 'hammond', '', 0, 1, 1, 0, '', '{"siteName":"","tagline":"","footerText":"","pagesMenu":"companymenu","social_facebook":"#","social_x":"#","social_instagram":"#","social_youtube":"#","social_linkedin":"#","social_rss":""}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(509, 0, 'finch', 'template', 'finch', '', 0, 1, 1, 0, '', '{"siteName":"","tagline":"","authorBio":"","footerText":"","social_x":"#","social_instagram":"#","social_facebook":"#","social_linkedin":"#","social_rss":""}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (600, 802, 'English (en-GB)', 'language', 'en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (601, 802, 'English (en-GB)', 'language', 'en-GB', '', 1, 1, 1, 1, '', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
@@ -1850,8 +1850,8 @@ CREATE TABLE IF NOT EXISTS `#__template_styles` (
 INSERT INTO `#__template_styles` (`id`, `template`, `client_id`, `home`, `title`, `params`) VALUES
 (7, 'protostar', 0, '0', 'protostar - Default', '{"templateColor":"","logoFile":"","googleFont":"0","googleFontName":"Open+Sans","fluidContainer":"0"}'),
 (8, 'isis', 1, '1', 'isis - Default', '{"templateColor":"","logoFile":""}'),
-(9, 'hammond', 0, '1', 'Hammond - Default', '{"siteName":"","tagline":"","footerText":"","pagesMenu":"companymenu","social_facebook":"","social_x":"","social_instagram":"","social_youtube":"","social_linkedin":"","social_rss":""}'),
-(10, 'finch', 0, '0', 'Finch - Default', '{"siteName":"","tagline":"","authorBio":"","footerText":"","social_x":"","social_instagram":"","social_facebook":"","social_linkedin":"","social_rss":""}');
+(9, 'hammond', 0, '1', 'Hammond - Default', '{"siteName":"","tagline":"","footerText":"","pagesMenu":"companymenu","social_facebook":"#","social_x":"#","social_instagram":"#","social_youtube":"#","social_linkedin":"#","social_rss":""}'),
+(10, 'finch', 0, '0', 'Finch - Default', '{"siteName":"","tagline":"","authorBio":"","footerText":"","social_x":"#","social_instagram":"#","social_facebook":"#","social_linkedin":"#","social_rss":""}');
 
 -- --------------------------------------------------------
 

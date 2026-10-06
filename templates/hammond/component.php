@@ -9,10 +9,10 @@
 
 defined('_JEXEC') or die;
 
+require_once __DIR__ . '/helper.php';
+
 /** @var JDocumentHtml $this */
-$this->setHtml5(true);
-$this->setGenerator('');
-$this->addStyleSheet($this->baseurl . '/templates/' . $this->template . '/css/template.css?t=' . date('Ymd_Hi', filemtime(__DIR__ . '/css/template.css')));
+HammondHelper::prepare($this, 'component');
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
@@ -20,7 +20,7 @@ $this->addStyleSheet($this->baseurl . '/templates/' . $this->template . '/css/te
 	<jdoc:include type="head" />
 </head>
 <body class="contentpane modal">
-	<?php echo file_get_contents(__DIR__ . '/images/icons.svg'); ?>
+	<?php echo HammondHelper::sprite(); ?>
 	<div class="container">
 		<jdoc:include type="message" />
 		<jdoc:include type="component" />

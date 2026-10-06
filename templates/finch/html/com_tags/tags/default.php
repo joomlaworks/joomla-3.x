@@ -30,7 +30,7 @@ $items       = array_filter((array) $this->items, function ($item) use ($levels)
 	<header class="listHeader">
 		<h1 class="listTitle"><?php echo $this->escape($params->get('page_heading')); ?></h1>
 		<?php if ($image) : ?>
-		<img class="tagsViewImage" src="<?php echo FinchHelper::e($image); ?>" alt="" loading="lazy" />
+		<img class="tagsViewImage" src="<?php echo FinchHelper::e($image); ?>" alt="" fetchpriority="high" />
 		<?php endif; ?>
 		<?php if (!empty($description)) : ?>
 		<div class="listDescription"><?php echo $description; ?></div>

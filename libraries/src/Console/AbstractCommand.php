@@ -241,6 +241,22 @@ abstract class AbstractCommand
 	}
 
 	/**
+	 * Whether a run writes code the server runs or reads as configuration (e.g. a template's PHP files), given its values:
+	 * the MCP server only allows such runs when started with --allow-template-code.
+	 *
+	 * @param   array|null  $options    The options of a run
+	 * @param   array|null  $arguments  The arguments of a run
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function writesCode(?array $options = null, ?array $arguments = null)
+	{
+		return false;
+	}
+
+	/**
 	 * Whether --dry-run is safe: the command supports it, or never changes anything.
 	 *
 	 * @return  boolean

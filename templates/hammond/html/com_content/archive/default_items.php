@@ -14,8 +14,8 @@ require_once JPATH_THEMES . '/hammond/helper.php';
 /** @var ContentViewArchive $this */
 ?>
 <div class="items layout-list">
-	<?php foreach ($this->items as $item) : ?>
-	<?php echo HammondHelper::listItem($item); ?>
+	<?php foreach (array_values($this->items) as $i => $item) : ?>
+	<?php echo HammondHelper::listItem($item, false, !$i); ?>
 	<?php endforeach; ?>
 </div>
 <?php if ($this->pagination->pagesTotal > 1) : ?>

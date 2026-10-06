@@ -43,7 +43,8 @@ class McpServeCommand extends AbstractCommand
 		. 'nothing, and dry runs of the others, so an assistant can look and plan but not change. --allow-write offers every command; --allow and '
 		. '--deny narrow the commands down (e.g. --allow="article:*,category:*"), and --as makes the content commands act as that account, '
 		. 'whose permissions then apply. Changes are recorded in the User Actions Log as made through MCP. Options which read files on the '
-		. 'server (--text-file etc.) or reveal secrets (--show-secrets) aren\'t offered.';
+		. 'server (--text-file etc.) or reveal secrets (--show-secrets) aren\'t offered. Writing a template\'s code (PHP, XML and dot files, '
+		. 'or restoring a template backup) also needs --allow-template-code; its CSS, JavaScript and images only need --allow-write.';
 
 	/**
 	 * Commands never offered: this one, and those for people (help, list) or internal use
@@ -76,6 +77,14 @@ class McpServeCommand extends AbstractCommand
 	private $allowWrite = false;
 
 	/**
+	 * Allow writing template code (PHP, XML, dot files): code which then runs on the server
+	 *
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	private $allowCode = false;
+
+	/**
 	 * The account the content commands act as, when the server sets it
 	 *
 	 * @var    string
@@ -91,6 +100,8 @@ class McpServeCommand extends AbstractCommand
 	protected function configure()
 	{
 		$this->addOption('allow-write', null, self::OPTION_NONE, 'Offer the commands which change the site too (by default only reading and dry runs)');
+		$this->addOption('allow-template-code', null, self::OPTION_NONE, 'With --allow-write: also allow writing templates\' PHP, XML and dot files, '
+			. 'and restoring template backups (code which runs on the server)');
 		$this->addOption('allow', null, self::OPTION_REQUIRED, 'Only these commands, separated by commas; wildcards allowed (e.g. "article:*,site:*")');
 		$this->addOption('deny', null, self::OPTION_REQUIRED, 'Never these commands, separated by commas; wildcards allowed (e.g. "database:*,core:update")');
 		$this->addOption('as', null, self::OPTION_REQUIRED, 'Make the content commands act as this account (its permissions apply), whatever the assistant asks');
@@ -106,6 +117,7 @@ class McpServeCommand extends AbstractCommand
 	protected function doExecute(CommandIO $io)
 	{
 		$this->allowWrite = (bool) $io->getOption('allow-write');
+		$this->allowCode  = $this->allowWrite && $io->getOption('allow-template-code');
 		$this->actAs      = (string) $io->getOption('as');
 
 		$allow = array_filter(array_map('trim', explode(',', (string) $io->getOption('allow'))), 'strlen');
@@ -263,6 +275,11 @@ class McpServeCommand extends AbstractCommand
 			$text .= 'Content is changed as the user "' . $this->actAs . '", whose permissions apply. ';
 		}
 
+		$text .= 'Templates: template_info shows a style\'s positions (for module_create), options and CSS design tokens. Put the site\'s own '
+			. 'CSS in the file the template loads for it (css/custom.css in Hammond and Finch), which updates never touch, and run '
+			. 'template_backup before changing a template\'s files. '
+			. ($this->allowCode ? '' : 'Writing a template\'s PHP, XML or dot files is not allowed by this server (it needs --allow-template-code). ');
+
 		return trim($text);
 	}
 
@@ -322,7 +339,7 @@ class McpServeCommand extends AbstractCommand
 				. ($this->allowWrite ? '' : '. Required: this server is read-only'));
 		}
 
-		$destructive = (bool) preg_match('/(delete|remove|trash|convert|import|reinstall|core:update$|reset-password|block$)/', $command->getName());
+		$destructive = (bool) preg_match('/(delete|remove|trash|convert|import|reinstall|restore|core:update$|reset-password|block$)/', $command->getName());
 
 		return array(
 			'name'        => $name,
@@ -431,6 +448,13 @@ class McpServeCommand extends AbstractCommand
 		{
 			return $this->toolError($id, sprintf('This server is read-only, so %s only runs with "dry_run": true. The site\'s administrator can '
 				. 'start the server with --allow-write to allow changes.', $command->getName()));
+		}
+
+		if (!$this->allowCode && empty($options['dry-run']) && $command->writesCode($fullOptions, $arguments))
+		{
+			return $this->toolError($id, sprintf('This server does not write template code (PHP, XML and dot files, or a restore), so %s only runs '
+				. 'with "dry_run": true here. The site\'s administrator can start the server with --allow-template-code to allow it; CSS, '
+				. 'JavaScript and images can be changed with --allow-write alone.', $command->getName()));
 		}
 
 		$stdout = fopen('php://memory', 'w+');

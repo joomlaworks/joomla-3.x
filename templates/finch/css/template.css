@@ -583,3 +583,8 @@ dl.stats-module dd {margin:0;overflow-wrap:anywhere;}
 .errorPage {display:grid;place-items:center;min-height:100vh;text-align:center;}
 .errorCode {margin:48px 0 0;font-family:var(--fs);font-size:7rem;font-weight:700;line-height:1;color:var(--c-accent);}
 .errorPage .pageTitle {border:0;margin-bottom:24px;font-size:2rem;}
+.offlineTitle {margin:0 0 8px;font-size:inherit;}
+.offlineImage {display:block;max-width:100%;height:auto;margin:24px auto 0;border-radius:var(--radius);}
+.offlineMessage {margin-bottom:28px;color:var(--c-muted);}
+.offlineLogin {width:min(360px,100%);margin:0 auto 48px;text-align:left;}
+.offlineLogin .btn {width:100%;justify-content:center;}

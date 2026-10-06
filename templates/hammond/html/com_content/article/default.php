@@ -30,7 +30,7 @@ $share  = array(
 if (HammondHelper::isPage()) : ?>
 <article class="pageView">
 	<h1 class="pageTitle"><?php echo HammondHelper::e($item->title); ?></h1>
-	<div class="itemFullText"><?php echo $item->text; ?></div>
+	<div class="itemFullText"><?php echo HammondHelper::lazyImages($item->text, true); ?></div>
 </article>
 <?php return; endif; ?>
 <article class="articleView" itemscope itemtype="https://schema.org/NewsArticle">
@@ -66,7 +66,7 @@ if (HammondHelper::isPage()) : ?>
 	<?php endif; ?>
 
 	<?php echo $item->event->beforeDisplayContent; ?>
-	<div class="itemFullText" itemprop="articleBody"><?php echo $item->text; ?></div>
+	<div class="itemFullText" itemprop="articleBody"><?php echo HammondHelper::lazyImages($item->text, $image['src'] === ''); ?></div>
 	<?php echo $item->event->afterDisplayContent; ?>
 
 	<?php if (!empty($item->tags->itemTags)) : ?>

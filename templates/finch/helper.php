@@ -20,6 +20,207 @@ JLoader::register('ContentHelperRoute', JPATH_SITE . '/components/com_content/he
 abstract class FinchHelper
 {
 	/**
+	 * The template's parameters
+	 *
+	 * @var    \Joomla\Registry\Registry
+	 * @since  3.17.0
+	 */
+	protected static $params;
+
+	/**
+	 * @return  \Joomla\Registry\Registry
+	 *
+	 * @since   3.17.0
+	 */
+	public static function params()
+	{
+		if (static::$params === null)
+		{
+			static::$params = JFactory::getApplication()->getTemplate(true)->params;
+		}
+
+		return static::$params;
+	}
+
+	/**
+	 * Prepare a page of the template and tell its markup what it needs to know. Sets up the document's head (HTML5, meta
+	 * tags, the stylesheets, the icon) for index.php, component.php (print and popup views) and offline.php alike; for
+	 * index.php also the script and the kind of page.
+	 *
+	 * @param   JDocumentHtml  $document  The document ($this in the template's files)
+	 * @param   string         $layout    index, component or offline
+	 *
+	 * @return  stdClass  params, siteName; for index also isHome, isPost, isPage, isList, hasSidebar, hasSearch, bodyClass
+	 *
+	 * @since   3.17.0
+	 */
+	public static function prepare($document, $layout = 'index')
+	{
+		$base           = JUri::root(true) . '/templates/' . basename(__DIR__);
+		$page           = new stdClass;
+		$page->params   = static::params();
+		$page->siteName = static::siteName();
+
+		$document->setHtml5(true);
+		$document->setGenerator('');
+		$document->setMetaData('viewport', 'width=device-width, initial-scale=1');
+		$document->setMetaData('theme-color', '#fbf8f3');
+
+		foreach (static::stylesheets() as $stylesheet)
+		{
+			$document->addStyleSheet($stylesheet);
+		}
+
+		$document->addHeadLink($base . '/images/favicon.svg', 'icon', 'rel', array('type' => 'image/svg+xml'));
+
+		if ($layout !== 'index')
+		{
+			return $page;
+		}
+
+		$document->addScript($base . '/js/template.js?t=' . date('Ymd_Hi', filemtime(__DIR__ . '/js/template.js')), array(), array('defer' => true));
+
+		$app    = JFactory::getApplication();
+		$input  = $app->input;
+		$active = $app->getMenu()->getActive();
+		$option = $input->getCmd('option', '');
+		$view   = $input->getCmd('view', '');
+
+		// Joomla makes the home item active on pages without a menu item of their own (tags, search): the home page is its own link
+		$home             = $active ? $active->query : array();
+		$page->isHome     = $active && $active->home && (isset($home['option']) ? $home['option'] : '') === $option
+			&& (isset($home['view']) ? $home['view'] : '') === $view && (!isset($home['id']) || (int) $home['id'] === $input->getInt('id'));
+		$page->isPage     = static::isPage();
+		$page->isPost     = $option === 'com_content' && $view === 'article' && !$page->isPage;
+		$page->isList     = in_array($option . '.' . $view, array('com_content.featured', 'com_content.category', 'com_content.archive', 'com_tags.tag', 'com_search.search'), true);
+		$page->hasSidebar = $page->isList && $document->countModules('sidebar');
+		$page->hasSearch  = (bool) $document->countModules('search');
+		$page->bodyClass  = implode(' ', array_filter(array(
+			'site', $page->isHome ? 'isHome' : '', $page->isPost ? 'isPost' : '', $page->isPage ? 'isPage' : '', $page->isList ? 'isList' : '',
+			$page->hasSidebar ? 'hasSidebar' : '', 'option-' . str_replace('com_', '', $option), 'view-' . $view,
+			$active ? 'itemid-' . (int) $active->id : '', $active ? trim((string) $active->getParams()->get('pageclass_sfx')) : '',
+		)));
+
+		return $page;
+	}
+
+	/**
+	 * The site's name as the template shows it: the "Name in the Logo" option, else the site's name.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public static function siteName()
+	{
+		return static::params()->get('siteName') ?: JFactory::getApplication()->get('sitename');
+	}
+
+	/**
+	 * The links to the blog's social profiles (the template's options), and its feed.
+	 *
+	 * @param   string  $class  Classes of the list
+	 *
+	 * @return  string  Empty when there are none
+	 *
+	 * @since   3.17.0
+	 */
+	public static function socialLinks($class = 'socialLinks')
+	{
+		$items = '';
+
+		foreach (array('x' => 'X', 'instagram' => 'Instagram', 'facebook' => 'Facebook', 'linkedin' => 'LinkedIn', 'rss' => 'RSS') as $network => $label)
+		{
+			$url = trim((string) static::params()->get('social_' . $network, ''));
+
+			// The site's feed unless another one is set
+			if ($network === 'rss' && $url === '')
+			{
+				$url = JUri::base(true) . '/index.php?format=feed&type=rss';
+			}
+
+			if ($url !== '')
+			{
+				$items .= '<li><a href="' . static::e($url) . '" aria-label="' . static::e($label) . '"' . ($network !== 'rss' ? ' rel="noopener" target="_blank"' : '')
+					. '>' . static::icon($network) . '</a></li>';
+			}
+		}
+
+		return $items === '' ? '' : '<ul class="' . $class . '">' . $items . '</ul>';
+	}
+
+	/**
+	 * The template's SVG icons, once at the top of the page; icon() refers to them.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public static function sprite()
+	{
+		return (string) file_get_contents(__DIR__ . '/images/icons.svg');
+	}
+
+	/**
+	 * The offline page's message, as Global Configuration says: its own text, the language's standard one, or none.
+	 *
+	 * @return  string  HTML (Global Configuration's text is the administrator's)
+	 *
+	 * @since   3.17.0
+	 */
+	public static function offlineMessage()
+	{
+		$app  = JFactory::getApplication();
+		$mode = (int) $app->get('display_offline_message', 1);
+
+		if ($mode === 1 && trim((string) $app->get('offline_message')) !== '')
+		{
+			return (string) $app->get('offline_message');
+		}
+
+		return $mode === 2 ? JText::_('JOFFLINE_MESSAGE') : '';
+	}
+
+	/**
+	 * The offline page's image (Global Configuration), when the file exists.
+	 *
+	 * @return  string  Its URL, or empty
+	 *
+	 * @since   3.17.0
+	 */
+	public static function offlineImage()
+	{
+		$image = preg_replace('/#.*$/', '', (string) JFactory::getApplication()->get('offline_image'));
+
+		return $image !== '' && is_file(JPATH_ROOT . '/' . ltrim($image, '/')) ? JUri::root(true) . '/' . ltrim($image, '/') : '';
+	}
+
+	/**
+	 * The template's stylesheets: css/template.css, then css/custom.css when the site has one. custom.css is the site's own CSS:
+	 * it isn't one of the template's files, so no update (Joomla Update, an upload of the files or the command line) touches it.
+	 * Each URL carries the file's modification time, so browsers fetch a changed file.
+	 *
+	 * @return  string[]
+	 *
+	 * @since   3.17.0
+	 */
+	public static function stylesheets()
+	{
+		$base = JUri::root(true) . '/templates/' . basename(__DIR__) . '/css/';
+		$urls = array();
+
+		foreach (array('template.css', 'custom.css') as $file)
+		{
+			if (is_file(__DIR__ . '/css/' . $file))
+			{
+				$urls[] = $base . $file . '?t=' . date('Ymd_Hi', filemtime(__DIR__ . '/css/' . $file));
+			}
+		}
+
+		return $urls;
+	}
+
+	/**
 	 * Escape for HTML.
 	 *
 	 * @param   string  $value  The text
@@ -341,20 +542,21 @@ abstract class FinchHelper
 	/**
 	 * A post as a card of a list: image, category, title, excerpt, date and reading time.
 	 *
-	 * @param   object   $item  The post
-	 * @param   boolean  $lead  The first, large post
+	 * @param   object   $item   The post
+	 * @param   boolean  $lead   The first, large post
+	 * @param   boolean  $eager  Load its image at once (the top of the page; lazily otherwise)
 	 *
 	 * @return  string
 	 *
 	 * @since   3.17.0
 	 */
-	public static function card($item, $lead = false)
+	public static function card($item, $lead = false, $eager = false)
 	{
 		$link    = static::link($item);
 		$minutes = isset($item->fulltext) || isset($item->text) ? JText::sprintf('TPL_FINCH_READING_TIME', static::readingTime($item)) : '';
 
 		return '<article class="post' . ($lead ? ' postLead' : '') . '">'
-			. static::figure($item, $link, 'postImage', !$lead)
+			. static::figure($item, $link, 'postImage', !$lead && !$eager)
 			. '<div class="postBody">' . static::category($item)
 			. '<h' . ($lead ? 2 : 3) . ' class="postTitle"><a href="' . $link . '">' . static::e($item->title) . '</a></h' . ($lead ? 2 : 3) . '>'
 			. '<p class="postExcerpt">' . static::excerpt($item, $lead ? 300 : 180) . '</p>'
@@ -363,7 +565,8 @@ abstract class FinchHelper
 	}
 
 	/**
-	 * A list of posts: the first one large (on the first page of a list), the others as cards in a grid.
+	 * A list of posts: the first one large (on the first page of a list), the others as cards in a grid. The images at the top
+	 * (the large post, else the grid's first row) load at once, the others lazily.
 	 *
 	 * @param   object[]  $items  The posts
 	 * @param   boolean   $lead   Show the first post large
@@ -386,15 +589,43 @@ abstract class FinchHelper
 		{
 			$html .= '<div class="postGrid">';
 
-			foreach ($items as $item)
+			foreach ($items as $i => $item)
 			{
-				$html .= static::card($item);
+				$html .= static::card($item, false, !$lead && $i < 2);
 			}
 
 			$html .= '</div>';
 		}
 
 		return '<div class="postList">' . $html . '</div>';
+	}
+
+	/**
+	 * Load the images and embedded frames of some HTML (an article's text, a module) only when they come near the screen:
+	 * loading="lazy" for those which don't say how to load (an image with fetchpriority is meant to load at once).
+	 *
+	 * @param   string   $html        The HTML
+	 * @param   boolean  $eagerFirst  Leave the first image as it is (when it's the top of the page)
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public static function lazyImages($html, $eagerFirst = false)
+	{
+		return (string) preg_replace_callback('/<(img|iframe)\b(?![^>]*\b(?:loading|fetchpriority)=)([^>]*)>/i', function ($match) use (&$eagerFirst)
+		{
+			$image = strtolower($match[1]) === 'img';
+
+			if ($image && $eagerFirst)
+			{
+				$eagerFirst = false;
+
+				return $match[0];
+			}
+
+			return '<' . $match[1] . ' loading="lazy"' . ($image ? ' decoding="async"' : '') . $match[2] . '>';
+		}, (string) $html);
 	}
 
 	/**
