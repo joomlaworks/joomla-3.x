@@ -692,6 +692,7 @@ class Zip implements ExtractableInterface
 		$absoluteRoot = Path::clean(Path::resolve($destination));
 		$absolutePath = Path::clean(Path::resolve($path));
 
-		return strpos($absolutePath, $absoluteRoot) === 0;
+		// Joomla 3.x UTD patch: with a separator, so "/site/tmp_evil" isn't below "/site/tmp"
+		return $absolutePath === $absoluteRoot || strpos($absolutePath, rtrim($absoluteRoot, '/\\') . DIRECTORY_SEPARATOR) === 0;
 	}
 }

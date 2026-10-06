@@ -228,6 +228,9 @@ class JDatabaseDriverMysqlonsqlite extends JDatabaseDriverPdomysql
 			return 'extension';
 		}
 
+		// The folder may have been created or removed by an earlier request: no cached answers
+		clearstatcache(true);
+
 		$root   = realpath(JPATH_ROOT);
 		$folder = realpath(dirname($path));
 
@@ -241,17 +244,30 @@ class JDatabaseDriverMysqlonsqlite extends JDatabaseDriverPdomysql
 			return 'root';
 		}
 
-		// Only the protection files and database files (with SQLite's -wal, -shm and -journal files) may be there
-		foreach (new DirectoryIterator($folder) as $entry)
+		if (!is_dir($folder))
 		{
-			$name = $entry->getFilename();
+			return '';
+		}
 
-			if ($entry->isDot() || in_array($name, array('.htaccess', 'web.config', 'index.html'), true)
-				|| ($entry->isFile() && preg_match('#\.(sqlite3?|db3?)(-wal|-shm|-journal)?$#i', $name)))
+		// Only the protection files and database files (with SQLite's -wal, -shm and -journal files) may be there
+		try
+		{
+			foreach (new DirectoryIterator($folder) as $entry)
 			{
-				continue;
-			}
+				$name = $entry->getFilename();
 
+				if ($entry->isDot() || in_array($name, array('.htaccess', 'web.config', 'index.html'), true)
+					|| ($entry->isFile() && preg_match('#\.(sqlite3?|db3?)(-wal|-shm|-journal)?$#i', $name)))
+				{
+					continue;
+				}
+
+				return 'folder';
+			}
+		}
+		catch (UnexpectedValueException $e)
+		{
+			// A folder which can't be read can't be checked
 			return 'folder';
 		}
 

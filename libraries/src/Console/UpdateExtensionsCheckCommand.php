@@ -38,13 +38,24 @@ class UpdateExtensionsCheckCommand extends AbstractCommand
 	 * @since  3.17.0
 	 */
 	protected $help = 'Clears the cached update information, fetches every enabled update site and lists the extensions with an update available. '
-		. 'With --use-cache, update sites checked within the "Updates Caching" time of the Installer options are not fetched again, which suits frequent cron jobs.';
+		. 'With --use-cache, update sites checked within the "Updates Caching" time of the Installer options are not fetched again, which suits frequent cron jobs. '
+		. 'With --dry-run, nothing is fetched and the updates found at the last check are listed.';
 
 	/**
+	 * It replaces the cached update information, so it isn't read-only
+	 *
 	 * @var    boolean
 	 * @since  3.17.0
 	 */
-	protected $readOnly = true;
+	protected $dryRun = true;
+
+	/**
+	 * Routine, often run by cron jobs (cli/update_cron.php)
+	 *
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $logged = false;
 
 	/**
 	 * @return  void
@@ -75,12 +86,22 @@ class UpdateExtensionsCheckCommand extends AbstractCommand
 		{
 			$cacheTimeout = 3600 * ComponentHelper::getParams('com_installer')->get('cachetimeout', 6, 'int');
 		}
+
+		if ($io->isDryRun())
+		{
+			$io->plan($cacheTimeout ? 'Fetch the update sites not checked recently and add their updates to the cached update information'
+				: 'Clear the cached update information and fetch every enabled update site', array('action' => 'refresh'));
+			$io->text('As found at the last check:');
+		}
 		else
 		{
-			$model->purge();
-		}
+			if (!$cacheTimeout)
+			{
+				$model->purge();
+			}
 
-		Updater::getInstance()->findUpdates(0, $cacheTimeout);
+			Updater::getInstance()->findUpdates(0, $cacheTimeout);
+		}
 
 		$db    = Factory::getDbo();
 		$query = $db->getQuery(true)

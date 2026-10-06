@@ -42,9 +42,11 @@ class McpServeCommand extends AbstractCommand
 		. '"php /path/to/site/cli/joomla.php mcp:serve" (over SSH for a remote site). It\'s read-only by default: only commands which change '
 		. 'nothing, and dry runs of the others, so an assistant can look and plan but not change. --allow-write offers every command; --allow and '
 		. '--deny narrow the commands down (e.g. --allow="article:*,category:*"), and --as makes the content commands act as that account, '
-		. 'whose permissions then apply. Changes are recorded in the User Actions Log as made through MCP. Options which read files on the '
-		. 'server (--text-file etc.) or reveal secrets (--show-secrets) aren\'t offered. Writing a template\'s code (PHP, XML and dot files, '
-		. 'or restoring a template backup) also needs --allow-template-code; its CSS, JavaScript and images only need --allow-write.';
+		. 'whose permissions then apply. Changes are recorded in the User Actions Log as made through MCP. Options which name files or '
+		. 'folders on the server (--text-file, --folder, --path of a package etc.) or reveal secrets (--show-secrets) aren\'t offered; database '
+		. 'exports and imports use a folder of the site\'s protected backup folder. Writing code also needs --allow-code: installing or '
+		. 'updating extensions or Joomla, and a template\'s PHP, XML and dot files (or restoring a template backup); a template\'s CSS, '
+		. 'JavaScript and images only need --allow-write.';
 
 	/**
 	 * Commands never offered: this one, and those for people (help, list) or internal use
@@ -77,7 +79,7 @@ class McpServeCommand extends AbstractCommand
 	private $allowWrite = false;
 
 	/**
-	 * Allow writing template code (PHP, XML, dot files): code which then runs on the server
+	 * Allow writing code which then runs on the server: extension and core packages, templates' PHP, XML and dot files
 	 *
 	 * @var    boolean
 	 * @since  3.17.0
@@ -100,8 +102,8 @@ class McpServeCommand extends AbstractCommand
 	protected function configure()
 	{
 		$this->addOption('allow-write', null, self::OPTION_NONE, 'Offer the commands which change the site too (by default only reading and dry runs)');
-		$this->addOption('allow-template-code', null, self::OPTION_NONE, 'With --allow-write: also allow writing templates\' PHP, XML and dot files, '
-			. 'and restoring template backups (code which runs on the server)');
+		$this->addOption('allow-code', null, self::OPTION_NONE, 'With --allow-write: also allow writing code which runs on the server (installing '
+			. 'or updating extensions or Joomla, templates\' PHP, XML and dot files, restoring template backups)');
 		$this->addOption('allow', null, self::OPTION_REQUIRED, 'Only these commands, separated by commas; wildcards allowed (e.g. "article:*,site:*")');
 		$this->addOption('deny', null, self::OPTION_REQUIRED, 'Never these commands, separated by commas; wildcards allowed (e.g. "database:*,core:update")');
 		$this->addOption('as', null, self::OPTION_REQUIRED, 'Make the content commands act as this account (its permissions apply), whatever the assistant asks');
@@ -117,7 +119,7 @@ class McpServeCommand extends AbstractCommand
 	protected function doExecute(CommandIO $io)
 	{
 		$this->allowWrite = (bool) $io->getOption('allow-write');
-		$this->allowCode  = $this->allowWrite && $io->getOption('allow-template-code');
+		$this->allowCode  = $this->allowWrite && $io->getOption('allow-code');
 		$this->actAs      = (string) $io->getOption('as');
 
 		$allow = array_filter(array_map('trim', explode(',', (string) $io->getOption('allow'))), 'strlen');
@@ -278,7 +280,8 @@ class McpServeCommand extends AbstractCommand
 		$text .= 'Templates: template_info shows a style\'s positions (for module_create), options and CSS design tokens. Put the site\'s own '
 			. 'CSS in the file the template loads for it (css/custom.css in Hammond and Finch), which updates never touch, and run '
 			. 'template_backup before changing a template\'s files. '
-			. ($this->allowCode ? '' : 'Writing a template\'s PHP, XML or dot files is not allowed by this server (it needs --allow-template-code). ');
+			. ($this->allowCode ? '' : 'Writing code (installing or updating extensions or Joomla, a template\'s PHP, XML or dot files) is not allowed by '
+			. 'this server (it needs --allow-code). ');
 
 		return trim($text);
 	}
@@ -314,7 +317,7 @@ class McpServeCommand extends AbstractCommand
 
 		foreach ($command->getOptions() as $option => $definition)
 		{
-			if (!$this->offersOption($option))
+			if (!$this->offersOption($command, $option))
 			{
 				continue;
 			}
@@ -362,18 +365,19 @@ class McpServeCommand extends AbstractCommand
 	}
 
 	/**
-	 * Whether an option is offered to the assistant: not the global ones, nor those reading files on the server or revealing secrets,
-	 * nor --as when the server sets the account.
+	 * Whether an option is offered to the assistant: not those naming files or folders on the server (the command's
+	 * getServerPathOptions()) or revealing secrets, nor --as when the server sets the account.
 	 *
-	 * @param   string  $option  The option name
+	 * @param   AbstractCommand  $command  The command
+	 * @param   string           $option   The option name
 	 *
 	 * @return  boolean
 	 *
 	 * @since   3.17.0
 	 */
-	private function offersOption($option)
+	private function offersOption(AbstractCommand $command, $option)
 	{
-		return substr($option, -5) !== '-file' && $option !== 'show-secrets' && !($option === 'as' && $this->actAs !== '');
+		return !in_array($option, $command->getServerPathOptions(), true) && $option !== 'show-secrets' && !($option === 'as' && $this->actAs !== '');
 	}
 
 	/**
@@ -418,7 +422,7 @@ class McpServeCommand extends AbstractCommand
 				continue;
 			}
 
-			if (isset($defined[$key]) && $this->offersOption($key))
+			if (isset($defined[$key]) && $this->offersOption($command, $key))
 			{
 				$options[$key] = $defined[$key][1] === self::OPTION_NONE ? (bool) $value : (is_scalar($value) ? (is_bool($value) ? ($value ? 'yes' : 'no') : (string) $value)
 					: json_encode($value));
@@ -452,9 +456,9 @@ class McpServeCommand extends AbstractCommand
 
 		if (!$this->allowCode && empty($options['dry-run']) && $command->writesCode($fullOptions, $arguments))
 		{
-			return $this->toolError($id, sprintf('This server does not write template code (PHP, XML and dot files, or a restore), so %s only runs '
-				. 'with "dry_run": true here. The site\'s administrator can start the server with --allow-template-code to allow it; CSS, '
-				. 'JavaScript and images can be changed with --allow-write alone.', $command->getName()));
+			return $this->toolError($id, sprintf('This server does not write code (extension or Joomla packages, a template\'s PHP, XML and dot '
+				. 'files, or a template restore), so %s only runs with "dry_run": true here. The site\'s administrator can start the server with '
+				. '--allow-code to allow it; a template\'s CSS, JavaScript and images can be changed with --allow-write alone.', $command->getName()));
 		}
 
 		$stdout = fopen('php://memory', 'w+');

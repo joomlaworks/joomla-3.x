@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-require_once JPATH_THEMES . '/finch/helper.php';
+require_once dirname(__DIR__, 3) . '/helper.php';
 
 /** @var ContentViewArchive $this */
 echo FinchHelper::postList((array) $this->items, false);

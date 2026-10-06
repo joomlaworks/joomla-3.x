@@ -164,7 +164,9 @@ abstract class HammondHelper
 				$url = JUri::base(true) . '/index.php?format=feed&type=rss';
 			}
 
-			if ($url !== '')
+			// Web addresses (or paths) only: never javascript: and the like, however it's spelt (browsers ignore tabs and newlines in it)
+			if ($url !== '' && (!preg_match('/^[a-z][a-z0-9+.\-]*:/i', preg_replace('/[\x00-\x20]+/', '', $url), $scheme)
+				|| preg_match('/^https?:$/i', $scheme[0])))
 			{
 				$html .= '<li><a href="' . static::e($url) . '" aria-label="' . static::e($label) . '"' . ($network !== 'rss' ? ' rel="noopener" target="_blank"' : '')
 					. '>' . static::icon($network) . '</a></li>';
@@ -606,8 +608,22 @@ abstract class HammondHelper
 	}
 
 	/**
+	 * An HTML attribute as browsers read it in a tag: its name (group 1), then optionally "=" and a double-quoted,
+	 * single-quoted or unquoted value
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	const HTML_ATTRIBUTE = '([^\t\n\f\r \/>][^\t\n\f\r \/>=]*)(?>[\t\n\f\r ]*=[\t\n\f\r ]*(?>"[^"]*"|\'[^\']*\'|[^\t\n\f\r >]+)?)?';
+
+	/**
 	 * Load the images and embedded frames of some HTML (an article's text, a module) only when they come near the screen:
-	 * loading="lazy" for those which don't say how to load (an image with fetchpriority is meant to load at once).
+	 * loading=lazy for those which don't say how to load (an image with fetchpriority is meant to load at once).
+	 *
+	 * The HTML has been filtered already, so this must never change what it means: it reads the tags from the start, each
+	 * whole (a quoted attribute value may hold "<" and ">", e.g. an "<img" inside a title), leaves comments and the content
+	 * of the elements browsers don't read as HTML alone (script, style, iframe, textarea...), stops at the first tag it
+	 * can't read, and adds its attributes without quotes, so that even a misread could never close an attribute value.
 	 *
 	 * @param   string   $html        The HTML
 	 * @param   boolean  $eagerFirst  Leave the first image as it is (when it's the top of the page)
@@ -618,19 +634,76 @@ abstract class HammondHelper
 	 */
 	public static function lazyImages($html, $eagerFirst = false)
 	{
-		return (string) preg_replace_callback('/<(img|iframe)\b(?![^>]*\b(?:loading|fetchpriority)=)([^>]*)>/i', function ($match) use (&$eagerFirst)
+		$html   = (string) $html;
+		$output = '';
+		$offset = 0;
+
+		while (($start = strpos($html, '<', $offset)) !== false)
 		{
-			$image = strtolower($match[1]) === 'img';
+			$output .= substr($html, $offset, $start - $offset);
 
-			if ($image && $eagerFirst)
+			// A comment, as browsers end it ("<!-->" and "<!--->" at once, otherwise at "-->" or "--!>"), or what they read as one
+			// ("<!...>", "<?...>", "</" not followed by a letter): as it is
+			if (preg_match('/\G(?:<!--(?:-?>|.*?--!?>)|<!(?!--)[^>]*>|<\?[^>]*>|<\/(?![A-Za-z])[^>]*>)/s', $html, $match, 0, $start))
 			{
-				$eagerFirst = false;
+				$output .= $match[0];
+				$offset  = $start + strlen($match[0]);
 
-				return $match[0];
+				continue;
 			}
 
-			return '<' . $match[1] . ' loading="lazy"' . ($image ? ' decoding="async"' : '') . $match[2] . '>';
-		}, (string) $html);
+			// A tag, read whole as browsers read it: its name runs up to a space, "/" or ">"; a value is quoted only when the quote
+			// comes right after "=" (an unquoted value may hold quotes, and a quoted one "<" and ">")
+			if (preg_match('/\G<(\/?[A-Za-z][^\t\n\f\r \/>]*)((?>[\t\n\f\r \/]+|' . self::HTML_ATTRIBUTE . ')*)>/', $html, $match, 0, $start))
+			{
+				$tag  = $match[0];
+				$name = strtolower($match[1]);
+
+				preg_match_all('/' . self::HTML_ATTRIBUTE . '/', $match[2], $attributes);
+
+				if (($name === 'img' || $name === 'iframe') && !array_intersect(array_map('strtolower', $attributes[1]), array('loading', 'fetchpriority')))
+				{
+					if ($name === 'img' && $eagerFirst)
+					{
+						$eagerFirst = false;
+					}
+					else
+					{
+						$tag = '<' . $match[1] . ' loading=lazy' . ($name === 'img' ? ' decoding=async' : '') . ' ' . ltrim($match[2]) . '>';
+					}
+				}
+
+				$output .= $tag;
+				$offset  = $start + strlen($match[0]);
+
+				// Elements whose content browsers read as text, not HTML: as it is, up to their end tag (all the rest without one)
+				if (in_array($name, array('script', 'style', 'xmp', 'iframe', 'noembed', 'noframes', 'noscript', 'textarea', 'title', 'plaintext'), true))
+				{
+					// They end only at "</name" followed by a space, "/" or ">"
+					if ($name === 'plaintext' || !preg_match('/<\/' . $name . '(?=[\t\n\f\r \/>])/i', $html, $end, PREG_OFFSET_CAPTURE, $offset))
+					{
+						return $output . substr($html, $offset);
+					}
+
+					$output .= substr($html, $offset, $end[0][1] - $offset);
+					$offset  = $end[0][1];
+				}
+
+				continue;
+			}
+
+			// The start of a tag which can't be read (e.g. an unterminated quote): the rest stays as it is
+			if (preg_match('/\G<[A-Za-z\/!?]/', $html, $match, 0, $start))
+			{
+				return $output . substr($html, $start);
+			}
+
+			// A "<" in the text
+			$output .= '<';
+			$offset  = $start + 1;
+		}
+
+		return $output . substr($html, $offset);
 	}
 
 	/**

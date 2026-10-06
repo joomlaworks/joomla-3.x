@@ -141,6 +141,12 @@ class PackageAdapter extends InstallerAdapter
 
 		foreach ($this->getManifest()->files->children() as $child)
 		{
+			// Only extensions inside the package
+			if (!Installer::isSafePath($folder) || !Installer::isSafePath($child))
+			{
+				throw new \RuntimeException(\JText::sprintf('JLIB_INSTALLER_ERROR_UNSAFE_PATH', $folder . '/' . $child));
+			}
+
 			$file = $source . '/' . (string) $child;
 
 			if (is_dir($file))

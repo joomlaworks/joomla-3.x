@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-require_once JPATH_THEMES . '/finch/helper.php';
+require_once dirname(__DIR__, 3) . '/helper.php';
 
 /** @var ContentViewCategory $this */
 $items = array_merge((array) $this->lead_items, (array) $this->intro_items);

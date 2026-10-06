@@ -410,6 +410,18 @@ class ConsoleApplication extends CliApplication
 	}
 
 	/**
+	 * How commands are run: "Command line", or e.g. "MCP".
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public function getInterface()
+	{
+		return (string) $this->interface;
+	}
+
+	/**
 	 * Set how commands are run, as shown in the User Actions Log (e.g. "MCP").
 	 *
 	 * @param   string  $interface  The name
@@ -504,12 +516,20 @@ class ConsoleApplication extends CliApplication
 	 */
 	protected function describeValue(AbstractCommand $command, $name, $value)
 	{
-		$value = is_scalar($value) ? (string) $value : json_encode($value);
-
 		if ($command->isSecret($name))
 		{
 			return '***';
 		}
+
+		// JSON values (e.g. --params) with secret keys inside
+		$decoded = is_scalar($value) ? json_decode((string) $value, true) : $value;
+
+		if (is_array($decoded))
+		{
+			$value = json_encode($this->maskSecrets($command, $decoded));
+		}
+
+		$value = is_scalar($value) ? (string) $value : json_encode($value);
 
 		if (preg_match('/^([A-Za-z0-9_.\-]+)=/', $value, $match) && $command->isSecret($match[1]))
 		{
@@ -519,12 +539,42 @@ class ConsoleApplication extends CliApplication
 		// Download keys and tokens in URLs (e.g. extension:reinstall --url=...?dlid=...)
 		$value = preg_replace('/([?&](?:dlid|key|download_id|downloadid|token|password|pass|secret|api_?key)=)[^&#\s]+/i', '$1***', $value);
 
+		// Passwords in URLs (https://user:password@host)
+		$value = preg_replace('#(://[^/@\s:]*:)[^/@\s]+@#', '$1***@', $value);
+
 		if (function_exists('mb_strlen') ? mb_strlen($value) > 80 : strlen($value) > 80)
 		{
 			$value = (function_exists('mb_substr') ? mb_substr($value, 0, 77) : substr($value, 0, 77)) . '...';
 		}
 
 		return preg_match('/[\s"\'\\\\]/', $value) ? '"' . addcslashes($value, '"\\') . '"' : $value;
+	}
+
+	/**
+	 * Mask the values of secret keys in data, e.g. the JSON of --params.
+	 *
+	 * @param   AbstractCommand  $command  The command, which tells which names are secret
+	 * @param   array            $data     The data
+	 *
+	 * @return  array
+	 *
+	 * @since   3.17.0
+	 */
+	protected function maskSecrets(AbstractCommand $command, array $data)
+	{
+		foreach ($data as $key => $item)
+		{
+			if (is_string($key) && $command->isSecret($key))
+			{
+				$data[$key] = '***';
+			}
+			elseif (is_array($item))
+			{
+				$data[$key] = $this->maskSecrets($command, $item);
+			}
+		}
+
+		return $data;
 	}
 
 	/**

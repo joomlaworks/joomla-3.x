@@ -122,6 +122,26 @@ function getQueryParam($key, $default = null)
 	return $value;
 }
 
+/**
+ * Whether an archive entry's name stays inside the folder it's extracted to: relative (no leading slash or drive letter),
+ * without ".." parts or control characters. Joomla 3.x UTD patch: the extractor joined names to the site's folder as given.
+ *
+ * @param   string  $name  The entry's name
+ *
+ * @return  boolean
+ */
+function akIsSafeEntryName($name)
+{
+	$name = str_replace('\\', '/', (string) $name);
+
+	if ($name === '' || $name[0] === '/' || preg_match('#^[A-Za-z]:#', $name) || preg_match('#[\x00-\x1F]#', $name))
+	{
+		return false;
+	}
+
+	return !in_array('..', explode('/', $name), true);
+}
+
 // Debugging function
 function debugMsg($msg)
 {
@@ -1871,6 +1891,14 @@ class AKUnarchiverJPA extends AKAbstractUnarchiver
 			$isBannedFile = true;
 		}
 
+		// Joomla 3.x UTD patch: never write outside the site's folder (a name with "..", an absolute name), nor create links,
+		// which may point anywhere (Joomla's packages have none)
+		if (!akIsSafeEntryName($this->fileHeader->file) || $this->fileHeader->type == 'link')
+		{
+			debugMsg('Skipping unsafe entry ' . $this->fileHeader->file);
+			$isBannedFile = true;
+		}
+
 		// Also try to find banned files passed in class configuration
 		if ((count($this->skipFiles) > 0) && (!$isRenamed))
 		{
@@ -2595,6 +2623,14 @@ class AKUnarchiverZIP extends AKUnarchiverJPA
 		// Find hard-coded banned files
 		if ((basename((string) $this->fileHeader->file) == ".") || (basename((string) $this->fileHeader->file) == ".."))
 		{
+			$isBannedFile = true;
+		}
+
+		// Joomla 3.x UTD patch: never write outside the site's folder (a name with "..", an absolute name), nor create links,
+		// which may point anywhere (Joomla's packages have none)
+		if (!akIsSafeEntryName($this->fileHeader->file) || $this->fileHeader->type == 'link')
+		{
+			debugMsg('Skipping unsafe entry ' . $this->fileHeader->file);
 			$isBannedFile = true;
 		}
 

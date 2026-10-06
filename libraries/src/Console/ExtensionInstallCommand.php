@@ -22,6 +22,12 @@ use Joomla\CMS\Installer\InstallerHelper;
 class ExtensionInstallCommand extends AbstractExtensionCommand
 {
 	/**
+	 * @var    string[]
+	 * @since  3.17.0
+	 */
+	protected $serverPathOptions = array('path');
+
+	/**
 	 * @var    string
 	 * @since  3.17.0
 	 */
@@ -44,6 +50,21 @@ class ExtensionInstallCommand extends AbstractExtensionCommand
 	 * @since  3.17.0
 	 */
 	protected $dryRun = true;
+
+	/**
+	 * It installs code it didn't make (a package's PHP files and install script).
+	 *
+	 * @param   array|null  $options    The options of a run
+	 * @param   array|null  $arguments  The arguments of a run
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function writesCode(?array $options = null, ?array $arguments = null)
+	{
+		return true;
+	}
 
 	/**
 	 * @return  void

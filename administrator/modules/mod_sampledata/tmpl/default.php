@@ -58,6 +58,9 @@ foreach ($items as $item)
 		$installed = (string) $item->title;
 	}
 }
+
+// Descriptions come from the plugins' language strings (which overrides can change): a few inline tags, no attributes
+$descriptionFilter = JFilterInput::getInstance(array('em', 'strong', 'b', 'i', 'br', 'code'), array(), 0, 0);
 ?>
 <div class="sampledata-container" data-installed="<?php echo htmlspecialchars($installed, ENT_QUOTES, 'UTF-8'); ?>">
 	<?php if ($items) : ?>
@@ -72,7 +75,7 @@ foreach ($items as $item)
 					<?php if (!empty($item->installed)) : ?>
 						<span class="label label-success"><?php echo JText::_('MOD_SAMPLEDATA_INSTALLED'); ?></span>
 					<?php endif; ?>
-					<small><?php echo $item->description; ?></small>
+					<small><?php echo $descriptionFilter->clean((string) $item->description, 'html'); ?></small>
 				</div>
 				<button type="button" class="btn btn-small sampledata-apply" data-type="<?php echo $name; ?>" data-steps="<?php echo (int) $item->steps; ?>" data-title="<?php echo htmlspecialchars((string) $item->title, ENT_QUOTES, 'UTF-8'); ?>">
 					<span class="icon-download" aria-hidden="true"></span> <?php echo JText::_(empty($item->installed) ? 'MOD_SAMPLEDATA_INSTALL' : 'MOD_SAMPLEDATA_REINSTALL'); ?>

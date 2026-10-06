@@ -253,7 +253,7 @@ class JArchiveZip implements JArchiveExtractable
 				$buffer = $this->_getFileData($i);
 				$path = JPath::clean($destination . '/' . $this->_metadata[$i]['name']);
 
-				if (strpos(JPath::clean(JPath::resolve($destination . '/' . $this->_metadata[$i]['name'])), JPath::clean(JPath::resolve($destination))) !== 0)
+				if (!$this->isBelow($destination, $destination . '/' . $this->_metadata[$i]['name']))
 				{
 					return $this->raiseWarning(100, 'Unable to write outside of destination path');
 				}
@@ -317,7 +317,7 @@ class JArchiveZip implements JArchiveExtractable
 				return $this->raiseWarning(100, 'Unable to read entry');
 			}
 
-			if (strpos(JPath::clean(JPath::resolve($destination . '/' . $file)), JPath::clean(JPath::resolve($destination))) !== 0)
+			if (!$this->isBelow($destination, $destination . '/' . $file))
 			{
 				return $this->raiseWarning(100, 'Unable to write outside of destination path');
 			}
@@ -659,5 +659,24 @@ class JArchiveZip implements JArchiveExtractable
 		}
 
 		return true;
+	}
+
+	/**
+	 * Whether a path is inside the destination folder (Joomla 3.x UTD: the check compared the paths without a separator, so
+	 * "/site/tmp_evil" passed for "/site/tmp").
+	 *
+	 * @param   string  $destination  The destination folder
+	 * @param   string  $path         The path to check
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	protected function isBelow($destination, $path)
+	{
+		$root = JPath::clean(JPath::resolve($destination));
+		$path = JPath::clean(JPath::resolve($path));
+
+		return $path === $root || strpos($path, rtrim($root, '/\\') . DIRECTORY_SEPARATOR) === 0;
 	}
 }

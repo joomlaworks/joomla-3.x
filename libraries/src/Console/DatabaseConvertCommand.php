@@ -21,6 +21,12 @@ use Joomla\Registry\Registry;
 class DatabaseConvertCommand extends AbstractCommand
 {
 	/**
+	 * @var    string[]
+	 * @since  3.17.0
+	 */
+	protected $serverPathOptions = array('file');
+
+	/**
 	 * @var    string
 	 * @since  3.17.0
 	 */

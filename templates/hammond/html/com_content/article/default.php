@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-require_once JPATH_THEMES . '/hammond/helper.php';
+require_once dirname(__DIR__, 3) . '/helper.php';
 
 JLoader::register('TagsHelperRoute', JPATH_SITE . '/components/com_tags/helpers/route.php');
 

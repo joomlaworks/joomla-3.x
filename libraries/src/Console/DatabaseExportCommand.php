@@ -20,6 +20,12 @@ use Joomla\CMS\Factory;
 class DatabaseExportCommand extends AbstractCommand
 {
 	/**
+	 * @var    string[]
+	 * @since  3.17.0
+	 */
+	protected $serverPathOptions = array('folder', 'zip');
+
+	/**
 	 * @var    string
 	 * @since  3.17.0
 	 */
@@ -84,6 +90,24 @@ class DatabaseExportCommand extends AbstractCommand
 		$tableName = (string) $io->getOption('table');
 		$zip       = $io->getOption('zip');
 
+		// Over MCP, a folder of the site's protected backup folder, never one the assistant names: an export holds e.g. the users'
+		// password hashes, and a folder the web serves (or a template's, which template:file:get reads) would give them away
+		$mcp = Factory::getApplication()->getInterface() === 'MCP';
+
+		if ($mcp)
+		{
+			$folder = AbstractTemplateCommand::getBackupFolder('database', !$io->isDryRun());
+
+			if ($folder === false && !$io->isDryRun())
+			{
+				$io->error('The site\'s backup folder (backup/) could not be created: the site\'s root folder must be writable.');
+
+				return self::FAILURE;
+			}
+
+			$folder = $folder === false ? 'backup/(protected folder)/database' : $folder;
+		}
+
 		try
 		{
 			$db->getExporter();
@@ -95,7 +119,7 @@ class DatabaseExportCommand extends AbstractCommand
 			return self::FAILURE;
 		}
 
-		if (!is_dir($folder) || !is_writable($folder))
+		if ((!$mcp || !$io->isDryRun()) && (!is_dir($folder) || !is_writable($folder)))
 		{
 			$io->error(sprintf('The folder %s does not exist or is not writable.', $folder));
 

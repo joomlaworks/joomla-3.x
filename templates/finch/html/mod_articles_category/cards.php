@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-require_once JPATH_THEMES . '/finch/helper.php';
+require_once dirname(__DIR__, 2) . '/helper.php';
 
 // Three posts as cards (e.g. "Read next" under a post, the module set to four), without the post being read
 /** @var array $list */

@@ -51,12 +51,18 @@ Summary of changes:
 - MySQL 8.0, 8.4 and 9.x now work on their default settings, with no `my.cnf` changes (see [Notes on MySQL & MariaDB](#notes-on-mysql--mariadb))
 - Fixed database error handling with the "MySQL (mysqli)" driver on PHP 8.1+, and several long-standing issues with the "MySQL (PDO)" driver
 - More PHP 8.5 deprecation fixes
+- Fixed Joomla Update failing with a PHP error when Joomla's own update site had been deleted
 
 **Security fixes:**
 - Installer: the ownership check for remote databases could be skipped by going straight to the step which writes the configuration (stock Joomla 3)
 - Installer: anyone could run the installer again on an installed site while the `installation` folder remained (stock Joomla 3); now only the browser which installed the site can go on
 - Installer: setting the Super User's group could put every user into the Super Users group when the mapping already existed
 - Module Manager: the ordering list of the module edit form could be read by anyone, listing the titles of the modules in any position
+- `{loadmoduleid}` showed any module to anyone, whatever its access level or publishing dates (since 3.12)
+- A crafted package could write files outside the site's folders, through Joomla Update's extraction, the extension installer or the archive code, and uninstalling one could delete a folder outside the extension (stock Joomla 3)
+- The configuration writer could put PHP code into `configuration.php` through a crafted setting name (stock Joomla 3)
+- Joomla Update showed the update feed's values unescaped; Install from URL and Install from Web accepted download addresses other than `http`/`https` (stock Joomla 3)
+- Little WAF now also checks form data and encoded spellings of the tags, and works on servers without `REQUEST_URI`; each filter only acts while its extension is installed
 
 **Bug fixes:**
 - Fixed intermittent "Serialization of 'PDOStatement' is not allowed" errors with the PDO database drivers when caching is enabled (any cache handler), typically right after the site wrote something to the database
@@ -348,9 +354,9 @@ Joomla 3 has always shipped a basic SQLite database driver, but it was never usa
 The command line includes an MCP (Model Context Protocol) server, so AI assistants such as Claude Code or Claude Desktop can work with a site directly: check its health, read its logs, and list, write and change content, using the command line's commands as tools.
 
 - **Read-only by default:** the assistant can use every command which only reads, and dry runs of the others (which report what they would change), but can't change anything. Add `--allow-write` to let it make changes.
-- **Templates:** with `--allow-write`, an assistant can change a template's CSS, JavaScript and images (e.g. "make the headings darker" goes into `css/custom.css`) and its options. Writing a template's code (PHP, XML, `.htaccess`) or restoring a template backup also needs `--allow-template-code`. Ask it to run `template:backup` first.
+- **Templates:** with `--allow-write`, an assistant can change a template's CSS, JavaScript and images (e.g. "make the headings darker" goes into `css/custom.css`) and its options. Anything which puts code on the server also needs `--allow-code`: writing a template's code (PHP, XML, `.htaccess`), restoring a template backup, installing or updating extensions, and updating Joomla. Ask it to run `template:backup` first.
 - **Narrow it down:** `--allow` and `--deny` choose the commands, with wildcards (e.g. `--allow="article:*,category:*,site:*"`), and `--as=username` makes content changes as that account, whose permissions apply (e.g. an Editor account can write and edit articles but not publish them).
-- **Traceable:** every change is recorded in the User Actions Log, as made through MCP. Secret values (passwords, keys) are left out of the log and aren't shown to the assistant.
+- **Traceable:** every change is recorded in the User Actions Log, as made through MCP. Secret values (passwords, keys) are left out of the log and aren't shown to the assistant, and options which would read or write files on the server aren't offered (database exports go to the site's protected backup folder).
 - **Claude Code:** `claude mcp add joomla -- php /path/to/site/cli/joomla.php mcp:serve` (add `--allow-write` and the other options at the end). For a site on another server, run it over SSH: `claude mcp add joomla -- ssh user@example.com php /path/to/site/cli/joomla.php mcp:serve`.
 - **Claude Desktop and other clients:** add a server with the command `php` and the arguments `/path/to/site/cli/joomla.php` and `mcp:serve` to the client's MCP configuration (e.g. `"mcpServers": {"joomla": {"command": "php", "args": ["/path/to/site/cli/joomla.php", "mcp:serve"]}}`).
 

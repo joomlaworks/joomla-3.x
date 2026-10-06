@@ -241,8 +241,39 @@ abstract class AbstractCommand
 	}
 
 	/**
-	 * Whether a run writes code the server runs or reads as configuration (e.g. a template's PHP files), given its values:
-	 * the MCP server only allows such runs when started with --allow-template-code.
+	 * Options which name a file or folder on the server (besides those ending in "-file"): the MCP server never offers
+	 * them, so an assistant can't read or write the server's files through them
+	 *
+	 * @var    string[]
+	 * @since  3.17.0
+	 */
+	protected $serverPathOptions = array();
+
+	/**
+	 * The options which name a file or folder on the server: those ending in "-file", and $serverPathOptions.
+	 *
+	 * @return  string[]
+	 *
+	 * @since   3.17.0
+	 */
+	public function getServerPathOptions()
+	{
+		$names = array();
+
+		foreach (array_keys($this->getOptions()) as $name)
+		{
+			if (substr($name, -5) === '-file' || in_array($name, $this->serverPathOptions, true))
+			{
+				$names[] = $name;
+			}
+		}
+
+		return $names;
+	}
+
+	/**
+	 * Whether a run writes code the server runs or reads as configuration (e.g. a template's PHP files, an extension's
+	 * package), given its values: the MCP server only allows such runs when started with --allow-code.
 	 *
 	 * @param   array|null  $options    The options of a run
 	 * @param   array|null  $arguments  The arguments of a run
@@ -291,7 +322,8 @@ abstract class AbstractCommand
 	 */
 	public function isSecret($name)
 	{
-		return (bool) preg_match('/pass(word)?|secret|token|api_?key/i', (string) $name);
+		// "key", "auth", "pwd" and "dlid" as whole parts of the name (redis_server_auth, --key), so "author" and "metakey" aren't
+		return (bool) preg_match('/pass(word)?|secret|token|api_?key|download_?id|(?:^|[_.\-])(?:key|auth|pwd|dlid)(?:[_.\-]|$)/i', (string) $name);
 	}
 
 	/**

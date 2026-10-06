@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-require_once JPATH_THEMES . '/hammond/helper.php';
+require_once dirname(__DIR__, 2) . '/helper.php';
 
 /** @var array $list  @var Joomla\Registry\Registry $params */
 $items = array_slice(array_values($list), HammondHelper::skip($params));

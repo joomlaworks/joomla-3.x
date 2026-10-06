@@ -9,8 +9,10 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Plugin\PluginHelper;
 
 /**
  * Little WAF - a small, opt-in request filter for known attack signatures against
@@ -27,6 +29,28 @@ use Joomla\CMS\Plugin\CMSPlugin;
  */
 class PlgSystemLittlewaf extends CMSPlugin
 {
+	/**
+	 * The filters: param => the plugins (system or content) of the extension it protects, and the tag it blocks, matched
+	 * case-insensitively on the canonical (percent-decoded) value, without the "u" flag so invalid UTF-8 can't make it fail
+	 *
+	 * @var    array
+	 * @since  3.17.0
+	 */
+	const FILTERS = array(
+		// Sourcerer's {source}...{/source} (also {source 0} etc.), which unpatched versions run as PHP
+		'filter_sourcerer'       => array('sourcerer', '/\{\/?source(?![A-Za-z0-9_])/i'),
+		// Modules Anywhere's {module ...} and {modulepos ...}
+		'filter_modulesanywhere' => array('modulesanywhere', '/\{module(?:pos)?(?![A-Za-z0-9_])/i'),
+	);
+
+	/**
+	 * At most this many characters of the request are logged
+	 *
+	 * @var    integer
+	 * @since  3.17.0
+	 */
+	const LOG_LENGTH = 500;
+
 	/**
 	 * @var    \Joomla\CMS\Application\CMSApplication
 	 * @since  3.16.0
@@ -51,82 +75,194 @@ class PlgSystemLittlewaf extends CMSPlugin
 			return;
 		}
 
-		$requestUri = (string) ($_SERVER['REQUEST_URI'] ?? '');
+		$patterns = array();
 
-		if ($this->params->get('filter_sourcerer', 1) && $this->matchesSourcererTag($requestUri))
+		foreach (static::FILTERS as $param => $filter)
 		{
-			$this->block('sourcerer', $requestUri);
+			// A tag is only dangerous where the extension which processes it is on
+			if ($this->params->get($param, 1) && (PluginHelper::isEnabled('system', $filter[0]) || PluginHelper::isEnabled('content', $filter[0])))
+			{
+				$patterns[substr($param, 7)] = $filter[1];
+			}
 		}
 
-		if ($this->params->get('filter_modulesanywhere', 1) && $this->matchesModulesAnywhereTag($requestUri))
+		if (!$patterns)
 		{
-			$this->block('modulesanywhere', $requestUri);
+			return;
+		}
+
+		foreach ($this->getRequestValues() as $where => $value)
+		{
+			foreach ($patterns as $filter => $pattern)
+			{
+				if ($this->matches($pattern, $value))
+				{
+					$this->block($filter, $where);
+				}
+			}
 		}
 	}
 
 	/**
-	 * Detects the Regular Labs Sourcerer {source}...{/source} raw-code tag in a URL, in
-	 * both its literal and percent-encoded forms (matching what has actually been
-	 * observed in mass-exploitation traffic against unpatched Sourcerer installs).
+	 * The parts of the request the filters check: the request target (rebuilt as JUri does where the server doesn't give
+	 * REQUEST_URI), the query string and path info, the names and values of GET and POST data, and uploaded file names.
+	 * POST data of logged-in users who may create content isn't checked: they write these tags in front-end editing, and
+	 * the extension itself decides who may use them.
 	 *
-	 * @param   string  $value  The raw request URI to inspect.
+	 * @return  \Generator  where => value
 	 *
-	 * @return  boolean
-	 *
-	 * @since   3.16.0
+	 * @since   3.17.0
 	 */
-	private function matchesSourcererTag($value)
+	private function getRequestValues()
 	{
-		return stripos($value, '{source}') !== false
-			|| stripos($value, '{/source}') !== false
-			|| stripos($value, '%7bsource%7d') !== false
-			|| stripos($value, '%7b/source%7d') !== false;
+		$query  = $this->server('QUERY_STRING');
+		$target = $this->server('REQUEST_URI');
+
+		if ($target === '')
+		{
+			$target = $this->server('SCRIPT_NAME') . $this->server('PATH_INFO') . ($query !== '' ? '?' . $query : '');
+		}
+
+		yield 'request' => $target;
+		yield 'query string' => $query;
+		yield 'path info' => $this->server('PATH_INFO');
+
+		$sources = array('GET' => $_GET);
+
+		if (!empty($_POST))
+		{
+			$user = Factory::getUser();
+
+			if ($user->guest || !$user->authorise('core.create', 'com_content'))
+			{
+				$sources['POST'] = $_POST;
+			}
+		}
+
+		if (!empty($_FILES))
+		{
+			$sources['file names'] = array_map(function ($file) { return isset($file['name']) ? $file['name'] : ''; }, $_FILES);
+		}
+
+		foreach ($sources as $source => $values)
+		{
+			foreach ($this->flatten($values) as $value)
+			{
+				yield $source => $value;
+			}
+		}
 	}
 
 	/**
-	 * Detects the Regular Labs Modules Anywhere {module ...}/{modulepos ...} tags in a
-	 * URL, in both literal and percent-encoded form. A precautionary filter — unlike the
-	 * Sourcerer tag above, this hasn't been observed in live attack traffic against this
-	 * project's own sites; it targets the same class of "tag processed from an
-	 * unverified source" risk that Regular Labs itself patched for this extension
-	 * (SSRF/XSS/restricted-content exposure, July 2026). {modulepos ...} is covered by
-	 * the same check, since "{modulepos" contains "{module" as a substring.
+	 * A server value as the server gave it (the input filters would change it).
 	 *
-	 * @param   string  $value  The raw request URI to inspect.
+	 * @param   string  $name  The name
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	private function server($name)
+	{
+		return isset($_SERVER[$name]) && is_scalar($_SERVER[$name]) ? (string) $_SERVER[$name] : '';
+	}
+
+	/**
+	 * Every key and value of (nested) request data.
+	 *
+	 * @param   array  $values  The data
+	 *
+	 * @return  \Generator
+	 *
+	 * @since   3.17.0
+	 */
+	private function flatten(array $values)
+	{
+		foreach ($values as $key => $value)
+		{
+			yield (string) $key;
+
+			if (is_array($value))
+			{
+				foreach ($this->flatten($value) as $inner)
+				{
+					yield $inner;
+				}
+			}
+			elseif (is_scalar($value))
+			{
+				yield (string) $value;
+			}
+		}
+	}
+
+	/**
+	 * Whether a value holds the tag, as it is or percent-encoded (up to twice, in any mix of encoded and plain characters).
+	 *
+	 * @param   string  $pattern  The tag's pattern
+	 * @param   string  $value    The value
 	 *
 	 * @return  boolean
 	 *
-	 * @since   3.16.0
+	 * @since   3.17.0
 	 */
-	private function matchesModulesAnywhereTag($value)
+	private function matches($pattern, $value)
 	{
-		return stripos($value, '{module') !== false
-			|| stripos($value, '%7bmodule') !== false;
+		for ($pass = 0; $pass < 3; $pass++)
+		{
+			if (preg_match($pattern, $value))
+			{
+				return true;
+			}
+
+			$decoded = rawurldecode($value);
+
+			if ($decoded === $value)
+			{
+				break;
+			}
+
+			$value = $decoded;
+		}
+
+		return false;
 	}
 
 	/**
 	 * Logs (if enabled) and terminates the request with a 403 response.
 	 *
 	 * @param   string  $filter  The filter key that matched, for logging.
-	 * @param   string  $value   The offending request data, for logging.
+	 * @param   string  $where   The part of the request that matched, for logging.
 	 *
 	 * @return  void  This method does not return.
 	 *
 	 * @since   3.16.0
 	 */
-	private function block($filter, $value)
+	private function block($filter, $where)
 	{
-		if ($this->params->get('log_blocked', 1))
-		{
-			Log::add(
-				sprintf('Little WAF blocked [%s] from %s: %s', $filter, $_SERVER['REMOTE_ADDR'] ?? 'unknown', $value),
-				Log::WARNING,
-				'littlewaf'
-			);
-		}
-
 		$this->app->setHeader('status', 403, true);
 		$this->app->setBody('Forbidden');
+
+		if ($this->params->get('log_blocked', 1))
+		{
+			// A request which can't be logged (e.g. the log folder isn't writable) is still blocked
+			try
+			{
+				Log::addLogger(array('text_file' => 'littlewaf.php'), Log::ALL, array('littlewaf'));
+
+				$request = preg_replace('/[\x00-\x1F\x7F]/', '?', substr($this->server('REQUEST_URI'), 0, static::LOG_LENGTH));
+
+				Log::add(
+					sprintf('Little WAF blocked [%s] in the %s from %s: %s', $filter, $where, $this->server('REMOTE_ADDR') ?: 'unknown', $request),
+					Log::WARNING,
+					'littlewaf'
+				);
+			}
+			catch (\Throwable $e)
+			{
+			}
+		}
+
 		echo $this->app->toString();
 		$this->app->close();
 	}

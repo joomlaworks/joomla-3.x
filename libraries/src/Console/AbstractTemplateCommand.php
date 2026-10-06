@@ -155,7 +155,7 @@ abstract class AbstractTemplateCommand extends AbstractCommand
 	 */
 	protected function resolvePath(CommandIO $io, array $template, $path, $mustExist = true)
 	{
-		$path = str_replace('\\', '/', trim((string) $path));
+		$path = static::normalisePath($path);
 
 		if ($path === '' || $path[0] === '/' || preg_match('#^[A-Za-z]:#', $path) || strpos($path, "\0") !== false)
 		{
@@ -173,6 +173,14 @@ abstract class AbstractTemplateCommand extends AbstractCommand
 				$io->error(sprintf('"%s" leads outside the template\'s folder.', $path));
 
 				return self::REFUSED;
+			}
+
+			// A name ending in a dot or a space, or holding a control character, could hide its real type (e.g. "shell.php.")
+			if ($part !== '' && $part !== '.' && preg_match('/[\x00-\x1F\x7F]|[ .]$/', $part))
+			{
+				$io->error(sprintf('"%s" is not a valid file or folder name: names may not end in a dot or a space.', $part));
+
+				return self::INVALID;
 			}
 
 			if ($part !== '' && $part !== '.')
@@ -224,7 +232,7 @@ abstract class AbstractTemplateCommand extends AbstractCommand
 
 	/**
 	 * Whether a file holds code the server runs or reads as configuration (PHP and other scripts a server may run, XML,
-	 * .htaccess and other dot files), rather than assets (CSS, JavaScript, images, fonts). The MCP server needs --allow-template-code to write these.
+	 * .htaccess and other dot files), rather than assets (CSS, JavaScript, images, fonts). The MCP server needs --allow-code to write these.
 	 *
 	 * @param   string  $path  The path
 	 *
@@ -234,9 +242,27 @@ abstract class AbstractTemplateCommand extends AbstractCommand
 	 */
 	public static function isCode($path)
 	{
-		$name = basename(str_replace('\\', '/', (string) $path));
+		// The name as it would be written (normalisePath(), as resolvePath() uses), without trailing dots or spaces, which
+		// some servers ignore; any of its extensions counts (Apache may run "shell.php.jpg" as PHP)
+		$name = basename(static::normalisePath($path));
+		$bare = rtrim($name, " \t\n\r\0\x0B.");
 
-		return $name === '' || $name[0] === '.' || (bool) preg_match('/\.(php[0-9]*|pht|phtml|phar|phps|inc|xml|shtml?|cgi|pl|py|sh|asp|aspx|jsp)$/i', $name);
+		return $bare === '' || $name[0] === '.' || (bool) preg_match('/\.(php[0-9]*|pht|phtml|phar|phps|inc|xml|shtml?|cgi|pl|py|sh|asp|aspx|jsp)(?=\.|$)/i', $bare);
+	}
+
+	/**
+	 * A path as the template commands use it: slashes, no surrounding whitespace. Everything that decides about a path
+	 * (isCode(), resolvePath()) starts from this, so that no decision is taken on a different string than the one written.
+	 *
+	 * @param   string  $path  The path
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public static function normalisePath($path)
+	{
+		return str_replace('\\', '/', trim((string) $path));
 	}
 
 	/**
@@ -373,7 +399,7 @@ abstract class AbstractTemplateCommand extends AbstractCommand
 	 *
 	 * @since   3.17.0
 	 */
-	protected static function getBackupFolder($subfolder = '', $create = true)
+	public static function getBackupFolder($subfolder = '', $create = true)
 	{
 		$root   = JPATH_ROOT . '/backup';
 		$folder = false;

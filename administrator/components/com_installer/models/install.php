@@ -401,10 +401,19 @@ class InstallerModelInstall extends JModelLegacy
 			jimport('joomla.updater.update');
 			$update = new JUpdate;
 			$update->loadFromXml($url);
-			$package_url = trim((string) $update->get('downloadurl', false)->_data);
+			$download    = $update->get('downloadurl', false);
+			$package_url = $download ? trim((string) $download->_data) : '';
 
 			if ($package_url)
 			{
+				// The download address comes from the XML file: the same rule as for the address given
+				if (!in_array((new JUri($package_url))->getScheme(), array('http', 'https'), true))
+				{
+					JError::raiseWarning('', JText::_('COM_INSTALLER_MSG_INSTALL_INVALID_URL_SCHEME'));
+
+					return false;
+				}
+
 				$url = $package_url;
 			}
 

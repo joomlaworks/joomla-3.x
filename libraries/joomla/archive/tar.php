@@ -103,7 +103,7 @@ class JArchiveTar implements JArchiveExtractable
 				$buffer = $this->_metadata[$i]['data'];
 				$path = JPath::clean($destination . '/' . $this->_metadata[$i]['name']);
 
-				if (strpos(JPath::clean(JPath::resolve($destination . '/' . $this->_metadata[$i]['name'])), JPath::clean(JPath::resolve($destination))) !== 0)
+				if (!$this->isBelow($destination, $destination . '/' . $this->_metadata[$i]['name']))
 				{
 					if (class_exists('JError'))
 					{
@@ -258,5 +258,24 @@ class JArchiveTar implements JArchiveExtractable
 		$this->_metadata = $return_array;
 
 		return true;
+	}
+
+	/**
+	 * Whether a path is inside the destination folder (Joomla 3.x UTD: the check compared the paths without a separator, so
+	 * "/site/tmp_evil" passed for "/site/tmp").
+	 *
+	 * @param   string  $destination  The destination folder
+	 * @param   string  $path         The path to check
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	protected function isBelow($destination, $path)
+	{
+		$root = JPath::clean(JPath::resolve($destination));
+		$path = JPath::clean(JPath::resolve($path));
+
+		return $path === $root || strpos($path, rtrim($root, '/\\') . DIRECTORY_SEPARATOR) === 0;
 	}
 }

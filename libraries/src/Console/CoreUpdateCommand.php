@@ -24,6 +24,12 @@ use Joomla\CMS\Version;
 class CoreUpdateCommand extends AbstractCommand
 {
 	/**
+	 * @var    string[]
+	 * @since  3.17.0
+	 */
+	protected $serverPathOptions = array('file');
+
+	/**
 	 * @var    string
 	 * @since  3.17.0
 	 */
@@ -60,6 +66,21 @@ class CoreUpdateCommand extends AbstractCommand
 	 * @since  3.17.0
 	 */
 	protected $superUser = true;
+
+	/**
+	 * It installs code it didn't make (a package's PHP files and install script).
+	 *
+	 * @param   array|null  $options    The options of a run
+	 * @param   array|null  $arguments  The arguments of a run
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function writesCode(?array $options = null, ?array $arguments = null)
+	{
+		return true;
+	}
 
 	/**
 	 * @return  void

@@ -413,6 +413,11 @@ class FileAdapter extends InstallerAdapter
 			{
 				$target = (string) $eFiles->attributes()->target;
 
+				if (!Installer::isSafePath($target))
+				{
+					continue;
+				}
+
 				// Create folder path
 				if (empty($target))
 				{
@@ -431,6 +436,11 @@ class FileAdapter extends InstallerAdapter
 					// Loop through all filenames elements
 					foreach ($eFiles->children() as $eFileName)
 					{
+						if (!Installer::isSafePath($eFileName))
+						{
+							continue;
+						}
+
 						if ($eFileName->getName() === 'folder')
 						{
 							$folderList[] = $targetFolder . '/' . $eFileName;
@@ -548,6 +558,15 @@ class FileAdapter extends InstallerAdapter
 			// Check if the element is files element
 			$folder = (string) $eFiles->attributes()->folder;
 			$target = (string) $eFiles->attributes()->target;
+
+			// Never outside the site's folder, nor reading outside the package
+			foreach (array_merge(array($folder, $target), array_map('strval', iterator_to_array($eFiles->children(), false))) as $part)
+			{
+				if (!Installer::isSafePath($part))
+				{
+					throw new \RuntimeException(\JText::sprintf('JLIB_INSTALLER_ERROR_UNSAFE_PATH', $part));
+				}
+			}
 
 			// Split folder names into array to get folder names. This will help in creating folders
 			$arrList = preg_split("#/|\\/#", $target);

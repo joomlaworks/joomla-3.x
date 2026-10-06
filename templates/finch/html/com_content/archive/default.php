@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-require_once JPATH_THEMES . '/finch/helper.php';
+require_once dirname(__DIR__, 3) . '/helper.php';
 
 // Unlike the stock layout, no Chosen (jQuery) for the selects: plain fields, styled by the template
 ?>

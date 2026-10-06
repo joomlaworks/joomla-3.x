@@ -38,6 +38,13 @@ class Php extends AbstractRegistryFormat
 
 		foreach (get_object_vars($object) as $k => $v)
 		{
+			// Joomla 3.x UTD patch: only valid property names. The name is written as it is, so anything else would be PHP code in
+			// the file (e.g. configuration.php, which every request runs)
+			if (!preg_match('/^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/', (string) $k))
+			{
+				continue;
+			}
+
 			if (is_scalar($v))
 			{
 				$vars .= "\tpublic $" . $k . " = '" . addcslashes($v, '\\\'') . "';\n";
@@ -101,7 +108,10 @@ class Php extends AbstractRegistryFormat
 		foreach ($a as $k => $v)
 		{
 			$s .= $i ? ', ' : '';
-			$s .= '"' . $k . '" => ';
+
+			// Joomla 3.x UTD patch: keys and values as single-quoted strings, with their quotes and backslashes escaped. Keys were
+			// written raw (code injection) and values double-quoted, where PHP would also read "$" and "{$...}"
+			$s .= (\is_int($k) ? $k : $this->quote((string) $k)) . ' => ';
 
 			if (\is_array($v) || \is_object($v))
 			{
@@ -109,7 +119,7 @@ class Php extends AbstractRegistryFormat
 			}
 			else
 			{
-				$s .= '"' . addslashes((string) $v) . '"';
+				$s .= $this->quote((string) $v);
 			}
 
 			$i++;
@@ -118,5 +128,19 @@ class Php extends AbstractRegistryFormat
 		$s .= ')';
 
 		return $s;
+	}
+
+	/**
+	 * A string as a single-quoted PHP string literal: PHP reads nothing in it but escaped quotes and backslashes.
+	 *
+	 * @param   string  $value  The string
+	 *
+	 * @return  string
+	 *
+	 * @since   1.0
+	 */
+	protected function quote($value)
+	{
+		return "'" . addcslashes($value, '\\\'') . "'";
 	}
 }

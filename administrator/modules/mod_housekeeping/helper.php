@@ -85,6 +85,13 @@ abstract class ModHousekeepingHelper
 			throw new RuntimeException(JText::_('JINVALID_TOKEN_NOTICE'), 403);
 		}
 
+		// com_ajax only checks that the module is installed: act only while the module is shown to the user (published, in
+		// the administrator, at an access level they have)
+		if (!JModuleHelper::getModule('mod_housekeeping')->id)
+		{
+			throw new RuntimeException(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
 		$action = $input->post->getCmd('action');
 
 		if ($action === 'cache')
@@ -125,8 +132,14 @@ abstract class ModHousekeepingHelper
 		$folders = array(
 			$config->get('cache_path', JPATH_SITE . '/cache') ?: JPATH_SITE . '/cache',
 			JPATH_ADMINISTRATOR . '/cache',
-			$config->get('tmp_path', JPATH_ROOT . '/tmp') ?: JPATH_ROOT . '/tmp',
 		);
+		$updating = is_file(JPATH_ADMINISTRATOR . '/components/com_joomlaupdate/restoration.php');
+
+		// Joomla Update extracts its package from the temporary folder over many requests: never empty it meanwhile
+		if (!$updating)
+		{
+			$folders[] = $config->get('tmp_path', JPATH_ROOT . '/tmp') ?: JPATH_ROOT . '/tmp';
+		}
 
 		foreach (array_unique(array_filter(array_map('realpath', $folders))) as $folder)
 		{
@@ -142,12 +155,18 @@ abstract class ModHousekeepingHelper
 
 		$message = JText::sprintf('MOD_HOUSEKEEPING_ALL_CLEANED', $groups, $deleted, static::size($bytes));
 
-		foreach ($skipped as $folder)
+		if ($updating)
 		{
-			$message .= ' ' . JText::sprintf('MOD_HOUSEKEEPING_FOLDER_SKIPPED', $folder);
+			$message .= ' ' . JText::_('MOD_HOUSEKEEPING_TMP_SKIPPED_UPDATE');
 		}
 
-		return array('message' => $message, 'groups' => $groups, 'deleted' => $deleted, 'bytes' => $bytes, 'skipped' => $skipped);
+		foreach ($skipped as $folder)
+		{
+			$message .= ' ' . JText::sprintf('MOD_HOUSEKEEPING_FOLDER_SKIPPED', JPath::removeRoot($folder));
+		}
+
+		return array('message' => $message, 'groups' => $groups, 'deleted' => $deleted, 'bytes' => $bytes, 'skipped' => array_map('JPath::removeRoot', $skipped),
+			'updating' => $updating);
 	}
 
 	/**

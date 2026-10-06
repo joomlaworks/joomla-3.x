@@ -20,6 +20,12 @@ use Joomla\CMS\Factory;
 class DatabaseImportCommand extends AbstractCommand
 {
 	/**
+	 * @var    string[]
+	 * @since  3.17.0
+	 */
+	protected $serverPathOptions = array('folder', 'zip');
+
+	/**
 	 * @var    string
 	 * @since  3.17.0
 	 */
@@ -106,6 +112,19 @@ class DatabaseImportCommand extends AbstractCommand
 		$folder    = rtrim((string) $io->getOption('folder'), '/\\') ?: '.';
 		$zipFile   = (string) $io->getOption('zip');
 		$tableName = (string) $io->getOption('table');
+
+		// Over MCP, from the folder database:export writes to there (never a folder the assistant names)
+		if (Factory::getApplication()->getInterface() === 'MCP')
+		{
+			$folder = AbstractTemplateCommand::getBackupFolder('database', false);
+
+			if ($folder === false)
+			{
+				$io->error('There is no export in the site\'s backup folder: run database:export first.');
+
+				return self::NOT_FOUND;
+			}
+		}
 
 		if (!in_array($db->getServerType(), array('mysql', 'postgresql'), true))
 		{
@@ -307,9 +326,10 @@ class DatabaseImportCommand extends AbstractCommand
 
 		try
 		{
-			// First the structures, then the data
-			$reader  = $this->open($file);
-			$dialect = 'mysql';
+			// First the structures, then the data. Every table name and statement is checked before any table is replaced.
+			$reader     = $this->open($file);
+			$dialect    = 'mysql';
+			$structures = array();
 
 			while ($reader->read())
 			{
@@ -325,12 +345,22 @@ class DatabaseImportCommand extends AbstractCommand
 				}
 				elseif ($reader->name === 'table_structure')
 				{
-					$table          = $this->createTable(simplexml_import_dom($reader->expand(new \DOMDocument)), $dialect);
-					$result[$table] = 0;
+					$structure    = simplexml_import_dom($reader->expand(new \DOMDocument));
+					$structures[] = array($structure, $this->getCreateStatements($structure, $dialect));
+				}
+				elseif ($reader->name === 'table_data')
+				{
+					$this->getRealTableName((string) $reader->getAttribute('name'));
 				}
 			}
 
 			$reader->close();
+
+			foreach ($structures as $structure)
+			{
+				$table          = $this->createTable($structure[0], $dialect, $structure[1]);
+				$result[$table] = 0;
+			}
 			$reader = $this->open($file);
 			$table  = null;
 
@@ -450,56 +480,92 @@ class DatabaseImportCommand extends AbstractCommand
 	}
 
 	/**
-	 * Drop a table and create it from its exported structure.
+	 * The statements which create a table, from its structure in a file: checked, but not run.
 	 *
 	 * @param   \SimpleXMLElement  $structure  The table_structure element
-	 * @param   string             $dialect    The kind of database of the file: mysql or postgresql
+	 * @param   string             $dialect    The kind of database the file comes from: mysql or postgresql
 	 *
-	 * @return  string  The table name
+	 * @return  array  statements, and the table definition (null when the file's own statement is used or the structure is merged)
 	 *
 	 * @since   3.17.0
 	 * @throws  \RuntimeException
 	 */
-	protected function createTable(\SimpleXMLElement $structure, $dialect = 'mysql')
+	protected function getCreateStatements(\SimpleXMLElement $structure, $dialect)
 	{
-		$db      = Factory::getDbo();
-		$generic = (string) $structure['name'];
-		$table   = $this->getRealTableName($generic);
-		$target  = $db->getServerType();
+		$db         = Factory::getDbo();
+		$generic    = (string) $structure['name'];
+		$statements = array();
+		$definition = null;
 
-		if ($table === '')
+		$this->getRealTableName($generic);
+
+		// From another kind of database, or into PostgreSQL: the structure is translated, and the values converted
+		if ($dialect !== 'mysql' || $db->getServerType() !== 'mysql')
 		{
-			throw new \RuntimeException('A table has no name.');
+			$definition = DatabaseTableDefinition::fromXml($structure, $dialect);
+			$statements = $definition->getCreateStatements($db->getServerType(), $db);
 		}
+		elseif (isset($structure->create_statement) && trim((string) $structure->create_statement) !== '')
+		{
+			$statement = trim((string) $structure->create_statement);
+
+			// The statement names the table with the #__ prefix, which the driver replaces: it must create this table, nothing else
+			if (!preg_match('/^CREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?`?' . preg_quote($generic, '/') . '`?\\s*\\(/i', $statement))
+			{
+				throw new \RuntimeException(sprintf('The structure of %s doesn\'t create that table.', $generic));
+			}
+
+			$statements = array($statement);
+		}
+
+		// Some drivers run every statement of a query: each must be one statement
+		foreach ($statements as $statement)
+		{
+			if (count(\JDatabaseDriver::splitSql($statement)) !== 1)
+			{
+				throw new \RuntimeException(sprintf('The structure of %s holds more than one statement.', $generic));
+			}
+		}
+
+		return array($statements, $definition);
+	}
+
+	/**
+	 * Replace a table with the structure from a file.
+	 *
+	 * @param   \SimpleXMLElement  $structure   The table_structure element
+	 * @param   string             $dialect     The kind of database the file comes from: mysql or postgresql
+	 * @param   array              $statements  The statements and definition from getCreateStatements()
+	 *
+	 * @return  string  The table name
+	 *
+	 * @since   3.17.0
+	 */
+	protected function createTable(\SimpleXMLElement $structure, $dialect, array $statements)
+	{
+		$db    = Factory::getDbo();
+		$table = $this->getRealTableName((string) $structure['name']);
+
+		list($statements, $definition) = $statements;
 
 		$db->dropTable($table, true);
 
-		// From another kind of database, or into PostgreSQL: the structure is translated, and the values converted
-		if ($dialect !== 'mysql' || $target !== 'mysql')
+		if ($definition)
 		{
-			$definition = DatabaseTableDefinition::fromXml($structure, $dialect);
-
-			foreach ($definition->getCreateStatements($target, $db) as $statement)
-			{
-				$db->setQuery($statement)->execute();
-			}
-
 			$this->definitions[$table] = $definition;
-
-			return $table;
 		}
 
-		if (isset($structure->create_statement) && trim((string) $structure->create_statement) !== '')
+		foreach ($statements as $statement)
 		{
-			// The statement names the table with the #__ prefix, which the driver replaces
-			$db->setQuery((string) $structure->create_statement)->execute();
-
-			return $table;
+			$db->setQuery($statement)->execute();
 		}
 
 		// Files of Joomla 4 and later only describe the columns and keys
-		$document = '<?xml version="1.0"?><mysqldump><database name="">' . $structure->asXML() . '</database></mysqldump>';
-		$db->getImporter()->from($document)->withStructure()->mergeStructure();
+		if (!$statements)
+		{
+			$document = '<?xml version="1.0"?><mysqldump><database name="">' . $structure->asXML() . '</database></mysqldump>';
+			$db->getImporter()->from($document)->withStructure()->mergeStructure();
+		}
 
 		return $table;
 	}
@@ -620,6 +686,12 @@ class DatabaseImportCommand extends AbstractCommand
 	 */
 	protected function getRealTableName($table)
 	{
+		// Only tables of the site (the exporter writes them with the #__ prefix)
+		if (!preg_match('/^#__[A-Za-z0-9_]+$/', $table))
+		{
+			throw new \RuntimeException(sprintf('%s isn\'t the name of a table of this site.', $table === '' ? 'An empty name' : $table));
+		}
+
 		return preg_replace('/^#__/', Factory::getDbo()->getPrefix(), $table);
 	}
 }

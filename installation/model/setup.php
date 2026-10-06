@@ -127,6 +127,17 @@ class InstallationModelSetup extends JModelBase
 	{
 		// Get the posted values from the request and validate them.
 		$data   = JFactory::getApplication()->input->post->get('jform', array(), 'array');
+
+		// No field of the installer takes a list: a value posted as one (e.g. jform[site_name][...]) is left out, so a required
+		// field fails validation and nothing of it is stored (these values end up in configuration.php)
+		foreach ($data as $key => $value)
+		{
+			if (!is_scalar($value))
+			{
+				unset($data[$key]);
+			}
+		}
+
 		$return = $this->validate($data, $page);
 
 		// Attempt to save the data before validation.

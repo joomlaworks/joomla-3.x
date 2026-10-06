@@ -169,17 +169,22 @@ class PlgInstallerWebinstaller extends CMSPlugin
 		{
 			$installfrom = base64_decode($this->app->input->getBase64('installfrom', ''));
 
-			$field = new SimpleXMLElement('<field></field>');
+			// Only web addresses: without "schemes", the URL rule also accepts file:, gopher: and others
+			$field = new SimpleXMLElement('<field schemes="http,https"></field>');
 			$rule  = new UrlRule;
 
-			if ($rule->test($field, $installfrom) && preg_match('/\.xml\s*$/', $installfrom))
+			if (!$rule->test($field, $installfrom))
+			{
+				$installfrom = '';
+			}
+			elseif (preg_match('/\.xml\s*$/', $installfrom))
 			{
 				$update = new Update;
 				$update->loadFromXml($installfrom);
 				$download    = $update->get('downloadurl', false);
 				$package_url = $download ? trim((string) $download->_data) : '';
 
-				if ($package_url)
+				if ($package_url && $rule->test($field, $package_url))
 				{
 					$installfrom = $package_url;
 				}

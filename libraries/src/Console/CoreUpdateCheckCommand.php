@@ -36,13 +36,24 @@ class CoreUpdateCheckCommand extends AbstractCommand
 	 * @var    string
 	 * @since  3.17.0
 	 */
-	protected $help = 'Fetches the update feed of the configured update channel and reports whether a newer Joomla version is available.';
+	protected $help = 'Fetches the update feed of the configured update channel and reports whether a newer Joomla version is available. '
+		. 'It replaces the cached update information (as the Joomla Update screen does); with --dry-run it reports the result of the last check instead.';
 
 	/**
+	 * It refreshes the cached update information (and the update site's address), so it isn't read-only
+	 *
 	 * @var    boolean
 	 * @since  3.17.0
 	 */
-	protected $readOnly = true;
+	protected $dryRun = true;
+
+	/**
+	 * Routine, often run by cron jobs
+	 *
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	protected $logged = false;
 
 	/**
 	 * @param   CommandIO  $io  The input values and the output
@@ -55,9 +66,17 @@ class CoreUpdateCheckCommand extends AbstractCommand
 	{
 		/** @var \JoomlaupdateModelDefault $model */
 		$model = $this->getAdministratorModel('com_joomlaupdate', 'Default', 'JoomlaupdateModel');
-		$model->applyUpdateSite();
-		$model->purge();
-		$model->refreshUpdates(true);
+
+		if ($io->isDryRun())
+		{
+			$io->plan('Fetch the update feed of the configured update channel and replace the cached update information', array('action' => 'refresh'));
+		}
+		else
+		{
+			$model->applyUpdateSite();
+			$model->purge();
+			$model->refreshUpdates(true);
+		}
 
 		$data    = $model->getUpdateInformation();
 		$params  = ComponentHelper::getParams('com_joomlaupdate');
@@ -76,6 +95,11 @@ class CoreUpdateCheckCommand extends AbstractCommand
 		}
 
 		$io->text('Your current Joomla version is ' . $current . '.');
+
+		if ($io->isDryRun())
+		{
+			$io->text('As found at the last check:');
+		}
 
 		$downloadUrl = null;
 

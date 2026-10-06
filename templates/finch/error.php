@@ -21,7 +21,7 @@ $code = (int) $this->error->getCode();
 $tpl  = $this->baseurl . '/templates/' . $this->template;
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
+<html lang="<?php echo htmlspecialchars($this->language, ENT_QUOTES, 'UTF-8'); ?>" dir="<?php echo htmlspecialchars($this->direction, ENT_QUOTES, 'UTF-8'); ?>">
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -29,7 +29,7 @@ $tpl  = $this->baseurl . '/templates/' . $this->template;
 	<?php foreach (FinchHelper::stylesheets() as $stylesheet) : ?>
 	<link href="<?php echo htmlspecialchars($stylesheet, ENT_QUOTES, 'UTF-8'); ?>" rel="stylesheet" />
 	<?php endforeach; ?>
-	<link href="<?php echo $tpl; ?>/images/favicon.svg" rel="icon" type="image/svg+xml" />
+	<link href="<?php echo htmlspecialchars($tpl, ENT_QUOTES, 'UTF-8'); ?>/images/favicon.svg" rel="icon" type="image/svg+xml" />
 </head>
 <body class="site isError">
 	<?php echo FinchHelper::sprite(); ?>
@@ -38,7 +38,7 @@ $tpl  = $this->baseurl . '/templates/' . $this->template;
 			<?php echo FinchHelper::logo(FinchHelper::siteName()); ?>
 			<p class="errorCode"><?php echo $code; ?></p>
 			<h1 class="pageTitle"><?php echo FinchHelper::e($this->error->getMessage()); ?></h1>
-			<p><a class="btn" href="<?php echo $this->baseurl; ?>/"><?php echo JText::_('JERROR_LAYOUT_HOME_PAGE'); ?></a></p>
+			<p><a class="btn" href="<?php echo htmlspecialchars($this->baseurl, ENT_QUOTES, 'UTF-8'); ?>/"><?php echo JText::_('JERROR_LAYOUT_HOME_PAGE'); ?></a></p>
 			<?php if ($this->debug) : ?>
 			<pre><?php echo FinchHelper::e($this->error->getTraceAsString()); ?></pre>
 			<?php endif; ?>

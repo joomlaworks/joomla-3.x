@@ -94,6 +94,13 @@ class JoomlaupdateModelDefault extends JModelLegacy
 		$db->setQuery($query);
 		$update_site = $db->loadObject();
 
+		// The update site of Joomla itself is gone (e.g. deleted in Extensions: Update Sites): bring it back, as a new site has it,
+		// or every update screen and update command would fail here
+		if (!$update_site)
+		{
+			$update_site = $this->restoreCoreUpdateSite($updateURL);
+		}
+
 		if ($update_site->location != $updateURL)
 		{
 			// Modify the database record.
@@ -108,6 +115,54 @@ class JoomlaupdateModelDefault extends JModelLegacy
 			$db->setQuery($query);
 			$db->execute();
 		}
+	}
+
+	/**
+	 * Recreate the update site of Joomla itself and its link to the "files_joomla" extension (700), as the installation
+	 * creates them. An update site of that name left without its link is linked again instead of duplicated.
+	 *
+	 * @param   string  $location  The update site's address
+	 *
+	 * @return  \stdClass  The update site
+	 *
+	 * @since   3.17.0
+	 */
+	protected function restoreCoreUpdateSite($location)
+	{
+		$db = $this->getDbo();
+		$id = (int) $db->setQuery(
+			$db->getQuery(true)
+				->select($db->quoteName('update_site_id'))
+				->from($db->quoteName('#__update_sites'))
+				->where($db->quoteName('name') . ' = ' . $db->quote('Joomla! Core'))
+				->where($db->quoteName('type') . ' = ' . $db->quote('collection'))
+				->order($db->quoteName('update_site_id')),
+			0, 1
+		)->loadResult();
+
+		if (!$id)
+		{
+			$site = (object) array(
+				'name'                 => 'Joomla! Core',
+				'type'                 => 'collection',
+				'location'             => $location,
+				'enabled'              => 1,
+				'last_check_timestamp' => 0,
+				'extra_query'          => '',
+			);
+			$db->insertObject('#__update_sites', $site, 'update_site_id');
+			$id = (int) $site->update_site_id;
+		}
+
+		$link = (object) array('update_site_id' => $id, 'extension_id' => 700);
+		$db->insertObject('#__update_sites_extensions', $link);
+
+		return $db->setQuery(
+			$db->getQuery(true)
+				->select('*')
+				->from($db->quoteName('#__update_sites'))
+				->where($db->quoteName('update_site_id') . ' = ' . $id)
+		)->loadObject();
 	}
 
 	/**

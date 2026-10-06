@@ -286,4 +286,21 @@ class JoomlaupdateViewDefault extends JViewLegacy
 		return $this->updateInfo['hasUpdate']
 				&& version_compare($this->updateInfo['latest'], $nextMinor, '>=');
 	}
+
+	/**
+	 * An address of the update feed (the package, the release notes) for an href: escaped, and only a web address (no
+	 * "javascript:" and the like).
+	 *
+	 * @param   string  $url  The address
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public function safeUrl($url)
+	{
+		$url = trim((string) $url);
+
+		return preg_match('#^https?://#i', $url) ? $this->escape($url) : '#';
+	}
 }

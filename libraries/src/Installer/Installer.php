@@ -989,6 +989,11 @@ class Installer extends \JAdapter
 			{
 				$sqlfile = $this->getPath('extension_root') . '/' . trim((string) $file);
 
+				if (!static::isSafePath($file))
+				{
+					return $this->refusePath($file);
+				}
+
 				// Check that sql files exists before reading. Otherwise raise error for rollback
 				if (!file_exists($sqlfile))
 				{
@@ -1088,7 +1093,7 @@ class Installer extends \JAdapter
 					}
 				}
 
-				if ($schemapath !== '')
+				if ($schemapath !== '' && static::isSafePath($schemapath))
 				{
 					$files = str_replace('.sql', '', \JFolder::files($this->getPath('extension_root') . '/' . $schemapath, '\.sql$'));
 					usort($files, 'version_compare');
@@ -1172,7 +1177,7 @@ class Installer extends \JAdapter
 					}
 				}
 
-				if ($schemapath !== '')
+				if ($schemapath !== '' && static::isSafePath($schemapath))
 				{
 					$files = \JFolder::files($this->getPath('extension_root') . '/' . $schemapath, '\.sql$');
 
@@ -1328,6 +1333,11 @@ class Installer extends \JAdapter
 
 		$folder = (string) $element->attributes()->folder;
 
+		if (!static::isSafePath($folder))
+		{
+			return $this->refusePath($folder);
+		}
+
 		if ($folder && file_exists($this->getPath('source') . '/' . $folder))
 		{
 			$source = $this->getPath('source') . '/' . $folder;
@@ -1348,12 +1358,18 @@ class Installer extends \JAdapter
 
 				foreach ($deletions['folders'] as $deleted_folder)
 				{
-					\JFolder::delete($destination . '/' . $deleted_folder);
+					if (static::isSafePath($deleted_folder))
+					{
+						\JFolder::delete($destination . '/' . $deleted_folder);
+					}
 				}
 
 				foreach ($deletions['files'] as $deleted_file)
 				{
-					\JFile::delete($destination . '/' . $deleted_file);
+					if (static::isSafePath($deleted_file))
+					{
+						\JFile::delete($destination . '/' . $deleted_file);
+					}
 				}
 			}
 		}
@@ -1372,6 +1388,11 @@ class Installer extends \JAdapter
 		// Process each file in the $files array (children of $tagName).
 		foreach ($element->children() as $file)
 		{
+			if (!static::isSafePath($file))
+			{
+				return $this->refusePath($file);
+			}
+
 			$path['src'] = $source . '/' . $file;
 			$path['dest'] = $destination . '/' . $file;
 
@@ -1445,6 +1466,11 @@ class Installer extends \JAdapter
 
 		$folder = (string) $element->attributes()->folder;
 
+		if (!static::isSafePath($folder))
+		{
+			return $this->refusePath($folder);
+		}
+
 		if ($folder && file_exists($this->getPath('source') . '/' . $folder))
 		{
 			$source = $this->getPath('source') . '/' . $folder;
@@ -1457,6 +1483,11 @@ class Installer extends \JAdapter
 		// Process each file in the $files array (children of $tagName).
 		foreach ($element->children() as $file)
 		{
+			if (!static::isSafePath($file) || !static::isSafePath($file->attributes()->tag))
+			{
+				return $this->refusePath(ltrim($file->attributes()->tag . '/' . $file, '/'));
+			}
+
 			/*
 			 * Language files go in a subfolder based on the language code, ie.
 			 * <language tag="en-US">en-US.mycomponent.ini</language>
@@ -1544,6 +1575,15 @@ class Installer extends \JAdapter
 		// Default 'media' Files are copied to the JPATH_BASE/media folder
 
 		$folder = ((string) $element->attributes()->destination) ? '/' . $element->attributes()->destination : null;
+
+		foreach (array($folder, (string) $element->attributes()->folder) as $part)
+		{
+			if (!static::isSafePath($part))
+			{
+				return $this->refusePath($part);
+			}
+		}
+
 		$destination = \JPath::clean(JPATH_ROOT . '/media' . $folder);
 
 		// Here we set the folder we are going to copy the files from.
@@ -1569,6 +1609,11 @@ class Installer extends \JAdapter
 		// Process each file in the $files array (children of $tagName).
 		foreach ($element->children() as $file)
 		{
+			if (!static::isSafePath($file))
+			{
+				return $this->refusePath($file);
+			}
+
 			$path['src'] = $source . '/' . $file;
 			$path['dest'] = $destination . '/' . $file;
 
@@ -1668,6 +1713,20 @@ class Installer extends \JAdapter
 	 */
 	public function copyFiles($files, $overwrite = null)
 	{
+		if (is_array($files))
+		{
+			// The destinations are built from the manifest: never outside the folders they belong to
+			foreach ($files as $file)
+			{
+				if (!static::isSafePath($file['dest']))
+				{
+					\JLog::add(\JText::sprintf('JLIB_INSTALLER_ERROR_UNSAFE_PATH', $file['dest']), \JLog::WARNING, 'jerror');
+
+					return false;
+				}
+			}
+		}
+
 		/*
 		 * To allow for manual override on the overwriting flag, we check to see if
 		 * the $overwrite flag was set and is a boolean value.  If not, use the object
@@ -1769,6 +1828,37 @@ class Installer extends \JAdapter
 	}
 
 	/**
+	 * Whether a path given by a manifest (a file or folder name, a language tag, a target folder) stays inside the folder it's
+	 * joined to: it has no ".." parts. Joomla 3.x UTD: the installer joined them to the extension's folders as given.
+	 *
+	 * @param   string  $path  The path, or the part of it which comes from the manifest
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public static function isSafePath($path)
+	{
+		return !in_array('..', preg_split('#[/\\\\]+#', (string) $path), true) && strpos((string) $path, "\0") === false;
+	}
+
+	/**
+	 * Logs a manifest path refused by isSafePath().
+	 *
+	 * @param   string  $path  The path
+	 *
+	 * @return  boolean  False
+	 *
+	 * @since   3.17.0
+	 */
+	protected function refusePath($path)
+	{
+		\JLog::add(\JText::sprintf('JLIB_INSTALLER_ERROR_UNSAFE_PATH', $path), \JLog::WARNING, 'jerror');
+
+		return false;
+	}
+
+	/**
 	 * Method to parse through a files element of the installation manifest and remove
 	 * the files that were installed
 	 *
@@ -1820,6 +1910,11 @@ class Installer extends \JAdapter
 				if ((string) $element->attributes()->destination)
 				{
 					$folder = (string) $element->attributes()->destination;
+
+					if (!static::isSafePath($folder))
+					{
+						return $this->refusePath($folder);
+					}
 				}
 				else
 				{
@@ -1870,6 +1965,13 @@ class Installer extends \JAdapter
 		// Process each file in the $files array (children of $tagName).
 		foreach ($files as $file)
 		{
+			if (!static::isSafePath($file) || !static::isSafePath($file->attributes()->tag))
+			{
+				$retval = $this->refusePath(ltrim($file->attributes()->tag . '/' . $file, '/'));
+
+				continue;
+			}
+
 			/*
 			 * If the file is a language, we must handle it differently.  Language files
 			 * go in a subdirectory based on the language code, ie.

@@ -55,6 +55,12 @@ class InstallationControllerInstallEmail extends JControllerBase
 		// Get the options from the session
 		$options = $model->getOptions();
 
+		// Only for the browser which has just installed the site (see InstallationModelConfiguration::createConfiguration())
+		if (!$app->getSession()->get('setup.installed', false) || empty($options['admin_email']) || empty($options['admin_user']))
+		{
+			$app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
+		}
+
 		$name    = $options['admin_user'];
 		$email   = $options['admin_email'];
 		$subject = JText::sprintf(JText::_('INSTL_EMAIL_SUBJECT'), $options['site_name']);

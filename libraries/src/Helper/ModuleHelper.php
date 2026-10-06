@@ -678,24 +678,40 @@ abstract class ModuleHelper
 	}
 
 	/**
-	 * Get module by id
+	 * Get a module by its ID, whichever pages it's assigned to (e.g. for {loadmoduleid}), but only when the visitor may see it:
+	 * published, of an enabled module type, of this client (site or administrator), in its publishing window, of an access
+	 * level of the user and, on a multilingual site, of the current language or all. These are the checks of
+	 * getModuleList() but the page assignment, which a module loaded by ID deliberately ignores.
 	 *
 	 * @param   string  $id  The id of the module
 	 *
-	 * @return  \stdClass  The Module object
+	 * @return  \stdClass|null  The Module object, or null when there's none the user may see
 	 *
 	 * @since   3.9.0
 	 */
 	public static function getModuleById($id)
 	{
-		$db    = \JFactory::getDbo();
-		$query = $db->getQuery(true)
+		$app      = \JFactory::getApplication();
+		$db       = \JFactory::getDbo();
+		$now      = $db->quote(\JFactory::getDate()->toSql());
+		$nullDate = $db->quote($db->getNullDate());
+		$query    = $db->getQuery(true)
 			->select('m.id, m.title, m.module, m.position, m.content, m.showtitle, m.params')
 			->from($db->quoteName('#__modules', 'm'))
 			->join('LEFT', $db->quoteName('#__extensions', 'e') . ' ON e.element = m.module AND e.client_id = m.client_id')
 			->where('m.id = ' . (int) $id)
 			->where('m.published = 1')
-			->where('e.enabled = 1');
+			->where('e.enabled = 1')
+			->where('m.client_id = ' . (int) $app->getClientId())
+			->where('m.access IN (' . implode(',', array_map('intval', \JFactory::getUser()->getAuthorisedViewLevels())) . ')')
+			->where('(m.publish_up IS NULL OR m.publish_up = ' . $nullDate . ' OR m.publish_up <= ' . $now . ')')
+			->where('(m.publish_down IS NULL OR m.publish_down = ' . $nullDate . ' OR m.publish_down >= ' . $now . ')');
+
+		if (($app->isClient('site') && $app->getLanguageFilter()) || ($app->isClient('administrator') && static::isAdminMultilang()))
+		{
+			$query->where('m.language IN (' . $db->quote(\JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')');
+		}
+
 		$db->setQuery($query);
 
 		return $db->loadObject();
