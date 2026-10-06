@@ -135,6 +135,10 @@ class InstallationModelConfiguration extends JModelBase
 		$registry->set('sef_suffix', 0);
 		$registry->set('unicodeslugs', 0);
 
+		// The site's name after every page title ("Home - My Site"): a bare menu item title, e.g. "Home", says little in a
+		// browser tab or a search result
+		$registry->set('sitename_pagetitles', 2);
+
 		// Feed settings.
 		$registry->set('feed_limit', 10);
 		$registry->set('feed_email', 'none');

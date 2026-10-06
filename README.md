@@ -66,6 +66,7 @@ Summary of changes:
 - Fixed PHP 8.5 deprecation warnings from non-canonical casts (e.g. `(boolean)`, `(integer)`, `(double)`) still present in parts of the code
 - Fixed thousands of PHP 8.5 deprecation warnings while Smart Search indexes content
 - Fixed a PHP warning in command line scripts given an empty argument
+- Fixed Global Configuration not saving on SQLite sites ("Invalid field: Host")
 - Fixed PHP 8.4/8.5 deprecation warnings when checking for updates, reading RSS feeds, sending mail with NTLM authentication, connecting to LDAP and using FTP
 - Fixed extension updates losing their download key when the package URL already had a query string
 - Update notification emails for a new Joomla version are now sent once a day, at a time you choose in the plugin's options (10:00 by default); they used to go out every 6 hours until the site was updated
@@ -104,6 +105,8 @@ Summary of changes:
 - Content management from the command line: list, show, create, change, publish, trash and delete articles, categories, tags, modules and menu items, saved as the administrator saves them, acting as an account whose permissions apply (`--as`); `--dry-run` on every command which changes something; `database:optimize`; `extension:reinstall` (overwrites an extension's files with its original package, from its update site or a given file, and lists or removes files the package doesn't have, e.g. on a hacked site); `site:health`; `log:list`/`log:tail` and `actionlog:list`. Changes made from the command line are recorded in the User Actions Log
 - Template management from the command line: a template's positions, options and design tokens (`template:info`), its options, and its files (list, read, write, delete), with every change undoable, syntax checks for PHP, and full template backups and restores (`template:backup`, `template:restore`)
 - Hammond and Finch load `css/custom.css` when it exists: the place for a site's own CSS, never touched by updates
+- New sites show the site's name after page titles ("Home - My Site" instead of "Home")
+- Hammond and Finch print articles on A4 with just the logo and the article, without splitting paragraphs between pages
 - Hammond and Finch: lean `index.php` files (the setup is in each template's helper), their own offline page, lazy images below the top of each page, and social links shown out of the box (`#` until set)
 - Built-in MCP server (`php cli/joomla.php mcp:serve`) for AI assistants, read-only by default. See [AI Assistants (MCP)](#ai-assistants-mcp)
 - New SQLite database driver (experimental): the whole site in one file, with no database server, for small to medium sites, development and testing. Core and extensions work unchanged, as it runs their MySQL SQL. Available on PHP 7.4+ in the installer, and for existing sites through the new `database:convert` command line command (which also moves a site back to MySQL). SQLite sites use PHP sessions, so browsing doesn't write to the database. See [SQLite Support](#sqlite-support)

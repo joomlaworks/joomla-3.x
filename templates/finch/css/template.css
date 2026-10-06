@@ -570,10 +570,28 @@ dl.stats-module dd {margin:0;overflow-wrap:anywhere;}
     .backToTop {margin-left:0;}
 }
 
+/* Print: an A4 page with the logo and the content only (a post: its title, byline, image and text) */
 @media print {
-    .siteHeader,.siteFooter,.sidebar,.belowContent,.shareLinks,.postNav {display:none;}
-    body {background:#fff;}
-    .postContent {max-width:none;font-size:12pt;}
+    @page {size:A4;margin:18mm 16mm 20mm;}
+    html {font-size:10.5pt;}
+    body {background:#fff;color:#000;}
+    .skipLink,.tagline,.mainNav,.searchPanel,#system-message-container,.aboveContent,.belowContent,.sidebar,.postFooter,.shareLinks,
+    .postTags,.authorBox,.postNav,.moduleContainer,.pagination,.siteFooter,iframe,video,audio,
+    .embed.video,figure:has(> iframe:only-child) {display:none!important;}
+    .siteHeader {position:static;background:none;}
+    .masthead {margin-bottom:18pt;padding:0 0 12pt;border-bottom:1.5pt solid #000;}
+    .container,.containerPost {max-width:none;padding:0;}
+    .layoutSidebar {display:block;}
+    .postViewTitle,.pageTitle {font-size:24pt;}
+    .postFigure img {width:auto;max-width:100%;max-height:9cm;margin:0 auto;}
+    .postContent {max-width:none;font-size:11pt;line-height:1.55;}
+    a {color:inherit;text-decoration:none;}
+    /* On paper, the address of a link is all there is */
+    .postContent a[href^="http"]::after {content:" (" attr(href) ")";font-size:8.5pt;color:#555;overflow-wrap:anywhere;}
+    /* Page breaks: never inside a paragraph, a list item, a quote, an image or a table, nor right after a heading */
+    p,li,blockquote,figure,img,table,tr,pre,dl,.byline {break-inside:avoid;page-break-inside:avoid;}
+    p {orphans:3;widows:3;}
+    h1,h2,h3,h4,h5,h6 {break-after:avoid;page-break-after:avoid;}
 }
 
 

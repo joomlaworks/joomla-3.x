@@ -47,7 +47,34 @@ class ConfigModelApplication extends ConfigModelForm
 			return false;
 		}
 
+		// An SQLite database has no server, and its Host field is hidden: required, it would stop the form (in the browser too)
+		if (JFactory::getDbo()->getName() === 'mysqlonsqlite')
+		{
+			$form->setFieldAttribute('host', 'required', 'false');
+		}
+
 		return $form;
+	}
+
+	/**
+	 * Validate the form data. An SQLite database has no server: its Host field is hidden and empty, so it isn't required.
+	 *
+	 * @param   JForm   $form   The form
+	 * @param   array   $data   The data
+	 * @param   string  $group  The name of the field group to validate
+	 *
+	 * @return  array|boolean  The filtered data, or false
+	 *
+	 * @since   3.17.0
+	 */
+	public function validate($form, $data, $group = null)
+	{
+		if (isset($data['dbtype']) && $data['dbtype'] === 'mysqlonsqlite')
+		{
+			$form->setFieldAttribute('host', 'required', 'false');
+		}
+
+		return parent::validate($form, $data, $group);
 	}
 
 	/**
