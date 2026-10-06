@@ -65,7 +65,7 @@
 		const run = (button) => {
 			const action = button.dataset.housekeepingAction;
 
-			if (busy || (button.dataset.confirm && !window.confirm(button.dataset.confirm))) {
+			if (busy) {
 				return;
 			}
 

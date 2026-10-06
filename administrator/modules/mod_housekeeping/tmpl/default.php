@@ -47,10 +47,8 @@ $icon = function ($name)
 	<button type="button" class="hkButton hkToggle" aria-haspopup="true" aria-expanded="false" aria-controls="housekeepingMenu"
 		title="<?php echo $e(JText::_('MOD_HOUSEKEEPING_MORE')); ?>" aria-label="<?php echo $e(JText::_('MOD_HOUSEKEEPING_MORE')); ?>"><?php echo $icon('more'); ?></button>
 	<ul class="hkMenu" id="housekeepingMenu" role="menu" hidden>
-		<li role="none"><button type="button" role="menuitem" data-housekeeping-action="all"
-			data-confirm="<?php echo $e(JText::_('MOD_HOUSEKEEPING_CONFIRM_ALL')); ?>"><?php echo $icon('all'); ?><span><?php echo JText::_('MOD_HOUSEKEEPING_CLEAN_ALL'); ?></span></button></li>
-		<li role="none"><button type="button" role="menuitem" data-housekeeping-action="checkin"
-			data-confirm="<?php echo $e(JText::_('MOD_HOUSEKEEPING_CONFIRM_CHECKIN')); ?>"><?php echo $icon('checkin'); ?><span><?php echo JText::_('MOD_HOUSEKEEPING_CHECKIN'); ?></span></button></li>
+		<li role="none"><button type="button" role="menuitem" data-housekeeping-action="all"><?php echo $icon('all'); ?><span><?php echo JText::_('MOD_HOUSEKEEPING_CLEAN_ALL'); ?></span></button></li>
+		<li role="none"><button type="button" role="menuitem" data-housekeeping-action="checkin"><?php echo $icon('checkin'); ?><span><?php echo JText::_('MOD_HOUSEKEEPING_CHECKIN'); ?></span></button></li>
 	</ul>
 	<?php endif; ?>
 </div>

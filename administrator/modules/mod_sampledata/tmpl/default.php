@@ -21,8 +21,16 @@ JText::script('MOD_SAMPLEDATA_INVALID_RESPONSE');
 JText::script('MOD_SAMPLEDATA_REQUEST_FAILED');
 JText::script('MOD_SAMPLEDATA_INSTALLED');
 
+// The form token goes in the requests' body. Sample data plugins written for stock Joomla 3 look for it in the URL, so it's added
+// there too, but only when such a plugin is enabled (a URL ends up in logs)
+$others = array_filter(JPluginHelper::getPlugin('sampledata'), function ($plugin)
+{
+	return $plugin->name !== 'blog';
+});
+
 JFactory::getDocument()->addScriptDeclaration('
-	var modSampledataUrl = "index.php?option=com_ajax&format=json&group=sampledata&' . Session::getFormToken() . '=1",
+	var modSampledataUrl = "index.php?option=com_ajax&format=json&group=sampledata' . ($others ? '&' . Session::getFormToken() . '=1' : '') . '",
+		modSampledataToken = "' . Session::getFormToken() . '",
 		modSampledataIconProgress = "' . JUri::root(true) . '/media/jui/images/ajax-loader.gif";
 ');
 

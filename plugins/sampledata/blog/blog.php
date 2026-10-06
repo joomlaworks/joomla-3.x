@@ -201,13 +201,24 @@ class PlgSampledataBlog extends JPlugin
 	 */
 	private function step($step)
 	{
-		$name = $this->app->input->get('type');
+		$input = $this->app->input;
+		$name  = $input->post->getCmd('type');
 
-		// From the Sample Data module only (com_ajax also runs plugins on the site)
-		if (!$this->app->isClient('administrator') || !Session::checkToken('get') || !in_array($name, self::SETS, true)
-			|| !Factory::getUser()->authorise('core.admin'))
+		// From the Sample Data module only (com_ajax also runs plugins on the site), and only for this plugin's sets
+		if (!$this->app->isClient('administrator') || !in_array($name, self::SETS, true))
 		{
 			return;
+		}
+
+		// A step replaces content: POST only, with the form token in the request's body (never in the URL, which ends up in logs)
+		if (strtoupper($input->server->getWord('REQUEST_METHOD')) !== 'POST' || !Session::checkToken('post'))
+		{
+			return array('success' => false, 'message' => JText::_('JINVALID_TOKEN_NOTICE'));
+		}
+
+		if (!Factory::getUser()->authorise('core.admin'))
+		{
+			return array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR'));
 		}
 
 		return $this->getSet($name)->step($step);

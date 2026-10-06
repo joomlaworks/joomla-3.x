@@ -49,6 +49,7 @@
 		body.append('type', type);
 		body.append('plugin', `SampledataApplyStep${step}`);
 		body.append('step', step);
+		body.append(window.modSampledataToken, '1');
 
 		fetch(window.modSampledataUrl, { method: 'POST', body, credentials: 'same-origin' })
 			.then((response) => response.json())
