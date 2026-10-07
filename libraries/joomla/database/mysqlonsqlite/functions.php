@@ -26,6 +26,15 @@ abstract class JDatabaseMysqlonsqliteFunctions
 	public static $lastInsertId = 0;
 
 	/**
+	 * The longest result LPAD() and RPAD() build, in characters: MySQL returns NULL past its packet size, and a length from a
+	 * query (e.g. LPAD(x, 2000000000, 'y')) would otherwise exhaust PHP's memory
+	 *
+	 * @var    integer
+	 * @since  3.17.0
+	 */
+	const MAX_PAD_LENGTH = 1048576;
+
+	/**
 	 * Register the functions on a connection.
 	 *
 	 * @param   WP_MySQL_On_SQLite  $connection  The connection
@@ -54,6 +63,9 @@ abstract class JDatabaseMysqlonsqliteFunctions
 			'lpad'            => array(array(__CLASS__, 'lpad'), 3),
 			'rpad'            => array(array(__CLASS__, 'rpad'), 3),
 			'uuid'            => array(array(__CLASS__, 'uuid'), 0),
+
+			// The layer's own REGEXP ends its pattern at an escaped slash (\/), and an invalid pattern prints PHP warnings
+			'regexp'          => array(array(__CLASS__, 'regexp'), 2),
 
 			// The layer's own bookkeeping inserts change SQLite's last row ID, and the layer resets its own when a statement starts
 			'last_insert_id'  => array(function () {
@@ -207,6 +219,39 @@ abstract class JDatabaseMysqlonsqliteFunctions
 	}
 
 	/**
+	 * SQLite's REGEXP operator: "value REGEXP pattern" calls regexp(pattern, value). Case-insensitive, unless the layer marks
+	 * the pattern as binary with a leading NUL byte (REGEXP BINARY).
+	 *
+	 * @param   string|null  $pattern  The regular expression
+	 * @param   string|null  $value    The text
+	 *
+	 * @return  integer|null  1 or 0, or NULL for NULL arguments or a pattern PCRE can't compile
+	 *
+	 * @since   3.17.0
+	 */
+	public static function regexp($pattern, $value)
+	{
+		if ($pattern === null || $value === null)
+		{
+			return null;
+		}
+
+		$pattern = (string) $pattern;
+		$flags   = 'i';
+
+		if ($pattern !== '' && $pattern[0] === "\0")
+		{
+			$pattern = substr($pattern, 1);
+			$flags   = '';
+		}
+
+		// A delimiter no pattern holds as such (an \x01 in it is written as an escape), so the pattern can't end early
+		$result = @preg_match("\x01" . str_replace("\x01", '\\x01', $pattern) . "\x01" . $flags, (string) $value);
+
+		return $result === false ? null : $result;
+	}
+
+	/**
 	 * @return  string  A version 1 style UUID, e.g. "6ccd780c-baba-1026-9564-5b8c656024db"
 	 *
 	 * @since   3.17.0
@@ -240,6 +285,11 @@ abstract class JDatabaseMysqlonsqliteFunctions
 		$string  = (string) $string;
 		$length  = (int) $length;
 		$current = mb_strlen($string, 'UTF-8');
+
+		if ($length > static::MAX_PAD_LENGTH)
+		{
+			return null;
+		}
 
 		// Like MySQL, a longer text is cut to the length
 		if ($length <= $current || (string) $pad === '')

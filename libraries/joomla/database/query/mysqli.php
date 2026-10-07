@@ -84,6 +84,10 @@ class JDatabaseQueryMysqli extends JDatabaseQuery implements JDatabaseQueryLimit
 	 */
 	public function processLimit($query, $limit, $offset = 0)
 	{
+		// Joomla 3.x UTD: numbers only (a caller passing request values would otherwise put them into the SQL)
+		$limit  = (int) $limit;
+		$offset = (int) $offset;
+
 		if ($limit > 0 && $offset > 0)
 		{
 			$query .= ' LIMIT ' . $offset . ', ' . $limit;

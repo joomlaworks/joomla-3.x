@@ -149,6 +149,10 @@ class JDatabaseQueryOracle extends JDatabaseQueryPdo implements JDatabaseQueryPr
 	 */
 	public function processLimit($query, $limit, $offset = 0)
 	{
+		// Joomla 3.x UTD: numbers only (a caller passing request values would otherwise put them into the SQL)
+		$limit  = (int) $limit;
+		$offset = (int) $offset;
+
 		// Check if we need to mangle the query.
 		if ($limit || $offset)
 		{
