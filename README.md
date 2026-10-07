@@ -53,6 +53,7 @@ Summary of changes:
 - More PHP 8.5 deprecation fixes
 - Fixed Joomla Update failing with a PHP error when Joomla's own update site had been deleted
 - Fixed the administrator's Help buttons, which showed "not found" since 3.11
+- Post-installation Messages now show what's new in every release of this distribution, from 3.11 to 3.17, instead of stock Joomla's outdated messages from the 3.2–3.10 era
 - PostgreSQL fixes: batch copy, saving Global Configuration (native driver), the installer's backup of old tables, and the frontpage module order
 - SQL Server / Azure SQL tested for the first time: fixed creating new items on PHP 8, connecting through ODBC Driver 18, Smart Search and search, and long values with NULL bytes being cut off
 

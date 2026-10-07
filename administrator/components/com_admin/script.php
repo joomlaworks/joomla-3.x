@@ -368,6 +368,8 @@ class JoomlaInstallerScript
 			'3.17.0-2026-10-08.sql' => '3.17.0',
 			// Housekeeping module
 			'3.17.0-2026-10-09.sql' => '3.17.0',
+			// What's new in 3.17 (post-installation message)
+			'3.17.0-2026-10-10.sql' => '3.17.0',
 		);
 
 		foreach ($dataMigrationFiles as $file => $addedIn)

@@ -1672,14 +1672,13 @@ CREATE TABLE IF NOT EXISTS `#__postinstall_messages` (
 --
 
 INSERT INTO `#__postinstall_messages` (`extension_id`, `title_key`, `description_key`, `action_key`, `language_extension`, `language_client_id`, `type`, `action_file`, `action`, `condition_file`, `condition_method`, `version_introduced`, `enabled`) VALUES
-(700, 'PLG_TWOFACTORAUTH_TOTP_POSTINSTALL_TITLE', 'PLG_TWOFACTORAUTH_TOTP_POSTINSTALL_BODY', 'PLG_TWOFACTORAUTH_TOTP_POSTINSTALL_ACTION', 'plg_twofactorauth_totp', 1, 'action', 'site://plugins/twofactorauth/totp/postinstall/actions.php', 'twofactorauth_postinstall_action', 'site://plugins/twofactorauth/totp/postinstall/actions.php', 'twofactorauth_postinstall_condition', '3.2.0', 1),
-(700, 'COM_CPANEL_WELCOME_BEGINNERS_TITLE', 'COM_CPANEL_WELCOME_BEGINNERS_MESSAGE', '', 'com_cpanel', 1, 'message', '', '', '', '', '3.2.0', 1),
-(700, 'COM_CPANEL_MSG_STATS_COLLECTION_TITLE', 'COM_CPANEL_MSG_STATS_COLLECTION_BODY', '', 'com_cpanel', 1, 'message', '', '', 'admin://components/com_admin/postinstall/statscollection.php', 'admin_postinstall_statscollection_condition', '3.5.0', 1),
-(700, 'PLG_SYSTEM_UPDATENOTIFICATION_POSTINSTALL_UPDATECACHETIME', 'PLG_SYSTEM_UPDATENOTIFICATION_POSTINSTALL_UPDATECACHETIME_BODY', 'PLG_SYSTEM_UPDATENOTIFICATION_POSTINSTALL_UPDATECACHETIME_ACTION', 'plg_system_updatenotification', 1, 'action', 'site://plugins/system/updatenotification/postinstall/updatecachetime.php', 'updatecachetime_postinstall_action', 'site://plugins/system/updatenotification/postinstall/updatecachetime.php', 'updatecachetime_postinstall_condition', '3.6.3', 1),
-(700, 'COM_CPANEL_MSG_JOOMLA40_PRE_CHECKS_TITLE', 'COM_CPANEL_MSG_JOOMLA40_PRE_CHECKS_BODY', '', 'com_cpanel', 1, 'message', '', '', 'admin://components/com_admin/postinstall/joomla40checks.php', 'admin_postinstall_joomla40checks_condition', '3.7.0', 1),
-(700, 'PLG_PLG_RECAPTCHA_VERSION_1_POSTINSTALL_TITLE', 'PLG_PLG_RECAPTCHA_VERSION_1_POSTINSTALL_BODY', 'PLG_PLG_RECAPTCHA_VERSION_1_POSTINSTALL_ACTION', 'plg_captcha_recaptcha', 1, 'action', 'site://plugins/captcha/recaptcha/postinstall/actions.php', 'recaptcha_postinstall_action', 'site://plugins/captcha/recaptcha/postinstall/actions.php', 'recaptcha_postinstall_condition', '3.8.6', 1),
-(700, 'COM_ACTIONLOGS_POSTINSTALL_TITLE', 'COM_ACTIONLOGS_POSTINSTALL_BODY', '', 'com_actionlogs', 1, 'message', '', '', '', '', '3.9.0', 1),
-(700, 'COM_PRIVACY_POSTINSTALL_TITLE', 'COM_PRIVACY_POSTINSTALL_BODY', '', 'com_privacy', 1, 'message', '', '', '', '', '3.9.0', 1);
+(700, 'COM_CPANEL_MSG_UTD_3_11_TITLE', 'COM_CPANEL_MSG_UTD_3_11_BODY', '', 'com_cpanel', 1, 'message', '', '', '', '', '3.11.0', 1),
+(700, 'COM_CPANEL_MSG_UTD_3_12_TITLE', 'COM_CPANEL_MSG_UTD_3_12_BODY', '', 'com_cpanel', 1, 'message', '', '', '', '', '3.12.0', 1),
+(700, 'COM_CPANEL_MSG_UTD_3_13_TITLE', 'COM_CPANEL_MSG_UTD_3_13_BODY', '', 'com_cpanel', 1, 'message', '', '', '', '', '3.13.0', 1),
+(700, 'COM_CPANEL_MSG_UTD_3_14_TITLE', 'COM_CPANEL_MSG_UTD_3_14_BODY', '', 'com_cpanel', 1, 'message', '', '', '', '', '3.14.0', 1),
+(700, 'COM_CPANEL_MSG_UTD_3_15_TITLE', 'COM_CPANEL_MSG_UTD_3_15_BODY', '', 'com_cpanel', 1, 'message', '', '', '', '', '3.15.0', 1),
+(700, 'COM_CPANEL_MSG_UTD_3_16_TITLE', 'COM_CPANEL_MSG_UTD_3_16_BODY', '', 'com_cpanel', 1, 'message', '', '', '', '', '3.16.0', 1),
+(700, 'COM_CPANEL_MSG_UTD_3_17_TITLE', 'COM_CPANEL_MSG_UTD_3_17_BODY', '', 'com_cpanel', 1, 'message', '', '', '', '', '3.17.0', 1);
 
 -- --------------------------------------------------------
 
