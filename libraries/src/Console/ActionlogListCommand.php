@@ -128,6 +128,9 @@ class ActionlogListCommand extends AbstractCommand
 		\JLoader::register('ActionlogsHelper', $helper);
 		Factory::getLanguage()->load('com_actionlogs', JPATH_ADMINISTRATOR);
 
+		// The messages of Joomla's own actions (logins, saved articles...) are in the Action Log plugins' language files
+		\ActionlogsHelper::loadActionLogPluginsLanguage();
+
 		$rows = array();
 
 		foreach ($db->setQuery($query, 0, $limit)->loadObjectList() as $log)

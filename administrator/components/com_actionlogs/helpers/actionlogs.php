@@ -193,6 +193,13 @@ class ActionlogsHelper
 	{
 		static $links = array();
 
+		// The message may be in its extension's language files (e.g. the command line's, in com_actionlogs'), which only the
+		// Actions Log's own pages loaded: the dashboard's Latest Actions module and the privacy requests showed the bare key
+		if (!empty($log->extension))
+		{
+			static::loadTranslationFiles(strtok($log->extension, '.'));
+		}
+
 		$message     = Text::_($log->message_language_key);
 		$messageData = json_decode((string) $log->message, true);
 
