@@ -109,6 +109,10 @@ class FOFDatabaseDriverPdomysql extends FOFDatabaseDriverPdo
 	 */
 	public function connect()
 	{
+		// Joomla 3.x UTD patch: one statement per query, as with mysqli (PDO MySQL runs several given at once, so an injection anywhere could
+		// add its own). Pdo\Mysql's constant from PHP 8.4 on (PHP 8.5 deprecates the PDO::MYSQL_* ones).
+		$this->options['driverOptions'][defined('Pdo\\Mysql::ATTR_MULTI_STATEMENTS') ? constant('Pdo\\Mysql::ATTR_MULTI_STATEMENTS') : PDO::MYSQL_ATTR_MULTI_STATEMENTS] = false;
+
 		try
 		{
 			// Try to connect to MySQL

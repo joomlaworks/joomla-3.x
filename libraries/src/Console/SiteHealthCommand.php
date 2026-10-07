@@ -203,15 +203,24 @@ class SiteHealthCommand extends AbstractCommand
 			return;
 		}
 
+		// The server's name: MariaDB uses the MySQL drivers (its version reads e.g. "11.8.9-MariaDB")
+		$server = array('mysql' => 'MySQL', 'postgresql' => 'PostgreSQL', 'mssql' => 'SQL Server')[$db->getServerType()] ?? $db->getServerType();
+
+		if (stripos($version, 'mariadb') !== false)
+		{
+			$server  = 'MariaDB';
+			$version = preg_replace('/-MariaDB.*$/i', '', $version);
+		}
+
 		if (!$db->isMinimumVersion())
 		{
 			$this->add('database', 'error', sprintf('The %s server %s is older than this Joomla version supports. Joomla updates are withheld until it is upgraded.',
-				$db->getServerType(), $version));
+				$server, $version));
 
 			return;
 		}
 
-		$this->add('database', 'ok', sprintf('%s %s with the "%s" driver.', $db->getServerType(), $version, $db->getName()));
+		$this->add('database', 'ok', sprintf('%s %s with the "%s" driver.', $server, $version, $db->getName()));
 	}
 
 	/**

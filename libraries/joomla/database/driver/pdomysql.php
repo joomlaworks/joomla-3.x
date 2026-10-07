@@ -112,6 +112,10 @@ class JDatabaseDriverPdomysql extends JDatabaseDriverPdo
 
 		$this->options['host'] = $host;
 
+		// Joomla 3.x UTD: one statement per query, as with mysqli (PDO MySQL runs several given at once, so an injection anywhere could
+		// add its own). Pdo\Mysql's constant from PHP 8.4 on (PHP 8.5 deprecates the PDO::MYSQL_* ones).
+		$this->options['driverOptions'][defined('Pdo\\Mysql::ATTR_MULTI_STATEMENTS') ? constant('Pdo\\Mysql::ATTR_MULTI_STATEMENTS') : PDO::MYSQL_ATTR_MULTI_STATEMENTS] = false;
+
 		if ($socket !== null)
 		{
 			$this->options['socket'] = $socket;
@@ -244,6 +248,19 @@ class JDatabaseDriverPdomysql extends JDatabaseDriverPdo
 		$this->execute();
 
 		return $this;
+	}
+
+	/**
+	 * Get the version of the database server; for MariaDB 10, without the "5.5.5-" which it sent to old clients (PHP before 8
+	 * shows it), as Joomla 4 does.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public function getVersion()
+	{
+		return preg_replace('/^5\.5\.5-(?=.*mariadb)/i', '', (string) parent::getVersion());
 	}
 
 	/**
