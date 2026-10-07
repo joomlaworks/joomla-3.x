@@ -72,7 +72,7 @@ class CoreInstallCommand extends AbstractCommand
 		$this->addOption('admin-email', null, self::OPTION_REQUIRED, 'The administrator\'s email address');
 		$this->addOption('admin-username', null, self::OPTION_REQUIRED, 'The administrator\'s username');
 		$this->addOption('admin-password', null, self::OPTION_REQUIRED, 'The administrator\'s password (generated when not given)');
-		$this->addOption('sample-data', null, self::OPTION_OPTIONAL, 'Also install sample data: news or blog (without a name, it asks which)');
+		$this->addOption('sample-data', null, self::OPTION_OPTIONAL, 'Also install sample data: news, blog or studio (without a name, it asks which)');
 	}
 
 	/**

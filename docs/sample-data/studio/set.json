@@ -1,0 +1,14 @@
+{
+	"title": "Studio",
+	"siteName": "Rookwood Studio",
+	"template": "rookwood",
+	"pagesCategory": "pages",
+	"archive": [],
+	"menus": {
+		"mainmenu": {"type": "studiomenu", "title": "Studio Menu", "description": "Work, journal, studio and contact pages"},
+		"footermenu": {"type": "studiofooter", "title": "Studio Footer Menu", "description": "Privacy and accessibility pages"},
+		"headeraction": {"type": "studioheader", "title": "Studio Header Button", "description": "The button in the header"},
+		"heroactions": {"type": "studiohero", "title": "Studio Hero Buttons", "description": "The buttons of the home page's hero"},
+		"studiolink": {"type": "studiolink", "title": "Studio Button", "description": "The button of the home page's studio section"}
+	}
+}

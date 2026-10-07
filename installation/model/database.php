@@ -998,9 +998,9 @@ class InstallationModelDatabase extends JModelBase
 
 		// The sets made for this distribution's templates; any other set (e.g. of a language pack) gets Protostar, made for the
 		// stock ones. Hammond, the default template of a new site, stays for the News set.
-		$templates = array('sample_news.sql' => 'hammond', 'sample_blog.sql' => 'finch');
+		$templates = array('sample_news.sql' => 'hammond', 'sample_blog.sql' => 'finch', 'sample_studio.sql' => 'rookwood');
 
-		// These keep their articles hours and days apart (the latest few minutes old), as on a news site or a blog
+		// These keep their articles hours and days apart (the latest few minutes old), as on a news site, a blog or a studio's journal
 		if (isset($templates[$sampleFileName]))
 		{
 			$this->shiftDates($db);

@@ -41,7 +41,7 @@ foreach ($db->setQuery("SELECT * FROM #__content ORDER BY id")->loadObjectList()
 	);
 }
 
-// Menus: the set's menus under menu types of their own (set.json), without the home item (the site keeps its own), with links by alias
+// Menus: the set's menus under menu types of their own (set.json), with links by alias; the home item as an alias of the site's own
 $types = array();
 foreach ($config['menus'] as $menutype => $menu)
 {
@@ -49,12 +49,31 @@ foreach ($config['menus'] as $menutype => $menu)
 	$data['menus'][$menu['type']] = array('title' => $menu['title'], 'description' => $menu['description'], 'items' => array());
 }
 $quoted = implode(', ', array_map(array($db, 'quote'), array_keys($types)));
-foreach ($db->setQuery("SELECT * FROM #__menu WHERE client_id = 0 AND menutype IN ($quoted) AND home = 0 ORDER BY lft")->loadObjectList() as $i)
+// A menu item alias names its target by alias ({menuitem:work}): the plugin adds the menus in set.json's order, so targets come first
+$menuItems = $db->setQuery("SELECT * FROM #__menu WHERE client_id = 0 AND menutype IN ($quoted) ORDER BY lft")->loadObjectList('id');
+foreach ($menuItems as $i)
 {
-	$link = preg_replace_callback('/view=(category|article)(&layout=blog)?&id=(\d+)/', function ($m) use ($catById, $artById) {
+	// The home item stays the site's own: in the set's menu, an alias of it ({menuitem:@home}), with the home item's options
+	if ($i->home)
+	{
+		$home    = json_decode($i->params, true);
+		$options = array('aliasoptions' => '{menuitem:@home}', 'alias_redirect' => 0, 'menu-anchor_title' => '',
+			'menu-anchor_css' => isset($home['menu-anchor_css']) ? $home['menu-anchor_css'] : '', 'menu_image' => '', 'menu_image_css' => '', 'menu_text' => 1, 'menu_show' => 1);
+		$data['menus'][$types[$i->menutype]]['items'][] = array('title' => $i->title, 'alias' => 'home-' . $set, 'type' => 'alias', 'link' => 'index.php?Itemid=', 'params' => json_encode($options));
+		continue;
+	}
+
+	$link = preg_replace_callback('/view=(category|article)(&layout=[A-Za-z0-9_.:-]+)?&id=(\d+)/', function ($m) use ($catById, $artById) {
 		return 'view=' . $m[1] . $m[2] . '&id={' . $m[1] . ':' . ($m[1] === 'category' ? $catById[$m[3]] : $artById[$m[3]]) . '}';
 	}, $i->link);
-	$data['menus'][$types[$i->menutype]]['items'][] = array('title' => $i->title, 'alias' => $i->alias, 'link' => $link, 'params' => $i->params);
+	$params = $i->params;
+	if ($i->type === 'alias')
+	{
+		$options                 = json_decode($params, true);
+		$options['aliasoptions'] = '{menuitem:' . $menuItems[(int) $options['aliasoptions']]->alias . '}';
+		$params                  = json_encode($options);
+	}
+	$data['menus'][$types[$i->menutype]]['items'][] = array('title' => $i->title, 'alias' => $i->alias, 'type' => $i->type, 'link' => $link, 'params' => $params);
 }
 
 // Modules: menu types and categories by name

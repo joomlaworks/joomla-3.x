@@ -1,0 +1,92 @@
+{
+ "light-curves": {
+  "file": "images/sampledata/studio/light-curves.webp",
+  "alt": "Curved lines of light on a dark ceiling",
+  "title": "Lights on the roof (Unsplash)",
+  "creator": "Joel Mbugua",
+  "source": "https://commons.wikimedia.org/wiki/File:Lights_on_the_roof_(Unsplash).jpg",
+  "license": "CC0 1.0",
+  "original": "5184x3456"
+ },
+ "light-painting": {
+  "file": "images/sampledata/studio/light-painting.webp",
+  "alt": "Red and blue streaks of light over water at night",
+  "title": "Water, Light and long shutter speeds (Unsplash)",
+  "creator": "Ahmad Dirini",
+  "source": "https://commons.wikimedia.org/wiki/File:Water,_Light_and_long_shutter_speeds_(Unsplash).jpg",
+  "license": "CC0 1.0",
+  "original": "3463x2202"
+ },
+ "violet-desk": {
+  "file": "images/sampledata/studio/violet-desk.webp",
+  "alt": "A desk with a monitor against a wall lit violet",
+  "title": "Desktop purple neon light (Unsplash)",
+  "creator": "Redd Angelo",
+  "source": "https://commons.wikimedia.org/wiki/File:Desktop_purple_neon_light_(Unsplash).jpg",
+  "license": "CC0 1.0",
+  "original": "6000x3375"
+ },
+ "code-screens": {
+  "file": "images/sampledata/studio/code-screens.webp",
+  "alt": "Two screens with code on a dark desk",
+  "title": "Coding workstation (Unsplash)",
+  "creator": "Farzad Nazifi",
+  "source": "https://commons.wikimedia.org/wiki/File:Coding_workstation_(Unsplash).jpg",
+  "license": "CC0 1.0",
+  "original": "4288x2848"
+ },
+ "light-trails": {
+  "file": "images/sampledata/studio/light-trails.webp",
+  "alt": "Pink and violet light trails in a city street at night",
+  "title": "Neon light trails in Munich (Unsplash)",
+  "creator": "Emre Karatas",
+  "source": "https://commons.wikimedia.org/wiki/File:Neon_light_trails_in_Munich_(Unsplash).jpg",
+  "license": "CC0 1.0",
+  "original": "4752x3168"
+ },
+ "perforated-facade": {
+  "file": "images/sampledata/studio/perforated-facade.webp",
+  "alt": "A white perforated building against a teal sky",
+  "title": "Swiss Cheese Architecture (Unsplash)",
+  "creator": "Dmitri Popov",
+  "source": "https://commons.wikimedia.org/wiki/File:Swiss_Cheese_Architecture_(Unsplash).jpg",
+  "license": "CC0 1.0",
+  "original": "4871x3237"
+ },
+ "orange-towers": {
+  "file": "images/sampledata/studio/orange-towers.webp",
+  "alt": "Orange glass towers seen from below",
+  "title": "Orange reflective architecture (Unsplash)",
+  "creator": "Alex wong",
+  "source": "https://commons.wikimedia.org/wiki/File:Orange_reflective_architecture_(Unsplash).jpg",
+  "license": "CC0 1.0",
+  "original": "5657x3771"
+ },
+ "twisting-tower": {
+  "file": "images/sampledata/studio/twisting-tower.webp",
+  "alt": "A twisting tower lit at night",
+  "title": "Twisting building facade (Unsplash)",
+  "creator": "Pavel Fertikh",
+  "source": "https://commons.wikimedia.org/wiki/File:Twisting_building_facade_(Unsplash).jpg",
+  "license": "CC0 1.0",
+  "original": "4669x3092"
+ },
+ "polar-lights": {
+  "file": "images/sampledata/studio/polar-lights.webp",
+  "alt": "Green and red polar lights over a forest",
+  "title": "Green and red polar lights (Unsplash)",
+  "creator": "Nelly Volkovich",
+  "source": "https://commons.wikimedia.org/wiki/File:Green_and_red_polar_lights_(Unsplash).jpg",
+  "license": "CC0 1.0",
+  "original": "5278x3519"
+ },
+ "spiral-stairs": {
+  "file": "images/sampledata/studio/spiral-stairs.webp",
+  "alt": "A white and yellow spiral staircase from above",
+  "title": "Spiral staircase (Unsplash)",
+  "creator": "chuttersnap",
+  "source": "https://commons.wikimedia.org/wiki/File:Spiral_staircase_(Unsplash).jpg",
+  "license": "CC0 1.0",
+  "original": "6016x4016"
+ }
+}

@@ -273,6 +273,7 @@ class ExtensionHelper
 		array('template', 'finch', '', 0),
 		array('template', 'hammond', '', 0),
 		array('template', 'protostar', '', 0),
+		array('template', 'rookwood', '', 0),
 	);
 
 	/**

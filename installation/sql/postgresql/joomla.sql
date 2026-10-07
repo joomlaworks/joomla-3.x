@@ -688,6 +688,7 @@ INSERT INTO "#__extensions" ("extension_id", "package_id", "name", "type", "elem
 (508, 0, 'hammond', 'template', 'hammond', '', 0, 1, 1, 0, '', '{"siteName":"","tagline":"","footerText":"","pagesMenu":"companymenu","social_facebook":"#","social_x":"#","social_instagram":"#","social_youtube":"#","social_linkedin":"#","social_rss":""}', '', '', 0, '1970-01-01 00:00:00', 0, 0),
 (509, 0, 'finch', 'template', 'finch', '', 0, 1, 1, 0, '', '{"siteName":"","tagline":"","authorBio":"","footerText":"","social_x":"#","social_instagram":"#","social_facebook":"#","social_linkedin":"#","social_rss":""}', '', '', 0, '1970-01-01 00:00:00', 0, 0),
 (510, 0, 'mod_housekeeping', 'module', 'mod_housekeeping', '', 1, 1, 1, 0, '', '', '', '', 0, '1970-01-01 00:00:00', 0, 0),
+(511, 0, 'rookwood', 'template', 'rookwood', '', 0, 1, 1, 0, '', '{"siteName":"","defaultTheme":"dark","footerHeadline":"","footerEmail":"","footerText":"","social_x":"","social_linkedin":"","social_instagram":"","social_github":"","social_dribbble":"","social_rss":""}', '', '', 0, '1970-01-01 00:00:00', 0, 0),
 (600, 802, 'English (en-GB)', 'language', 'en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '1970-01-01 00:00:00', 0, 0),
 (601, 802, 'English (en-GB)', 'language', 'en-GB', '', 1, 1, 1, 1, '', '', '', '', 0, '1970-01-01 00:00:00', 0, 0),
 (700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '', '', 0, '1970-01-01 00:00:00', 0, 0),
@@ -1823,9 +1824,10 @@ INSERT INTO "#__template_styles" ("id", "template", "client_id", "home", "title"
 (7, 'protostar', 0, '0', 'protostar - Default', '{"templateColor":"","logoFile":"","googleFont":"0","googleFontName":"Open+Sans","fluidContainer":"0"}'),
 (8, 'isis', 1, '1', 'isis - Default', '{"templateColor":"","logoFile":""}'),
 (9, 'hammond', 0, '1', 'Hammond - Default', '{"siteName":"","tagline":"","footerText":"","pagesMenu":"companymenu","social_facebook":"#","social_x":"#","social_instagram":"#","social_youtube":"#","social_linkedin":"#","social_rss":""}'),
-(10, 'finch', 0, '0', 'Finch - Default', '{"siteName":"","tagline":"","authorBio":"","footerText":"","social_x":"#","social_instagram":"#","social_facebook":"#","social_linkedin":"#","social_rss":""}');
+(10, 'finch', 0, '0', 'Finch - Default', '{"siteName":"","tagline":"","authorBio":"","footerText":"","social_x":"#","social_instagram":"#","social_facebook":"#","social_linkedin":"#","social_rss":""}'),
+(11, 'rookwood', 0, '0', 'Rookwood - Default', '{"siteName":"","defaultTheme":"dark","footerHeadline":"","footerEmail":"","footerText":"","social_x":"","social_linkedin":"","social_instagram":"","social_github":"","social_dribbble":"","social_rss":""}');
 
-SELECT setval('#__template_styles_id_seq', 11, false);
+SELECT setval('#__template_styles_id_seq', 12, false);
 
 --
 -- Table structure for table `#__ucm_base`

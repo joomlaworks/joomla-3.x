@@ -1,0 +1,412 @@
+{
+	"categories": [
+		{
+			"alias": "work",
+			"title": "Work",
+			"description": "<p>Brands, websites and products we have designed and built with our clients.</p>"
+		},
+		{
+			"alias": "journal",
+			"title": "Journal",
+			"description": "<p>Notes from the studio on design, engineering and the craft in between.</p>"
+		}
+	],
+	"articles": [
+		{
+			"category": "work",
+			"title": "A city of light for Northwind Architects",
+			"intro": "<p>A new identity and portfolio site for an architecture practice whose buildings change colour with the hour.</p>",
+			"full": "<h2>The brief</h2>\n<p>Northwind had outgrown a template website that showed its buildings as small, grey thumbnails. They wanted a home that felt like walking through their work.</p>\n<h2>What we did</h2>\n<p>We built a modular identity around the warm glass of their towers, and a website where every project opens full-screen, with drawings, materials and a timeline of the build.</p>\n<blockquote><p>Fast, thoughtful and calm under pressure. We would hire them again tomorrow.</p></blockquote>\n<h2>Results</h2>\n<ul class=\"figures\"><li><strong>3×</strong> longer visits</li><li><strong>41%</strong> more enquiries</li><li><strong>8</strong> weeks from kickoff to launch</li></ul>\n<dl class=\"facts\"><dt>Client</dt><dd>Northwind Architects</dd><dt>Services</dt><dd>Brand identity, Web design</dd></dl>",
+			"image": "images/sampledata/studio/orange-towers.webp",
+			"image_alt": "Orange glass towers seen from below",
+			"author": "Mara Ellis",
+			"publish_up": "2026-10-04 03:30",
+			"featured": true,
+			"tags": [
+				"Brand identity",
+				"Web design"
+			],
+			"hits": 1493
+		},
+		{
+			"category": "work",
+			"title": "Seeing the grid with Halden Energy",
+			"intro": "<p>A live dashboard that turns two hundred wind turbines into one clear picture for the people who run them.</p>",
+			"full": "<h2>The brief</h2>\n<p>Halden's operators watched six different tools to keep an offshore wind farm running. Alarms were missed, and new staff took months to learn the systems.</p>\n<h2>What we did</h2>\n<p>We spent two weeks in the control room, then designed and built one dashboard: a map of the farm, the turbines that need attention first, and the weather that will matter next.</p>\n<blockquote><p>They listened first and designed second. It shows in every screen.</p></blockquote>\n<h2>Results</h2>\n<ul class=\"figures\"><li><strong>62%</strong> faster response to alarms</li><li><strong>1</strong> screen instead of six</li><li><strong>99.98%</strong> uptime since launch</li></ul>\n<dl class=\"facts\"><dt>Client</dt><dd>Halden Energy</dd><dt>Services</dt><dd>Product design, Engineering</dd></dl>",
+			"image": "images/sampledata/news/energy/energy-17.webp",
+			"image_alt": "Offshore wind turbines at sea",
+			"author": "Ines Kovač",
+			"publish_up": "2026-09-10 05:30",
+			"featured": true,
+			"tags": [
+				"Product design",
+				"Engineering"
+			],
+			"hits": 3842
+		},
+		{
+			"category": "work",
+			"title": "The Aperture museum after dark",
+			"intro": "<p>An exhibition website for a museum of light, built to feel as playful as the rooms it describes.</p>",
+			"full": "<h2>The brief</h2>\n<p>The museum's night programme sold out in person but barely existed online. They needed a site that could sell tickets and carry the atmosphere of the galleries.</p>\n<h2>What we did</h2>\n<p>Every exhibition gets a page of moving light made with plain CSS and a few lines of script, so it loads fast on a phone in a queue outside. Tickets take three taps.</p>\n<blockquote><p>They listened first and designed second. It shows in every screen.</p></blockquote>\n<h2>Results</h2>\n<ul class=\"figures\"><li><strong>2.1 s</strong> largest contentful paint on 4G</li><li><strong>+54%</strong> online ticket sales</li><li><strong>0</strong> third-party scripts</li></ul>\n<dl class=\"facts\"><dt>Client</dt><dd>Aperture Museum of Light</dd><dt>Services</dt><dd>Web design, Motion</dd></dl>",
+			"image": "images/sampledata/studio/light-painting.webp",
+			"image_alt": "Red and blue streaks of light over water at night",
+			"author": "Mara Ellis",
+			"publish_up": "2026-08-18 08:30",
+			"featured": true,
+			"tags": [
+				"Web design",
+				"Motion"
+			],
+			"hits": 2244
+		},
+		{
+			"category": "work",
+			"title": "Vela Towers, from launch to living room",
+			"intro": "<p>A launch campaign for two residential towers, from the hoarding on the street to the welcome pack on the kitchen table.</p>",
+			"full": "<h2>The brief</h2>\n<p>Vela had a remarkable building and a crowded market. The first homes had to sell before the second tower topped out.</p>\n<h2>What we did</h2>\n<p>We named the towers, designed the identity around their twist, and ran one campaign across print, street and a small, quick website with floor plans that work on any screen.</p>\n<blockquote><p>The new work feels like us, only clearer. Our customers noticed within a week.</p></blockquote>\n<h2>Results</h2>\n<ul class=\"figures\"><li><strong>78%</strong> of homes reserved before completion</li><li><strong>12</strong> weeks of campaign</li><li><strong>5</strong> design awards</li></ul>\n<dl class=\"facts\"><dt>Client</dt><dd>Vela Residences</dd><dt>Services</dt><dd>Brand identity, Campaign</dd></dl>",
+			"image": "images/sampledata/studio/twisting-tower.webp",
+			"image_alt": "A twisting tower lit at night",
+			"author": "Mara Ellis",
+			"publish_up": "2026-08-03 04:30",
+			"featured": false,
+			"tags": [
+				"Brand identity",
+				"Campaign"
+			],
+			"hits": 2520
+		},
+		{
+			"category": "work",
+			"title": "Outdoor gear for Aurora Outfitters",
+			"intro": "<p>A new shop for an outdoor brand whose customers buy on the move, often on a weak signal at the edge of the map.</p>",
+			"full": "<h2>The brief</h2>\n<p>Aurora's old shop was slow, and half of their customers left before the product page had loaded. Returns were high because sizes were hard to judge.</p>\n<h2>What we did</h2>\n<p>We rebuilt the shop around speed and clarity: small pages, images sized for each screen, a size guide drawn from real returns, and a checkout that survives a dropped connection.</p>\n<blockquote><p>They listened first and designed second. It shows in every screen.</p></blockquote>\n<h2>Results</h2>\n<ul class=\"figures\"><li><strong>−38%</strong> returns</li><li><strong>+27%</strong> mobile conversion</li><li><strong>1.4 s</strong> average page load</li></ul>\n<dl class=\"facts\"><dt>Client</dt><dd>Aurora Outfitters</dd><dt>Services</dt><dd>E-commerce, Web design</dd></dl>",
+			"image": "images/sampledata/studio/polar-lights.webp",
+			"image_alt": "Green and red polar lights over a forest",
+			"author": "Ines Kovač",
+			"publish_up": "2026-07-12 08:30",
+			"featured": true,
+			"tags": [
+				"E-commerce",
+				"Web design"
+			],
+			"hits": 3146
+		},
+		{
+			"category": "work",
+			"title": "An open data platform for the city",
+			"intro": "<p>A developer platform that publishes a city's open data with documentation people actually enjoy reading.</p>",
+			"full": "<h2>The brief</h2>\n<p>The city released hundreds of data sets a year, but few developers used them: formats changed without notice and the documentation was a set of PDFs.</p>\n<h2>What we did</h2>\n<p>We designed a versioned API, a catalogue with search and previews, and documentation written alongside the code, so every example is tested before it is published.</p>\n<blockquote><p>They turned a complicated problem into something our whole team understands.</p></blockquote>\n<h2>Results</h2>\n<ul class=\"figures\"><li><strong>340</strong> data sets published</li><li><strong>5×</strong> more API keys issued</li><li><strong>100%</strong> of examples tested</li></ul>\n<dl class=\"facts\"><dt>Client</dt><dd>Open City Data</dd><dt>Services</dt><dd>Engineering, Product design</dd></dl>",
+			"image": "images/sampledata/studio/code-screens.webp",
+			"image_alt": "Two screens with code on a dark desk",
+			"author": "Theo Brandt",
+			"publish_up": "2026-06-21 07:30",
+			"featured": false,
+			"tags": [
+				"Engineering",
+				"Product design"
+			],
+			"hits": 310
+		},
+		{
+			"category": "work",
+			"title": "A furniture brand with holes in all the right places",
+			"intro": "<p>An identity for a young furniture maker, drawn from the perforated steel at the heart of its first collection.</p>",
+			"full": "<h2>The brief</h2>\n<p>Perfora had one beautiful collection, a tiny budget and no name customers could remember.</p>\n<h2>What we did</h2>\n<p>We named the company after its material and built the whole identity from a grid of round holes: the logo, a typeface of dots, flat-pack boxes and a one-page shop.</p>\n<blockquote><p>Fast, thoughtful and calm under pressure. We would hire them again tomorrow.</p></blockquote>\n<h2>Results</h2>\n<ul class=\"figures\"><li><strong>1</strong> grid behind everything</li><li><strong>3</strong> retailers signed in the first month</li><li><strong>0</strong> plastic in the packaging</li></ul>\n<dl class=\"facts\"><dt>Client</dt><dd>Perfora</dd><dt>Services</dt><dd>Brand identity, Packaging</dd></dl>",
+			"image": "images/sampledata/studio/perforated-facade.webp",
+			"image_alt": "A white perforated building against a teal sky",
+			"author": "Mara Ellis",
+			"publish_up": "2026-05-28 07:30",
+			"featured": false,
+			"tags": [
+				"Brand identity",
+				"Packaging"
+			],
+			"hits": 1174
+		},
+		{
+			"category": "work",
+			"title": "Spiral Records, around and around",
+			"intro": "<p>A refreshed identity and a listening-first website for an independent record label celebrating twenty years.</p>",
+			"full": "<h2>The brief</h2>\n<p>After twenty years and four hundred releases, Spiral's catalogue was scattered across platforms and its own site had not changed in a decade.</p>\n<h2>What we did</h2>\n<p>We gave the logo a quarter turn and built a site where the whole catalogue plays in the browser, release by release, with liner notes written by the artists.</p>\n<blockquote><p>They listened first and designed second. It shows in every screen.</p></blockquote>\n<h2>Results</h2>\n<ul class=\"figures\"><li><strong>400</strong> releases online</li><li><strong>+65%</strong> direct sales</li><li><strong>20</strong> years celebrated</li></ul>\n<dl class=\"facts\"><dt>Client</dt><dd>Spiral Records</dd><dt>Services</dt><dd>Brand identity, Web design, Motion</dd></dl>",
+			"image": "images/sampledata/studio/spiral-stairs.webp",
+			"image_alt": "A white and yellow spiral staircase from above",
+			"author": "Mara Ellis",
+			"publish_up": "2026-05-07 09:30",
+			"featured": false,
+			"tags": [
+				"Brand identity",
+				"Web design",
+				"Motion"
+			],
+			"hits": 463
+		},
+		{
+			"category": "work",
+			"title": "Quiet infrastructure for Cirrus Hosting",
+			"intro": "<p>A control panel for a hosting company that wanted its customers to forget their servers were there.</p>",
+			"full": "<h2>The brief</h2>\n<p>Cirrus had fast, reliable servers and a control panel that generated more support tickets than any outage.</p>\n<h2>What we did</h2>\n<p>We mapped the twenty tasks customers do most, designed one clear path for each, and rebuilt the panel as a set of small, accessible components the Cirrus team now owns.</p>\n<blockquote><p>They listened first and designed second. It shows in every screen.</p></blockquote>\n<h2>Results</h2>\n<ul class=\"figures\"><li><strong>−45%</strong> support tickets</li><li><strong>20</strong> tasks redesigned</li><li><strong>AA</strong> WCAG level met</li></ul>\n<dl class=\"facts\"><dt>Client</dt><dd>Cirrus Hosting</dd><dt>Services</dt><dd>Product design, Engineering</dd></dl>",
+			"image": "images/sampledata/news/technology/technology-06.webp",
+			"image_alt": "Rows of servers lit blue in a data centre",
+			"author": "Sam Okoye",
+			"publish_up": "2026-04-20 09:30",
+			"featured": false,
+			"tags": [
+				"Product design",
+				"Engineering"
+			],
+			"hits": 769
+		},
+		{
+			"category": "journal",
+			"title": "Dark mode is a design system, not a filter",
+			"intro": "<p>Inverting colours gives you a dark page, not a dark design. What changes when you treat both themes as first-class citizens.</p>",
+			"full": "<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>\n<h2>In practice</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>\n<blockquote><p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab</p></blockquote>\n.<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>\n<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>",
+			"image": "images/sampledata/news/technology/technology-17.webp",
+			"image_alt": "A laptop and cables on a dark desk",
+			"author": "Mara Ellis",
+			"publish_up": "2026-10-03 08:30",
+			"featured": true,
+			"tags": [
+				"Design",
+				"Accessibility"
+			],
+			"hits": 1768
+		},
+		{
+			"category": "journal",
+			"title": "What a fast website feels like",
+			"intro": "<p>Speed is not a number on a report. It is the moment a page answers before you have finished wondering whether it will.</p>",
+			"full": "<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>\n<h2>What we learned</h2>\n<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>\n<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>\n<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>",
+			"image": "images/sampledata/news/technology/technology-08.webp",
+			"image_alt": "A laptop keyboard in blue light",
+			"author": "Theo Brandt",
+			"publish_up": "2026-09-27 05:30",
+			"featured": true,
+			"tags": [
+				"Performance",
+				"Engineering"
+			],
+			"hits": 2740
+		},
+		{
+			"category": "journal",
+			"title": "The case for boring technology",
+			"intro": "<p>Every new tool is a loan against your future attention. Here is how we decide which ones are worth the interest.</p>",
+			"full": "<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>\n<h2>Where we started</h2>\n<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>\n<ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li></ul>\n<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>\n<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>",
+			"image": "images/sampledata/news/technology/technology-15.webp",
+			"image_alt": "A processor on a circuit board",
+			"author": "Ines Kovač",
+			"publish_up": "2026-09-19 08:30",
+			"featured": true,
+			"tags": [
+				"Engineering"
+			],
+			"hits": 1102
+		},
+		{
+			"category": "journal",
+			"title": "Designing for the edge of the map",
+			"intro": "<p>Lessons from building a shop for customers who buy on one bar of signal, far from the nearest town.</p>",
+			"full": "<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>\n<h2>Where we started</h2>\n<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>\n<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>\n<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>",
+			"image": "images/sampledata/news/energy/energy-20.webp",
+			"image_alt": "Wind turbines on hills at dusk",
+			"author": "Sam Okoye",
+			"publish_up": "2026-09-11 01:30",
+			"featured": false,
+			"tags": [
+				"Design",
+				"Performance"
+			],
+			"hits": 157
+		},
+		{
+			"category": "journal",
+			"title": "Type that carries a brand",
+			"intro": "<p>Why we start most identities with letters, not logos, and what system fonts can do when you treat them well.</p>",
+			"full": "<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>\n<h2>Where we started</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>\n<blockquote><p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus</p></blockquote>\n.<ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li></ul>\n<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>\n<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>",
+			"image": "images/sampledata/news/opinion/opinion-22.webp",
+			"image_alt": "A red typewriter on a black leather seat",
+			"author": "Mara Ellis",
+			"publish_up": "2026-09-06 03:30",
+			"featured": true,
+			"tags": [
+				"Typography",
+				"Design"
+			],
+			"hits": 2230
+		},
+		{
+			"category": "journal",
+			"title": "Accessibility is a craft, not a checklist",
+			"intro": "<p>Passing an audit is the floor. The real work is noticing who still struggles once every box is ticked.</p>",
+			"full": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>\n<h2>What we learned</h2>\n<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>\n<ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li></ul>\n<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>\n<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>",
+			"image": "images/sampledata/news/opinion/opinion-13.webp",
+			"image_alt": "A notebook and pen beside a laptop",
+			"author": "Theo Brandt",
+			"publish_up": "2026-08-29 04:30",
+			"featured": false,
+			"tags": [
+				"Accessibility"
+			],
+			"hits": 2753
+		},
+		{
+			"category": "journal",
+			"title": "Notes from a control room",
+			"intro": "<p>Two weeks beside the people who keep an offshore wind farm running taught us more than any brief could.</p>",
+			"full": "<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>\n<h2>What we learned</h2>\n<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>\n<blockquote><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad</p></blockquote>\n.<ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li></ul>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>\n<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>",
+			"image": "images/sampledata/news/energy/energy-17.webp",
+			"image_alt": "Offshore wind turbines at sea",
+			"author": "Ines Kovač",
+			"publish_up": "2026-08-22 02:30",
+			"featured": false,
+			"tags": [
+				"Product design",
+				"Studio life"
+			],
+			"hits": 841
+		},
+		{
+			"category": "journal",
+			"title": "Small components, long lives",
+			"intro": "<p>The parts of a product that last are the small, dull, well-named ones. A few habits that keep them that way.</p>",
+			"full": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>\n<h2>The short version</h2>\n<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>\n<ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li></ul>\n<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>\n<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>",
+			"image": "images/sampledata/news/technology/technology-22.webp",
+			"image_alt": "Code on a laptop screen beside a stack of books",
+			"author": "Sam Okoye",
+			"publish_up": "2026-08-15 05:30",
+			"featured": false,
+			"tags": [
+				"Engineering",
+				"Product design"
+			],
+			"hits": 2464
+		},
+		{
+			"category": "journal",
+			"title": "Colour with confidence",
+			"intro": "<p>Vibrant palettes are easy to like and hard to live with. How we build colour systems that stay bright and readable.</p>",
+			"full": "<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>\n<h2>Where we started</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>\n<blockquote><p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab</p></blockquote>\n.<ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li></ul>\n<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>\n<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>",
+			"image": "images/sampledata/news/culture/culture-22.webp",
+			"image_alt": "Stage lights in blue and orange over a crowd",
+			"author": "Mara Ellis",
+			"publish_up": "2026-08-09 05:30",
+			"featured": true,
+			"tags": [
+				"Design"
+			],
+			"hits": 2772
+		},
+		{
+			"category": "journal",
+			"title": "Writing documentation people read",
+			"intro": "<p>The best documentation is written next to the code, tested with it and kept as short as the reader's patience.</p>",
+			"full": "<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>\n<h2>The short version</h2>\n<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>\n<blockquote><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad</p></blockquote>\n.<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>\n<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>",
+			"image": "images/sampledata/news/opinion/opinion-14.webp",
+			"image_alt": "Coffee beside a laptop showing code",
+			"author": "Theo Brandt",
+			"publish_up": "2026-08-02 04:30",
+			"featured": false,
+			"tags": [
+				"Engineering",
+				"Writing"
+			],
+			"hits": 205
+		},
+		{
+			"category": "journal",
+			"title": "Motion that means something",
+			"intro": "<p>Animation should explain, not decorate. Three questions we ask before anything on a page is allowed to move.</p>",
+			"full": "<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>\n<h2>The short version</h2>\n<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>\n<blockquote><p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab</p></blockquote>\n.<ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li></ul>\n<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>\n<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>",
+			"image": "images/sampledata/news/culture/culture-11.webp",
+			"image_alt": "A microphone in warm, blurred light",
+			"author": "Ines Kovač",
+			"publish_up": "2026-07-26 05:30",
+			"featured": false,
+			"tags": [
+				"Motion",
+				"Design"
+			],
+			"hits": 721
+		},
+		{
+			"category": "journal",
+			"title": "The studio at ten",
+			"intro": "<p>Ten years, four people, a hundred and twenty projects and one rule we have never broken.</p>",
+			"full": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>\n<h2>What we learned</h2>\n<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>\n<blockquote><p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem</p></blockquote>\n.<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>\n<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>",
+			"image": "images/sampledata/news/opinion/opinion-10.webp",
+			"image_alt": "A laptop, coffee and sticky notes on a desk",
+			"author": "Sam Okoye",
+			"publish_up": "2026-07-18 01:30",
+			"featured": false,
+			"tags": [
+				"Studio life"
+			],
+			"hits": 2064
+		},
+		{
+			"category": "journal",
+			"title": "Images, sized honestly",
+			"intro": "<p>Most slow pages are slow because of pictures. The simple rules we follow for every image we ship.</p>",
+			"full": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>\n<h2>In practice</h2>\n<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>\n<ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li></ul>\n<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>\n<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>",
+			"image": "images/sampledata/news/technology/technology-13.webp",
+			"image_alt": "Laptop keys in warm light",
+			"author": "Mara Ellis",
+			"publish_up": "2026-07-13 01:30",
+			"featured": false,
+			"tags": [
+				"Performance"
+			],
+			"hits": 2245
+		},
+		{
+			"category": "journal",
+			"title": "Why we still sketch on paper",
+			"intro": "<p>Screens make ideas look finished too soon. A pencil keeps them honest for a little longer.</p>",
+			"full": "<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>\n<h2>Where we started</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>\n<ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li></ul>\n<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>\n<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>",
+			"image": "images/sampledata/news/opinion/opinion-11.webp",
+			"image_alt": "The pages of an open book fanned out",
+			"author": "Theo Brandt",
+			"publish_up": "2026-07-05 01:30",
+			"featured": false,
+			"tags": [
+				"Design",
+				"Studio life"
+			],
+			"hits": 1715
+		},
+		{
+			"category": "journal",
+			"title": "Sustainable by default",
+			"intro": "<p>Lighter pages use less energy, on our servers and on yours. What a lower-carbon website looks like in practice.</p>",
+			"full": "<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>\n<h2>The short version</h2>\n<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>\n<blockquote><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat</p></blockquote>\n.<ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li></ul>\n<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>\n<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>",
+			"image": "images/sampledata/news/energy/energy-12.webp",
+			"image_alt": "Solar panels among trees",
+			"author": "Ines Kovač",
+			"publish_up": "2026-06-27 05:30",
+			"featured": true,
+			"tags": [
+				"Sustainability",
+				"Engineering"
+			],
+			"hits": 392
+		},
+		{
+			"category": "journal",
+			"title": "Sound design for the web",
+			"intro": "<p>Most websites are silent, and most should stay that way. When sound helps, and how to add it without startling anyone.</p>",
+			"full": "<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>\n<h2>What we learned</h2>\n<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>\n<blockquote><p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et</p></blockquote>\n.<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>\n<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>",
+			"image": "images/sampledata/news/culture/culture-21.webp",
+			"image_alt": "A concert hall seen from the stage",
+			"author": "Sam Okoye",
+			"publish_up": "2026-06-21 01:30",
+			"featured": false,
+			"tags": [
+				"Motion",
+				"Design"
+			],
+			"hits": 639
+		}
+	]
+}

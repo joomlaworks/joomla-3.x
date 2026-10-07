@@ -370,6 +370,8 @@ class JoomlaInstallerScript
 			'3.17.0-2026-10-09.sql' => '3.17.0',
 			// What's new in 3.17 (post-installation message)
 			'3.17.0-2026-10-10.sql' => '3.17.0',
+			// Rookwood template
+			'3.17.0-2026-10-11.sql' => '3.17.0',
 		);
 
 		foreach ($dataMigrationFiles as $file => $addedIn)
@@ -793,6 +795,7 @@ class JoomlaInstallerScript
 			array('template', 'finch', ''),
 			array('template', 'hammond', ''),
 			array('template', 'protostar', ''),
+			array('template', 'rookwood', ''),
 			array('template', 'isis', '', 1),
 		),
 	);

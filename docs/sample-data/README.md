@@ -1,18 +1,22 @@
 # Sample data: build scripts
 
-The distribution's two sample data sets, **News** (for the Hammond template) and **Blog** (for the Finch template), each exist
-twice, made from the same site:
+The distribution's three sample data sets, **News** (for the Hammond template), **Blog** (for the Finch template) and **Studio** (for
+the Rookwood template), each exist twice, made from the same site:
 
 - `installation/sql/{mysql,postgresql,sqlazure}/sample_<set>.sql`: the installer's set (also `cli/joomla.php core:install
   --sample-data=<set>`), a dump of the tables it fills;
 - `plugins/sampledata/blog/data/<set>.json`: the Sample Data plugin's set, which adds the same content to an existing site from the
-  Sample Data module of the Control Panel (categories, tags, articles, menu items and modules by alias, so they get new IDs).
+  Sample Data module of the Control Panel (categories, tags, articles, menu items and modules by alias, so they get new IDs; a
+  Menu Item Alias names its target as `{menuitem:<alias>}`, and the set's Home is an alias of the site's own home page,
+  `{menuitem:@home}`; so links which must survive new IDs belong in menus, not in module
+  text: the Studio set's buttons are such menus, placed in its Custom modules with `{loadposition ...}`).
 
-Both are generated: don't edit them by hand. Change a set's `content.json` (or its `setup.py`), then run
+All are generated: don't edit them by hand. Change a set's `content.json` (or its `setup.py`), then run
 
 ```sh
 PHP=php8.5 docs/sample-data/build/build.sh news /path/to/an/empty/work/folder
 PHP=php8.5 docs/sample-data/build/build.sh blog /path/to/an/empty/work/folder
+PHP=php8.5 docs/sample-data/build/build.sh studio /path/to/an/empty/work/folder
 ```
 
 ## How a build works
@@ -40,9 +44,17 @@ oEmbed endpoints).
 `blog/generate_content.py` writes `blog/content.json` from it: 20 of the News set's opinion articles as the posts of a personal blog
 (one fictional author, four topics, a post every few days).
 
+`studio/generate_content.py` writes `studio/content.json`: 9 case studies (real copy: brief, work, a quote, results as figures,
+client and services) and 16 journal posts (real titles and intros, placeholder text) of a fictional design and technology studio,
+by four fictional authors.
+
 ## The images
 
-Both sets use the images bundled in `images/sampledata/news/<section>/<section>-NN.webp` (about 11 MB). They're all CC0 (public
+The News and Blog sets, and the Studio set's journal, use the images bundled in `images/sampledata/news/<section>/<section>-NN.webp` (about 11 MB). They're all CC0 (public
 domain), found through Openverse (`news/fetch_images.py`, then `news/replace_images.py` for the ones showing real people, events,
 paintings or archive photos), cropped to 16:9 at 1280 × 720 and converted to WebP (`news/convert_images.py`). `news/CREDITS.md`
 and `news/credits.json` credit each one.
+
+The Studio set's own images, `images/sampledata/studio/<name>.webp` (1920 × 1080) with a 960px copy `<name>-960.webp` for
+phones (about 2.3 MB), are CC0 photos from Wikimedia Commons (Unsplash's CC0 era), credited in `studio/CREDITS.md` and
+`studio/credits.json`. Rookwood's `img()` adds the smaller copy as a `srcset` whenever one exists next to an image.

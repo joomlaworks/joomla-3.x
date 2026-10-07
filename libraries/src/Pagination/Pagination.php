@@ -788,6 +788,12 @@ class Pagination
 		{
 			$value = $this->app->input->get($param, null, $filter);
 
+			// A template's layout (template:layout) keeps its colon, which CMD removes (page 2 would lose the layout)
+			if ($param === 'layout' && preg_match('/^[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+$/', (string) $this->app->input->getString('layout')))
+			{
+				$value = $this->app->input->getString('layout');
+			}
+
 			if ($value === null)
 			{
 				continue;

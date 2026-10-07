@@ -51,7 +51,7 @@ class PlgSampledataBlog extends JPlugin
 	 * @var    string[]
 	 * @since  3.17.0
 	 */
-	const SETS = array('news', 'blog');
+	const SETS = array('news', 'blog', 'studio');
 
 	/**
 	 * Get an overview of the sets.

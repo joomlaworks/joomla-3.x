@@ -50,6 +50,7 @@ class PlgSampledataBlogSet
 	const SETS = array(
 		'news' => array('template' => 'hammond', 'articleSteps' => 4),
 		'blog' => array('template' => 'finch', 'articleSteps' => 1),
+		'studio' => array('template' => 'rookwood', 'articleSteps' => 1),
 	);
 
 	/**
@@ -123,7 +124,7 @@ class PlgSampledataBlogSet
 		$data->name        = $this->name;
 		$data->title       = JText::_('PLG_SAMPLEDATA_BLOG_' . strtoupper($this->name) . '_OVERVIEW_TITLE');
 		$data->description = JText::_('PLG_SAMPLEDATA_BLOG_' . strtoupper($this->name) . '_OVERVIEW_DESC');
-		$data->icon        = $this->name === 'news' ? 'stack' : 'pencil-2';
+		$data->icon        = $this->name === 'news' ? 'stack' : ($this->name === 'studio' ? 'briefcase' : 'pencil-2');
 		$data->steps       = $this->articleSteps + 4;
 		$record            = self::getRecord($this->db);
 		$data->installed   = $record !== null && $record['set'] === $this->name;
@@ -427,6 +428,18 @@ class PlgSampledataBlogSet
 		$model       = JModelLegacy::getInstance('Item', 'MenusModel', array('ignore_request' => true));
 		$componentId = ComponentHelper::getComponent('com_content')->id;
 		$items       = array();
+		$itemIds     = array();
+
+		// "@home" names the site's home page (its default menu item, for all languages)
+		$itemIds['@home'] = (int) $this->db->setQuery(
+			$this->db->getQuery(true)
+				->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('client_id') . ' = 0')
+				->where($this->db->quoteName('home') . ' = 1')
+				->where($this->db->quoteName('published') . ' = 1')
+				->order('CASE WHEN ' . $this->db->quoteName('language') . ' = ' . $this->db->quote('*') . ' THEN 0 ELSE 1 END')
+		)->loadResult();
 
 		foreach ($data['menus'] as $menutype => $menu)
 		{
@@ -456,12 +469,31 @@ class PlgSampledataBlogSet
 					return $m[1] === 'category' ? $categories[$m[2]] : $articles[$m[2]];
 				}, $item['link']);
 
-				$items[] = $this->save($model, array(
-					'menutype' => $table->menutype, 'title' => $item['title'], 'alias' => $item['alias'], 'link' => $link, 'type' => 'component',
-					'component_id' => $componentId, 'published' => 1, 'parent_id' => 1, 'level' => 1, 'home' => 0, 'browserNav' => 0,
-					'access' => $access, 'language' => $language, 'template_style_id' => 0, 'params' => json_decode($item['params'], true),
+				$params = json_decode($item['params'], true);
+				$type   = isset($item['type']) ? $item['type'] : 'component';
+
+				// A menu item alias (e.g. a button of the template) names its target by alias: an item of the set added before it
+				if ($type === 'alias')
+				{
+					$target = isset($params['aliasoptions']) ? preg_replace('/^\{menuitem:(@?[a-z0-9-]+)\}$/', '$1', (string) $params['aliasoptions']) : '';
+
+					if (empty($itemIds[$target]))
+					{
+						continue;
+					}
+
+					$params['aliasoptions'] = $itemIds[$target];
+				}
+
+				$id = $this->save($model, array(
+					'menutype' => $table->menutype, 'title' => $item['title'], 'alias' => $item['alias'], 'link' => $link, 'type' => $type,
+					'component_id' => $type === 'component' ? $componentId : 0, 'published' => 1, 'parent_id' => 1, 'level' => 1, 'home' => 0,
+					'browserNav' => 0, 'access' => $access, 'language' => $language, 'template_style_id' => 0, 'params' => $params,
 					'note' => '', 'img' => '', 'associations' => array(), 'client_id' => 0,
 				));
+
+				$items[]                 = $id;
+				$itemIds[$item['alias']] = $id;
 			}
 		}
 

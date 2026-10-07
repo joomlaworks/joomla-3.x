@@ -40,7 +40,8 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 Summary of changes:
 - New default template for new sites, **Hammond**: a modern, light news and magazine design with a frontpage made of modules, built with plain CSS and JavaScript
 - New **Finch** blog template, with a new **Blog** sample data set (a personal blog of 20 essays)
-- New **News** sample data set, a complete news site for Hammond, with its images; the installer now offers just News and Blog, and both can also be added later from the Control Panel
+- New **Rookwood** template for studios and companies, dark or light, with a new **Studio** sample data set (case studies, a journal and a home page of full-width sections)
+- New **News** sample data set, a complete news site for Hammond, with its images; the installer now offers just News, Blog and Studio, and each can also be added later from the Control Panel
 - TinyMCE 8, the current TinyMCE, as a new editor ("Editor - TinyMCE", the default for new sites); TinyMCE 4 stays as "Editor - TinyMCE (legacy)", and existing sites keep it until they switch in Global Configuration
 - New command line interface (`cli/joomla.php`) with the commands of the Joomla 4+ CLI and JSON output for scripts and AI agents, plus content management (articles, categories, modules, menus), dry runs, a health check and log viewers
 - One-click **Clean Cache** in the administrator's status bar for everyone with backend access; administrators also get **Clean Everything** (the main site cache, anything inside the /cache folder and temporary folders as defined in configuration.php) and **Global Check-in** from the same spot
@@ -137,6 +138,9 @@ Summary of changes:
 - News sample data: 227 articles in ten sections with tags, menus and modules, and images, videos and posts matching each section. From the installer, `core:install --sample-data=news` or the Control Panel's Sample Data module (Super Users only; it also makes a Hammond style the site's default template, and replaces the sample data set installed before)
 - Finch, a blog template: the latest post large and the others as cards beside a sidebar, posts in a calm reading column with a drop cap, author box and links to the previous and next posts, standalone pages, system fonts and SVG icons, without jQuery or Bootstrap. The default template of new sites with the Blog set; installed but not activated on existing sites
 - Blog sample data: 20 essays by one author in four topics, with tags, pages and the sidebar's modules, using the News set's images. From the installer, `core:install --sample-data=blog` or the Control Panel's Sample Data module (Super Users only; it also makes a Finch style the site's default template, and replaces the sample data set installed before)
+- Rookwood, a template for studios, agencies and companies: full-width sections, a dark and a light theme with a switch for visitors, large type, bold colours, Showcase and Mosaic category layouts, case study and page layouts, system fonts and SVG icons, without jQuery or Bootstrap. The default template of new sites with the Studio set; installed but not activated on existing sites
+- Studio sample data: 9 case studies and 16 journal posts, studio and contact pages, and a home page of sections, with ten CC0 images of its own. From the installer, `core:install --sample-data=studio` or the Control Panel's Sample Data module (it also makes a Rookwood style the site's default template)
+- Lists shown with a template's layout keep it on page 2 and later (stock Joomla 3 dropped it from the page links)
 
 ## Version 3.16 - released October 3rd, 2026
 Summary of changes:
@@ -290,7 +294,7 @@ A new site on SQLite takes one command with a few flags: give it the site's name
 wget -q https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip && unzip -q joomla-latest.zip && rm joomla-latest.zip && php cli/joomla.php core:install --site-name="My Site" --admin-email=me@example.com --admin-username=admin
 ```
 
-Add `--sample-data=news` or `--sample-data=blog` to start with one of the installer's sample data sets; the news set comes with the Hammond template as the site's template, the blog set with Finch, 2 brand new, modern and Core Web Vitals friendly templates, (derived from years of experience building content-heavy sites by the project maintainers).
+Add `--sample-data=news`, `--sample-data=blog` or `--sample-data=studio` to start with one of the installer's sample data sets; the news set comes with the Hammond template as the site's template, the blog set with Finch, the studio set with Rookwood, 3 brand new, modern and Core Web Vitals friendly templates, (derived from years of experience building content-heavy sites by the project maintainers).
 
 Installing sites like this needs PHP 7.4 or newer with the `pdo_sqlite` extension. If you also add the flag `--format=json`, you'll get installation details in JSON format (including the password), which is ideal for scripts (using jq) and LLMs.
 
