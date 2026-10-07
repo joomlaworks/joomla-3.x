@@ -126,24 +126,31 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 		}
 
 		// Build the DSN for the connection.
+		// Joomla 3.x UTD patch: values quoted, and a connection of its own (see JDatabaseDriverPostgresql::connect())
+		$value = function ($text)
+		{
+			return "'" . addcslashes((string) $text, "'\\") . "'";
+		};
+
 		$dsn = '';
 
 		if (!empty($this->options['host']))
 		{
-			$dsn .= "host={$this->options['host']} ";
+			$dsn .= 'host=' . $value($this->options['host']) . ' ';
 		}
 
-		$dsn .= "dbname={$this->options['database']} user={$this->options['user']} password={$this->options['password']}";
+		$dsn .= 'dbname=' . $value($this->options['database']) . ' user=' . $value($this->options['user']) . ' password=' . $value($this->options['password']);
 
 		// Attempt to connect to the server.
-		if (!($this->connection = @pg_connect($dsn)))
+		if (!($this->connection = @pg_connect($dsn, PGSQL_CONNECT_FORCE_NEW)))
 		{
 			throw new RuntimeException('Error connecting to PGSQL database.');
 		}
 
 		pg_set_error_verbosity($this->connection, PGSQL_ERRORS_DEFAULT);
-		pg_query('SET standard_conforming_strings=off');
-		pg_query('SET escape_string_warning=off');
+		// Joomla 3.x UTD patch: on this connection (without it, PHP 8.1+ deprecates the call and it runs on the last one opened)
+		pg_query($this->connection, 'SET standard_conforming_strings=off');
+		pg_query($this->connection, 'SET escape_string_warning=off');
 	}
 
 	/**
@@ -710,7 +717,8 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 		}
 
 		// Execute the query. Error suppression is used here to prevent warnings/notices that the connection has been lost.
-		$this->cursor = @pg_query($this->connection, $query);
+		// Joomla 3.x UTD patch: one statement only (extended protocol), as in Joomla's own driver
+		$this->cursor = @pg_query_params($this->connection, $query, array());
 
 		if ($this->debug)
 		{

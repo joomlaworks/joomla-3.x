@@ -148,18 +148,27 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 			}
 		}
 
-		// Build the DSN for the connection.
+		// Build the DSN for the connection. Joomla 3.x UTD: values quoted, so e.g. a password with a space or quote connects (and
+		// can't add settings of its own)
+		$value = function ($text)
+		{
+			return "'" . addcslashes((string) $text, "'\\") . "'";
+		};
+
 		$dsn = '';
 
 		if (!empty($this->options['host']))
 		{
-			$dsn .= "host={$this->options['host']} port={$this->options['port']} ";
+			$dsn .= 'host=' . $value($this->options['host']) . ' port=' . $value($this->options['port']) . ' ';
 		}
 
-		$dsn .= "dbname={$this->options['database']} user={$this->options['user']} password={$this->options['password']}";
+		$dsn .= 'dbname=' . $value($this->options['database']) . ' user=' . $value($this->options['user']) . ' password=' . $value($this->options['password']);
 
-		// Attempt to connect to the server.
-		if (!($this->connection = @pg_connect($dsn)))
+		/*
+		 * Attempt to connect to the server. Joomla 3.x UTD: always a connection of its own; pg_connect() returns the open connection
+		 * with the same settings, so closing another driver instance's (e.g. Global Configuration's connection test) closed the site's.
+		 */
+		if (!($this->connection = @pg_connect($dsn, PGSQL_CONNECT_FORCE_NEW)))
 		{
 			throw new JDatabaseExceptionConnecting('Error connecting to PGSQL database.');
 		}
@@ -762,8 +771,12 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 			$memoryBefore = memory_get_usage();
 		}
 
-		// Execute the query. Error suppression is used here to prevent warnings/notices that the connection has been lost.
-		$this->cursor = @pg_query($this->connection, $query);
+		/*
+		 * Execute the query. Error suppression is used here to prevent warnings/notices that the connection has been lost.
+		 * Joomla 3.x UTD: through the extended protocol (pg_query_params() without parameters), which runs one statement only, like
+		 * the MySQL drivers and PDO; pg_query() ran every statement of a string, so any injection could have added its own.
+		 */
+		$this->cursor = @pg_query_params($this->connection, $query, array());
 
 		if ($this->debug)
 		{
@@ -875,7 +888,20 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 			foreach ($oldIndexes as $oldIndex)
 			{
 				$changedIdxName = str_replace($oldTable, $newTable, $oldIndex);
-				$this->setQuery('ALTER INDEX ' . $this->escape($oldIndex) . ' RENAME TO ' . $this->escape($changedIdxName));
+
+				// An index named without its table (e.g. #__uc_ItemnameTagid) gets the new prefix instead, if any: renaming it to itself
+				// fails, and a new table of the old name would need the old index name again
+				if ($changedIdxName === $oldIndex)
+				{
+					if ($backup === null || $prefix === null || strpos($oldIndex, $prefix) !== 0)
+					{
+						continue;
+					}
+
+					$changedIdxName = $backup . substr($oldIndex, strlen($prefix));
+				}
+
+				$this->setQuery('ALTER INDEX ' . $this->quoteName($oldIndex) . ' RENAME TO ' . $this->quoteName($changedIdxName));
 				$this->execute();
 			}
 
@@ -890,7 +916,7 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 						WHERE nspname NOT LIKE \'pg_%\'
 						AND nspname != \'information_schema\'
 					)
-					AND relname LIKE \'%' . $oldTable . '%\' ;'
+					AND relname LIKE ' . $this->quote('%' . $oldTable . '%') . ';'
 			);
 
 			$oldSequences = $this->loadColumn();
@@ -898,12 +924,12 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 			foreach ($oldSequences as $oldSequence)
 			{
 				$changedSequenceName = str_replace($oldTable, $newTable, $oldSequence);
-				$this->setQuery('ALTER SEQUENCE ' . $this->escape($oldSequence) . ' RENAME TO ' . $this->escape($changedSequenceName));
+				$this->setQuery('ALTER SEQUENCE ' . $this->quoteName($oldSequence) . ' RENAME TO ' . $this->quoteName($changedSequenceName));
 				$this->execute();
 			}
 
 			/* Rename table */
-			$this->setQuery('ALTER TABLE ' . $this->escape($oldTable) . ' RENAME TO ' . $this->escape($newTable));
+			$this->setQuery('ALTER TABLE ' . $this->quoteName($oldTable) . ' RENAME TO ' . $this->quoteName($newTable));
 			$this->execute();
 		}
 

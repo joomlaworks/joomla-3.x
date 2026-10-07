@@ -436,7 +436,9 @@ abstract class ModuleHelper
 			$cacheId .= $lang . '*';
 		}
 
-		$query->order('m.position, m.ordering');
+		// The ID last: modules of the same position and ordering otherwise come in whatever order the database returns (PostgreSQL's
+		// differs from MySQL's and SQLite's insertion order)
+		$query->order('m.position, m.ordering, m.id');
 
 		// Set the query
 		$db->setQuery($query);

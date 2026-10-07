@@ -45,7 +45,7 @@ class UsernameRule extends FormRule
 		// Build the query.
 		$query->select('COUNT(*)')
 			->from('#__users')
-			->where($db instanceof \JDatabaseDriverMysqlonsqlite ? $db->foldedEquals($db->quoteName('username'), $value) : 'username = ' . $db->quote($value));
+			->where(\Joomla\CMS\User\UserHelper::getSameTextCondition($db, $db->quoteName('username'), $value));
 
 		// Get the extra field check attribute.
 		$userId = ($form instanceof Form) ? $form->getValue('id') : '';

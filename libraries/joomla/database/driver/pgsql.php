@@ -457,7 +457,20 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 		foreach ($oldIndexes as $oldIndex)
 		{
 			$changedIdxName = str_replace($oldTable, $newTable, $oldIndex);
-			$this->setQuery('ALTER INDEX ' . $this->escape($oldIndex) . ' RENAME TO ' . $this->escape($changedIdxName))->execute();
+
+			// An index named without its table (e.g. #__uc_ItemnameTagid) gets the new prefix instead, if any: renaming it to itself
+			// fails, and a new table of the old name would need the old index name again
+			if ($changedIdxName === $oldIndex)
+			{
+				if ($backup === null || $prefix === null || strpos($oldIndex, $prefix) !== 0)
+				{
+					continue;
+				}
+
+				$changedIdxName = $backup . substr($oldIndex, strlen($prefix));
+			}
+
+			$this->setQuery('ALTER INDEX ' . $this->quoteName($oldIndex) . ' RENAME TO ' . $this->quoteName($changedIdxName))->execute();
 		}
 
 		// Rename sequences
@@ -481,11 +494,11 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 		foreach ($oldSequences as $oldSequence)
 		{
 			$changedSequenceName = str_replace($oldTable, $newTable, $oldSequence);
-			$this->setQuery('ALTER SEQUENCE ' . $this->escape($oldSequence) . ' RENAME TO ' . $this->escape($changedSequenceName))->execute();
+			$this->setQuery('ALTER SEQUENCE ' . $this->quoteName($oldSequence) . ' RENAME TO ' . $this->quoteName($changedSequenceName))->execute();
 		}
 
 		// Rename table
-		$this->setQuery('ALTER TABLE ' . $this->escape($oldTable) . ' RENAME TO ' . $this->escape($newTable))->execute();
+		$this->setQuery('ALTER TABLE ' . $this->quoteName($oldTable) . ' RENAME TO ' . $this->quoteName($newTable))->execute();
 
 		return true;
 	}

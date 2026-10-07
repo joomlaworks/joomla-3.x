@@ -205,16 +205,23 @@ class ModulesModelModule extends JModelAdmin
 					$db->execute();
 				}
 
-				// Copy rules
-				$query->clear()
-					->update($db->quoteName('#__assets', 't'))
-					->join('INNER', $db->quoteName('#__assets', 's') .
-						' ON ' . $db->quoteName('s.id') . ' = ' . $oldAssetId
-					)
-					->set($db->quoteName('t.rules') . ' = ' . $db->quoteName('s.rules'))
-					->where($db->quoteName('t.id') . ' = ' . $table->asset_id);
+				// Copy rules (read, then write: PostgreSQL refuses the UPDATE ... JOIN form, with its qualified SET column)
+				$rules = $db->setQuery(
+					$db->getQuery(true)
+						->select($db->quoteName('rules'))
+						->from($db->quoteName('#__assets'))
+						->where($db->quoteName('id') . ' = ' . (int) $oldAssetId)
+				)->loadResult();
 
-				$db->setQuery($query)->execute();
+				if ($rules !== null)
+				{
+					$db->setQuery(
+						$db->getQuery(true)
+							->update($db->quoteName('#__assets'))
+							->set($db->quoteName('rules') . ' = ' . $db->quote($rules))
+							->where($db->quoteName('id') . ' = ' . (int) $table->asset_id)
+					)->execute();
+				}
 			}
 			else
 			{

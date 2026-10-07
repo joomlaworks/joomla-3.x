@@ -53,6 +53,7 @@ Summary of changes:
 - More PHP 8.5 deprecation fixes
 - Fixed Joomla Update failing with a PHP error when Joomla's own update site had been deleted
 - Fixed the administrator's Help buttons, which showed "not found" since 3.11
+- PostgreSQL fixes: batch copy, saving Global Configuration (native driver), the installer's backup of old tables, and the frontpage module order
 
 **Security fixes:**
 - Installer: the ownership check for remote databases could be skipped by going straight to the step which writes the configuration (stock Joomla 3)
@@ -62,6 +63,7 @@ Summary of changes:
 - `{loadmoduleid}` showed any module to anyone, whatever its access level or publishing dates (since 3.12)
 - A crafted package could write files outside the site's folders, through Joomla Update's extraction, the extension installer or the archive code, and uninstalling one could delete a folder outside the extension (stock Joomla 3); such packages are now refused as a whole
 - FOF's download class read local files (`file://`) and could write outside the temporary folder (stock Joomla 3)
+- PostgreSQL: the native driver ran several statements given at once, its connection settings weren't quoted, and usernames differing only in case could be registered (stock Joomla 3)
 - The configuration writer could put PHP code into `configuration.php` through a crafted setting name (stock Joomla 3)
 - Joomla Update showed the update feed's values unescaped; Install from URL and Install from Web accepted download addresses other than `http`/`https` (stock Joomla 3)
 - Little WAF now also checks form data and encoded spellings of the tags, and works on servers without `REQUEST_URI`; each filter only acts while its extension is installed

@@ -927,4 +927,33 @@ abstract class UserHelper
 
 		return true;
 	}
+
+	/**
+	 * A condition finding a username or email address the database considers the same as the given one, as MySQL's default
+	 * collation compares them, for checks that it isn't taken yet: SQLite only folds ASCII case (see
+	 * JDatabaseDriverMysqlonsqlite::foldedEquals()), PostgreSQL compares with case (so "Admin" could be added next to "admin").
+	 * Lookups (login, password reset) keep their exact comparison.
+	 *
+	 * @param   \JDatabaseDriver  $db      The database driver
+	 * @param   string            $column  The quoted column name
+	 * @param   string            $value   The value
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public static function getSameTextCondition($db, $column, $value)
+	{
+		if ($db instanceof \JDatabaseDriverMysqlonsqlite)
+		{
+			return $db->foldedEquals($column, $value);
+		}
+
+		if ($db->getServerType() === 'postgresql')
+		{
+			return 'LOWER(' . $column . ') = LOWER(' . $db->quote((string) $value) . ')';
+		}
+
+		return $column . ' = ' . $db->quote((string) $value);
+	}
 }

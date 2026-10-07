@@ -10,6 +10,7 @@ namespace Joomla\CMS\Table;
 
 defined('JPATH_PLATFORM') or die;
 
+use Joomla\CMS\User\UserHelper;
 use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 use Joomla\Utilities\ArrayHelper;
@@ -230,9 +231,7 @@ class User extends Table
 		$query = $this->_db->getQuery(true)
 			->select($this->_db->quoteName('id'))
 			->from($this->_db->quoteName('#__users'))
-			->where($this->_db instanceof \JDatabaseDriverMysqlonsqlite
-				? $this->_db->foldedEquals($this->_db->quoteName('username'), $this->username)
-				: $this->_db->quoteName('username') . ' = ' . $this->_db->quote($this->username))
+			->where(UserHelper::getSameTextCondition($this->_db, $this->_db->quoteName('username'), $this->username))
 			->where($this->_db->quoteName('id') . ' != ' . (int) $this->id);
 		$this->_db->setQuery($query);
 
