@@ -92,7 +92,8 @@ class DatabaseExportCommand extends AbstractCommand
 
 		// Over MCP, a folder of the site's protected backup folder, never one the assistant names: an export holds e.g. the users'
 		// password hashes, and a folder the web serves (or a template's, which template:file:get reads) would give them away
-		$mcp = Factory::getApplication()->getInterface() === 'MCP';
+		// (MCP clients can't give --folder; a folder another command gives, e.g. database:convert's temporary one, is used as it is)
+		$mcp = Factory::getApplication()->getInterface() === 'MCP' && (string) $io->getOption('folder') === '.';
 
 		if ($mcp)
 		{

@@ -127,6 +127,30 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 		$model = $this->getModel('Default');
 
 		$file = JFactory::getApplication()->getUserState('com_joomlaupdate.file', null);
+
+		// A package which can't be extracted safely is refused before anything is written over the site (the package's name as
+		// createRestorationFile() works it out)
+		$basename = (string) $file;
+
+		if ($basename === '')
+		{
+			$info     = $model->getUpdateInformation();
+			$basename = is_object($info['object']) && isset($info['object']->downloadurl->_data) ? basename((string) $info['object']->downloadurl->_data) : '';
+		}
+
+		$package = JFactory::getConfig()->get('tmp_path') . '/' . basename($basename);
+		$problem = $model->checkPackage($package);
+
+		if ($problem !== '')
+		{
+			JLog::add($problem, JLog::WARNING, 'Update');
+			@unlink($package);
+			JFactory::getApplication()->setUserState('com_joomlaupdate.file', null);
+			$this->setRedirect('index.php?option=com_joomlaupdate', $problem, 'error');
+
+			return;
+		}
+
 		$model->createRestorationFile($file);
 
 		$this->display();

@@ -45,7 +45,8 @@ class McpServeCommand extends AbstractCommand
 		. 'whose permissions then apply. Changes are recorded in the User Actions Log as made through MCP. Options which name files or '
 		. 'folders on the server (--text-file, --folder, --path of a package etc.) or reveal secrets (--show-secrets) aren\'t offered; database '
 		. 'exports and imports use a folder of the site\'s protected backup folder. Writing code also needs --allow-code: installing or '
-		. 'updating extensions or Joomla, and a template\'s PHP, XML and dot files (or restoring a template backup); a template\'s CSS, '
+		. 'updating extensions or Joomla, configuration.php (config:set, database:convert), and a template\'s PHP, XML and dot files (or '
+		. 'restoring a template backup); a template\'s CSS, '
 		. 'JavaScript and images only need --allow-write.';
 
 	/**
@@ -103,7 +104,7 @@ class McpServeCommand extends AbstractCommand
 	{
 		$this->addOption('allow-write', null, self::OPTION_NONE, 'Offer the commands which change the site too (by default only reading and dry runs)');
 		$this->addOption('allow-code', null, self::OPTION_NONE, 'With --allow-write: also allow writing code which runs on the server (installing '
-			. 'or updating extensions or Joomla, templates\' PHP, XML and dot files, restoring template backups)');
+			. 'or updating extensions or Joomla, configuration.php, templates\' PHP, XML and dot files, restoring template backups)');
 		$this->addOption('allow', null, self::OPTION_REQUIRED, 'Only these commands, separated by commas; wildcards allowed (e.g. "article:*,site:*")');
 		$this->addOption('deny', null, self::OPTION_REQUIRED, 'Never these commands, separated by commas; wildcards allowed (e.g. "database:*,core:update")');
 		$this->addOption('as', null, self::OPTION_REQUIRED, 'Make the content commands act as this account (its permissions apply), whatever the assistant asks');
@@ -280,7 +281,7 @@ class McpServeCommand extends AbstractCommand
 		$text .= 'Templates: template_info shows a style\'s positions (for module_create), options and CSS design tokens. Put the site\'s own '
 			. 'CSS in the file the template loads for it (css/custom.css in Hammond and Finch), which updates never touch, and run '
 			. 'template_backup before changing a template\'s files. '
-			. ($this->allowCode ? '' : 'Writing code (installing or updating extensions or Joomla, a template\'s PHP, XML or dot files) is not allowed by '
+			. ($this->allowCode ? '' : 'Writing code (installing or updating extensions or Joomla, configuration.php, a template\'s PHP, XML or dot files) is not allowed by '
 			. 'this server (it needs --allow-code). ');
 
 		return trim($text);
@@ -456,8 +457,8 @@ class McpServeCommand extends AbstractCommand
 
 		if (!$this->allowCode && empty($options['dry-run']) && $command->writesCode($fullOptions, $arguments))
 		{
-			return $this->toolError($id, sprintf('This server does not write code (extension or Joomla packages, a template\'s PHP, XML and dot '
-				. 'files, or a template restore), so %s only runs with "dry_run": true here. The site\'s administrator can start the server with '
+			return $this->toolError($id, sprintf('This server does not write code (extension or Joomla packages, configuration.php, a template\'s PHP, '
+				. 'XML and dot files, or a template restore), so %s only runs with "dry_run": true here. The site\'s administrator can start the server with '
 				. '--allow-code to allow it; a template\'s CSS, JavaScript and images can be changed with --allow-write alone.', $command->getName()));
 		}
 

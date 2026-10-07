@@ -159,11 +159,6 @@ class InstallationModelDatabase extends JModelBase
 			return false;
 		}
 
-		if ($isSqlite && !$this->prepareSqliteFolder($options->db_name))
-		{
-			return false;
-		}
-
 		$shouldCheckLocalhost = getenv('JOOMLA_INSTALLATION_DISABLE_LOCALHOST_CHECK') !== '1';
 
 		// Per default allowed DB hosts: localhost / 127.0.0.1 / ::1 (optionally with port), or a local socket (localhost:/path/to/mysql.sock)
@@ -272,6 +267,12 @@ class InstallationModelDatabase extends JModelBase
 				// All tests for this session passed set it to the session
 				JFactory::getSession()->set('remoteDbFileTestsPassed', true);
 			}
+		}
+
+		// Only now (the request has passed the ownership check): the SQLite folder is created and protected, and its messages name paths
+		if ($isSqlite && !$this->prepareSqliteFolder($options->db_name))
+		{
+			return false;
 		}
 
 		// Get a database object.

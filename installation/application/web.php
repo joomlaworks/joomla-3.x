@@ -178,7 +178,7 @@ final class InstallationApplicationWeb extends JApplicationCms
 			}
 			catch (RuntimeException $e)
 			{
-				echo $e->getMessage();
+				echo htmlspecialchars(JPath::removeRoot($e->getMessage()), ENT_QUOTES, 'UTF-8');
 				$this->close($e->getCode());
 			}
 
@@ -195,7 +195,7 @@ final class InstallationApplicationWeb extends JApplicationCms
 		// Mop up any uncaught exceptions.
 		catch (Exception $e)
 		{
-			echo $e->getMessage();
+			echo htmlspecialchars(JPath::removeRoot($e->getMessage()), ENT_QUOTES, 'UTF-8');
 			$this->close($e->getCode());
 		}
 	}

@@ -16,11 +16,9 @@ defined('_JEXEC') or die;
 const JDEBUG = false;
 @ini_set('magic_quotes_runtime', 0);
 
-// Tasks answer JSON to installation.js: a PHP message printed before it would break the response and show the server's paths
-if (isset($_REQUEST['task']))
-{
-	@ini_set('display_errors', '0');
-}
+// PHP messages go to the server's log, never into the page: anyone can open the installer, and the messages show the server's
+// paths (in the JSON of a task, a message would also break the response)
+@ini_set('display_errors', '0');
 
 /*
  * Check if a configuration file already exists.

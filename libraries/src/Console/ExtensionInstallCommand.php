@@ -105,6 +105,15 @@ class ExtensionInstallCommand extends AbstractExtensionCommand
 
 		if ($url !== '')
 		{
+			// Through the MCP server a dry run may be all that's allowed: it mustn't make the server fetch an address the assistant chose
+			if ($io->isDryRun() && Factory::getApplication()->getInterface() === 'MCP')
+			{
+				$io->plan('Download the package from ' . $url . ' and install it (not downloaded in a dry run through MCP)',
+					array('action' => 'install', 'url' => $url));
+
+				return self::SUCCESS;
+			}
+
 			$download = InstallerHelper::downloadPackage($url);
 
 			if (!$download)

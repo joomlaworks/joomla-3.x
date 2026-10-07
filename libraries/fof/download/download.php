@@ -158,6 +158,11 @@ class FOFDownload
 	 */
 	public function getFromURL($url)
 	{
+		if (!static::isRemoteUrl($url))
+		{
+			return false;
+		}
+
 		try
 		{
 			return $this->adapter->downloadAndReturn($url, null, null, $this->adapterOptions);
@@ -219,8 +224,17 @@ class FOFDownload
 			}
 		}
 
+		// Joomla 3.x UTD patch: the file stays in the temporary folder, whatever name the request gives
+		$localFilename = basename(str_replace('\\', '/', (string) $localFilename));
+
 		$tmpDir        = JFactory::getConfig()->get('tmp_path', JPATH_ROOT . '/tmp');
 		$tmpDir        = rtrim((string) $tmpDir, '/\\');
+
+		if (!static::isRemoteUrl($url) || $localFilename === '' || $localFilename === '.' || $localFilename === '..')
+		{
+			return array('status' => false, 'error' => 'Invalid download URL or file name', 'frag' => $frag, 'totalSize' => $totalSize,
+				'doneSize' => $doneSize, 'percent' => 0, 'localfile' => '');
+		}
 
 		// Init retArray
 		$retArray = array(
@@ -491,5 +505,17 @@ class FOFDownload
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Whether a URL is a web or FTP address. Joomla 3.x UTD patch: the cURL adapter would also read file:// and other schemes.
+	 *
+	 * @param   string  $url  The URL
+	 *
+	 * @return  boolean
+	 */
+	protected static function isRemoteUrl($url)
+	{
+		return (bool) preg_match('#^(?:https?|ftps?)://#i', trim((string) $url));
 	}
 }

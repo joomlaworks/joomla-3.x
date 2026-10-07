@@ -113,8 +113,9 @@ class DatabaseImportCommand extends AbstractCommand
 		$zipFile   = (string) $io->getOption('zip');
 		$tableName = (string) $io->getOption('table');
 
-		// Over MCP, from the folder database:export writes to there (never a folder the assistant names)
-		if (Factory::getApplication()->getInterface() === 'MCP')
+		// Over MCP, from the folder database:export writes to there (never a folder the assistant names; a folder another command
+		// gives, e.g. database:convert's temporary one, is used as it is)
+		if (Factory::getApplication()->getInterface() === 'MCP' && (string) $io->getOption('folder') === '.')
 		{
 			$folder = AbstractTemplateCommand::getBackupFolder('database', false);
 
@@ -182,13 +183,27 @@ class DatabaseImportCommand extends AbstractCommand
 
 			if ($io->isDryRun())
 			{
+				$refused = false;
+
 				foreach ($files as $file)
 				{
-					$table = $this->getRealTableName(basename($file, '.xml'));
-					$io->plan(sprintf('Replace the table %s with the contents of %s', $table, basename($file)), array('action' => 'import', 'table' => $table, 'file' => $file));
+					// The tables the file holds, checked as the import would check them
+					try
+					{
+						foreach ($this->getTables($file) as $table)
+						{
+							$io->plan(sprintf('Replace the table %s with the contents of %s', $table, basename($file)),
+								array('action' => 'import', 'table' => $table, 'file' => $file));
+						}
+					}
+					catch (\RuntimeException $e)
+					{
+						$io->error(sprintf('%s would be refused: %s', basename($file), $e->getMessage()));
+						$refused = true;
+					}
 				}
 
-				return self::SUCCESS;
+				return $refused ? self::FAILURE : self::SUCCESS;
 			}
 
 			if ($io->isInteractive()
@@ -405,6 +420,63 @@ class DatabaseImportCommand extends AbstractCommand
 	}
 
 	/**
+	 * The tables a file would replace, with every name and statement checked as importFile() checks them; nothing is changed.
+	 *
+	 * @param   string  $file  The file
+	 *
+	 * @return  string[]  The real table names
+	 *
+	 * @since   3.17.0
+	 * @throws  \RuntimeException
+	 */
+	protected function getTables($file)
+	{
+		$file   = $this->compatibleFile($file);
+		$tables = array();
+
+		try
+		{
+			$reader  = $this->open($file);
+			$dialect = 'mysql';
+
+			while ($reader->read())
+			{
+				if ($reader->nodeType !== \XMLReader::ELEMENT)
+				{
+					continue;
+				}
+
+				if ($reader->depth === 0)
+				{
+					$dialect = $reader->name === 'postgresqldump' ? 'postgresql' : 'mysql';
+				}
+				elseif ($reader->name === 'table_structure')
+				{
+					$structure = simplexml_import_dom($reader->expand(new \DOMDocument));
+					$this->getCreateStatements($structure, $dialect);
+					$tables[] = $this->getRealTableName((string) $structure['name']);
+				}
+				elseif ($reader->name === 'table_data')
+				{
+					$tables[] = $this->getRealTableName((string) $reader->getAttribute('name'));
+				}
+			}
+
+			$reader->close();
+		}
+		finally
+		{
+			if (isset($this->compatibleCopy))
+			{
+				@unlink($this->compatibleCopy);
+				$this->compatibleCopy = null;
+			}
+		}
+
+		return array_values(array_unique($tables));
+	}
+
+	/**
 	 * Return a file which XML parsers accept. The Joomla 4 and later exporter writes NULL values with an attribute without
 	 * a value (value_is_null), which isn't valid XML, so such files are read from a corrected copy.
 	 *
@@ -516,6 +588,15 @@ class DatabaseImportCommand extends AbstractCommand
 			}
 
 			$statements = array($statement);
+		}
+		else
+		{
+			// Files of Joomla 4 and later: the importer writes the column types and extras as they are
+			foreach ($structure->field as $field)
+			{
+				DatabaseTableDefinition::check('mysqlType', (string) $field['Type'], $generic);
+				DatabaseTableDefinition::check('mysqlExtra', (string) $field['Extra'], $generic);
+			}
 		}
 
 		// Some drivers run every statement of a query: each must be one statement

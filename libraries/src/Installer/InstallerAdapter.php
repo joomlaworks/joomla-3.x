@@ -751,8 +751,18 @@ abstract class InstallerAdapter extends \JAdapterInstance
 			return false;
 		}
 
-		// Parse optional tags
-		$this->parseOptionalTags();
+		// Parse optional tags (media and languages: a path leading out of their folders stops the installation)
+		try
+		{
+			$this->parseOptionalTags();
+		}
+		catch (\RuntimeException $e)
+		{
+			// Install failed, roll back changes
+			$this->parent->abort($e->getMessage());
+
+			return false;
+		}
 
 		/*
 		 * ---------------------------------------------------------------------------------------------

@@ -55,6 +55,21 @@ class CoreUpdateFinaliseCommand extends AbstractCommand
 	protected $superUser = true;
 
 	/**
+	 * It runs the new version's update script and database changes.
+	 *
+	 * @param   array|null  $options    The options of a run
+	 * @param   array|null  $arguments  The arguments of a run
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function writesCode(?array $options = null, ?array $arguments = null)
+	{
+		return true;
+	}
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0

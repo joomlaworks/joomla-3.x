@@ -211,7 +211,7 @@ class FOFDownloadAdapterCurl extends FOFDownloadAdapterAbstract implements FOFDo
 	 *
 	 * @return  int  The length of the $data string
 	 */
-	protected function reponseHeaderCallback(&$ch, &$data)
+	protected function reponseHeaderCallback($ch, $data)
 	{
 		$strlen = strlen($data);
 
@@ -220,7 +220,8 @@ class FOFDownloadAdapterCurl extends FOFDownloadAdapterAbstract implements FOFDo
 			return $strlen;
 		}
 
-		if (substr($data, 0, 4) == 'HTTP')
+		// Joomla 3.x UTD patch: cURL passes its arguments by value (PHP 8 warned on every header), and a line may have no value
+		if (substr($data, 0, 4) == 'HTTP' || strpos($data, ': ') === false)
 		{
 			return $strlen;
 		}

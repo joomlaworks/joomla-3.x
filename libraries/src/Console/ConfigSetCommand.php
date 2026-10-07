@@ -52,6 +52,22 @@ class ConfigSetCommand extends AbstractCommand
 	protected $superUser = true;
 
 	/**
+	 * It writes configuration.php, which every request runs, and settings such as the database, paths and session handler decide
+	 * what the server does.
+	 *
+	 * @param   array|null  $options    The options of a run
+	 * @param   array|null  $arguments  The arguments of a run
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function writesCode(?array $options = null, ?array $arguments = null)
+	{
+		return true;
+	}
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0

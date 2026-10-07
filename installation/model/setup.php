@@ -42,6 +42,16 @@ class InstallationModelSetup extends JModelBase
 		// Get the current setup options from the session.
 		$old = (array) $this->getOptions();
 
+		// Every value is a single value: a list posted for a field (jform[language][...]) is never stored, as these values end
+		// up in configuration.php
+		foreach ((array) $options as $key => $value)
+		{
+			if ($value !== null && !is_scalar($value))
+			{
+				unset($options[$key]);
+			}
+		}
+
 		// Ensure that we have language
 		if (!isset($options['language']) || empty($options['language']))
 		{

@@ -101,6 +101,11 @@ class JoomlaupdateModelDefault extends JModelLegacy
 			$update_site = $this->restoreCoreUpdateSite($updateURL);
 		}
 
+		if (!$update_site)
+		{
+			return JError::raiseWarning(500, JText::_('COM_JOOMLAUPDATE_UPDATE_SITE_NOT_CREATED'));
+		}
+
 		if ($update_site->location != $updateURL)
 		{
 			// Modify the database record.
@@ -115,6 +120,66 @@ class JoomlaupdateModelDefault extends JModelLegacy
 			$db->setQuery($query);
 			$db->execute();
 		}
+	}
+
+	/**
+	 * Check an update package before it's extracted over the site: a ZIP file whose entries all stay inside the site (relative
+	 * names without ".." parts, no links). The extraction script skips such entries one by one, which would leave a half-applied
+	 * update behind, so the whole package is refused before anything is written.
+	 *
+	 * @param   string  $file  The package
+	 *
+	 * @return  string  Why the package is refused, or an empty string
+	 *
+	 * @since   3.17.0
+	 */
+	public function checkPackage($file)
+	{
+		$handle = is_file($file) ? @fopen($file, 'rb') : false;
+
+		if (!$handle)
+		{
+			return JText::_('COM_JOOMLAUPDATE_PACKAGE_MISSING');
+		}
+
+		$magic = fread($handle, 4);
+		fclose($handle);
+
+		if ($magic !== "PK\x03\x04")
+		{
+			return JText::_('COM_JOOMLAUPDATE_PACKAGE_NOT_ZIP');
+		}
+
+		// Without the zip extension, only the extraction script's own checks apply
+		if (!class_exists('ZipArchive'))
+		{
+			return '';
+		}
+
+		$zip = new ZipArchive;
+
+		if ($zip->open($file) !== true)
+		{
+			return JText::_('COM_JOOMLAUPDATE_PACKAGE_NOT_ZIP');
+		}
+
+		$problem = '';
+
+		for ($i = 0; $i < $zip->numFiles && $problem === ''; $i++)
+		{
+			$name = str_replace('\\', '/', (string) $zip->getNameIndex($i));
+			$link = $zip->getExternalAttributesIndex($i, $system, $attributes) && $system === ZipArchive::OPSYS_UNIX
+				&& (($attributes >> 16) & 0170000) === 0120000;
+
+			if ($name === '' || $name[0] === '/' || preg_match('#^[A-Za-z]:|[\x00-\x1F]#', $name) || in_array('..', explode('/', $name), true) || $link)
+			{
+				$problem = JText::sprintf('COM_JOOMLAUPDATE_PACKAGE_UNSAFE_ENTRY', htmlspecialchars(substr($name, 0, 120), ENT_QUOTES, 'UTF-8'));
+			}
+		}
+
+		$zip->close();
+
+		return $problem;
 	}
 
 	/**

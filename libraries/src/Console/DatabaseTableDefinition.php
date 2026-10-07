@@ -29,6 +29,23 @@ class DatabaseTableDefinition
 	const NULL_DATES = array('mysql' => '0000-00-00 00:00:00', 'postgresql' => '1970-01-01 00:00:00');
 
 	/**
+	 * What a file's column types, defaults and index statements may be, as these are written into the SQL which creates the
+	 * table: a file could otherwise put any SQL there (e.g. a generated column reading the server's files)
+	 *
+	 * @var    string[]
+	 * @since  3.17.0
+	 */
+	const SAFE_SQL = array(
+		// int, int(10) unsigned, varchar(255), decimal(10,2), enum('a','b'), double precision
+		'mysqlType'   => "/^[a-z]+(?: [a-z]+)*(?:\\((?:\\d+(?:\\s*,\\s*\\d+)?|'(?:[^'\\\\]|''|\\\\.)*'(?:\\s*,\\s*'(?:[^'\\\\]|''|\\\\.)*')*)\\))?(?: (?:unsigned|zerofill|signed))*$/i",
+		'mysqlExtra'  => '/^(?:\\s*(?:auto_increment|DEFAULT_GENERATED|on update (?:CURRENT_TIMESTAMP|now)(?:\\(\\d*\\))?))*\\s*$/i',
+		// integer, character varying(255), timestamp(6) without time zone, numeric(10,2), text[]
+		'pgType'      => '/^[a-z_][a-z0-9_]*(?: [a-z_][a-z0-9_]*)*(?:\\(\\d+(?:\\s*,\\s*\\d+)?\\))?(?: [a-z_][a-z0-9_]*)*(?:\\[\\])*$/i',
+		// '...'::character varying, 0, (-1)::integer, NULL, true, now(), CURRENT_TIMESTAMP, nextval('#__x_id_seq'::regclass)
+		'pgDefault'   => "/^(?:'(?:[^']|'')*'|\\(?-?\\d+(?:\\.\\d+)?\\)?|NULL|true|false|CURRENT_(?:TIMESTAMP|DATE|TIME)(?:\\(\\d*\\))?|LOCALTIMESTAMP|(?:now|nextval|gen_random_uuid|uuid_generate_v4)\\((?:'(?:[^']|'')*'(?:::[a-z_][a-z0-9_]*(?: [a-z_][a-z0-9_]*)*)?)?\\))(?:::[a-z_][a-z0-9_]*(?: [a-z_][a-z0-9_]*)*(?:\\(\\d+(?:,\\s*\\d+)?\\))?(?:\\[\\])*)*$/i",
+	);
+
+	/**
 	 * The kind of database the file comes from: mysql or postgresql
 	 *
 	 * @var    string
@@ -99,6 +116,9 @@ class DatabaseTableDefinition
 	{
 		foreach ($structure->field as $field)
 		{
+			static::check('mysqlType', (string) $field['Type'], $this->name);
+			static::check('mysqlExtra', (string) $field['Extra'], $this->name);
+
 			$column = static::parseType((string) $field['Type']);
 
 			$column['nullable']      = strtoupper((string) $field['Null']) === 'YES';
@@ -171,6 +191,13 @@ class DatabaseTableDefinition
 			$column  = static::parseType((string) $field['Type']);
 			$default = isset($field['Default']) ? trim((string) $field['Default']) : '';
 
+			static::check('pgType', (string) $field['Type'], $this->name);
+
+			if ($default !== '')
+			{
+				static::check('pgDefault', $default, $this->name);
+			}
+
 			$column['nullable']      = strtoupper((string) $field['Null']) === 'YES';
 			$column['autoIncrement'] = in_array($name, $sequenced, true) || stripos($default, 'nextval(') === 0;
 			$column['default']       = null;
@@ -209,7 +236,17 @@ class DatabaseTableDefinition
 
 		foreach ($structure->key as $key)
 		{
-			$query   = (string) $key['Query'];
+			$query = (string) $key['Query'];
+
+			// The primary key or an index of this table (an expression index is copied as it is between PostgreSQL databases)
+			$table = '(?:ONLY )?(?:"?[a-z0-9_]+"?\\.)?"?' . preg_quote($this->name, '/') . '"?';
+
+			if ($query !== '' && !preg_match('/^(?:ALTER TABLE ' . $table . ' ADD (?:CONSTRAINT "?[#a-z0-9_]+"? )?PRIMARY KEY'
+				. '|CREATE (?:UNIQUE )?INDEX "?[#a-z0-9_]+"? ON ' . $table . ' USING [a-z]+) \\([^;]*\\)$/i', $query))
+			{
+				throw new \RuntimeException(sprintf('The structure of %s has an index statement which isn\'t an index of that table.', $this->name));
+			}
+
 			$primary = in_array(strtolower((string) $key['is_primary']), array('t', 'true', '1'), true);
 			$name    = (string) $key['Index'];
 
@@ -247,6 +284,27 @@ class DatabaseTableDefinition
 				'columns'  => $columns,
 				'query'    => $query,
 			);
+		}
+	}
+
+	/**
+	 * Refuse a type, default or other piece of SQL from a file which doesn't have the expected form.
+	 *
+	 * @param   string  $kind   A key of SAFE_SQL
+	 * @param   string  $value  The value
+	 * @param   string  $table  The table, for the message
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 * @throws  \RuntimeException
+	 */
+	public static function check($kind, $value, $table)
+	{
+		if (!preg_match(static::SAFE_SQL[$kind], trim((string) $value)))
+		{
+			throw new \RuntimeException(sprintf('The structure of %s has a column type or default which can\'t be imported: %s', $table,
+				substr((string) $value, 0, 80)));
 		}
 	}
 

@@ -526,8 +526,16 @@ class Installer extends \JAdapter
 			)
 		);
 
-		// Run the install
-		$result = $adapter->install();
+		// Run the install (adapters which don't catch it themselves, e.g. languages, stop at a refused manifest path here)
+		try
+		{
+			$result = $adapter->install();
+		}
+		catch (\RuntimeException $e)
+		{
+			$this->abort($e->getMessage());
+			$result = false;
+		}
 
 		// Fire the onExtensionAfterInstall
 		$dispatcher->trigger(
@@ -728,8 +736,16 @@ class Installer extends \JAdapter
 		$dispatcher = \JEventDispatcher::getInstance();
 		$dispatcher->trigger('onExtensionBeforeUpdate', array('type' => $this->manifest->attributes()->type, 'manifest' => $this->manifest));
 
-		// Run the update
-		$result = $adapter->update();
+		// Run the update (adapters which don't catch it themselves, e.g. languages, stop at a refused manifest path here)
+		try
+		{
+			$result = $adapter->update();
+		}
+		catch (\RuntimeException $e)
+		{
+			$this->abort($e->getMessage());
+			$result = false;
+		}
 
 		// Fire the onExtensionAfterUpdate
 		$dispatcher->trigger(
@@ -991,7 +1007,7 @@ class Installer extends \JAdapter
 
 				if (!static::isSafePath($file))
 				{
-					return $this->refusePath($file);
+					return $this->skipPath($file);
 				}
 
 				// Check that sql files exists before reading. Otherwise raise error for rollback
@@ -1093,7 +1109,12 @@ class Installer extends \JAdapter
 					}
 				}
 
-				if ($schemapath !== '' && static::isSafePath($schemapath))
+				if ($schemapath !== '' && !static::isSafePath($schemapath))
+				{
+					$this->refusePath($schemapath);
+				}
+
+				if ($schemapath !== '')
 				{
 					$files = str_replace('.sql', '', \JFolder::files($this->getPath('extension_root') . '/' . $schemapath, '\.sql$'));
 					usort($files, 'version_compare');
@@ -1177,7 +1198,12 @@ class Installer extends \JAdapter
 					}
 				}
 
-				if ($schemapath !== '' && static::isSafePath($schemapath))
+				if ($schemapath !== '' && !static::isSafePath($schemapath))
+				{
+					$this->refusePath($schemapath);
+				}
+
+				if ($schemapath !== '')
 				{
 					$files = \JFolder::files($this->getPath('extension_root') . '/' . $schemapath, '\.sql$');
 
@@ -1335,7 +1361,7 @@ class Installer extends \JAdapter
 
 		if (!static::isSafePath($folder))
 		{
-			return $this->refusePath($folder);
+			$this->refusePath($folder);
 		}
 
 		if ($folder && file_exists($this->getPath('source') . '/' . $folder))
@@ -1358,18 +1384,26 @@ class Installer extends \JAdapter
 
 				foreach ($deletions['folders'] as $deleted_folder)
 				{
-					if (static::isSafePath($deleted_folder))
+					if (!static::isSafePath($deleted_folder))
 					{
-						\JFolder::delete($destination . '/' . $deleted_folder);
+						$this->skipPath($deleted_folder);
+
+						continue;
 					}
+
+					\JFolder::delete($destination . '/' . $deleted_folder);
 				}
 
 				foreach ($deletions['files'] as $deleted_file)
 				{
-					if (static::isSafePath($deleted_file))
+					if (!static::isSafePath($deleted_file))
 					{
-						\JFile::delete($destination . '/' . $deleted_file);
+						$this->skipPath($deleted_file);
+
+						continue;
 					}
+
+					\JFile::delete($destination . '/' . $deleted_file);
 				}
 			}
 		}
@@ -1390,7 +1424,7 @@ class Installer extends \JAdapter
 		{
 			if (!static::isSafePath($file))
 			{
-				return $this->refusePath($file);
+				$this->refusePath($file);
 			}
 
 			$path['src'] = $source . '/' . $file;
@@ -1468,7 +1502,7 @@ class Installer extends \JAdapter
 
 		if (!static::isSafePath($folder))
 		{
-			return $this->refusePath($folder);
+			$this->refusePath($folder);
 		}
 
 		if ($folder && file_exists($this->getPath('source') . '/' . $folder))
@@ -1485,7 +1519,7 @@ class Installer extends \JAdapter
 		{
 			if (!static::isSafePath($file) || !static::isSafePath($file->attributes()->tag))
 			{
-				return $this->refusePath(ltrim($file->attributes()->tag . '/' . $file, '/'));
+				$this->refusePath(ltrim($file->attributes()->tag . '/' . $file, '/'));
 			}
 
 			/*
@@ -1580,7 +1614,7 @@ class Installer extends \JAdapter
 		{
 			if (!static::isSafePath($part))
 			{
-				return $this->refusePath($part);
+				$this->refusePath($part);
 			}
 		}
 
@@ -1611,7 +1645,7 @@ class Installer extends \JAdapter
 		{
 			if (!static::isSafePath($file))
 			{
-				return $this->refusePath($file);
+				$this->refusePath($file);
 			}
 
 			$path['src'] = $source . '/' . $file;
@@ -1720,9 +1754,7 @@ class Installer extends \JAdapter
 			{
 				if (!static::isSafePath($file['dest']))
 				{
-					\JLog::add(\JText::sprintf('JLIB_INSTALLER_ERROR_UNSAFE_PATH', $file['dest']), \JLog::WARNING, 'jerror');
-
-					return false;
+					$this->refusePath($file['dest']);
 				}
 			}
 		}
@@ -1843,7 +1875,23 @@ class Installer extends \JAdapter
 	}
 
 	/**
-	 * Logs a manifest path refused by isSafePath().
+	 * Stop an installation at a manifest path refused by isSafePath(): the adapters abort (and roll back) with the message, so a
+	 * package is never installed with some of its files quietly left out.
+	 *
+	 * @param   string  $path  The path
+	 *
+	 * @return  void
+	 *
+	 * @since   3.17.0
+	 * @throws  \RuntimeException
+	 */
+	protected function refusePath($path)
+	{
+		throw new \RuntimeException(\JText::sprintf('JLIB_INSTALLER_ERROR_UNSAFE_PATH', $path));
+	}
+
+	/**
+	 * Log a manifest path refused by isSafePath() where the work goes on without it (uninstalling, removed files).
 	 *
 	 * @param   string  $path  The path
 	 *
@@ -1851,7 +1899,7 @@ class Installer extends \JAdapter
 	 *
 	 * @since   3.17.0
 	 */
-	protected function refusePath($path)
+	protected function skipPath($path)
 	{
 		\JLog::add(\JText::sprintf('JLIB_INSTALLER_ERROR_UNSAFE_PATH', $path), \JLog::WARNING, 'jerror');
 
@@ -1913,7 +1961,7 @@ class Installer extends \JAdapter
 
 					if (!static::isSafePath($folder))
 					{
-						return $this->refusePath($folder);
+						return $this->skipPath($folder);
 					}
 				}
 				else
@@ -1967,7 +2015,7 @@ class Installer extends \JAdapter
 		{
 			if (!static::isSafePath($file) || !static::isSafePath($file->attributes()->tag))
 			{
-				$retval = $this->refusePath(ltrim($file->attributes()->tag . '/' . $file, '/'));
+				$retval = $this->skipPath(ltrim($file->attributes()->tag . '/' . $file, '/'));
 
 				continue;
 			}

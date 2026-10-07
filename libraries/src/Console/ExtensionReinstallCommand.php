@@ -170,6 +170,15 @@ class ExtensionReinstallCommand extends AbstractExtensionCommand
 		}
 		else
 		{
+			// Through the MCP server a dry run may be all that's allowed: it mustn't make the server fetch feeds or packages
+			if ($io->isDryRun() && Factory::getApplication()->getInterface() === 'MCP')
+			{
+				$io->plan('Download the package from ' . ($url !== '' ? preg_replace('/([?&](?:dlid|key|download_id|token)=)[^&]+/i', '$1***', $url)
+					: 'the extension\'s update site') . ' and install it again (not downloaded in a dry run through MCP)', array('action' => 'reinstall'));
+
+				return self::SUCCESS;
+			}
+
 			if ($url === '')
 			{
 				$release = $this->findRelease($io, $extension, $installed);

@@ -59,6 +59,21 @@ class DatabaseConvertCommand extends AbstractCommand
 	protected $dryRun = true;
 
 	/**
+	 * It writes configuration.php (the site's new database), which every request runs.
+	 *
+	 * @param   array|null  $options    The options of a run
+	 * @param   array|null  $arguments  The arguments of a run
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	public function writesCode(?array $options = null, ?array $arguments = null)
+	{
+		return true;
+	}
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0

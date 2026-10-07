@@ -388,7 +388,7 @@ class InstallerModelInstall extends JModelLegacy
 		// We only allow http & https here
 		$uri = new JUri($url);
 
-		if (!in_array($uri->getScheme(), array('http', 'https')))
+		if (!in_array(strtolower((string) $uri->getScheme()), array('http', 'https'), true))
 		{
 			JError::raiseWarning('', JText::_('COM_INSTALLER_MSG_INSTALL_INVALID_URL_SCHEME'));
 
@@ -407,7 +407,7 @@ class InstallerModelInstall extends JModelLegacy
 			if ($package_url)
 			{
 				// The download address comes from the XML file: the same rule as for the address given
-				if (!in_array((new JUri($package_url))->getScheme(), array('http', 'https'), true))
+				if (!in_array(strtolower((string) (new JUri($package_url))->getScheme()), array('http', 'https'), true))
 				{
 					JError::raiseWarning('', JText::_('COM_INSTALLER_MSG_INSTALL_INVALID_URL_SCHEME'));
 
