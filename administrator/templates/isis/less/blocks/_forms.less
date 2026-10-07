@@ -20,6 +20,36 @@
 	.field-spacer>.control-label{
 		width: auto;
 	}
+	// A spacer as wide as the form: its heading (a label) as a band, its line (hr) as a visible rule
+	.field-spacer {
+		> .control-label {
+			float: none;
+			width: auto;
+			padding-right: 0;
+		}
+		> .controls {
+			min-height: 0;
+			margin: 0;
+		}
+		.spacer label {
+			display: block;
+			margin: 12px 0 0;
+			padding: 12px 16px 12px 14px;
+			border-left: 4px solid #1a3867;
+			border-radius: 4px;
+			background: #eef3f9;
+			color: #1a3867;
+			font-size: 15px;
+			font-weight: 600;
+			line-height: 1.4;
+		}
+		.spacer hr {
+			width: auto;
+			margin: 12px 0;
+			border: 0;
+			border-top: 2px solid #c9d3df;
+		}
+	}
 	#jform_catid_chzn {
 		vertical-align: middle;
 	}
