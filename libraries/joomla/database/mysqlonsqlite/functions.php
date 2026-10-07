@@ -57,6 +57,10 @@ abstract class JDatabaseMysqlonsqliteFunctions
 			'lcase'           => array(array(__CLASS__, 'lower'), 1),
 			'ucase'           => array(array(__CLASS__, 'upper'), 1),
 
+			// SQLite has it from 3.44.0 only (the layer runs from 3.37.0); Joomla's query builder writes it for the slugs ("id:alias")
+			// of articles and categories (CONCAT() the layer turns into ||, which gives NULL for a NULL value as MySQL's does)
+			'concat_ws'       => array(array(__CLASS__, 'concatWs'), -1),
+
 			'find_in_set'     => array(array(__CLASS__, 'findInSet'), 2),
 			'substring_index' => array(array(__CLASS__, 'substringIndex'), 3),
 			'right'           => array(array(__CLASS__, 'right'), 2),
@@ -75,6 +79,17 @@ abstract class JDatabaseMysqlonsqliteFunctions
 				return JDatabaseMysqlonsqliteFunctions::$lastInsertId;
 			}, 0),
 		);
+
+		// SQLite has SOUNDEX() only when built with it (most packages are): this one gives the same codes, and fills in only when
+		// it's missing
+		try
+		{
+			$sqlite->query("SELECT SOUNDEX('a')");
+		}
+		catch (PDOException $e)
+		{
+			$functions['soundex'] = array(array(__CLASS__, 'soundex'), 1);
+		}
 
 		foreach ($functions as $name => $function)
 		{
@@ -126,6 +141,85 @@ abstract class JDatabaseMysqlonsqliteFunctions
 	public static function upper($string)
 	{
 		return $string === null ? null : mb_strtoupper((string) $string, 'UTF-8');
+	}
+
+	/**
+	 * SQLite's SOUNDEX(), for builds without it: the same four-character code.
+	 *
+	 * @param   string|null  $string  The text
+	 *
+	 * @return  string|null
+	 *
+	 * @since   3.17.0
+	 */
+	public static function soundex($string)
+	{
+		if ($string === null)
+		{
+			return null;
+		}
+
+		// SQLite's algorithm (func.c), byte by byte: the first ASCII letter, then the codes of the bytes after it (bytes above 127
+		// taken as their lower 7 bits, as SQLite does), a repeated code once, a byte without a code ending the repeat
+		$codes  = '00000000000000000000000000000000000000000000000000000000000000000012301200224550126230102020000000123012002245501262301020200000';
+		$string = (string) $string;
+		$length = strlen($string);
+
+		// ASCII letters only, as SQLite's (ctype_alpha() follows the locale)
+		for ($i = 0; $i < $length && strpos('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', $string[$i]) === false; $i++)
+		{
+		}
+
+		if ($i === $length)
+		{
+			return '?000';
+		}
+
+		$result   = strtoupper($string[$i]);
+		$previous = $codes[ord($string[$i]) & 0x7f];
+
+		for (; $i < $length && strlen($result) < 4; $i++)
+		{
+			$code = $codes[ord($string[$i]) & 0x7f];
+
+			if ($code !== '0')
+			{
+				if ($code !== $previous)
+				{
+					$previous = $code;
+					$result  .= $code;
+				}
+			}
+			else
+			{
+				$previous = '0';
+			}
+		}
+
+		return str_pad($result, 4, '0');
+	}
+
+	/**
+	 * MySQL's CONCAT_WS(): the values joined by the separator, NULL values left out; NULL only when the separator is.
+	 *
+	 * @param   mixed  $separator  The separator
+	 * @param   mixed  ...$values  The values
+	 *
+	 * @return  string|null
+	 *
+	 * @since   3.17.0
+	 */
+	public static function concatWs($separator = null, ...$values)
+	{
+		if ($separator === null)
+		{
+			return null;
+		}
+
+		return implode((string) $separator, array_filter($values, function ($value)
+		{
+			return $value !== null;
+		}));
 	}
 
 	/**

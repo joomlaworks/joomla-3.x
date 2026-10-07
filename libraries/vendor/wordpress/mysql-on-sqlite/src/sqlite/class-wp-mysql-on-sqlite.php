@@ -5135,6 +5135,18 @@ class WP_MySQL_On_SQLite extends PDO {
 					$this->translate( $nodes[0] ),
 					$this->translate( $nodes[1] )
 				);
+			case WP_MySQL_Lexer::RIGHT_SYMBOL:
+				/*
+				 * Joomla 3.x UTD patch: RIGHT() was passed on as it is, but before SQLite 3.39.0 RIGHT is a join
+				 * keyword only, so "RIGHT(" was a syntax error. Quoted, the name is an identifier on every version;
+				 * the Joomla driver registers the function (multibyte-safe, RIGHT(x, 0) is empty).
+				 */
+				$nodes = $node->get_child_nodes();
+				return sprintf(
+					'"RIGHT"(%s, %s)',
+					$this->translate( $nodes[0] ),
+					$this->translate( $nodes[1] )
+				);
 			default:
 				return $this->translate_sequence( $node->get_children() );
 		}
