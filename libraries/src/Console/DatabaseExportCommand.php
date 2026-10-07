@@ -45,7 +45,9 @@ class DatabaseExportCommand extends AbstractCommand
 		. 'or one table with --table. With --zip the files go into a data_exported_<date>.zip archive instead, or into one named as given, e.g. --zip=mysite.zip '
 		. '(a name without a folder goes into --folder). '
 		. 'The format is the one of the Joomla 4 and later database:export command; on MySQL and MariaDB each table also carries its exact '
-		. 'CREATE TABLE statement, which database:import uses. Rows are read in batches, so large tables don\'t need much memory.';
+		. 'CREATE TABLE statement, which database:import uses. Rows are read in batches, so large tables don\'t need much memory. '
+		. 'Without --folder, the files go into the current folder, or into the site\'s protected backup folder (backup/<random>/database) '
+		. 'when the current folder is inside the site, where the web server could serve them (an export holds e.g. password hashes).';
 
 	/**
 	 * @var    boolean
@@ -95,7 +97,13 @@ class DatabaseExportCommand extends AbstractCommand
 		// (MCP clients can't give --folder; a folder another command gives, e.g. database:convert's temporary one, is used as it is)
 		$mcp = Factory::getApplication()->getInterface() === 'MCP' && (string) $io->getOption('folder') === '.';
 
-		if ($mcp)
+		// The same without --folder from a folder inside the site, which the web server may serve
+		$root      = realpath(JPATH_ROOT);
+		$current   = realpath('.');
+		$protected = $mcp || ((string) $io->getOption('folder') === '.' && $root !== false && $current !== false
+			&& ($current === $root || strpos($current . DIRECTORY_SEPARATOR, rtrim($root, '/\\') . DIRECTORY_SEPARATOR) === 0));
+
+		if ($protected)
 		{
 			$folder = AbstractTemplateCommand::getBackupFolder('database', !$io->isDryRun());
 
@@ -107,6 +115,11 @@ class DatabaseExportCommand extends AbstractCommand
 			}
 
 			$folder = $folder === false ? 'backup/(protected folder)/database' : $folder;
+
+			if (!$mcp)
+			{
+				$io->text('Writing to the site\'s protected backup folder: ' . $folder);
+			}
 		}
 
 		try
@@ -120,7 +133,7 @@ class DatabaseExportCommand extends AbstractCommand
 			return self::FAILURE;
 		}
 
-		if ((!$mcp || !$io->isDryRun()) && (!is_dir($folder) || !is_writable($folder)))
+		if ((!$protected || !$io->isDryRun()) && (!is_dir($folder) || !is_writable($folder)))
 		{
 			$io->error(sprintf('The folder %s does not exist or is not writable.', $folder));
 

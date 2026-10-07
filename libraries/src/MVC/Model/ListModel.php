@@ -257,8 +257,9 @@ class ListModel extends BaseDatabaseModel
 	protected function getStoreId($id = '')
 	{
 		// Add the list state to the store id.
-		$id .= ':' . $this->getState('list.start');
-		$id .= ':' . $this->getState('list.limit');
+		// Numbers: front-end models set these from the request themselves, which may hold arrays
+		$id .= ':' . (int) (is_scalar($this->getState('list.start')) ? $this->getState('list.start') : 0);
+		$id .= ':' . (int) (is_scalar($this->getState('list.limit')) ? $this->getState('list.limit') : 0);
 		$id .= ':' . $this->getState('list.ordering');
 		$id .= ':' . $this->getState('list.direction');
 
@@ -315,14 +316,15 @@ class ListModel extends BaseDatabaseModel
 			return $this->cache[$store];
 		}
 
-		$start = $this->getState('list.start');
+		// Joomla 3.x UTD: numbers, whatever a model set
+		$start = (int) $this->getState('list.start');
 
 		if ($start > 0)
 		{
-			$limit = $this->getState('list.limit');
+			$limit = (int) $this->getState('list.limit');
 			$total = $this->getTotal();
 
-			if ($start > $total - $limit)
+			if ($limit > 0 && $start > $total - $limit)
 			{
 				$start = max(0, (int) (ceil($total / $limit) - 1) * $limit);
 			}
@@ -572,7 +574,8 @@ class ListModel extends BaseDatabaseModel
 								break;
 
 							case 'limit':
-								$value = $inputFilter->clean($value, 'int');
+								// Joomla 3.x UTD: a number (list[limit][]=... gave an array, and every list of the session failed)
+								$value = is_scalar($value) ? (int) $inputFilter->clean($value, 'int') : (int) $app->get('list_limit');
 								$limit = $value;
 								break;
 
@@ -597,6 +600,9 @@ class ListModel extends BaseDatabaseModel
 			{
 				// Pre-fill the limits
 				$limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->get('list_limit'), 'uint');
+
+				// Joomla 3.x UTD: a number (limit[]=... gave an array, kept in the session, and every list failed until logout)
+				$limit = is_scalar($limit) ? (int) $limit : (int) $app->get('list_limit');
 				$this->setState('list.limit', $limit);
 
 				// Check if the ordering field is in the whitelist, otherwise use the incoming value.
@@ -639,6 +645,7 @@ class ListModel extends BaseDatabaseModel
 			}
 
 			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0, 'int');
+			$value = is_scalar($value) ? (int) $value : 0;
 			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
 			$this->setState('list.start', $limitstart);
 		}

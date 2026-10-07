@@ -516,7 +516,8 @@ class FOFDatabaseDriverMysqli extends FOFDatabaseDriver
 	{
 		$this->connect();
 
-		return mysqli_get_server_info($this->connection);
+		// Joomla 3.x UTD patch: MariaDB 10 sent "5.5.5-10.x.y-MariaDB" to old clients (PHP before 8 shows it): its real version
+		return preg_replace('/^5\.5\.5-(?=.*mariadb)/i', '', (string) mysqli_get_server_info($this->connection));
 	}
 
 	/**

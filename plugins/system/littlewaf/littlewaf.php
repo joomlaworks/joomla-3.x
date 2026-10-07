@@ -51,6 +51,14 @@ class PlgSystemLittlewaf extends CMSPlugin
 	const LOG_LENGTH = 500;
 
 	/**
+	 * The log file isn't written once it's larger than this many bytes
+	 *
+	 * @var    integer
+	 * @since  3.17.0
+	 */
+	const LOG_MAX_SIZE = 10485760;
+
+	/**
 	 * @var    \Joomla\CMS\Application\CMSApplication
 	 * @since  3.16.0
 	 */
@@ -145,8 +153,8 @@ class PlgSystemLittlewaf extends CMSPlugin
 	/**
 	 * The parts of the request the filters check: the request target (rebuilt as JUri does where the server doesn't give
 	 * REQUEST_URI), the query string and path info, the names and values of GET and POST data, and uploaded file names.
-	 * POST data of logged-in users who may create content isn't checked: they write these tags in front-end editing, and
-	 * the extension itself decides who may use them.
+	 * The editor's text of logged-in users who may write articles (or edit modules) isn't checked: they write these tags in
+	 * front-end editing, and the extension itself decides who may use them. The rest of their POST data is.
 	 *
 	 * @return  \Generator  where => value
 	 *
@@ -154,15 +162,9 @@ class PlgSystemLittlewaf extends CMSPlugin
 	 */
 	private function getRequestValues()
 	{
-		$query  = $this->server('QUERY_STRING');
-		$target = $this->server('REQUEST_URI');
+		$query = $this->server('QUERY_STRING');
 
-		if ($target === '')
-		{
-			$target = $this->server('SCRIPT_NAME') . $this->server('PATH_INFO') . ($query !== '' ? '?' . $query : '');
-		}
-
-		yield 'request' => $target;
+		yield 'request' => $this->requestTarget();
 		yield 'query string' => $query;
 		yield 'path info' => $this->server('PATH_INFO');
 
@@ -170,12 +172,7 @@ class PlgSystemLittlewaf extends CMSPlugin
 
 		if (!empty($_POST))
 		{
-			$user = Factory::getUser();
-
-			if ($user->guest || !$user->authorise('core.create', 'com_content'))
-			{
-				$sources['POST'] = $_POST;
-			}
+			$sources['POST'] = $this->withoutEditorText($_POST);
 		}
 
 		if (!empty($_FILES))
@@ -190,6 +187,63 @@ class PlgSystemLittlewaf extends CMSPlugin
 				yield $source => $value;
 			}
 		}
+	}
+
+	/**
+	 * The request target, rebuilt as JUri does where the server doesn't give REQUEST_URI.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	private function requestTarget()
+	{
+		$target = $this->server('REQUEST_URI');
+
+		if ($target === '')
+		{
+			$query  = $this->server('QUERY_STRING');
+			$target = $this->server('SCRIPT_NAME') . $this->server('PATH_INFO') . ($query !== '' ? '?' . $query : '');
+		}
+
+		return $target;
+	}
+
+	/**
+	 * POST data without the editor's text of a logged-in user who may write articles (anywhere: the component or a category),
+	 * or edit modules (a module's content). Everything else they send is still checked.
+	 *
+	 * @param   array  $post  The POST data
+	 *
+	 * @return  array
+	 *
+	 * @since   3.17.0
+	 */
+	private function withoutEditorText(array $post)
+	{
+		$user = Factory::getUser();
+
+		if ($user->guest || !isset($post['jform']) || !is_array($post['jform']))
+		{
+			return $post;
+		}
+
+		foreach (array('core.create', 'core.edit', 'core.edit.own') as $action)
+		{
+			if ($user->authorise($action, 'com_content') || $user->getAuthorisedCategories('com_content', $action))
+			{
+				unset($post['jform']['articletext']);
+
+				break;
+			}
+		}
+
+		if ($user->authorise('core.edit', 'com_modules') || $user->authorise('core.create', 'com_modules'))
+		{
+			unset($post['jform']['content']);
+		}
+
+		return $post;
 	}
 
 	/**
@@ -287,9 +341,17 @@ class PlgSystemLittlewaf extends CMSPlugin
 			// A request which can't be logged (e.g. the log folder isn't writable) is still blocked
 			try
 			{
+				// Blocked requests never reach the log rotation, so a flood of them stops being logged at LOG_MAX_SIZE
+				$file = rtrim((string) $this->app->get('log_path', JPATH_ADMINISTRATOR . '/logs'), '/\\') . '/littlewaf.php';
+
+				if (is_file($file) && filesize($file) > static::LOG_MAX_SIZE)
+				{
+					throw new \RuntimeException('The log file is full');
+				}
+
 				Log::addLogger(array('text_file' => 'littlewaf.php'), Log::ALL, array('littlewaf'));
 
-				$request = preg_replace('/[\x00-\x1F\x7F]/', '?', substr($this->server('REQUEST_URI'), 0, static::LOG_LENGTH));
+				$request = preg_replace('/[\x00-\x1F\x7F]/', '?', substr($this->requestTarget(), 0, static::LOG_LENGTH));
 
 				Log::add(
 					sprintf('Little WAF blocked [%s] in the %s from %s: %s', $filter, $where, $this->server('REMOTE_ADDR') ?: 'unknown', $request),

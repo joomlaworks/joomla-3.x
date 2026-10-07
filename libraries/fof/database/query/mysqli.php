@@ -50,7 +50,8 @@ class FOFDatabaseQueryMysqli extends FOFDatabaseQuery implements FOFDatabaseQuer
 		$limit  = (int) $limit;
 		$offset = (int) $offset;
 
-		if ($limit > 0 || $offset > 0)
+		// No limit means all rows, and the offset is ignored, as in Joomla's MySQL query classes ("LIMIT n, 0" would give none)
+		if ($limit > 0)
 		{
 			$query .= ' LIMIT ' . $offset . ', ' . $limit;
 		}

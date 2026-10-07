@@ -384,7 +384,8 @@ class FOFDatabaseDriverPdomysql extends FOFDatabaseDriverPdo
 	{
 		$this->connect();
 
-		return $this->getOption(PDO::ATTR_SERVER_VERSION);
+		// Joomla 3.x UTD patch: MariaDB 10 sent "5.5.5-10.x.y-MariaDB" to old clients (PHP before 8 shows it): its real version
+		return preg_replace('/^5\.5\.5-(?=.*mariadb)/i', '', (string) $this->getOption(PDO::ATTR_SERVER_VERSION));
 	}
 
 	/**

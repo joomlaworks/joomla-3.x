@@ -119,6 +119,15 @@ abstract class JDatabaseDriverPdo extends JDatabaseDriver
 		$replace = array();
 		$with = array();
 
+		// Joomla 3.x UTD: a host with a stray space (e.g. typed into the installer) still connects, also with its port ("host:port ")
+		foreach (array('host', 'port') as $key)
+		{
+			if (isset($this->options[$key]) && is_string($this->options[$key]))
+			{
+				$this->options[$key] = trim($this->options[$key]);
+			}
+		}
+
 		// Find the correct PDO DSN Format to use:
 		switch ($this->options['driver'])
 		{
@@ -290,6 +299,23 @@ abstract class JDatabaseDriverPdo extends JDatabaseDriver
 				$with = array($this->options['host'], $this->options['port'], $this->options['database']);
 
 				break;
+		}
+
+		/*
+		 * Joomla 3.x UTD: the values go into the DSN as they are, where ";" separates its settings, so e.g. a database name
+		 * "site;dbname=other" connected to another database. Refuse such values (a SQLite file name is the whole DSN).
+		 */
+		if (strpos($format, 'sqlite') !== 0)
+		{
+			foreach ($with as $i => $value)
+			{
+				$value = (string) $value;
+
+				if (strpbrk($value, ";\x00\r\n") !== false || ($replace[$i] === '#PORT#' && $value !== '' && !ctype_digit($value)))
+				{
+					throw new JDatabaseExceptionConnecting('Invalid database connection settings: the host, port, database name or other setting holds a character it can\'t have.', 1);
+				}
+			}
 		}
 
 		// Create the connection string:

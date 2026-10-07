@@ -949,7 +949,8 @@ abstract class UserHelper
 			return $db->foldedEquals($column, $value);
 		}
 
-		if ($db->getServerType() === 'postgresql')
+		// PostgreSQL compares exactly; SQL Server's default collation ignores case, but a database may use a case-sensitive one
+		if ($db->getServerType() !== 'mysql')
 		{
 			return 'LOWER(' . $column . ') = LOWER(' . $db->quote((string) $value) . ')';
 		}

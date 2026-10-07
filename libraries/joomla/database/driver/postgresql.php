@@ -113,6 +113,9 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 			throw new JDatabaseExceptionUnsupported('The pgsql extension for PHP is not installed or enabled.');
 		}
 
+		// Joomla 3.x UTD: a host with a stray space (e.g. typed into the installer) still connects, now that values are quoted
+		$this->options['host'] = trim((string) $this->options['host']);
+
 		/*
 		 * pg_connect() takes the port as separate argument. Therefore, we
 		 * have to extract it from the host string (if provided).
@@ -358,7 +361,8 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 	{
 		$this->connect();
 
-		return pg_num_rows((int) $cur ? $cur : $this->cursor);
+		// Joomla 3.x UTD: no (int) cast, which warns for PHP 8.1+'s PgSql\Result objects
+		return pg_num_rows($cur ?: $this->cursor);
 	}
 
 	/**

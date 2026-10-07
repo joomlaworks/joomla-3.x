@@ -435,16 +435,16 @@ abstract class AbstractTemplateCommand extends AbstractCommand
 			static::protectFolder($folder);
 		}
 
-		if ($subfolder !== '')
+		// Every level gets its own protection files: a server which lists folders (and ignores .htaccess) would list the others
+		foreach ($subfolder !== '' ? explode('/', trim($subfolder, '/')) : array() as $part)
 		{
-			$folder .= '/' . $subfolder;
+			$folder .= '/' . $part;
 
-			if (!is_dir($folder) && (!$create || !@mkdir($folder, 0755, true)))
+			if (!is_dir($folder) && (!$create || !@mkdir($folder, 0755)))
 			{
 				return false;
 			}
 
-			// Its own protection files too: a server which lists folders (and ignores .htaccess) would otherwise list it
 			if ($create)
 			{
 				static::protectFolder($folder);
@@ -705,8 +705,11 @@ abstract class AbstractTemplateCommand extends AbstractCommand
 	protected static function keepPreviousVersion(array $template, array $file)
 	{
 		$previous = static::getPreviousVersionFile($template, $file['relative']);
+		$folder   = dirname($file['relative']);
 
-		if ($previous === false || (!is_dir(dirname($previous)) && !@mkdir(dirname($previous), 0755, true)))
+		// The file's folders inside the template, created (and protected) as the backup folder's own
+		if ($previous === false || ($folder !== '.' && $folder !== ''
+			&& static::getBackupFolder('template-files/' . $template['client'] . '/' . $template['name'] . '/' . $folder) === false))
 		{
 			return false;
 		}

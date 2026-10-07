@@ -125,15 +125,26 @@ class FinderModelSearch extends JModelList
 		// Convert the rows to result objects.
 		foreach ($rows as $rk => $row)
 		{
-			// Build the result object.
-			if (is_resource($row->object))
+			/*
+			 * Build the result object. Joomla 3.x UTD: PostgreSQL's PDO driver gives the bytes as a stream, its native driver as hex
+			 * text ("\x4f3a..."), which wasn't decoded, so no result could be read; indexes written before 3.17 hold that hex text
+			 * once more (the indexer escaped the value twice). A serialized object starts with "O:", never with "\x".
+			 */
+			$object = is_resource($row->object) ? stream_get_contents($row->object) : (string) $row->object;
+
+			for ($layer = 0; $layer < 2 && strncmp($object, '\\x', 2) === 0 && ctype_xdigit(substr($object, 2)); $layer++)
 			{
-				$object = pg_unescape_bytea(stream_get_contents($row->object));
-				$result = unserialize(str_replace("''", "'", $object));
+				$object = hex2bin(substr($object, 2));
 			}
-			else
+
+			$result = unserialize($object);
+
+			// An unreadable entry is left out, rather than stopping the page
+			if (!is_object($result))
 			{
-				$result = unserialize($row->object);
+				unset($results[$rk]);
+
+				continue;
 			}
 
 			$result->weight = $results[$rk];

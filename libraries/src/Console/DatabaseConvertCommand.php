@@ -21,6 +21,68 @@ use Joomla\Registry\Registry;
 class DatabaseConvertCommand extends AbstractCommand
 {
 	/**
+	 * The SOUNDEX() function of PostgreSQL's installation (installation/sql/postgresql/joomla.sql)
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	const POSTGRESQL_SOUNDEX = <<<'SQL'
+CREATE OR REPLACE FUNCTION soundex(input text) RETURNS text
+IMMUTABLE STRICT COST 500 LANGUAGE plpgsql
+AS $$
+DECLARE
+  soundex text = '';
+  char text;
+  symbol text;
+  last_symbol text = '';
+  pos int = 1;
+BEGIN
+  WHILE length(soundex) < 4 LOOP
+    char = upper(substr(input, pos, 1));
+    pos = pos + 1;
+    CASE char
+    WHEN '' THEN
+      -- End of input string
+      IF soundex = '' THEN
+        RETURN '';
+      ELSE
+        RETURN rpad(soundex, 4, '0');
+      END IF;
+    WHEN 'B', 'F', 'P', 'V' THEN
+      symbol = '1';
+    WHEN 'C', 'G', 'J', 'K', 'Q', 'S', 'X', 'Z' THEN
+      symbol = '2';
+    WHEN 'D', 'T' THEN
+      symbol = '3';
+    WHEN 'L' THEN
+      symbol = '4';
+    WHEN 'M', 'N' THEN
+      symbol = '5';
+    WHEN 'R' THEN
+      symbol = '6';
+    ELSE
+      -- Not a consonant; no output, but next similar consonant will be re-recorded
+      symbol = '';
+    END CASE;
+
+    IF soundex = '' THEN
+      -- First character; only accept strictly English ASCII characters
+      IF char ~>=~ 'A' AND char ~<=~ 'Z' THEN
+        soundex = char;
+        last_symbol = symbol;
+      END IF;
+    ELSIF last_symbol != symbol THEN
+      soundex = soundex || symbol;
+      last_symbol = symbol;
+    END IF;
+  END LOOP;
+
+  RETURN soundex;
+END;
+$$;
+SQL;
+
+	/**
 	 * @var    string[]
 	 * @since  3.17.0
 	 */
@@ -250,13 +312,18 @@ class DatabaseConvertCommand extends AbstractCommand
 	{
 		/** @var \Joomla\CMS\Application\ConsoleApplication $app */
 		$app    = Factory::getApplication();
-		$folder = $config->get('tmp_path') . '/' . uniqid('dbconvert_');
+
+		/*
+		 * The copy (the whole database, password hashes included) goes into a folder of the site's protected backup folder with a
+		 * random name, not tmp/: that's inside the site, unprotected, and its name was the time (uniqid())
+		 */
+		$folder = AbstractTemplateCommand::getBackupFolder('database/convert-' . bin2hex(random_bytes(12)));
 
 		try
 		{
-			if (!\JFolder::create($folder))
+			if ($folder === false)
 			{
-				$io->error('Cannot create the temporary folder ' . $folder . '.');
+				$io->error('The site\'s backup folder (backup/) could not be created: the site\'s root folder must be writable.');
 
 				return self::FAILURE;
 			}
@@ -291,10 +358,16 @@ class DatabaseConvertCommand extends AbstractCommand
 
 				return self::FAILURE;
 			}
+
+			// PostgreSQL's installation adds a SOUNDEX() function, which Smart Search's indexer uses; an export doesn't carry it
+			if ($target->getServerType() === 'postgresql')
+			{
+				$target->setQuery(static::POSTGRESQL_SOUNDEX)->execute();
+			}
 		}
 		finally
 		{
-			if (is_dir($folder))
+			if ($folder !== false && is_dir($folder))
 			{
 				\JFolder::delete($folder);
 			}

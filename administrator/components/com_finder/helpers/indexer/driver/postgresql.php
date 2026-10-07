@@ -245,6 +245,9 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 		 * aggregate all the data into that table into a more usable form. The
 		 * aggregated data will be inserted into #__finder_tokens_aggregate
 		 * table.
+		 *
+		 * Joomla 3.x UTD: weights are cast to numeric before ROUND(value, places), which PostgreSQL only has for numeric: sites
+		 * moved from MySQL (database:convert) have real columns there, and indexing failed on them.
 		 */
 		$query = 'INSERT INTO ' . $db->quoteName('#__finder_tokens_aggregate') .
 			' (' . $db->quoteName('term_id') .
@@ -260,7 +263,7 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 			', ' . $db->quoteName('language') . ')' .
 			' SELECT' .
 			' COALESCE(t.term_id, 0), \'\', t1.term, t1.stem, t1.common, t1.phrase, t1.weight, t1.context,' .
-			' ROUND( t1.weight * COUNT( t2.term ) * %F, 8 ) AS context_weight, 0, t1.language' .
+			' ROUND( CAST(t1.weight * COUNT( t2.term ) * %F AS numeric), 8 ) AS context_weight, 0, t1.language' .
 			' FROM (' .
 			'   SELECT DISTINCT t1.term, t1.stem, t1.common, t1.phrase, t1.weight, t1.context, t1.language' .
 			'   FROM ' . $db->quoteName('#__finder_tokens') . ' AS t1' .
@@ -373,7 +376,7 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 				', ' . $db->quoteName('term_id') .
 				', ' . $db->quoteName('weight') . ')' .
 				' SELECT ' . (int) $linkId . ', ' . $db->quoteName('term_id') . ',' .
-				' ROUND(SUM(' . $db->quoteName('context_weight') . '), 8)' .
+				' ROUND(CAST(SUM(' . $db->quoteName('context_weight') . ') AS numeric), 8)' .
 				' FROM ' . $db->quoteName('#__finder_tokens_aggregate') .
 				' WHERE ' . $db->quoteName('map_suffix') . ' = ' . $db->quote($suffix) .
 				' GROUP BY ' . $db->quoteName('term') . ', ' . $db->quoteName('term_id') .
@@ -390,7 +393,12 @@ class FinderIndexerDriverPostgresql extends FinderIndexer
 		$query->clear()
 			->update($db->quoteName('#__finder_links'))
 			->set($db->quoteName('md5sum') . ' = ' . $db->quote($curSig))
-			->set($db->quoteName('object') . ' = ' . $db->quote(pg_escape_bytea($object)))
+			/*
+			 * Joomla 3.x UTD: as hex, which the server decodes, whatever the connection's escaping settings; pg_escape_bytea() without
+			 * a connection (deprecated in PHP 8.1) used the last one opened, and its output was quoted again, so the bytes stored
+			 * were its escaped text
+			 */
+			->set($db->quoteName('object') . " = decode(" . $db->quote(bin2hex($object)) . ", 'hex')")
 			->where($db->quoteName('link_id') . ' = ' . $db->quote($linkId));
 		$db->setQuery($query);
 		$db->execute();

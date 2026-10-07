@@ -56,6 +56,7 @@ Summary of changes:
 - A new, modern administrator login page, which works well on phones and tablets
 - Post-installation Messages now show what's new in every release of this distribution, from 3.11 to 3.17, instead of stock Joomla's outdated messages from the 3.2–3.10 era
 - PostgreSQL fixes: batch copy, saving Global Configuration (native driver), the installer's backup of old tables, and the frontpage module order
+- Fixed Smart Search on PostgreSQL (no results with the native driver; sites moved with `database:convert` couldn't index), and a link which broke every administrator list until logging out
 - SQL Server / Azure SQL tested for the first time: fixed creating new items on PHP 8, connecting through ODBC Driver 18, Smart Search and search, and long values with NULL bytes being cut off
 
 **Security fixes:**
@@ -71,6 +72,8 @@ Summary of changes:
 - The configuration writer could put PHP code into `configuration.php` through a crafted setting name (stock Joomla 3)
 - Joomla Update showed the update feed's values unescaped; Install from URL and Install from Web accepted download addresses other than `http`/`https` (stock Joomla 3)
 - Little WAF now also checks form data and encoded spellings of the tags, and works on servers without `REQUEST_URI`; each filter only acts while its extension is installed
+- `database:convert` wrote its temporary copy of the database to an unprotected folder of `tmp/`; it now uses the protected backup folder, as `database:export` does when run inside the site
+- The PDO database drivers refuse connection settings which could add settings of their own (stock Joomla 3)
 
 **Bug fixes:**
 - Fixed intermittent "Serialization of 'PDOStatement' is not allowed" errors with the PDO database drivers when caching is enabled (any cache handler), typically right after the site wrote something to the database
@@ -346,6 +349,7 @@ Joomla 3 has always had PostgreSQL drivers, but they fell behind: the main one s
 - **Installing and updating:** choose either PostgreSQL driver in the installer. Joomla Update, Extensions: Database and the "Restore uninstalled core extensions" option work as on MySQL.
 - **Command line:** `php cli/joomla.php database:export` and `database:import` work on PostgreSQL, and `database:convert` moves a site between MySQL/MariaDB, PostgreSQL and SQLite, in any direction (e.g. `php cli/joomla.php database:convert --to=postgresql --user=... --password=... --database=...`). Converting translates column types and Joomla's "no date" values, which differ between MySQL and PostgreSQL, checks that every table has all its rows, and fixes the new database's structure as Extensions: Database would. The site is offline while its database is copied, and the old database is left as it is. Tables of MySQL-only extensions get the defaults MySQL would apply, so their code keeps working on PostgreSQL.
 - **Core extensions:** we've gone the extra mile and added the PostgreSQL install scripts that Banners, Contacts and News Feeds never had, so these can be uninstalled and installed again on PostgreSQL too.
+- **Usernames:** checks that a username or email address isn't taken ignore case, as on MySQL, but not accents: `Àdmin` and `admin` are two users on PostgreSQL (and SQL Server), one on MySQL/MariaDB.
 - **Third-party extensions:** many only ship MySQL database scripts. Moving a site to PostgreSQL copies their tables and data, but check that the extensions themselves support PostgreSQL before relying on them.
 
 
@@ -353,7 +357,7 @@ Joomla 3 has always had PostgreSQL drivers, but they fell behind: the main one s
 Joomla 3 has always shipped a basic SQLite database driver, but it was never usable for a site: the installer didn't offer it, and Joomla and its extensions only ship MySQL database scripts. Version 3.17 completes it with the "SQLite (experimental)" driver, which runs Joomla's and extensions' MySQL SQL through an emulation layer (from WordPress's SQLite Database Integration project). Core and extensions work unchanged, with no SQLite-specific scripts.
 
 - **What it's for:** the whole site's data in one portable (cloud-synchronizable) file, with no database server, for small to medium sites, development and testing. SQLite handles one write at a time (read operations never wait & write operations queue briefly), so busy sites with many simultaneous writers should stay on MySQL/MariaDB.
-- **Requirements:** PHP 7.4 or newer, and the PDO SQLite extension with SQLite 3.37.0 or newer. It's only offered where these are available. Most shared hosting environments should have SQLite bundled by default or activated on-demand as an option in their respective control panel.
+- **Requirements:** PHP 7.4 or newer, and the PDO SQLite extension with SQLite 3.37.0 or newer. It's only offered where these are available. Most shared hosting environments should have SQLite bundled by default or activated on-demand as an option in their respective control panel. With PHP's `intl` extension, checks that a username or email address isn't taken also ignore accents and full-width letters, as MySQL does; without it, only case.
 - **Getting there:** choose it in the installer, or move an existing site with `php cli/joomla.php database:convert --to=sqlite` (and back with `--to=mysqli`). The command takes the site offline while it copies the database, so nothing changes meanwhile, and puts it back online afterwards (if the conversion fails, the site comes back online with its current database).
 - **Sessions:** with the "Database" session handler, every page view writes to the database file. A new SQLite site, or one moved with `database:convert`, therefore uses PHP sessions instead (Global Configuration → System → Session Handler → "PHP"), and writes only when content or settings change, or a new visitor arrives. If your server has an object cache such as Memcached, Redis or APCu enabled, prefer that for sessions: it's faster than PHP's session files and also keeps sessions out of the database. `database:convert` keeps those handlers as they are.
 - **Security:** keep the database file out of the web's reach: outside the site's public folder, or in a folder of its own, which Joomla protects for Apache and IIS (with nginx, keep the file's random name too). To move it, change "Path to Database Folder" in Global Configuration → Server → Database (shown for SQLite only): Joomla copies the database there, switches to it and removes the old file.

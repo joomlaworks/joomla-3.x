@@ -187,6 +187,18 @@ class EmailRule extends FormRule
 			$db->setQuery($query);
 			$duplicate = (bool) $db->loadResult();
 
+			// Joomla 3.x UTD: the user's own email, unchanged, even where another user's differs only in case (see Table\User::check())
+			if ($duplicate && (int) $userId > 0)
+			{
+				$stored    = $db->setQuery(
+					$db->getQuery(true)
+						->select($db->quoteName('email'))
+						->from($db->quoteName('#__users'))
+						->where($db->quoteName('id') . ' = ' . (int) $userId)
+				)->loadResult();
+				$duplicate = $stored !== (string) $value;
+			}
+
 			if ($duplicate)
 			{
 				return new \UnexpectedValueException(\JText::_('JLIB_DATABASE_ERROR_EMAIL_INUSE'));

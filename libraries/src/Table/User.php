@@ -227,6 +227,17 @@ class User extends Table
 			$this->lastResetTime = $this->_db->getNullDate();
 		}
 
+		/*
+		 * Joomla 3.x UTD: a user's own username and email address, unchanged, are never "in use": on PostgreSQL and SQLite, sites
+		 * may already have users differing only in case (exact comparisons before 3.17), which could otherwise not be saved.
+		 */
+		$stored = $this->id ? $this->_db->setQuery(
+			$this->_db->getQuery(true)
+				->select($this->_db->quoteName(array('username', 'email')))
+				->from($this->_db->quoteName('#__users'))
+				->where($this->_db->quoteName('id') . ' = ' . (int) $this->id)
+		)->loadAssoc() : null;
+
 		// Check for existing username
 		$query = $this->_db->getQuery(true)
 			->select($this->_db->quoteName('id'))
@@ -237,7 +248,7 @@ class User extends Table
 
 		$xid = (int) $this->_db->loadResult();
 
-		if ($xid && $xid != (int) $this->id)
+		if ($xid && $xid != (int) $this->id && !($stored && $stored['username'] === $this->username))
 		{
 			$this->setError(\JText::_('JLIB_DATABASE_ERROR_USERNAME_INUSE'));
 
@@ -255,7 +266,7 @@ class User extends Table
 		$this->_db->setQuery($query);
 		$xid = (int) $this->_db->loadResult();
 
-		if ($xid && $xid != (int) $this->id)
+		if ($xid && $xid != (int) $this->id && !($stored && $stored['email'] === $this->email))
 		{
 			$this->setError(\JText::_('JLIB_DATABASE_ERROR_EMAIL_INUSE'));
 

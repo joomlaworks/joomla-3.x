@@ -136,6 +136,7 @@ class MediaField extends FormField
 			case 'height':
 			case 'preview':
 			case 'directory':
+			case 'folder':
 			case 'previewWidth':
 			case 'previewHeight':
 				return $this->$name;
@@ -165,6 +166,7 @@ class MediaField extends FormField
 			case 'height':
 			case 'preview':
 			case 'directory':
+			case 'folder':
 				$this->$name = (string) $value;
 				break;
 

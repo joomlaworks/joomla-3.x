@@ -55,6 +55,18 @@ class UsernameRule extends FormRule
 		$db->setQuery($query);
 		$duplicate = (bool) $db->loadResult();
 
+		// Joomla 3.x UTD: the user's own username, unchanged, even where another user's differs only in case (see Table\User::check())
+		if ($duplicate && (int) $userId > 0)
+		{
+			$stored    = $db->setQuery(
+				$db->getQuery(true)
+					->select($db->quoteName('username'))
+					->from($db->quoteName('#__users'))
+					->where($db->quoteName('id') . ' = ' . (int) $userId)
+			)->loadResult();
+			$duplicate = $stored !== (string) $value;
+		}
+
 		if ($duplicate)
 		{
 			return false;

@@ -132,11 +132,20 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 			return "'" . addcslashes((string) $text, "'\\") . "'";
 		};
 
-		$dsn = '';
+		$dsn  = '';
+		$host = trim(isset($this->options['host']) ? (string) $this->options['host'] : '');
+		$port = isset($this->options['port']) ? (string) $this->options['port'] : '';
 
-		if (!empty($this->options['host']))
+		// The port, given on its own or as host:port (as Joomla's driver takes it); FOF passed "host:port" whole, which never connected
+		if ($port === '' && strpos($host, ':') !== false && ctype_digit(substr(strrchr($host, ':'), 1)))
 		{
-			$dsn .= 'host=' . $value($this->options['host']) . ' ';
+			$port = substr(strrchr($host, ':'), 1);
+			$host = substr($host, 0, -strlen($port) - 1) ?: 'localhost';
+		}
+
+		if ($host !== '')
+		{
+			$dsn .= 'host=' . $value($host) . ' ' . ($port !== '' ? 'port=' . $value($port) . ' ' : '');
 		}
 
 		$dsn .= 'dbname=' . $value($this->options['database']) . ' user=' . $value($this->options['user']) . ' password=' . $value($this->options['password']);
@@ -1510,6 +1519,12 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 	 */
 	protected function getErrorNumber()
 	{
+		// Joomla 3.x UTD patch: no result to read the error code from (PHP 8.1+ throws a TypeError for false)
+		if ($this->cursor === false)
+		{
+			return 0;
+		}
+
 		return (int) pg_result_error_field($this->cursor, PGSQL_DIAG_SQLSTATE) . ' ';
 	}
 
