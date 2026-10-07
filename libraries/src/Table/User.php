@@ -230,7 +230,9 @@ class User extends Table
 		$query = $this->_db->getQuery(true)
 			->select($this->_db->quoteName('id'))
 			->from($this->_db->quoteName('#__users'))
-			->where($this->_db->quoteName('username') . ' = ' . $this->_db->quote($this->username))
+			->where($this->_db instanceof \JDatabaseDriverMysqlonsqlite
+				? $this->_db->foldedEquals($this->_db->quoteName('username'), $this->username)
+				: $this->_db->quoteName('username') . ' = ' . $this->_db->quote($this->username))
 			->where($this->_db->quoteName('id') . ' != ' . (int) $this->id);
 		$this->_db->setQuery($query);
 
@@ -247,7 +249,9 @@ class User extends Table
 		$query->clear()
 			->select($this->_db->quoteName('id'))
 			->from($this->_db->quoteName('#__users'))
-			->where('LOWER(' . $this->_db->quoteName('email') . ') = LOWER(' . $this->_db->quote($this->email) . ')')
+			->where($this->_db instanceof \JDatabaseDriverMysqlonsqlite
+				? $this->_db->foldedEquals($this->_db->quoteName('email'), $this->email)
+				: 'LOWER(' . $this->_db->quoteName('email') . ') = LOWER(' . $this->_db->quote($this->email) . ')')
 			->where($this->_db->quoteName('id') . ' != ' . (int) $this->id);
 		$this->_db->setQuery($query);
 		$xid = (int) $this->_db->loadResult();

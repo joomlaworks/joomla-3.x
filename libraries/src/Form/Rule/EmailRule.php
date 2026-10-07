@@ -177,7 +177,7 @@ class EmailRule extends FormRule
 			// Build the query.
 			$query->select('COUNT(*)')
 				->from('#__users')
-				->where('email = ' . $db->quote($value));
+				->where($db instanceof \JDatabaseDriverMysqlonsqlite ? $db->foldedEquals($db->quoteName('email'), $value) : 'email = ' . $db->quote($value));
 
 			// Get the extra field check attribute.
 			$userId = ($form instanceof Form) ? $form->getValue('id') : '';

@@ -64,6 +64,9 @@ abstract class JDatabaseMysqlonsqliteFunctions
 			'rpad'            => array(array(__CLASS__, 'rpad'), 3),
 			'uuid'            => array(array(__CLASS__, 'uuid'), 0),
 
+			// Text as MySQL's utf8mb4_unicode_ci compares it (see fold()), for uniqueness checks of e.g. usernames
+			'joomla_fold'     => array(array(__CLASS__, 'fold'), 1),
+
 			// The layer's own REGEXP ends its pattern at an escaped slash (\/), and an invalid pattern prints PHP warnings
 			'regexp'          => array(array(__CLASS__, 'regexp'), 2),
 
@@ -216,6 +219,40 @@ abstract class JDatabaseMysqlonsqliteFunctions
 	public static function rpad($string, $length, $pad)
 	{
 		return static::pad($string, $length, $pad, false);
+	}
+
+	/**
+	 * Text as MySQL's utf8mb4_unicode_ci compares it, near enough: without trailing spaces, accents or case (full case folding,
+	 * so "ß" is "ss"), and with compatibility forms such as full-width letters made plain. SQLite's own NOCASE only folds the
+	 * case of ASCII letters, so "àdmin" or "ａｄｍｉｎ" would pass for a new username next to "admin". Accents and compatibility
+	 * forms need PHP's intl extension (Normalizer); without it, only spaces and case are folded.
+	 *
+	 * @param   string|null  $string  The text
+	 *
+	 * @return  string|null
+	 *
+	 * @since   3.17.0
+	 */
+	public static function fold($string)
+	{
+		if ($string === null)
+		{
+			return null;
+		}
+
+		$string = rtrim((string) $string, ' ');
+
+		if (class_exists('Normalizer'))
+		{
+			$decomposed = Normalizer::normalize($string, Normalizer::FORM_KD);
+
+			if (is_string($decomposed))
+			{
+				$string = preg_replace('/\p{Mn}+/u', '', $decomposed) ?? $decomposed;
+			}
+		}
+
+		return mb_convert_case($string, MB_CASE_FOLD, 'UTF-8');
 	}
 
 	/**

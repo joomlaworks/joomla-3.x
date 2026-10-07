@@ -576,6 +576,24 @@ class JDatabaseDriverMysqlonsqlite extends JDatabaseDriverPdomysql
 	}
 
 	/**
+	 * A condition comparing a text column with a value as MySQL's utf8mb4_unicode_ci would (see
+	 * JDatabaseMysqlonsqliteFunctions::fold()), for checks that a value isn't taken yet: SQLite's NOCASE collation tells apart
+	 * values MySQL treats as the same (accents, full-width letters, "ß" and "ss", trailing spaces). Scans the table, so only
+	 * for such checks, not for lookups.
+	 *
+	 * @param   string  $column  The quoted column name
+	 * @param   string  $value   The value
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public function foldedEquals($column, $value)
+	{
+		return 'joomla_fold(' . $column . ') = joomla_fold(' . $this->quote((string) $value) . ')';
+	}
+
+	/**
 	 * Get the version of the emulated MySQL server, e.g. "8.0.38-mysql-on-sqlite-3.0.2".
 	 *
 	 * @return  string
