@@ -113,6 +113,12 @@ class JDatabaseDriverSqlsrv extends JDatabaseDriver
 			'pwd' => $this->options['password'],
 			'CharacterSet' => 'UTF-8',
 			'ReturnDatesAsStrings' => true,
+			/*
+			 * Joomla 3.x UTD: Microsoft's ODBC Driver 18 encrypts by default and refuses a certificate it can't verify, which most
+			 * servers of one's own have (self-signed), so the site couldn't connect at all. Accept it, as the drivers before 18 did
+			 * (they didn't encrypt by default); the "trustServerCertificate" driver option set to false verifies it instead.
+			 */
+			'TrustServerCertificate' => isset($this->options['trustServerCertificate']) ? (bool) $this->options['trustServerCertificate'] : true,
 		);
 
 		// Make sure the SQLSRV extension for PHP is installed and enabled.
@@ -236,10 +242,14 @@ class JDatabaseDriverSqlsrv extends JDatabaseDriver
 			return str_replace(',', '.', $text);
 		}
 
-		$result = str_replace("'", "''", $text);
+		$result = str_replace("'", "''", (string) $text);
 
-		// SQL Server does not accept NULL byte in query string
-		$result = str_replace("\0", "' + CHAR(0) + N'", $result);
+		/*
+		 * SQL Server does not accept NULL byte in query string. Joomla 3.x UTD: spliced in as nvarchar(max), since joining
+		 * strings of a limited length gives at most 4000 characters: longer values with NULL bytes, e.g. serialized objects
+		 * (Smart Search's results), were cut off.
+		 */
+		$result = str_replace("\0", "' + CAST(NCHAR(0) AS nvarchar(max)) + N'", $result);
 
 		// Fix for SQL Server escape sequence, see https://support.microsoft.com/en-us/kb/164291
 		$result = str_replace(
@@ -552,7 +562,12 @@ class JDatabaseDriverSqlsrv extends JDatabaseDriver
 				continue;
 			}
 
-			if ($k == $key && $key == 0)
+			/*
+			 * Joomla 3.x UTD: a new row's empty key is left out, so the identity column numbers it. This compared the key's name
+			 * with 0, which PHP 8 no longer finds equal, so every new item failed ("Cannot insert explicit value for identity
+			 * column"), and PHP 7 left out keys with a value too.
+			 */
+			if ($k === $key && ($v === 0 || $v === '0' || $v === ''))
 			{
 				continue;
 			}

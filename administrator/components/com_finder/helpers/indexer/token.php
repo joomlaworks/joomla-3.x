@@ -112,6 +112,14 @@ class FinderIndexerToken
 	public $suggestion;
 
 	/**
+	 * Whether a search result must contain the token (set by the query parser).
+	 *
+	 * @var    boolean
+	 * @since  3.17.0
+	 */
+	public $required;
+
+	/**
 	 * Method to construct the token object.
 	 *
 	 * @param   mixed   $term    The term as a string for words or an array for phrases.

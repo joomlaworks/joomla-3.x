@@ -9,6 +9,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\String\StringHelper;
+
 jimport('joomla.filesystem.file');
 
 /**
@@ -281,6 +283,9 @@ class FinderIndexerDriverSqlsrv extends FinderIndexer
 		 * aggregate all the data into that table into a more usable form. The
 		 * aggregated data will be inserted into #__finder_tokens_aggregate
 		 * table.
+		 *
+		 * Joomla 3.x UTD: new terms get the term ID 0, as on MySQL and PostgreSQL, and the total weight 0 until it's set
+		 * further down. The install SQL creates both columns NOT NULL without a default, so indexing failed on new sites.
 		 */
 		$query = 'INSERT INTO ' . $db->quoteName('#__finder_tokens_aggregate') .
 				' (' . $db->quoteName('term_id') .
@@ -291,10 +296,11 @@ class FinderIndexerDriverSqlsrv extends FinderIndexer
 				', ' . $db->quoteName('term_weight') .
 				', ' . $db->quoteName('context') .
 				', ' . $db->quoteName('context_weight') .
+				', ' . $db->quoteName('total_weight') .
 				', ' . $db->quoteName('language') . ')' .
 				' SELECT' .
-				' t.term_id, t1.term, t1.stem, t1.common, t1.phrase, t1.weight, t1.context,' .
-				' ROUND( t1.weight * COUNT( t2.term ) * %F, 8 ) AS context_weight, t1.language' .
+				' COALESCE(t.term_id, 0), t1.term, t1.stem, t1.common, t1.phrase, t1.weight, t1.context,' .
+				' ROUND( t1.weight * COUNT( t2.term ) * %F, 8 ) AS context_weight, 0, t1.language' .
 				' FROM (' .
 				'   SELECT DISTINCT t1.term, t1.stem, t1.common, t1.phrase, t1.weight, t1.context, t1.language' .
 				'   FROM ' . $db->quoteName('#__finder_tokens') . ' AS t1' .
@@ -323,6 +329,10 @@ class FinderIndexerDriverSqlsrv extends FinderIndexer
 		 * already exist for our tokens. If any of the rows in the aggregate
 		 * table have a term of 0, then no term record exists for that
 		 * term so we need to add it to the terms table.
+		 *
+		 * Joomla 3.x UTD: one row per term as the column's collation compares it, which the unique key on the term uses too:
+		 * terms PHP tells apart can be one there (e.g. with an emoji's variation selector), and MySQL's INSERT IGNORE has no
+		 * SQL Server equivalent.
 		 */
 		$db->setQuery(
 			'INSERT INTO ' . $db->quoteName('#__finder_terms') .
@@ -331,11 +341,12 @@ class FinderIndexerDriverSqlsrv extends FinderIndexer
 			', ' . $db->quoteName('common') .
 			', ' . $db->quoteName('phrase') .
 			', ' . $db->quoteName('weight') .
-			', ' . $db->quoteName('soundex') . ')' .
-			' SELECT ta.term, ta.stem, ta.common, ta.phrase, ta.term_weight, SOUNDEX(ta.term)' .
+			', ' . $db->quoteName('soundex') .
+			', ' . $db->quoteName('language') . ')' .
+			' SELECT MIN(ta.term), MIN(ta.stem), MAX(ta.common), MAX(ta.phrase), MAX(ta.term_weight), SOUNDEX(MIN(ta.term)), MIN(ta.language)' .
 			' FROM ' . $db->quoteName('#__finder_tokens_aggregate') . ' AS ta' .
-			' WHERE ta.term_id IS NULL' .
-			' GROUP BY ta.term, ta.stem, ta.common, ta.phrase, ta.term_weight'
+			' WHERE ta.term_id = 0' .
+			' GROUP BY ta.term'
 		);
 		$db->execute();
 
@@ -347,7 +358,7 @@ class FinderIndexerDriverSqlsrv extends FinderIndexer
 		$query = $db->getQuery(true)
 			->update('ta')
 			->set('ta.term_id = t.term_id from #__finder_tokens_aggregate AS ta INNER JOIN #__finder_terms AS t ON t.term = ta.term')
-			->where('ta.term_id IS NULL');
+			->where('ta.term_id = 0');
 		$db->setQuery($query);
 		$db->execute();
 
@@ -369,48 +380,47 @@ class FinderIndexerDriverSqlsrv extends FinderIndexer
 		static::$profiler ? static::$profiler->mark('afterTerms') : null;
 
 		/*
-		 * Before we can insert all of the mapping rows, we have to figure out
-		 * which mapping table the rows need to be inserted into. The mapping
-		 * table for each term is based on the first character of the md5 of
-		 * the first character of the term. In php, it would be expressed as
-		 * substr(md5(substr($token, 0, 1)), 0, 1)
-		 */
-		$query->clear()
-			->update($db->quoteName('#__finder_tokens_aggregate'))
-			->set($db->quoteName('map_suffix') . " = SUBSTRING(HASHBYTES('MD5', SUBSTRING(" . $db->quoteName('term') . ', 1, 1)), 1, 1)');
-		$db->setQuery($query);
-		$db->execute();
-
-		/*
 		 * At this point, the aggregate table contains a record for each
 		 * term in each context. So, we're going to pull down all of that
 		 * data while grouping the records by term and add all of the
 		 * sub-totals together to arrive at the final total for each token for
 		 * this link. Then, we insert all of that data into the appropriate
 		 * mapping table.
+		 *
+		 * Joomla 3.x UTD: the mapping table is the first hex digit of the md5 of the term's first character, which searches
+		 * work out in PHP from the UTF-8 text. SQL Server hashes text as UTF-16 (and took the hash's first byte, not its first
+		 * hex digit), so most terms ended up in no table and searches found nothing: work it out here in PHP too.
 		 */
-		for ($i = 0; $i <= 15; $i++)
-		{
-			// Get the mapping table suffix.
-			$suffix = dechex($i);
+		$db->setQuery(
+			'SELECT ' . $db->quoteName('term') . ', ' . $db->quoteName('term_id') .
+			', ROUND(SUM(' . $db->quoteName('context_weight') . '), 8) AS ' . $db->quoteName('weight') .
+			' FROM ' . $db->quoteName('#__finder_tokens_aggregate') .
+			' GROUP BY term, term_id'
+		);
 
-			/*
-			 * We have to run this query 16 times, one for each link => term
-			 * mapping table.
-			 */
-			$db->setQuery(
-				'INSERT INTO ' . $db->quoteName('#__finder_links_terms' . $suffix) .
-				' (' . $db->quoteName('link_id') .
-				', ' . $db->quoteName('term_id') .
-				', ' . $db->quoteName('weight') . ')' .
-				' SELECT ' . (int) $linkId . ', ' . $db->quoteName('term_id') . ',' .
-				' ROUND(SUM(' . $db->quoteName('context_weight') . '), 8)' .
-				' FROM ' . $db->quoteName('#__finder_tokens_aggregate') .
-				' WHERE ' . $db->quoteName('map_suffix') . ' = ' . $db->quote($suffix) .
-				' GROUP BY term, term_id' .
-				' ORDER BY ' . $db->quoteName('term') . ' DESC'
-			);
-			$db->execute();
+		$maps = array();
+
+		foreach ($db->loadObjectList() as $row)
+		{
+			$suffix = StringHelper::substr(md5(StringHelper::substr($row->term, 0, 1)), 0, 1);
+
+			$maps[$suffix][] = sprintf('(%d, %d, %.8F)', $linkId, $row->term_id, $row->weight);
+		}
+
+		foreach ($maps as $suffix => $values)
+		{
+			// SQL Server takes at most 1000 rows per VALUES list
+			foreach (array_chunk($values, 1000) as $chunk)
+			{
+				$db->setQuery(
+					'INSERT INTO ' . $db->quoteName('#__finder_links_terms' . $suffix) .
+					' (' . $db->quoteName('link_id') .
+					', ' . $db->quoteName('term_id') .
+					', ' . $db->quoteName('weight') . ')' .
+					' VALUES ' . implode(', ', $chunk)
+				);
+				$db->execute();
+			}
 		}
 
 		// Mark afterMapping in the profiler.

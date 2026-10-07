@@ -37,8 +37,8 @@ $sitename = htmlspecialchars((string) $app->get('sitename'), ENT_QUOTES, 'UTF-8'
 $cpanel = ($option === 'com_cpanel');
 
 $showSubmenu = false;
-$this->submenumodules = JModuleHelper::getModules('submenu');
-foreach ($this->submenumodules as $submenumodule)
+$submenumodules = JModuleHelper::getModules('submenu');
+foreach ($submenumodules as $submenumodule)
 {
 	$output = JModuleHelper::renderModule($submenumodule);
 	if ($output !== '')
@@ -146,8 +146,8 @@ $stickyToolbar = $params->get('stickyToolbar', '1');
 				<div>
 				<?php endif; ?>
 					<?php // Display menu modules ?>
-					<?php $this->menumodules = JModuleHelper::getModules('menu'); ?>
-					<?php foreach ($this->menumodules as $menumodule) : ?>
+					<?php $menumodules = JModuleHelper::getModules('menu'); ?>
+					<?php foreach ($menumodules as $menumodule) : ?>
 						<?php $output = JModuleHelper::renderModule($menumodule, array('style' => 'none')); ?>
 						<?php $params = new Registry($menumodule->params); ?>
 						<?php echo $output; ?>

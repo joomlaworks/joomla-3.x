@@ -235,15 +235,34 @@ class FOFDatabaseDriverSqlsrv extends FOFDatabaseDriver
 	 */
 	public function escape($text, $extra = false)
 	{
-		$result = addslashes($text);
-		$result = str_replace("\'", "''", $result);
-		$result = str_replace('\"', '"', $result);
-		$result = str_replace('\/', '/', $result);
+		/*
+		 * Joomla 3.x UTD: as Joomla's own SQL Server driver does. This used addslashes(), but SQL Server has no backslash
+		 * escapes, so every backslash was stored doubled and a NULL byte as "\0".
+		 */
+		if (is_int($text))
+		{
+			return $text;
+		}
+
+		if (is_float($text))
+		{
+			// Force the dot as a decimal point.
+			return str_replace(',', '.', $text);
+		}
+
+		$result = str_replace("'", "''", (string) $text);
+		$result = str_replace("\0", "' + CAST(NCHAR(0) AS nvarchar(max)) + N'", $result);
+
+		// Fix for SQL Server escape sequence, see https://support.microsoft.com/en-us/kb/164291
+		$result = str_replace(
+			array("\\\n",     "\\\r",     "\\\\\r\r\n"),
+			array("\\\\\n\n", "\\\\\r\r", "\\\\\r\n\r\n"),
+			$result
+		);
 
 		if ($extra)
 		{
-			// We need the below str_replace since the search in sql server doesn't recognize _ character.
-			$result = str_replace('_', '[_]', $result);
+			$result = str_replace(array('[', '_', '%'), array('[[]', '[_]', '[%]'), $result);
 		}
 
 		return $result;
@@ -506,7 +525,12 @@ class FOFDatabaseDriverSqlsrv extends FOFDatabaseDriver
 				continue;
 			}
 
-			if ($k == $key && $key == 0)
+			/*
+			 * Joomla 3.x UTD: a new row's empty key is left out, so the identity column numbers it. This compared the key's name
+			 * with 0, which PHP 8 no longer finds equal, so every new item failed ("Cannot insert explicit value for identity
+			 * column"), and PHP 7 left out keys with a value too.
+			 */
+			if ($k === $key && ($v === 0 || $v === '0' || $v === ''))
 			{
 				continue;
 			}

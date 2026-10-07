@@ -85,6 +85,14 @@ class MediaField extends FormField
 	protected $directory;
 
 	/**
+	 * The folder the media manager opens in.
+	 *
+	 * @var    string
+	 * @since  3.17.0
+	 */
+	protected $folder;
+
+	/**
 	 * The previewWidth.
 	 *
 	 * @var    int

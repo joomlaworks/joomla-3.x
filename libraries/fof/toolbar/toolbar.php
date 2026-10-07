@@ -17,6 +17,7 @@ defined('FOF_INCLUDED') or die;
  * @package  FrameworkOnFramework
  * @since    1.0
  */
+#[\AllowDynamicProperties]
 class FOFToolbar
 {
 	/** @var array Configuration parameters */

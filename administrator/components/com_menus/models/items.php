@@ -339,7 +339,7 @@ class MenusModelItems extends JModelList
 		}
 
 		// Filter by search in title, alias or id
-		if ($search = trim($this->getState('filter.search')))
+		if ($search = trim((string) $this->getState('filter.search')))
 		{
 			if (stripos($search, 'id:') === 0)
 			{

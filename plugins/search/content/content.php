@@ -281,7 +281,9 @@ class PlgSearchContent extends JPlugin
 			if (!empty($relevance))
 			{
 				$query->select(implode(' + ', $relevance) . ' AS relevance');
-				$order = ' relevance DESC, ' . $order;
+
+				// Joomla 3.x UTD: added to this query only; the archived articles' query added it a second time (SQL Server refuses that)
+				$query->order('relevance DESC');
 			}
 
 			$query->select('a.title AS title, a.metadesc, a.metakey, a.created AS created, a.language, a.catid')
@@ -355,7 +357,9 @@ class PlgSearchContent extends JPlugin
 			if (!empty($relevance))
 			{
 				$query->select(implode(' + ', $relevance) . ' AS relevance');
-				$order = ' relevance DESC, ' . $order;
+
+				// Joomla 3.x UTD: added to this query only; the archived articles' query added it a second time (SQL Server refuses that)
+				$query->order('relevance DESC');
 			}
 
 			$query->select('a.title AS title, a.metadesc, a.metakey, a.created AS created, a.language, a.catid')

@@ -126,7 +126,7 @@ class ContentType extends Table
 	public function getContentTable()
 	{
 		$result = false;
-		$tableInfo = json_decode($this->table);
+		$tableInfo = json_decode((string) $this->table);
 
 		if (is_object($tableInfo) && isset($tableInfo->special))
 		{

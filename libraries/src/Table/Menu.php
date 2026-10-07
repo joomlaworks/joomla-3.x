@@ -100,10 +100,10 @@ class Menu extends Nested
 			return false;
 		}
 
-		// Check for a path.
+		// Check for a path (Joomla 3.x UTD: never NULL, which SQL Server's column refuses; store() makes the alias and the path)
 		if (trim((string) $this->path) === '')
 		{
-			$this->path = $this->alias;
+			$this->path = (string) $this->alias;
 		}
 
 		// Check for params.

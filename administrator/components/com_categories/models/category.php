@@ -1047,6 +1047,9 @@ class CategoriesModelCategory extends JModelAdmin
 				if (!in_array($childId, $pks))
 				{
 					$pks[] = $childId;
+
+					// Named like the selected categories, so the permission check below has an asset
+					$contexts[$childId] = preg_replace('/\d+$/', $childId, $contexts[$pk]);
 				}
 			}
 

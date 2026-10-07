@@ -332,7 +332,7 @@ class Mail extends \PHPMailer
 					try
 					{
 						// Check for boolean false return if exception handling is disabled
-						if (call_user_func('parent::' . $method, $recipientEmail, $recipientName) === false)
+						if (parent::$method($recipientEmail, $recipientName) === false)
 						{
 							return false;
 						}
@@ -358,7 +358,7 @@ class Mail extends \PHPMailer
 					try
 					{
 						// Check for boolean false return if exception handling is disabled
-						if (call_user_func('parent::' . $method, $to, $name) === false)
+						if (parent::$method($to, $name) === false)
 						{
 							return false;
 						}
@@ -381,7 +381,7 @@ class Mail extends \PHPMailer
 			try
 			{
 				// Check for boolean false return if exception handling is disabled
-				if (call_user_func('parent::' . $method, $recipient, $name) === false)
+				if (parent::$method($recipient, $name) === false)
 				{
 					return false;
 				}

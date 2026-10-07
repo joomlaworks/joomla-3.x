@@ -1071,7 +1071,7 @@ class MenusModelItem extends JModelAdmin
 		// Initialise form with component view params if available.
 		if ($type == 'component')
 		{
-			$link = htmlspecialchars_decode($link);
+			$link = htmlspecialchars_decode((string) $link);
 
 			// Parse the link arguments.
 			$args = array();

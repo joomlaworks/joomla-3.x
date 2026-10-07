@@ -137,7 +137,7 @@ abstract class JHtmlSearchtools
 	public static function sort($title, $order, $direction = 'asc', $selected = 0, $task = null, $newDirection = 'asc', $tip = '', $icon = null,
 		$formName = 'adminForm')
 	{
-		$direction = strtolower($direction);
+		$direction = strtolower((string) $direction);
 		$orderIcons = array('icon-arrow-up-3', 'icon-arrow-down-3');
 		$index = (int) ($direction === 'desc');
 

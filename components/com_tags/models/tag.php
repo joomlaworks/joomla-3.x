@@ -271,7 +271,8 @@ class TagsModelTag extends JModelList
 	{
 		if (!isset($this->item))
 		{
-			$this->item = false;
+			// The tags found are appended (PHP 8.1+ deprecates appending to false); none is still a 404 below
+			$this->item = array();
 
 			if (empty($pk))
 			{

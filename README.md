@@ -7,7 +7,7 @@ However, official support for Joomla 3.x ended in February 2025 (counting the eL
 
 So we're actively developing Joomla 3.x UTD as an up-to-date distribution of the Joomla 3.x content management system, built to ensure code security, support modern PHP & MySQL/MariaDB versions & fix any broken behaviour that never got sorted before the release of newer major versions of Joomla.
 
-If you are a Joomla extension developer reading this, ensure your extension update XML files don't stop at Joomla 3.10.x. Do your users a favour ;)
+If you are a Joomla extension developer still supporting Joomla 3.x and you are reading this, please do your users a favour and make sure your extension update XML files don't stop at Joomla 3.10.x.
 
 ---
 
@@ -54,6 +54,7 @@ Summary of changes:
 - Fixed Joomla Update failing with a PHP error when Joomla's own update site had been deleted
 - Fixed the administrator's Help buttons, which showed "not found" since 3.11
 - PostgreSQL fixes: batch copy, saving Global Configuration (native driver), the installer's backup of old tables, and the frontpage module order
+- SQL Server / Azure SQL tested for the first time: fixed creating new items on PHP 8, connecting through ODBC Driver 18, Smart Search and search, and long values with NULL bytes being cut off
 
 **Security fixes:**
 - Installer: the ownership check for remote databases could be skipped by going straight to the step which writes the configuration (stock Joomla 3)
@@ -309,12 +310,14 @@ Switching to this distribution will also allow you (or take you closer) to upgra
 | MySQL | 5.5.3 | Tested and actively supported (5.7 or newer recommended, see notes below for 8.x & 9.x) |
 | MariaDB | 5.5 | Tested and actively supported |
 | PostgreSQL | 9.0 | Tested and supported with both drivers since 3.17 (16 or newer recommended, preferably 18, see notes below) |
-| Microsoft SQL Server / Azure SQL | 2008 R2 (10.50.1600.1) | Inherited from stock Joomla 3.x, not tested by this project |
+| Microsoft SQL Server / Azure SQL | 2008 R2 (10.50.1600.1) | Inherited from stock Joomla 3.x; tested since 3.17 on SQL Server 2022 with both drivers (core only: few extensions support it) |
 | SQLite (experimental) | 3.37.0, with PHP 7.4+ | New in 3.17: runs MySQL SQL through an emulation layer, so core and extensions work unchanged; tested with core and common extensions |
 
 For PostgreSQL and SQLite, see [PostgreSQL Support](#postgresql-support) and [SQLite Support](#sqlite-support).
 
 Database support in Joomla 3.x was always centered on MySQL/MariaDB. The core works with all of the databases above, but many third-party extensions only ship MySQL/MariaDB database scripts, so expect rough edges with those on PostgreSQL and SQL Server. The installer enforces these minimum versions. Once a site runs 3.16 or newer, it won't be offered further updates while its database is below these versions, and sees a notice in Joomla Update instead.
+
+**SQL Server / Azure SQL:** sites connect through Microsoft's PHP drivers (`sqlsrv`) and ODBC driver. ODBC Driver 18 encrypts the connection by default; the server's certificate is accepted without being verified (as earlier ODBC drivers did, which didn't encrypt), since most self-hosted servers have a self-signed one. The command line's database tools (`database:export`, `database:import`, `database:convert`, `database:optimize`) don't support SQL Server, and Smart Search indexes made before 3.17 should be rebuilt (Clear Index, then Index).
 
 
 ## NOTES ON MYSQL & MARIADB

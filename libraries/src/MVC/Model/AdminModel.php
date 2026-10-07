@@ -293,7 +293,8 @@ abstract class AdminModel extends FormModel
 				{
 					foreach ($result as $old => $new)
 					{
-						$contexts[$new] = $contexts[$old];
+						// Children copied along with a category weren't selected, so they have no context: name theirs like the others
+						$contexts[$new] = isset($contexts[$old]) ? $contexts[$old] : preg_replace('/\d+$/', $old, reset($contexts));
 					}
 
 					$pks = array_values($result);
