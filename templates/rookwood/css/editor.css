@@ -1,0 +1,143 @@
+/**
+ * @package     Joomla.Site
+ * @subpackage  Templates.rookwood
+ *
+ * @copyright   (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @license     GNU General Public License version 2 or later; see LICENSE.md
+ */
+
+/* The editor's text as the site shows it: TinyMCE (and other editors) load css/editor.css of the site's default template into
+   the editing area. These are the article text rules of template.css (.prose), written for the editor's bare <body>: change
+   both files together. The light theme by default, the dark one when the device is set to dark. Plain class selectors
+   (ul.figures, dl.facts, ul.values, ul.team, div.contactCards, .wide) also appear in the editor's Formats menu. */
+
+/* --- Variables --- */
+:root {
+    --fh:           ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
+    --fm:           ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+
+    --c-bg:         #f5f3ee;
+    --c-surface:    #ffffff;
+    --c-line:       #dcd8cd;
+    --c-line-d:     #bfbab0;
+    --c-text:       #2a2c33;
+    --c-ink:        #15171c;
+    --c-muted:      #626674;
+    --c-violet:     #5a3df0;
+    --c-lime:       #c6f000;
+    --c-pink:       #e8326b;
+    --c-aqua:       #0aa79b;
+    --c-accent:     var(--c-violet);
+    --c-quote:      var(--c-violet);
+    --c-number:     var(--c-violet);
+
+    --measure:      760px;
+    --container:    1400px;
+    --radius:       14px;
+    --radius-l:     28px;
+}
+
+@media (prefers-color-scheme:dark) {
+    :root {
+        --c-bg:         #0e1014;
+        --c-surface:    #161920;
+        --c-line:       #2a2f3a;
+        --c-line-d:     #3a4050;
+        --c-text:       #d6dae3;
+        --c-ink:        #f4f6fb;
+        --c-muted:      #9aa1b2;
+        --c-violet:     #8b6cff;
+        --c-lime:       #d7ff3d;
+        --c-pink:       #ff5c8a;
+        --c-aqua:       #2ee6d6;
+        --c-quote:      var(--c-lime);
+        --c-number:     var(--c-lime);
+    }
+}
+
+/* --- The text --- */
+/* The reading column of the page, centred; .wide blocks as wide as the page's content (here: the editor) */
+html {color-scheme:light;}
+body {margin:0;padding:32px 24px 48px;font-family:var(--fh);font-size:1.15rem;line-height:1.7;color:var(--c-text);background:var(--c-bg);-webkit-font-smoothing:antialiased;}
+/* html body > *: more specific than the elements' own margins below */
+html body > * {max-width:var(--measure);margin-left:auto;margin-right:auto;}
+html body > .wide {max-width:var(--container);}
+body > :first-child {margin-top:0;}
+h1,h2,h3,h4,h5,h6 {font-family:var(--fh);color:var(--c-ink);line-height:1.08;letter-spacing:-0.025em;margin:0 0 .5em;font-weight:800;}
+h1 {font-size:2.6rem;}
+h2 {margin-top:1.8em;margin-bottom:.6em;font-size:clamp(1.6rem, 1.3rem + 1vw, 2.2rem);}
+h3 {margin-top:1.6em;margin-bottom:.5em;font-size:1.4rem;letter-spacing:-0.015em;}
+h4 {font-size:1.1rem;letter-spacing:-0.01em;}
+p {margin-top:0;margin-bottom:1em;}
+ul,ol {margin-top:0;margin-bottom:1em;padding-left:1.4em;}
+ul li::marker {color:var(--c-accent);}
+a {color:var(--c-ink);text-decoration:underline;text-decoration-color:var(--c-accent);text-decoration-thickness:2px;text-underline-offset:3px;}
+img {max-width:100%;height:auto;border-radius:var(--radius);}
+figure {margin-top:2em;margin-bottom:2em;}
+figcaption {margin-top:10px;font-size:.88rem;color:var(--c-muted);}
+blockquote {margin-top:2em;margin-bottom:2em;padding:0 0 0 28px;border-left:4px solid var(--c-quote);font-size:clamp(1.35rem, 1.1rem + .8vw, 1.8rem);font-weight:700;line-height:1.3;letter-spacing:-0.02em;color:var(--c-ink);}
+blockquote p:last-child {margin:0;}
+blockquote cite,blockquote footer {display:block;margin-top:14px;font-size:1rem;font-style:normal;font-weight:500;letter-spacing:0;color:var(--c-muted);}
+code,pre,kbd {font-family:var(--fm);font-size:.9em;}
+pre {padding:20px;border-radius:var(--radius);background:var(--c-surface);overflow-x:auto;}
+table {width:100%;margin-top:2em;margin-bottom:2em;border-collapse:collapse;font-size:1rem;}
+th,td {padding:10px 12px;border-bottom:1px solid var(--c-line);text-align:left;}
+iframe {display:block;width:100%;max-width:100%;aspect-ratio:16 / 9;height:auto;border:0;border-radius:var(--radius);}
+hr {border:0;border-top:2px solid var(--c-line);margin-top:2.5em;margin-bottom:2.5em;}
+
+/* A case study's results: large figures */
+ul.figures {display:grid;grid-template-columns:repeat(auto-fit, minmax(180px,1fr));gap:20px;margin-top:1.5em;margin-bottom:2em;padding:0;list-style:none;}
+ul.figures li {padding:22px;border:2px solid var(--c-line);border-radius:var(--radius-l);background:var(--c-surface);color:var(--c-muted);font-size:1rem;line-height:1.4;}
+ul.figures li strong {display:block;margin-bottom:6px;font-size:clamp(2.4rem, 1.8rem + 2vw, 3.4rem);font-weight:850;line-height:1;letter-spacing:-0.05em;color:var(--c-ink);}
+ul.figures li:nth-child(3n+1) strong {color:var(--c-violet);}
+ul.figures li:nth-child(3n+2) strong {color:var(--c-pink);}
+ul.figures li:nth-child(3n+3) strong {color:var(--c-aqua);}
+
+/* A case study's client and services */
+dl.facts {display:grid;grid-template-columns:max-content minmax(0,1fr);gap:8px 32px;margin-top:2em;margin-bottom:0;padding-top:24px;border-top:2px solid var(--c-line);font-size:1rem;}
+dl.facts dt {font-family:var(--fm);font-size:.85rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--c-muted);}
+dl.facts dd {margin:0;font-weight:700;color:var(--c-ink);}
+
+/* A page's numbered values */
+ul.values {display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:20px;margin-top:2em;margin-bottom:2em;padding:0;list-style:none;counter-reset:value;}
+ul.values li {padding:28px;border-radius:var(--radius-l);background:var(--c-surface);font-size:1rem;counter-increment:value;}
+ul.values li::before {content:"0" counter(value);display:block;margin-bottom:24px;font-family:var(--fm);font-weight:700;color:var(--c-number);}
+ul.values li strong {display:block;margin-bottom:8px;font-size:1.3rem;letter-spacing:-0.015em;color:var(--c-ink);}
+
+/* A page's team: initials in a coloured shape (style="--hue:250" on the span) */
+ul.team {display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:20px;margin-top:2em;margin-bottom:2em;padding:0;list-style:none;}
+ul.team li {display:grid;gap:4px;padding:24px;border:2px solid var(--c-line);border-radius:var(--radius-l);background:var(--c-surface);font-size:1rem;line-height:1.4;}
+ul.team li .avatar {display:inline-grid;place-items:center;width:64px;height:64px;margin-bottom:14px;border-radius:42% 58% 55% 45% / 50% 45% 55% 50%;background:hsl(var(--hue, 250) 75% 62%);color:#0e1014;font-size:1.2rem;font-weight:850;}
+ul.team li strong {font-size:1.15rem;color:var(--c-ink);}
+ul.team li span:last-child {color:var(--c-muted);}
+
+/* A page's contact cards */
+div.contactCards {display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:20px;margin-top:2em;margin-bottom:2em;}
+div.contactCards > div {padding:28px;border:2px solid var(--c-line);border-radius:var(--radius-l);background:var(--c-surface);font-size:1rem;}
+div.contactCards > div h2 {margin:0 0 14px;font-size:1.3rem;}
+div.contactCards > div p {margin:0 0 6px;}
+div.contactCards > div a {font-weight:800;}
+div.contactCards > div:nth-child(3n+1) {box-shadow:6px 6px 0 var(--c-violet);}
+div.contactCards > div:nth-child(3n+2) {box-shadow:6px 6px 0 var(--c-pink);}
+div.contactCards > div:nth-child(3n+3) {box-shadow:6px 6px 0 var(--c-aqua);}
+
+/* --- Editor only --- */
+/* Joomla's Read More and page break markers (not shown on the site) */
+hr#system-readmore {border:0;border-top:2px dashed var(--c-pink);}
+hr.system-pagebreak {border:0;border-top:2px dashed var(--c-muted);}
+
+@media (prefers-color-scheme:dark) {
+    html {color-scheme:dark;}
+}
+
+@media only screen and (max-width:1100px) {
+    ul.team {grid-template-columns:repeat(2, minmax(0,1fr));}
+    ul.values,div.contactCards {grid-template-columns:1fr;}
+}
+
+@media only screen and (max-width:767px) {
+    body {padding:20px 16px 32px;font-size:1.08rem;}
+    ul.team {grid-template-columns:1fr;}
+    dl.facts {grid-template-columns:1fr;gap:2px;}
+    dl.facts dd {margin-bottom:12px;}
+}

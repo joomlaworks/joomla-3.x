@@ -556,22 +556,39 @@ class PlgEditorTinymce_latest extends JPlugin
 			if (!is_file(JPATH_SITE . '/templates/' . $template . '/css/' . $custom))
 			{
 				JLog::add(JText::sprintf('PLG_TINYMCE_LATEST_ERR_CUSTOMCSSFILENOTPRESENT', $custom), JLog::WARNING, 'jerror');
+
+				return JUri::root(true) . '/templates/' . $template . '/css/' . $custom;
 			}
 
-			return JUri::root(true) . '/templates/' . $template . '/css/' . $custom;
+			return $this->versionedUrl('templates/' . $template . '/css/' . $custom);
 		}
 
 		foreach (array($template, 'system') as $folder)
 		{
 			if ($folder !== '' && is_file(JPATH_SITE . '/templates/' . $folder . '/css/editor.css'))
 			{
-				return JUri::root(true) . '/templates/' . $folder . '/css/editor.css';
+				return $this->versionedUrl('templates/' . $folder . '/css/editor.css');
 			}
 		}
 
 		JLog::add(JText::_('PLG_TINYMCE_LATEST_ERR_EDITORCSSFILENOTPRESENT'), JLog::WARNING, 'jerror');
 
 		return null;
+	}
+
+	/**
+	 * The URL of a file of the site with its modification time (?t=YYYYMMDD_HHii, as the templates' stylesheets), so that
+	 * browsers fetch a changed editor.css instead of the copy they keep
+	 *
+	 * @param   string  $path  The file, relative to the site's root
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	protected function versionedUrl($path)
+	{
+		return JUri::root(true) . '/' . $path . '?t=' . date('Ymd_Hi', filemtime(JPATH_SITE . '/' . $path));
 	}
 
 	/**
