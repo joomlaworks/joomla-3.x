@@ -12,7 +12,6 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Plugin\PluginHelper;
 
 /**
  * Little WAF - a small, opt-in request filter for known attack signatures against
@@ -76,11 +75,19 @@ class PlgSystemLittlewaf extends CMSPlugin
 		}
 
 		$patterns = array();
+		$enabled  = null;
 
 		foreach (static::FILTERS as $param => $filter)
 		{
+			if (!$this->params->get($param, 1))
+			{
+				continue;
+			}
+
+			$enabled = $enabled === null ? $this->getEnabledPlugins() : $enabled;
+
 			// A tag is only dangerous where the extension which processes it is on
-			if ($this->params->get($param, 1) && (PluginHelper::isEnabled('system', $filter[0]) || PluginHelper::isEnabled('content', $filter[0])))
+			if (in_array($filter[0], $enabled, true))
 			{
 				$patterns[substr($param, 7)] = $filter[1];
 			}
@@ -100,6 +107,38 @@ class PlgSystemLittlewaf extends CMSPlugin
 					$this->block($filter, $where);
 				}
 			}
+		}
+	}
+
+	/**
+	 * The protected extensions which have an enabled plugin, in any plugin group: the group a vendor registers its plugin in
+	 * mustn't decide whether its filter is on.
+	 *
+	 * @return  string[]  Plugin elements
+	 *
+	 * @since   3.17.0
+	 */
+	private function getEnabledPlugins()
+	{
+		$elements = array_unique(array_map(function ($filter) { return $filter[0]; }, static::FILTERS));
+
+		try
+		{
+			$db = Factory::getDbo();
+
+			return $db->setQuery(
+				$db->getQuery(true)
+					->select($db->quoteName('element'))
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+					->where($db->quoteName('enabled') . ' = 1')
+					->where($db->quoteName('element') . ' IN (' . implode(',', array_map(array($db, 'quote'), $elements)) . ')')
+			)->loadColumn() ?: array();
+		}
+		catch (\RuntimeException $e)
+		{
+			// Without the database the site can't run the extensions either; filter rather than guess
+			return $elements;
 		}
 	}
 

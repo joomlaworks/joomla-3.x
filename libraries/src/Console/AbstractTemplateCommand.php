@@ -443,6 +443,12 @@ abstract class AbstractTemplateCommand extends AbstractCommand
 			{
 				return false;
 			}
+
+			// Its own protection files too: a server which lists folders (and ignores .htaccess) would otherwise list it
+			if ($create)
+			{
+				static::protectFolder($folder);
+			}
 		}
 
 		return $folder;
