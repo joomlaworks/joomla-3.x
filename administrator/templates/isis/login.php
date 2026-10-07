@@ -109,7 +109,7 @@ $escape = function ($text)
 			<div class="loginBrand-inner">
 				<p class="loginBrand-site"><?php echo $escape($sitename); ?></p>
 				<p class="loginBrand-host"><?php echo $escape($siteHost); ?></p>
-				<a class="loginBrand-visit" href="<?php echo $escape($siteUrl); ?>">
+				<a class="loginBrand-visit" href="<?php echo $escape($siteUrl); ?>" tabindex="9">
 					<span><?php echo JText::_('TPL_ISIS_LOGIN_VISIT_SITE'); ?></span>
 					<svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 				</a>
