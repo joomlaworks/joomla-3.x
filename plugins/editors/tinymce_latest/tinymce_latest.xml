@@ -24,12 +24,12 @@
     <config>
         <fields name="params" addfieldpath="/plugins/editors/tinymce_latest/field">
             <fieldset name="basic">
-                <field name="configuration" type="tinymcelatestbuilder" hiddenLabel="true" />
-            </fieldset>
-            <fieldset name="advanced" label="PLG_TINYMCE_LATEST_FIELD_LABEL_ADVANCEDPARAMS">
-                <field name="sets_amount" type="number" label="PLG_TINYMCE_LATEST_FIELD_NUMBER_OF_SETS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_NUMBER_OF_SETS_DESC" filter="int" validate="number" min="3" default="3" />
-                <field name="html_height" type="text" label="PLG_TINYMCE_LATEST_FIELD_HTMLHEIGHT_LABEL" description="PLG_TINYMCE_LATEST_FIELD_HTMLHEIGHT_DESC" default="550px" />
+                <field name="sizeHeading" type="note" class="tinymceHeading tinymceHeadingFirst" label="PLG_TINYMCE_LATEST_FIELD_HEADING_SIZE" />
+                <field name="html_height" type="text" label="PLG_TINYMCE_LATEST_FIELD_HTMLHEIGHT_LABEL" description="PLG_TINYMCE_LATEST_FIELD_HTMLHEIGHT_DESC" default="800px" />
                 <field name="html_width" type="text" label="PLG_TINYMCE_LATEST_FIELD_HTMLWIDTH_LABEL" description="PLG_TINYMCE_LATEST_FIELD_HTMLWIDTH_DESC" default="" />
+                <field name="setsHeading" type="note" class="tinymceHeading" label="PLG_TINYMCE_LATEST_FIELD_HEADING_SETS" description="PLG_TINYMCE_LATEST_FIELD_HEADING_SETS_DESC" />
+                <field name="sets_amount" type="number" label="PLG_TINYMCE_LATEST_FIELD_NUMBER_OF_SETS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_NUMBER_OF_SETS_DESC" filter="int" validate="number" min="3" default="3" />
+                <field name="configuration" type="tinymcelatestbuilder" hiddenLabel="true" />
             </fieldset>
         </fields>
     </config>

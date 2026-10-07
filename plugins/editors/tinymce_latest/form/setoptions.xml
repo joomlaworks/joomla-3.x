@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form addfieldpath="/plugins/editors/tinymce_latest/field">
+    <field name="heading_who" type="note" class="tinymceHeading" label="PLG_TINYMCE_LATEST_FIELD_HEADING_WHO" description="PLG_TINYMCE_LATEST_FIELD_HEADING_WHO_DESC" />
     <field name="access" type="usergrouplist" label="PLG_TINYMCE_LATEST_FIELD_SETACCESS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_SETACCESS_DESC" multiple="true" class="access-select" />
+    <field name="heading_look" type="note" class="tinymceHeading" label="PLG_TINYMCE_LATEST_FIELD_HEADING_LOOK" description="PLG_TINYMCE_LATEST_FIELD_HEADING_LOOK_DESC" />
     <field name="skin" type="tinymcelatestskins" label="PLG_TINYMCE_LATEST_FIELD_SKIN_LABEL" description="PLG_TINYMCE_LATEST_FIELD_SKIN_DESC" default="oxide" />
     <field name="skin_admin" type="tinymcelatestskins" label="PLG_TINYMCE_LATEST_FIELD_SKIN_ADMIN_LABEL" description="PLG_TINYMCE_LATEST_FIELD_SKIN_ADMIN_DESC" default="oxide" />
     <field name="toolbar_mode" type="list" label="PLG_TINYMCE_LATEST_FIELD_TOOLBAR_MODE_LABEL" description="PLG_TINYMCE_LATEST_FIELD_TOOLBAR_MODE_DESC" default="sliding">
@@ -9,52 +11,7 @@
         <option value="scrolling">PLG_TINYMCE_LATEST_FIELD_TOOLBAR_MODE_SCROLLING</option>
         <option value="wrap">PLG_TINYMCE_LATEST_FIELD_TOOLBAR_MODE_WRAP</option>
     </field>
-    <field name="drag_drop" type="radio" label="PLG_TINYMCE_LATEST_FIELD_DRAG_DROP_LABEL" description="PLG_TINYMCE_LATEST_FIELD_DRAG_DROP_DESC" class="btn-group btn-group-yesno" default="1">
-        <option value="1">JON</option>
-        <option value="0">JOFF</option>
-    </field>
-    <field name="path" type="tinymcelatestuploaddirs" label="PLG_TINYMCE_LATEST_FIELD_CUSTOM_PATH_LABEL" description="PLG_TINYMCE_LATEST_FIELD_CUSTOM_PATH_DESC" class="input-xxlarge" showon="drag_drop:1" />
-    <field name="entity_encoding" type="list" label="PLG_TINYMCE_LATEST_FIELD_ENCODING_LABEL" description="PLG_TINYMCE_LATEST_FIELD_ENCODING_DESC" default="raw">
-        <option value="named">PLG_TINYMCE_LATEST_FIELD_VALUE_NAMED</option>
-        <option value="numeric">PLG_TINYMCE_LATEST_FIELD_VALUE_NUMERIC</option>
-        <option value="raw">PLG_TINYMCE_LATEST_FIELD_VALUE_RAW</option>
-    </field>
-    <field name="lang_mode" type="radio" label="PLG_TINYMCE_LATEST_FIELD_LANGSELECT_LABEL" description="PLG_TINYMCE_LATEST_FIELD_LANGSELECT_DESC" class="btn-group btn-group-yesno" default="1">
-        <option value="1">JON</option>
-        <option value="0">JOFF</option>
-    </field>
-    <field name="lang_code" type="filelist" label="PLG_TINYMCE_LATEST_FIELD_LANGCODE_LABEL" description="PLG_TINYMCE_LATEST_FIELD_LANGCODE_DESC" stripext="1" directory="media/editors/tinymce_latest/langs/" hide_none="1" hide_default="1" filter="\.js$" showon="lang_mode:0">
-        <option value="en">English</option>
-    </field>
-    <field name="content_css" type="radio" label="PLG_TINYMCE_LATEST_FIELD_CSS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_CSS_DESC" class="btn-group btn-group-yesno" default="1">
-        <option value="1">JON</option>
-        <option value="0">JOFF</option>
-    </field>
-    <field name="content_css_custom" type="text" label="PLG_TINYMCE_LATEST_FIELD_CUSTOM_CSS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_CUSTOM_CSS_DESC" class="input-xxlarge" />
-    <field name="relative_urls" type="list" label="PLG_TINYMCE_LATEST_FIELD_URLS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_URLS_DESC" default="1">
-        <option value="0">PLG_TINYMCE_LATEST_FIELD_VALUE_ABSOLUTE</option>
-        <option value="1">PLG_TINYMCE_LATEST_FIELD_VALUE_RELATIVE</option>
-    </field>
-    <field name="newlines" type="list" label="PLG_TINYMCE_LATEST_FIELD_NEWLINES_LABEL" description="PLG_TINYMCE_LATEST_FIELD_NEWLINES_DESC" default="0">
-        <option value="1">PLG_TINYMCE_LATEST_FIELD_VALUE_BR</option>
-        <option value="0">PLG_TINYMCE_LATEST_FIELD_VALUE_P</option>
-    </field>
-    <field name="paste_as_text" type="radio" label="PLG_TINYMCE_LATEST_FIELD_PASTE_AS_TEXT_LABEL" description="PLG_TINYMCE_LATEST_FIELD_PASTE_AS_TEXT_DESC" class="btn-group btn-group-yesno" default="0">
-        <option value="1">JON</option>
-        <option value="0">JOFF</option>
-    </field>
-    <field name="use_config_textfilters" type="radio" label="PLG_TINYMCE_LATEST_CONFIG_TEXTFILTER_ACL_LABEL" description="PLG_TINYMCE_LATEST_CONFIG_TEXTFILTER_ACL_DESC" class="btn-group btn-group-yesno" default="0">
-        <option value="1">JON</option>
-        <option value="0">JOFF</option>
-    </field>
-    <field name="invalid_elements" type="text" label="PLG_TINYMCE_LATEST_FIELD_PROHIBITED_LABEL" description="PLG_TINYMCE_LATEST_FIELD_PROHIBITED_DESC" showon="use_config_textfilters:0" default="script,applet,iframe" class="input-xxlarge" />
-    <field name="valid_elements" type="text" label="PLG_TINYMCE_LATEST_FIELD_VALIDELEMENTS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_VALIDELEMENTS_DESC" showon="use_config_textfilters:0" class="input-xxlarge" />
-    <field name="extended_elements" type="text" label="PLG_TINYMCE_LATEST_FIELD_ELEMENTS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_ELEMENTS_DESC" showon="use_config_textfilters:0" class="input-xxlarge" />
-    <field name="sandbox_iframes" type="radio" label="PLG_TINYMCE_LATEST_FIELD_SANDBOX_IFRAMES_LABEL" description="PLG_TINYMCE_LATEST_FIELD_SANDBOX_IFRAMES_DESC" class="btn-group btn-group-yesno" default="1">
-        <option value="1">JON</option>
-        <option value="0">JOFF</option>
-    </field>
-    <field name="sandbox_iframes_exclusions" type="text" label="PLG_TINYMCE_LATEST_FIELD_SANDBOX_IFRAMES_EXCLUSIONS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_SANDBOX_IFRAMES_EXCLUSIONS_DESC" class="input-xxlarge" showon="sandbox_iframes:1" />
+    <field name="heading_area" type="note" class="tinymceHeading" label="PLG_TINYMCE_LATEST_FIELD_HEADING_AREA" description="PLG_TINYMCE_LATEST_FIELD_HEADING_AREA_DESC" />
     <field name="resizing" type="radio" label="PLG_TINYMCE_LATEST_FIELD_RESIZING_LABEL" description="PLG_TINYMCE_LATEST_FIELD_RESIZING_DESC" class="btn-group btn-group-yesno" default="1">
         <option value="1">JON</option>
         <option value="0">JOFF</option>
@@ -71,7 +28,36 @@
         <option value="1">JON</option>
         <option value="0">JOFF</option>
     </field>
+    <field name="heading_styles" type="note" class="tinymceHeading" label="PLG_TINYMCE_LATEST_FIELD_HEADING_STYLES" description="PLG_TINYMCE_LATEST_FIELD_HEADING_STYLES_DESC" />
+    <field name="content_css" type="radio" label="PLG_TINYMCE_LATEST_FIELD_CSS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_CSS_DESC" class="btn-group btn-group-yesno" default="1">
+        <option value="1">JON</option>
+        <option value="0">JOFF</option>
+    </field>
+    <field name="content_css_custom" type="text" label="PLG_TINYMCE_LATEST_FIELD_CUSTOM_CSS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_CUSTOM_CSS_DESC" class="input-xxlarge" />
+    <field name="heading_language" type="note" class="tinymceHeading" label="PLG_TINYMCE_LATEST_FIELD_HEADING_LANGUAGE" description="PLG_TINYMCE_LATEST_FIELD_HEADING_LANGUAGE_DESC" />
+    <field name="lang_mode" type="radio" label="PLG_TINYMCE_LATEST_FIELD_LANGSELECT_LABEL" description="PLG_TINYMCE_LATEST_FIELD_LANGSELECT_DESC" class="btn-group btn-group-yesno" default="1">
+        <option value="1">JON</option>
+        <option value="0">JOFF</option>
+    </field>
+    <field name="lang_code" type="filelist" label="PLG_TINYMCE_LATEST_FIELD_LANGCODE_LABEL" description="PLG_TINYMCE_LATEST_FIELD_LANGCODE_DESC" stripext="1" directory="media/editors/tinymce_latest/langs/" hide_none="1" hide_default="1" filter="\.js$" showon="lang_mode:0">
+        <option value="en">English</option>
+    </field>
+    <field name="heading_images" type="note" class="tinymceHeading" label="PLG_TINYMCE_LATEST_FIELD_HEADING_IMAGES" description="PLG_TINYMCE_LATEST_FIELD_HEADING_IMAGES_DESC" />
+    <field name="drag_drop" type="radio" label="PLG_TINYMCE_LATEST_FIELD_DRAG_DROP_LABEL" description="PLG_TINYMCE_LATEST_FIELD_DRAG_DROP_DESC" class="btn-group btn-group-yesno" default="1">
+        <option value="1">JON</option>
+        <option value="0">JOFF</option>
+    </field>
+    <field name="path" type="tinymcelatestuploaddirs" label="PLG_TINYMCE_LATEST_FIELD_CUSTOM_PATH_LABEL" description="PLG_TINYMCE_LATEST_FIELD_CUSTOM_PATH_DESC" class="input-xxlarge" showon="drag_drop:1" />
     <field name="image_advtab" type="radio" label="PLG_TINYMCE_LATEST_FIELD_ADVIMAGE_LABEL" description="PLG_TINYMCE_LATEST_FIELD_ADVIMAGE_DESC" class="btn-group btn-group-yesno" default="1">
+        <option value="1">JON</option>
+        <option value="0">JOFF</option>
+    </field>
+    <field name="heading_writing" type="note" class="tinymceHeading" label="PLG_TINYMCE_LATEST_FIELD_HEADING_WRITING" description="PLG_TINYMCE_LATEST_FIELD_HEADING_WRITING_DESC" />
+    <field name="newlines" type="list" label="PLG_TINYMCE_LATEST_FIELD_NEWLINES_LABEL" description="PLG_TINYMCE_LATEST_FIELD_NEWLINES_DESC" default="0">
+        <option value="1">PLG_TINYMCE_LATEST_FIELD_VALUE_BR</option>
+        <option value="0">PLG_TINYMCE_LATEST_FIELD_VALUE_P</option>
+    </field>
+    <field name="paste_as_text" type="radio" label="PLG_TINYMCE_LATEST_FIELD_PASTE_AS_TEXT_LABEL" description="PLG_TINYMCE_LATEST_FIELD_PASTE_AS_TEXT_DESC" class="btn-group btn-group-yesno" default="0">
         <option value="1">JON</option>
         <option value="0">JOFF</option>
     </field>
@@ -79,14 +65,38 @@
         <option value="1">JON</option>
         <option value="0">JOFF</option>
     </field>
-    <field name="autosave" type="radio" label="PLG_TINYMCE_LATEST_FIELD_AUTOSAVE_LABEL" description="PLG_TINYMCE_LATEST_FIELD_AUTOSAVE_DESC" class="btn-group btn-group-yesno" default="1">
-        <option value="1">JON</option>
-        <option value="0">JOFF</option>
-    </field>
     <field name="contextmenu" type="radio" label="PLG_TINYMCE_LATEST_FIELD_CONTEXTMENU_LABEL" description="PLG_TINYMCE_LATEST_FIELD_CONTEXTMENU_DESC" class="btn-group btn-group-yesno" default="1">
         <option value="1">JON</option>
         <option value="0">JOFF</option>
     </field>
+    <field name="autosave" type="radio" label="PLG_TINYMCE_LATEST_FIELD_AUTOSAVE_LABEL" description="PLG_TINYMCE_LATEST_FIELD_AUTOSAVE_DESC" class="btn-group btn-group-yesno" default="1">
+        <option value="1">JON</option>
+        <option value="0">JOFF</option>
+    </field>
+    <field name="heading_output" type="note" class="tinymceHeading" label="PLG_TINYMCE_LATEST_FIELD_HEADING_OUTPUT" description="PLG_TINYMCE_LATEST_FIELD_HEADING_OUTPUT_DESC" />
+    <field name="relative_urls" type="list" label="PLG_TINYMCE_LATEST_FIELD_URLS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_URLS_DESC" default="1">
+        <option value="0">PLG_TINYMCE_LATEST_FIELD_VALUE_ABSOLUTE</option>
+        <option value="1">PLG_TINYMCE_LATEST_FIELD_VALUE_RELATIVE</option>
+    </field>
+    <field name="entity_encoding" type="list" label="PLG_TINYMCE_LATEST_FIELD_ENCODING_LABEL" description="PLG_TINYMCE_LATEST_FIELD_ENCODING_DESC" default="raw">
+        <option value="named">PLG_TINYMCE_LATEST_FIELD_VALUE_NAMED</option>
+        <option value="numeric">PLG_TINYMCE_LATEST_FIELD_VALUE_NUMERIC</option>
+        <option value="raw">PLG_TINYMCE_LATEST_FIELD_VALUE_RAW</option>
+    </field>
+    <field name="heading_allowed" type="note" class="tinymceHeading" label="PLG_TINYMCE_LATEST_FIELD_HEADING_ALLOWED" description="PLG_TINYMCE_LATEST_FIELD_HEADING_ALLOWED_DESC" />
+    <field name="use_config_textfilters" type="radio" label="PLG_TINYMCE_LATEST_CONFIG_TEXTFILTER_ACL_LABEL" description="PLG_TINYMCE_LATEST_CONFIG_TEXTFILTER_ACL_DESC" class="btn-group btn-group-yesno" default="0">
+        <option value="1">JON</option>
+        <option value="0">JOFF</option>
+    </field>
+    <field name="invalid_elements" type="text" label="PLG_TINYMCE_LATEST_FIELD_PROHIBITED_LABEL" description="PLG_TINYMCE_LATEST_FIELD_PROHIBITED_DESC" showon="use_config_textfilters:0" default="script,applet,iframe" class="input-xxlarge" />
+    <field name="valid_elements" type="text" label="PLG_TINYMCE_LATEST_FIELD_VALIDELEMENTS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_VALIDELEMENTS_DESC" showon="use_config_textfilters:0" class="input-xxlarge" />
+    <field name="extended_elements" type="text" label="PLG_TINYMCE_LATEST_FIELD_ELEMENTS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_ELEMENTS_DESC" showon="use_config_textfilters:0" class="input-xxlarge" />
+    <field name="sandbox_iframes" type="radio" label="PLG_TINYMCE_LATEST_FIELD_SANDBOX_IFRAMES_LABEL" description="PLG_TINYMCE_LATEST_FIELD_SANDBOX_IFRAMES_DESC" class="btn-group btn-group-yesno" default="1">
+        <option value="1">JON</option>
+        <option value="0">JOFF</option>
+    </field>
+    <field name="sandbox_iframes_exclusions" type="text" label="PLG_TINYMCE_LATEST_FIELD_SANDBOX_IFRAMES_EXCLUSIONS_LABEL" description="PLG_TINYMCE_LATEST_FIELD_SANDBOX_IFRAMES_EXCLUSIONS_DESC" class="input-xxlarge" showon="sandbox_iframes:1" />
+    <field name="heading_extend" type="note" class="tinymceHeading" label="PLG_TINYMCE_LATEST_FIELD_HEADING_EXTEND" description="PLG_TINYMCE_LATEST_FIELD_HEADING_EXTEND_DESC" />
     <field name="custom_plugin" type="text" label="PLG_TINYMCE_LATEST_FIELD_CUSTOMPLUGIN_LABEL" description="PLG_TINYMCE_LATEST_FIELD_CUSTOMPLUGIN_DESC" class="input-xxlarge" />
     <field name="custom_button" type="text" label="PLG_TINYMCE_LATEST_FIELD_CUSTOMBUTTON_LABEL" description="PLG_TINYMCE_LATEST_FIELD_CUSTOMBUTTON_DESC" class="input-xxlarge" />
 </form>

@@ -409,7 +409,7 @@ class PlgEditorTinymce_latest extends JPlugin
 			// Large images and embeds stay within the editing area (no sideways scrolling); only in the editor, not on the site
 			'content_style'    => 'img, video { max-width: 100%; height: auto; } iframe { max-width: 100%; }',
 			'importcss_append' => true,
-			'height'           => $this->params->get('html_height', '550px') ?: '550px',
+			'height'           => $this->params->get('html_height', '800px') ?: '800px',
 			'width'            => $this->params->get('html_width', '') ?: null,
 			'resize'           => $resizing,
 			'elementpath'      => (bool) $levelParams->get('element_path', 1),

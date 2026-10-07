@@ -408,7 +408,7 @@ class PlgEditorTinymce extends JPlugin
 			$valid_elements    = trim((string) $levelParams->get('valid_elements', ''));
 		}
 
-		$html_height = $this->params->get('html_height', '550');
+		$html_height = $this->params->get('html_height', '800');
 		$html_width  = $this->params->get('html_width', '');
 
 		if ($html_width == 750)
@@ -1460,7 +1460,7 @@ class PlgEditorTinymce extends JPlugin
 		// Flip for performance, so we can direct check for the key isset($access[$key])
 		$access = array_flip($access);
 
-		$html_height = $this->params->get('html_height', '550');
+		$html_height = $this->params->get('html_height', '800');
 		$html_width  = $this->params->get('html_width', '');
 
 		if ($html_width == 750)

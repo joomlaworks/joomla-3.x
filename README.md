@@ -124,6 +124,7 @@ Summary of changes:
 - Content management from the command line: list, show, create, change, publish, trash and delete articles, categories, tags, modules and menu items, saved as the administrator saves them, acting as an account whose permissions apply (`--as`); `--dry-run` on every command which changes something; `database:optimize`; `extension:reinstall` (overwrites an extension's files with its original package, from its update site or a given file, and lists or removes files the package doesn't have, e.g. on a hacked site); `site:health`; `log:list`/`log:tail` and `actionlog:list`. Changes made from the command line are recorded in the User Actions Log
 - Template management from the command line: a template's positions, options and design tokens (`template:info`), its options, and its files (list, read, write, delete), with every change undoable, syntax checks for PHP, and full template backups and restores (`template:backup`, `template:restore`)
 - Hammond and Finch load `css/custom.css` when it exists: the place for a site's own CSS, never touched by updates
+- A taller editor by default (800px; the "HTML Height" option of the TinyMCE plugins sets it)
 - Hammond, Finch and Rookwood each have an `editor.css`: the editor shows articles with the site's fonts, colours and layout (Rookwood's in light or dark, as the device is set)
 - New sites list 50 items per page in the administrator's managers (Global Configuration's Default List Limit) instead of 20
 - New sites show the site's name after page titles ("Home - My Site" instead of "Home")

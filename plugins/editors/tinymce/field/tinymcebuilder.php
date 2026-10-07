@@ -43,6 +43,21 @@ class JFormFieldTinymceBuilder extends JFormField
 	protected $layoutData = array();
 
 	/**
+	 * The builder as a block of its own, as wide as the form: in the usual control group, with a hidden label, Isis indents
+	 * it by the labels' column (and the sets' options inside it a second time) and it overflows on the right.
+	 *
+	 * @param   array  $options  Options to be passed into the rendering of the field
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public function renderField($options = array())
+	{
+		return '<div class="control-group tinymceBuilderGroup">' . $this->getInput() . '</div>';
+	}
+
+	/**
 	 * Method to get the data to be passed to the layout for rendering.
 	 *
 	 * @return  array

@@ -71,8 +71,27 @@ $doc->addScriptOptions('plg_editors_tinymce_builder', array(
 	)
 );
 $doc->addStyleDeclaration('
-    #joomla-tinymce-builder{
-		margin-left: -180px;
+	.tinymceHeading {
+		clear: both;
+		margin: 36px 0 18px;
+		padding: 14px 18px 14px 16px;
+		border-left: 4px solid #1a3867;
+		border-radius: 4px;
+		background: #eef3f9;
+		color: #4a5a70;
+		font-size: 13px;
+		line-height: 1.5;
+	}
+	.tinymceHeading h4 {
+		margin: 0 0 2px;
+		color: #1a3867;
+		font-size: 17px;
+		font-weight: 600;
+		line-height: 1.3;
+	}
+	.tinymceHeadingFirst,
+	.setoptions-form-wrapper > .control-group:first-child .tinymceHeading {
+		margin-top: 8px;
 	}
 	.mce-menubar,
 	.mce-panel {
