@@ -50,7 +50,6 @@ Summary of changes:
 - The backend template has a new responsive login page, inline with Isis' colors, but modernized and more practical.
 - We've added a new one-click **Clean Cache** control in the administrator's status bar for everyone with backend access; administrators also get **Clean Everything** (the main site cache, anything inside the /cache folder and temporary folders as defined in configuration.php) and **Global Check-in** from the same spot.
 - Post-installation Messages now show what's new in every release of this distribution, starting from v3.11, instead of stock Joomla's outdated messages from the 3.2–3.10 era.
-- Joomla 3.x UTD works natively with the default user authentication method that ships with MySQL 8.0, 8.4 and 9.x (caching SHA-2) and it does not required switching MySQL to support "native" authentication (the old way up to MySQL 5.7).
 - Fixed the administrator's Help buttons, which showed "not found" since v3.11.
 - Fixed a ton of long-standing bugs in the API and ironed out any PHP deprecations we could detect.
 
