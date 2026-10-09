@@ -22,7 +22,7 @@ $code = (int) $this->error->getCode();
 $tpl  = $this->baseurl . '/templates/' . $this->template;
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo htmlspecialchars($this->language, ENT_QUOTES, 'UTF-8'); ?>" dir="<?php echo htmlspecialchars($this->direction, ENT_QUOTES, 'UTF-8'); ?>">
+<html lang="<?php echo htmlspecialchars($this->language, ENT_QUOTES, 'UTF-8'); ?>" dir="<?php echo htmlspecialchars($this->direction, ENT_QUOTES, 'UTF-8'); ?>" data-scheme="<?php echo FinchHelper::scheme(); ?>">
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />

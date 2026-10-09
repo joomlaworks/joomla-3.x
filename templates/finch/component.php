@@ -16,7 +16,7 @@ class_exists('FinchHelper', false) || require_once __DIR__ . '/helper.php';
 FinchHelper::prepare($this, 'component');
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
+<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-scheme="<?php echo FinchHelper::scheme(); ?>">
 <head>
 	<jdoc:include type="head" />
 </head>

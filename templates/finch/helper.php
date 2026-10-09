@@ -64,7 +64,20 @@ abstract class FinchHelper
 		$document->setHtml5(true);
 		$document->setGenerator('');
 		$document->setMetaData('viewport', 'width=device-width, initial-scale=1');
-		$document->setMetaData('theme-color', '#fbf8f3');
+		$page->scheme   = static::scheme();
+
+		// The browser's own parts (scroll bars, fields) and its bar match the page's colours
+		$document->setMetaData('color-scheme', $page->scheme === 'auto' ? 'light dark' : $page->scheme);
+
+		if ($page->scheme === 'auto')
+		{
+			$document->addCustomTag('<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />');
+			$document->addCustomTag('<meta name="theme-color" content="#1b1022" media="(prefers-color-scheme: dark)" />');
+		}
+		else
+		{
+			$document->setMetaData('theme-color', $page->scheme === 'dark' ? '#1b1022' : '#ffffff');
+		}
 
 		foreach (static::stylesheets() as $stylesheet)
 		{
@@ -542,11 +555,98 @@ abstract class FinchHelper
 	}
 
 	/**
-	 * A post as a card of a list: image, category, title, excerpt, date and reading time.
+	 * The template's five tones, by name: a topic's colour, given as a class in its menu item's Page Class (e.g. tone-mint)
+	 *
+	 * @var    string[]
+	 * @since  3.17.0
+	 */
+	const TONES = array('lavender', 'sunflower', 'coral', 'mint', 'sky');
+
+	/**
+	 * The colour of a topic: the tone in the Page Class of the menu item showing the category (Category Blog or List), else
+	 * one picked by the category's ID (consecutive IDs get different tones). A post keeps its topic's colour everywhere: lists,
+	 * its page, "Read next".
+	 *
+	 * @param   object  $item  The post (its catid) or the category (its id)
+	 *
+	 * @return  string  A class: tone-lavender, tone-sunflower, tone-coral, tone-mint or tone-sky
+	 *
+	 * @since   3.17.0
+	 */
+	public static function tone($item)
+	{
+		static $chosen = null;
+
+		if ($chosen === null)
+		{
+			$chosen = array();
+
+			foreach ((array) JFactory::getApplication()->getMenu()->getItems('component', 'com_content') as $menuItem)
+			{
+				if (isset($menuItem->query['view'], $menuItem->query['id']) && $menuItem->query['view'] === 'category'
+					&& preg_match('/(?:^|\s)tone-(' . implode('|', static::TONES) . ')(?:\s|$)/', (string) $menuItem->getParams()->get('pageclass_sfx'), $match))
+				{
+					$chosen[(int) $menuItem->query['id']] = 'tone-' . $match[1];
+				}
+			}
+		}
+
+		$id = isset($item->catid) ? (int) $item->catid : (isset($item->id) ? (int) $item->id : 0);
+
+		return isset($chosen[$id]) ? $chosen[$id] : 'tone-' . static::TONES[$id % 5];
+	}
+
+	/**
+	 * The colour scheme: the template's option, light, dark, or the device's setting (auto).
+	 *
+	 * @return  string  auto, light or dark
+	 *
+	 * @since   3.17.0
+	 */
+	public static function scheme()
+	{
+		// The error page calls it too, when something may have failed already: never let the option break that page
+		try
+		{
+			$scheme = (string) static::params()->get('colorScheme', 'auto');
+		}
+		catch (Exception $e)
+		{
+			$scheme = 'auto';
+		}
+
+		return in_array($scheme, array('light', 'dark'), true) ? $scheme : 'auto';
+	}
+
+	/**
+	 * The publishing date as a stamp: the day large, the month and year under it.
+	 *
+	 * @param   object  $item  The post
+	 *
+	 * @return  string  Empty without a date
+	 *
+	 * @since   3.17.0
+	 */
+	public static function stamp($item)
+	{
+		$value = isset($item->publish_up) ? $item->publish_up : (isset($item->created) ? $item->created : '');
+
+		if (!$value || $value === JFactory::getDbo()->getNullDate())
+		{
+			return '';
+		}
+
+		return '<time class="postStamp" datetime="' . JFactory::getDate($value)->format('c') . '"><span class="stampDay">'
+			. static::e(JHtml::_('date', $value, 'j')) . '</span><span class="stampMonth">' . static::e(JHtml::_('date', $value, 'M Y')) . '</span></time>';
+	}
+
+	/**
+	 * A post in a list: the date stamp, its topic, title, excerpt and reading time, and its image on a block of the topic's
+	 * colour. The lead post (the newest, on a list's first page) is a band of that colour across the page.
 	 *
 	 * @param   object   $item   The post
-	 * @param   boolean  $lead   The first, large post
-	 * @param   boolean  $eager  Load its image at once (the top of the page; lazily otherwise)
+	 * @param   boolean  $lead   The lead post
+	 * @param   boolean  $eager  Its image is at the top of the page: load it at once
 	 *
 	 * @return  string
 	 *
@@ -556,19 +656,22 @@ abstract class FinchHelper
 	{
 		$link    = static::link($item);
 		$minutes = isset($item->fulltext) || isset($item->text) ? JText::sprintf('TPL_FINCH_READING_TIME', static::readingTime($item)) : '';
+		$h       = $lead ? 2 : 3;
 
-		return '<article class="post' . ($lead ? ' postLead' : '') . '">'
-			. static::figure($item, $link, 'postImage', !$lead && !$eager)
+		return '<article class="post ' . static::tone($item) . ($lead ? ' postLead' : '') . '"><div class="postInner">'
+			. static::stamp($item)
 			. '<div class="postBody">' . static::category($item)
-			. '<h' . ($lead ? 2 : 3) . ' class="postTitle"><a href="' . $link . '">' . static::e($item->title) . '</a></h' . ($lead ? 2 : 3) . '>'
-			. '<p class="postExcerpt">' . static::excerpt($item, $lead ? 300 : 180) . '</p>'
-			. '<div class="postMeta">' . static::date($item) . ($minutes !== '' ? '<span class="postReading">' . $minutes . '</span>' : '') . '</div>'
+			. '<h' . $h . ' class="postTitle"><a href="' . $link . '">' . static::e($item->title) . '</a></h' . $h . '>'
+			. '<p class="postExcerpt">' . static::excerpt($item, $lead ? 260 : 190) . '</p>'
+			. ($minutes !== '' ? '<p class="postMeta"><span class="postReading">' . $minutes . '</span></p>' : '')
+			. '</div>'
+			. static::figure($item, $link, 'postImage', !$lead && !$eager)
 			. '</div></article>';
 	}
 
 	/**
-	 * A list of posts: the first one large (on the first page of a list), the others as cards in a grid. The images at the top
-	 * (the large post, else the grid's first row) load at once, the others lazily.
+	 * A list of posts, one after the other: the newest with a wide image on the first page of a list, the others with a small
+	 * one beside their text. The first two images load at once, the others lazily.
 	 *
 	 * @param   object[]  $items  The posts
 	 * @param   boolean   $lead   Show the first post large
@@ -579,24 +682,11 @@ abstract class FinchHelper
 	 */
 	public static function postList(array $items, $lead = true)
 	{
-		$items = array_values($items);
-		$html  = '';
+		$html = '';
 
-		if ($lead && $items)
+		foreach (array_values($items) as $i => $item)
 		{
-			$html .= static::card(array_shift($items), true);
-		}
-
-		if ($items)
-		{
-			$html .= '<div class="postGrid">';
-
-			foreach ($items as $i => $item)
-			{
-				$html .= static::card($item, false, !$lead && $i < 2);
-			}
-
-			$html .= '</div>';
+			$html .= static::card($item, $lead && !$i, $i < 2);
 		}
 
 		return '<div class="postList">' . $html . '</div>';

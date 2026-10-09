@@ -16,7 +16,7 @@ class_exists('FinchHelper', false) || require_once __DIR__ . '/helper.php';
 $page = FinchHelper::prepare($this);
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
+<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-scheme="<?php echo FinchHelper::scheme(); ?>">
 <head>
 	<jdoc:include type="head" />
 </head>
@@ -25,25 +25,19 @@ $page = FinchHelper::prepare($this);
 	<a class="skipLink" href="#content"><?php echo JText::_('TPL_FINCH_SKIP_TO_CONTENT'); ?></a>
 
 	<header class="siteHeader">
-		<div class="container masthead">
+		<div class="container headerBar">
 			<?php echo FinchHelper::logo($page->siteName); ?>
-			<?php if ($page->params->get('tagline')) : ?>
-			<p class="tagline"><?php echo FinchHelper::e($page->params->get('tagline')); ?></p>
+			<nav class="mainNav" aria-label="<?php echo JText::_('TPL_FINCH_MAIN_NAVIGATION'); ?>">
+				<jdoc:include type="modules" name="navigation" style="none" />
+			</nav>
+			<?php if ($page->hasSearch) : ?>
+			<button type="button" class="iconButton searchToggle" aria-expanded="false" aria-controls="searchPanel" aria-label="<?php echo JText::_('TPL_FINCH_SEARCH'); ?>">
+				<?php echo FinchHelper::icon('search') . FinchHelper::icon('close'); ?>
+			</button>
 			<?php endif; ?>
 		</div>
 
-		<nav class="mainNav" aria-label="<?php echo JText::_('TPL_FINCH_MAIN_NAVIGATION'); ?>">
-			<div class="container">
-				<jdoc:include type="modules" name="navigation" style="none" />
-				<?php if ($page->hasSearch) : ?>
-				<button type="button" class="iconButton searchToggle" aria-expanded="false" aria-controls="searchPanel" aria-label="<?php echo JText::_('TPL_FINCH_SEARCH'); ?>">
-					<?php echo FinchHelper::icon('search') . FinchHelper::icon('close'); ?>
-				</button>
-				<?php endif; ?>
-			</div>
-		</nav>
-
-		<?php // The search form opens over the page, under the navigation: it never moves the content (no layout shift) ?>
+		<?php // The search form opens over the page, under the header: it never moves the content (no layout shift) ?>
 		<?php if ($page->hasSearch) : ?>
 		<div class="searchPanel" id="searchPanel" hidden>
 			<div class="container">
@@ -56,26 +50,36 @@ $page = FinchHelper::prepare($this);
 	<main id="content" class="siteMain">
 		<jdoc:include type="message" />
 
+		<?php // The home page opens with the greeting (else the blog's name) set across the page, and the tagline ?>
+		<?php if ($page->isHome) : ?>
+		<div class="container masthead">
+			<h1 class="mastheadTitle"><?php echo FinchHelper::e(trim((string) $page->params->get('greeting')) ?: $page->siteName); ?></h1>
+			<?php if ($page->params->get('tagline')) : ?>
+			<p class="mastheadTagline"><?php echo FinchHelper::e($page->params->get('tagline')); ?></p>
+			<?php endif; ?>
+		</div>
+		<?php endif; ?>
+
 		<?php if ($this->countModules('above-content')) : ?>
 		<div class="container aboveContent"><jdoc:include type="modules" name="above-content" style="finch" /></div>
 		<?php endif; ?>
 
-		<?php if ($page->hasSidebar) : ?>
-		<div class="container layoutSidebar">
-			<div class="layoutMain"><jdoc:include type="component" /></div>
-			<aside class="sidebar"><jdoc:include type="modules" name="sidebar" style="finch" /></aside>
-		</div>
-		<?php else : ?>
 		<div class="container<?php echo $page->isPost || $page->isPage ? ' containerPost' : ''; ?>">
 			<jdoc:include type="component" />
 		</div>
-		<?php endif; ?>
 
 		<?php // After a post (e.g. "Read next") ?>
 		<?php if ($page->isPost && $this->countModules('below-content')) : ?>
 		<div class="container belowContent"><jdoc:include type="modules" name="below-content" style="finch" /></div>
 		<?php endif; ?>
 	</main>
+
+	<?php // The sidebar's modules (about, popular posts, topics): a band across the page under the lists ?>
+	<?php if ($page->hasSidebar) : ?>
+	<aside class="sidebar">
+		<div class="container sidebarInner"><jdoc:include type="modules" name="sidebar" style="finch" /></div>
+	</aside>
+	<?php endif; ?>
 
 	<footer class="siteFooter">
 		<div class="container">

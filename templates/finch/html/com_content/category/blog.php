@@ -15,7 +15,7 @@ class_exists('FinchHelper', false) || require_once dirname(__DIR__, 3) . '/helpe
 /** @var ContentViewCategory $this */
 $items = array_merge((array) $this->lead_items, (array) $this->intro_items);
 ?>
-<div class="listView categoryView">
+<div class="listView categoryView <?php echo FinchHelper::tone($this->category); ?>">
 	<header class="listHeader">
 		<p class="listKicker"><?php echo JText::_('TPL_FINCH_TOPIC'); ?></p>
 		<h1 class="listTitle"><?php echo FinchHelper::e($this->category->title); ?></h1>

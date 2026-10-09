@@ -42,6 +42,13 @@
 			<fieldset name="basic">
 				<field name="customCssNote" type="note" class="alert alert-info" label="TPL_FINCH_CUSTOM_CSS_LABEL" description="TPL_FINCH_CUSTOM_CSS_DESC" />
 				<field name="siteName" type="text" label="TPL_FINCH_SITE_NAME_LABEL" description="TPL_FINCH_SITE_NAME_DESC" default="" />
+				<field name="colorScheme" type="list" label="TPL_FINCH_COLOR_SCHEME_LABEL" description="TPL_FINCH_COLOR_SCHEME_DESC" default="auto">
+					<option value="auto">TPL_FINCH_COLOR_SCHEME_AUTO</option>
+					<option value="light">TPL_FINCH_COLOR_SCHEME_LIGHT</option>
+					<option value="dark">TPL_FINCH_COLOR_SCHEME_DARK</option>
+				</field>
+				<field name="toneNote" type="note" class="alert alert-info" label="TPL_FINCH_TONES_LABEL" description="TPL_FINCH_TONES_DESC" />
+				<field name="greeting" type="text" label="TPL_FINCH_GREETING_LABEL" description="TPL_FINCH_GREETING_DESC" default="" />
 				<field name="tagline" type="text" label="TPL_FINCH_TAGLINE_LABEL" description="TPL_FINCH_TAGLINE_DESC" default="" class="input-xxlarge" />
 				<field name="authorBio" type="textarea" label="TPL_FINCH_AUTHOR_BIO_LABEL" description="TPL_FINCH_AUTHOR_BIO_DESC" default="" rows="3" class="input-xxlarge" filter="string" />
 				<field name="footerText" type="textarea" label="TPL_FINCH_FOOTER_TEXT_LABEL" description="TPL_FINCH_FOOTER_TEXT_DESC" default="" rows="3" class="input-xxlarge" />

@@ -43,7 +43,7 @@ $share    = array(
 // The intro as the standfirst, when the text doesn't start with it already ("Show Intro Text" off)
 $standfirst = !$params->get('show_intro', 1) ? FinchHelper::excerpt($item) : '';
 ?>
-<article class="postView" itemscope itemtype="https://schema.org/BlogPosting">
+<article class="postView <?php echo FinchHelper::tone($item); ?>" itemscope itemtype="https://schema.org/BlogPosting">
 	<header class="postHeader">
 		<?php echo FinchHelper::category((object) array('category_title' => $item->category_title, 'catid' => $item->catid, 'language' => $item->language)); ?>
 		<h1 class="postViewTitle" itemprop="headline"><?php echo FinchHelper::e($item->title); ?></h1>
@@ -56,7 +56,7 @@ $standfirst = !$params->get('show_intro', 1) ? FinchHelper::excerpt($item) : '';
 			<span class="avatar" aria-hidden="true" style="--hue:<?php echo $hue; ?>"><?php echo FinchHelper::e(FinchHelper::initials($author)); ?></span>
 			<span class="bylineName" itemprop="author"><?php echo FinchHelper::e($author); ?></span>
 			<?php endif; ?>
-			<span class="bylineMeta"><?php echo FinchHelper::date($item); ?> · <?php echo JText::sprintf('TPL_FINCH_READING_TIME', FinchHelper::readingTime($item)); ?></span>
+			<span class="bylineMeta"><?php echo FinchHelper::date($item); ?><span class="postReading"><?php echo JText::sprintf('TPL_FINCH_READING_TIME', FinchHelper::readingTime($item)); ?></span></span>
 		</div>
 	</header>
 

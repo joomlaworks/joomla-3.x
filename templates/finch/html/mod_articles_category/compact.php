@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 // A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
 class_exists('FinchHelper', false) || require_once dirname(__DIR__, 2) . '/helper.php';
 
-// Posts as a short list: a small image, the title and the date (e.g. popular posts in the sidebar)
+// Posts as a short numbered list: the title and the date (e.g. popular posts in the sidebar, in order)
 /** @var array $list */
 if (!$list)
 {
@@ -20,13 +20,10 @@ if (!$list)
 }
 ?>
 <ol class="compactList">
-	<?php foreach (array_values($list) as $item) : $link = FinchHelper::link($item); ?>
+	<?php foreach (array_values($list) as $item) : ?>
 	<li class="compactItem">
-		<?php echo FinchHelper::figure($item, $link, 'compactImage'); ?>
-		<div>
-			<a class="compactTitle" href="<?php echo $link; ?>"><?php echo FinchHelper::e($item->title); ?></a>
-			<?php echo FinchHelper::date($item); ?>
-		</div>
+		<a class="compactTitle" href="<?php echo FinchHelper::link($item); ?>"><?php echo FinchHelper::e($item->title); ?></a>
+		<?php echo FinchHelper::date($item); ?>
 	</li>
 	<?php endforeach; ?>
 </ol>

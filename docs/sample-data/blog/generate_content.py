@@ -8,7 +8,7 @@ news = json.load(open(os.path.join(HERE, '..', 'news', 'content.json')))
 opinion = [a for a in news['articles'] if a['category'] == 'opinion']
 random.seed(20261006)
 
-AUTHOR = 'Ada Linden'
+AUTHOR = 'Finch Hartley'
 categories = [
     {'alias': 'places', 'title': 'Places', 'description': '<p>Cities, towns and the places we share.</p>'},
     {'alias': 'ideas', 'title': 'Ideas', 'description': '<p>Learning, public life and how we talk to each other.</p>'},

@@ -8,71 +8,88 @@
 
 /* The editor's text as the site shows it: TinyMCE (and other editors) load css/editor.css of the site's default template into
    the editing area. These are the post text rules of template.css (.postContent), written for the editor's bare <body>:
-   change both files together. Plain class selectors also appear in the editor's Formats menu. */
+   change both files together. Light, or dark when the device is, as the site. Plain class selectors also appear in the
+   editor's Formats menu. */
 
 /* --- Variables --- */
+/* The editor can't know a post's topic: the first of the tones (lavender) stands for it */
 :root {
-    --fs:           'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Charter, 'Bitstream Charter', Cambria, Georgia, 'Noto Serif', serif;
-    --fh:           system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
+    --fh:           ui-sans-serif, system-ui, -apple-system, 'Segoe UI Variable Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    --fs:           Charter, 'Bitstream Charter', 'Sitka Text', 'Iowan Old Style', Cambria, Georgia, 'Noto Serif', serif;
     --fm:           ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
 
-    --c-ink:        #22201c;
-    --c-text:       #34312b;
-    --c-muted:      #75706a;
-    --c-line:       #e9e2d6;
-    --c-line-d:     #d4cabb;
-    --c-bg:         #fbf8f3;
-    --c-accent:     #7c3f12;
-    --c-gold:       #f2c14e;
+    --c-bg:         #ffffff;
+    --c-ink:        #2a1636;
+    --c-text:       #3f2e4a;
+    --c-muted:      #76667f;
+    --c-line:       #ebe3f0;
+    --c-line-d:     #cfc1da;
+    --c-on-tone:    #2a1636;
+    --tone:         #d9c4ec;
+    --t1:           #ffd23f;
 
-    --measure:      720px;
-    --radius:       12px;
+    --measure:      680px;
+}
+
+@media (prefers-color-scheme:dark) {
+    :root {
+        --c-bg:         #1b1022;
+        --c-ink:        #f6effa;
+        --c-text:       #ddd0e6;
+        --c-muted:      #a998b5;
+        --c-line:       #33223d;
+        --c-line-d:     #4b3758;
+    }
 }
 
 /* --- The text --- */
-/* The post's reading column, centred, with the drop cap of its first paragraph (posts have it, pages don't) */
+/* The post's reading column, centred */
 html {color-scheme:light;}
-body {max-width:var(--measure);margin:0 auto;padding:32px 24px 48px;font-family:var(--fs);font-size:1.22rem;line-height:1.78;color:var(--c-text);background:var(--c-bg);-webkit-font-smoothing:antialiased;}
+body {max-width:var(--measure);margin:0 auto;padding:32px 24px 48px;font-family:var(--fs);font-size:1.2rem;line-height:1.75;color:var(--c-text);background:var(--c-bg);-webkit-font-smoothing:antialiased;}
 body > :first-child {margin-top:0;}
-body > p:first-of-type::first-letter {float:left;margin:.08em .12em 0 0;font-size:3.6em;line-height:.8;font-weight:700;color:var(--c-accent);}
-h1,h2,h3,h4,h5,h6 {font-family:var(--fs);color:var(--c-ink);font-weight:700;line-height:1.2;margin:0 0 .5em;}
+::selection {background:var(--t1);color:var(--c-on-tone);}
+h1,h2,h3,h4,h5,h6 {font-family:var(--fh);color:var(--c-ink);font-weight:850;line-height:1.1;letter-spacing:-0.025em;margin:0 0 .5em;}
 h1 {font-size:2.6rem;}
-h2 {margin-top:1.7em;margin-bottom:.6em;font-size:1.7rem;}
-h3 {margin-top:1.5em;margin-bottom:.5em;font-size:1.35rem;}
+h2 {margin-top:1.8em;margin-bottom:.55em;font-size:1.75rem;font-weight:900;letter-spacing:-0.035em;}
+h3 {margin-top:1.5em;margin-bottom:.5em;font-size:1.3rem;}
 h4 {font-size:1.1rem;}
-p {margin:0 0 1.25em;}
+p {margin:0 0 1.3em;}
 ul,ol {margin:0 0 1em;padding-left:1.3em;}
 li {margin-bottom:.45em;}
-li::marker {color:var(--c-accent);}
-a {color:var(--c-ink);text-decoration:underline;text-decoration-color:var(--c-gold);text-decoration-thickness:3px;text-underline-offset:3px;}
+li::marker {color:var(--c-ink);font-family:var(--fh);font-weight:800;}
+a {color:var(--c-ink);text-decoration:underline;text-decoration-color:var(--tone);text-decoration-thickness:.18em;text-underline-offset:2px;}
 img {max-width:100%;height:auto;}
-blockquote {position:relative;margin:2em 0;padding:8px 0 8px 32px;border-left:3px solid var(--c-gold);font-size:1.45rem;line-height:1.5;font-style:italic;color:var(--c-ink);}
+/* Quotes: a block of the topic's colour */
+blockquote {margin:2em 0;padding:28px 32px;background:var(--tone);font-size:1.4rem;font-style:italic;line-height:1.5;color:var(--c-on-tone);}
 blockquote p {margin:0 0 .5em;}
-blockquote cite {display:block;font-family:var(--fh);font-style:normal;font-size:.85rem;font-weight:600;color:var(--c-muted);}
-blockquote cite::before {content:'— ';}
+blockquote cite {display:block;margin-top:12px;font-family:var(--fh);font-style:normal;font-size:.9rem;font-weight:700;color:var(--c-on-tone);}
 figure {margin:2em 0;}
-figure img {display:block;width:100%;border-radius:var(--radius);}
-figcaption {margin-top:10px;font-size:.85rem;text-align:center;color:var(--c-muted);}
+figure img {display:block;width:100%;}
+figcaption {margin-top:10px;font-family:var(--fh);font-size:.85rem;color:var(--c-muted);}
 code,pre,kbd {font-family:var(--fm);font-size:.9em;}
 table {width:100%;margin:1.8em 0;border-collapse:collapse;font-family:var(--fh);font-size:.95rem;}
-caption {caption-side:top;text-align:left;font-weight:700;padding-bottom:8px;color:var(--c-ink);}
-th {text-align:left;padding:10px 12px;border-bottom:2px solid var(--c-ink);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;}
-td {padding:10px 12px;border-bottom:1px solid var(--c-line);}
+caption {caption-side:top;text-align:left;font-weight:800;padding-bottom:8px;color:var(--c-ink);}
+th {text-align:left;padding:10px 12px;background:var(--tone);color:var(--c-on-tone);font-size:.875rem;}
+td {padding:10px 12px;border-bottom:2px solid var(--c-line);}
 td:last-child,th:last-child {text-align:right;font-variant-numeric:tabular-nums;}
-hr {border:0;border-top:1px solid var(--c-line);margin:2em 0;}
+hr {border:0;border-top:2px solid var(--c-line);margin:2em 0;}
 
 /* Embedded videos and X posts */
-.embed.video {position:relative;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;background:var(--c-ink);}
+.embed.video {position:relative;aspect-ratio:16/9;overflow:hidden;background:#2a1636;}
 .embed.video iframe {position:absolute;inset:0;width:100%;height:100%;border:0;}
 .embed.x-post {display:flex;justify-content:center;}
-.embed.x-post blockquote {border:1px solid var(--c-line-d);border-radius:12px;padding:16px 20px;font-family:var(--fh);font-size:1rem;font-style:normal;max-width:550px;}
+.embed.x-post blockquote {padding:16px 20px;border:2px solid var(--c-line-d);background:none;font-family:var(--fh);font-size:1rem;font-style:normal;color:var(--c-text);max-width:550px;}
 
 /* --- Editor only --- */
 /* Joomla's Read More and page break markers (not shown on the site) */
-hr#system-readmore {border:0;border-top:2px dashed var(--c-accent);}
+hr#system-readmore {border:0;border-top:2px dashed var(--c-ink);}
 hr.system-pagebreak {border:0;border-top:2px dashed var(--c-muted);}
 
+@media (prefers-color-scheme:dark) {
+    html {color-scheme:dark;}
+}
+
 @media only screen and (max-width:767px) {
-    body {padding:20px 16px 32px;font-size:1.12rem;}
-    blockquote {font-size:1.25rem;padding-left:22px;}
+    body {padding:20px 16px 32px;font-size:1.1rem;}
+    blockquote {padding:22px;font-size:1.2rem;}
 }
