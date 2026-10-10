@@ -51,6 +51,12 @@ class PlgContentContact extends JPlugin
 			return true;
 		}
 
+		// Without Contacts (uninstalled or disabled) there's no contact to link to, and its table may be gone
+		if (!JComponentHelper::isEnabled('com_contact'))
+		{
+			return true;
+		}
+
 		// Return if an alias is used
 		if ((int) $this->params->get('link_to_alias', 0) === 0 && $row->created_by_alias != '')
 		{

@@ -34,7 +34,8 @@ class PlgPrivacyContact extends PrivacyPlugin
 	 */
 	public function onPrivacyExportRequest(PrivacyTableRequest $request, ?JUser $user = null)
 	{
-		if (!$user && !$request->email)
+		// Without Contacts (uninstalled or disabled) there's no contact data to export, and its table may be gone
+		if ((!$user && !$request->email) || !JComponentHelper::isEnabled('com_contact'))
 		{
 			return array();
 		}
