@@ -41,7 +41,7 @@ $icon = function ($name)
 	data-working="<?php echo $e(JText::_('MOD_HOUSEKEEPING_WORKING')); ?>" data-failed="<?php echo $e(JText::_('MOD_HOUSEKEEPING_REQUEST_FAILED')); ?>"
 	data-close="<?php echo $e(JText::_('MOD_HOUSEKEEPING_CLOSE')); ?>">
 	<?php if ($canClean) : ?>
-	<button type="button" class="hkButton" data-housekeeping-action="cache"><?php echo $icon('clean'); ?><span><?php echo JText::_('MOD_HOUSEKEEPING_CLEAN_CACHE'); ?></span></button>
+	<button type="button" class="hkButton" data-housekeeping-action="cache" title="<?php echo $e(JText::_('MOD_HOUSEKEEPING_CLEAN_CACHE')); ?>"><?php echo $icon('clean'); ?><span><?php echo JText::_('MOD_HOUSEKEEPING_CLEAN_CACHE'); ?></span></button>
 	<?php endif; ?>
 	<?php if ($isAdmin) : ?>
 	<button type="button" class="hkButton hkToggle" aria-haspopup="true" aria-expanded="false" aria-controls="housekeepingMenu"

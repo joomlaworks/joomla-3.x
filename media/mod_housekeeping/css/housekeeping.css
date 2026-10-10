@@ -33,6 +33,12 @@
 
 @keyframes hkSpin {to {transform:rotate(360deg);}}
 
+/* Narrower screens: Clean Cache shows its icon only (its name stays for screen readers and as its tooltip), so the status bar
+   keeps to one line next to the version and copyright */
+@media (max-width: 979px) {
+    .housekeeping [data-housekeeping-action="cache"] > span {position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+}
+
 @media (prefers-reduced-motion: reduce) {
     .hkToast {transition:none;}
     .housekeeping.hkBusy [data-housekeeping-action="cache"] .hkIcon {animation:none;}

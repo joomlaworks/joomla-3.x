@@ -34,9 +34,10 @@ abstract class ModVersionHelper
 			$versionText = str_replace($version::PRODUCT . ' ', '', $version->getLongVersion());
 		}
 
+		// The distribution's name, e.g. "Joomla 3.x UTD v3.17.0" (Version::PRODUCT, "Joomla!", stays for update checks)
 		if (!empty($product))
 		{
-			$versionText = $version::PRODUCT . ' ' . $versionText;
+			$versionText = $version::DISTRIBUTION . ' v' . $versionText;
 		}
 
 		return $versionText;

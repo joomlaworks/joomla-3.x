@@ -28,6 +28,15 @@ final class Version
 	const PRODUCT = 'Joomla!';
 
 	/**
+	 * The distribution's name, as the administrator's footer shows it. PRODUCT stays "Joomla!": update checks match it against
+	 * the update feeds' target platform ("joomla"), and the user agent and the web installer send it.
+	 *
+	 * @var    string
+	 * @since  3.18.0
+	 */
+	const DISTRIBUTION = 'Joomla 3.x UTD';
+
+	/**
 	 * Major release version.
 	 *
 	 * @var    integer
