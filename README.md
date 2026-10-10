@@ -9,6 +9,8 @@ So we're actively developing Joomla 3.x UTD as an up-to-date distribution of the
 
 If you are a Joomla extension developer still supporting Joomla 3.x and you are reading this, please do your users a favour and make sure your extension update XML files don't stop at Joomla 3.10.x.
 
+**New in 3.17: work with your site through AI assistants and the command line.** Joomla 3.x UTD has a built-in MCP server and a command line with 100 commands. See the guide, **[AI Assistants & the Command Line](AI-GUIDE.md)**, to connect Claude, ChatGPT/Codex, Gemini, Copilot, Cursor, Devin Desktop and other assistants, and to use the command line for pretty much anything.
+
 ---
 
 ## CONTENTS
@@ -28,6 +30,7 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 - [PostgreSQL Support](#postgresql-support)
 - [SQLite Support](#sqlite-support)
 - [AI Assistants (MCP)](#ai-assistants-mcp)
+  - [Full guide: AI Assistants & the Command Line](AI-GUIDE.md)
 - [Notes on Operating System Support](#notes-on-operating-system-support)
 - [Contribute](#contribute)
 - [Discuss](#discuss)
