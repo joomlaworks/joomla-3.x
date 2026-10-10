@@ -9,6 +9,16 @@
 
 defined('_JEXEC') or die;
 
+// Visitors and Messages show an icon instead of their name (kept for screen readers, and as the tooltip with the count); the
+// icons and their styles are the template's (Isis: images/svg, #status .statusIcon)
+
+$iconItem = function ($icon, $count, $label, $badgeClass = '')
+{
+	return '<span class="statusIcon statusIcon' . $icon . '" aria-hidden="true"></span>'
+		. '<span class="badge' . $badgeClass . '">' . (int) $count . '</span>'
+		. '<span class="element-invisible">' . $label . '</span>';
+};
+
 $hideLinks = $input->getBool('hidemainmenu');
 $task      = $input->getCmd('task');
 $output    = array();
@@ -45,9 +55,9 @@ if (JFactory::getConfig()->get('shared_session', '0'))
 	// Print the frontend logged in  users.
 	if ($params->get('show_loggedin_users', 1))
 	{
-		$output[] = '<div class="btn-group loggedin-users">'
-			. '<span class="badge">' . $total_users . '</span>'
-			. JText::plural('MOD_STATUS_TOTAL_USERS', $total_users)
+		$label    = JText::plural('MOD_STATUS_TOTAL_USERS', $total_users);
+		$output[] = '<div class="btn-group loggedin-users" title="' . (int) $total_users . ' ' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '">'
+			. $iconItem('Visitors', $total_users, $label)
 			. '<span class="btn-group separator"></span>'
 			. '</div>';
 	}
@@ -57,9 +67,9 @@ else
 	// Print the frontend logged in  users.
 	if ($params->get('show_loggedin_users', 1))
 	{
-		$output[] = '<div class="btn-group loggedin-users">'
-			. '<span class="badge">' . $online_num . '</span>'
-			. JText::plural('MOD_STATUS_USERS', $online_num)
+		$label    = JText::plural('MOD_STATUS_USERS', $online_num);
+		$output[] = '<div class="btn-group loggedin-users" title="' . (int) $online_num . ' ' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '">'
+			. $iconItem('Visitors', $online_num, $label)
 			. '<span class="btn-group separator"></span>'
 			. '</div>';
 	}
@@ -79,10 +89,10 @@ else
 if ($params->get('show_messages', 1))
 {
 	$active   = $unread ? ' badge-warning' : '';
-	$output[] = '<div class="btn-group ' . $inboxClass . '">'
+	$label    = JText::plural('MOD_STATUS_MESSAGES_LABEL', $unread);
+	$output[] = '<div class="btn-group ' . $inboxClass . '" title="' . (int) $unread . ' ' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '">'
 		. ($hideLinks ? '' : '<a href="' . $inboxLink . '">')
-		. '<span class="badge' . $active . '">' . $unread . '</span>'
-		. JText::plural('MOD_STATUS_MESSAGES_LABEL', $unread)
+		. $iconItem('Messages', $unread, $label, $active)
 		. ($hideLinks ? '' : '</a>')
 		. '<span class="btn-group separator"></span>'
 		. '</div>';

@@ -45,7 +45,7 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 - The administrator login page always shows its gradient: upgraded sites got a flat blue panel from Isis' old "Login Background Colour" option, which is removed
 
 **Improvements:**
-- The administrator's status bar names the distribution: "Joomla 3.x UTD v3.17.0"
+- The administrator's status bar names the distribution ("Joomla 3.x UTD v3.17.0"), and shows Visitors and Messages as icons and "Admins", so it stays on one line
 - `config:set` says which options it set, with their new and previous values (secrets and long values by name only)
 
 ## Version 3.17 - released October 10th, 2026

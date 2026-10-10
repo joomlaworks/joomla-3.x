@@ -8299,6 +8299,23 @@ html[dir="rtl"] .quick-icons .nav-list [class*=" icon-"] {
 #status .badge {
 	margin-right: 0.25em;
 }
+/* Visitors and Messages as icons (images/svg), masks painted in the text colour, so they follow the bar's colours */
+#status .statusIcon {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	margin-right: 4px;
+	vertical-align: -2px;
+	background-color: currentColor;
+}
+#status .statusIconVisitors {
+	-webkit-mask: url('../images/svg/visitors.svg') center / contain no-repeat;
+	mask: url('../images/svg/visitors.svg') center / contain no-repeat;
+}
+#status .statusIconMessages {
+	-webkit-mask: url('../images/svg/messages.svg') center / contain no-repeat;
+	mask: url('../images/svg/messages.svg') center / contain no-repeat;
+}
 #status.status-top {
 	background: #1a3867;
 	-webkit-box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.2) inset, 0px -1px 0px rgba(0, 0, 0, 0.3) inset, 0px -1px 0px rgba(0, 0, 0, 0.3);
@@ -9660,6 +9677,10 @@ input[type="url"] {
 }
 #status .badge {
 	margin-left: 0.25em;
+	margin-right: 0;
+}
+#status .statusIcon {
+	margin-left: 4px;
 	margin-right: 0;
 }
 .dropdown-menu > li > a {

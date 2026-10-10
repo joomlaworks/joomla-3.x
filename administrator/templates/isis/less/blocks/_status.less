@@ -31,6 +31,23 @@
 	.badge {
 		margin-right: .25em;
 	}
+	/* Visitors and Messages as icons (images/svg), masks painted in the text colour, so they follow the bar's colours */
+	.statusIcon {
+		display: inline-block;
+		width: 14px;
+		height: 14px;
+		margin-right: 4px;
+		vertical-align: -2px;
+		background-color: currentColor;
+	}
+	.statusIconVisitors {
+		-webkit-mask: ~"url('../images/svg/visitors.svg') center / contain no-repeat";
+		mask: ~"url('../images/svg/visitors.svg') center / contain no-repeat";
+	}
+	.statusIconMessages {
+		-webkit-mask: ~"url('../images/svg/messages.svg') center / contain no-repeat";
+		mask: ~"url('../images/svg/messages.svg') center / contain no-repeat";
+	}
 }
 /* Status Module in top position */
 #status.status-top {
