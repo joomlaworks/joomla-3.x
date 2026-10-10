@@ -13,7 +13,7 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 
 ## CONTENTS
 - [Changelog](#changelog)
-  - [Version 3.17 - unreleased [pending]](#version-317---unreleased-pending)
+  - [Version 3.17 - released October 10th, 2026](#version-317---released-october-10th-2026)
   - [Version 3.16 - released October 3rd, 2026](#version-316---released-october-3rd-2026)
   - [Version 3.15 - released July 18th, 2026](#version-315---released-july-18th-2026)
   - [Version 3.14 - released July 4th, 2026](#version-314---released-july-4th-2026)
@@ -36,7 +36,7 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 
 ## CHANGELOG
 
-## Version 3.17 - unreleased [pending]
+## Version 3.17 - released October 10th, 2026
 Summary of changes:
 - Full support for all major database vendors: MySQL/MariaDB (native & PDO), Postgres (native & PDO), SQLite, SQL Server & Azure SQL, spanning versions that were released even 15 or so years ago (excluding SQLite which supports versions from around 2020 for now). Our work made all databases simply work as they should with Joomla. And Joomla 3.x UTD works natively with the default user authentication method that ships with MySQL 8.0, 8.4 and 9.x (caching SHA-2) and it does not require switching MySQL to "native" authentication (the old way up to MySQL 5.7).
 - For SQLite specifically, we're using WordPress' emulation layer so that any SQL statement built for MySQL will work with SQLite as well. And we use WAL mode to queue write operations in SQLite, while switching session management to "PHP" to reduce write volume to what would otherwise end up in the sessions table in the database. SQLite is excellent for spinning up Joomla 3.x UTD dev environments in seconds, or even putting entire sites in Dropbox, OneDrive etc. that you can resume working on when switching between devices. But it can also be used for small sites, that don't require lots of concurrent writes. We currently flag the SQLite driver as 'experimental,' having tested it primarily against engine releases from the past six years. Compatibility will continue to improve as we test older releases and gather real-world feedback from third-party extensions.
@@ -107,7 +107,7 @@ Summary of changes:
 - The "Joomla! Statistics" plugin and its request to send statistics are off on new and updated sites (joomla.org's statistics don't cover this distribution)
 - A modernised installer for new sites: new app-style design with a sidebar of steps (with dark mode and right-to-left support), well-formed XHTML-style HTML5, plain HTML/CSS/JavaScript without Bootstrap, jQuery or any other file from outside the `installation` folder, and the same steps as before
 - The installer removes the `installation` folder by itself when you continue to your site or its administrator (only after installing, and only its own folder), and no longer has FTP options
-- The installer offers two sample data sets, News and Blog; Brochure, Default and Learn (and the Learn set's images) are removed
+- The installer offers three sample data sets, News, Blog and Studio; Brochure, Default and Learn (and the Learn set's images) are removed
 - The "Sample Data" plugin (formerly "Sample Data - Blog") and Control Panel module install either set, News first, with a button per set
 
 **New features:**
