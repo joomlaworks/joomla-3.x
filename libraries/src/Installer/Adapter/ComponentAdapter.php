@@ -880,6 +880,7 @@ class ComponentAdapter extends InstallerAdapter
 
 			static::removeSearchIndexLinks($this->extension->element);
 			static::removeSharedData($this->extension->element);
+			static::removeSiteMenuItems($this->extension->element);
 
 			return $retval;
 		}
@@ -1025,6 +1026,98 @@ class ComponentAdapter extends InstallerAdapter
 		}
 
 		return false;
+	}
+
+	/**
+	 * Delete the site menu items which link to a component, which would only lead to "page not found" once it's uninstalled,
+	 * except the home item (the site needs one); their children move up to their parent. Menu Item Aliases of the deleted items
+	 * and their module assignments go too.
+	 *
+	 * @param   string  $option  The component, e.g. com_content
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function removeSiteMenuItems($option)
+	{
+		if (!preg_match('/^com_[a-z0-9_]+$/', $option))
+		{
+			return;
+		}
+
+		$db = \JFactory::getDbo();
+
+		try
+		{
+			// LIKE takes the underscore as a wildcard, so the links are compared again here
+			$rows = $db->setQuery(
+				$db->getQuery(true)
+					->select($db->quoteName(array('id', 'link')))
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('client_id') . ' = 0')
+					->where($db->quoteName('type') . ' = ' . $db->quote('component'))
+					->where($db->quoteName('home') . ' = 0')
+					->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=' . $option . '%'))
+			)->loadObjectList();
+		}
+		catch (\RuntimeException $e)
+		{
+			return;
+		}
+
+		$ids = array();
+
+		foreach ($rows as $row)
+		{
+			if ($row->link === 'index.php?option=' . $option || strpos($row->link, 'index.php?option=' . $option . '&') === 0)
+			{
+				$ids[] = (int) $row->id;
+			}
+		}
+
+		if (!$ids)
+		{
+			return;
+		}
+
+		// Menu Item Aliases of those items
+		foreach ($db->setQuery(
+			$db->getQuery(true)
+				->select($db->quoteName(array('id', 'params')))
+				->from($db->quoteName('#__menu'))
+				->where($db->quoteName('client_id') . ' = 0')
+				->where($db->quoteName('type') . ' = ' . $db->quote('alias'))
+				->where($db->quoteName('home') . ' = 0')
+		)->loadObjectList() as $alias)
+		{
+			$params = json_decode((string) $alias->params, true);
+
+			if (is_array($params) && isset($params['aliasoptions']) && in_array((int) $params['aliasoptions'], $ids, true))
+			{
+				$ids[] = (int) $alias->id;
+			}
+		}
+
+		$table = Table::getInstance('Menu');
+
+		foreach ($ids as $id)
+		{
+			// Not with its children, which may link elsewhere: they move up to its parent
+			if ($table->load($id))
+			{
+				$table->delete($id, false);
+			}
+		}
+
+		$db->setQuery(
+			$db->getQuery(true)
+				->delete($db->quoteName('#__modules_menu'))
+				->where($db->quoteName('menuid') . ' IN (' . implode(',', array_merge($ids, array_map(function ($id)
+				{
+					return -$id;
+				}, $ids))) . ')')
+		)->execute();
 	}
 
 	/**

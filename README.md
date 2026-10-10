@@ -54,7 +54,7 @@ Summary of changes:
 - Uninstalling a component (core or third-party) removes its entries from the Smart Search index
 - Uninstalling a core component removes its own database tables (shared ones stay); every removable component has install and uninstall SQL for MySQL, PostgreSQL and SQL Server, so restoring brings its tables back. Updating from an earlier version also removes the tables of core components uninstalled before
 - PostgreSQL 9.1 is now the minimum (was 9.0)
-- Removable extensions no longer break each other when one is removed, and uninstalling a component also removes its tag mappings, associations, content history and custom fields
+- Removable extensions no longer break each other when one is removed, and uninstalling a component also removes its tag mappings, associations, content history, custom fields and site menu items (except the home item)
 - Removed the "Authentication - GMail" plugin (Google stopped accepting its password sign-in in 2022), the "System - P3P Policy" plugin, joomla.org's update site for the Joomla Update component, Global Configuration's Memcache options, unused web service libraries and polyfills for PHP versions below 7.1
 
 **Bug fixes:**

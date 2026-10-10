@@ -1322,8 +1322,9 @@ class JoomlaInstallerScript
 					continue;
 				}
 
-				// Its rows in shared tables (tag mappings, associations, custom fields, ...) go too
+				// Its rows in shared tables (tag mappings, associations, custom fields, ...) and its site menu items go too
 				\Joomla\CMS\Installer\Adapter\ComponentAdapter::removeSharedData($element);
+				\Joomla\CMS\Installer\Adapter\ComponentAdapter::removeSiteMenuItems($element);
 
 				$folder   = JPATH_ADMINISTRATOR . '/components/' . $element;
 				$manifest = $folder . '/' . substr($element, 4) . '.xml';
