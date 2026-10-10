@@ -682,6 +682,7 @@ class JoomlaInstallerScript
 			array('plugin', 'categories', 'finder'),
 			array('plugin', 'content', 'finder'),
 			array('plugin', 'tags', 'finder'),
+			array('plugin', 'highlight', 'system'),
 		),
 		'Content History' => array(
 			array('component', 'com_contenthistory', ''),
@@ -803,18 +804,29 @@ class JoomlaInstallerScript
 	);
 
 	/**
-	 * The only removable core extensions whose manifest declares a media folder. A real uninstall removes
-	 * just these, so the cleanup below does the same and leaves every other media/ folder alone.
+	 * The removable core extensions whose manifest declares media (a folder, or several, as their `<media>` lists
+	 * them). A real uninstall removes just these, so the cleanup below does the same and leaves every other media/
+	 * folder alone.
 	 *
 	 * @var    array
 	 * @since  3.16.0
 	 */
 	protected $removableCoreExtensionMedia = array(
-		'component:0::com_finder'         => '/media/com_finder',
-		'module:1::mod_housekeeping'      => '/media/mod_housekeeping',
-		'module:1::mod_sampledata'        => '/media/mod_sampledata',
-		'plugin:0:installer:webinstaller' => '/media/plg_installer_webinstaller',
-		'plugin:0:editors:tinymce_latest' => '/media/editors/tinymce_latest',
+		'component:0::com_associations'          => '/media/com_associations',
+		'component:0::com_contact'               => array('/media/com_contact', '/media/contacts'),
+		'component:0::com_contenthistory'        => '/media/com_contenthistory',
+		'component:0::com_fields'                => '/media/com_fields',
+		'component:0::com_finder'                => '/media/com_finder',
+		'module:1::mod_housekeeping'             => '/media/mod_housekeeping',
+		'module:1::mod_sampledata'               => '/media/mod_sampledata',
+		'plugin:0:captcha:recaptcha'             => '/media/plg_captcha_recaptcha',
+		'plugin:0:captcha:recaptcha_invisible'   => '/media/plg_captcha_recaptcha_invisible',
+		'plugin:0:editors:tinymce_latest'        => '/media/editors/tinymce_latest',
+		'plugin:0:installer:webinstaller'        => '/media/plg_installer_webinstaller',
+		'plugin:0:quickicon:privacycheck'        => '/media/plg_quickicon_privacycheck',
+		'plugin:0:system:highlight'              => '/media/plg_system_highlight',
+		'plugin:0:system:stats'                  => '/media/plg_system_stats',
+		'plugin:0:twofactorauth:totp'            => '/media/plg_twofactorauth_totp',
 	);
 
 	/**
@@ -1004,10 +1016,11 @@ class JoomlaInstallerScript
 	}
 
 	/**
-	 * Uninstall the companion plugins of removable core components which are no longer installed (e.g. Smart Search -
-	 * Contacts after Contacts was uninstalled), as uninstalling the component does since 3.18: they query the component's
-	 * dropped tables (Smart Search indexing stopped at "Table '#__contact_details' doesn't exist"). The companions are those
-	 * the component's manifest lists (`<companions>`), read from the files this update just extracted.
+	 * Uninstall the companions (`<companions>` in a component's manifest: the modules and plugins which only serve it) of
+	 * removable core components which are no longer installed, as uninstalling a component does since 3.18: left behind,
+	 * they query its dropped tables (Smart Search indexing stopped at "Table '#__contact_details' doesn't exist"). The
+	 * manifests are read from the files this update just extracted; a shared companion stays while another installed
+	 * component lists it.
 	 *
 	 * @return  void
 	 *
@@ -1040,41 +1053,23 @@ class JoomlaInstallerScript
 				$manifest = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . substr($element, 4) . '.xml';
 				$xml      = is_file($manifest) ? simplexml_load_file($manifest) : false;
 
-				if (!$xml || !isset($xml->companions))
+				foreach (\Joomla\CMS\Installer\Adapter\ComponentAdapter::readCompanions($xml ?: null) as $companion)
 				{
-					continue;
-				}
-
-				foreach ($xml->companions->plugin as $plugin)
-				{
-					$group = (string) $plugin['group'];
-					$name  = (string) $plugin['element'];
-
-					if (!isset($installed[$this->removableCoreExtensionKey('plugin', $name, $group, 0)]))
-					{
-						continue;
-					}
-
-					$query = $db->getQuery(true)
-						->select($db->quoteName('extension_id'))
-						->from($db->quoteName('#__extensions'))
-						->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
-						->where($db->quoteName('folder') . ' = ' . $db->quote($group))
-						->where($db->quoteName('element') . ' = ' . $db->quote($name));
-
 					try
 					{
-						$id = (int) $db->setQuery($query)->loadResult();
+						$id = \Joomla\CMS\Installer\Adapter\ComponentAdapter::findCompanion($db, $companion);
 
-						if ($id)
+						if (!$id || ($companion[4] && \Joomla\CMS\Installer\Adapter\ComponentAdapter::isCompanionInUse($db, $companion, $element)))
 						{
-							$installer = new JInstaller;
-							$installer->uninstall('plugin', $id);
+							continue;
 						}
+
+						$installer = new JInstaller;
+						$installer->uninstall($companion[0], $id);
 					}
 					catch (Exception $e)
 					{
-						// Not worth failing the update for: the plugin stays as it was
+						// Not worth failing the update for: the extension stays as it was
 					}
 				}
 			}
@@ -1161,7 +1156,7 @@ class JoomlaInstallerScript
 
 				if (isset($this->removableCoreExtensionMedia[$key]))
 				{
-					$folders[] = $this->removableCoreExtensionMedia[$key];
+					$folders = array_merge($folders, (array) $this->removableCoreExtensionMedia[$key]);
 				}
 
 				$deleted = false;
@@ -1303,6 +1298,9 @@ class JoomlaInstallerScript
 
 					continue;
 				}
+
+				// A member of two groups (System - Highlight: Search and Smart Search) is restored once
+				$installed[$key] = true;
 
 				if ($leftovers)
 				{

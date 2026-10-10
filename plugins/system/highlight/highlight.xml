@@ -12,6 +12,9 @@
     <files>
         <filename plugin="highlight">highlight.php</filename>
     </files>
+    <media folder="media">
+        <folder>plg_system_highlight</folder>
+    </media>
     <languages>
         <language tag="en-GB">language/en-GB/en-GB.plg_system_highlight.ini</language>
         <language tag="en-GB">language/en-GB/en-GB.plg_system_highlight.sys.ini</language>

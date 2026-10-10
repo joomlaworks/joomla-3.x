@@ -47,7 +47,8 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 - Smart Search's full reindex no longer stops with "The table '#__finder_tokens' is full" on MySQL/MariaDB's default settings
 - Smart Search's command line indexer no longer stops when a content plugin renders a module into the content being indexed
 - Smart Search's Advanced Search: setting only a start or end date no longer adds today as the other one
-- Uninstalling Contacts or News Feeds also uninstalls their plugins (e.g. "Smart Search - Contacts", which stopped indexing); updates remove those left behind by earlier uninstalls
+- Uninstalling a core component also uninstalls the modules and plugins which only serve it (e.g. "Smart Search - Contacts", which stopped indexing); updates remove those left behind by earlier uninstalls
+- Uninstalling core extensions no longer leaves their media folders or language files behind
 - More PHP 8.2+/8.5 deprecation warnings fixed (the administrator's toolbar title, iterating registries and sessions)
 
 ## Version 3.17 - released October 10th, 2026

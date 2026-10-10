@@ -15,6 +15,9 @@
         <folder>controllers</folder>
         <folder>layouts</folder>
     </files>
+    <media folder="media">
+        <folder>com_fields</folder>
+    </media>
     <administration>
         <files folder="admin">
             <filename>access.xml</filename>
@@ -32,5 +35,27 @@
             <language tag="en-GB">language/en-GB.com_fields.sys.ini</language>
         </languages>
     </administration>
+    <!-- Extensions which only serve this component, uninstalled with it ("Restore uninstalled core extensions" in Joomla Update brings them back); a shared one stays while another component listing it is installed -->
+    <companions>
+        <plugin group="content" element="fields" />
+        <plugin group="editors-xtd" element="fields" />
+        <plugin group="system" element="fields" />
+        <plugin group="fields" element="calendar" />
+        <plugin group="fields" element="checkboxes" />
+        <plugin group="fields" element="color" />
+        <plugin group="fields" element="editor" />
+        <plugin group="fields" element="imagelist" />
+        <plugin group="fields" element="integer" />
+        <plugin group="fields" element="list" />
+        <plugin group="fields" element="media" />
+        <plugin group="fields" element="radio" />
+        <plugin group="fields" element="repeatable" />
+        <plugin group="fields" element="sql" />
+        <plugin group="fields" element="text" />
+        <plugin group="fields" element="textarea" />
+        <plugin group="fields" element="url" />
+        <plugin group="fields" element="user" />
+        <plugin group="fields" element="usergrouplist" />
+    </companions>
 </extension>
 

@@ -35,5 +35,15 @@
             <language tag="en-GB">language/en-GB.com_search.sys.ini</language>
         </languages>
     </administration>
+    <!-- Extensions which only serve this component, uninstalled with it ("Restore uninstalled core extensions" in Joomla Update brings them back); a shared one stays while another component listing it is installed -->
+    <companions>
+        <module element="mod_search" client="site" />
+        <plugin group="search" element="categories" />
+        <plugin group="search" element="contacts" />
+        <plugin group="search" element="content" />
+        <plugin group="search" element="newsfeeds" />
+        <plugin group="search" element="tags" />
+        <plugin group="system" element="highlight" shared="true" />
+    </companions>
 </extension>
 

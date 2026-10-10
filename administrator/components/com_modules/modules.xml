@@ -9,6 +9,9 @@
     <authorUrl>www.joomla.org</authorUrl>
     <version>3.0.0</version>
     <description>COM_MODULES_XML_DESCRIPTION</description>
+    <media folder="media">
+        <folder>com_modules</folder>
+    </media>
     <administration>
         <files folder="admin">
             <filename>config.xml</filename>
@@ -24,5 +27,9 @@
             <language tag="en-GB">language/en-GB.com_modules.sys.ini</language>
         </languages>
     </administration>
+    <!-- Extensions which only serve this component, uninstalled with it ("Restore uninstalled core extensions" in Joomla Update brings them back); a shared one stays while another component listing it is installed -->
+    <companions>
+        <plugin group="editors-xtd" element="module" />
+    </companions>
 </extension>
 

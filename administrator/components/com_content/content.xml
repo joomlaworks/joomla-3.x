@@ -16,6 +16,9 @@
         <folder>helpers</folder>
         <folder>models</folder>
     </files>
+    <media folder="media">
+        <folder>com_content</folder>
+    </media>
     <languages folder="site">
         <language tag="en-GB">language/en-GB.com_content.ini</language>
     </languages>
@@ -37,5 +40,26 @@
             <language tag="en-GB">language/en-GB.com_content.sys.ini</language>
         </languages>
     </administration>
+    <!-- Extensions which only serve this component, uninstalled with it ("Restore uninstalled core extensions" in Joomla Update brings them back); a shared one stays while another component listing it is installed -->
+    <companions>
+        <module element="mod_articles_archive" client="site" />
+        <module element="mod_articles_categories" client="site" />
+        <module element="mod_articles_category" client="site" />
+        <module element="mod_articles_latest" client="site" />
+        <module element="mod_articles_news" client="site" />
+        <module element="mod_articles_popular" client="site" />
+        <module element="mod_related_items" client="site" />
+        <module element="mod_latest" client="administrator" />
+        <module element="mod_popular" client="administrator" />
+        <plugin group="content" element="pagebreak" />
+        <plugin group="content" element="pagenavigation" />
+        <plugin group="content" element="vote" />
+        <plugin group="editors-xtd" element="article" />
+        <plugin group="editors-xtd" element="pagebreak" />
+        <plugin group="editors-xtd" element="readmore" />
+        <plugin group="finder" element="content" />
+        <plugin group="privacy" element="content" />
+        <plugin group="search" element="content" />
+    </companions>
 </extension>
 

@@ -888,40 +888,145 @@ class ComponentAdapter extends InstallerAdapter
 	}
 
 	/**
-	 * The plugins the manifest names as the component's companions: `<companions><plugin group="finder" element="contacts" />`.
-	 * They only serve the component (e.g. its Search and Smart Search plugins, which query its tables), so they are uninstalled
-	 * with it. Core components list them as their "Restore uninstalled core extensions" group does, which brings them back.
+	 * The extensions the manifest names as the component's companions, which only serve it and are uninstalled with it:
 	 *
-	 * @return  array  Arrays of group and element
+	 *     <companions>
+	 *         <module element="mod_banners" client="site" />
+	 *         <plugin group="finder" element="contacts" />
+	 *         <plugin group="system" element="highlight" shared="true" />
+	 *     </companions>
+	 *
+	 * A shared companion serves any of the components listing it, and stays while another one is installed (e.g. System -
+	 * Highlight, for Search and Smart Search); any other goes with each component listing it (e.g. Smart Search - Contacts,
+	 * which needs both Contacts and Smart Search). Core components list them as their "Restore uninstalled core extensions"
+	 * group does, which brings them back.
+	 *
+	 * @return  array  Companions (see readCompanions())
 	 *
 	 * @since   3.18.0
 	 */
 	protected function getCompanions()
 	{
+		return static::readCompanions($this->getManifest());
+	}
+
+	/**
+	 * The companions a component manifest lists.
+	 *
+	 * @param   \SimpleXMLElement|null  $manifest  The manifest
+	 *
+	 * @return  array  Arrays of type (module or plugin), element, folder (a plugin's group), client ID and shared
+	 *
+	 * @since   3.18.0
+	 */
+	public static function readCompanions($manifest)
+	{
 		$companions = array();
 
-		if (isset($this->getManifest()->companions))
+		if (!$manifest instanceof \SimpleXMLElement || !isset($manifest->companions))
 		{
-			foreach ($this->getManifest()->companions->plugin as $plugin)
-			{
-				$group   = \JFilterInput::getInstance()->clean((string) $plugin['group'], 'cmd');
-				$element = \JFilterInput::getInstance()->clean((string) $plugin['element'], 'cmd');
+			return $companions;
+		}
 
-				if ($group !== '' && $element !== '')
-				{
-					$companions[] = array($group, $element);
-				}
+		$filter = \JFilterInput::getInstance();
+
+		foreach ($manifest->companions->children() as $node)
+		{
+			$type    = $node->getName();
+			$element = $filter->clean((string) $node['element'], 'cmd');
+			$folder  = $type === 'plugin' ? $filter->clean((string) $node['group'], 'cmd') : '';
+			$client  = $type === 'module' && (string) $node['client'] === 'administrator' ? 1 : 0;
+
+			if (!in_array($type, array('module', 'plugin'), true) || $element === '' || ($type === 'plugin' && $folder === ''))
+			{
+				continue;
 			}
+
+			$companions[] = array($type, $element, $folder, $client, (string) $node['shared'] === 'true');
 		}
 
 		return $companions;
 	}
 
 	/**
-	 * Uninstall the component's companion plugins which are installed. A plugin that can't be uninstalled (e.g. protected) is
-	 * left as it is.
+	 * The extension ID of an installed companion, or 0.
 	 *
-	 * @param   array  $companions  Arrays of group and element (getCompanions())
+	 * @param   \JDatabaseDriver  $db         The database
+	 * @param   array             $companion  The companion (readCompanions())
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.18.0
+	 */
+	public static function findCompanion($db, array $companion)
+	{
+		list($type, $element, $folder, $client) = $companion;
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName('extension_id'))
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('type') . ' = ' . $db->quote($type))
+			->where($db->quoteName('element') . ' = ' . $db->quote($element))
+			->where($db->quoteName('folder') . ' = ' . $db->quote($folder))
+			->where($db->quoteName('client_id') . ' = ' . (int) $client)
+			->where($db->quoteName('state') . ' != -1');
+
+		return (int) $db->setQuery($query)->loadResult();
+	}
+
+	/**
+	 * Whether another installed component lists a shared companion, so it stays.
+	 *
+	 * @param   \JDatabaseDriver  $db         The database
+	 * @param   array             $companion  The companion (readCompanions())
+	 * @param   string            $except     The component being uninstalled (or already gone)
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	public static function isCompanionInUse($db, array $companion, $except)
+	{
+		$query = $db->getQuery(true)
+			->select($db->quoteName('element'))
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('type') . ' = ' . $db->quote('component'))
+			->where($db->quoteName('state') . ' != -1')
+			->where($db->quoteName('element') . ' != ' . $db->quote($except));
+
+		foreach ($db->setQuery($query)->loadColumn() as $component)
+		{
+			$name     = strpos($component, 'com_') === 0 ? substr($component, 4) : $component;
+			$manifest = null;
+
+			foreach (array(JPATH_ADMINISTRATOR, JPATH_SITE) as $base)
+			{
+				$file = $base . '/components/' . $component . '/' . $name . '.xml';
+
+				if (is_file($file))
+				{
+					$manifest = simplexml_load_file($file);
+					break;
+				}
+			}
+
+			foreach (static::readCompanions($manifest ?: null) as $other)
+			{
+				if (array_slice($other, 0, 4) === array_slice($companion, 0, 4))
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Uninstall the component's installed companions (a shared one only when no other installed component lists it). One
+	 * that can't be uninstalled (e.g. protected) is left as it is.
+	 *
+	 * @param   array  $companions  The companions (getCompanions())
 	 *
 	 * @return  void
 	 *
@@ -933,23 +1038,16 @@ class ComponentAdapter extends InstallerAdapter
 
 		foreach ($companions as $companion)
 		{
-			list($group, $element) = $companion;
+			$id = static::findCompanion($db, $companion);
 
-			$query = $db->getQuery(true)
-				->select($db->quoteName('extension_id'))
-				->from($db->quoteName('#__extensions'))
-				->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
-				->where($db->quoteName('folder') . ' = ' . $db->quote($group))
-				->where($db->quoteName('element') . ' = ' . $db->quote($element));
-
-			$id = (int) $db->setQuery($query)->loadResult();
-
-			if ($id)
+			if (!$id || ($companion[4] && static::isCompanionInUse($db, $companion, $this->element)))
 			{
-				// An installer of its own: this one is still busy with the component
-				$installer = new Installer;
-				$installer->uninstall('plugin', $id);
+				continue;
 			}
+
+			// An installer of its own: this one is still busy with the component
+			$installer = new Installer;
+			$installer->uninstall($companion[0], $id);
 		}
 	}
 

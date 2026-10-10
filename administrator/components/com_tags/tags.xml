@@ -37,5 +37,12 @@
         </languages>
         <menu link="option=com_tags" img="class:tags">com_tags</menu>
     </administration>
+    <!-- Extensions which only serve this component, uninstalled with it ("Restore uninstalled core extensions" in Joomla Update brings them back); a shared one stays while another component listing it is installed -->
+    <companions>
+        <module element="mod_tags_popular" client="site" />
+        <module element="mod_tags_similar" client="site" />
+        <plugin group="finder" element="tags" />
+        <plugin group="search" element="tags" />
+    </companions>
 </extension>
 

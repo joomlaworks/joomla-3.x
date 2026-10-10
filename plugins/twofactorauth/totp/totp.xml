@@ -14,6 +14,9 @@
         <folder>postinstall</folder>
         <folder>tmpl</folder>
     </files>
+    <media folder="media">
+        <folder>plg_twofactorauth_totp</folder>
+    </media>
     <languages>
         <language tag="en-GB">en-GB.plg_twofactorauth_totp.ini</language>
         <language tag="en-GB">en-GB.plg_twofactorauth_totp.sys.ini</language>

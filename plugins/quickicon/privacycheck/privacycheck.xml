@@ -12,6 +12,9 @@
     <files>
         <filename plugin="privacycheck">privacycheck.php</filename>
     </files>
+    <media folder="media">
+        <folder>plg_quickicon_privacycheck</folder>
+    </media>
     <languages>
         <language tag="en-GB">en-GB.plg_quickicon_privacycheck.ini</language>
         <language tag="en-GB">en-GB.plg_quickicon_privacycheck.sys.ini</language>

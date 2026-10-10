@@ -9,6 +9,9 @@
     <authorUrl>www.joomla.org</authorUrl>
     <version>3.7.0</version>
     <description>COM_ASSOCIATIONS_XML_DESCRIPTION</description>
+    <media folder="media">
+        <folder>com_associations</folder>
+    </media>
     <administration>
         <menu img="class:associations">COM_ASSOCIATIONS</menu>
         <files folder="admin">

@@ -18,6 +18,9 @@
         <filename>wrapper.php</filename>
         <folder>views</folder>
     </files>
+    <media folder="media">
+        <folder>com_wrapper</folder>
+    </media>
     <languages folder="site">
         <language tag="en-GB">language/en-GB.com_wrapper.ini</language>
     </languages>
@@ -30,5 +33,9 @@
             <language tag="en-GB">language/en-GB.com_wrapper.sys.ini</language>
         </languages>
     </administration>
+    <!-- Extensions which only serve this component, uninstalled with it ("Restore uninstalled core extensions" in Joomla Update brings them back); a shared one stays while another component listing it is installed -->
+    <companions>
+        <module element="mod_wrapper" client="site" />
+    </companions>
 </extension>
 
