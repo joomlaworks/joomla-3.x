@@ -54,6 +54,7 @@ Summary of changes:
 - Uninstalling a component (core or third-party) removes its entries from the Smart Search index
 - Uninstalling a core component removes its own database tables (shared ones stay); every removable component has install and uninstall SQL for MySQL, PostgreSQL and SQL Server, so restoring brings its tables back. Updating from an earlier version also removes the tables of core components uninstalled before
 - PostgreSQL 9.1 is now the minimum (was 9.0)
+- Removable extensions no longer break each other when one is removed, and uninstalling a component also removes its tag mappings, associations, content history and custom fields
 - Removed the "Authentication - GMail" plugin (Google stopped accepting its password sign-in in 2022), the "System - P3P Policy" plugin, joomla.org's update site for the Joomla Update component, Global Configuration's Memcache options, unused web service libraries and polyfills for PHP versions below 7.1
 
 **Bug fixes:**
@@ -62,7 +63,8 @@ Summary of changes:
 - Articles with "Link Author" no longer fail when Contacts is uninstalled or disabled
 - Sites updating from before 3.12 keep Beez 3 when they use it (as a third-party template); a site whose template files are missing falls back to another template instead of failing
 - Fixed PHP 8.2+/8.5 deprecation warnings in text logs (e.g. during updates), the administrator's toolbar title, registries and sessions, and SQL list fields
-- Users' and Contacts' Options and the Multilingual Status no longer fail when Fields or Contacts has been uninstalled
+- Users' and Contacts' Options, the Multilingual Status, batch copy/move of articles and Privacy's data exports no longer fail when Fields or Contacts has been uninstalled
+- "User - Joomla!" can no longer be uninstalled: without it nobody could log in
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:

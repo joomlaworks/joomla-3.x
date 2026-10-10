@@ -24,7 +24,7 @@ if (!$item)
 
 $context = $displayData['context'];
 
-if (!$context)
+if (!$context || !JComponentHelper::isEnabled('com_fields'))
 {
 	return;
 }

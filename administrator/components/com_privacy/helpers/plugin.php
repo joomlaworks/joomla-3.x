@@ -131,6 +131,16 @@ abstract class PrivacyPlugin extends JPlugin
 			$items = array($items);
 		}
 
+		// Fields isn't installed: no custom fields, but the export keeps the domain (callers add whatever this returns)
+		if (!JComponentHelper::isEnabled('com_fields'))
+		{
+			$parts = explode('.', $context);
+			$type  = str_replace('com_', '', $parts[0]);
+			$name  = isset($parts[1]) ? $parts[1] : '';
+
+			return $this->createDomain($type . '_' . $name . '_custom_fields', 'joomla_' . $type . '_' . $name . '_custom_fields_data');
+		}
+
 		$parts = FieldsHelper::extract($context);
 
 		if (!$parts)

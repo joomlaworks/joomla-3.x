@@ -781,7 +781,7 @@ class PlgSampledataBlogSet
 				->where($db->quoteName('catid') . ' IN (' . implode(',', array_map('intval', $record['categories'] ?: array(0))) . ')')
 		)->loadColumn();
 
-		$record['tags'] = $db->setQuery(
+		$record['tags'] = !ComponentHelper::isEnabled('com_tags') ? array() : $db->setQuery(
 			$db->getQuery(true)
 				->select($db->quoteName('id'))
 				->from($db->quoteName('#__tags'))
@@ -955,7 +955,8 @@ class PlgSampledataBlogSet
 
 		$table = JTable::getInstance('Tag', 'TagsTable');
 
-		foreach ($record['tags'] as $id)
+		// Tags uninstalled since the set was added: its tags went with its tables
+		foreach (ComponentHelper::isEnabled('com_tags') ? $record['tags'] : array() as $id)
 		{
 			$used = (int) $db->setQuery($db->getQuery(true)->select('COUNT(*)')->from($db->quoteName('#__contentitem_tag_map'))
 				->where($db->quoteName('tag_id') . ' = ' . (int) $id))->loadResult();

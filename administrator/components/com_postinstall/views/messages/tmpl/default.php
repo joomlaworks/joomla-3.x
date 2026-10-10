@@ -79,8 +79,11 @@ JHtml::_('formbehavior.chosen', 'select');
 <?php if ($this->eid == 700) : ?>
 	</div>
 	<div class="span4"<?php if ($lang->isRtl()) : ?> style="padding-right: 20px;"<?php endif; ?>>
+		<?php // The Feed module shows the news, while it's installed ?>
+		<?php if (is_file(JPATH_ADMINISTRATOR . '/modules/mod_feed/mod_feed.php')) : ?>
 		<h2><?php echo JText::_('COM_POSTINSTALL_LBL_RELEASENEWS'); ?></h2>
 		<?php echo $renderer->render($mod, $params, $options); ?>
+		<?php endif; ?>
 	</div>
 </div>
 <?php endif; ?>

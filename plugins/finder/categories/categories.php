@@ -296,9 +296,14 @@ class PlgFinderCategories extends FinderIndexerAdapter
 		{
 			$item->route = $class::getCategoryRoute($item->id, $item->language);
 		}
-		else
+		elseif (class_exists('ContentHelperRoute'))
 		{
 			$item->route = ContentHelperRoute::getCategoryRoute($item->id, $item->language);
+		}
+		else
+		{
+			// Articles, whose router is the usual fallback, isn't installed
+			$item->route = $item->url;
 		}
 
 		$item->path = FinderIndexerHelper::getContentPath($item->route);

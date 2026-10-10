@@ -74,7 +74,8 @@ class ContentModelArticle extends JModelAdmin
 
 		$oldItem = $this->getTable();
 		$oldItem->load($oldId);
-		$fields = FieldsHelper::getFields('com_content.article', $oldItem, true);
+		// Custom field values, while Fields is installed
+		$fields = JComponentHelper::isEnabled('com_fields') ? FieldsHelper::getFields('com_content.article', $oldItem, true) : array();
 
 		$fieldsData = array();
 
@@ -155,7 +156,7 @@ class ContentModelArticle extends JModelAdmin
 				}
 			}
 
-			$fields = FieldsHelper::getFields('com_content.article', $this->table, true);
+			$fields = JComponentHelper::isEnabled('com_fields') ? FieldsHelper::getFields('com_content.article', $this->table, true) : array();
 			$fieldsData = array();
 
 			if (!empty($fields))

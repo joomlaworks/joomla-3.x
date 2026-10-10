@@ -129,17 +129,21 @@ class PrivacyModelConfirm extends JModelAdmin
 			return false;
 		}
 
-		// Push a notification to the site's super users, deliberately ignoring if this process fails so the below message goes out
-		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_messages/models', 'MessagesModel');
-		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_messages/tables');
+		// Push a notification to the site's super users (through Private Messages, while it's installed), deliberately ignoring if this
+		// process fails so the below message goes out
+		if (JComponentHelper::isEnabled('com_messages'))
+		{
+			JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_messages/models', 'MessagesModel');
+			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_messages/tables');
 
-		/** @var MessagesModelMessage $messageModel */
-		$messageModel = JModelLegacy::getInstance('Message', 'MessagesModel');
+			/** @var MessagesModelMessage $messageModel */
+			$messageModel = JModelLegacy::getInstance('Message', 'MessagesModel');
 
-		$messageModel->notifySuperUsers(
-			JText::_('COM_PRIVACY_ADMIN_NOTIFICATION_USER_CONFIRMED_REQUEST_SUBJECT'),
-			JText::sprintf('COM_PRIVACY_ADMIN_NOTIFICATION_USER_CONFIRMED_REQUEST_MESSAGE', $table->email)
-		);
+			$messageModel->notifySuperUsers(
+				JText::_('COM_PRIVACY_ADMIN_NOTIFICATION_USER_CONFIRMED_REQUEST_SUBJECT'),
+				JText::sprintf('COM_PRIVACY_ADMIN_NOTIFICATION_USER_CONFIRMED_REQUEST_MESSAGE', $table->email)
+			);
+		}
 
 		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_actionlogs/models', 'ActionlogsModel');
 

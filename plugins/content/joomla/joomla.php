@@ -44,8 +44,8 @@ class PlgContentJoomla extends JPlugin
 			return true;
 		}
 
-		// Check this is a new article.
-		if (!$isNew)
+		// Check this is a new article, and that Private Messages, which sends the notifications, is installed.
+		if (!$isNew || !JComponentHelper::isEnabled('com_messages'))
 		{
 			return true;
 		}
@@ -132,8 +132,8 @@ class PlgContentJoomla extends JPlugin
 			'com_weblinks' => array('table_name' => '#__weblinks')
 		);
 
-		// Now check to see if this is a known core extension
-		if (isset($tableInfo[$extension]))
+		// Now check to see if this is a known core extension (installed: uninstalling one drops its table)
+		if (isset($tableInfo[$extension]) && JComponentHelper::isEnabled($extension))
 		{
 			// Get table name for known core extensions
 			$table = $tableInfo[$extension]['table_name'];

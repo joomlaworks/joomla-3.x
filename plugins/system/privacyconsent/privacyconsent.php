@@ -675,11 +675,16 @@ class PlgSystemPrivacyconsent extends JPlugin
 			return true;
 		}
 
-		// Push a notification to the site's super users
-		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_messages/models', 'MessagesModel');
-		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_messages/tables');
-		/** @var MessagesModelMessage $messageModel */
-		$messageModel = JModelLegacy::getInstance('Message', 'MessagesModel');
+		// Push a notification to the site's super users (through Private Messages, while it's installed)
+		$messageModel = null;
+
+		if (JComponentHelper::isEnabled('com_messages'))
+		{
+			JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_messages/models', 'MessagesModel');
+			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_messages/tables');
+			/** @var MessagesModelMessage $messageModel */
+			$messageModel = JModelLegacy::getInstance('Message', 'MessagesModel');
+		}
 
 		foreach ($users as $user)
 		{
@@ -696,6 +701,11 @@ class PlgSystemPrivacyconsent extends JPlugin
 			catch (RuntimeException $e)
 			{
 				return false;
+			}
+
+			if (!$messageModel)
+			{
+				continue;
 			}
 
 			$messageModel->notifySuperUsers(

@@ -814,7 +814,6 @@ class JoomlaInstallerScript
 			array('plugin', 'image', 'editors-xtd'),
 			array('plugin', 'joomla', 'actionlog'),
 			array('plugin', 'joomla', 'content'),
-			array('plugin', 'joomla', 'user'),
 			array('plugin', 'languagecode', 'system'),
 			array('plugin', 'ldap', 'authentication'),
 			array('plugin', 'littlewaf', 'system'),
@@ -1322,6 +1321,9 @@ class JoomlaInstallerScript
 				{
 					continue;
 				}
+
+				// Its rows in shared tables (tag mappings, associations, custom fields, ...) go too
+				\Joomla\CMS\Installer\Adapter\ComponentAdapter::removeSharedData($element);
 
 				$folder   = JPATH_ADMINISTRATOR . '/components/' . $element;
 				$manifest = $folder . '/' . substr($element, 4) . '.xml';

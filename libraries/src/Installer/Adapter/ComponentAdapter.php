@@ -879,6 +879,7 @@ class ComponentAdapter extends InstallerAdapter
 			$this->uninstallCompanions($companions);
 
 			static::removeSearchIndexLinks($this->extension->element);
+			static::removeSharedData($this->extension->element);
 
 			return $retval;
 		}
@@ -1024,6 +1025,81 @@ class ComponentAdapter extends InstallerAdapter
 		}
 
 		return false;
+	}
+
+	/**
+	 * Remove a component's rows from the tables it shares with others: tag mappings, the content copies tagging keeps
+	 * (#__ucm_content, #__ucm_base), content history, associations and custom fields (with their values and category
+	 * assignments), all found by the component's contexts (e.g. com_content.article). Content types stay: reinstalling the
+	 * component doesn't add them back. A table which isn't there (its component uninstalled) is skipped.
+	 *
+	 * @param   string  $option  The component, e.g. com_content
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function removeSharedData($option)
+	{
+		if (!preg_match('/^com_[a-z0-9_]+$/', $option))
+		{
+			return;
+		}
+
+		$db      = \JFactory::getDbo();
+		$context = $db->quote($option . '.%');
+		$typeIds = array();
+
+		try
+		{
+			$typeIds = $db->setQuery(
+				$db->getQuery(true)
+					->select($db->quoteName('type_id'))
+					->from($db->quoteName('#__content_types'))
+					->where($db->quoteName('type_alias') . ' LIKE ' . $context)
+			)->loadColumn();
+		}
+		catch (\RuntimeException $e)
+		{
+			// No content types: nothing of the component in the UCM tables either
+		}
+
+		$typeIds = implode(',', array_map('intval', $typeIds));
+		$fields  = $db->getQuery(true)
+			->select($db->quoteName('id'))
+			->from($db->quoteName('#__fields'))
+			->where($db->quoteName('context') . ' LIKE ' . $context);
+		$queries = array(
+			$db->getQuery(true)->delete($db->quoteName('#__contentitem_tag_map'))->where($db->quoteName('type_alias') . ' LIKE ' . $context),
+			$db->getQuery(true)->delete($db->quoteName('#__ucm_content'))->where($db->quoteName('core_type_alias') . ' LIKE ' . $context),
+			$db->getQuery(true)->delete($db->quoteName('#__associations'))->where($db->quoteName('context') . ' LIKE ' . $context),
+			// The component's categories were deleted: their associations go too
+			$db->getQuery(true)->delete($db->quoteName('#__associations'))
+				->where($db->quoteName('context') . ' = ' . $db->quote('com_categories.item'))
+				->where($db->quoteName('id') . ' NOT IN (' . $db->getQuery(true)->select($db->quoteName('id'))->from($db->quoteName('#__categories')) . ')'),
+			$db->getQuery(true)->delete($db->quoteName('#__fields_values'))->where($db->quoteName('field_id') . ' IN (' . $fields . ')'),
+			$db->getQuery(true)->delete($db->quoteName('#__fields_categories'))->where($db->quoteName('field_id') . ' IN (' . $fields . ')'),
+			$db->getQuery(true)->delete($db->quoteName('#__fields'))->where($db->quoteName('context') . ' LIKE ' . $context),
+			$db->getQuery(true)->delete($db->quoteName('#__fields_groups'))->where($db->quoteName('context') . ' LIKE ' . $context),
+		);
+
+		if ($typeIds !== '')
+		{
+			$queries[] = $db->getQuery(true)->delete($db->quoteName('#__ucm_base'))->where($db->quoteName('ucm_type_id') . ' IN (' . $typeIds . ')');
+			$queries[] = $db->getQuery(true)->delete($db->quoteName('#__ucm_history'))->where($db->quoteName('ucm_type_id') . ' IN (' . $typeIds . ')');
+		}
+
+		foreach ($queries as $query)
+		{
+			try
+			{
+				$db->setQuery($query)->execute();
+			}
+			catch (\RuntimeException $e)
+			{
+				// The table's component isn't installed (e.g. Tags or Fields): nothing to remove there
+			}
+		}
 	}
 
 	/**
