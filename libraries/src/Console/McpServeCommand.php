@@ -279,7 +279,7 @@ class McpServeCommand extends AbstractCommand
 		}
 
 		$text .= 'Templates: template_info shows a style\'s positions (for module_create), options and CSS design tokens. Put the site\'s own '
-			. 'CSS in the file the template loads for it (css/custom.css in Hammond and Finch), which updates never touch, and run '
+			. 'CSS in the file the template loads for it (css/custom.css in Hammond, Finch and Rookwood), which updates never touch, and run '
 			. 'template_backup before changing a template\'s files. '
 			. ($this->allowCode ? '' : 'Writing code (installing or updating extensions or Joomla, configuration.php, a template\'s PHP, XML or dot files) is not allowed by '
 			. 'this server (it needs --allow-code). ');

@@ -38,7 +38,7 @@ class TemplateFileSetCommand extends AbstractTemplateCommand
 		. 'A new file needs --create. PHP files are checked for syntax errors and XML files for well-formedness first, and aren\'t '
 		. 'written when they fail. The previous version of the file is kept (in the site\'s backup folder), and --restore puts it back '
 		. '(again to redo). --dry-run shows the change as a diff. For the site\'s own CSS, use the file the template loads for it '
-		. '(css/custom.css in Hammond and Finch, see template:info), which updates never touch; changes to the template\'s own files are '
+		. '(css/custom.css in Hammond, Finch and Rookwood, see template:info), which updates never touch; changes to the template\'s own files are '
 		. 'lost when the template is updated. template:backup saves the whole template first.';
 
 	/**

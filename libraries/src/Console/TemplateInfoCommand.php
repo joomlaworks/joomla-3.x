@@ -283,7 +283,7 @@ class TemplateInfoCommand extends AbstractTemplateCommand
 	}
 
 	/**
-	 * The file for the site's own CSS which the template loads when it exists (Hammond and Finch: css/custom.css; Protostar
+	 * The file for the site's own CSS which the template loads when it exists (Hammond, Finch and Rookwood: css/custom.css; Protostar
 	 * and templates built on it: css/user.css), found in the template's PHP files.
 	 *
 	 * @param   array  $template  The template

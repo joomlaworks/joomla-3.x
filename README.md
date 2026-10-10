@@ -116,7 +116,7 @@ Summary of changes:
 - Quick install from the command line: `php cli/joomla.php core:install` sets up a new site on SQLite from just the site's name and the administrator's email address and username, with a generated password and, optionally, sample data (see [Quick install from the command line](#quick-install-from-the-command-line-sqlite))
 - Content management from the command line: list, show, create, change, publish, trash and delete articles, categories, tags, modules and menu items, saved as the administrator saves them, acting as an account whose permissions apply (`--as`); `--dry-run` on every command which changes something; `database:optimize`; `extension:reinstall` (overwrites an extension's files with its original package, from its update site or a given file, and lists or removes files the package doesn't have, e.g. on a hacked site); `site:health`; `log:list`/`log:tail` and `actionlog:list`. Changes made from the command line are recorded in the User Actions Log
 - Template management from the command line: a template's positions, options and design tokens (`template:info`), its options, and its files (list, read, write, delete), with every change undoable, syntax checks for PHP, and full template backups and restores (`template:backup`, `template:restore`)
-- Hammond and Finch load `css/custom.css` when it exists: the place for a site's own CSS, never touched by updates
+- Hammond, Finch and Rookwood load `css/custom.css` when it exists: the place for a site's own CSS, never touched by updates
 - Clearer option groups in the administrator: spacer headings are bands, spacer lines are visible rules
 - A taller editor by default (800px; the "HTML Height" option of the TinyMCE plugins sets it)
 - Hammond, Finch and Rookwood each have an `editor.css`: the editor shows articles with the site's fonts, colours and layout (Finch's and Rookwood's in light or dark, as the device is set)
@@ -367,6 +367,8 @@ Joomla 3 has always shipped a basic SQLite database driver, but it was never usa
 
 ## AI ASSISTANTS (MCP)
 The command line includes an MCP (Model Context Protocol) server, so AI assistants such as Claude Code or Claude Desktop can work with a site directly: check its health, read its logs, and list, write and change content, using the command line's commands as tools.
+
+**The full guide, [AI Assistants & the Command Line](AI-GUIDE.md), covers setting up Claude, ChatGPT/Codex, Gemini, Copilot, Cursor and other clients, choosing what an assistant may do, and using the command line yourself, with recipes for every area of a site.**
 
 - **Read-only by default:** the assistant can use every command which only reads, and dry runs of the others (which report what they would change), but can't change anything. Add `--allow-write` to let it make changes.
 - **Templates:** with `--allow-write`, an assistant can change a template's CSS, JavaScript and images (e.g. "make the headings darker" goes into `css/custom.css`) and its options. Anything which puts code on the server also needs `--allow-code`: writing a template's code (PHP, XML, `.htaccess`), restoring a template backup, installing or updating extensions, updating Joomla, and changing `configuration.php` (`config:set`, `database:convert`). Ask it to run `template:backup` first.
