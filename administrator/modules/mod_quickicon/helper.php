@@ -170,7 +170,44 @@ abstract class ModQuickIconHelper
 			}
 		}
 
+		// Only buttons whose components are there: a removable core component (e.g. Articles) may be uninstalled
+		self::$buttons[$key] = array_values(array_filter(self::$buttons[$key], array('ModQuickIconHelper', 'hasComponents')));
+
 		return self::$buttons[$key];
+	}
+
+	/**
+	 * Whether the components a button links to or checks access on are installed and enabled.
+	 *
+	 * @param   array  $button  The button
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	public static function hasComponents(array $button)
+	{
+		$components = array();
+
+		if (preg_match_all('/[?&;](?:option|extension)=(com_[a-z0-9_]+)/', (string) $button['link'], $matches))
+		{
+			$components = $matches[1];
+		}
+
+		if (is_array($button['access']))
+		{
+			$components = array_merge($components, preg_grep('/^com_[a-z0-9_]+$/', $button['access']));
+		}
+
+		foreach (array_unique($components) as $component)
+		{
+			if (!JComponentHelper::isEnabled($component))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

@@ -60,6 +60,10 @@
         <plugin group="finder" element="content" />
         <plugin group="privacy" element="content" />
         <plugin group="search" element="content" />
+        <plugin group="content" element="confirmconsent" />
+        <plugin group="sampledata" element="blog" />
+        <plugin group="system" element="privacyconsent" />
+        <plugin group="user" element="terms" />
     </companions>
 </extension>
 

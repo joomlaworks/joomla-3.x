@@ -462,6 +462,12 @@ abstract class RookwoodHelper
 	 */
 	public static function tags($item, $max = 2)
 	{
+		// Tags are the Tags component's: without it (uninstalled or disabled) they aren't shown
+		if (!JComponentHelper::isEnabled('com_tags'))
+		{
+			return '';
+		}
+
 		// The lists load their articles' tags already; modules don't
 		if (!isset($item->tagLabels))
 		{

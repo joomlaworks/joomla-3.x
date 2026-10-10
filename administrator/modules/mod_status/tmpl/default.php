@@ -86,7 +86,7 @@ else
 }
 
 //  Print the inbox message.
-if ($params->get('show_messages', 1))
+if ($params->get('show_messages', 1) && JComponentHelper::isEnabled('com_messages'))
 {
 	$active   = $unread ? ' badge-warning' : '';
 	$label    = JText::plural('MOD_STATUS_MESSAGES_LABEL', $unread);

@@ -16,7 +16,8 @@ JLoader::register('TagsHelperRoute', JPATH_BASE . '/components/com_tags/helpers/
 $authorised = JFactory::getUser()->getAuthorisedViewLevels();
 
 ?>
-<?php if (!empty($displayData)) : ?>
+<?php // Tags link to the Tags component's pages: without it (uninstalled or disabled) they aren't shown ?>
+<?php if (!empty($displayData) && JComponentHelper::isEnabled('com_tags')) : ?>
 	<ul class="tags inline">
 		<?php foreach ($displayData as $i => $tag) : ?>
 			<?php if (in_array($tag->access, $authorised)) : ?>

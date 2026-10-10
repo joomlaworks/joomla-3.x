@@ -72,7 +72,7 @@ $standfirst = !$params->get('show_intro', 1) ? FinchHelper::excerpt($item) : '';
 	<?php echo $item->event->afterDisplayContent; ?>
 
 	<footer class="postFooter">
-		<?php if (!empty($item->tags->itemTags)) : ?>
+		<?php if (!empty($item->tags->itemTags) && JComponentHelper::isEnabled('com_tags')) : ?>
 		<div class="postTags">
 			<span class="postTagsLabel"><?php echo JText::_('TPL_FINCH_TAGGED'); ?></span>
 			<?php foreach ($item->tags->itemTags as $tag) : ?>

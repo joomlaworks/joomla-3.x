@@ -70,7 +70,7 @@ if (HammondHelper::isPage()) : ?>
 	<div class="itemFullText" itemprop="articleBody"><?php echo HammondHelper::lazyImages($item->text, $image['src'] === ''); ?></div>
 	<?php echo $item->event->afterDisplayContent; ?>
 
-	<?php if (!empty($item->tags->itemTags)) : ?>
+	<?php if (!empty($item->tags->itemTags) && JComponentHelper::isEnabled('com_tags')) : ?>
 	<footer class="articleTags">
 		<span class="tagsLabel"><?php echo JText::_('TPL_HAMMOND_TAGGED'); ?></span>
 		<?php foreach ($item->tags->itemTags as $tag) : ?>

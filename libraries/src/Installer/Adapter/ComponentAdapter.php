@@ -721,8 +721,10 @@ class ComponentAdapter extends InstallerAdapter
 		 * ---------------------------------------------------------------------------------------------
 		 */
 
-		// Find and load the XML install file for the component
-		$this->parent->setPath('source', $this->parent->getPath('extension_administrator'));
+		// Find and load the XML install file for the component (a site-only component, e.g. Wrapper, keeps it in its site folder)
+		$this->parent->setPath('source', $this->parent->getPath(
+			is_dir($this->parent->getPath('extension_administrator')) ? 'extension_administrator' : 'extension_site'
+		));
 
 		// Get the package manifest object
 		// We do findManifest to avoid problem when uninstalling a list of extension: getManifest cache its manifest file

@@ -317,6 +317,18 @@ class JAdminCssMenu
 				continue;
 			}
 
+			// Exclude the categories and fields of a component which isn't there (e.g. Articles, uninstalled)
+			if (in_array($item->element, array('com_categories', 'com_fields'), true))
+			{
+				parse_str((string) parse_url(html_entity_decode((string) $item->link), PHP_URL_QUERY), $query);
+				$owner = isset($query['extension']) ? $query['extension'] : (isset($query['context']) ? strtok($query['context'], '.') : '');
+
+				if (strpos((string) $owner, 'com_') === 0 && !JComponentHelper::isEnabled($owner))
+				{
+					continue;
+				}
+			}
+
 			// Exclude Mass Mail if disabled in global configuration
 			if ($item->scope === 'massmail' && (JFactory::getApplication()->get('massmailoff', 0) == 1))
 			{

@@ -59,6 +59,14 @@ class JFormFieldSQL extends JFormFieldList
 	protected $query;
 
 	/**
+	 * The option shown first (the header attribute), or false. Declared, as PHP 8.2+ deprecates creating it dynamically.
+	 *
+	 * @var    string|boolean
+	 * @since  3.18.0
+	 */
+	protected $header = false;
+
+	/**
 	 * Method to get certain otherwise inaccessible properties from the form field object.
 	 *
 	 * @param   string  $name  The property name for which to get the value.
@@ -75,6 +83,7 @@ class JFormFieldSQL extends JFormFieldList
 			case 'valueField':
 			case 'translate':
 			case 'query':
+			case 'header':
 				return $this->$name;
 		}
 
@@ -100,6 +109,10 @@ class JFormFieldSQL extends JFormFieldList
 			case 'translate':
 			case 'query':
 				$this->$name = (string) $value;
+				break;
+
+			case 'header':
+				$this->header = $value;
 				break;
 
 			default:

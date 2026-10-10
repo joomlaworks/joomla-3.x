@@ -53,6 +53,10 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 - Uninstalling a core component also uninstalls the modules and plugins which only serve it (e.g. "Smart Search - Contacts", which stopped indexing); updates remove those left behind by earlier uninstalls
 - Uninstalling core extensions no longer leaves their media folders or language files behind
 - More PHP 8.2+/8.5 deprecation warnings fixed (the administrator's toolbar title, iterating registries and sessions)
+- No more PHP 8.2+ deprecation warning in forms with an SQL list field using a header option
+
+**Improvements:**
+- More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor; the admin quick icons, menu, status bar and article tags adapt when they're gone
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:
