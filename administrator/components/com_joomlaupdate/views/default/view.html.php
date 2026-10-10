@@ -265,8 +265,7 @@ class JoomlaupdateViewDefault extends JViewLegacy
 
 	/**
 	 * Returns true, if the pre update check should be displayed.
-	 * This logic is not hardcoded in tmpl files, because it is
-	 * used by the Hathor tmpl too.
+	 * This logic is not hardcoded in tmpl files, so template overrides can use it too.
 	 *
 	 * @return boolean
 	 *

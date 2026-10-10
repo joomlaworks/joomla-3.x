@@ -219,9 +219,7 @@ class ExtensionHelper
 		// Core plugin extensions - quick icon
 		array('plugin', 'extensionupdate', 'quickicon', 0),
 		array('plugin', 'joomlaupdate', 'quickicon', 0),
-		array('plugin', 'phpversioncheck', 'quickicon', 0),
 		array('plugin', 'privacycheck', 'quickicon', 0),
-		array('plugin', 'eos310', 'quickicon', 0),
 
 		// Core plugin extensions - sample data
 		array('plugin', 'blog', 'sampledata', 0),
@@ -265,11 +263,9 @@ class ExtensionHelper
 		array('plugin', 'terms', 'user', 0),
 
 		// Core template extensions - administrator
-		array('template', 'hathor', '', 1),
 		array('template', 'isis', '', 1),
 
 		// Core template extensions - site
-		array('template', 'beez3', '', 0),
 		array('template', 'finch', '', 0),
 		array('template', 'hammond', '', 0),
 		array('template', 'protostar', '', 0),

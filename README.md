@@ -43,6 +43,7 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 ## Version 3.18 - unreleased [pending]
 
 **Bug fixes:**
+- If the site's template files are missing, the site falls back to another installed template instead of failing
 - Articles with "Link Author" no longer fail when Contacts is uninstalled or disabled (the author just isn't linked)
 - Smart Search's full reindex no longer stops with "The table '#__finder_tokens' is full" on MySQL/MariaDB's default settings
 - Smart Search's command line indexer no longer stops when a content plugin renders a module into the content being indexed

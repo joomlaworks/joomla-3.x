@@ -545,12 +545,13 @@ final class SiteApplication extends CMSApplication
 		{
 			$this->enqueueMessage(\JText::_('JERROR_ALERTNOTEMPLATE'), 'error');
 
-			// Try to find data for 'beez3' template
+			// Fall back to the default template style, else any style whose template is there (Joomla fell back to Beez 3,
+			// which this distribution no longer ships)
 			$original_tmpl = $template->template;
 
 			foreach ($templates as $tmpl)
 			{
-				if ($tmpl->template === 'beez3')
+				if (file_exists(JPATH_THEMES . '/' . $tmpl->template . '/index.php'))
 				{
 					$template = $tmpl;
 					break;
