@@ -878,6 +878,8 @@ class ComponentAdapter extends InstallerAdapter
 			// Then the plugins which only serve it (and would query its dropped tables)
 			$this->uninstallCompanions($companions);
 
+			static::removeSearchIndexLinks($this->extension->element);
+
 			return $retval;
 		}
 		else
@@ -1022,6 +1024,45 @@ class ComponentAdapter extends InstallerAdapter
 		}
 
 		return false;
+	}
+
+	/**
+	 * Remove a component's entries from the Smart Search index, whose links would lead to errors once it's uninstalled.
+	 * Nothing happens if Smart Search isn't there. Large indexes get 10 seconds, then the rest is only taken out of the
+	 * results (until the index is cleared), so an uninstall doesn't run into the time limit.
+	 *
+	 * @param   string  $option  The component, e.g. com_content
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function removeSearchIndexLinks($option)
+	{
+		$indexer = JPATH_ADMINISTRATOR . '/components/com_finder/helpers/indexer/indexer.php';
+
+		if ($option === 'com_finder' || !is_file($indexer))
+		{
+			return;
+		}
+
+		try
+		{
+			\JLoader::register('FinderIndexer', $indexer);
+
+			// What doesn't fit in the time is only taken out of the results
+			$result = \FinderIndexer::getInstance()->removeComponentLinks($option, 10);
+
+			if ($result['hidden'])
+			{
+				\JLog::add(\JText::sprintf('JLIB_INSTALLER_NOTICE_SMART_SEARCH_LEFTOVERS', $result['hidden']), \JLog::NOTICE, 'jerror');
+			}
+		}
+		catch (\Exception $e)
+		{
+			// Smart Search's tables are gone, or the index is left as it was
+			\JLog::add($e->getMessage(), \JLog::WARNING, 'jerror');
+		}
 	}
 
 	/**

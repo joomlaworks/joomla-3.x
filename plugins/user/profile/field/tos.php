@@ -74,16 +74,10 @@ class JFormFieldTos extends JFormFieldRadio
 		}
 
 		$tosArticle = $this->element['article'] > 0 ? (int) $this->element['article'] : 0;
+		$article    = null;
 
-		if ($tosArticle)
+		if ($tosArticle && JComponentHelper::isEnabled('com_content'))
 		{
-			JHtml::_('behavior.modal');
-			JLoader::register('ContentHelperRoute', JPATH_BASE . '/components/com_content/helpers/route.php');
-
-			$attribs          = array();
-			$attribs['class'] = 'modal';
-			$attribs['rel']   = '{handler: \'iframe\', size: {x:800, y:500}}';
-
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 			$query->select('id, alias, catid, language')
@@ -91,6 +85,16 @@ class JFormFieldTos extends JFormFieldRadio
 				->where('id = ' . $tosArticle);
 			$db->setQuery($query);
 			$article = $db->loadObject();
+		}
+
+		if ($article)
+		{
+			JHtml::_('behavior.modal');
+			JLoader::register('ContentHelperRoute', JPATH_BASE . '/components/com_content/helpers/route.php');
+
+			$attribs          = array();
+			$attribs['class'] = 'modal';
+			$attribs['rel']   = '{handler: \'iframe\', size: {x:800, y:500}}';
 
 			if (JLanguageAssociations::isEnabled())
 			{

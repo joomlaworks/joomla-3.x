@@ -59,6 +59,12 @@ class PlgSearchCategories extends JPlugin
 	 */
 	public function onContentSearch($text, $phrase = '', $ordering = '', $areas = null)
 	{
+		// It finds categories of Articles only
+		if (!JComponentHelper::isEnabled('com_content'))
+		{
+			return array();
+		}
+
 		$db = JFactory::getDbo();
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();

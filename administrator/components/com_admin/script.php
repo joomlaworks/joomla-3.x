@@ -1258,6 +1258,8 @@ class JoomlaInstallerScript
 					continue;
 				}
 
+				\Joomla\CMS\Installer\Adapter\ComponentAdapter::removeSearchIndexLinks($element);
+
 				$manifest = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . substr($element, 4) . '.xml';
 				$xml      = is_file($manifest) ? simplexml_load_file($manifest) : false;
 

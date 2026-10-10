@@ -346,6 +346,123 @@ abstract class FinderIndexer
 	}
 
 	/**
+	 * Method to remove the index entries of a component, e.g. one which was uninstalled, whose links would only lead to
+	 * errors. It works on batches of links, not one link at a time as remove() does. With a time limit, the links left when
+	 * it runs out are only taken out of the results (their terms stay in the index until it's cleared).
+	 *
+	 * @param   string   $option   The component, e.g. com_content
+	 * @param   integer  $seconds  How long to spend on removing links with their terms, 0 for no limit
+	 *
+	 * @return  integer[]  The number of links removed ('removed') and of those only taken out of the results ('hidden').
+	 *
+	 * @since   3.18.0
+	 * @throws  Exception on database error.
+	 */
+	public function removeComponentLinks($option, $seconds = 0)
+	{
+		$result = array('removed' => 0, 'hidden' => 0);
+
+		if (!preg_match('/^com_[a-z0-9_]+$/', $option))
+		{
+			return $result;
+		}
+
+		$db     = $this->db;
+		$prefix = 'index.php?option=' . $option . '&';
+		$start  = microtime(true);
+		$last   = 0;
+
+		while (true)
+		{
+			// LIKE takes the underscore as a wildcard, so the prefix is compared again here
+			$query = $db->getQuery(true)
+				->select($db->quoteName(array('link_id', 'url')))
+				->from($db->quoteName('#__finder_links'))
+				->where($db->quoteName('url') . ' LIKE ' . $db->quote($prefix . '%'))
+				->where($db->quoteName('link_id') . ' > ' . (int) $last)
+				->order($db->quoteName('link_id'));
+			$rows = $db->setQuery($query, 0, 100)->loadObjectList();
+
+			if (!$rows)
+			{
+				break;
+			}
+
+			$linkIds = array();
+
+			foreach ($rows as $row)
+			{
+				$last = (int) $row->link_id;
+
+				if (strpos($row->url, $prefix) === 0)
+				{
+					$linkIds[] = $last;
+				}
+			}
+
+			if (!$linkIds)
+			{
+				continue;
+			}
+
+			$ids  = implode(',', $linkIds);
+			$full = !$seconds || microtime(true) - $start < $seconds;
+
+			for ($i = 0; $full && $i <= 15; $i++)
+			{
+				$table = $db->quoteName('#__finder_links_terms' . dechex($i));
+				$terms = $db->getQuery(true)
+					->select($db->quoteName('term_id'))
+					->from($table)
+					->where($db->quoteName('link_id') . ' IN (' . $ids . ')');
+
+				// Lower the link counts of the terms by the number of these links which have them
+				$count = $db->getQuery(true)
+					->select('COUNT(*)')
+					->from($table . ' AS ' . $db->quoteName('m'))
+					->where($db->quoteName('m.term_id') . ' = ' . $db->quoteName('#__finder_terms.term_id'))
+					->where($db->quoteName('m.link_id') . ' IN (' . $ids . ')');
+				$query->clear()
+					->update($db->quoteName('#__finder_terms'))
+					->set($db->quoteName('links') . ' = ' . $db->quoteName('links') . ' - (' . $count . ')')
+					->where($db->quoteName('term_id') . ' IN (' . $terms . ')');
+				$db->setQuery($query)->execute();
+
+				// Then delete the terms no other link has
+				$query->clear()
+					->delete($db->quoteName('#__finder_terms'))
+					->where($db->quoteName('links') . ' <= 0')
+					->where($db->quoteName('term_id') . ' IN (' . $terms . ')');
+				$db->setQuery($query)->execute();
+
+				$query->clear()
+					->delete($table)
+					->where($db->quoteName('link_id') . ' IN (' . $ids . ')');
+				$db->setQuery($query)->execute();
+			}
+
+			$query->clear()
+				->delete($db->quoteName('#__finder_taxonomy_map'))
+				->where($db->quoteName('link_id') . ' IN (' . $ids . ')');
+			$db->setQuery($query)->execute();
+
+			$query->clear()
+				->delete($db->quoteName('#__finder_links'))
+				->where($db->quoteName('link_id') . ' IN (' . $ids . ')');
+			$db->setQuery($query)->execute();
+
+			$result[$full ? 'removed' : 'hidden'] += count($linkIds);
+		}
+
+		if ($result['removed'] || $result['hidden'])
+		{
+			FinderIndexerTaxonomy::removeOrphanNodes();
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Method to optimize the index. We use this method to remove unused terms
 	 * and any other optimizations that might be necessary.
 	 *

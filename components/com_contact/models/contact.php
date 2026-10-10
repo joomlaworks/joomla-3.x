@@ -318,7 +318,7 @@ class ContactModelContact extends JModelForm
 		}
 
 		// Get the com_content articles by the linked user
-		if ((int) $contact->user_id && $this->getState('params')->get('show_articles'))
+		if ((int) $contact->user_id && $this->getState('params')->get('show_articles') && JComponentHelper::isEnabled('com_content'))
 		{
 			$query = $db->getQuery(true)
 				->select('a.id')
@@ -507,7 +507,7 @@ class ContactModelContact extends JModelForm
 				}
 
 				// Get the com_content articles by the linked user
-				if ((int) $result->user_id && $this->getState('params')->get('show_articles'))
+				if ((int) $result->user_id && $this->getState('params')->get('show_articles') && JComponentHelper::isEnabled('com_content'))
 				{
 					$query = $db->getQuery(true)
 						->select('a.id')

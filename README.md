@@ -56,7 +56,8 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 - No more PHP 8.2+ deprecation warning in forms with an SQL list field using a header option
 
 **Improvements:**
-- More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor; the admin quick icons, menu, status bar and article tags adapt when they're gone
+- More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor; the admin quick icons, menu, status bar and article tags adapt when they're gone, and Contacts no longer needs Articles
+- Uninstalling a component removes its entries from the Smart Search index
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:
