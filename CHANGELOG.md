@@ -1,5 +1,7 @@
 # CHANGELOG
 
+## Version 3.18 - unreleased [pending]
+
 ## Version 3.17 - released October 10th, 2026
 
 ### Security fixes
