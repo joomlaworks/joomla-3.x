@@ -13,7 +13,8 @@ This guide covers both: how to connect an AI assistant to your site, what it can
 - [Connect an AI assistant (MCP)](#connect-an-ai-assistant-mcp)
   - [Claude Code](#claude-code)
   - [Claude Desktop](#claude-desktop)
-  - [Cursor, VS Code, Windsurf, Gemini CLI, Codex CLI](#cursor-vs-code-windsurf-gemini-cli-codex-cli)
+  - [Devin Desktop (formerly Windsurf)](#devin-desktop-formerly-windsurf)
+  - [Cursor, VS Code, Gemini CLI, Codex CLI](#cursor-vs-code-gemini-cli-codex-cli)
   - [Any other MCP client](#any-other-mcp-client)
 - [Decide what the assistant may do](#decide-what-the-assistant-may-do)
 - [Working with an assistant](#working-with-an-assistant)
@@ -85,11 +86,20 @@ Settings → Developer → Edit Config opens `claude_desktop_config.json`. Add t
 
 Over SSH: `"command": "ssh"` and `"args": ["user@example.com", "php", "/path/to/site/cli/joomla.php", "mcp:serve"]`. Options go at the end of `args` (e.g. `"--allow-write"`).
 
-### Cursor, VS Code, Windsurf, Gemini CLI, Codex CLI
+### Devin Desktop (formerly Windsurf)
+
+[Devin Desktop](https://devin.ai/desktop) is the new name for Windsurf. Its default agent, Devin Local, adds servers like Claude Code does:
+```
+devin mcp add joomla -- php /path/to/site/cli/joomla.php mcp:serve
+```
+
+Add `-s project` to share the server through the project's `.devin/mcp_config.json`, or `-s user` for all your projects (`~/.config/devin/mcp_config.json`; `%APPDATA%\devin\mcp_config.json` on Windows). The files take the same `mcpServers` block as Claude Desktop above. The legacy Cascade agent reads `~/.config/devin/mcp_config.json` too (Cascade panel → ... → Open MCP config file).
+
+### Cursor, VS Code, Gemini CLI, Codex CLI
 
 These clients use the same command and arguments, in their own configuration files (check your client's documentation for the current location):
 
-- **Cursor** (`.cursor/mcp.json` in the project, or `~/.cursor/mcp.json`), **Windsurf** (`~/.codeium/windsurf/mcp_config.json`) and **Gemini CLI** (`~/.gemini/settings.json`): the same `mcpServers` block as Claude Desktop above.
+- **Cursor** (`.cursor/mcp.json` in the project, or `~/.cursor/mcp.json`) and **Gemini CLI** (`~/.gemini/settings.json`): the same `mcpServers` block as Claude Desktop above.
 - **VS Code** with GitHub Copilot (`.vscode/mcp.json`):
   ```json
   {
