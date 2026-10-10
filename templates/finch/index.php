@@ -95,7 +95,7 @@ $page = FinchHelper::prepare($this);
 			</div>
 			<div class="footerBottom">
 				<?php if ($page->params->get('footerText')) : ?>
-				<p class="footerText"><?php echo FinchHelper::e($page->params->get('footerText')); ?></p>
+				<p class="footerText"><?php echo FinchHelper::footerText($page->params->get('footerText')); ?></p>
 				<?php endif; ?>
 				<p class="copyright">&copy; <?php echo date('Y') . ' ' . FinchHelper::e($page->siteName); ?>. <?php echo JText::_('TPL_FINCH_ALL_RIGHTS_RESERVED'); ?></p>
 				<a class="backToTop" href="#top"><?php echo FinchHelper::icon('arrow-up') . JText::_('TPL_FINCH_BACK_TO_TOP'); ?></a>

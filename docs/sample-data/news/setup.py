@@ -39,7 +39,7 @@ if 'hammond' not in sql("SELECT element FROM #__extensions WHERE type='template'
 params = json.dumps({
     'siteName': 'Hammond News',
     'tagline': 'Independent journalism on politics, the economy, technology and the ideas shaping our world.',
-    'footerText': 'Hammond News is a placeholder publication made for demonstrating Joomla. Hammond Media Ltd., 10 Example Street, Exampletown. '
+    'footerText': 'Hammond News is a placeholder publication made for demonstrating Joomla 3.x UTD. Hammond Media Ltd., 10 Example Street, Exampletown. '
                   'Registered in Exampleland, company no. 0000000. All articles, people and figures on this site are fictional.',
     'pagesMenu': 'companymenu',
     'social_facebook': '#', 'social_x': '#', 'social_instagram': '#', 'social_youtube': '#', 'social_linkedin': '#', 'social_rss': '',

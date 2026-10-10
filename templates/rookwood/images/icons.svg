@@ -1,6 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
 <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
 <symbol id="i-close" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
 <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 20V5m-6 6 6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-x" viewBox="0 0 24 24"><path d="M17.8 3h3.1l-6.7 7.6L22 21h-6.2l-4.8-6.3L5.5 21H2.4l7.1-8.2L2 3h6.3l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.5z" fill="currentColor"/></symbol>

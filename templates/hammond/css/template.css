@@ -692,6 +692,7 @@ dl.stats-module dd {margin:0;overflow-wrap:anywhere;}
 .footerMenus .moduleContainer:first-child ul.menu {columns:2;column-gap:32px;}
 .footerBottom {display:flex;flex-wrap:wrap;align-items:center;gap:12px 32px;padding-top:28px;font-size:.85rem;color:#8b8e94;}
 .footerText {flex:1 1 100%;margin:0;max-width:110ch;line-height:1.6;}
+.footerText a {white-space:nowrap;text-decoration:underline;text-underline-offset:3px;}
 .copyright {margin:0;}
 .backToTop {display:inline-flex;align-items:center;gap:6px;margin-left:auto;font-weight:700;}
 

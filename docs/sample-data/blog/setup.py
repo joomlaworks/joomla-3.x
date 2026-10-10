@@ -36,7 +36,7 @@ params = json.dumps({
     'greeting': 'Hi, I\'m Finch.',
     'tagline': 'Essays on cities, ideas and the way we live.',
     'authorBio': 'Finch Hartley writes about cities, classrooms and the small technologies that shape everyday life. Finch has kept this notebook since 2016.',
-    'footerText': 'Field Notes is a placeholder blog made for demonstrating Joomla. Finch Hartley and everything written here are fictional.',
+    'footerText': 'Field Notes is a placeholder blog made for demonstrating Joomla 3.x UTD. Finch Hartley and everything written here are fictional.',
     'social_x': '#', 'social_instagram': '#', 'social_facebook': '#', 'social_linkedin': '#', 'social_rss': '',
 })
 sql("UPDATE #__template_styles SET home = '0' WHERE client_id = 0",

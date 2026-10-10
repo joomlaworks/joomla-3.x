@@ -50,7 +50,8 @@ abstract class RookwoodHelper
 	 * @param   JDocumentHtml  $document  The document ($this in the template's files)
 	 * @param   string         $layout    index, component or offline
 	 *
-	 * @return  stdClass  params, siteName, theme; for index also isHome, isPage, isList, ownLayout (an override draws the page), bodyClass
+	 * @return  stdClass  params, siteName, theme; for index also isHome, isPage, isList, ownLayout (an override draws the page), hasSearch,
+	 *                    bodyClass
 	 *
 	 * @since   3.17.0
 	 */
@@ -101,7 +102,8 @@ abstract class RookwoodHelper
 		$page->isList    = !$page->isHome && in_array($option . '.' . $view,
 			array('com_content.category', 'com_content.archive', 'com_content.featured', 'com_tags.tag', 'com_tags.tags', 'com_search.search'), true);
 		$page->ownLayout = in_array($option . '.' . $view, array('com_content.article', 'com_content.category', 'com_content.featured',
-			'com_content.archive', 'com_tags.tag', 'com_tags.tags'), true) && $input->getCmd('layout') !== 'edit';
+			'com_content.archive', 'com_tags.tag', 'com_tags.tags', 'com_search.search'), true) && $input->getCmd('layout') !== 'edit';
+		$page->hasSearch = (bool) $document->countModules('search');
 		$page->bodyClass = implode(' ', array_filter(array(
 			'site', $page->isHome ? 'isFrontpage' : 'isInner', $page->isPage ? 'isPage' : '', $page->isList ? 'isList' : '',
 			'option-' . str_replace('com_', '', $option), 'view-' . $view, $active ? 'itemid-' . (int) $active->id : '',
@@ -293,6 +295,21 @@ abstract class RookwoodHelper
 	public static function e($value)
 	{
 		return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+	}
+
+	/**
+	 * The footer text option, escaped, with "Joomla 3.x UTD" linked to the distribution's site. The option is plain text: the
+	 * link is added to the escaped text, which has no markup of its own.
+	 *
+	 * @param   string  $text  The text
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public static function footerText($text)
+	{
+		return str_replace('Joomla 3.x UTD', '<a href="https://j3xutd.joomlaworks.net">Joomla 3.x UTD</a>', static::e($text));
 	}
 
 	/**

@@ -262,6 +262,21 @@ abstract class HammondHelper
 	}
 
 	/**
+	 * The footer text option, escaped, with "Joomla 3.x UTD" linked to the distribution's site. The option is plain text: the
+	 * link is added to the escaped text, which has no markup of its own.
+	 *
+	 * @param   string  $text  The text
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	public static function footerText($text)
+	{
+		return str_replace('Joomla 3.x UTD', '<a href="https://j3xutd.joomlaworks.net">Joomla 3.x UTD</a>', static::e($text));
+	}
+
+	/**
 	 * An SVG icon from the sprite in index.php.
 	 *
 	 * @param   string  $name   The icon

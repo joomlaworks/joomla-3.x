@@ -135,7 +135,7 @@ $page = HammondHelper::prepare($this);
 			</div>
 			<div class="footerBottom">
 				<?php if ($page->params->get('footerText')) : ?>
-				<p class="footerText"><?php echo HammondHelper::e($page->params->get('footerText')); ?></p>
+				<p class="footerText"><?php echo HammondHelper::footerText($page->params->get('footerText')); ?></p>
 				<?php endif; ?>
 				<p class="copyright">&copy; <?php echo date('Y') . ' ' . HammondHelper::e($page->siteName); ?>. <?php echo JText::_('TPL_HAMMOND_ALL_RIGHTS_RESERVED'); ?></p>
 				<a class="backToTop" href="#top"><?php echo HammondHelper::icon('arrow-up') . JText::_('TPL_HAMMOND_BACK_TO_TOP'); ?></a>

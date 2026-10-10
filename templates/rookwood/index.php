@@ -34,6 +34,11 @@ $page = RookwoodHelper::prepare($this);
 				<?php endif; ?>
 			</nav>
 			<div class="headerTools">
+				<?php if ($page->hasSearch) : ?>
+				<button type="button" class="iconButton searchToggle" aria-expanded="false" aria-controls="searchPanel" aria-label="<?php echo JText::_('TPL_ROOKWOOD_SEARCH'); ?>">
+					<?php echo RookwoodHelper::icon('search') . RookwoodHelper::icon('close'); ?>
+				</button>
+				<?php endif; ?>
 				<button type="button" class="iconButton themeToggle" data-label-dark="<?php echo JText::_('TPL_ROOKWOOD_THEME_DARK'); ?>" data-label-light="<?php echo JText::_('TPL_ROOKWOOD_THEME_LIGHT'); ?>" aria-label="<?php echo JText::_('TPL_ROOKWOOD_THEME_SWITCH'); ?>">
 					<?php echo RookwoodHelper::icon('sun') . RookwoodHelper::icon('moon'); ?>
 				</button>
@@ -46,6 +51,15 @@ $page = RookwoodHelper::prepare($this);
 				</button>
 			</div>
 		</div>
+
+		<?php // The search form opens over the page, under the header: it never moves the content (no layout shift) ?>
+		<?php if ($page->hasSearch) : ?>
+		<div class="searchPanel" id="searchPanel" hidden>
+			<div class="container">
+				<jdoc:include type="modules" name="search" style="none" />
+			</div>
+		</div>
+		<?php endif; ?>
 	</header>
 
 	<main id="content" class="siteMain">
@@ -82,7 +96,7 @@ $page = RookwoodHelper::prepare($this);
 			<div class="footerBottom">
 				<?php echo RookwoodHelper::logo('logo logoFooter'); ?>
 				<?php echo RookwoodHelper::socialLinks(); ?>
-				<p class="copyright">&copy; <?php echo date('Y') . ' ' . RookwoodHelper::e($page->siteName); ?>.<?php if ($text = $page->params->get('footerText')) : ?> <?php echo RookwoodHelper::e($text); ?><?php endif; ?></p>
+				<p class="copyright">&copy; <?php echo date('Y') . ' ' . RookwoodHelper::e($page->siteName); ?>.<?php if ($text = $page->params->get('footerText')) : ?> <?php echo RookwoodHelper::footerText($text); ?><?php endif; ?></p>
 				<a class="backToTop" href="#top"><?php echo RookwoodHelper::icon('arrow-up') . JText::_('TPL_ROOKWOOD_BACK_TO_TOP'); ?></a>
 			</div>
 		</div>

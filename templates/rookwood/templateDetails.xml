@@ -27,6 +27,7 @@
 	<positions>
 		<position>navigation</position>
 		<position>header-action</position>
+		<position>search</position>
 		<position>frontpage</position>
 		<position>above-content</position>
 		<position>below-content</position>

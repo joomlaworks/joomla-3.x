@@ -3,7 +3,7 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* Rookwood: the theme switch, the menu on small screens, the header's state once the page scrolls */
+/* Rookwood: the theme switch, the search panel, the menu on small screens, the header's state once the page scrolls */
 ((document, window) => {
 	'use strict';
 
@@ -40,6 +40,43 @@
 		});
 	}
 
+	// The search panel: under the header, closed with the button, Escape or a click outside it
+	const searchToggle = document.querySelector('.searchToggle');
+	const searchPanel = document.getElementById('searchPanel');
+
+	const setSearch = (open) => {
+		if (!searchToggle || !searchPanel) {
+			return;
+		}
+
+		searchPanel.hidden = !open;
+		searchToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+		const field = open ? searchPanel.querySelector('input[type="search"], input[type="text"]') : null;
+
+		if (field) {
+			field.focus({ preventScroll: true });
+		}
+	};
+
+	if (searchToggle && searchPanel) {
+		searchToggle.addEventListener('click', () => {
+			setMenu(false);
+			setSearch(searchPanel.hidden);
+		});
+		document.addEventListener('click', (event) => {
+			if (!searchPanel.hidden && event.target instanceof Element && !event.target.closest('#searchPanel, .searchToggle')) {
+				setSearch(false);
+			}
+		});
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && !searchPanel.hidden) {
+				setSearch(false);
+				searchToggle.focus();
+			}
+		});
+	}
+
 	// The menu on small screens: a panel over the page, closed with the button, Escape or a link
 	const menuToggle = document.querySelector('.menuToggle');
 	const nav = document.getElementById('mainNav');
@@ -54,7 +91,10 @@
 	};
 
 	if (menuToggle && nav) {
-		menuToggle.addEventListener('click', () => setMenu(!body.classList.contains('menuOpen')));
+		menuToggle.addEventListener('click', () => {
+			setSearch(false);
+			setMenu(!body.classList.contains('menuOpen'));
+		});
 		nav.addEventListener('click', (event) => {
 			if (event.target instanceof Element && event.target.closest('a')) {
 				setMenu(false);

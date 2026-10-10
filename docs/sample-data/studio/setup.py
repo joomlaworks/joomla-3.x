@@ -73,7 +73,7 @@ contact = ('<p>Tell us about your project, your idea or your problem. We answer 
            '<div class="contactCard"><h2>Careers and press</h2><p><a href="mailto:jobs@example.com">jobs@example.com</a></p><p><a href="mailto:press@example.com">press@example.com</a></p><p>We hire twice a year.</p></div>'
            '</div>\n'
            '<h2>Getting here</h2>\n<p>The studio is a ten-minute walk from Rookwood Central. There are bicycle racks in the yard and step-free access through the side gate.</p>\n'
-           '<p><em>Rookwood Studio, its people, clients and addresses are fictional: this is sample content for demonstrating Joomla.</em></p>')
+           '<p><em>Rookwood Studio, its people, clients and addresses are fictional: this is sample content for demonstrating <a href="https://j3xutd.joomlaworks.net">Joomla 3.x UTD</a>.</em></p>')
 pages = [
     ('studio', 'Studio', 'mainmenu', 'violet-desk', 'A desk lit in violet and blue in a dark studio', studio),
     ('contact', 'Contact', 'mainmenu', 'light-trails', 'Trails of car lights through a city at night', contact),
@@ -123,7 +123,7 @@ button('studiolink', 'Meet the studio', 'meet-the-studio', 'studio', 'btn btnLig
 params = json.dumps({
     'siteName': 'Rookwood Studio', 'defaultTheme': 'dark',
     'footerHeadline': 'Have a project in mind? Let\'s talk.', 'footerEmail': 'hello@example.com',
-    'footerText': 'A fictional studio, made for demonstrating Joomla.',
+    'footerText': 'A fictional studio, made for demonstrating Joomla 3.x UTD.',
     'social_x': '#', 'social_linkedin': '#', 'social_instagram': '#', 'social_github': '#', 'social_dribbble': '#', 'social_rss': '',
 })
 sql("UPDATE #__template_styles SET home = '0' WHERE client_id = 0",
@@ -156,6 +156,9 @@ menu('Main Menu', 'navigation', 'mainmenu')
 menu('Header Button', 'header-action', 'headeraction', css=' buttons')
 menu('Hero Buttons', 'hero-actions', 'heroactions', css=' buttons')
 menu('Studio Button', 'studio-link', 'studiolink', css=' buttons')
+cli('module:create', '--type=mod_search', '--title=Search', '--position=search', '--show-title=no', '--pages=all', '--state=published',
+    '--params=' + json.dumps({'label': 'Search', 'width': '', 'text': 'Search the studio…', 'button': '1', 'button_pos': 'right', 'button_text': 'Search',
+                              'set_itemid': '0', 'opensearch': '0'}))
 
 custom('Hero', 'frontpage', '<div class="hero">' + picture('light-curves', '', 'heroImage', True) + '<div class="container heroBody">'
        '<p class="eyebrow">Design &amp; technology studio</p>'
