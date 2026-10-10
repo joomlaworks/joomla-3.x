@@ -42,7 +42,7 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 
 ## Version 3.18 - unreleased [pending]
 **Bug fixes:**
-- The administrator login page shows its gradient on upgraded sites too, which got a flat blue panel from Isis' old default "Login Background Colour"
+- The administrator login page always shows its gradient: upgraded sites got a flat blue panel from Isis' old "Login Background Colour" option, which is removed
 
 **Improvements:**
 - `config:set` says which options it set, with their new and previous values (secrets and long values by name only)

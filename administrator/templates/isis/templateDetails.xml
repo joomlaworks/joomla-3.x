@@ -50,7 +50,6 @@
                 <field name="headerColor" type="color" label="TPL_ISIS_COLOR_HEADER_LABEL" description="TPL_ISIS_COLOR_HEADER_DESC" class="" default="#1A3867" validate="color" />
                 <field name="sidebarColor" type="color" label="TPL_ISIS_COLOR_SIDEBAR_LABEL" description="TPL_ISIS_COLOR_SIDEBAR_DESC" class="" default="#3071a9" validate="color" />
                 <field name="linkColor" type="color" label="TPL_ISIS_COLOR_LINK_LABEL" description="TPL_ISIS_COLOR_LINK_DESC" class="" default="#3071a9" validate="color" />
-                <field name="loginBackgroundColor" type="color" label="TPL_ISIS_COLOR_LOGIN_BACKGROUND_LABEL" description="TPL_ISIS_COLOR_LOGIN_BACKGROUND_DESC" class="" default="" validate="color" />
                 <field name="logoFile" type="media" schemes="http,https,ftp,ftps,data,file" validate="url" relative="true" label="TPL_ISIS_LOGO_LABEL" description="TPL_ISIS_LOGO_DESC" class="" default="" />
                 <field name="loginLogoFile" type="media" schemes="http,https,ftp,ftps,data,file" validate="url" relative="true" label="TPL_ISIS_LOGIN_LOGO_LABEL" description="TPL_ISIS_LOGIN_LOGO_DESC" class="" default="" />
                 <field name="admin_menus" type="radio" label="TPL_ISIS_FIELD_ADMIN_MENUS_LABEL" description="TPL_ISIS_FIELD_ADMIN_MENUS_DESC" class="btn-group btn-group-yesno" default="1" filter="integer">

@@ -34,26 +34,9 @@ $siteUrl  = $frontEndUri->toString();
 $siteHost = rtrim($frontEndUri->toString(array('host', 'port', 'path')), '/');
 $sitename = (string) $app->get('sitename', '');
 
-// Template parameters: a custom logo for the form, and a colour for the side panel instead of its gradient
-$loginLogoFile   = (string) $this->params->get('loginLogoFile', '');
-$backgroundColor = (string) $this->params->get('loginBackgroundColor', '');
-
-// The option's old default (#17568C, Joomla 3's login blue) is stored by every save of the style's options, so on most
-// existing sites it isn't a choice: they get the gradient like new sites. Any other colour is used instead of it.
-if (!preg_match('/^#[0-9a-f]{6}$/i', $backgroundColor) || strtolower($backgroundColor) === '#17568c')
-{
-	$backgroundColor = '';
-}
-
-$lightBackground = false;
-
-if ($backgroundColor !== '')
-{
-	$yiq             = (hexdec(substr($backgroundColor, 1, 2)) * 299 + hexdec(substr($backgroundColor, 3, 2)) * 587 + hexdec(substr($backgroundColor, 5, 2)) * 114) / 1000;
-	$lightBackground = $yiq >= 160;
-
-	$this->addStyleDeclaration('.loginBrand { --brand-bg: ' . $backgroundColor . '; }');
-}
+// Template parameters: a custom logo for the form. The side panel is always the gradient (Isis' old "Login Background
+// Colour" option is gone; a value sites still have stored is ignored)
+$loginLogoFile = (string) $this->params->get('loginLogoFile', '');
 
 JHtml::_('stylesheet', 'login.css', array('version' => 'auto', 'relative' => true));
 JHtml::_('script', 'login.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
@@ -107,7 +90,7 @@ $escape = function ($text)
 </head>
 <body class="loginPage <?php echo $escape($option . ' view-' . $view); ?>">
 	<div class="loginLayout">
-		<aside class="loginBrand<?php echo $backgroundColor !== '' ? ' loginBrand--custom' : ''; ?><?php echo $lightBackground ? ' loginBrand--light' : ''; ?>">
+		<aside class="loginBrand">
 			<div class="loginBrand-inner">
 				<p class="loginBrand-site"><?php echo $escape($sitename); ?></p>
 				<p class="loginBrand-host"><?php echo $escape($siteHost); ?></p>
