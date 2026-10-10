@@ -15,6 +15,7 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 
 ## CONTENTS
 - [Changelog](#changelog)
+  - [Version 3.18 - unreleased [pending]](#version-318---unreleased-pending)
   - [Version 3.17 - released October 10th, 2026](#version-317---released-october-10th-2026)
   - [Version 3.16 - released October 3rd, 2026](#version-316---released-october-3rd-2026)
   - [Version 3.15 - released July 18th, 2026](#version-315---released-july-18th-2026)
@@ -38,6 +39,10 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 - [Longterm Plan (as a different project)](#longterm-plan-as-a-different-project)
 
 ## CHANGELOG
+
+## Version 3.18 - unreleased [pending]
+**Improvements:**
+- `config:set` says which options it set, with their new and previous values (secrets and long values by name only)
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:

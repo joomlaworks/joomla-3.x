@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version 3.18 - unreleased [pending]
+
+### Improvements
+- `config:set` names what it set: its success message lists each option with its new and previous value (e.g. `[OK] Configuration set: caching = 2 (was 0); cachetime = 30 (was 15).`), or "(unchanged)", so consecutive runs can be told apart; it only said "Configuration set.". Secret options (passwords, keys) and values too long or with markup for one line of text (e.g. an HTML offline message) are named without their value ("smtppass changed"). With `--format=json`, `data.options` lists every option with `value`, `previous` and `changed` (secrets as `***`).
+
 ## Version 3.17 - released October 10th, 2026
 
 ### Security fixes

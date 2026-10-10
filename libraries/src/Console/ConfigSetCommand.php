@@ -124,10 +124,80 @@ class ConfigSetCommand extends AbstractCommand
 
 		if (!$io->isDryRun())
 		{
-			$io->success('Configuration set.');
+			// Name what was set, so consecutive runs can be told apart; secret values are never shown
+			$described = array();
+			$data      = array();
+
+			foreach ($changes as $option => $value)
+			{
+				$old     = isset($current[$option]) ? $current[$option] : null;
+				$secret  = $this->isSecret($option);
+				$changed = (string) $old !== (string) $value;
+
+				// Secrets, and values too long or with markup for one line of text (the JSON data has them all), are only named
+				if ($secret || !$this->isShortValue($value) || !$this->isShortValue($old))
+				{
+					$described[] = $option . ($changed ? ' changed' : ' unchanged');
+				}
+				else
+				{
+					$described[] = $option . ' = ' . $this->describeValue($value)
+						. ($changed ? ' (was ' . $this->describeValue($old) . ')' : ' (unchanged)');
+				}
+
+				$data[] = array('option' => $option, 'value' => $secret ? '***' : $value, 'previous' => $secret ? '***' : $old, 'changed' => $changed);
+			}
+
+			$io->setData('options', $data);
+			$io->success('Configuration set: ' . implode('; ', $described) . '.');
 		}
 
 		return self::SUCCESS;
+	}
+
+	/**
+	 * Whether a value fits the success message as it is: short, on one line, without markup.
+	 *
+	 * @param   mixed  $value  The value
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.17.0
+	 */
+	private function isShortValue($value)
+	{
+		if (!is_scalar($value) && $value !== null)
+		{
+			return false;
+		}
+
+		$value = (string) $value;
+
+		return strlen($value) <= 40 && !preg_match('/[<>\r\n]/', $value);
+	}
+
+	/**
+	 * A configuration value as the success message shows it.
+	 *
+	 * @param   mixed  $value  The value
+	 *
+	 * @return  string
+	 *
+	 * @since   3.17.0
+	 */
+	private function describeValue($value)
+	{
+		if (is_bool($value))
+		{
+			return $value ? 'true' : 'false';
+		}
+
+		if ($value === null || $value === '')
+		{
+			return '(empty)';
+		}
+
+		return (string) $value;
 	}
 
 	/**
