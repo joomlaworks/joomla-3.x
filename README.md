@@ -52,7 +52,8 @@ Summary of changes:
 **Improvements:**
 - More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. The administrator's quick icons, menu and status bar, article tags and Contacts work without them
 - Uninstalling a component (core or third-party) removes its entries from the Smart Search index
-- Uninstalling a core component removes its own database tables (shared ones stay); every removable component has install and uninstall SQL for MySQL, PostgreSQL and SQL Server, so restoring brings its tables back
+- Uninstalling a core component removes its own database tables (shared ones stay); every removable component has install and uninstall SQL for MySQL, PostgreSQL and SQL Server, so restoring brings its tables back. Updating from an earlier version also removes the tables of core components uninstalled before
+- PostgreSQL 9.1 is now the minimum (was 9.0)
 - Removed the "Authentication - GMail" plugin (Google stopped accepting its password sign-in in 2022), the "System - P3P Policy" plugin, joomla.org's update site for the Joomla Update component, Global Configuration's Memcache options, unused web service libraries and polyfills for PHP versions below 7.1
 
 **Bug fixes:**
@@ -269,7 +270,7 @@ Switching to this distribution will also allow you (or take you closer) to upgra
 |---|---|---|
 | MySQL | 5.5.3 | Tested and actively supported (5.7 or newer recommended, see notes below for 8.x & 9.x) |
 | MariaDB | 5.5 | Tested and actively supported |
-| PostgreSQL | 9.0 | Tested and supported with both drivers since 3.17 (16 or newer recommended, preferably 18, see notes below) |
+| PostgreSQL | 9.1 | Tested and supported with both drivers since 3.17 (16 or newer recommended, preferably 18, see notes below) |
 | Microsoft SQL Server / Azure SQL | 2008 R2 (10.50.1600.1) | Inherited from stock Joomla 3.x; tested since 3.17 on SQL Server 2022 with both drivers (core only: few extensions support it) |
 | SQLite (experimental) | 3.37.0, with PHP 7.4+ | New in 3.17: runs MySQL SQL through an emulation layer, so core and extensions work unchanged; tested on SQLite 3.37.2 (Ubuntu 22.04's) and 3.46.1, with core and common extensions |
 
@@ -300,7 +301,7 @@ sql_mode = ""
 ## POSTGRESQL SUPPORT
 Joomla 3 has always had PostgreSQL drivers, but they fell behind: the main one stopped working on PHP 8.1, and parts of Joomla broke on recent PostgreSQL versions. Since 3.17, PostgreSQL is fully supported again and tested against PostgreSQL 18, with both drivers: "PostgreSQL" (PHP's `pgsql` extension) and "PostgreSQL (PDO)" (`pdo_pgsql`).
 
-- **Versions:** PostgreSQL 9.0 is the minimum, but use a recent version: 16 or newer, preferably 18.
+- **Versions:** PostgreSQL 9.1 is the minimum (9.0 until 3.17), but use a recent version: 16 or newer, preferably 18.
 - **Installing and updating:** choose either PostgreSQL driver in the installer. Joomla Update, Extensions: Database and the "Restore uninstalled core extensions" option work as on MySQL.
 - **Command line:** `php cli/joomla.php database:export` and `database:import` work on PostgreSQL, and `database:convert` moves a site between MySQL/MariaDB, PostgreSQL and SQLite, in any direction (e.g. `php cli/joomla.php database:convert --to=postgresql --user=... --password=... --database=...`). Converting translates column types and Joomla's "no date" values, which differ between MySQL and PostgreSQL, checks that every table has all its rows, and fixes the new database's structure as Extensions: Database would. The site is offline while its database is copied, and the old database is left as it is. Tables of MySQL-only extensions get the defaults MySQL would apply, so their code keeps working on PostgreSQL.
 - **Core extensions:** we've gone the extra mile and added the PostgreSQL install scripts that Banners, Contacts and News Feeds never had, so these can be uninstalled and installed again on PostgreSQL too.

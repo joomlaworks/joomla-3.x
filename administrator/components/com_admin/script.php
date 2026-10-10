@@ -96,8 +96,9 @@ class JoomlaInstallerScript
 		}
 		else
 		{
-			// First the plugins left behind by components uninstalled before 3.18, so their files go too
+			// First the plugins and tables left behind by components uninstalled before 3.18, while their files are still there
 			$this->removeLeftoverCompanions();
+			$this->dropTablesOfRemovedCoreComponents();
 			$this->deleteFilesOfRemovedCoreExtensions();
 		}
 		$this->updateManifestCaches();
@@ -1280,6 +1281,71 @@ class JoomlaInstallerScript
 					{
 						// Not worth failing the update for: the extension stays as it was
 					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Since 3.18 uninstalling a removable core component drops its own tables. Sites updating from an earlier version may still
+	 * have the tables of one they uninstalled then (Content History and Fields kept them, the others only if their uninstall SQL
+	 * failed): run the component's uninstall SQL, from the just extracted package, which drops only its own tables. Not when the
+	 * admin asked to restore uninstalled core extensions (this runs on the other branch).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function dropTablesOfRemovedCoreComponents()
+	{
+		if (!empty($this->fromVersion) && version_compare($this->fromVersion, '3.18.0', '>='))
+		{
+			return;
+		}
+
+		$states = $this->getCoreExtensionStates();
+
+		if ($states === null)
+		{
+			return;
+		}
+
+		list($installed) = $states;
+
+		foreach ($this->removableCoreExtensions as $members)
+		{
+			foreach ($members as $member)
+			{
+				list($type, $element) = $member;
+
+				if ($type !== 'component' || isset($installed[$this->removableCoreExtensionKey('component', $element, '', 0)]))
+				{
+					continue;
+				}
+
+				$folder   = JPATH_ADMINISTRATOR . '/components/' . $element;
+				$manifest = $folder . '/' . substr($element, 4) . '.xml';
+				$xml      = is_file($manifest) ? simplexml_load_file($manifest) : false;
+
+				if (!$xml || !isset($xml->uninstall->sql))
+				{
+					continue;
+				}
+
+				try
+				{
+					$installer = new JInstaller;
+					$installer->setPath('extension_root', $folder);
+
+					if ($installer->parseSQLFiles($xml->uninstall->sql) === false)
+					{
+						JLog::add(JText::sprintf('JLIB_INSTALLER_ERROR_SQL_ERROR', $element), JLog::WARNING, 'Update');
+					}
+				}
+				catch (Exception $e)
+				{
+					// Not worth failing the update for: the tables stay as they were
+					JLog::add($e->getMessage(), JLog::WARNING, 'Update');
 				}
 			}
 		}
