@@ -38,7 +38,9 @@ $sitename = (string) $app->get('sitename', '');
 $loginLogoFile   = (string) $this->params->get('loginLogoFile', '');
 $backgroundColor = (string) $this->params->get('loginBackgroundColor', '');
 
-if (!preg_match('/^#[0-9a-f]{6}$/i', $backgroundColor))
+// The option's old default (#17568C, Joomla 3's login blue) is stored by every save of the style's options, so on most
+// existing sites it isn't a choice: they get the gradient like new sites. Any other colour is used instead of it.
+if (!preg_match('/^#[0-9a-f]{6}$/i', $backgroundColor) || strtolower($backgroundColor) === '#17568c')
 {
 	$backgroundColor = '';
 }
