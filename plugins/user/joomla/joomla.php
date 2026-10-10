@@ -113,6 +113,12 @@ class PlgUserJoomla extends JPlugin
 			return false;
 		}
 
+		// Private Messages isn't installed: its tables are gone
+		if (!JComponentHelper::isEnabled('com_messages'))
+		{
+			return true;
+		}
+
 		$query = $this->db->getQuery(true)
 			->delete($this->db->quoteName('#__messages'))
 			->where($this->db->quoteName('user_id_from') . ' = ' . (int) $user['id']);

@@ -69,6 +69,7 @@ abstract class AbstractCategoryStateCommand extends AbstractStateCommand
 		}
 
 		Factory::getApplication()->input->set('extension', $extension);
+		$this->component = $extension;
 
 		return parent::run($io);
 	}

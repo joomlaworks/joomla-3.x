@@ -87,6 +87,7 @@ class CategoryDeleteCommand extends AbstractDeleteCommand
 		}
 
 		Factory::getApplication()->input->set('extension', $extension);
+		$this->component = $extension;
 
 		return parent::run($io);
 	}

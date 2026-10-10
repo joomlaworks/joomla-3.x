@@ -38,6 +38,11 @@ abstract class JHtmlTag
 	 */
 	public static function options($config = array('filter.published' => array(0, 1)))
 	{
+		if (!JHelperTags::isAvailable())
+		{
+			return array();
+		}
+
 		$hash = md5(serialize($config));
 
 		if (!isset(static::$items[$hash]))
@@ -111,6 +116,11 @@ abstract class JHtmlTag
 	 */
 	public static function tags($config = array('filter.published' => array(0, 1)))
 	{
+		if (!JHelperTags::isAvailable())
+		{
+			return array();
+		}
+
 		$hash = md5(serialize($config));
 		$config = (array) $config;
 		$db = JFactory::getDbo();

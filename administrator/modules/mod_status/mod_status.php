@@ -15,14 +15,19 @@ $db     = JFactory::getDbo();
 $lang   = JFactory::getLanguage();
 $input  = JFactory::getApplication()->input;
 
-// Get the number of unread messages in your inbox.
-$query = $db->getQuery(true)
-	->select('COUNT(*)')
-	->from('#__messages')
-	->where('state = 0 AND user_id_to = ' . (int) $user->get('id'));
+// Get the number of unread messages in your inbox (Private Messages' tables are gone while it isn't installed).
+$query  = $db->getQuery(true);
+$unread = 0;
 
-$db->setQuery($query);
-$unread = (int) $db->loadResult();
+if (JComponentHelper::isEnabled('com_messages'))
+{
+	$query->select('COUNT(*)')
+		->from('#__messages')
+		->where('state = 0 AND user_id_to = ' . (int) $user->get('id'));
+
+	$db->setQuery($query);
+	$unread = (int) $db->loadResult();
+}
 
 $count = 0;
 

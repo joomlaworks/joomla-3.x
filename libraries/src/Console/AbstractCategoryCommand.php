@@ -52,6 +52,7 @@ abstract class AbstractCategoryCommand extends AbstractContentCommand
 		}
 
 		Factory::getApplication()->input->set('extension', $extension);
+		$this->component = $extension;
 
 		return parent::run($io);
 	}

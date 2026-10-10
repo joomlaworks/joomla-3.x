@@ -1922,7 +1922,9 @@ class Form
 		$field = $this->loadFieldType($type);
 
 		// If the object could not be loaded, get a text field object.
-		if ($field === false)
+		$missingType = $field === false;
+
+		if ($missingType)
 		{
 			$field = $this->loadFieldType('text');
 		}
@@ -1954,6 +1956,12 @@ class Form
 			}
 
 			$value = $this->getValue((string) $element['name'], $group, $default);
+		}
+
+		// A text field can't show a list of values (e.g. a multiple select of a component which isn't installed): leave it out
+		if ($missingType && is_array($value))
+		{
+			return false;
 		}
 
 		// Setup the JFormField object.

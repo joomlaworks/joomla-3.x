@@ -322,6 +322,12 @@ class ConfigModelApplication extends ConfigModelForm
 		// Merge the new data in. We do this to preserve values that were not in the form.
 		$data = array_merge($prev, $data);
 
+		// Options of the Memcache handler, removed in 3.16
+		foreach (array('memcache_persist', 'memcache_compress', 'memcache_server_host', 'memcache_server_port', 'session_memcache_server_host', 'session_memcache_server_port') as $removed)
+		{
+			unset($data[$removed]);
+		}
+
 		/*
 		 * Perform miscellaneous options based on configuration settings/changes.
 		 */

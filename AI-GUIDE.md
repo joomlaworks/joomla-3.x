@@ -209,7 +209,7 @@ Options for every command:
 | `-v`, `--verbose` | Show the trace of unexpected errors |
 | `--live-site=URL` | The site's address, for commands which build links |
 
-Exit codes: `0` success, `1` failure, `2` invalid input, `3` not found, `4` refused (permissions or protection).
+Exit codes: `0` success, `1` failure, `2` invalid input, `3` not found (also when the component a command works on, e.g. Articles for the `article:` commands or Tags for `tag:`, has been uninstalled), `4` refused (permissions or protection).
 
 Items are given by ID, and in most places also by alias, path or title: `--category=journal`, `--category=blog/news`, `--tags="Design,Typography"`. Name filters (e.g. of `config:get`, `user:list`, `extension:list`) take the wildcards `*` and `?`; quote them so the shell doesn't expand them.
 

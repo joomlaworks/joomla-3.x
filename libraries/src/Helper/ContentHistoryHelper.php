@@ -56,6 +56,12 @@ class ContentHistoryHelper extends CMSHelper
 	 */
 	public function deleteHistory($table)
 	{
+		// Content History isn't installed: its table is gone
+		if (!ComponentHelper::isEnabled('com_contenthistory'))
+		{
+			return true;
+		}
+
 		$key = $table->getKeyName();
 		$id = $table->$key;
 		$typeTable = Table::getInstance('Contenttype', 'JTable');
@@ -83,6 +89,12 @@ class ContentHistoryHelper extends CMSHelper
 	 */
 	public function getHistory($typeId, $id)
 	{
+		// Content History isn't installed: its table is gone
+		if (!ComponentHelper::isEnabled('com_contenthistory'))
+		{
+			return array();
+		}
+
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select($db->quoteName('h.version_note') . ',' . $db->quoteName('h.save_date') . ',' . $db->quoteName('u.name'))
@@ -108,6 +120,12 @@ class ContentHistoryHelper extends CMSHelper
 	 */
 	public function store($table)
 	{
+		// Content History isn't installed: its table is gone
+		if (!ComponentHelper::isEnabled('com_contenthistory'))
+		{
+			return true;
+		}
+
 		$dataObject = $this->getDataObject($table);
 		$historyTable = Table::getInstance('Contenthistory', 'JTable');
 		$typeTable = Table::getInstance('Contenttype', 'JTable');

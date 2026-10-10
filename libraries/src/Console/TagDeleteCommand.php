@@ -19,6 +19,12 @@ class TagDeleteCommand extends AbstractDeleteCommand
 {
 	/**
 	 * @var    string
+	 * @since  3.18.0
+	 */
+	protected $component = 'com_tags';
+
+	/**
+	 * @var    string
 	 * @since  3.17.0
 	 */
 	protected $name = 'tag:delete';

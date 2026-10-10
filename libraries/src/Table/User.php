@@ -10,6 +10,7 @@ namespace Joomla\CMS\Table;
 
 defined('JPATH_PLATFORM') or die;
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
@@ -445,17 +446,21 @@ class User extends Table
 		 * Clean Up Related Data.
 		 */
 
-		$query->clear()
-			->delete($this->_db->quoteName('#__messages_cfg'))
-			->where($this->_db->quoteName('user_id') . ' = ' . (int) $this->$k);
-		$this->_db->setQuery($query);
-		$this->_db->execute();
+		// Private Messages' tables, which are gone when it isn't installed
+		if (ComponentHelper::isEnabled('com_messages'))
+		{
+			$query->clear()
+				->delete($this->_db->quoteName('#__messages_cfg'))
+				->where($this->_db->quoteName('user_id') . ' = ' . (int) $this->$k);
+			$this->_db->setQuery($query);
+			$this->_db->execute();
 
-		$query->clear()
-			->delete($this->_db->quoteName('#__messages'))
-			->where($this->_db->quoteName('user_id_to') . ' = ' . (int) $this->$k);
-		$this->_db->setQuery($query);
-		$this->_db->execute();
+			$query->clear()
+				->delete($this->_db->quoteName('#__messages'))
+				->where($this->_db->quoteName('user_id_to') . ' = ' . (int) $this->$k);
+			$this->_db->setQuery($query);
+			$this->_db->execute();
+		}
 
 		$query->clear()
 			->delete($this->_db->quoteName('#__user_keys'))

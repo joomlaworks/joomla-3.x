@@ -232,7 +232,8 @@ class ContentModelFeatured extends ContentModelArticles
 		}
 
 		// Filter by a single or group of tags.
-		$tagId = $this->getState('filter.tag');
+		// Tags' map table is gone while it isn't installed
+		$tagId = JHelperTags::isAvailable() ? $this->getState('filter.tag') : null;
 
 		if (is_array($tagId) && count($tagId) === 1)
 		{

@@ -55,6 +55,9 @@ class PlgSearchContent extends JPlugin
 		$groups     = implode(',', $user->getAuthorisedViewLevels());
 		$tag        = JFactory::getLanguage()->getTag();
 
+		// Custom fields are searched while Fields is installed (its tables are gone otherwise)
+		$fields = JComponentHelper::isEnabled('com_fields');
+
 		JLoader::register('ContentHelperRoute', JPATH_SITE . '/components/com_content/helpers/route.php');
 		JLoader::register('SearchHelper', JPATH_ADMINISTRATOR . '/components/com_search/helpers/search.php');
 
@@ -93,39 +96,42 @@ class PlgSearchContent extends JPlugin
 
 				$relevance[] = ' CASE WHEN ' . $wheres2[0] . ' THEN 5 ELSE 0 END ';
 
-				// Join over Fields.
-				$subQuery = $db->getQuery(true);
-				$subQuery->select("cfv.item_id")
-					->from("#__fields_values AS cfv")
-					->join('LEFT', '#__fields AS f ON f.id = cfv.field_id')
-					->where('(f.context IS NULL OR f.context = ' . $db->q('com_content.article') . ')')
-					->where('(f.state IS NULL OR f.state = 1)')
-					->where('(f.access IS NULL OR f.access IN (' . $groups . '))')
-					->where('cfv.value LIKE ' . $text);
-
-				// Filter by language.
-				if ($app->isClient('site') && JLanguageMultilang::isEnabled())
+				if ($fields)
 				{
-					$subQuery->where('(f.language IS NULL OR f.language in (' . $db->quote($tag) . ',' . $db->quote('*') . '))');
-				}
+					// Join over Fields.
+					$subQuery = $db->getQuery(true);
+					$subQuery->select("cfv.item_id")
+						->from("#__fields_values AS cfv")
+						->join('LEFT', '#__fields AS f ON f.id = cfv.field_id')
+						->where('(f.context IS NULL OR f.context = ' . $db->q('com_content.article') . ')')
+						->where('(f.state IS NULL OR f.state = 1)')
+						->where('(f.access IS NULL OR f.access IN (' . $groups . '))')
+						->where('cfv.value LIKE ' . $text);
 
-				if ($serverType == "mysql")
-				{
-					/* This generates a dependent sub-query so do no use in MySQL prior to version 6.0 !
-					* $wheres2[] = 'a.id IN( '. (string) $subQuery.')';
-					*/
-
-					$db->setQuery($subQuery);
-					$fieldids = $db->loadColumn();
-
-					if (count($fieldids))
+					// Filter by language.
+					if ($app->isClient('site') && JLanguageMultilang::isEnabled())
 					{
-						$wheres2[] = 'a.id IN(' . implode(",", $fieldids) . ')';
+						$subQuery->where('(f.language IS NULL OR f.language in (' . $db->quote($tag) . ',' . $db->quote('*') . '))');
 					}
-				}
-				else
-				{
-					$wheres2[] = $subQuery->castAsChar('a.id') . ' IN( ' . (string) $subQuery . ')';
+
+					if ($serverType == "mysql")
+					{
+						/* This generates a dependent sub-query so do no use in MySQL prior to version 6.0 !
+						* $wheres2[] = 'a.id IN( '. (string) $subQuery.')';
+						*/
+
+						$db->setQuery($subQuery);
+						$fieldids = $db->loadColumn();
+
+						if (count($fieldids))
+						{
+							$wheres2[] = 'a.id IN(' . implode(",", $fieldids) . ')';
+						}
+					}
+					else
+					{
+						$wheres2[] = $subQuery->castAsChar('a.id') . ' IN( ' . (string) $subQuery . ')';
+					}
 				}
 
 				$where = '(' . implode(') OR (', $wheres2) . ')';
@@ -150,7 +156,7 @@ class PlgSearchContent extends JPlugin
 
 					$relevance[] = ' CASE WHEN ' . $wheres2[0] . ' THEN 5 ELSE 0 END ';
 
-					if ($phrase === 'all')
+					if ($phrase === 'all' && $fields)
 					{
 						// Join over Fields.
 						$subQuery = $db->getQuery(true);
@@ -183,7 +189,7 @@ class PlgSearchContent extends JPlugin
 							$wheres2[] = $subQuery->castAsChar('a.id') . ' IN( ' . (string) $subQuery . ')';
 						}
 					}
-					else
+					elseif ($fields)
 					{
 						$cfwhere[] = 'LOWER(cfv.value) LIKE LOWER(' . $word . ')';
 					}
@@ -191,7 +197,7 @@ class PlgSearchContent extends JPlugin
 					$wheres[] = implode(' OR ', $wheres2);
 				}
 
-				if ($phrase === 'any')
+				if ($phrase === 'any' && $fields)
 				{
 					// Join over Fields.
 					$subQuery = $db->getQuery(true);
@@ -419,14 +425,19 @@ class PlgSearchContent extends JPlugin
 				{
 					// Not efficient to get these ONE article at a TIME
 					// Lookup field values so they can be checked, GROUP_CONCAT would work in above queries, but isn't supported by non-MySQL DBs.
-					$query = $db->getQuery(true);
-					$query->select('fv.value')
-						->from('#__fields_values as fv')
-						->join('left', '#__fields as f on fv.field_id = f.id')
-						->where('f.context = ' . $db->quote('com_content.article'))
-						->where('fv.item_id = ' . $db->quote((int) $article->slug));
-					$db->setQuery($query);
-					$article->jcfields = implode(',', $db->loadColumn());
+					$article->jcfields = '';
+
+					if ($fields)
+					{
+						$query = $db->getQuery(true);
+						$query->select('fv.value')
+							->from('#__fields_values as fv')
+							->join('left', '#__fields as f on fv.field_id = f.id')
+							->where('f.context = ' . $db->quote('com_content.article'))
+							->where('fv.item_id = ' . $db->quote((int) $article->slug));
+						$db->setQuery($query);
+						$article->jcfields = implode(',', $db->loadColumn());
+					}
 
 					if (SearchHelper::checkNoHtml($article, $searchText, array('text', 'title', 'jcfields', 'metadesc', 'metakey')))
 					{

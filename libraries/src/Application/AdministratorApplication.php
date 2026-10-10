@@ -365,6 +365,12 @@ class AdministratorApplication extends CMSApplication
 	 */
 	public static function purgeMessages()
 	{
+		// Private Messages isn't installed: its tables are gone
+		if (!ComponentHelper::isEnabled('com_messages'))
+		{
+			return;
+		}
+
 		$user = \JFactory::getUser();
 		$userid = $user->get('id');
 

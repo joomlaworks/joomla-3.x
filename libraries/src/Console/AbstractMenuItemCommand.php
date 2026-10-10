@@ -137,6 +137,13 @@ abstract class AbstractMenuItemCommand extends AbstractContentCommand
 		switch ($option)
 		{
 			case 'article':
+				if (!ComponentHelper::isEnabled('com_content'))
+				{
+					$io->error('com_content isn\'t installed or is disabled, so there are no articles to link to.');
+
+					return false;
+				}
+
 				$query = $db->getQuery(true)
 					->select($db->quoteName('id'))
 					->from($db->quoteName('#__content'))

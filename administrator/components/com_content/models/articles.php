@@ -358,7 +358,8 @@ class ContentModelArticles extends JModelList
 			$query->where('a.language = ' . $db->quote($language));
 		}
 
-		$tag = $this->getState('filter.tag');
+		// Tags' map table is gone while it isn't installed
+		$tag = JHelperTags::isAvailable() ? $this->getState('filter.tag') : null;
 
 		// Run simplified query when filtering by one tag.
 		if (\is_array($tag) && \count($tag) === 1)

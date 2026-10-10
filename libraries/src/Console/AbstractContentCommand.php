@@ -11,6 +11,7 @@ namespace Joomla\CMS\Console;
 defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Access\Access;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\User;
 
@@ -36,6 +37,14 @@ abstract class AbstractContentCommand extends AbstractCommand
 	 * @since  3.17.0
 	 */
 	protected $user;
+
+	/**
+	 * The component whose items the command works on, refused while it isn't installed (e.g. com_content)
+	 *
+	 * @var    string
+	 * @since  3.18.0
+	 */
+	protected $component = '';
 
 	/**
 	 * State names => values
@@ -74,6 +83,13 @@ abstract class AbstractContentCommand extends AbstractCommand
 	 */
 	public function run(CommandIO $io)
 	{
+		if ($this->component !== '' && !ComponentHelper::isEnabled($this->component))
+		{
+			$io->error(sprintf('%s isn\'t installed or is disabled.', $this->component));
+
+			return self::NOT_FOUND;
+		}
+
 		$this->user = $this->getActingUser($io);
 
 		if (!$this->user)
@@ -521,6 +537,13 @@ abstract class AbstractContentCommand extends AbstractCommand
 	 */
 	protected function findTags(CommandIO $io, $value)
 	{
+		if (!ComponentHelper::isEnabled('com_tags'))
+		{
+			$io->error('com_tags isn\'t installed or is disabled, so items can\'t be tagged.');
+
+			return false;
+		}
+
 		$db  = Factory::getDbo();
 		$ids = array();
 

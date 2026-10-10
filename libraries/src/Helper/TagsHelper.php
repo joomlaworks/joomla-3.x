@@ -80,6 +80,19 @@ class TagsHelper extends CMSHelper
 	public $typeAlias = null;
 
 	/**
+	 * Whether Tags is installed and enabled. Its tables are dropped when it's uninstalled, and the items of other components
+	 * keep calling this helper (when they're saved, edited or shown), which then has nothing to do.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	public static function isAvailable()
+	{
+		return ComponentHelper::isEnabled('com_tags');
+	}
+
+	/**
 	 * Method to add tag rows to mapping table.
 	 *
 	 * @param   integer         $ucmId  ID of the #__ucm_content item being tagged
@@ -92,6 +105,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public function addTagMapping($ucmId, TableInterface $table, $tags = array())
 	{
+		if (!static::isAvailable())
+		{
+			return true;
+		}
+
 		$db = $table->getDbo();
 		$key = $table->getKeyName();
 		$item = $table->$key;
@@ -147,6 +165,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public static function convertPathsToNames($tags)
 	{
+		if (!static::isAvailable())
+		{
+			return $tags;
+		}
+
 		// We will replace path aliases with tag names
 		if ($tags)
 		{
@@ -232,6 +255,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public function createTagsFromField($tags)
 	{
+		if (!static::isAvailable())
+		{
+			return $tags;
+		}
+
 		if (empty($tags) || $tags[0] == '')
 		{
 			return;
@@ -319,6 +347,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public function createTagsFromMetadata($metadata)
 	{
+		if (!static::isAvailable())
+		{
+			return $metadata;
+		}
+
 		$metaObject = json_decode($metadata);
 
 		if (empty($metaObject->tags))
@@ -446,6 +479,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public function getItemTags($contentType, $id, $getTagData = true)
 	{
+		if (!static::isAvailable())
+		{
+			return $this->itemTags = array();
+		}
+
 		// Initialize some variables.
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true)
@@ -503,6 +541,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public function getTagIds($ids, $prefix)
 	{
+		if (!static::isAvailable())
+		{
+			return $this->tags = '';
+		}
+
 		if (empty($ids))
 		{
 			return;
@@ -709,6 +752,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public function getTagNames($tagIds)
 	{
+		if (!static::isAvailable())
+		{
+			return array();
+		}
+
 		$tagNames = array();
 
 		if (is_array($tagIds) && count($tagIds) > 0)
@@ -741,6 +789,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public function getTagTreeArray($id, &$tagTreeArray = array())
 	{
+		if (!static::isAvailable())
+		{
+			return $tagTreeArray;
+		}
+
 		// Get a level row instance.
 		Table::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_tags/tables');
 		$table = Table::getInstance('Tag', 'TagsTable');
@@ -856,6 +909,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public function postStoreProcess(TableInterface $table, $newTags = array(), $replace = true)
 	{
+		if (!static::isAvailable())
+		{
+			return true;
+		}
+
 		if (!empty($table->newTags) && empty($newTags))
 		{
 			$newTags = $table->newTags;
@@ -912,6 +970,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public function preStoreProcess(TableInterface $table, $newTags = array())
 	{
+		if (!static::isAvailable())
+		{
+			return;
+		}
+
 		if ($newTags != array())
 		{
 			$this->newTags = $newTags;
@@ -952,6 +1015,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public static function searchTags($filters = array())
 	{
+		if (!static::isAvailable())
+		{
+			return array();
+		}
+
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true)
 			->select('a.id AS value')
@@ -1044,6 +1112,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public function tagDeleteInstances($tagId)
 	{
+		if (!static::isAvailable())
+		{
+			return;
+		}
+
 		// Delete the old tag maps.
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true)
@@ -1067,6 +1140,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public function tagItem($ucmId, TableInterface $table, $tags = array(), $replace = true)
 	{
+		if (!static::isAvailable())
+		{
+			return true;
+		}
+
 		$key = $table->get('_tbl_key');
 		$oldTags = $this->getTagIds((int) $table->$key, $this->typeAlias);
 		$oldTags = explode(',', $oldTags);
@@ -1114,6 +1192,11 @@ class TagsHelper extends CMSHelper
 	 */
 	public function unTagItem($contentId, TableInterface $table, $tags = array())
 	{
+		if (!static::isAvailable())
+		{
+			return true;
+		}
+
 		$key = $table->getKeyName();
 		$id = $table->$key;
 		$db = \JFactory::getDbo();

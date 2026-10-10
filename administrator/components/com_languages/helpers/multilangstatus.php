@@ -165,6 +165,12 @@ abstract class MultilangstatusHelper
 	 */
 	public static function getContacts()
 	{
+		// The check needs both Contacts' and Articles' tables
+		if (!JComponentHelper::isEnabled('com_contact') || !JComponentHelper::isEnabled('com_content'))
+		{
+			return array();
+		}
+
 		$db = JFactory::getDbo();
 		$languages = count(JLanguageHelper::getLanguages());
 

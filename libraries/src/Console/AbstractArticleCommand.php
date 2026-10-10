@@ -21,6 +21,12 @@ use Joomla\CMS\User\User;
 abstract class AbstractArticleCommand extends AbstractContentCommand
 {
 	/**
+	 * @var    string
+	 * @since  3.18.0
+	 */
+	protected $component = 'com_content';
+
+	/**
 	 * Add the options of the article's fields.
 	 *
 	 * @return  void

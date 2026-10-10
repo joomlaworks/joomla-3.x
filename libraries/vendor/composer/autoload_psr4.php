@@ -7,11 +7,7 @@ $baseDir = dirname(dirname($vendorDir));
 
 return array(
     'TYPO3\\PharStreamWrapper\\' => array($vendorDir . '/typo3/phar-stream-wrapper/src'),
-    'Symfony\\Polyfill\\Util\\' => array($vendorDir . '/symfony/polyfill-util'),
     'Symfony\\Polyfill\\Php73\\' => array($vendorDir . '/symfony/polyfill-php73'),
-    'Symfony\\Polyfill\\Php71\\' => array($vendorDir . '/symfony/polyfill-php71'),
-    'Symfony\\Polyfill\\Php56\\' => array($vendorDir . '/symfony/polyfill-php56'),
-    'Symfony\\Polyfill\\Php55\\' => array($vendorDir . '/symfony/polyfill-php55'),
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'ReCaptcha\\' => array($vendorDir . '/google/recaptcha/src/ReCaptcha'),
@@ -27,10 +23,8 @@ return array(
     'Joomla\\Filter\\' => array($vendorDir . '/joomla/filter/src'),
     'Joomla\\Filesystem\\' => array($vendorDir . '/joomla/filesystem/src'),
     'Joomla\\Event\\' => array($vendorDir . '/joomla/event/src'),
-    'Joomla\\Data\\Tests\\' => array($vendorDir . '/joomla/data/Tests'),
     'Joomla\\Data\\' => array($vendorDir . '/joomla/data/src'),
     'Joomla\\DI\\' => array($vendorDir . '/joomla/di/src'),
     'Joomla\\Archive\\' => array($vendorDir . '/joomla/archive/src'),
     'Joomla\\Application\\' => array($vendorDir . '/joomla/application/src'),
-    'Brumann\\Polyfill\\' => array($vendorDir . '/brumann/polyfill-unserialize/src'),
 );

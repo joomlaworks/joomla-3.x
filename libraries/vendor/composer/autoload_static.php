@@ -23,11 +23,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         '4292e2fa66516089e6006723267587b4' => __DIR__ . '/..' . '/joomla/string/src/phputf8/utils/ascii.php',
         '87465e33b7551b401bf051928f220e9a' => __DIR__ . '/..' . '/joomla/string/src/phputf8/utils/validation.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
-        'e40631d46120a9c38ea139981f8dab26' => __DIR__ . '/..' . '/ircmaxell/password-compat/lib/password.php',
-        '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
-        'edc6464955a37aa4d5fbf39d40fb6ee7' => __DIR__ . '/..' . '/symfony/polyfill-php55/bootstrap.php',
-        'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
-        'e277be14c90068cf94faed2c43dbe6d8' => __DIR__ . '/..' . '/symfony/polyfill-php71/bootstrap.php',
         '0d59ee240a4cd96ddbb4ff164fccea4d' => __DIR__ . '/..' . '/symfony/polyfill-php73/bootstrap.php',
         '3109cb1a231dcd04bee1f9f620d46975' => __DIR__ . '/..' . '/paragonie/sodium_compat/autoload.php',
     );
@@ -39,11 +34,7 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         ),
         'S' => 
         array (
-            'Symfony\\Polyfill\\Util\\' => 22,
             'Symfony\\Polyfill\\Php73\\' => 23,
-            'Symfony\\Polyfill\\Php71\\' => 23,
-            'Symfony\\Polyfill\\Php56\\' => 23,
-            'Symfony\\Polyfill\\Php55\\' => 23,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\Yaml\\' => 23,
         ),
@@ -68,7 +59,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
             'Joomla\\Filter\\' => 14,
             'Joomla\\Filesystem\\' => 18,
             'Joomla\\Event\\' => 13,
-            'Joomla\\Data\\Tests\\' => 18,
             'Joomla\\Data\\' => 12,
             'Joomla\\DI\\' => 10,
             'Joomla\\Archive\\' => 15,
@@ -76,7 +66,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         ),
         'B' => 
         array (
-            'Brumann\\Polyfill\\' => 17,
         ),
     );
 
@@ -85,25 +74,9 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         array (
             0 => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src',
         ),
-        'Symfony\\Polyfill\\Util\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-util',
-        ),
         'Symfony\\Polyfill\\Php73\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php73',
-        ),
-        'Symfony\\Polyfill\\Php71\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php71',
-        ),
-        'Symfony\\Polyfill\\Php56\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php56',
-        ),
-        'Symfony\\Polyfill\\Php55\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php55',
         ),
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
@@ -165,10 +138,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         array (
             0 => __DIR__ . '/..' . '/joomla/event/src',
         ),
-        'Joomla\\Data\\Tests\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/joomla/data/Tests',
-        ),
         'Joomla\\Data\\' => 
         array (
             0 => __DIR__ . '/..' . '/joomla/data/src',
@@ -184,10 +153,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'Joomla\\Application\\' => 
         array (
             0 => __DIR__ . '/..' . '/joomla/application/src',
-        ),
-        'Brumann\\Polyfill\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/brumann/polyfill-unserialize/src',
         ),
     );
 
@@ -209,8 +174,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
     );
 
     public static $classMap = array (
-        'Brumann\\Polyfill\\DisallowedClassesSubstitutor' => __DIR__ . '/..' . '/brumann/polyfill-unserialize/src/DisallowedClassesSubstitutor.php',
-        'Brumann\\Polyfill\\Unserialize' => __DIR__ . '/..' . '/brumann/polyfill-unserialize/src/Unserialize.php',
         'CallbackFilterIterator' => __DIR__ . '/..' . '/joomla/compat/src/CallbackFilterIterator.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'EasyPeasyICS' => __DIR__ . '/..' . '/phpmailer/phpmailer/extras/EasyPeasyICS.php',
@@ -298,14 +261,11 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'Joomla\\Registry\\Registry' => __DIR__ . '/..' . '/joomla/registry/src/Registry.php',
         'Joomla\\Session\\Session' => __DIR__ . '/..' . '/joomla/session/Joomla/Session/Session.php',
         'Joomla\\Session\\Storage' => __DIR__ . '/..' . '/joomla/session/Joomla/Session/Storage.php',
-        'Joomla\\Session\\Storage\\Apc' => __DIR__ . '/..' . '/joomla/session/Joomla/Session/Storage/Apc.php',
         'Joomla\\Session\\Storage\\Apcu' => __DIR__ . '/..' . '/joomla/session/Joomla/Session/Storage/Apcu.php',
         'Joomla\\Session\\Storage\\Database' => __DIR__ . '/..' . '/joomla/session/Joomla/Session/Storage/Database.php',
-        'Joomla\\Session\\Storage\\Memcache' => __DIR__ . '/..' . '/joomla/session/Joomla/Session/Storage/Memcache.php',
         'Joomla\\Session\\Storage\\Memcached' => __DIR__ . '/..' . '/joomla/session/Joomla/Session/Storage/Memcached.php',
         'Joomla\\Session\\Storage\\None' => __DIR__ . '/..' . '/joomla/session/Joomla/Session/Storage/None.php',
         'Joomla\\Session\\Storage\\Wincache' => __DIR__ . '/..' . '/joomla/session/Joomla/Session/Storage/Wincache.php',
-        'Joomla\\Session\\Storage\\Xcache' => __DIR__ . '/..' . '/joomla/session/Joomla/Session/Storage/Xcache.php',
         'Joomla\\String\\Inflector' => __DIR__ . '/..' . '/joomla/string/src/Inflector.php',
         'Joomla\\String\\Normalise' => __DIR__ . '/..' . '/joomla/string/src/Normalise.php',
         'Joomla\\String\\String' => __DIR__ . '/..' . '/joomla/string/src/String.php',
@@ -388,14 +348,7 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'Symfony\\Component\\Yaml\\Unescaper' => __DIR__ . '/..' . '/symfony/yaml/Unescaper.php',
         'Symfony\\Component\\Yaml\\Yaml' => __DIR__ . '/..' . '/symfony/yaml/Yaml.php',
         'Symfony\\Polyfill\\Ctype\\Ctype' => __DIR__ . '/..' . '/symfony/polyfill-ctype/Ctype.php',
-        'Symfony\\Polyfill\\Php55\\Php55' => __DIR__ . '/..' . '/symfony/polyfill-php55/Php55.php',
-        'Symfony\\Polyfill\\Php55\\Php55ArrayColumn' => __DIR__ . '/..' . '/symfony/polyfill-php55/Php55ArrayColumn.php',
-        'Symfony\\Polyfill\\Php56\\Php56' => __DIR__ . '/..' . '/symfony/polyfill-php56/Php56.php',
-        'Symfony\\Polyfill\\Php71\\Php71' => __DIR__ . '/..' . '/symfony/polyfill-php71/Php71.php',
         'Symfony\\Polyfill\\Php73\\Php73' => __DIR__ . '/..' . '/symfony/polyfill-php73/Php73.php',
-        'Symfony\\Polyfill\\Util\\Binary' => __DIR__ . '/..' . '/symfony/polyfill-util/Binary.php',
-        'Symfony\\Polyfill\\Util\\BinaryNoFuncOverload' => __DIR__ . '/..' . '/symfony/polyfill-util/BinaryNoFuncOverload.php',
-        'Symfony\\Polyfill\\Util\\BinaryOnFuncOverload' => __DIR__ . '/..' . '/symfony/polyfill-util/BinaryOnFuncOverload.php',
         'TYPO3\\PharStreamWrapper\\Assertable' => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src/Assertable.php',
         'TYPO3\\PharStreamWrapper\\Behavior' => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src/Behavior.php',
         'TYPO3\\PharStreamWrapper\\Collectable' => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src/Collectable.php',

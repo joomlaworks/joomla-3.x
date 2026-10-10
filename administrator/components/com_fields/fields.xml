@@ -9,6 +9,20 @@
     <authorUrl>www.joomla.org</authorUrl>
     <version>3.7.0</version>
     <description>COM_FIELDS_XML_DESCRIPTION</description>
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+            <file driver="postgresql" charset="utf8">sql/install.postgresql.utf8.sql</file>
+            <file driver="sqlsrv" charset="utf8">sql/install.sqlsrv.utf8.sql</file>
+        </sql>
+    </install>
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+            <file driver="postgresql" charset="utf8">sql/uninstall.postgresql.utf8.sql</file>
+            <file driver="sqlsrv" charset="utf8">sql/uninstall.sqlsrv.utf8.sql</file>
+        </sql>
+    </uninstall>
     <files folder="site">
         <filename>controller.php</filename>
         <filename>fields.php</filename>
@@ -29,6 +43,7 @@
             <folder>models</folder>
             <folder>tables</folder>
             <folder>views</folder>
+            <folder>sql</folder>
         </files>
         <languages folder="admin">
             <language tag="en-GB">language/en-GB.com_fields.ini</language>

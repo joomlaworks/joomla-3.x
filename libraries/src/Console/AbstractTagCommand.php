@@ -21,6 +21,12 @@ use Joomla\CMS\Factory;
 abstract class AbstractTagCommand extends AbstractContentCommand
 {
 	/**
+	 * @var    string
+	 * @since  3.18.0
+	 */
+	protected $component = 'com_tags';
+
+	/**
 	 * The tag model.
 	 *
 	 * @return  \TagsModelTag

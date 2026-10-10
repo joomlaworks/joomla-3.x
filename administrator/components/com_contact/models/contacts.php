@@ -278,7 +278,8 @@ class ContactModelContacts extends JModelList
 		}
 
 		// Filter by a single tag.
-		$tagId = $this->getState('filter.tag');
+		// Tags' map table is gone while it isn't installed
+		$tagId = JHelperTags::isAvailable() ? $this->getState('filter.tag') : null;
 
 		if (is_numeric($tagId))
 		{

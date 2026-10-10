@@ -983,6 +983,11 @@ class Installer extends \JAdapter
 		{
 			$dbDriver = 'postgresql';
 		}
+		elseif ($db->getServerType() === 'mssql')
+		{
+			// SQL Server and Azure SQL share one set of files
+			$dbDriver = 'sqlsrv';
+		}
 
 		$update_count = 0;
 
@@ -999,6 +1004,10 @@ class Installer extends \JAdapter
 			elseif ($fDriver === 'pgsql')
 			{
 				$fDriver = 'postgresql';
+			}
+			elseif ($fDriver === 'sqlazure')
+			{
+				$fDriver = 'sqlsrv';
 			}
 
 			if ($fCharset === 'utf8' && $fDriver == $dbDriver)

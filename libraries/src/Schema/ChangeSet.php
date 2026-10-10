@@ -61,10 +61,17 @@ class ChangeSet
 	 * @since  3.16.0
 	 */
 	protected static $removableComponentTables = array(
-		'com_banners'   => '(?:banners|banner_clients|banner_tracks)',
-		'com_contact'   => 'contact_details',
-		'com_finder'    => 'finder_\w+',
-		'com_newsfeeds' => 'newsfeeds',
+		'com_banners'        => '(?:banners|banner_clients|banner_tracks)',
+		'com_contact'        => 'contact_details',
+		'com_content'        => '(?:content|content_frontpage|content_rating)',
+		'com_contenthistory' => 'ucm_history',
+		'com_fields'         => '(?:fields|fields_categories|fields_groups|fields_values)',
+		'com_finder'         => 'finder_\w+',
+		'com_messages'       => '(?:messages|messages_cfg)',
+		'com_newsfeeds'      => 'newsfeeds',
+		'com_privacy'        => '(?:privacy_consents|privacy_requests)',
+		'com_redirect'       => 'redirect_links',
+		'com_tags'           => '(?:tags|contentitem_tag_map)',
 	);
 
 	/**

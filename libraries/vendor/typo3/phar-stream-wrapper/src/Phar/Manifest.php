@@ -11,7 +11,6 @@ namespace TYPO3\PharStreamWrapper\Phar;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Brumann\Polyfill\Unserialize;
 
 class Manifest
 {
@@ -161,7 +160,8 @@ class Manifest
             return null;
         }
 
-        $result = Unserialize::unserialize($this->metaData, array('allowed_classes' => false));
+        // Joomla 3.x UTD patch: PHP's own unserialize() (its allowed_classes option exists since PHP 7.0) instead of the polyfill
+        $result = unserialize($this->metaData, array('allowed_classes' => false));
 
         $serialized = json_encode($result);
         if (strpos($serialized, '__PHP_Incomplete_Class_Name') !== false) {

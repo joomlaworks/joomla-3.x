@@ -379,6 +379,8 @@ class JoomlaInstallerScript
 			'3.17.0-2026-10-11.sql' => '3.17.0',
 			// Articles, Messaging, Privacy, Redirect, Tags, Wrapper, Breadcrumbs, Syndication Feeds and CodeMirror unlocked
 			'3.18.0-2026-10-10.sql' => '3.18.0',
+			// "Authentication - GMail", "System - P3P Policy" and joomla.org's Joomla Update component update site removed
+			'3.18.0-2026-10-11.sql' => null,
 		);
 
 		foreach ($dataMigrationFiles as $file => $addedIn)
@@ -808,7 +810,6 @@ class JoomlaInstallerScript
 			array('plugin', 'cookie', 'authentication'),
 			array('plugin', 'debug', 'system'),
 			array('plugin', 'emailcloak', 'content'),
-			array('plugin', 'gmail', 'authentication'),
 			array('plugin', 'image', 'editors-xtd'),
 			array('plugin', 'joomla', 'actionlog'),
 			array('plugin', 'joomla', 'content'),
@@ -820,7 +821,6 @@ class JoomlaInstallerScript
 			array('plugin', 'logrotation', 'system'),
 			array('plugin', 'menu', 'editors-xtd'),
 			array('plugin', 'module', 'editors-xtd'),
-			array('plugin', 'p3p', 'system'),
 			array('plugin', 'profile', 'user'),
 			array('plugin', 'recaptcha', 'captcha'),
 			array('plugin', 'recaptcha_invisible', 'captcha'),
@@ -880,7 +880,6 @@ class JoomlaInstallerScript
 	 * @since  3.16.0
 	 */
 	protected $removableCoreExtensionsDisabled = array(
-		'plugin:0:authentication:gmail',
 		'plugin:0:authentication:ldap',
 		'plugin:0:captcha:recaptcha',
 		'plugin:0:captcha:recaptcha_invisible',
@@ -889,7 +888,6 @@ class JoomlaInstallerScript
 		'plugin:0:content:vote',
 		'plugin:0:system:languagecode',
 		'plugin:0:system:littlewaf',
-		'plugin:0:system:p3p',
 		'plugin:0:system:privacyconsent',
 		'plugin:0:system:redirect',
 		'plugin:0:system:stats',
@@ -1050,8 +1048,9 @@ class JoomlaInstallerScript
 			$installed[$key] = true;
 		}
 
-		// Sanity check: if protected core components look uninstalled, the query result can't be trusted
-		if (!isset($installed['component:0::com_content'], $installed['component:0::com_users']))
+		// Sanity check: if protected core components look uninstalled, the query result can't be trusted (Articles can be
+		// uninstalled since 3.18)
+		if (!isset($installed['component:0::com_admin'], $installed['component:0::com_users']))
 		{
 			return null;
 		}
@@ -3417,6 +3416,14 @@ class JoomlaInstallerScript
 			'/plugins/installer/webinstaller/js/client.min.js',
 			'/plugins/installer/webinstaller/tmpl/hathor.php',
 			'/plugins/installer/webinstaller/webinstaller.script.php',
+
+			// Joomla 3.18.0
+			'/administrator/language/en-GB/en-GB.plg_authentication_gmail.ini',
+			'/administrator/language/en-GB/en-GB.plg_authentication_gmail.sys.ini',
+			'/administrator/language/en-GB/en-GB.plg_fields_image.ini',
+			'/administrator/language/en-GB/en-GB.plg_fields_image.sys.ini',
+			'/administrator/language/en-GB/en-GB.plg_system_p3p.ini',
+			'/administrator/language/en-GB/en-GB.plg_system_p3p.sys.ini',
 		);
 
 		// TODO There is an issue while deleting folders using the ftp mode
@@ -3670,6 +3677,28 @@ class JoomlaInstallerScript
 			// Joomla 3.17.0
 			'/plugins/installer/webinstaller/css',
 			'/plugins/installer/webinstaller/js',
+			// Joomla 3.18.0
+			'/bin',
+			'/libraries/joomla/facebook',
+			'/libraries/joomla/github',
+			'/libraries/joomla/google',
+			'/libraries/joomla/keychain',
+			'/libraries/joomla/linkedin',
+			'/libraries/joomla/mediawiki',
+			'/libraries/joomla/oauth1',
+			'/libraries/joomla/oauth2',
+			'/libraries/joomla/openstreetmap',
+			'/libraries/joomla/twitter',
+			'/libraries/legacy/simplecrypt',
+			'/libraries/vendor/brumann',
+			'/libraries/vendor/ircmaxell',
+			'/libraries/vendor/paragonie/random_compat',
+			'/libraries/vendor/symfony/polyfill-php55',
+			'/libraries/vendor/symfony/polyfill-php56',
+			'/libraries/vendor/symfony/polyfill-php71',
+			'/libraries/vendor/symfony/polyfill-util',
+			'/plugins/authentication/gmail',
+			'/plugins/system/p3p',
 		);
 
 		jimport('joomla.filesystem.file');
@@ -3694,6 +3723,21 @@ class JoomlaInstallerScript
 		if (!JFile::exists(JPATH_ROOT . '/administrator/components/com_weblinks/weblinks.php'))
 		{
 			$files[] = '/administrator/manifests/packages/pkg_weblinks.xml';
+
+			// Weblinks' language files, which earlier releases still shipped (an installed Weblinks has its own copies there)
+			$files[] = '/administrator/language/en-GB/en-GB.com_weblinks.ini';
+			$files[] = '/administrator/language/en-GB/en-GB.com_weblinks.sys.ini';
+			$files[] = '/administrator/language/en-GB/en-GB.plg_editors-xtd_weblink.ini';
+			$files[] = '/administrator/language/en-GB/en-GB.plg_editors-xtd_weblink.sys.ini';
+			$files[] = '/administrator/language/en-GB/en-GB.plg_finder_weblinks.ini';
+			$files[] = '/administrator/language/en-GB/en-GB.plg_finder_weblinks.sys.ini';
+			$files[] = '/administrator/language/en-GB/en-GB.plg_search_weblinks.ini';
+			$files[] = '/administrator/language/en-GB/en-GB.plg_search_weblinks.sys.ini';
+			$files[] = '/administrator/language/en-GB/en-GB.plg_system_weblinks.ini';
+			$files[] = '/administrator/language/en-GB/en-GB.plg_system_weblinks.sys.ini';
+			$files[] = '/language/en-GB/en-GB.com_weblinks.ini';
+			$files[] = '/language/en-GB/en-GB.mod_weblinks.ini';
+			$files[] = '/language/en-GB/en-GB.mod_weblinks.sys.ini';
 		}
 
 		foreach ($files as $file)

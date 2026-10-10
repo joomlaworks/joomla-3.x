@@ -138,7 +138,6 @@ class ExtensionHelper
 
 		// Core plugin extensions - authentication
 		array('plugin', 'cookie', 'authentication', 0),
-		array('plugin', 'gmail', 'authentication', 0),
 		array('plugin', 'joomla', 'authentication', 0),
 		array('plugin', 'ldap', 'authentication', 0),
 
@@ -243,7 +242,6 @@ class ExtensionHelper
 		array('plugin', 'log', 'system', 0),
 		array('plugin', 'logout', 'system', 0),
 		array('plugin', 'logrotation', 'system', 0),
-		array('plugin', 'p3p', 'system', 0),
 		array('plugin', 'privacyconsent', 'system', 0),
 		array('plugin', 'redirect', 'system', 0),
 		array('plugin', 'remember', 'system', 0),

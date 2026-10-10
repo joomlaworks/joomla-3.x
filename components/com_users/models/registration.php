@@ -656,6 +656,12 @@ class UsersModelRegistration extends JModelForm
 		{
 			$this->setError(JText::_('COM_USERS_REGISTRATION_SEND_MAIL_FAILED'));
 
+			// Private Messages isn't installed: nothing to send them through
+			if (!JComponentHelper::isEnabled('com_messages'))
+			{
+				return false;
+			}
+
 			// Send a system message to administrators receiving system mails
 			$db = $this->getDbo();
 			$query->clear()

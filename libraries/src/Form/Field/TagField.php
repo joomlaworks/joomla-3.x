@@ -72,6 +72,12 @@ class TagField extends \JFormFieldList
 	 */
 	protected function getInput()
 	{
+		// Tags isn't installed: its tables are gone
+		if (!TagsHelper::isAvailable())
+		{
+			return '';
+		}
+
 		// AJAX mode requires ajax-chosen
 		if (!$this->isNested())
 		{
@@ -108,6 +114,20 @@ class TagField extends \JFormFieldList
 	}
 
 	/**
+	 * Shows nothing while Tags isn't installed.
+	 *
+	 * @param   array  $options  Options to be passed into the rendering of the field
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	public function renderField($options = array())
+	{
+		return TagsHelper::isAvailable() ? parent::renderField($options) : '';
+	}
+
+	/**
 	 * Method to get a list of tags
 	 *
 	 * @return  array  The field option objects.
@@ -116,6 +136,12 @@ class TagField extends \JFormFieldList
 	 */
 	protected function getOptions()
 	{
+		// Tags isn't installed: its tables are gone
+		if (!TagsHelper::isAvailable())
+		{
+			return array();
+		}
+
 		$published = (string) $this->element['published'] ?: array(0, 1);
 		$app       = Factory::getApplication();
 		$tag       = $app->getLanguage()->getTag();

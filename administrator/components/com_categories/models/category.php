@@ -862,6 +862,12 @@ class CategoriesModelCategory extends JModelAdmin
 	{
 		$successful = array();
 
+		// It reorders articles: nothing to do while Articles isn't installed
+		if (!JComponentHelper::isEnabled('com_content'))
+		{
+			return false;
+		}
+
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
 

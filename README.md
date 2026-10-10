@@ -45,12 +45,15 @@ A short overview of each release. Every change is described in detail in [CHANGE
 ## Version 3.18 - unreleased [pending]
 Summary of changes:
 - Much more of Joomla's core can be removed: Articles, Private Messages, Privacy, Redirect, Tags, Wrapper, the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. Using K2 instead of Articles? Uninstall Articles, and the rest of the site keeps working
-- Clean uninstalls: a component takes its own modules, plugins, media and Smart Search entries along, and updates clean up after earlier uninstalls
+- Clean uninstalls: a component takes its own database tables, modules, plugins, media and Smart Search entries along (and "Restore uninstalled core extensions" brings them back, on every supported database), and updates clean up after earlier uninstalls
+- Housekeeping: the GMail sign-in and P3P plugins, Memcache options, unused libraries and pre-7.1 PHP polyfills are gone
 - Smart Search fixes for large sites, the command line indexer and Advanced Search's dates ([#9](https://github.com/joomlaworks/joomla-3.x/issues/9), [#21](https://github.com/joomlaworks/joomla-3.x/issues/21), [#23](https://github.com/joomlaworks/joomla-3.x/issues/23)), plus more PHP 8.2–8.5 fixes ([#20](https://github.com/joomlaworks/joomla-3.x/issues/20))
 
 **Improvements:**
 - More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. The administrator's quick icons, menu and status bar, article tags and Contacts work without them
 - Uninstalling a component (core or third-party) removes its entries from the Smart Search index
+- Uninstalling a core component removes its own database tables (shared ones stay); every removable component has install and uninstall SQL for MySQL, PostgreSQL and SQL Server, so restoring brings its tables back
+- Removed the "Authentication - GMail" plugin (Google stopped accepting its password sign-in in 2022), the "System - P3P Policy" plugin, joomla.org's update site for the Joomla Update component, Global Configuration's Memcache options, unused web service libraries and polyfills for PHP versions below 7.1
 
 **Bug fixes:**
 - Uninstalling a core component also uninstalls the modules and plugins which only serve it (e.g. "Smart Search - Contacts", which stopped indexing) and leaves no media folders or language files behind; updates clean up after earlier uninstalls
@@ -58,6 +61,7 @@ Summary of changes:
 - Articles with "Link Author" no longer fail when Contacts is uninstalled or disabled
 - Sites updating from before 3.12 keep Beez 3 when they use it (as a third-party template); a site whose template files are missing falls back to another template instead of failing
 - Fixed PHP 8.2+/8.5 deprecation warnings in text logs (e.g. during updates), the administrator's toolbar title, registries and sessions, and SQL list fields
+- Users' and Contacts' Options and the Multilingual Status no longer fail when Fields or Contacts has been uninstalled
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:

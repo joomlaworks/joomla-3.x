@@ -146,7 +146,6 @@ class Crypt
 	 */
 	public static function timingSafeCompare($known, $unknown)
 	{
-		// This function is native in PHP as of 5.6 and backported via the symfony/polyfill-56 library
 		return hash_equals((string) $known, (string) $unknown);
 	}
 
@@ -165,12 +164,6 @@ class Crypt
 	{
 		// Log usage of deprecated function
 		Log::add(__METHOD__ . '() is deprecated without replacement.', Log::WARNING, 'deprecated');
-
-		if (!defined('PASSWORD_DEFAULT'))
-		{
-			// Always make sure that the password hashing API has been defined.
-			include_once JPATH_ROOT . '/vendor/ircmaxell/password-compat/lib/password.php';
-		}
 
 		return true;
 	}
