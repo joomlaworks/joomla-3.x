@@ -80,6 +80,9 @@ class JoomlaInstallerScript
 			// Informational log only
 		}
 
+		// Before the file cleanup, which keeps Beez 3's files while it's installed
+		$this->keepOrRemoveBeez3();
+
 		// This needs to stay for 2.5 update compatibility
 		$this->deleteUnexistingFiles();
 
@@ -1013,6 +1016,170 @@ class JoomlaInstallerScript
 		}
 
 		return array($installed, $discovered);
+	}
+
+	/**
+	 * Beez 3 left the distribution in 3.12. A site updating across 3.12 which uses it (a Beez 3 style is a default, also for a
+	 * language, or assigned to a published menu item) keeps it, as a third-party template its admin may uninstall later; an unused one
+	 * is removed, its files with the other leftovers (deleteUnexistingFiles()). Rows whose files are already gone (sites
+	 * updated by earlier versions of the 3.12 migration) are removed on any update. After 3.12, an installed Beez 3 is the
+	 * admin's choice and stays.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function keepOrRemoveBeez3()
+	{
+		$db = JFactory::getDbo();
+
+		try
+		{
+			$query = $db->getQuery(true)
+				->select($db->quoteName('extension_id'))
+				->from($db->quoteName('#__extensions'))
+				->where($db->quoteName('type') . ' = ' . $db->quote('template'))
+				->where($db->quoteName('element') . ' = ' . $db->quote('beez3'))
+				->where($db->quoteName('client_id') . ' = 0');
+			$ids = $db->setQuery($query)->loadColumn();
+
+			if (!$ids)
+			{
+				return;
+			}
+
+			$filesThere = is_file(JPATH_SITE . '/templates/beez3/index.php');
+			$crossing   = !empty($this->fromVersion) && version_compare($this->fromVersion, '3.12.0', 'lt');
+
+			if ($filesThere && (!$crossing || $this->isBeez3InUse()))
+			{
+				return;
+			}
+
+			// A Beez 3 default without its files (it was already falling back): Protostar becomes the default, as the old
+			// migration did, else any other site style
+			$query = $db->getQuery(true)
+				->select('COUNT(*)')
+				->from($db->quoteName('#__template_styles'))
+				->where($db->quoteName('template') . ' = ' . $db->quote('beez3'))
+				->where($db->quoteName('client_id') . ' = 0')
+				->where($db->quoteName('home') . ' = ' . $db->quote('1'));
+
+			if ((int) $db->setQuery($query)->loadResult() > 0)
+			{
+				$query = $db->getQuery(true)
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__template_styles'))
+					->where($db->quoteName('template') . ' != ' . $db->quote('beez3'))
+					->where($db->quoteName('client_id') . ' = 0')
+					->order('CASE WHEN ' . $db->quoteName('template') . ' = ' . $db->quote('protostar') . ' THEN 0 ELSE 1 END, '
+						. $db->quoteName('id'));
+				$fallback = (int) $db->setQuery($query, 0, 1)->loadResult();
+
+				if ($fallback)
+				{
+					$db->setQuery(
+						$db->getQuery(true)
+							->update($db->quoteName('#__template_styles'))
+							->set($db->quoteName('home') . ' = ' . $db->quote('1'))
+							->where($db->quoteName('id') . ' = ' . $fallback)
+					)->execute();
+				}
+			}
+
+			$db->setQuery(
+				$db->getQuery(true)
+					->delete($db->quoteName('#__template_styles'))
+					->where($db->quoteName('template') . ' = ' . $db->quote('beez3'))
+					->where($db->quoteName('client_id') . ' = 0')
+			)->execute();
+
+			foreach (array('#__extensions', '#__update_sites_extensions') as $table)
+			{
+				$db->setQuery(
+					$db->getQuery(true)
+						->delete($db->quoteName($table))
+						->where($db->quoteName('extension_id') . ' IN (' . implode(',', array_map('intval', $ids)) . ')')
+				)->execute();
+			}
+		}
+		catch (Exception $e)
+		{
+			// Not worth failing the update for: Beez 3 stays as it is, files included (it's still installed)
+		}
+	}
+
+	/**
+	 * Whether Beez 3 is installed (a template row for it), so its files are kept.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	private function isBeez3Installed()
+	{
+		$db = JFactory::getDbo();
+
+		try
+		{
+			$query = $db->getQuery(true)
+				->select('COUNT(*)')
+				->from($db->quoteName('#__extensions'))
+				->where($db->quoteName('type') . ' = ' . $db->quote('template'))
+				->where($db->quoteName('element') . ' = ' . $db->quote('beez3'))
+				->where($db->quoteName('client_id') . ' = 0');
+
+			return (int) $db->setQuery($query)->loadResult() > 0;
+		}
+		catch (Exception $e)
+		{
+			// Can't tell: keep the files
+			return true;
+		}
+	}
+
+	/**
+	 * Whether a Beez 3 style is a default template style (also a language's) or assigned to a published menu item.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	private function isBeez3InUse()
+	{
+		$db = JFactory::getDbo();
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName('id'))
+			->from($db->quoteName('#__template_styles'))
+			->where($db->quoteName('template') . ' = ' . $db->quote('beez3'))
+			->where($db->quoteName('client_id') . ' = 0');
+		$styles = array_map('intval', $db->setQuery($query)->loadColumn());
+
+		if (!$styles)
+		{
+			return false;
+		}
+
+		$query = $db->getQuery(true)
+			->select('COUNT(*)')
+			->from($db->quoteName('#__template_styles'))
+			->where($db->quoteName('id') . ' IN (' . implode(',', $styles) . ')')
+			->where($db->quoteName('home') . ' != ' . $db->quote('0'));
+
+		if ((int) $db->setQuery($query)->loadResult() > 0)
+		{
+			return true;
+		}
+
+		$query = $db->getQuery(true)
+			->select('COUNT(*)')
+			->from($db->quoteName('#__menu'))
+			->where($db->quoteName('template_style_id') . ' IN (' . implode(',', $styles) . ')')
+			->where($db->quoteName('client_id') . ' = 0')
+			->where($db->quoteName('published') . ' = 1');
+
+		return (int) $db->setQuery($query)->loadResult() > 0;
 	}
 
 	/**
@@ -3463,6 +3630,19 @@ class JoomlaInstallerScript
 		);
 
 		jimport('joomla.filesystem.file');
+
+		// Beez 3 left the distribution in 3.12, but a site using it keeps it (keepOrRemoveBeez3()): while it's installed, it's
+		// a third-party template and its files aren't leftovers
+		if ($this->isBeez3Installed())
+		{
+			$isBeez3 = function ($path)
+			{
+				return strpos($path, '/templates/beez3') !== 0 && strpos($path, '/language/en-GB/en-GB.tpl_beez3.') !== 0;
+			};
+
+			$files   = array_values(array_filter($files, $isBeez3));
+			$folders = array_values(array_filter($folders, $isBeez3));
+		}
 
 		/*
 		 * Needed for updates post-3.4

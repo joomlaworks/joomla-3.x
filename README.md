@@ -43,6 +43,8 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 ## Version 3.18 - unreleased [pending]
 
 **Bug fixes:**
+- Sites updating from before 3.12 keep Beez 3 when they use it (default template or a published menu item's), as a third-party template
+- No more PHP 8.2+ deprecation warnings when Joomla writes a text log (e.g. during updates)
 - If the site's template files are missing, the site falls back to another installed template instead of failing
 - Articles with "Link Author" no longer fail when Contacts is uninstalled or disabled (the author just isn't linked)
 - Smart Search's full reindex no longer stops with "The table '#__finder_tokens' is full" on MySQL/MariaDB's default settings

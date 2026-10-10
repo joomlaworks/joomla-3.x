@@ -21,6 +21,7 @@ use Joomla\CMS\Filesystem\Path;
  *
  * @since  1.7.0
  */
+#[\AllowDynamicProperties]
 class LogEntry
 {
 	/**
@@ -82,6 +83,28 @@ class LogEntry
 	 * @since  3.1.4
 	 */
 	public $callStack = array();
+
+	/**
+	 * Fields the text logger fills in (FormattedtextLogger::formatLine()). Declared, as PHP 8.2+ deprecates creating them
+	 * dynamically; loggers and extensions may still add fields of their own (custom log formats), which the attribute above
+	 * allows.
+	 *
+	 * @var    string|null
+	 * @since  3.18.0
+	 */
+	public $clientIP = null;
+
+	/**
+	 * @var    string|null
+	 * @since  3.18.0
+	 */
+	public $datetime = null;
+
+	/**
+	 * @var    string|null
+	 * @since  3.18.0
+	 */
+	public $time = null;
 
 	/**
 	 * Constructor
