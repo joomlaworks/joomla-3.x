@@ -699,15 +699,19 @@ class FinderIndexerQuery
 			$date1 = JFactory::getDate('now', $offset)->format('%Y-%m-%d');
 		}
 
-		// Try to parse the date string.
-		$date = JFactory::getDate($date1, $offset);
-
-		// Check if the date was parsed successfully.
-		if ($date->toUnix() !== null)
+		// An empty date sets no filter: JFactory::getDate('') is now, so setting only the start date used to end the range today
+		if ($date1 !== '')
 		{
-			// Set the date filter.
-			$this->date1 = $date->toSql();
-			$this->when1 = in_array($when1, $whens, true) ? $when1 : 'before';
+			// Try to parse the date string.
+			$date = JFactory::getDate($date1, $offset);
+
+			// Check if the date was parsed successfully.
+			if ($date->toUnix() !== null)
+			{
+				// Set the date filter.
+				$this->date1 = $date->toSql();
+				$this->when1 = in_array($when1, $whens, true) ? $when1 : 'before';
+			}
 		}
 
 		// The value of 'today' is a special case that we need to handle.
@@ -716,15 +720,18 @@ class FinderIndexerQuery
 			$date2 = JFactory::getDate('now', $offset)->format('%Y-%m-%d');
 		}
 
-		// Try to parse the date string.
-		$date = JFactory::getDate($date2, $offset);
-
-		// Check if the date was parsed successfully.
-		if ($date->toUnix() !== null)
+		if ($date2 !== '')
 		{
-			// Set the date filter.
-			$this->date2 = $date->toSql();
-			$this->when2 = in_array($when2, $whens, true) ? $when2 : 'before';
+			// Try to parse the date string.
+			$date = JFactory::getDate($date2, $offset);
+
+			// Check if the date was parsed successfully.
+			if ($date->toUnix() !== null)
+			{
+				// Set the date filter.
+				$this->date2 = $date->toSql();
+				$this->when2 = in_array($when2, $whens, true) ? $when2 : 'before';
+			}
 		}
 
 		return true;

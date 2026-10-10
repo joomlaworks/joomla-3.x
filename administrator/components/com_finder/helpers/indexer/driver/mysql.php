@@ -223,7 +223,7 @@ class FinderIndexerDriverMysql extends FinderIndexer
 						$count += $this->tokenizeToDb($ip, $group, $item->language, $format);
 
 						// Check if we're approaching the memory limit of the token table.
-						if ($count > static::$state->options->get('memory_table_limit', 30000))
+						if ($count > $this->getMemoryTableLimit(30000))
 						{
 							$this->toggleTables(false);
 						}
@@ -247,7 +247,7 @@ class FinderIndexerDriverMysql extends FinderIndexer
 					$count += $this->tokenizeToDb($item->$property, $group, $item->language, $format);
 
 					// Check if we're approaching the memory limit of the token table.
-					if ($count > static::$state->options->get('memory_table_limit', 30000))
+					if ($count > $this->getMemoryTableLimit(30000))
 					{
 						$this->toggleTables(false);
 					}
@@ -312,8 +312,7 @@ class FinderIndexerDriverMysql extends FinderIndexer
 		foreach ($state->weights as $context => $multiplier)
 		{
 			// Run the query to aggregate the tokens for this context..
-			$db->setQuery(sprintf($query, $multiplier, $context, $context));
-			$db->execute();
+			$this->executeTokenQuery(sprintf($query, $multiplier, $context, $context));
 		}
 
 		// Mark afterAggregating in the profiler.

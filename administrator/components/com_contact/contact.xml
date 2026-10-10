@@ -58,5 +58,14 @@
             <language tag="en-GB">language/en-GB.com_contact.sys.ini</language>
         </languages>
     </administration>
+    <!-- Plugins which only serve this component: uninstalled with it ("Restore uninstalled core extensions" in Joomla Update brings them back with it) -->
+    <companions>
+        <plugin group="content" element="contact" />
+        <plugin group="editors-xtd" element="contact" />
+        <plugin group="finder" element="contacts" />
+        <plugin group="privacy" element="contact" />
+        <plugin group="search" element="contacts" />
+        <plugin group="user" element="contactcreator" />
+    </companions>
 </extension>
 

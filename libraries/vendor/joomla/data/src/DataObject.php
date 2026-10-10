@@ -182,7 +182,8 @@ class DataObject implements DumpableInterface, \IteratorAggregate, \JsonSerializ
 		}
 
 		// Add this object to the dumped stack.
-		$dumped->attach($this);
+		// offsetSet(): attach() is deprecated since PHP 8.5 (Joomla 3.x UTD patch)
+		$dumped->offsetSet($this);
 
 		// Setup a container.
 		$dump = new \stdClass;
@@ -207,9 +208,11 @@ class DataObject implements DumpableInterface, \IteratorAggregate, \JsonSerializ
 	 * @see     IteratorAggregate::getIterator()
 	 * @since   1.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
-		return new \ArrayIterator($this->dump(0));
+		// An array: PHP 8.5 deprecates an object as the iterator's storage (Joomla 3.x UTD patch)
+		return new \ArrayIterator((array) $this->dump(0));
 	}
 
 	/**
@@ -219,6 +222,7 @@ class DataObject implements DumpableInterface, \IteratorAggregate, \JsonSerializ
 	 *
 	 * @since   1.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function jsonSerialize()
 	{
 		return $this->dump();
@@ -324,6 +328,7 @@ class DataObject implements DumpableInterface, \IteratorAggregate, \JsonSerializ
 	 *
 	 * @since   1.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function count()
 	{
 		return count($this->properties);

@@ -290,7 +290,8 @@ class Registry implements \JsonSerializable, \ArrayAccess, \IteratorAggregate, \
 	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
-		return new \ArrayIterator($this->data);
+		// An array: PHP 8.5 deprecates an object as the iterator's storage (Joomla 3.x UTD patch)
+		return new \ArrayIterator((array) $this->data);
 	}
 
 	/**

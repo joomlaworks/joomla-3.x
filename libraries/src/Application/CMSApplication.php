@@ -57,6 +57,15 @@ class CMSApplication extends WebApplication
 	public $registeredurlparams = null;
 
 	/**
+	 * The component's title for the administrator's toolbar: set by ToolbarHelper::title() (and some extensions), read by
+	 * mod_title. Declared, as PHP 8.2+ deprecates creating it dynamically.
+	 *
+	 * @var    string|null
+	 * @since  3.18.0
+	 */
+	public $JComponentTitle = null;
+
+	/**
 	 * The client identifier.
 	 *
 	 * @var    integer

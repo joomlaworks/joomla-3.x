@@ -749,6 +749,9 @@ class ComponentAdapter extends InstallerAdapter
 		$this->set('name', $this->getName());
 		$this->set('element', $this->getElement());
 
+		// Read now: the manifest goes with the component's folders
+		$companions = $this->getCompanions();
+
 		// Attempt to load the admin language file; might have uninstall strings
 		$this->loadLanguage(JPATH_ADMINISTRATOR . '/components/' . $this->element);
 
@@ -870,6 +873,9 @@ class ComponentAdapter extends InstallerAdapter
 			// Now we will no longer need the extension object, so let's delete it
 			$this->extension->delete($this->extension->extension_id);
 
+			// Then the plugins which only serve it (and would query its dropped tables)
+			$this->uninstallCompanions($companions);
+
 			return $retval;
 		}
 		else
@@ -878,6 +884,72 @@ class ComponentAdapter extends InstallerAdapter
 			\JLog::add(\JText::_('JLIB_INSTALLER_ERROR_COMP_UNINSTALL_NO_OPTION'), \JLog::WARNING, 'jerror');
 
 			return false;
+		}
+	}
+
+	/**
+	 * The plugins the manifest names as the component's companions: `<companions><plugin group="finder" element="contacts" />`.
+	 * They only serve the component (e.g. its Search and Smart Search plugins, which query its tables), so they are uninstalled
+	 * with it. Core components list them as their "Restore uninstalled core extensions" group does, which brings them back.
+	 *
+	 * @return  array  Arrays of group and element
+	 *
+	 * @since   3.18.0
+	 */
+	protected function getCompanions()
+	{
+		$companions = array();
+
+		if (isset($this->getManifest()->companions))
+		{
+			foreach ($this->getManifest()->companions->plugin as $plugin)
+			{
+				$group   = \JFilterInput::getInstance()->clean((string) $plugin['group'], 'cmd');
+				$element = \JFilterInput::getInstance()->clean((string) $plugin['element'], 'cmd');
+
+				if ($group !== '' && $element !== '')
+				{
+					$companions[] = array($group, $element);
+				}
+			}
+		}
+
+		return $companions;
+	}
+
+	/**
+	 * Uninstall the component's companion plugins which are installed. A plugin that can't be uninstalled (e.g. protected) is
+	 * left as it is.
+	 *
+	 * @param   array  $companions  Arrays of group and element (getCompanions())
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function uninstallCompanions(array $companions)
+	{
+		$db = $this->parent->getDbo();
+
+		foreach ($companions as $companion)
+		{
+			list($group, $element) = $companion;
+
+			$query = $db->getQuery(true)
+				->select($db->quoteName('extension_id'))
+				->from($db->quoteName('#__extensions'))
+				->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+				->where($db->quoteName('folder') . ' = ' . $db->quote($group))
+				->where($db->quoteName('element') . ' = ' . $db->quote($element));
+
+			$id = (int) $db->setQuery($query)->loadResult();
+
+			if ($id)
+			{
+				// An installer of its own: this one is still busy with the component
+				$installer = new Installer;
+				$installer->uninstall('plugin', $id);
+			}
 		}
 	}
 

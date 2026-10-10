@@ -60,5 +60,10 @@
             <language tag="en-GB">language/en-GB.com_newsfeeds.sys.ini</language>
         </languages>
     </administration>
+    <!-- Plugins which only serve this component: uninstalled with it ("Restore uninstalled core extensions" in Joomla Update brings them back with it) -->
+    <companions>
+        <plugin group="finder" element="newsfeeds" />
+        <plugin group="search" element="newsfeeds" />
+    </companions>
 </extension>
 

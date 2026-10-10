@@ -489,7 +489,7 @@ abstract class FinderIndexer
 		$count += $this->addTokensToDb($tokens, $context);
 
 		// Check if we're approaching the memory limit of the token table.
-		if ($count > static::$state->options->get('memory_table_limit', 30000))
+		if ($count > $this->getMemoryTableLimit(30000))
 		{
 			$this->toggleTables(false);
 		}
@@ -543,16 +543,87 @@ abstract class FinderIndexer
 				++$values;
 			}
 
-			$db->setQuery($query)->execute();
+			$this->executeTokenQuery($query);
 
 			// Check if we're approaching the memory limit of the token table.
-			if ($values > static::$state->options->get('memory_table_limit', 10000))
+			if ($values > $this->getMemoryTableLimit(10000))
 			{
 				$this->toggleTables(false);
 			}
 		}
 
 		return $values;
+	}
+
+	/**
+	 * How many rows the token tables may hold before they move from memory to disk: the "memory_table_limit" option, but no
+	 * more than MySQL's max_heap_table_size holds. A memory table stores its text columns at full width, about 620 bytes a
+	 * row with utf8mb4, so the default 16 MB is full at about 27,000 rows, below the option's 30,000: a long article stopped
+	 * the indexing with "The table '#__finder_tokens' is full". A kilobyte a row leaves room for the indexes.
+	 *
+	 * @param   integer  $default  The option's default
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.18.0
+	 */
+	protected function getMemoryTableLimit($default)
+	{
+		static $capacity = false;
+
+		if ($capacity === false)
+		{
+			$capacity = null;
+			$db       = $this->db;
+
+			if ($db->getServerType() === 'mysql' && !($db instanceof JDatabaseDriverMysqlonsqlite))
+			{
+				try
+				{
+					$heap     = (int) $db->setQuery('SELECT @@max_heap_table_size')->loadResult();
+					$capacity = $heap > 0 ? max(1000, (int) floor($heap / 1024)) : null;
+				}
+				catch (RuntimeException $e)
+				{
+					$capacity = null;
+				}
+			}
+		}
+
+		$limit = (int) static::$state->options->get('memory_table_limit', $default);
+
+		return $capacity === null ? $limit : min($limit, $capacity);
+	}
+
+	/**
+	 * Run a query which adds rows to the token tables. Should a memory table still fill up (other servers' row sizes, settings
+	 * changed while indexing), move the tables to disk and run it again.
+	 *
+	 * @param   JDatabaseQuery|string  $query  The query
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function executeTokenQuery($query)
+	{
+		$db = $this->db;
+
+		try
+		{
+			$db->setQuery($query)->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			// MySQL's "The table '...' is full" (error 1114)
+			if ((int) $e->getCode() !== 1114 && stripos($e->getMessage(), 'is full') === false)
+			{
+				throw $e;
+			}
+
+			$this->toggleTables(false);
+			$db->setQuery($query)->execute();
+		}
 	}
 
 	/**

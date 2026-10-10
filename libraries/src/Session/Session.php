@@ -298,7 +298,8 @@ class Session implements \IteratorAggregate
 	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
-		return new \ArrayIterator($this->getData());
+		// The registry's public properties, as an object-backed iterator gave (PHP 8.5 deprecates those)
+		return new \ArrayIterator(get_object_vars($this->getData()));
 	}
 
 	/**

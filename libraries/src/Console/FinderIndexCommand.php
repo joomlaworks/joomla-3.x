@@ -167,7 +167,26 @@ class FinderIndexCommand extends AbstractCommand
 
 		$this->simulateRequest();
 
-		Factory::$application = CMSApplication::getInstance('site');
+		$site = CMSApplication::getInstance('site');
+
+		// What a site request has by now: its language (modules' getParams() reads its tag; it was null, so a content plugin
+		// rendering a module stopped the indexing with "Call to a member function getTag() on null"), the component and its
+		// paths (plugins read JPATH_COMPONENT, which PHP 8 makes fatal when undefined)
+		$site->loadLanguage($language);
+		$site->input->set('option', 'com_finder');
+
+		$paths = array(
+			'JPATH_COMPONENT'               => JPATH_SITE . '/components/com_finder',
+			'JPATH_COMPONENT_SITE'          => JPATH_SITE . '/components/com_finder',
+			'JPATH_COMPONENT_ADMINISTRATOR' => JPATH_ADMINISTRATOR . '/components/com_finder',
+		);
+
+		foreach ($paths as $constant => $path)
+		{
+			defined($constant) || define($constant, $path);
+		}
+
+		Factory::$application = $site;
 
 		try
 		{

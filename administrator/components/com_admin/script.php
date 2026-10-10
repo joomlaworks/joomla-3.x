@@ -93,6 +93,8 @@ class JoomlaInstallerScript
 		}
 		else
 		{
+			// First the plugins left behind by components uninstalled before 3.18, so their files go too
+			$this->removeLeftoverCompanions();
 			$this->deleteFilesOfRemovedCoreExtensions();
 		}
 		$this->updateManifestCaches();
@@ -999,6 +1001,84 @@ class JoomlaInstallerScript
 		}
 
 		return array($installed, $discovered);
+	}
+
+	/**
+	 * Uninstall the companion plugins of removable core components which are no longer installed (e.g. Smart Search -
+	 * Contacts after Contacts was uninstalled), as uninstalling the component does since 3.18: they query the component's
+	 * dropped tables (Smart Search indexing stopped at "Table '#__contact_details' doesn't exist"). The companions are those
+	 * the component's manifest lists (`<companions>`), read from the files this update just extracted.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function removeLeftoverCompanions()
+	{
+		$states = $this->getCoreExtensionStates();
+
+		if ($states === null)
+		{
+			return;
+		}
+
+		list($installed) = $states;
+
+		$db = JFactory::getDbo();
+
+		foreach ($this->removableCoreExtensions as $members)
+		{
+			foreach ($members as $member)
+			{
+				list($type, $element) = $member;
+
+				if ($type !== 'component' || isset($installed[$this->removableCoreExtensionKey('component', $element, '', 0)]))
+				{
+					continue;
+				}
+
+				$manifest = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . substr($element, 4) . '.xml';
+				$xml      = is_file($manifest) ? simplexml_load_file($manifest) : false;
+
+				if (!$xml || !isset($xml->companions))
+				{
+					continue;
+				}
+
+				foreach ($xml->companions->plugin as $plugin)
+				{
+					$group = (string) $plugin['group'];
+					$name  = (string) $plugin['element'];
+
+					if (!isset($installed[$this->removableCoreExtensionKey('plugin', $name, $group, 0)]))
+					{
+						continue;
+					}
+
+					$query = $db->getQuery(true)
+						->select($db->quoteName('extension_id'))
+						->from($db->quoteName('#__extensions'))
+						->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+						->where($db->quoteName('folder') . ' = ' . $db->quote($group))
+						->where($db->quoteName('element') . ' = ' . $db->quote($name));
+
+					try
+					{
+						$id = (int) $db->setQuery($query)->loadResult();
+
+						if ($id)
+						{
+							$installer = new JInstaller;
+							$installer->uninstall('plugin', $id);
+						}
+					}
+					catch (Exception $e)
+					{
+						// Not worth failing the update for: the plugin stays as it was
+					}
+				}
+			}
+		}
 	}
 
 	/**

@@ -42,6 +42,13 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 
 ## Version 3.18 - unreleased [pending]
 
+**Bug fixes:**
+- Smart Search's full reindex no longer stops with "The table '#__finder_tokens' is full" on MySQL/MariaDB's default settings
+- Smart Search's command line indexer no longer stops when a content plugin renders a module into the content being indexed
+- Smart Search's Advanced Search: setting only a start or end date no longer adds today as the other one
+- Uninstalling Contacts or News Feeds also uninstalls their plugins (e.g. "Smart Search - Contacts", which stopped indexing); updates remove those left behind by earlier uninstalls
+- More PHP 8.2+/8.5 deprecation warnings fixed (the administrator's toolbar title, iterating registries and sessions)
+
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:
 - Full support for all major database vendors: MySQL/MariaDB (native & PDO), Postgres (native & PDO), SQLite, SQL Server & Azure SQL, spanning versions that were released even 15 or so years ago (excluding SQLite, which supports versions from late 2021 on, 3.37.0 and newer, for now). Our work made all databases simply work as they should with Joomla. And Joomla 3.x UTD works natively with the default user authentication method that ships with MySQL 8.0, 8.4 and 9.x (caching SHA-2) and it does not require switching MySQL to "native" authentication (the old way up to MySQL 5.7).
