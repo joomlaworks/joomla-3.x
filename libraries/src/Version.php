@@ -32,7 +32,7 @@ final class Version
 	 * the update feeds' target platform ("joomla"), and the user agent and the web installer send it.
 	 *
 	 * @var    string
-	 * @since  3.18.0
+	 * @since  3.17.0
 	 */
 	const DISTRIBUTION = 'Joomla 3.x UTD';
 

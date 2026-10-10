@@ -15,7 +15,6 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 
 ## CONTENTS
 - [Changelog](#changelog)
-  - [Version 3.18 - unreleased [pending]](#version-318---unreleased-pending)
   - [Version 3.17 - released October 10th, 2026](#version-317---released-october-10th-2026)
   - [Version 3.16 - released October 3rd, 2026](#version-316---released-october-3rd-2026)
   - [Version 3.15 - released July 18th, 2026](#version-315---released-july-18th-2026)
@@ -39,14 +38,6 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 - [Longterm Plan (as a different project)](#longterm-plan-as-a-different-project)
 
 ## CHANGELOG
-
-## Version 3.18 - unreleased [pending]
-**Bug fixes:**
-- The administrator login page always shows its gradient: upgraded sites got a flat blue panel from Isis' old "Login Background Colour" option, which is removed
-
-**Improvements:**
-- The administrator's status bar names the distribution ("Joomla 3.x UTD v3.17.0"), and shows Visitors and Messages as icons and "Admins", so it stays on one line
-- `config:set` says which options it set, with their new and previous values (secrets and long values by name only)
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:
@@ -114,6 +105,7 @@ Summary of changes:
 - The command line now shows the messages of older code (e.g. why a category can't be deleted), and a broken command file no longer stops the other commands
 - Fixed tags given by ID from the command line being created as new tags named after the number
 - Fixed date calculations with negative intervals failing on the SQLite database driver
+- The administrator login page always shows its gradient: upgraded sites got a flat blue panel from Isis' old "Login Background Colour" option, which is removed
 
 **Improvements:**
 - The "Joomla! Statistics" plugin and its request to send statistics are off on new and updated sites (joomla.org's statistics don't cover this distribution)
@@ -121,6 +113,8 @@ Summary of changes:
 - The installer removes the `installation` folder by itself when you continue to your site or its administrator (only after installing, and only its own folder), and no longer has FTP options
 - The installer offers three sample data sets, News, Blog and Studio; Brochure, Default and Learn (and the Learn set's images) are removed
 - The "Sample Data" plugin (formerly "Sample Data - Blog") and Control Panel module install either set, News first, with a button per set
+- The administrator's status bar names the distribution ("Joomla 3.x UTD v3.17.0"), and shows Visitors and Messages as icons and "Admins", so it stays on one line
+- `config:set` says which options it set, with their new and previous values (secrets and long values by name only)
 
 **New features:**
 - TinyMCE 8 editor ("Editor - TinyMCE"), next to the TinyMCE 4 one, now "Editor - TinyMCE (legacy)": the editor buttons below the editor as before, image uploads by dropping, pasting or the image dialog, templates, a toolbar builder per user group, 61 languages. New sites use it; existing sites switch in Global Configuration (and can switch back)
