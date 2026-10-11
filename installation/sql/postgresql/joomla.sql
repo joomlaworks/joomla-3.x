@@ -1821,11 +1821,11 @@ CREATE INDEX "#__template_styles_idx_client_id_home" ON "#__template_styles" ("c
 
 INSERT INTO "#__template_styles" ("id", "template", "client_id", "home", "title", "params") VALUES
 (7, 'protostar', 0, '0', 'protostar - Default', '{"templateColor":"","logoFile":"","googleFont":"0","googleFontName":"Open+Sans","fluidContainer":"0"}'),
-(8, 'isis', 1, '1', 'isis - Default', '{"templateColor":"","logoFile":""}'),
+(8, 'isis', 1, '0', 'isis - Default', '{"templateColor":"","logoFile":""}'),
 (9, 'hammond', 0, '1', 'Hammond - Default', '{"siteName":"","tagline":"","footerText":"","pagesMenu":"companymenu","social_facebook":"#","social_x":"#","social_instagram":"#","social_youtube":"#","social_linkedin":"#","social_rss":""}'),
 (10, 'finch', 0, '0', 'Finch - Default', '{"siteName":"","tagline":"","authorBio":"","footerText":"","social_x":"#","social_instagram":"#","social_facebook":"#","social_linkedin":"#","social_rss":""}'),
 (11, 'rookwood', 0, '0', 'Rookwood - Default', '{"siteName":"","defaultTheme":"dark","footerHeadline":"","footerEmail":"","footerText":"","social_x":"","social_linkedin":"","social_instagram":"","social_github":"","social_dribbble":"","social_rss":""}'),
-(12, 'prothero', 1, '0', 'Prothero - Default', '{"colorScheme":"auto","logoFile":""}');
+(12, 'prothero', 1, '1', 'Prothero - Default', '{"colorScheme":"auto","logoFile":""}');
 
 SELECT setval('#__template_styles_id_seq', 13, false);
 

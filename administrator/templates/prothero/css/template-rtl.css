@@ -212,3 +212,4 @@ a.grid_true {display:inline-block;height:16px;width:16px;background-image:url(".
 /* Spacer headings: the band's edge on the right */
 .form-horizontal .field-spacer .spacer label {padding:12px 14px 12px 16px;border-left:0;border-right:4px solid var(--c-bg);}
 .sidebar-nav .nav-list > li.active > a {box-shadow:inset -2px 0 0 var(--c-accent);}
+input[type="file"]::file-selector-button {margin-right:0;margin-left:10px;}

@@ -1866,6 +1866,10 @@ textarea.noResize {resize:none;}
 .form-horizontal .controls > .radio.btn-group:first-child {padding-top:0;}
 .form-horizontal .controls > .radio.btn-group-yesno:first-child {padding-top:0;}
 input.field-media-input {width:auto;}
+/* File fields: the browser's button as the template's */
+input[type="file"] {height:auto;line-height:20px;}
+input[type="file"]::file-selector-button {margin-right:10px;padding:5px 12px;font:inherit;font-weight:500;color:var(--c-fg);background:var(--c-card);border:1px solid var(--c-input);border-radius:var(--radius);cursor:pointer;}
+input[type="file"]::file-selector-button:hover {background:var(--c-muted);}
 /* Edit forms: the settings column (status, category, access...) as a grey panel */
 .form-validate .span3 > fieldset.form-vertical {padding:16px;background:var(--c-subtle);border:1px solid var(--c-border);border-radius:var(--radius-lg);}
 .form-validate .span3 > fieldset.form-vertical .control-group:last-child {margin-bottom:0;}
@@ -2265,6 +2269,8 @@ input[type="checkbox"]:focus,input[type="radio"]:focus {box-shadow:none;}
 /* Dashboard cards: the title on a grey band */
 .com_cpanel .well > .module-title.nav-header {margin:-14px -18px 14px;padding:11px 18px;background:var(--c-subtle);border-bottom:1px solid var(--c-border);border-radius:var(--radius-lg) var(--radius-lg) 0 0;}
 .com_cpanel .well > .module-title + .row-striped,.com_cpanel .well > .module-title + .list-striped {margin-top:-14px;border-top:0;}
+/* The post-installation messages notice: tinted with the accent of the Menu Bar Colour (black and graphite leave it neutral) */
+:root:not([data-navbar="black"]):not([data-navbar="graphite"]) .com_cpanel .row-fluid > .alert-info {background-color:color-mix(in srgb, var(--c-accent) 7%, var(--c-card));border-color:color-mix(in srgb, var(--c-accent) 22%, var(--c-card));}
 /* The quick icons column: a sidebar, as on the list pages */
 .com_cpanel .cpanel-links {padding:14px 10px;background:var(--c-subtle);border:1px solid var(--c-border);border-radius:var(--radius-lg);}
 .com_cpanel .cpanel-links .quick-icons {margin-bottom:0;}
