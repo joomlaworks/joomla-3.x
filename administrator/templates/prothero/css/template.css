@@ -2103,6 +2103,9 @@ body .navbar,body .navbar-fixed-top {margin-bottom:0;}
     .navbar .nav-collapse .nav-user .dropdown-menu > li > span,.navbar .nav-collapse .nav-user .dropdown-menu > li > a {display:block;margin:0;padding:4px 0;font-size:14px;color:var(--c-nav-soft);background:none;border:0;}
     .navbar .nav-collapse .nav-user .dropdown-menu > li > span {flex-basis:100%;color:var(--c-nav-fg);}
     .navbar .nav-collapse .nav-user .dropdown-menu > li.divider {display:none;}
+    /* List pagination centred */
+    .pagination.pagination-toolbar {text-align:center;}
+    .pagination.pagination-toolbar .limit {float:none;margin-bottom:8px;}
     /* The toolbar: always shown, its buttons in one row scrolling sideways (no "Toolbar" button opening a column of them) */
     .btn-subhead {display:none !important;}
     .subhead-collapse.collapse {height:auto !important;overflow:visible;}
