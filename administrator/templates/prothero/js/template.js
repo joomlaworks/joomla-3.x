@@ -358,10 +358,10 @@
 		}
 	};
 
-	/* --- Tab rows that don't fit scroll sideways (css/template.css): the side with more tabs gets a fade --- */
+	/* --- Tab rows (and the toolbar on phones) that don't fit scroll sideways (css/template.css): the side with more gets a fade --- */
 
 	function initTabRows() {
-		var rows = $$('.nav-tabs:not(.nav-stacked)').filter(function (row) {
+		var rows = $$('.nav-tabs:not(.nav-stacked), #toolbar').filter(function (row) {
 			return !row.closest('.tabs-left, .tabs-right');
 		});
 
