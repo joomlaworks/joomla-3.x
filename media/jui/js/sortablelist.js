@@ -109,6 +109,54 @@
 			}
 		});
 
+		// Touch: jQuery UI's sortable only listens to the mouse. A touch that starts on a handle drives it with the mouse events it
+		// expects; a touch anywhere else scrolls the page as usual (Joomla 3.x UTD)
+		var wrapperElement = $(tableWrapper)[0];
+
+		if (wrapperElement && window.MouseEvent) {
+			var sendMouse = function (type, touch, target) {
+				target.dispatchEvent(new MouseEvent(type, {
+					bubbles: true,
+					cancelable: true,
+					view: window,
+					button: 0,
+					buttons: type === 'mouseup' ? 0 : 1,
+					clientX: touch.clientX,
+					clientY: touch.clientY,
+					screenX: touch.screenX,
+					screenY: touch.screenY
+				}));
+			};
+
+			wrapperElement.addEventListener('touchstart', function (event) {
+				var handle = event.touches.length === 1 && event.target.closest ? event.target.closest(ops.sortableHandle) : null;
+
+				if (!handle || !wrapperElement.contains(handle)) {
+					return;
+				}
+
+				var move = function (e) {
+					e.preventDefault();
+					sendMouse('mousemove', e.touches[0], document);
+				};
+
+				var end = function (e) {
+					document.removeEventListener('touchmove', move);
+					document.removeEventListener('touchend', end);
+					document.removeEventListener('touchcancel', end);
+					sendMouse('mouseup', e.changedTouches[0], document);
+				};
+
+				event.preventDefault();
+				sendMouse('mouseover', event.touches[0], handle);
+				sendMouse('mousedown', event.touches[0], handle);
+
+				document.addEventListener('touchmove', move, { passive: false });
+				document.addEventListener('touchend', end);
+				document.addEventListener('touchcancel', end);
+			}, { passive: false });
+		}
+
 		this.hideChildrenNodes = function (itemId) {
 			root.childrenNodes = root.getChildrenNodes(itemId);
 			root.childrenNodes.hide();

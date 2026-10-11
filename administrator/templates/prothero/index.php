@@ -35,6 +35,10 @@ JHtml::_('bootstrap.framework');
 // Add template js
 JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true));
 
+// For the lists' Reorder button on phones (js/template.js)
+JText::script('TPL_PROTHERO_REORDER');
+JText::script('TPL_PROTHERO_REORDER_DONE');
+
 // Add Stylesheets
 JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
 

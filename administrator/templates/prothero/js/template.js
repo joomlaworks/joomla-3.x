@@ -425,6 +425,71 @@
 		window.addEventListener('resize', function () { rows.forEach(update); });
 	}
 
+	/* --- Lists on phones: a Reorder button switches to sorting by ordering (drag and drop then works) and back --- */
+
+	function initReorder() {
+		var bar = $('.js-stools-container-bar');
+		var orderLink = $$('.js-stools-column-order[data-order]').filter(function (link) {
+			return !!link.querySelector('.icon-menu-2');
+		})[0];
+		var form = orderLink ? orderLink.closest('form') : null;
+		var field = form ? form.querySelector('[name="list[fullordering]"]') : null;
+
+		if (!bar || !orderLink || !field) {
+			return;
+		}
+
+		var ordering = orderLink.getAttribute('data-order');
+		var key = 'prothero-reorder:' + location.pathname + location.search.replace(/[?&](limitstart|start)=\d+/g, '');
+		var active = (field.value || '').split(' ')[0] === ordering;
+		var text = function (k, fallback) { return (window.Joomla && Joomla.JText && Joomla.JText._(k)) || fallback; };
+
+		var setOrdering = function (value) {
+			if (field.tagName === 'SELECT') {
+				var option = $$('option', field).filter(function (o) { return o.value === value; })[0];
+
+				if (!option) {
+					option = document.createElement('option');
+					option.value = value;
+					field.appendChild(option);
+				}
+
+				option.selected = true;
+			} else {
+				field.value = value;
+			}
+
+			form.submit();
+		};
+
+		var wrapper = document.createElement('div');
+		var button = document.createElement('button');
+
+		wrapper.className = 'btn-wrapper prothero-reorder';
+		button.type = 'button';
+		button.className = 'btn' + (active ? ' btn-primary' : '');
+		button.setAttribute('aria-pressed', active ? 'true' : 'false');
+		button.innerHTML = '<span class="icon-menu-2" aria-hidden="true"></span> ';
+		button.appendChild(document.createTextNode(active ? text('TPL_PROTHERO_REORDER_DONE', 'Done') : text('TPL_PROTHERO_REORDER', 'Reorder')));
+		wrapper.appendChild(button);
+		bar.appendChild(wrapper);
+
+		button.addEventListener('click', function () {
+			var previous;
+
+			try { previous = sessionStorage.getItem(key); } catch (e) {}
+
+			if (active) {
+				// Back to the order the list had before, else the select's first choice
+				setOrdering(previous || (field.tagName === 'SELECT' && field.options.length ? field.options[0].value : ''));
+			} else {
+				try { sessionStorage.setItem(key, field.value || ''); } catch (e) {}
+
+				setOrdering(ordering + ' ' + (orderLink.getAttribute('data-direction') || 'ASC').toUpperCase());
+			}
+		});
+	}
+
 	/* --- The login page --- */
 
 	function initLogin() {
@@ -491,6 +556,7 @@
 		initMenuButton();
 		initStickyToolbar();
 		initTabRows();
+		initReorder();
 
 		// Events only jQuery hears: Chosen ready (and changed through its API), subform rows added
 		if (jq()) {

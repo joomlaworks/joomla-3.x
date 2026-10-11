@@ -76,3 +76,8 @@
 .middle, .table td.middle, .table th.middle {
     vertical-align: middle;
 }
+
+/* A touch on a handle drags the row instead of scrolling the page (Joomla 3.x UTD) */
+.dndlist-sortable .sortable-handler {
+  touch-action: none;
+}

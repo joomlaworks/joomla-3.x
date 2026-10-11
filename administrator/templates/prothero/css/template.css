@@ -1791,6 +1791,8 @@ h6 {font-size:13px;line-height:18px;}
 .chzn-container-multi .chzn-choices li.search-choice .search-choice-close:before {font-family:IcoMoon;content:"\004A";position:relative;right:1px;top:0;font-size:10px;}
 .chzn-container-multi .chzn-drop .result-selected {color:var(--c-muted-fg);}
 .js-stools .js-stools-container-bar .js-stools-field-filter .chzn-container {margin:1px 0;padding:0 !important;}
+/* The lists' Reorder button: phones only ("Prothero: Phones") */
+.js-stools-container-bar .btn-wrapper.prothero-reorder {display:none;}
 /* Lists: space between the search tools and the list */
 .js-stools {margin-bottom:12px;}
 /* Status lists (published, unpublished): tinted as their state */
@@ -2109,6 +2111,11 @@ body .navbar,body .navbar-fixed-top {margin-bottom:0;}
     .navbar .nav-collapse .nav-user .dropdown-menu > li > span,.navbar .nav-collapse .nav-user .dropdown-menu > li > a {display:block;margin:0;padding:4px 0;font-size:14px;color:var(--c-nav-soft);background:none;border:0;}
     .navbar .nav-collapse .nav-user .dropdown-menu > li > span {flex-basis:100%;color:var(--c-nav-fg);}
     .navbar .nav-collapse .nav-user .dropdown-menu > li.divider {display:none;}
+    /* Lists: the Reorder button (js/template.js), and the drag handles while the list is sorted by ordering (touch works through
+       media/jui/js/sortablelist.js); a larger handle for a finger */
+    .js-stools-container-bar .btn-wrapper.prothero-reorder {display:inline-block;}
+    table:has(> tbody.ui-sortable) td.order.hidden-phone,table:has(> tbody.ui-sortable) th.hidden-phone:has(.js-stools-column-order .icon-menu-2) {display:table-cell !important;}
+    table:has(> tbody.ui-sortable) td.order .sortable-handler {display:inline-block;padding:10px 8px;margin:-6px 0;}
     /* List pagination centred */
     .pagination.pagination-toolbar {text-align:center;}
     .pagination.pagination-toolbar .limit {float:none;margin-bottom:8px;}
