@@ -255,6 +255,16 @@
 				watchIframe(editor, element);
 			};
 
+			// A page shown dark (data-scheme on <html>, as the Prothero administrator template writes it: dark, or auto and a device set
+			// to dark) gets the dark twin of a light skin; the content keeps its own stylesheet (the site template's editor.css)
+			const darkSkins = { oxide: 'oxide-dark', 'tinymce-5': 'tinymce-5-dark' };
+			const scheme = document.documentElement.getAttribute('data-scheme');
+			const dark = scheme === 'dark' || (scheme === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+			if (dark && darkSkins[options.skin || 'oxide']) {
+				options.skin = darkSkins[options.skin || 'oxide'];
+			}
+
 			tinymce.init(options);
 
 			// Until TinyMCE has started, the textarea holds the content

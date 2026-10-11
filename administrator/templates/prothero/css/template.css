@@ -2385,6 +2385,66 @@ input[type="checkbox"]:focus,input[type="radio"]:focus {box-shadow:none;}
     #menu-assignment .menu-links {column-count:auto;}
 }
 
+/* --- Prothero: TinyMCE 4 (Editor - TinyMCE (legacy)) --- */
+/* Its only skin, lightgray, has no dark version: its toolbar, menus and dialogs (part of the page) in the template's colours, light and
+   dark; the editing area keeps the site template's editor.css. Its stylesheet comes after this one, hence "body" in each selector */
+body .mce-container,body .mce-container *,body .mce-widget,body .mce-widget *,body .mce-reset {color:var(--c-fg);}
+body .mce-panel {background-color:var(--c-subtle);border-color:var(--c-border);}
+body .mce-tinymce.mce-panel {border:1px solid var(--c-border);border-radius:var(--radius);overflow:hidden;}
+body .mce-menubar {border-color:var(--c-border);}
+body .mce-menubar .mce-menubtn button,body .mce-menubar .mce-menubtn button span,body .mce-menubtn button,body .mce-btn button,body .mce-ico,body .mce-path-item {color:var(--c-fg);}
+body .mce-menubar .mce-caret,body .mce-caret {border-top-color:var(--c-fg);}
+body .mce-caret.mce-up {border-bottom-color:var(--c-fg);}
+body .mce-btn {background-color:transparent;border-color:transparent;text-shadow:none;}
+body .mce-btn:hover,body .mce-btn:focus,body .mce-menubar .mce-menubtn:hover,body .mce-menubar .mce-menubtn.mce-active,body .mce-menubar .mce-menubtn:focus,body .mce-btn-flat:hover,body .mce-btn-flat.mce-active,body .mce-btn-flat:focus,body .mce-btn-flat:active {color:var(--c-fg);background:var(--c-muted);border-color:var(--c-border);}
+body .mce-btn.mce-active,body .mce-btn.mce-active:hover,body .mce-btn:active,body .mce-splitbtn .mce-open.mce-active {background-color:var(--c-border);border-color:var(--c-input);}
+body .mce-btn-group:not(:first-child) {border-left-color:var(--c-border);}
+body .mce-rtl .mce-btn-group:not(:first-child) {border-right-color:var(--c-border);}
+body .mce-splitbtn:hover .mce-open {border-left-color:var(--c-border);}
+body .mce-primary {background-color:var(--c-primary);border-color:var(--c-primary);}
+body .mce-primary:hover,body .mce-primary:focus,body .mce-primary.mce-active,body .mce-primary.mce-active:hover,body .mce-primary:not(.mce-disabled):active {background-color:var(--c-primary-hover);}
+body .mce-primary button,body .mce-primary button i {color:var(--c-on-primary);}
+body .mce-disabled .mce-caret {border-top-color:var(--c-muted-fg);}
+body .mce-disabled .mce-path-item,body .mce-label.mce-disabled,body .mce-textbox.mce-disabled,body .mce-combobox.mce-disabled input,body .mce-menu-item.mce-disabled .mce-text,body .mce-menu-item.mce-disabled .mce-ico,body .mce-menu-shortcut {color:var(--c-muted-fg);}
+body .mce-path-item:focus {color:var(--c-on-primary);background:var(--c-primary);}
+/* Menus */
+body .mce-menu,body .mce-floatpanel.mce-popover {background:var(--c-popover);border:1px solid var(--c-border);border-radius:var(--radius);box-shadow:var(--shadow-md);}
+body .mce-menu-item,body .mce-menu-item .mce-ico,body .mce-menu-item .mce-text {color:var(--c-fg);}
+body .mce-menu-item:hover,body .mce-menu-item.mce-selected,body .mce-menu-item:focus {color:var(--c-fg);background-color:var(--c-muted);}
+body .mce-menu-item:hover *,body .mce-menu-item.mce-selected *,body .mce-menu-item:focus *,body .mce-menu-item:hover .mce-text,body .mce-menu-item.mce-selected .mce-text,body .mce-menu-item:focus .mce-text,body .mce-menu-item:hover .mce-ico,body .mce-menu-item.mce-selected .mce-ico,body .mce-menu-item:focus .mce-ico,body .mce-menu-item:hover .mce-menu-shortcut,body .mce-menu-item.mce-selected .mce-menu-shortcut,body .mce-menu-item:focus .mce-menu-shortcut {color:var(--c-fg);}
+body .mce-menu-item .mce-caret {border-left-color:var(--c-fg);}
+body .mce-menu-item.mce-selected .mce-caret,body .mce-menu-item:focus .mce-caret,body .mce-menu-item:hover .mce-caret {border-left-color:var(--c-fg);}
+body .mce-rtl .mce-menu-item .mce-caret,body .mce-rtl .mce-menu-item.mce-selected .mce-caret,body .mce-rtl .mce-menu-item:focus .mce-caret,body .mce-rtl .mce-menu-item:hover .mce-caret {border-left-color:transparent;border-right-color:var(--c-fg);}
+body .mce-menu-item-normal.mce-active {background-color:var(--c-muted);}
+body .mce-menu-item-normal.mce-active .mce-text,body .mce-menu-item-normal.mce-active:hover .mce-text,body .mce-menu-item-normal.mce-active:hover .mce-ico,body .mce-menu-item-normal.mce-active:focus .mce-text,body .mce-menu-item-normal.mce-active:focus .mce-ico {color:var(--c-fg);}
+body .mce-menu-item.mce-disabled:hover {background:transparent;}
+body div.mce-menu .mce-menu-item-sep,body .mce-menu-item-sep:hover {border-bottom-color:var(--c-border);}
+body .mce-arrow.mce-arrow-up:after,body .mce-floatpanel.mce-popover.mce-bottom > .mce-arrow:after {border-bottom-color:var(--c-popover);}
+body .mce-arrow.mce-arrow-down:after {border-top-color:var(--c-popover);}
+/* Dialogs */
+body #mce-modal-block {background:#000;}
+body .mce-window {background:var(--c-popover);border:1px solid var(--c-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);}
+body .mce-window-head {border-bottom-color:var(--c-border);}
+body .mce-window-head .mce-close i,body .mce-notification .mce-close {color:var(--c-muted-fg);}
+body .mce-close:hover i {color:var(--c-fg);}
+body .mce-foot {background-color:var(--c-subtle);border-top-color:var(--c-border);}
+body .mce-tabs,body .mce-tabs + .mce-container-body {background:var(--c-popover);}
+body .mce-tabs {border-bottom-color:var(--c-border);}
+body .mce-tab {background:var(--c-subtle);border-color:var(--c-border);text-shadow:none;}
+body .mce-tab:hover,body .mce-tab.mce-active {background:var(--c-popover);}
+body .mce-textbox,body .mce-selectbox,body .mce-combobox input {color:var(--c-fg);background:var(--c-card);border-color:var(--c-input);}
+body .mce-textbox:focus,body .mce-textbox.mce-focus {border-color:var(--c-ring);}
+body .mce-placeholder .mce-textbox {color:var(--c-muted-fg);}
+body .mce-combobox .mce-btn,body .mce-colorbox i,body .mce-window-body .mce-listbox {border-color:var(--c-input);}
+body .mce-fieldset {border-color:var(--c-border);}
+body .mce-tooltip-inner {color:var(--c-on-primary);background-color:var(--c-primary);}
+body .mce-tooltip-arrow-n {border-bottom-color:var(--c-primary);}
+body .mce-tooltip-arrow-s {border-top-color:var(--c-primary);}
+body .mce-tooltip-arrow-e {border-left-color:var(--c-primary);}
+body .mce-tooltip-arrow-w {border-right-color:var(--c-primary);}
+body .mce-notification {background-color:var(--c-popover);border-color:var(--c-border);}
+body .mce-notification *,body .mce-notification .mce-progress .mce-text {color:var(--c-fg);}
+
 /* --- Prothero: Core stylesheets --- */
 /* Stylesheets core code adds (media/jui, media/system, the editor's options) have fixed light colours: the template's instead, for dark too */
 #sbox-window {background-color:var(--c-popover);}
