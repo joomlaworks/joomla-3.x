@@ -2113,7 +2113,7 @@ body .navbar,body .navbar-fixed-top {margin-bottom:0;}
     .navbar .nav-collapse .nav-user .dropdown-menu > li.divider {display:none;}
     /* Lists: the Reorder button (js/template.js), and the drag handles while the list is sorted by ordering (touch works through
        media/jui/js/sortablelist.js); a larger handle for a finger */
-    .js-stools-container-bar .btn-wrapper.prothero-reorder {display:inline-block;}
+    .js-stools-container-bar .btn-wrapper.prothero-reorder {display:block;margin:12px 0 0;}
     table:has(> tbody.ui-sortable) td.order.hidden-phone,table:has(> tbody.ui-sortable) th.hidden-phone:has(.js-stools-column-order .icon-menu-2) {display:table-cell !important;}
     table:has(> tbody.ui-sortable) td.order .sortable-handler {display:inline-block;padding:10px 8px;margin:-6px 0;}
     /* List pagination centred */
