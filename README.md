@@ -51,6 +51,7 @@ Summary of changes:
 - Prothero, a new black and white administrator template with a dark mode, the default on new sites; Isis stays, and works with the same extensions
 
 **New features:**
+- The debug console opens from a button at the bottom right, showing the page's time, memory, queries and errors, as a panel with tabs instead of a block at the end of every page; redesigned, light and dark
 - Prothero, a new administrator template next to Isis: Isis' markup (so extensions made for Isis work with it), with a minimal black and white look in the style of shadcn/ui and Vercel, light and dark colour schemes (automatic by default), a choice of colours for the top menu bar and a matching login page. It's the default administrator template of new sites; existing sites keep Isis and can switch in System > Templates
 
 **Improvements:**

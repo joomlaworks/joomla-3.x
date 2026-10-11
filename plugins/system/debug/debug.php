@@ -209,6 +209,9 @@ class PlgSystemDebug extends JPlugin
 		if ((JDEBUG || $this->debugLang) && $this->isAuthorisedDisplayDebug())
 		{
 			JHtml::_('stylesheet', 'cms/debug.css', array('version' => 'auto', 'relative' => true));
+
+			// The console as a panel opened from a button (without it, it stays at the end of the page)
+			JHtml::_('script', 'cms/debug.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
 		}
 
 		// Disable asset media version if needed.
@@ -281,7 +284,17 @@ class PlgSystemDebug extends JPlugin
 			e.style.display = e.style.display === 'none' ? 'block' : 'none';
 		}</script>";
 
-		$html[] = '<div id="system-debug" class="profiler">';
+		// For the console's button: the page's time and memory, its queries, and what went wrong (counted before the sections, as
+		// showing the errors empties their stack and the profile closes the database connection)
+		$summary = $this->getSummary();
+
+		$html[] = '<div id="system-debug" class="profiler"'
+			. ' data-label="' . htmlspecialchars(JText::_('PLG_DEBUG_TITLE'), ENT_COMPAT, 'UTF-8') . '"'
+			. ' data-close="' . htmlspecialchars(JText::_('JLIB_HTML_BEHAVIOR_CLOSE'), ENT_COMPAT, 'UTF-8') . '"'
+			. ' data-time="' . $summary['time'] . '"'
+			. ' data-memory="' . $summary['memory'] . '"'
+			. ' data-queries="%%DBG_QUERIES%%"'
+			. ' data-errors="' . $summary['errors'] . '">';
 
 		$html[] = '<h2>' . JText::_('PLG_DEBUG_TITLE') . '</h2>';
 
@@ -289,7 +302,7 @@ class PlgSystemDebug extends JPlugin
 		{
 			if (JError::getErrors())
 			{
-				$html[] = $this->display('errors');
+				$html[] = $this->display('errors', array(), count(JError::getErrors()));
 			}
 
 			if ($this->params->get('session', 1))
@@ -309,12 +322,15 @@ class PlgSystemDebug extends JPlugin
 
 			if ($this->params->get('queries', 1))
 			{
-				$html[] = $this->display('queries');
+				// Counted now: rendering the sections before this one runs queries too
+				$log                = $this->db->getLog();
+				$summary['queries'] = $log ? count($log) : 0;
+				$html[]             = $this->display('queries', array(), $summary['queries']);
 			}
 
 			if (!empty($this->logEntries) && $this->params->get('logs', 1))
 			{
-				$html[] = $this->display('logs');
+				$html[] = $this->display('logs', array(), count($this->logEntries));
 			}
 		}
 
@@ -323,7 +339,7 @@ class PlgSystemDebug extends JPlugin
 			if ($this->params->get('language_errorfiles', 1))
 			{
 				$languageErrors = JFactory::getLanguage()->getErrorFiles();
-				$html[]         = $this->display('language_files_in_error', $languageErrors);
+				$html[]         = $this->display('language_files_in_error', $languageErrors, count($languageErrors));
 			}
 
 			if ($this->params->get('language_files', 1))
@@ -333,7 +349,7 @@ class PlgSystemDebug extends JPlugin
 
 			if ($this->params->get('language_strings', 1))
 			{
-				$html[] = $this->display('untranslated_strings');
+				$html[] = $this->display('untranslated_strings', array(), count(JFactory::getLanguage()->getOrphans()));
 			}
 		}
 
@@ -344,7 +360,9 @@ class PlgSystemDebug extends JPlugin
 
 		$html[] = '</div>';
 
-		echo str_replace('</body>', implode('', $html) . '</body>', $contents);
+		$output = str_replace('%%DBG_QUERIES%%', (int) $summary['queries'], implode('', $html));
+
+		echo str_replace('</body>', $output . '</body>', $contents);
 	}
 
 	/**
@@ -433,7 +451,7 @@ class PlgSystemDebug extends JPlugin
 	 *
 	 * @since   2.5
 	 */
-	protected function display($item, array $errors = array())
+	protected function display($item, array $errors = array(), $count = null)
 	{
 		$title = JText::_('PLG_DEBUG_' . strtoupper($item));
 
@@ -457,7 +475,8 @@ class PlgSystemDebug extends JPlugin
 
 		$class = 'dbg-header' . $status;
 
-		$html[] = '<div class="' . $class . '" onclick="' . $js . '"><a href="javascript:void(0);"><h3>' . $title . '</h3></a></div>';
+		$html[] = '<div class="' . $class . '" onclick="' . $js . '"' . ($count === null ? '' : ' data-count="' . (int) $count . '"')
+			. '><a href="javascript:void(0);"><h3>' . $title . '</h3></a></div>';
 
 		// @todo set with js.. ?
 		$style = ' style="display: none;"';
@@ -467,6 +486,53 @@ class PlgSystemDebug extends JPlugin
 		$html[] = '</div>';
 
 		return implode('', $html);
+	}
+
+	/**
+	 * The figures the console's button shows: the page's time (ms) and peak memory (bytes), its database queries, and the number
+	 * of errors and warnings (errors raised, log messages of warning level or worse, language files in error).
+	 *
+	 * @return  array  time, memory, queries, errors
+	 *
+	 * @since   3.18.0
+	 */
+	protected function getSummary()
+	{
+		$time    = 0;
+		$queries = 0;
+		$errors  = 0;
+
+		if (JDEBUG)
+		{
+			$marks = JProfiler::getInstance('Application')->getMarks();
+			$last  = end($marks);
+			$time  = $last ? $last->totalTime : 0;
+
+			$log     = $this->db->getLog();
+			$queries = $log ? count($log) : 0;
+
+			$errors += count(JError::getErrors());
+
+			foreach ($this->logEntries as $entry)
+			{
+				if ($entry->priority <= JLog::WARNING && $entry->category !== 'databasequery')
+				{
+					$errors++;
+				}
+			}
+		}
+
+		if ($this->debugLang)
+		{
+			$errors += count(JFactory::getLanguage()->getErrorFiles());
+		}
+
+		return array(
+			'time'    => round($time),
+			'memory'  => memory_get_peak_usage(),
+			'queries' => $queries,
+			'errors'  => $errors,
+		);
 	}
 
 	/**
