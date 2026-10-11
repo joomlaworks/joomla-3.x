@@ -265,6 +265,22 @@
 				options.skin = darkSkins[options.skin || 'oxide'];
 			}
 
+			// Its sticky toolbar stops under what stays at the top of the administrator (Isis' and Prothero's top bar, and their
+			// pinned toolbar when that's on), instead of sliding under it
+			if (options.toolbar_sticky && options.toolbar_sticky_offset === undefined) {
+				const fixedHeight = (el) => (el && ['fixed', 'sticky'].indexOf(getComputedStyle(el).position) !== -1 ? el.offsetHeight : 0);
+				const pinned = document.getElementById('isisJsData');
+				let offset = fixedHeight(document.querySelector('nav.navbar-fixed-top'));
+
+				if (pinned && pinned.getAttribute('data-tmpl-sticky') === 'true' && window.innerWidth > 767) {
+					const subhead = document.querySelector('.subhead');
+
+					offset += subhead ? subhead.offsetHeight : 0;
+				}
+
+				options.toolbar_sticky_offset = offset;
+			}
+
 			tinymce.init(options);
 
 			// Until TinyMCE has started, the textarea holds the content

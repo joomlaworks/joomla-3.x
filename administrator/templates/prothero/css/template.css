@@ -2076,6 +2076,9 @@ body .navbar,body .navbar-fixed-top {margin-bottom:0;}
 /* --- Prothero: Phones --- */
 /* The top bar: the logo, the site's name and the menu button in one row, centred; the opened menu under them */
 @media (max-width:767px) {
+    /* Always in view, as on larger screens (Bootstrap lets it scroll away on phones); the page starts under it */
+    .navbar.navbar-fixed-top {position:fixed;top:0;left:0;right:0;margin:0;}
+    body.admin {padding-top:48px;}
     .navbar-inner > .container-fluid {display:flex;flex-wrap:wrap;align-items:center;min-height:48px;}
     .navbar .admin-logo {order:1;float:none;margin:0;padding:0 8px 0 16px;line-height:48px;}
     .navbar .brand.hidden-desktop {order:2;flex:1 1 0;min-width:0;float:none;margin:0;padding:6px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;justify-content:center;align-items:center;gap:4px;}
