@@ -28,14 +28,16 @@ $task     = $app->input->getCmd('task', '');
 $itemid   = $app->input->getCmd('Itemid', '');
 $sitename = htmlspecialchars((string) $app->get('sitename'), ENT_QUOTES, 'UTF-8');
 
+// No legacy markup: no scripts and stylesheets for old Internet Explorer versions
+require_once __DIR__ . '/helper.php';
+
+protostarDropConditionalAssets($this);
+
 // Add JavaScript Frameworks
 JHtml::_('bootstrap.framework');
 
 // Add template js
 JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true));
-
-// Add html5 shiv
-JHtml::_('script', 'jui/html5.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
 
 // Add Stylesheets
 JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));

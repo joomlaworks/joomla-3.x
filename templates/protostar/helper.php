@@ -45,3 +45,37 @@ if (!function_exists('protostarOptionColors'))
 		return array('properties' => $properties, 'classes' => $classes);
 	}
 }
+
+if (!function_exists('protostarDropConditionalAssets'))
+{
+	/**
+	 * No legacy markup: leave out the scripts and stylesheets for old Internet Explorer versions (conditional comments, e.g. the
+	 * HTML5 fallback and polyfills of forms, or the keepalive's event polyfill). Done when the head is built, so assets added after
+	 * the page file runs are covered too.
+	 *
+	 * @param   JDocument  $document  The page
+	 *
+	 * @return  void
+	 */
+	function protostarDropConditionalAssets($document)
+	{
+		JEventDispatcher::getInstance()->register('onBeforeCompileHead', function () use ($document)
+		{
+			if (!$document instanceof JDocumentHtml)
+			{
+				return;
+			}
+
+			foreach (array('_scripts', '_styleSheets') as $list)
+			{
+				foreach ($document->$list as $url => $asset)
+				{
+					if (!empty($asset['options']['conditional']) || !empty($asset['conditional']))
+					{
+						unset($document->{$list}[$url]);
+					}
+				}
+			}
+		});
+	}
+}

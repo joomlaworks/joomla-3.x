@@ -48,28 +48,10 @@ JHtml::_('stylesheet', 'custom.css', array('version' => 'auto', 'relative' => tr
 $option = $app->input->getCmd('option', '');
 $view   = $app->input->getCmd('view', '');
 
-// No legacy markup: scripts and stylesheets for old Internet Explorer versions (conditional comments, e.g. the keepalive's
-// event polyfill). Done when the head is built, so assets added after this file runs are covered too.
-$document = $this;
+// No legacy markup: no scripts and stylesheets for old Internet Explorer versions
+require_once __DIR__ . '/helper.php';
 
-JEventDispatcher::getInstance()->register('onBeforeCompileHead', function () use ($document)
-{
-	if (!$document instanceof JDocumentHtml)
-	{
-		return;
-	}
-
-	foreach (array('_scripts', '_styleSheets') as $list)
-	{
-		foreach ($document->$list as $url => $asset)
-		{
-			if (!empty($asset['options']['conditional']) || !empty($asset['conditional']))
-			{
-				unset($document->{$list}[$url]);
-			}
-		}
-	}
-});
+isisDropConditionalAssets($this);
 
 
 // The Joomla! logo inline, its wordmark in the text colour (dark mode); the mark keeps Joomla's colours

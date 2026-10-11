@@ -24,17 +24,16 @@ $frontEndUri = JUri::getInstance(JUri::root());
 $frontEndUri->setScheme(((int) $app->get('force_ssl', 0) === 2) ? 'https' : 'http');
 $mainPageUri = $frontEndUri->toString();
 
+// No legacy markup: no scripts and stylesheets for old Internet Explorer versions
+require_once __DIR__ . '/helper.php';
+
+isisDropConditionalAssets($this);
+
 // Add JavaScript Frameworks
 JHtml::_('bootstrap.framework');
 
-// Add filter polyfill for IE8
-JHtml::_('behavior.polyfill', array('filter'), 'lte IE 9');
-
 // Add template js
 JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true));
-
-// Add html5 shiv
-JHtml::_('script', 'jui/html5.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
 
 // Add Stylesheets
 JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
@@ -148,7 +147,6 @@ if ($optionColors['properties'] !== '')
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<jdoc:include type="head" />
 </head>
 <body class="admin <?php echo $option . ' view-' . $view . ' layout-' . $layout . ' task-' . $task . ' itemid-' . $itemid . $optionColors['classes']; ?>" data-basepath="<?php echo JURI::root(true); ?>">

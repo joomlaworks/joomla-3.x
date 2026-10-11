@@ -77,7 +77,6 @@ $optionColors = isisOptionColors(array(
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<title><?php echo $this->title; ?> <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
 	<?php if ($app->get('debug_lang', '0') == '1' || $app->get('debug', '0') == '1') : ?>
 		<!-- Load additional CSS styles for debug mode-->
@@ -106,7 +105,6 @@ $optionColors = isisOptionColors(array(
 	<script src="<?php echo JUri::root(true); ?>/media/jui/js/jquery-noconflict.js"></script>
 	<script src="<?php echo JUri::root(true); ?>/media/jui/js/bootstrap.js"></script>
 	<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/template.js"></script>
-	<!--[if lt IE 9]><script src="<?php echo JUri::root(true); ?>/media/jui/js/html5.js"></script><![endif]-->
 </head>
 <body class="admin <?php echo $option . ' view-' . $view . ' layout-' . $layout . ' task-' . $task . $optionColors['classes']; ?>" data-spy="scroll" data-target=".subhead" data-offset="87">
 	<!-- Top Navigation -->
