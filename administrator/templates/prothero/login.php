@@ -38,7 +38,7 @@ $sitename = (string) $app->get('sitename', '');
 $loginLogoFile = (string) $this->params->get('loginLogoFile', '');
 
 JHtml::_('stylesheet', 'login.css', array('version' => 'auto', 'relative' => true));
-JHtml::_('script', 'login.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
+JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
 
 // Language specific CSS and the site's own custom.css, as on every other page of the template
 JHtml::_('stylesheet', 'administrator/language/' . $lang->getTag() . '/' . $lang->getTag() . '.css', array('version' => 'auto'));

@@ -1,430 +1,471 @@
 /**
  * @package     Joomla.Administrator
- * @subpackage  Templates.isis
- * @copyright   (C) 2012 Open Source Matters, Inc. <https://www.joomla.org>
+ * @subpackage  Templates.prothero
+ *
+ * @copyright   (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license     GNU General Public License version 2 or later; see LICENSE.md
- * @since       3.0
+ *
+ * Prothero's script, plain JavaScript, for every page: the administrator's (button groups, coloured status lists, the admin
+ * menu's scrolling submenus, the pinned toolbar, the list sidebar, scrolling tab rows) and the login page's (show/hide the
+ * password, close messages, mark the form busy). It does what Isis' jQuery script did, with the same markup.
+ *
+ * Some core scripts announce their events through jQuery only (Chosen's "liszt:ready" and its changes, subforms'
+ * "subform-row-add"), which listeners added with addEventListener never receive: those are heard through jQuery when the page
+ * has it (it always has where those scripts run). Bootstrap's tooltips are a jQuery plugin too and are set up the same way.
  */
-
-jQuery(function($)
-{
+(function () {
 	'use strict';
 
-	var $w = $(window);
+	var $ = function (selector, context) { return (context || document).querySelector(selector); };
+	var $$ = function (selector, context) { return Array.prototype.slice.call((context || document).querySelectorAll(selector)); };
+	var jq = function () { return window.jQuery && window.jQuery.fn ? window.jQuery : null; };
+	var height = function (el) { return el ? el.getBoundingClientRect().height : 0; };
 
-	$(document.body)
-		// add color classes to chosen field based on value
-		.on('liszt:ready', 'select[class^="chzn-color"], select[class*=" chzn-color"]', function() {
-			var $select = $(this);
-			var cls = this.className.replace(/^.(chzn-color[a-z0-9-_]*)$.*/, '$1');
-			var $container = $select.next('.chzn-container').find('.chzn-single');
+	/* --- Button groups (Yes/No and other radio groups) --- */
 
-			$container.addClass(cls).attr('rel', 'value_' + $select.val());
-			$select.on('change click', function() {
-				$container.attr('rel', 'value_' + $select.val());
-			});
-		})
-		// Handle changes to (radio) button groups
-		.on('change', '.btn-group input:radio', function () {
-			var $this = $(this);
-			var $group = $this.closest('.btn-group');
-			var name = $this.prop('name');
-			var reversed = $group.hasClass('btn-group-reversed');
+	// The chosen option's label gets "active" and a colour class: danger for 0 (success with btn-group-reversed), else success
+	function colourLabels(input) {
+		var group = input.closest('.btn-group');
+		var reversed = !!(group && group.classList.contains('btn-group-reversed'));
+		var labels = [];
 
-			$group.find('input:radio[name="' + name + '"]').each(function () {
-				var $input = $(this);
-				// Get the enclosing label
-				var $label = $input.closest('label');
-				var inputId = $input.attr('id');
-				var inputVal = $input.val();
-				var btnClass = 'primary';
+		if (input.closest('label')) {
+			labels.push(input.closest('label'));
+		}
 
-				// Include any additional labels for this control
-				if (inputId) {
-					$label = $label.add($('label[for="' + inputId + '"]'));
+		if (input.id) {
+			labels = labels.concat($$('label[for="' + input.id + '"]'));
+		}
+
+		labels.forEach(function (label) {
+			label.classList.remove('active', 'btn-success', 'btn-danger', 'btn-primary');
+
+			if (input.checked) {
+				var cls = 'primary';
+
+				if (input.value !== '') {
+					cls = (input.value == 0 ? !reversed : reversed) ? 'danger' : 'success';
 				}
 
-				if ($input.prop('checked')) {
-					if (inputVal != '') {
-						btnClass = (inputVal == 0 ? !reversed : reversed) ? 'danger' : 'success';
-					}
-
-					$label.addClass('active btn-' + btnClass);
-				} else {
-					$label.removeClass('active btn-success btn-danger btn-primary');
-				}
-			})
-		})
-		.on('subform-row-add', initTemplate);
-
-	initTemplate();
-
-	// Called once on domready, again when a subform row is added
-	function initTemplate(event, container)
-	{
-		var $container = $(container || document);
-
-		// Create tooltips
-		$container.find('*[rel=tooltip]').tooltip();
-
-		// Turn radios into btn-group
-		$container.find('.radio.btn-group label').addClass('btn');
-
-		// Handle disabled, prevent clicks on the container, and add disabled style to each button
-		$container.find('fieldset.btn-group:disabled').each(function() {
-			$(this).css('pointer-events', 'none').off('click').find('.btn').addClass('disabled');
-		});
-
-		// Setup coloring for buttons
-		$container.find('.btn-group input:checked').each(function() {
-			var $input  = $(this);
-			var $label = $('label[for=' + $input.attr('id') + ']');
-			var btnClass = 'primary';
-
-			if ($input.val() != '')
-			{
-				var reversed = $input.parent().hasClass('btn-group-reversed');
-				btnClass = ($input.val() == 0 ? !reversed : reversed) ? 'danger' : 'success';
+				label.classList.add('active', 'btn-' + cls);
 			}
-
-			$label.addClass('active btn-' + btnClass);
 		});
 	}
 
+	document.addEventListener('change', function (event) {
+		var input = event.target;
 
-	/**
-	 * Append submenu items to empty UL on hover allowing a scrollable dropdown
-	 */
-	if ($w.width() > 767)
-	{
-		var menuScroll = $('#menu > li > ul'),
-			emptyMenu  = $('#nav-empty'),
-			linkWidth,
-			menuWidth,
-			offsetLeft;
+		if (input.type === 'radio' && input.closest('.btn-group')) {
+			var group = input.closest('.btn-group');
 
-		$('#menu > li').on('click mouseenter', function() {
-
-			// Set max-height (and width if scroll) for dropdown menu, depending of window height
-			var $self            = $(this),
-				$dropdownMenu    = $self.children('ul'),
-				windowHeight     = $w.height(),
-				linkHeight       = $self.outerHeight(true),
-				statusHeight     = $('#status').outerHeight(true),
-				menuHeight       = $dropdownMenu.height(),
-				menuOuterHeight  = $dropdownMenu.outerHeight(true),
-				scrollMenuWidth  = $dropdownMenu.width() + 15,
-				maxHeight        = windowHeight - (linkHeight + statusHeight + (menuOuterHeight - menuHeight) + 20),
-				linkPaddingLeft  = $self.children('a').css('padding-left');
-
-			if (maxHeight < menuHeight)
-			{
-				$dropdownMenu.css('width', scrollMenuWidth);
-			}
-			else if (maxHeight > menuHeight)
-			{
-				$dropdownMenu.css('width', 'auto');
-			}
-
-			$dropdownMenu.css('max-height', maxHeight);
-
-			// Get the submenu position
-			linkWidth   = $self.outerWidth(true);
-			menuWidth   = $dropdownMenu.width();
-			offsetLeft  = Math.round($self.offset().left) - parseInt(linkPaddingLeft);
-
-			emptyMenu.empty().hide();
-
-		});
-
-		menuScroll.find('.dropdown-submenu > a').on('mouseover', function() {
-
-			var $self           = $(this),
-				dropdown        = $self.next('ul'),
-				submenuWidth    = dropdown.outerWidth(),
-				offsetTop       = $self.offset().top,
-				linkPaddingTop  = parseInt(dropdown.css('padding-top')) + parseInt($self.css('padding-top')),
-				scroll          = $w.scrollTop() + linkPaddingTop;
-
-			// Set the submenu position
-			if ($('html').attr('dir') == 'rtl')
-			{
-				emptyMenu.css({
-					top : offsetTop - scroll,
-					left: offsetLeft - (menuWidth - linkWidth) - submenuWidth
-				});
-			}
-			else
-			{
-				emptyMenu.css({
-					top : offsetTop - scroll,
-					left: offsetLeft + menuWidth
-				});
-			}
-
-			// Append items to empty <ul> and show it
-			dropdown.hide();
-			emptyMenu.show().html(dropdown.html());
-
-			// Check if the full element is visible. If not, adjust the position
-			if (emptyMenu.Jvisible() !== true)
-			{
-				emptyMenu.css({
-					top : ($w.height() - emptyMenu.outerHeight()) - $('#status').height()
-				});
-			}
-
-		});
-
-		menuScroll.find('a.no-dropdown').on('mouseenter', function() {
-
-			emptyMenu.empty().hide();
-
-		});
-
-		// obtain a reference to the original handler
-		var _clearMenus = $._data(document, 'events').click.filter(function (el) {
-			return el.namespace === 'data-api.dropdown' && el.selector === undefined
-		})[0].handler;
-
-		// disable the old listener
-		$(document)
-			.off('click.data-api.dropdown', _clearMenus)
-			.on('click.data-api.dropdown', function(e) {
-				e.button === 2 || _clearMenus();
-
-				if (!$('#menu').find('> li').hasClass('open'))
-				{
-					emptyMenu.empty().hide();
+			$$('input[type="radio"]', group).forEach(function (radio) {
+				if (radio.name === input.name) {
+					colourLabels(radio);
 				}
 			});
+		}
+	});
 
-		$.fn.Jvisible = function(partial,hidden)
-		{
-			if (this.length < 1)
-			{
-				return;
-			}
+	/* --- Status lists (Chosen select boxes coloured by their value) --- */
 
-			var $t = this.length > 1 ? this.eq(0) : this,
-				t  = $t.get(0)
+	function colourChosen(select) {
+		var single = select.nextElementSibling && select.nextElementSibling.classList.contains('chzn-container') ? $('.chzn-single', select.nextElementSibling) : null;
+		var cls = (select.className.match(/(^|\s)(chzn-color[a-z0-9_-]*)/) || [])[2];
 
-			var viewTop         = $w.scrollTop(),
-				viewBottom      = (viewTop + $w.height()) - $('#status').height(),
-				offset          = $t.offset(),
-				_top            = offset.top,
-				_bottom         = _top + $t.height(),
-				compareTop      = partial === true ? _bottom : _top,
-				compareBottom   = partial === true ? _top : _bottom;
-
-			return !!t.offsetWidth * t.offsetHeight && ((compareBottom <= viewBottom) && (compareTop >= viewTop));
-		};
-
-	}
-
-	/**
-	 * USED IN: All views with toolbar and sticky bar enabled
-	 */
-	var navTop;
-	var isFixed = false;
-
-	if (document.getElementById('isisJsData') && document.getElementById('isisJsData').getAttribute('data-tmpl-sticky') == "true") {
-		processScrollInit();
-		processScroll();
-
-		$(window).on('resize', processScrollInit);
-		$(window).on('scroll', processScroll);
-	}
-
-	function processScrollInit() {
-		if ($('.subhead').length) {
-			navTop = $('.subhead').length && $('.subhead').offset().top - parseInt(document.getElementById('isisJsData').getAttribute('data-tmpl-offset'));
-
-			// Fix the container top
-			$(".container-main").css("top", $('.subhead').height() + $('nav.navbar').height());
-
-			// Only apply the scrollspy when the toolbar is not collapsed
-			if (document.body.clientWidth > 480) {
-				$('.subhead-collapse').height($('.subhead').height());
-				$('.subhead').scrollspy({offset: {top: $('.subhead').offset().top - $('nav.navbar').height()}});
-			}
+		if (single && cls) {
+			single.classList.add(cls);
+			single.setAttribute('rel', 'value_' + select.value);
 		}
 	}
 
-	function processScroll() {
-		if ($('.subhead').length) {
-			var scrollTop = $(window).scrollTop();
-			if (scrollTop >= navTop && !isFixed) {
-				isFixed = true;
-				$('.subhead').addClass('subhead-fixed');
-
-				// Fix the container top
-				$(".container-main").css("top", $('.subhead').height() + $('nav.navbar').height());
-			} else if (scrollTop <= navTop && isFixed) {
-				isFixed = false;
-				$('.subhead').removeClass('subhead-fixed');
-			}
-		}
+	function colourAllChosen() {
+		$$('select[class^="chzn-color"], select[class*=" chzn-color"]').forEach(colourChosen);
 	}
 
-	/**
-	 * USED IN: All list views to hide/show the sidebar
-	 */
-	window.toggleSidebar = function(force)
-	{
-		var context = 'jsidebar';
+	// A choice made in a list (click or keyboard) updates its colour once Chosen has set the select's value
+	['click', 'keyup'].forEach(function (type) {
+		document.addEventListener(type, function (event) {
+			var container = event.target.closest && event.target.closest('.chzn-container');
 
-		var $sidebar = $('#j-sidebar-container'),
-			$main = $('#j-main-container'),
-			$message = $('#system-message-container'),
-			$debug = $('#system-debug'),
-			$toggleSidebarIcon = $('#j-toggle-sidebar-icon'),
-			$toggleButtonWrapper = $('#j-toggle-button-wrapper'),
-			$toggleButton = $('#j-toggle-sidebar-button'),
-			$sidebarToggle = $('#j-toggle-sidebar');
+			if (container && container.previousElementSibling && container.previousElementSibling.tagName === 'SELECT') {
+				var select = container.previousElementSibling;
 
-		var openIcon = 'icon-arrow-left-2',
-			closedIcon = 'icon-arrow-right-2';
+				setTimeout(function () { colourChosen(select); }, 0);
+			}
+		});
+	});
 
-		var $visible = $sidebarToggle.is(":visible");
+	/* --- Set up a page, or a part of it a subform just added --- */
 
-		if (jQuery(document.querySelector("html")).attr('dir') == 'rtl')
-		{
-			openIcon = 'icon-arrow-right-2';
-			closedIcon = 'icon-arrow-left-2';
+	function initTemplate(container) {
+		container = container || document;
+
+		// Tooltips (Bootstrap's plugin)
+		if (jq() && jq().fn.tooltip) {
+			jq()($$('[rel="tooltip"]', container)).tooltip();
 		}
 
-		var isComponent = $('body').hasClass('component');
+		// Radios into button groups
+		$$('.radio.btn-group label', container).forEach(function (label) {
+			label.classList.add('btn');
+		});
 
-		$sidebar.removeClass('span2').addClass('j-sidebar-container');
-		$message.addClass('j-toggle-main');
-		$main.addClass('j-toggle-main');
-		if (!isComponent) {
-			$debug.addClass('j-toggle-main');
-		}
-
-		var mainHeight = $main.outerHeight()+30,
-			sidebarHeight = $sidebar.outerHeight(),
-			bodyWidth = $('body').outerWidth(),
-			sidebarWidth = $sidebar.outerWidth(),
-			contentWidth = $('#content').outerWidth(),
-			contentWidthRelative = contentWidth / bodyWidth * 100,
-			mainWidthRelative = (contentWidth - sidebarWidth) / bodyWidth * 100;
-
-		if (force)
-		{
-			// Load the value from localStorage
-			if (typeof(Storage) !== "undefined")
-			{
-				$visible = localStorage.getItem(context);
+		// Disabled groups: no clicks, buttons styled disabled
+		$$('fieldset.btn-group', container).forEach(function (fieldset) {
+			if (fieldset.disabled) {
+				fieldset.style.pointerEvents = 'none';
+				$$('.btn', fieldset).forEach(function (btn) { btn.classList.add('disabled'); });
 			}
+		});
 
-			// Need to convert the value to a boolean
-			$visible = ($visible == 'true');
-		}
-		else
-		{
-			$message.addClass('j-toggle-transition');
-			$sidebar.addClass('j-toggle-transition');
-			$toggleButtonWrapper.addClass('j-toggle-transition');
-			$main.addClass('j-toggle-transition');
-			if (!isComponent) {
-				$debug.addClass('j-toggle-transition');
-			}
-		}
-
-		if ($visible)
-		{
-			$sidebarToggle.hide();
-			$sidebar.removeClass('j-sidebar-visible').addClass('j-sidebar-hidden');
-			$toggleButtonWrapper.removeClass('j-toggle-visible').addClass('j-toggle-hidden');
-			$toggleSidebarIcon.removeClass('j-toggle-visible').addClass('j-toggle-hidden');
-			$message.removeClass('span10').addClass('span12');
-			$main.removeClass('span10').addClass('span12 expanded');
-			$toggleSidebarIcon.removeClass(openIcon).addClass(closedIcon);
-			$toggleButton.attr( 'data-original-title', Joomla.JText._('JTOGGLE_SHOW_SIDEBAR') );
-			$sidebar.attr('aria-hidden', true);
-			$sidebar.find('a').attr('tabindex', '-1');
-			$sidebar.find(':input').attr('tabindex', '-1');
-
-			if (!isComponent) {
-				$debug.css( 'width', contentWidthRelative + '%' );
-			}
-
-			if (typeof(Storage) !== "undefined")
-			{
-				// Set the last selection in localStorage
-				localStorage.setItem(context, true);
-			}
-		}
-		else
-		{
-			$sidebarToggle.show();
-			$sidebar.removeClass('j-sidebar-hidden').addClass('j-sidebar-visible');
-			$toggleButtonWrapper.removeClass('j-toggle-hidden').addClass('j-toggle-visible');
-			$toggleSidebarIcon.removeClass('j-toggle-hidden').addClass('j-toggle-visible');
-			$message.removeClass('span12').addClass('span10');
-			$main.removeClass('span12 expanded').addClass('span10');
-			$toggleSidebarIcon.removeClass(closedIcon).addClass(openIcon);
-			$toggleButton.attr( 'data-original-title', Joomla.JText._('JTOGGLE_HIDE_SIDEBAR') );
-			$sidebar.removeAttr('aria-hidden');
-			$sidebar.find('a').removeAttr('tabindex');
-			$sidebar.find(':input').removeAttr('tabindex');
-
-			if (!isComponent && bodyWidth > 768 && mainHeight < sidebarHeight)
-			{
-				$debug.css( 'width', mainWidthRelative + '%' );
-			}
-			else if (!isComponent)
-			{
-				$debug.css( 'width', contentWidthRelative + '%' );
-			}
-
-			if (typeof(Storage) !== "undefined")
-			{
-				// Set the last selection in localStorage
-				localStorage.setItem( context, false );
-			}
-		}
+		// The chosen options of button groups
+		$$('.btn-group input:checked', container).forEach(colourLabels);
 	}
-});
 
-/**
- * Tab rows that don't fit scroll sideways (css/template.css): mark the side with more tabs, for the fade, and bring the active
- * tab into view.
- */
-document.addEventListener('DOMContentLoaded', function () {
-	'use strict';
+	/* --- The admin menu: submenus too long for the screen scroll, their children shown beside them (#nav-empty) --- */
 
-	var rows = document.querySelectorAll('.nav-tabs:not(.nav-stacked)');
+	function initMenu() {
+		var menu = $('#menu');
+		var emptyMenu = $('#nav-empty');
+		var status = $('#status');
+		var position = { left: 0, width: 0, menuWidth: 0 };
 
-	var update = function (row) {
-		var rtl  = getComputedStyle(row).direction === 'rtl',
-			left = Math.abs(row.scrollLeft),
-			more = row.scrollWidth - row.clientWidth - left > 2;
-
-		row.classList.toggle('tabs-more-end', more);
-		row.classList.toggle('tabs-more-start', left > 2);
-		row.classList.toggle('tabs-rtl', rtl);
-	};
-
-	Array.prototype.forEach.call(rows, function (row) {
-		if (row.closest('.tabs-left, .tabs-right')) {
+		if (!menu || !emptyMenu || window.innerWidth <= 767) {
 			return;
 		}
 
-		var active = row.querySelector('li.active');
+		var hideEmpty = function () {
+			emptyMenu.innerHTML = '';
+			emptyMenu.style.display = 'none';
+		};
 
-		if (active && row.scrollWidth > row.clientWidth) {
-			row.scrollLeft = active.offsetLeft - row.offsetLeft - 16;
+		$$('#menu > li').forEach(function (item) {
+			var open = function () {
+				var dropdown = item.querySelector(':scope > ul');
+				var link = item.querySelector(':scope > a');
+
+				if (!dropdown) {
+					return;
+				}
+
+				var style = getComputedStyle(dropdown);
+				var outer = dropdown.offsetHeight + parseFloat(style.marginTop) + parseFloat(style.marginBottom);
+				var inner = dropdown.scrollHeight;
+				var maxHeight = window.innerHeight - (item.offsetHeight + height(status) + (outer - dropdown.clientHeight) + 20);
+
+				dropdown.style.width = maxHeight < inner ? (dropdown.clientWidth + 15) + 'px' : 'auto';
+				dropdown.style.maxHeight = maxHeight + 'px';
+
+				position.width = item.offsetWidth;
+				position.menuWidth = dropdown.clientWidth;
+				position.left = Math.round(item.getBoundingClientRect().left) - parseInt(getComputedStyle(link).paddingLeft, 10);
+
+				hideEmpty();
+			};
+
+			item.addEventListener('click', open);
+			item.addEventListener('mouseenter', open);
+		});
+
+		$$('#menu > li > ul .dropdown-submenu > a').forEach(function (link) {
+			link.addEventListener('mouseover', function () {
+				var dropdown = link.nextElementSibling;
+
+				if (!dropdown || dropdown.tagName !== 'UL') {
+					return;
+				}
+
+				var top = link.getBoundingClientRect().top - parseInt(getComputedStyle(dropdown).paddingTop, 10) - parseInt(getComputedStyle(link).paddingTop, 10);
+				var rtl = document.documentElement.getAttribute('dir') === 'rtl';
+
+				dropdown.style.display = 'none';
+				emptyMenu.innerHTML = dropdown.innerHTML;
+				emptyMenu.style.display = 'block';
+				emptyMenu.style.top = top + 'px';
+				emptyMenu.style.left = (rtl ? position.left - (position.menuWidth - position.width) - emptyMenu.offsetWidth : position.left + position.menuWidth) + 'px';
+
+				// Keep it on the screen, above the status bar
+				var box = emptyMenu.getBoundingClientRect();
+
+				if (box.bottom > window.innerHeight - height(status) || box.top < 0) {
+					emptyMenu.style.top = (window.innerHeight - emptyMenu.offsetHeight - height(status)) + 'px';
+				}
+			});
+		});
+
+		$$('#menu > li > ul a.no-dropdown').forEach(function (link) {
+			link.addEventListener('mouseenter', hideEmpty);
+		});
+
+		// When the menus close (Bootstrap closes them on any click), the copied submenu goes too
+		document.addEventListener('click', function () {
+			setTimeout(function () {
+				if (!$('#menu > li.open')) {
+					hideEmpty();
+				}
+			}, 0);
+		});
+	}
+
+	/* --- The pinned toolbar --- */
+
+	function initStickyToolbar() {
+		var data = $('#isisJsData');
+		var subhead = $('.subhead');
+		var navbar = $('nav.navbar');
+		var main = $('.container-main');
+		var navTop = 0;
+		var fixed = false;
+
+		if (!data || data.getAttribute('data-tmpl-sticky') !== 'true' || !subhead) {
+			return;
 		}
 
-		update(row);
-		row.addEventListener('scroll', function () { update(row); }, { passive: true });
-		row.addEventListener('click', function () { setTimeout(function () { update(row); }, 0); });
-	});
+		var measure = function () {
+			navTop = subhead.getBoundingClientRect().top + window.pageYOffset - parseInt(data.getAttribute('data-tmpl-offset'), 10);
 
-	window.addEventListener('resize', function () {
-		Array.prototype.forEach.call(rows, update);
-	});
-});
+			if (main) {
+				main.style.top = (height(subhead) + height(navbar)) + 'px';
+			}
+
+			// Keep the toolbar's place while it's pinned, when it isn't collapsed
+			if (document.body.clientWidth > 480) {
+				var collapse = $('.subhead-collapse');
+
+				if (collapse) {
+					collapse.style.height = height(subhead) + 'px';
+				}
+			}
+		};
+
+		var update = function () {
+			var scrollTop = window.pageYOffset;
+
+			if (scrollTop >= navTop && !fixed) {
+				fixed = true;
+				subhead.classList.add('subhead-fixed');
+
+				if (main) {
+					main.style.top = (height(subhead) + height(navbar)) + 'px';
+				}
+			} else if (scrollTop <= navTop && fixed) {
+				fixed = false;
+				subhead.classList.remove('subhead-fixed');
+			}
+		};
+
+		measure();
+		update();
+		window.addEventListener('resize', measure);
+		window.addEventListener('scroll', update, { passive: true });
+	}
+
+	/* --- The list sidebar: hidden or shown, remembered (layouts/joomla/sidebars call it, and its toggle button) --- */
+
+	window.toggleSidebar = function (force) {
+		var sidebar = $('#j-sidebar-container');
+		var main = $('#j-main-container');
+		var message = $('#system-message-container');
+		var debug = $('#system-debug');
+		var icon = $('#j-toggle-sidebar-icon');
+		var buttonWrapper = $('#j-toggle-button-wrapper');
+		var button = $('#j-toggle-sidebar-button');
+		var toggle = $('#j-toggle-sidebar');
+		var rtl = document.documentElement.getAttribute('dir') === 'rtl';
+		var openIcon = rtl ? 'icon-arrow-right-2' : 'icon-arrow-left-2';
+		var closedIcon = rtl ? 'icon-arrow-left-2' : 'icon-arrow-right-2';
+		var isComponent = document.body.classList.contains('component');
+		var cls = function (el, add, remove) {
+			if (el) {
+				if (remove) { el.classList.remove.apply(el.classList, remove.split(' ')); }
+				if (add) { el.classList.add.apply(el.classList, add.split(' ')); }
+			}
+		};
+		var store = function (value) {
+			try { localStorage.setItem('jsidebar', value); } catch (e) {}
+		};
+
+		if (!sidebar) {
+			return;
+		}
+
+		// Visible now: the toggle area is shown
+		var visible = !!(toggle && toggle.getClientRects().length);
+
+		cls(sidebar, 'j-sidebar-container', 'span2');
+		cls(message, 'j-toggle-main');
+		cls(main, 'j-toggle-main');
+
+		if (!isComponent) {
+			cls(debug, 'j-toggle-main');
+		}
+
+		var bodyWidth = document.body.offsetWidth;
+		var content = $('#content');
+		var contentWidth = content ? content.offsetWidth : bodyWidth;
+		var contentRelative = contentWidth / bodyWidth * 100;
+		var mainRelative = (contentWidth - sidebar.offsetWidth) / bodyWidth * 100;
+		var mainHeight = main ? main.offsetHeight + 30 : 0;
+
+		if (force) {
+			// The last choice
+			try { visible = localStorage.getItem('jsidebar') === 'true'; } catch (e) { visible = false; }
+		} else {
+			[message, sidebar, buttonWrapper, main].concat(isComponent ? [] : [debug]).forEach(function (el) {
+				cls(el, 'j-toggle-transition');
+			});
+		}
+
+		var text = function (key) { return window.Joomla && Joomla.JText ? Joomla.JText._(key) : ''; };
+		var tabindex = function (remove) {
+			$$('a, input, select, textarea, button', sidebar).forEach(function (el) {
+				if (remove) { el.removeAttribute('tabindex'); } else { el.setAttribute('tabindex', '-1'); }
+			});
+		};
+
+		if (visible) {
+			if (toggle) { toggle.style.display = 'none'; }
+			cls(sidebar, 'j-sidebar-hidden', 'j-sidebar-visible');
+			cls(buttonWrapper, 'j-toggle-hidden', 'j-toggle-visible');
+			cls(icon, 'j-toggle-hidden ' + closedIcon, 'j-toggle-visible ' + openIcon);
+			cls(message, 'span12', 'span10');
+			cls(main, 'span12 expanded', 'span10');
+			if (button) { button.setAttribute('data-original-title', text('JTOGGLE_SHOW_SIDEBAR')); }
+			sidebar.setAttribute('aria-hidden', 'true');
+			tabindex(false);
+
+			if (!isComponent && debug) {
+				debug.style.width = contentRelative + '%';
+			}
+
+			store('true');
+		} else {
+			if (toggle) { toggle.style.display = ''; }
+			cls(sidebar, 'j-sidebar-visible', 'j-sidebar-hidden');
+			cls(buttonWrapper, 'j-toggle-visible', 'j-toggle-hidden');
+			cls(icon, 'j-toggle-visible ' + openIcon, 'j-toggle-hidden ' + closedIcon);
+			cls(message, 'span10', 'span12');
+			cls(main, 'span10', 'span12 expanded');
+			if (button) { button.setAttribute('data-original-title', text('JTOGGLE_HIDE_SIDEBAR')); }
+			sidebar.removeAttribute('aria-hidden');
+			tabindex(true);
+
+			if (!isComponent && debug) {
+				debug.style.width = (bodyWidth > 768 && mainHeight < sidebar.offsetHeight ? mainRelative : contentRelative) + '%';
+			}
+
+			store('false');
+		}
+	};
+
+	/* --- Tab rows that don't fit scroll sideways (css/template.css): the side with more tabs gets a fade --- */
+
+	function initTabRows() {
+		var rows = $$('.nav-tabs:not(.nav-stacked)').filter(function (row) {
+			return !row.closest('.tabs-left, .tabs-right');
+		});
+
+		var update = function (row) {
+			var left = Math.abs(row.scrollLeft);
+
+			row.classList.toggle('tabs-more-end', row.scrollWidth - row.clientWidth - left > 2);
+			row.classList.toggle('tabs-more-start', left > 2);
+			row.classList.toggle('tabs-rtl', getComputedStyle(row).direction === 'rtl');
+		};
+
+		rows.forEach(function (row) {
+			var active = $('li.active', row);
+
+			// The active tab in view
+			if (active && row.scrollWidth > row.clientWidth) {
+				row.scrollLeft = active.offsetLeft - row.offsetLeft - 16;
+			}
+
+			update(row);
+			row.addEventListener('scroll', function () { update(row); }, { passive: true });
+			row.addEventListener('click', function () { setTimeout(function () { update(row); }, 0); });
+		});
+
+		window.addEventListener('resize', function () { rows.forEach(update); });
+	}
+
+	/* --- The login page --- */
+
+	function initLogin() {
+		$$('.loginReveal').forEach(function (button) {
+			var input = document.getElementById(button.getAttribute('aria-controls'));
+			var label = $('.loginReveal-label', button);
+
+			if (!input) {
+				return;
+			}
+
+			button.hidden = false;
+
+			button.addEventListener('click', function () {
+				var show = input.type === 'password';
+
+				input.type = show ? 'text' : 'password';
+				button.setAttribute('aria-pressed', show ? 'true' : 'false');
+				label.textContent = button.getAttribute(show ? 'data-hide' : 'data-show');
+				input.focus();
+			});
+		});
+
+		// The message layout's close buttons are meant for Bootstrap's script, which the login page doesn't load
+		document.addEventListener('click', function (event) {
+			var close = event.target.closest('#system-message-container .close');
+
+			if (close && close.parentNode) {
+				close.parentNode.remove();
+			}
+		});
+
+		var form = $('#form-login');
+
+		if (form) {
+			form.addEventListener('submit', function () {
+				var submit = $('.loginSubmit', form);
+
+				// Never shown back after a successful login; a failed one reloads the page
+				if (submit) {
+					submit.setAttribute('aria-busy', 'true');
+				}
+
+				// The password stays hidden if the browser restores the page from its cache
+				$$('.loginReveal[aria-pressed="true"]', form).forEach(function (button) {
+					button.click();
+				});
+			});
+		}
+	}
+
+	/* --- Start --- */
+
+	function init() {
+		if (document.body.classList.contains('loginPage')) {
+			initLogin();
+
+			return;
+		}
+
+		initTemplate(document);
+		colourAllChosen();
+		initMenu();
+		initStickyToolbar();
+		initTabRows();
+
+		// Events only jQuery hears: Chosen ready (and changed through its API), subform rows added
+		if (jq()) {
+			jq()(document.body)
+				.on('liszt:ready chosen:ready change', 'select', function () { colourChosen(this); })
+				.on('subform-row-add', function (event, row) { initTemplate(row && row.nodeType ? row : (row && row[0]) || document); });
+		}
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', init);
+	} else {
+		init();
+	}
+}());

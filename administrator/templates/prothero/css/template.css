@@ -761,6 +761,8 @@ button.btn::-moz-focus-inner,input[type="submit"].btn::-moz-focus-inner {padding
 /* Tab rows in one line, scrolling sideways when they don't fit; a fade on the side with more tabs (js/template.js marks it) */
 :not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked) {display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;border-bottom:0;box-shadow:inset 0 -1px 0 var(--c-border);scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 :not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked)::-webkit-scrollbar {display:none;}
+/* A fieldset grows to its content's width (a tab row in one line): not past its column */
+fieldset {min-width:0;}
 :not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked)::before,:not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked)::after {display:none;}
 :not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked) > li {flex:none;float:none;margin-bottom:0;}
 :not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked) > li > a {white-space:nowrap;}
