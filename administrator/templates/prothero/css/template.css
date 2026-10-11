@@ -2058,8 +2058,11 @@ body .navbar,body .navbar-fixed-top {margin-bottom:0;}
     .navbar-inner > .container-fluid {display:flex;flex-wrap:wrap;align-items:center;min-height:48px;}
     .navbar .admin-logo {order:1;float:none;margin:0;padding:0 8px 0 16px;line-height:48px;}
     .navbar .brand.hidden-desktop {order:2;flex:1 1 0;min-width:0;float:none;margin:0;padding:6px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;justify-content:center;align-items:center;gap:4px;}
-    .navbar .btn-navbar {order:3;float:none;margin:0 12px 0 8px;padding:8px 9px;border-radius:var(--radius);}
-    .navbar .nav-collapse {order:4;flex:0 0 100%;}
+    .navbar .btn.btn-navbar {order:3;float:none;margin:0 16px 0 8px;padding:8px 9px;border-radius:var(--radius);}
+    /* The opened menu lies over the page under the bar (the page doesn't move), scrolling on its own when taller than the screen */
+    .navbar-inner {position:relative;}
+    .navbar .nav-collapse {position:absolute;top:100%;left:0;right:0;z-index:1040;background:var(--c-nav-bg);box-shadow:0 16px 24px rgba(0,0,0,0.25);}
+    .navbar .nav-collapse.in {max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px);overflow-y:auto !important;overscroll-behavior:contain;}
     /* The menu: every section open, in two columns, the section names as headings (no more opening each one) */
     .navbar .nav-collapse #menu {display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:6px 20px;margin:0;padding:8px 16px 16px;border-top:1px solid var(--c-nav-border);}
     .navbar .nav-collapse #menu > li {float:none;min-width:0;}
@@ -2082,7 +2085,7 @@ body .navbar,body .navbar-fixed-top {margin-bottom:0;}
     #status.navbar-fixed-bottom.hidden-phone {display:block !important;position:fixed;left:0;right:0;bottom:0;z-index:1030;margin:0;padding:6px 12px;}
     #status .btn-toolbar {display:flex;flex-wrap:wrap;align-items:center;row-gap:4px;}
     #status .btn-toolbar > .btn-group.pull-right {display:none;}
-    #status .btn-toolbar {column-gap:16px;}
+    #status .btn-toolbar {column-gap:16px;justify-content:center;}
     #status .btn-group.separator,#status .loggedin-users,#status .backloggedin-users {display:none;}
     body.admin {padding-bottom:40px;}
 }

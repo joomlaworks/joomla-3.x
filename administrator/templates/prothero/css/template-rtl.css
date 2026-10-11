@@ -225,5 +225,5 @@ input[type="file"]::file-selector-button {margin-right:0;margin-left:10px;}
 }
 @media (max-width:767px) {
     .navbar .admin-logo {padding:0 16px 0 8px;}
-    .navbar .btn-navbar {margin:0 8px 0 12px;}
+    .navbar .btn.btn-navbar {margin:0 8px 0 16px;}
 }
