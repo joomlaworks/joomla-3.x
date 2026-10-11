@@ -14,10 +14,12 @@
     --font:            system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
     --c-page:          #ffffff;
     --c-panel:         #ffffff;
-    --c-side:          #18181b;  /* the site's panel */
-    --c-on-side:       #fafafa;
-    --c-side-muted:    #a1a1aa;
-    --c-side-line:     #3f3f46;
+    --c-side:          #f4f4f5;  /* the site's panel: building blocks (images/login-blocks.svg) */
+    --c-side-blocks:   url("../images/login-blocks.svg");
+    --c-side-plate:    rgba(255, 255, 255, 0.78);  /* under the site's name, over the blocks */
+    --c-on-side:       #09090b;
+    --c-side-muted:    #52525b;
+    --c-side-line:     #e4e4e7;
     --c-text:          #09090b;
     --c-muted:         #71717a;
     --c-line:          #e4e4e7;
@@ -41,7 +43,11 @@
     color-scheme:      dark;
     --c-page:          #09090b;
     --c-panel:         #09090b;
-    --c-side:          #18181b;
+    --c-side:          #111113;
+    --c-side-blocks:   url("../images/login-blocks-dark.svg");
+    --c-side-plate:    rgba(9, 9, 11, 0.72);
+    --c-on-side:       #fafafa;
+    --c-side-muted:    #a1a1aa;
     --c-side-line:     #27272a;
     --c-text:          #fafafa;
     --c-muted:         #a1a1aa;
@@ -66,7 +72,11 @@
         color-scheme:      dark;
         --c-page:          #09090b;
         --c-panel:         #09090b;
-        --c-side:          #18181b;
+        --c-side:          #111113;
+        --c-side-blocks:   url("../images/login-blocks-dark.svg");
+        --c-side-plate:    rgba(9, 9, 11, 0.72);
+        --c-on-side:       #fafafa;
+        --c-side-muted:    #a1a1aa;
         --c-side-line:     #27272a;
         --c-text:          #fafafa;
         --c-muted:         #a1a1aa;
@@ -94,14 +104,14 @@ html {-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c-text);font:16px/1.5 var(--font);-webkit-font-smoothing:antialiased;}
 .loginLayout {display:grid;grid-template-columns:minmax(0, 3fr) minmax(24rem, 2fr);min-height:100vh;}
 
-/* --- Side panel: the site, on a flat dark panel --- */
-.loginBrand {display:flex;flex-direction:column;justify-content:center;padding:clamp(2rem, 5vw, 4.5rem);color:var(--c-on-side);background:var(--c-side);border-right:1px solid var(--c-side-line);}
-.loginBrand-inner {margin-block:auto;max-width:46rem;}
+/* --- Side panel: the site, on a pattern of building blocks --- */
+.loginBrand {display:flex;flex-direction:column;justify-content:center;padding:clamp(2rem, 5vw, 4.5rem);color:var(--c-on-side);background:var(--c-side) var(--c-side-blocks) 0 0 / 259.81px 360px repeat;border-right:1px solid var(--c-side-line);}
+.loginBrand-inner {align-self:flex-start;margin-block:auto;max-width:46rem;padding:clamp(1.5rem, 3vw, 2.5rem);background:var(--c-side-plate);border:1px solid var(--c-side-line);border-radius:16px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
 .loginBrand-site {margin:0;font-size:clamp(2rem, 3.4vw, 2.75rem);font-weight:700;line-height:1.15;letter-spacing:-0.03em;overflow-wrap:anywhere;}
 .loginBrand-host {margin:0.75rem 0 2rem;font-size:1rem;color:var(--c-side-muted);overflow-wrap:anywhere;}
-.loginBrand-visit {display:inline-flex;align-items:center;gap:0.5rem;padding:0.55rem 1rem;border:1px solid var(--c-side-line);border-radius:var(--radius);color:var(--c-on-side);font-size:0.9rem;font-weight:500;text-decoration:none;transition:background-color 0.15s ease;}
+.loginBrand-visit {display:inline-flex;align-items:center;gap:0.5rem;padding:0.55rem 1rem;border:1px solid var(--c-side-line);border-radius:var(--radius);color:var(--c-on-side);background:var(--c-panel);font-size:0.9rem;font-weight:500;text-decoration:none;transition:background-color 0.15s ease;}
 .loginBrand-visit svg {transition:transform 0.15s ease;}
-.loginBrand-visit:hover,.loginBrand-visit:focus-visible {background:rgba(255, 255, 255, 0.08);}
+.loginBrand-visit:hover,.loginBrand-visit:focus-visible {background:var(--c-hover);}
 .loginBrand-visit:hover svg,.loginBrand-visit:focus-visible svg {transform:translateX(3px);}
 .loginBrand-visit:focus-visible {outline:2px solid var(--c-side-muted);outline-offset:2px;}
 
@@ -159,7 +169,7 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
     /* Equal rows above and below the card keep it in the middle; the site's name and link are centred above it */
     .loginLayout {grid-template-columns:minmax(0, 1fr);grid-template-rows:1fr auto 1fr;min-height:100vh;min-height:100svh;}
     .loginBrand {justify-content:center;padding:1.25rem 1rem;color:var(--c-text);background:none;border:0;text-align:center;}
-    .loginBrand-inner {max-width:none;margin:0;}
+    .loginBrand-inner {align-self:center;max-width:none;margin:0;padding:0;background:none;border:0;-webkit-backdrop-filter:none;backdrop-filter:none;}
     .loginBrand-site {font-size:clamp(1.4rem, 5.5vw, 1.9rem);}
     .loginBrand-host {display:none;}
     .loginBrand-visit {margin-top:0.85rem;padding:0.45rem 0.9rem;color:var(--c-text);border-color:var(--c-line);}
