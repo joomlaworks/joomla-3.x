@@ -15,6 +15,7 @@
     --c-popover:       #ffffff;  /* menus, popovers, modals */
     --c-muted:         #ececef;  /* hover, active items, add-ons */
     --c-subtle:        #f6f6f7;  /* sidebars, toolbar, status bar, card titles */
+    --c-row-hover:     #f6f6f7;  /* list rows under the pointer */
     --c-border:        #e4e4e7;
     --c-input:         #e4e4e7;  /* field borders */
     --c-accent:        var(--accent-color, #2563eb);  /* the pinch of colour: focus, checked boxes, the active sidebar item */
@@ -72,6 +73,7 @@
     --c-popover:       #18181b;
     --c-muted:         #27272a;
     --c-subtle:        #111113;
+    --c-row-hover:     #18181b;
     --c-border:        #27272a;
     --c-input:         #3f3f46;
     --c-accent:        color-mix(in srgb, var(--accent-color, #2563eb) 60%, #ffffff);
@@ -124,6 +126,7 @@
         --c-popover:       #18181b;
         --c-muted:         #27272a;
         --c-subtle:        #111113;
+        --c-row-hover:     #18181b;
         --c-border:        #27272a;
         --c-input:         #3f3f46;
         --c-accent:        color-mix(in srgb, var(--accent-color, #2563eb) 60%, #ffffff);
@@ -538,6 +541,8 @@ table {max-width:100%;background-color:transparent;border-collapse:collapse;bord
 .table-bordered caption + thead tr:first-child th:last-child,.table-bordered caption + tbody tr:first-child td:last-child,.table-bordered colgroup + thead tr:first-child th:last-child,.table-bordered colgroup + tbody tr:first-child td:last-child {border-top-right-radius:var(--radius);}
 .table-striped tbody > tr:nth-child(odd) > td,.table-striped tbody > tr:nth-child(odd) > th {background-color:transparent;}
 .table-hover tbody tr:hover > td,.table-hover tbody tr:hover > th {background-color:var(--c-muted);}
+/* Lists (Joomla's are striped tables): the row under the pointer */
+.table-striped tbody > tr:hover > td,.table-striped tbody > tr:hover > th {background-color:var(--c-row-hover);}
 table td[class*="span"],table th[class*="span"],.row-fluid table td[class*="span"],.row-fluid table th[class*="span"] {display:table-cell;float:none;margin-left:0;}
 .table td.span1,.table th.span1 {float:none;width:44px;margin-left:0;}
 .table td.span2,.table th.span2 {float:none;width:124px;margin-left:0;}
