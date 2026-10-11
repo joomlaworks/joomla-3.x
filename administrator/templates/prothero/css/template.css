@@ -2089,6 +2089,8 @@ body .navbar,body .navbar-fixed-top {margin-bottom:0;}
     /* The menu: every section open, in two columns, the section names as headings (no more opening each one) */
     .navbar .nav-collapse #menu {display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:6px 20px;margin:0;padding:8px 16px 16px;border-top:1px solid var(--c-nav-border);}
     .navbar .nav-collapse #menu > li {float:none;min-width:0;}
+    /* No Help section on phones (help pages are made for large screens); it's the one linking to the help view */
+    .navbar .nav-collapse #menu > li:has(a[href*="option=com_admin&view=help"]) {display:none;}
     .navbar .nav-collapse #menu > li > a.dropdown-toggle {margin:10px 0 2px;padding:0 0 6px;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--c-nav-muted);background:none;border:0;border-bottom:1px solid var(--c-nav-border);border-radius:0;pointer-events:none;cursor:default;}
     .navbar .nav-collapse #menu > li > .dropdown-menu {display:block !important;position:static;float:none;width:auto !important;max-height:none !important;margin:0;padding:2px 0 0;overflow:visible;background:none;border:0;box-shadow:none;}
     .navbar .nav-collapse #menu .dropdown-menu > li > a {margin:0;padding:6px 0;font-size:14px;line-height:20px;white-space:normal;color:var(--c-nav-soft);background:none;border:0;border-radius:0;}
