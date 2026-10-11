@@ -207,6 +207,32 @@
 		});
 	}
 
+	/* --- The phone menu: shown or hidden at once (Bootstrap's collapse animates its height, which looked choppy) --- */
+
+	function initMenuButton() {
+		var button = $('.navbar .btn-navbar');
+		var menu = $('.navbar .nav-collapse');
+
+		if (!button || !menu) {
+			return;
+		}
+
+		button.setAttribute('aria-expanded', 'false');
+
+		// Caught before Bootstrap's handler on the document, which then never sees the click
+		button.addEventListener('click', function (event) {
+			event.preventDefault();
+			event.stopPropagation();
+
+			var open = !menu.classList.contains('in');
+
+			menu.classList.toggle('in', open);
+			menu.style.height = '';
+			button.classList.toggle('collapsed', !open);
+			button.setAttribute('aria-expanded', open ? 'true' : 'false');
+		});
+	}
+
 	/* --- The pinned toolbar --- */
 
 	function initStickyToolbar() {
@@ -452,6 +478,7 @@
 		initTemplate(document);
 		colourAllChosen();
 		initMenu();
+		initMenuButton();
 		initStickyToolbar();
 		initTabRows();
 

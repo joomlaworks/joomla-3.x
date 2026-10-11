@@ -2078,6 +2078,8 @@ body .navbar,body .navbar-fixed-top {margin-bottom:0;}
     /* The opened menu lies over the page under the bar (the page doesn't move), scrolling on its own when taller than the screen */
     .navbar-inner {position:relative;}
     .navbar .nav-collapse {position:absolute;top:100%;left:0;right:0;z-index:1040;background:var(--c-nav-bg);box-shadow:0 16px 24px rgba(0,0,0,0.25);}
+    .navbar .nav-collapse.collapse {display:none;height:auto !important;transition:none;}
+    .navbar .nav-collapse.collapse.in {display:block;}
     .navbar .nav-collapse.in {max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px);overflow-y:auto !important;overscroll-behavior:contain;}
     /* The menu: every section open, in two columns, the section names as headings (no more opening each one) */
     .navbar .nav-collapse #menu {display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:6px 20px;margin:0;padding:8px 16px 16px;border-top:1px solid var(--c-nav-border);}
