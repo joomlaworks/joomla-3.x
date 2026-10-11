@@ -2073,6 +2073,25 @@ html[dir="rtl"] .quick-icons .nav-list [class^="icon-"],html[dir="rtl"] .quick-i
 .j-toggle-button-wrapper.j-toggle-visible {right:7px;}
 .j-toggle-sidebar-button {font-size:16px;color:var(--c-muted-fg);text-decoration:none;cursor:pointer;}
 .j-toggle-sidebar-button:hover {color:var(--c-fg);}
+/* The sidebar runs the list's full height and its links stay in view while the list scrolls: its parent (the list's form) holds it
+   and the list, and the links stick under the pinned toolbar (or the menu bar, without one). Widths and offsets as before, now that
+   the parent and not the page places it (the parent sits inside .container-fluid's padding) */
+@media (min-width:980px) {
+    :has(> .j-sidebar-container) {position:relative;display:flow-root;}
+    .j-sidebar-container {top:0;bottom:0;width:calc(16.5% + 6.6px);margin-left:-21px;}
+    .j-sidebar-container,.j-sidebar-container.j-sidebar-hidden {left:calc(-16.5% - 6.6px);}
+    .j-sidebar-container.j-sidebar-visible {left:0;}
+    .j-sidebar-container > #j-toggle-sidebar-wrapper {position:sticky;top:110px;}
+    body:has(#isisJsData[data-tmpl-sticky="0"]) .j-sidebar-container > #j-toggle-sidebar-wrapper {top:54px;}
+}
+@media (min-width:768px) and (max-width:979px) {
+    :has(> .j-sidebar-container) {position:relative;display:flow-root;}
+    .j-sidebar-container {top:0;bottom:0;width:calc(16.5% + 3.3px);margin-left:-11px;}
+    .j-sidebar-container,.j-sidebar-container.j-sidebar-hidden {left:calc(-16.5% - 3.3px);}
+    .j-sidebar-container.j-sidebar-visible {left:0;}
+    .j-sidebar-container > #j-toggle-sidebar-wrapper {position:sticky;top:110px;}
+    body:has(#isisJsData[data-tmpl-sticky="0"]) .j-sidebar-container > #j-toggle-sidebar-wrapper {top:54px;}
+}
 #system-message-container,#j-main-container {padding:0 0 0 5px;min-height:0;}
 #system-message-container.j-toggle-main,#j-main-container.j-toggle-main,#system-debug.j-toggle-main {float:right;}
 @media (min-width:768px) {

@@ -52,6 +52,11 @@ require_once __DIR__ . '/helper.php';
 
 protheroDropConditionalAssets($this);
 
+// The side panel's building blocks come in three colourways, shown one after another on each visit (a cookie remembers the last)
+$cookie = $app->input->cookie;
+$blocks = (int) $cookie->getInt('prothero_blocks', 0) % 3 + 1;
+$cookie->set('prothero_blocks', $blocks, time() + 365 * 86400, JUri::base(true) . '/', '', JUri::getInstance()->isSsl(), true);
+
 $escape = function ($text)
 {
 	return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
@@ -65,7 +70,7 @@ $escape = function ($text)
 </head>
 <body class="loginPage <?php echo $escape($option . ' view-' . $view); ?>">
 	<div class="loginLayout">
-		<aside class="loginBrand">
+		<aside class="loginBrand" data-blocks="<?php echo $blocks; ?>">
 			<div class="loginBrand-inner">
 				<p class="loginBrand-site"><?php echo $escape($sitename); ?></p>
 				<p class="loginBrand-host"><?php echo $escape($siteHost); ?></p>

@@ -14,8 +14,7 @@
     --font:            system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
     --c-page:          #ffffff;
     --c-panel:         #ffffff;
-    --c-side:          #f4f4f5;  /* the site's panel: building blocks (images/login-blocks.svg) */
-    --c-side-blocks:   url("../images/login-blocks.svg");
+    --c-side:          #f4f4f5;  /* the site's panel: building blocks (images/login-blocks*.svg) */
     --c-side-plate:    rgba(255, 255, 255, 0.78);  /* under the site's name, over the blocks */
     --c-on-side:       #09090b;
     --c-side-muted:    #52525b;
@@ -44,7 +43,6 @@
     --c-page:          #09090b;
     --c-panel:         #09090b;
     --c-side:          #111113;
-    --c-side-blocks:   url("../images/login-blocks-dark.svg");
     --c-side-plate:    rgba(9, 9, 11, 0.72);
     --c-on-side:       #fafafa;
     --c-side-muted:    #a1a1aa;
@@ -73,7 +71,6 @@
         --c-page:          #09090b;
         --c-panel:         #09090b;
         --c-side:          #111113;
-        --c-side-blocks:   url("../images/login-blocks-dark.svg");
         --c-side-plate:    rgba(9, 9, 11, 0.72);
         --c-on-side:       #fafafa;
         --c-side-muted:    #a1a1aa;
@@ -105,7 +102,7 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 .loginLayout {display:grid;grid-template-columns:minmax(0, 3fr) minmax(24rem, 2fr);min-height:100vh;}
 
 /* --- Side panel: the site, on a pattern of building blocks --- */
-.loginBrand {display:flex;flex-direction:column;justify-content:center;padding:clamp(2rem, 5vw, 4.5rem);color:var(--c-on-side);background:var(--c-side) var(--c-side-blocks) 0 0 / 259.81px 360px repeat;border-right:1px solid var(--c-side-line);}
+.loginBrand {display:flex;flex-direction:column;justify-content:center;padding:clamp(2rem, 5vw, 4.5rem);color:var(--c-on-side);background:var(--c-side) var(--blocks) 0 0 / 259.81px 360px repeat;border-right:1px solid var(--c-side-line);}
 .loginBrand-inner {align-self:flex-start;margin-block:auto;max-width:46rem;padding:clamp(1.5rem, 3vw, 2.5rem);background:var(--c-side-plate);border:1px solid var(--c-side-line);border-radius:16px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
 .loginBrand-site {margin:0;font-size:clamp(2rem, 3.4vw, 2.75rem);font-weight:700;line-height:1.15;letter-spacing:-0.03em;overflow-wrap:anywhere;}
 .loginBrand-host {margin:0.75rem 0 2rem;font-size:1rem;color:var(--c-side-muted);overflow-wrap:anywhere;}
@@ -114,6 +111,19 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 .loginBrand-visit:hover,.loginBrand-visit:focus-visible {background:var(--c-hover);}
 .loginBrand-visit:hover svg,.loginBrand-visit:focus-visible svg {transform:translateX(3px);}
 .loginBrand-visit:focus-visible {outline:2px solid var(--c-side-muted);outline-offset:2px;}
+
+/* The blocks in three colourways, one after another on each visit (login.php writes data-blocks), light and dark */
+.loginBrand {--blocks:url("../images/login-blocks.svg");}
+.loginBrand[data-blocks="2"] {--blocks:url("../images/login-blocks-2.svg");}
+.loginBrand[data-blocks="3"] {--blocks:url("../images/login-blocks-3.svg");}
+:root[data-scheme="dark"] .loginBrand {--blocks:url("../images/login-blocks-dark.svg");}
+:root[data-scheme="dark"] .loginBrand[data-blocks="2"] {--blocks:url("../images/login-blocks-2-dark.svg");}
+:root[data-scheme="dark"] .loginBrand[data-blocks="3"] {--blocks:url("../images/login-blocks-3-dark.svg");}
+@media (prefers-color-scheme:dark) {
+    :root[data-scheme="auto"] .loginBrand {--blocks:url("../images/login-blocks-dark.svg");}
+    :root[data-scheme="auto"] .loginBrand[data-blocks="2"] {--blocks:url("../images/login-blocks-2-dark.svg");}
+    :root[data-scheme="auto"] .loginBrand[data-blocks="3"] {--blocks:url("../images/login-blocks-3-dark.svg");}
+}
 
 /* --- Form panel --- */
 .loginMain {display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;padding:clamp(1.5rem, 4vw, 3rem) 1rem;}
