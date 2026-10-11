@@ -388,3 +388,43 @@ jQuery(function($)
 		}
 	}
 });
+
+/**
+ * Tab rows that don't fit scroll sideways (css/template.css): mark the side with more tabs, for the fade, and bring the active
+ * tab into view.
+ */
+document.addEventListener('DOMContentLoaded', function () {
+	'use strict';
+
+	var rows = document.querySelectorAll('.nav-tabs:not(.nav-stacked)');
+
+	var update = function (row) {
+		var rtl  = getComputedStyle(row).direction === 'rtl',
+			left = Math.abs(row.scrollLeft),
+			more = row.scrollWidth - row.clientWidth - left > 2;
+
+		row.classList.toggle('tabs-more-end', more);
+		row.classList.toggle('tabs-more-start', left > 2);
+		row.classList.toggle('tabs-rtl', rtl);
+	};
+
+	Array.prototype.forEach.call(rows, function (row) {
+		if (row.closest('.tabs-left, .tabs-right')) {
+			return;
+		}
+
+		var active = row.querySelector('li.active');
+
+		if (active && row.scrollWidth > row.clientWidth) {
+			row.scrollLeft = active.offsetLeft - row.offsetLeft - 16;
+		}
+
+		update(row);
+		row.addEventListener('scroll', function () { update(row); }, { passive: true });
+		row.addEventListener('click', function () { setTimeout(function () { update(row); }, 0); });
+	});
+
+	window.addEventListener('resize', function () {
+		Array.prototype.forEach.call(rows, update);
+	});
+});

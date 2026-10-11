@@ -758,6 +758,17 @@ button.btn::-moz-focus-inner,input[type="submit"].btn::-moz-focus-inner {padding
 .nav-tabs .open .dropdown-toggle,.nav-pills .open .dropdown-toggle,.nav > li.dropdown.open.active > a:hover,.nav > li.dropdown.open.active > a:focus {color:var(--c-fg);background-color:var(--c-muted);border-color:var(--c-border);}
 .nav li.dropdown.open .caret,.nav li.dropdown.open.active .caret,.nav li.dropdown.open a:hover .caret,.nav li.dropdown.open a:focus .caret {border-top-color:currentColor;border-bottom-color:currentColor;opacity:1;}
 .tabs-stacked .open > a:hover,.tabs-stacked .open > a:focus {border-color:var(--c-muted-fg);}
+/* Tab rows in one line, scrolling sideways when they don't fit; a fade on the side with more tabs (js/template.js marks it) */
+:not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked) {display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;border-bottom:0;box-shadow:inset 0 -1px 0 var(--c-border);scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+:not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked)::-webkit-scrollbar {display:none;}
+:not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked)::before,:not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked)::after {display:none;}
+:not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked) > li {flex:none;float:none;margin-bottom:0;}
+:not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked) > li > a {white-space:nowrap;}
+.nav-tabs.tabs-more-end {-webkit-mask-image:linear-gradient(to right, #000 calc(100% - 48px), transparent);mask-image:linear-gradient(to right, #000 calc(100% - 48px), transparent);}
+.nav-tabs.tabs-more-start {-webkit-mask-image:linear-gradient(to left, #000 calc(100% - 48px), transparent);mask-image:linear-gradient(to left, #000 calc(100% - 48px), transparent);}
+.nav-tabs.tabs-more-start.tabs-more-end {-webkit-mask-image:linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent);mask-image:linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent);}
+.nav-tabs.tabs-rtl.tabs-more-end {-webkit-mask-image:linear-gradient(to left, #000 calc(100% - 48px), transparent);mask-image:linear-gradient(to left, #000 calc(100% - 48px), transparent);}
+.nav-tabs.tabs-rtl.tabs-more-start {-webkit-mask-image:linear-gradient(to right, #000 calc(100% - 48px), transparent);mask-image:linear-gradient(to right, #000 calc(100% - 48px), transparent);}
 .tabbable:before,.tabbable:after {display:table;content:"";line-height:0;}
 .tabbable:after {clear:both;}
 .tab-content {overflow:auto;}
