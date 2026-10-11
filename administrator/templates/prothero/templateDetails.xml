@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE install PUBLIC "-//Joomla! 2.5//DTD template 1.0//EN" "https://www.joomla.org/xml/dtd/2.5/template-install.dtd">
+<extension version="3.9" type="template" client="administrator" method="upgrade">
+    <name>prothero</name>
+    <version>1.0.0</version>
+    <creationDate>October 2026</creationDate>
+    <author>JoomlaWorks Ltd.</author>
+    <authorEmail>contact@joomlaworks.net</authorEmail>
+    <authorUrl>https://www.joomlaworks.net</authorUrl>
+    <copyright>(C) 2026 JoomlaWorks Ltd. and this project's contributors</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.md</license>
+    <description>TPL_PROTHERO_XML_DESCRIPTION</description>
+    <files>
+        <filename>component.php</filename>
+        <filename>cpanel.php</filename>
+        <filename>favicon.ico</filename>
+        <filename>helper.php</filename>
+        <filename>index.php</filename>
+        <filename>login.php</filename>
+        <filename>templateDetails.xml</filename>
+        <filename>template_preview.png</filename>
+        <filename>template_thumbnail.png</filename>
+        <folder>css</folder>
+        <folder>html</folder>
+        <folder>images</folder>
+        <folder>img</folder>
+        <folder>js</folder>
+        <folder>language</folder>
+    </files>
+    <positions>
+        <position>menu</position>
+        <position>submenu</position>
+        <position>toolbar</position>
+        <position>title</position>
+        <position>status</position>
+        <position>icon</position>
+        <position>cp_shell</position>
+        <position>cpanel</position>
+        <position>bottom</position>
+        <position>footer</position>
+        <position>login</position>
+        <position>debug</position>
+    </positions>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.tpl_prothero.ini</language>
+        <language tag="en-GB">en-GB/en-GB.tpl_prothero.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="advanced">
+                <field name="colorScheme" type="list" label="TPL_PROTHERO_COLOR_SCHEME_LABEL" description="TPL_PROTHERO_COLOR_SCHEME_DESC" default="auto">
+                    <option value="auto">TPL_PROTHERO_COLOR_SCHEME_AUTO</option>
+                    <option value="light">TPL_PROTHERO_COLOR_SCHEME_LIGHT</option>
+                    <option value="dark">TPL_PROTHERO_COLOR_SCHEME_DARK</option>
+                </field>
+                <field name="logoFile" type="media" schemes="http,https,ftp,ftps,data,file" validate="url" relative="true" label="TPL_PROTHERO_LOGO_LABEL" description="TPL_PROTHERO_LOGO_DESC" class="" default="" />
+                <field name="loginLogoFile" type="media" schemes="http,https,ftp,ftps,data,file" validate="url" relative="true" label="TPL_PROTHERO_LOGIN_LOGO_LABEL" description="TPL_PROTHERO_LOGIN_LOGO_DESC" class="" default="" />
+                <field name="admin_menus" type="radio" label="TPL_PROTHERO_FIELD_ADMIN_MENUS_LABEL" description="TPL_PROTHERO_FIELD_ADMIN_MENUS_DESC" class="btn-group btn-group-yesno" default="1" filter="integer">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="displayHeader" type="radio" label="TPL_PROTHERO_HEADER_LABEL" description="TPL_PROTHERO_HEADER_DESC" class="btn-group btn-group-yesno" default="1" filter="integer">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="statusFixed" type="list" label="TPL_PROTHERO_STATUS_LABEL" description="TPL_PROTHERO_STATUS_DESC" default="1" filter="integer">
+                    <option value="1">TPL_PROTHERO_STATUS_BOTTOM</option>
+                    <option value="0">TPL_PROTHERO_STATUS_TOP</option>
+                </field>
+                <field name="stickyToolbar" type="radio" label="TPL_PROTHERO_STICKY_LABEL" description="TPL_PROTHERO_STICKY_DESC" class="btn-group btn-group-yesno" default="1" filter="integer">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>
+

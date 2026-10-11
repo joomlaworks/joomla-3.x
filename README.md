@@ -48,6 +48,10 @@ Summary of changes:
 - Clean uninstalls: a component takes its own database tables, modules, plugins, media and Smart Search entries along (and "Restore uninstalled core extensions" brings them back, on every supported database), and updates clean up after earlier uninstalls
 - Housekeeping: the GMail sign-in and P3P plugins, Memcache options, unused libraries and pre-7.1 PHP polyfills are gone
 - Smart Search fixes for large sites, the command line indexer and Advanced Search's dates ([#9](https://github.com/joomlaworks/joomla-3.x/issues/9), [#21](https://github.com/joomlaworks/joomla-3.x/issues/21), [#23](https://github.com/joomlaworks/joomla-3.x/issues/23)), plus more PHP 8.2–8.5 fixes ([#20](https://github.com/joomlaworks/joomla-3.x/issues/20))
+- Prothero, a new black and white administrator template with a dark mode, alongside Isis and compatible with the same extensions
+
+**New features:**
+- Prothero, a new administrator template next to Isis: Isis' markup (so extensions made for Isis work with it), with a minimal black and white look in the style of shadcn/ui and Vercel, light and dark colour schemes (automatic by default) and a matching login page. Isis stays the default; choose Prothero in System > Templates
 
 **Improvements:**
 - More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. The administrator's quick icons, menu and status bar, article tags and Contacts work without them

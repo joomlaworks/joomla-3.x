@@ -262,6 +262,7 @@ class ExtensionHelper
 
 		// Core template extensions - administrator
 		array('template', 'isis', '', 1),
+		array('template', 'prothero', '', 1),
 
 		// Core template extensions - site
 		array('template', 'finch', '', 0),

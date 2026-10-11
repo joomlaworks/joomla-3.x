@@ -35,11 +35,11 @@ JFactory::getDocument()->addScriptDeclaration('
 ');
 
 JFactory::getDocument()->addStyleDeclaration('
-	.sampledata-set { padding: 12px 0; border-bottom: 1px solid #eee; }
+	.sampledata-set { padding: 12px 0; border-bottom: 1px solid rgba(128, 128, 128, 0.25); }
 	.sampledata-set:last-child { border-bottom: 0; }
 	.sampledata-head { display: flex; align-items: center; gap: 16px; }
 	.sampledata-info { flex: 1; min-width: 0; }
-	.sampledata-info small { display: block; margin-top: 2px; color: #555; }
+	.sampledata-info small { display: block; margin-top: 2px; opacity: 0.8; }
 	.sampledata-head .btn { flex: none; }
 	.sampledata-head .label { margin-left: 6px; vertical-align: middle; }
 	.sampledata-progress { width: 100%; margin-top: 10px; }

@@ -382,6 +382,8 @@ class JoomlaInstallerScript
 			'3.18.0-2026-10-10.sql' => '3.18.0',
 			// "Authentication - GMail", "System - P3P Policy" and joomla.org's Joomla Update component update site removed
 			'3.18.0-2026-10-11.sql' => null,
+			// Prothero administrator template
+			'3.18.0-2026-10-12.sql' => '3.18.0',
 		);
 
 		foreach ($dataMigrationFiles as $file => $addedIn)
@@ -840,6 +842,7 @@ class JoomlaInstallerScript
 			array('template', 'protostar', ''),
 			array('template', 'rookwood', ''),
 			array('template', 'isis', '', 1),
+			array('template', 'prothero', '', 1),
 		),
 	);
 
