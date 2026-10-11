@@ -1,0 +1,9 @@
+/**
+ * Protostar's template options (Template Colour, and Background Colour with it): loaded after the site's user.css when Template
+ * Colour is set. The page sets each colour as a custom property and a class on <body>; :where() keeps the selectors' specificity as
+ * without the class.
+ */
+body.site:where(.protostar-template-color) {border-top:3px solid var(--protostar-template-color);}
+body.site:where(.protostar-background-color) {background-color:var(--protostar-background-color);}
+:where(.protostar-template-color) a {color:var(--protostar-template-color);}
+:where(.protostar-template-color) .nav-list > .active > a,:where(.protostar-template-color) .nav-list > .active > a:hover,:where(.protostar-template-color) .dropdown-menu li > a:hover,:where(.protostar-template-color) .dropdown-menu .active > a,:where(.protostar-template-color) .dropdown-menu .active > a:hover,:where(.protostar-template-color) .nav-pills > .active > a,:where(.protostar-template-color) .nav-pills > .active > a:hover,:where(.protostar-template-color) .btn-primary {background:var(--protostar-template-color);}

@@ -37,7 +37,12 @@ JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true)
 JHtml::_('script', 'jui/html5.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
 
 // Add Stylesheets
-JHtml::_('stylesheet', 'template' . ($this->direction === 'rtl' ? '-rtl' : '') . '.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
+
+if ($this->direction === 'rtl')
+{
+	JHtml::_('stylesheet', 'template-rtl.css', array('version' => 'auto', 'relative' => true));
+}
 
 // Load specific language related CSS
 JHtml::_('stylesheet', 'administrator/language/' . $lang->getTag() . '/' . $lang->getTag() . '.css', array('version' => 'auto'));
@@ -123,50 +128,20 @@ if ($stickyToolbar)
 	$stickyBar = 'true';
 }
 
-// Template color
-if ($navbar_color)
-{
-	$this->addStyleDeclaration('
-	.navbar-inner,
-	.navbar-inverse .navbar-inner,
-	.dropdown-menu li > a:hover,
-	.dropdown-menu .active > a,
-	.dropdown-menu .active > a:hover,
-	.navbar-inverse .nav li.dropdown.open > .dropdown-toggle,
-	.navbar-inverse .nav li.dropdown.active > .dropdown-toggle,
-	.navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle,
-	#status.status-top {
-		background: ' . $navbar_color . ';
-	}');
-}
+// Template options: their colours as custom properties, which css/template-options.css applies after custom.css
+require_once __DIR__ . '/helper.php';
 
-// Template header color
-if ($header_color)
-{
-	$this->addStyleDeclaration('
-	.header {
-		background: ' . $header_color . ';
-	}');
-}
+$optionColors = isisOptionColors(array(
+	'navbar'  => $navbar_color,
+	'header'  => $header_color,
+	'sidebar' => $this->params->get('sidebarColor'),
+	'link'    => $this->params->get('linkColor'),
+));
 
-// Sidebar background color
-if ($this->params->get('sidebarColor'))
+if ($optionColors['properties'] !== '')
 {
-	$this->addStyleDeclaration('
-	.nav-list > .active > a,
-	.nav-list > .active > a:hover {
-		background: ' . $this->params->get('sidebarColor') . ';
-	}');
-}
-
-// Link color
-if ($this->params->get('linkColor'))
-{
-	$this->addStyleDeclaration('
-	a,
-	.j-toggle-sidebar-button {
-		color: ' . $this->params->get('linkColor') . ';
-	}');
+	JHtml::_('stylesheet', 'template-options.css', array('version' => 'auto', 'relative' => true));
+	$this->addStyleDeclaration(':root {' . $optionColors['properties'] . '}');
 }
 ?>
 <!DOCTYPE html>
@@ -176,7 +151,7 @@ if ($this->params->get('linkColor'))
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<jdoc:include type="head" />
 </head>
-<body class="admin <?php echo $option . ' view-' . $view . ' layout-' . $layout . ' task-' . $task . ' itemid-' . $itemid; ?>" data-basepath="<?php echo JURI::root(true); ?>">
+<body class="admin <?php echo $option . ' view-' . $view . ' layout-' . $layout . ' task-' . $task . ' itemid-' . $itemid . $optionColors['classes']; ?>" data-basepath="<?php echo JURI::root(true); ?>">
 <!-- Top Navigation -->
 <nav class="navbar<?php echo $navbar_is_light ? '' : ' navbar-inverse'; ?> navbar-fixed-top">
 	<div class="navbar-inner">

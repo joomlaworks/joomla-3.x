@@ -3768,6 +3768,8 @@ class JoomlaInstallerScript
 			'/libraries/vendor/symfony/polyfill-util',
 			'/plugins/authentication/gmail',
 			'/plugins/system/p3p',
+			'/administrator/templates/isis/less',
+			'/templates/protostar/less',
 		);
 
 		jimport('joomla.filesystem.file');

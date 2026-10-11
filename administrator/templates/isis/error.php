@@ -62,6 +62,15 @@ else
 $displayHeader = $params->get('displayHeader', '1');
 $statusFixed   = $params->get('statusFixed', '1');
 $stickyToolbar = $params->get('stickyToolbar', '1');
+
+require_once __DIR__ . '/helper.php';
+
+$optionColors = isisOptionColors(array(
+	'navbar'  => $params->get('templateColor'),
+	'header'  => $displayHeader ? $params->get('headerColor') : '',
+	'sidebar' => $params->get('sidebarColor'),
+	'link'    => $params->get('linkColor'),
+));
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
@@ -83,38 +92,15 @@ $stickyToolbar = $params->get('stickyToolbar', '1');
 	<?php if (is_file(JPATH_ROOT . $file)) : ?>
 		<link href="<?php echo JUri::root(true) . $file; ?>" rel="stylesheet" />
 	<?php endif; ?>
-	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template<?php echo ($this->direction == 'rtl' ? '-rtl' : ''); ?>.css" rel="stylesheet" />
+	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template.css" rel="stylesheet" />
+	<?php if ($this->direction === 'rtl') : ?>
+		<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template-rtl.css" rel="stylesheet" />
+	<?php endif; ?>
 	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
-	<?php // Template color ?>
-	<?php if ($params->get('templateColor')) : ?>
-	<style>
-		.navbar-inner, .navbar-inverse .navbar-inner, .nav-list > .active > a, .nav-list > .active > a:hover, .dropdown-menu li > a:hover, .dropdown-menu .active > a, .dropdown-menu .active > a:hover, .navbar-inverse .nav li.dropdown.open > .dropdown-toggle, .navbar-inverse .nav li.dropdown.active > .dropdown-toggle, .navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle
-		{
-			background: <?php echo $params->get('templateColor');?>;
-		}
-		.navbar-inner, .navbar-inverse .nav li.dropdown.open > .dropdown-toggle, .navbar-inverse .nav li.dropdown.active > .dropdown-toggle, .navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle{
-			-moz-box-shadow: 0 1px 3px rgba(0, 0, 0, .25), inset 0 -1px 0 rgba(0, 0, 0, .1), inset 0 30px 10px rgba(0, 0, 0, .2);
-			-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .25), inset 0 -1px 0 rgba(0, 0, 0, .1), inset 0 30px 10px rgba(0, 0, 0, .2);
-			box-shadow: 0 1px 3px rgba(0, 0, 0, .25), inset 0 -1px 0 rgba(0, 0, 0, .1), inset 0 30px 10px rgba(0, 0, 0, .2);
-		}
-	</style>
-	<?php endif; ?>
-	<?php // Template header color ?>
-	<?php if ($params->get('headerColor')) : ?>
-	<style>
-		.header
-		{
-			background: <?php echo $params->get('headerColor');?>;
-		}
-	</style>
-	<?php endif; ?>
-	<?php // Sidebar background color ?>
-	<?php if ($params->get('sidebarColor')) : ?>
-		<style>
-			.nav-list > .active > a, .nav-list > .active > a:hover {
-				background: <?php echo $params->get('sidebarColor'); ?>;
-			}
-		</style>
+	<?php // The template options' colours, as on other pages ?>
+	<?php if ($optionColors['properties'] !== '') : ?>
+		<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template-options.css" rel="stylesheet" />
+		<style>:root {<?php echo $optionColors['properties']; ?>}</style>
 	<?php endif; ?>
 	<script src="<?php echo JUri::root(true); ?>/media/jui/js/jquery.js"></script>
 	<script src="<?php echo JUri::root(true); ?>/media/jui/js/jquery-noconflict.js"></script>
@@ -122,7 +108,7 @@ $stickyToolbar = $params->get('stickyToolbar', '1');
 	<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/template.js"></script>
 	<!--[if lt IE 9]><script src="<?php echo JUri::root(true); ?>/media/jui/js/html5.js"></script><![endif]-->
 </head>
-<body class="admin <?php echo $option . ' view-' . $view . ' layout-' . $layout . ' task-' . $task;?>" data-spy="scroll" data-target=".subhead" data-offset="87">
+<body class="admin <?php echo $option . ' view-' . $view . ' layout-' . $layout . ' task-' . $task . $optionColors['classes']; ?>" data-spy="scroll" data-target=".subhead" data-offset="87">
 	<!-- Top Navigation -->
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">

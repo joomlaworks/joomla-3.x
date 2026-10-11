@@ -55,31 +55,19 @@ if ($this->params->get('googleFont'))
 	}");
 }
 
-// Template color
-if ($this->params->get('templateColor'))
-{
-	$this->addStyleDeclaration('
-	body.site {
-		border-top: 3px solid ' . $this->params->get('templateColor') . ';
-		background-color: ' . $this->params->get('templateBackgroundColor') . ';
-	}
-	a {
-		color: ' . $this->params->get('templateColor') . ';
-	}
-	.nav-list > .active > a,
-	.nav-list > .active > a:hover,
-	.dropdown-menu li > a:hover,
-	.dropdown-menu .active > a,
-	.dropdown-menu .active > a:hover,
-	.nav-pills > .active > a,
-	.nav-pills > .active > a:hover,
-	.btn-primary {
-		background: ' . $this->params->get('templateColor') . ';
-	}');
-}
-
 // Check for a custom CSS file
 JHtml::_('stylesheet', 'user.css', array('version' => 'auto', 'relative' => true));
+
+// Template options: their colours as custom properties, which css/template-options.css applies after user.css
+require_once __DIR__ . '/helper.php';
+
+$optionColors = protostarOptionColors($this->params);
+
+if ($optionColors['properties'] !== '')
+{
+	JHtml::_('stylesheet', 'template-options.css', array('version' => 'auto', 'relative' => true));
+	$this->addStyleDeclaration(':root {' . $optionColors['properties'] . '}');
+}
 
 // Check for a custom js file
 JHtml::_('script', 'user.js', array('version' => 'auto', 'relative' => true));
@@ -134,7 +122,8 @@ else
 	. ($task ? ' task-' . $task : ' no-task')
 	. ($itemid ? ' itemid-' . $itemid : '')
 	. ($params->get('fluidContainer') ? ' fluid' : '')
-	. ($this->direction === 'rtl' ? ' rtl' : '');
+	. ($this->direction === 'rtl' ? ' rtl' : '')
+	. $optionColors['classes'];
 ?>">
 	<!-- Body -->
 	<div class="body" id="top">

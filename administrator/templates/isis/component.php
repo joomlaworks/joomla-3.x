@@ -30,7 +30,12 @@ JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true)
 JHtml::_('script', 'jui/html5.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
 
 // Add Stylesheets
-JHtml::_('stylesheet', 'template' . ($this->direction === 'rtl' ? '-rtl' : '') . '.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
+
+if ($this->direction === 'rtl')
+{
+	JHtml::_('stylesheet', 'template-rtl.css', array('version' => 'auto', 'relative' => true));
+}
 
 // Load optional RTL Bootstrap CSS
 JHtml::_('bootstrap.loadCss', false, $this->direction);
@@ -41,10 +46,15 @@ JHtml::_('stylesheet', 'administrator/language/' . $lang->getTag() . '/' . $lang
 // Load custom.css
 JHtml::_('stylesheet', 'custom.css', array('version' => 'auto', 'relative' => true));
 
-// Link color
-if ($this->params->get('linkColor'))
+// The Link Colour option, as a custom property which css/template-options.css applies after custom.css
+require_once __DIR__ . '/helper.php';
+
+$optionColors = isisOptionColors(array('link' => $this->params->get('linkColor')));
+
+if ($optionColors['properties'] !== '')
 {
-	$this->addStyleDeclaration('a { color: ' . $this->params->get('linkColor') . '; }');
+	JHtml::_('stylesheet', 'template-options.css', array('version' => 'auto', 'relative' => true));
+	$this->addStyleDeclaration(':root {' . $optionColors['properties'] . '}');
 }
 ?>
 <!DOCTYPE html>
@@ -52,7 +62,7 @@ if ($this->params->get('linkColor'))
 <head>
 	<jdoc:include type="head" />
 </head>
-<body class="contentpane component">
+<body class="contentpane component<?php echo $optionColors['classes']; ?>">
 	<jdoc:include type="message" />
 	<jdoc:include type="component" />
 </body>
