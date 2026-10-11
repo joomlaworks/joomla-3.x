@@ -79,7 +79,6 @@ foreach ($this->submenumodules as $submenumodule)
 
 // Template Parameters
 $displayHeader = $this->params->get('displayHeader', '1');
-$statusFixed   = $this->params->get('statusFixed', '1');
 $stickyToolbar = $this->params->get('stickyToolbar', '1');
 
 // The logo in the header: the site's own, else Joomla's, inline so its wordmark follows the colour scheme
@@ -88,7 +87,7 @@ $logo = $displayHeader && $this->params->get('logoFile') ? JUri::root() . htmlsp
 // Pass some values to javascript
 $offset = 34;
 
-if ($displayHeader || !$statusFixed)
+if ($displayHeader)
 {
 	$offset = 44;
 }
@@ -185,16 +184,6 @@ if ($stickyToolbar)
 		</div>
 	</header>
 <?php endif; ?>
-<?php if (!$statusFixed && $this->countModules('status')) : ?>
-	<!-- Begin Status Module -->
-	<div id="status" class="navbar status-top hidden-phone">
-		<div class="btn-toolbar">
-			<jdoc:include type="modules" name="status" style="no" />
-		</div>
-		<div class="clearfix"></div>
-	</div>
-	<!-- End Status Module -->
-<?php endif; ?>
 <?php if (!$cpanel) : ?>
 	<!-- Subheader -->
 	<a class="btn btn-subhead" data-toggle="collapse" data-target=".subhead-collapse"><?php echo JText::_('TPL_PROTHERO_TOOLBAR'); ?>
@@ -243,7 +232,7 @@ if ($stickyToolbar)
 			<!-- End Content -->
 	</section>
 
-	<?php if (!$this->countModules('status') || (!$statusFixed && $this->countModules('status'))) : ?>
+	<?php if (!$this->countModules('status')) : ?>
 		<footer class="footer">
 			<p class="text-center">
 				<jdoc:include type="modules" name="footer" style="no" />
@@ -251,7 +240,7 @@ if ($stickyToolbar)
 		</footer>
 	<?php endif; ?>
 </div>
-<?php if ($statusFixed && $this->countModules('status')) : ?>
+<?php if ($this->countModules('status')) : ?>
 	<!-- Begin Status Module -->
 	<div id="status" class="navbar navbar-fixed-bottom hidden-phone">
 		<div class="btn-toolbar">

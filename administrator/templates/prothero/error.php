@@ -53,7 +53,6 @@ $logo = $params->get('logoFile') ? htmlspecialchars(JUri::root() . $params->get(
 
 // Template Parameters
 $displayHeader = $params->get('displayHeader', '1');
-$statusFixed   = $params->get('statusFixed', '1');
 $stickyToolbar = $params->get('stickyToolbar', '1');
 
 require_once __DIR__ . '/helper.php';
@@ -164,27 +163,6 @@ $navbar = protheroNavbarColor($params);
 			<h1 class="page-title"><?php echo JText::_('ERROR'); ?></h1>
 		</div>
 	</header>
-	<?php if (!$statusFixed && $this->getInstance()->countModules('status')) : ?>
-		<!-- Begin Status Module -->
-		<div id="status" class="navbar status-top hidden-phone">
-			<div class="btn-toolbar">
-				<div class="btn-group pull-right">
-					<p>
-						&copy; <?php echo date('Y'); ?> <?php echo $sitename; ?>
-					</p>
-				</div>
-				<?php // Display status modules ?>
-				<?php $this->statusmodules = JModuleHelper::getModules('status'); ?>
-				<?php foreach ($this->statusmodules as $statusmodule) : ?>
-					<?php $output = JModuleHelper::renderModule($statusmodule, array('style' => 'no')); ?>
-					<?php $params = new Registry($statusmodule->params); ?>
-					<?php echo $output; ?>
-				<?php endforeach; ?>
-			</div>
-			<div class="clearfix"></div>
-		</div>
-		<!-- End Status Module -->
-	<?php endif; ?>
 	<div class="subhead-spacer" style="margin-bottom: 20px"></div>
 	<!-- container-fluid -->
 	<div class="container-fluid container-main">
