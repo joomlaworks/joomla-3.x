@@ -15,7 +15,7 @@
     --c-page:          #ffffff;
     --c-panel:         #ffffff;
     --c-side:          #f4f4f5;  /* the site's panel: building blocks (images/login-blocks*.svg) */
-    --c-side-plate:    rgba(255, 255, 255, 0.78);  /* under the site's name, over the blocks */
+    --c-side-plate:    rgba(255, 255, 255, 0.5);  /* under the site's name, over the blocks */
     --c-on-side:       #09090b;
     --c-side-muted:    #52525b;
     --c-side-line:     #e4e4e7;
@@ -43,7 +43,7 @@
     --c-page:          #09090b;
     --c-panel:         #09090b;
     --c-side:          #111113;
-    --c-side-plate:    rgba(9, 9, 11, 0.72);
+    --c-side-plate:    rgba(9, 9, 11, 0.5);
     --c-on-side:       #fafafa;
     --c-side-muted:    #a1a1aa;
     --c-side-line:     #27272a;
@@ -71,7 +71,7 @@
         --c-page:          #09090b;
         --c-panel:         #09090b;
         --c-side:          #111113;
-        --c-side-plate:    rgba(9, 9, 11, 0.72);
+        --c-side-plate:    rgba(9, 9, 11, 0.5);
         --c-on-side:       #fafafa;
         --c-side-muted:    #a1a1aa;
         --c-side-line:     #27272a;
