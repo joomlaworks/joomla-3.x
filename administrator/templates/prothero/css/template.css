@@ -49,6 +49,12 @@
     --shadow-md:       0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
     --shadow-lg:       0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
     --ring:            0 0 0 3px rgba(161,161,170,0.5);
+    --c-nav-bg:        var(--nav-color, #09090b);  /* the top menu bar: the Menu Bar Colour option, white text */
+    --c-nav-fg:        #ffffff;
+    --c-nav-soft:      rgba(255,255,255,0.8);
+    --c-nav-muted:     rgba(255,255,255,0.45);
+    --c-nav-hover:     rgba(255,255,255,0.14);
+    --c-nav-border:    rgba(255,255,255,0.12);
     --radius:          6px;
     --radius-lg:       8px;
     --font-sans:       system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
@@ -98,6 +104,12 @@
     --shadow-md:       0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -2px rgba(0,0,0,0.4);
     --shadow-lg:       0 10px 15px -3px rgba(0,0,0,0.5), 0 4px 6px -4px rgba(0,0,0,0.5);
     --ring:            0 0 0 3px rgba(113,113,122,0.5);
+    --c-nav-bg:        #09090b;  /* the page's colours: the option's colours would glare */
+    --c-nav-fg:        #fafafa;
+    --c-nav-soft:      #d4d4d8;
+    --c-nav-muted:     #71717a;
+    --c-nav-hover:     #27272a;
+    --c-nav-border:    #27272a;
 }
 @media (prefers-color-scheme:dark) {
     :root[data-scheme="auto"] {
@@ -143,8 +155,23 @@
         --shadow-md:       0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -2px rgba(0,0,0,0.4);
         --shadow-lg:       0 10px 15px -3px rgba(0,0,0,0.5), 0 4px 6px -4px rgba(0,0,0,0.5);
         --ring:            0 0 0 3px rgba(113,113,122,0.5);
+        --c-nav-bg:        #09090b;  /* the page's colours: the option's colours would glare */
+        --c-nav-fg:        #fafafa;
+        --c-nav-soft:      #d4d4d8;
+        --c-nav-muted:     #71717a;
+        --c-nav-hover:     #27272a;
+        --c-nav-border:    #27272a;
     }
 }
+/* The Menu Bar Colour option (data-navbar on <html>): dark colours white text reads well on; light mode only */
+:root[data-navbar="graphite"] {--nav-color:#27272a;}
+:root[data-navbar="navy"] {--nav-color:#172554;}
+:root[data-navbar="blue"] {--nav-color:#1e3a8a;}
+:root[data-navbar="indigo"] {--nav-color:#312e81;}
+:root[data-navbar="purple"] {--nav-color:#3b0764;}
+:root[data-navbar="wine"] {--nav-color:#4c0519;}
+:root[data-navbar="teal"] {--nav-color:#134e4a;}
+:root[data-navbar="forest"] {--nav-color:#14532d;}
 
 
 /* --- Page transitions --- */
@@ -804,7 +831,9 @@ button.btn::-moz-focus-inner,input[type="submit"].btn::-moz-focus-inner {padding
 .navbar .pull-right > li > .dropdown-menu:before,.navbar .nav > li > .dropdown-menu.pull-right:before {left:auto;right:12px;}
 .navbar .pull-right > li > .dropdown-menu:after,.navbar .nav > li > .dropdown-menu.pull-right:after {left:auto;right:13px;}
 .navbar .pull-right > li > .dropdown-menu .dropdown-menu,.navbar .nav > li > .dropdown-menu.pull-right .dropdown-menu {left:auto;right:100%;margin-left:0;margin-right:4px;border-radius:var(--radius-lg);}
-.navbar-inverse .navbar-inner {background-color:var(--c-bg);border-color:var(--c-border);}
+.navbar-inverse .navbar-inner {background-color:var(--c-nav-bg);border-color:var(--c-nav-border);}
+/* The bar's own links and buttons take its colours (the menus they open keep the page's) */
+.navbar-inverse .admin-logo,.navbar-inverse .brand,.navbar-inverse .nav > li > a,.navbar-inverse .btn-navbar {--c-fg:var(--c-nav-fg);--c-fg-soft:var(--c-nav-soft);--c-muted-fg:var(--c-nav-muted);--c-muted:var(--c-nav-hover);--c-card:transparent;--c-input:var(--c-nav-border);}
 .navbar-inverse .brand,.navbar-inverse .nav > li > a {color:var(--c-fg-soft);}
 .navbar-inverse .brand:hover,.navbar-inverse .brand:focus,.navbar-inverse .nav > li > a:hover,.navbar-inverse .nav > li > a:focus {color:var(--c-fg);}
 .navbar-inverse .brand {color:var(--c-fg-soft);}
@@ -1944,7 +1973,7 @@ body.modal-open {-ms-overflow-style:none;}
 body .navbar,body .navbar-fixed-top {margin-bottom:0;}
 .navbar-inner {min-height:0;background:var(--c-bg);}
 .navbar-inner .container-fluid {padding-left:10px;padding-right:10px;font-size:14px;}
-.navbar-inverse .navbar-inner {background:var(--c-bg);}
+.navbar-inverse .navbar-inner {background:var(--c-nav-bg);}
 .navbar .navbar-text {line-height:30px;}
 .navbar .admin-logo {float:left;padding:12px 12px 0 12px;font-size:17px;color:var(--c-fg);}
 .navbar .admin-logo:hover {color:var(--c-fg-soft);}
@@ -1994,6 +2023,8 @@ body .navbar,body .navbar-fixed-top {margin-bottom:0;}
     .nav-collapse .dropdown-menu {margin:0;}
     .nav-collapse .dropdown-menu > li > span {display:block;padding:4px 15px;}
     .navbar-inverse .nav-collapse .dropdown-menu > li > span {color:var(--c-muted-fg);}
+    /* The opened menu sits on the bar: its colours */
+    .navbar-inverse .nav-collapse {--c-fg:var(--c-nav-fg);--c-fg-soft:var(--c-nav-soft);--c-muted-fg:var(--c-nav-muted);--c-muted:var(--c-nav-hover);--c-subtle:var(--c-nav-hover);--c-border:var(--c-nav-border);color:var(--c-nav-fg);}
     .nav-collapse .nav > li > a.dropdown-toggle {margin:0;padding-left:15px;font-size:12px;font-weight:500;color:var(--c-muted-fg);background-color:var(--c-subtle);text-transform:none;}
     .nav-collapse .nav li a {margin:0;border-top:1px solid var(--c-border);}
     .nav-collapse .nav li ul li ul.dropdown-menu,.nav-collapse .nav li ul li:hover ul.dropdown-menu,.nav-collapse .caret {display:none !important;}

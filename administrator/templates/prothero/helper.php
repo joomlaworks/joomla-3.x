@@ -34,6 +34,30 @@ if (!function_exists('protheroScheme'))
 	}
 }
 
+if (!function_exists('protheroNavbarColor'))
+{
+	/**
+	 * The Menu Bar Colour option, for the data-navbar attribute of <html> (css/template.css has a colour for each; black has none).
+	 *
+	 * @param   mixed  $params  The template style's options (a Registry), or null
+	 *
+	 * @return  string
+	 */
+	function protheroNavbarColor($params)
+	{
+		try
+		{
+			$color = is_object($params) ? (string) $params->get('navbarColor', 'black') : 'black';
+		}
+		catch (Exception $e)
+		{
+			$color = 'black';
+		}
+
+		return in_array($color, array('graphite', 'navy', 'blue', 'indigo', 'purple', 'wine', 'teal', 'forest'), true) ? $color : 'black';
+	}
+}
+
 if (!function_exists('protheroLogo'))
 {
 	/**

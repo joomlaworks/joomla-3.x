@@ -59,9 +59,10 @@ $stickyToolbar = $params->get('stickyToolbar', '1');
 require_once __DIR__ . '/helper.php';
 
 $scheme = protheroScheme($params);
+$navbar = protheroNavbarColor($params);
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-scheme="<?php echo $scheme; ?>">
+<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-scheme="<?php echo $scheme; ?>" data-navbar="<?php echo $navbar; ?>">
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">

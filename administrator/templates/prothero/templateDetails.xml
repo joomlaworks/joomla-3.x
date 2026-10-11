@@ -53,6 +53,17 @@
                     <option value="light">TPL_PROTHERO_COLOR_SCHEME_LIGHT</option>
                     <option value="dark">TPL_PROTHERO_COLOR_SCHEME_DARK</option>
                 </field>
+                <field name="navbarColor" type="list" label="TPL_PROTHERO_NAVBAR_COLOR_LABEL" description="TPL_PROTHERO_NAVBAR_COLOR_DESC" default="black">
+                    <option value="black">TPL_PROTHERO_NAVBAR_COLOR_BLACK</option>
+                    <option value="graphite">TPL_PROTHERO_NAVBAR_COLOR_GRAPHITE</option>
+                    <option value="navy">TPL_PROTHERO_NAVBAR_COLOR_NAVY</option>
+                    <option value="blue">TPL_PROTHERO_NAVBAR_COLOR_BLUE</option>
+                    <option value="indigo">TPL_PROTHERO_NAVBAR_COLOR_INDIGO</option>
+                    <option value="purple">TPL_PROTHERO_NAVBAR_COLOR_PURPLE</option>
+                    <option value="wine">TPL_PROTHERO_NAVBAR_COLOR_WINE</option>
+                    <option value="teal">TPL_PROTHERO_NAVBAR_COLOR_TEAL</option>
+                    <option value="forest">TPL_PROTHERO_NAVBAR_COLOR_FOREST</option>
+                </field>
                 <field name="logoFile" type="media" schemes="http,https,ftp,ftps,data,file" validate="url" relative="true" label="TPL_PROTHERO_LOGO_LABEL" description="TPL_PROTHERO_LOGO_DESC" class="" default="" />
                 <field name="loginLogoFile" type="media" schemes="http,https,ftp,ftps,data,file" validate="url" relative="true" label="TPL_PROTHERO_LOGIN_LOGO_LABEL" description="TPL_PROTHERO_LOGIN_LOGO_DESC" class="" default="" />
                 <field name="admin_menus" type="radio" label="TPL_PROTHERO_FIELD_ADMIN_MENUS_LABEL" description="TPL_PROTHERO_FIELD_ADMIN_MENUS_DESC" class="btn-group btn-group-yesno" default="1" filter="integer">
