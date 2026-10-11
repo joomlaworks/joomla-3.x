@@ -2052,6 +2052,41 @@ body .navbar,body .navbar-fixed-top {margin-bottom:0;}
     .nav-collapse .dropdown-menu li + li a {margin-bottom:0;}
 }
 
+/* --- Prothero: Phones --- */
+/* The top bar: the logo, the site's name and the menu button in one row, centred; the opened menu under them */
+@media (max-width:767px) {
+    .navbar-inner > .container-fluid {display:flex;flex-wrap:wrap;align-items:center;min-height:48px;}
+    .navbar .admin-logo {order:1;float:none;margin:0;padding:0 8px 0 16px;line-height:48px;}
+    .navbar .brand.hidden-desktop {order:2;flex:1 1 0;min-width:0;float:none;margin:0;padding:6px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;justify-content:center;align-items:center;gap:4px;}
+    .navbar .btn-navbar {order:3;float:none;margin:0 12px 0 8px;padding:8px 9px;border-radius:var(--radius);}
+    .navbar .nav-collapse {order:4;flex:0 0 100%;}
+    /* The menu: every section open, in two columns, the section names as headings (no more opening each one) */
+    .navbar .nav-collapse #menu {display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:6px 20px;margin:0;padding:8px 16px 16px;border-top:1px solid var(--c-nav-border);}
+    .navbar .nav-collapse #menu > li {float:none;min-width:0;}
+    .navbar .nav-collapse #menu > li > a.dropdown-toggle {margin:10px 0 2px;padding:0 0 6px;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--c-nav-muted);background:none;border:0;border-bottom:1px solid var(--c-nav-border);border-radius:0;pointer-events:none;cursor:default;}
+    .navbar .nav-collapse #menu > li > .dropdown-menu {display:block !important;position:static;float:none;width:auto !important;max-height:none !important;margin:0;padding:2px 0 0;overflow:visible;background:none;border:0;box-shadow:none;}
+    .navbar .nav-collapse #menu .dropdown-menu > li > a {margin:0;padding:6px 0;font-size:14px;line-height:20px;white-space:normal;color:var(--c-nav-soft);background:none;border:0;border-radius:0;}
+    .navbar .nav-collapse #menu .dropdown-menu > li > a:hover,.navbar .nav-collapse #menu .dropdown-menu > li > a:focus {color:var(--c-nav-fg);background:none;text-decoration:underline;}
+    .navbar .nav-collapse #menu .dropdown-menu > li.divider,.navbar .nav-collapse #menu .dropdown-submenu > a:after {display:none;}
+    .navbar .nav-collapse #menu .dropdown-menu .dropdown-menu {display:none !important;}
+    .navbar .nav-collapse #menu .dropdown-menu .menuitem-group {margin:8px 0 0;padding:0;font-size:11px;color:var(--c-nav-muted);background:none;border:0;}
+    /* The user's menu: a row at the bottom */
+    .navbar .nav-collapse .nav-user {display:block;float:none;margin:0;padding:10px 16px 14px;border-top:1px solid var(--c-nav-border);}
+    .navbar .nav-collapse .nav-user > li > a.dropdown-toggle {display:none;}
+    .navbar .nav-collapse .nav-user > li > .dropdown-menu {display:flex !important;flex-wrap:wrap;align-items:center;gap:4px 18px;position:static;float:none;margin:0;padding:0;background:none;border:0;box-shadow:none;}
+    .navbar .nav-collapse .nav-user .dropdown-menu > li > span,.navbar .nav-collapse .nav-user .dropdown-menu > li > a {display:block;margin:0;padding:4px 0;font-size:14px;color:var(--c-nav-soft);background:none;border:0;}
+    .navbar .nav-collapse .nav-user .dropdown-menu > li > span {flex-basis:100%;color:var(--c-nav-fg);}
+    .navbar .nav-collapse .nav-user .dropdown-menu > li.divider {display:none;}
+    /* The status bar: fixed at the bottom, as on larger screens (Isis hides it on phones); in one row, without the version and
+       copyright or the visitor and administrator counts */
+    #status.navbar-fixed-bottom.hidden-phone {display:block !important;position:fixed;left:0;right:0;bottom:0;z-index:1030;margin:0;padding:6px 12px;}
+    #status .btn-toolbar {display:flex;flex-wrap:wrap;align-items:center;row-gap:4px;}
+    #status .btn-toolbar > .btn-group.pull-right {display:none;}
+    #status .btn-toolbar {column-gap:16px;}
+    #status .btn-group.separator,#status .loggedin-users,#status .backloggedin-users {display:none;}
+    body.admin {padding-bottom:40px;}
+}
+
 /* --- Prothero: Quick icons --- */
 .quick-icons {font-size:14px;margin-bottom:20px;}
 .quick-icons .nav-header {margin:12px 0 5px;font-size:12px;}

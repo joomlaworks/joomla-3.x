@@ -223,3 +223,7 @@ input[type="file"]::file-selector-button {margin-right:0;margin-left:10px;}
     .j-sidebar-container,.j-sidebar-container.j-sidebar-hidden {left:auto;right:calc(-16.5% - 3.3px);}
     .j-sidebar-container.j-sidebar-visible {left:auto;right:0;}
 }
+@media (max-width:767px) {
+    .navbar .admin-logo {padding:0 16px 0 8px;}
+    .navbar .btn-navbar {margin:0 8px 0 12px;}
+}
