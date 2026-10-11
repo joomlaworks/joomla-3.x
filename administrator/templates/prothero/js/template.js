@@ -128,7 +128,6 @@
 		var menu = $('#menu');
 		var emptyMenu = $('#nav-empty');
 		var status = $('#status');
-		var position = { left: 0, width: 0, menuWidth: 0 };
 
 		if (!menu || !emptyMenu || window.innerWidth <= 767) {
 			return;
@@ -139,28 +138,32 @@
 			emptyMenu.style.display = 'none';
 		};
 
+		// A dropdown no taller than the screen above the status bar, scrolling (and a little wider for the scrollbar) when it's longer
+		var fit = function (item) {
+			var dropdown = item.querySelector(':scope > ul');
+
+			if (!dropdown || !dropdown.offsetWidth) {
+				return;
+			}
+
+			dropdown.style.width = '';
+			dropdown.style.maxHeight = '';
+
+			var maxHeight = window.innerHeight - dropdown.getBoundingClientRect().top - height(status) - 20;
+
+			if (dropdown.scrollHeight > maxHeight) {
+				dropdown.style.width = (dropdown.offsetWidth + 15) + 'px';
+			}
+
+			dropdown.style.maxHeight = maxHeight + 'px';
+		};
+
 		$$('#menu > li').forEach(function (item) {
 			var open = function () {
-				var dropdown = item.querySelector(':scope > ul');
-				var link = item.querySelector(':scope > a');
-
-				if (!dropdown) {
-					return;
-				}
-
-				var style = getComputedStyle(dropdown);
-				var outer = dropdown.offsetHeight + parseFloat(style.marginTop) + parseFloat(style.marginBottom);
-				var inner = dropdown.scrollHeight;
-				var maxHeight = window.innerHeight - (item.offsetHeight + height(status) + (outer - dropdown.clientHeight) + 20);
-
-				dropdown.style.width = maxHeight < inner ? (dropdown.clientWidth + 15) + 'px' : 'auto';
-				dropdown.style.maxHeight = maxHeight + 'px';
-
-				position.width = item.offsetWidth;
-				position.menuWidth = dropdown.clientWidth;
-				position.left = Math.round(item.getBoundingClientRect().left) - parseInt(getComputedStyle(link).paddingLeft, 10);
-
 				hideEmpty();
+
+				// Measured once Bootstrap has opened it (its click handler runs after this one)
+				setTimeout(function () { fit(item); }, 0);
 			};
 
 			item.addEventListener('click', open);
@@ -170,26 +173,33 @@
 		$$('#menu > li > ul .dropdown-submenu > a').forEach(function (link) {
 			link.addEventListener('mouseover', function () {
 				var dropdown = link.nextElementSibling;
+				var parent = link.closest('ul');
 
-				if (!dropdown || dropdown.tagName !== 'UL') {
+				if (!dropdown || dropdown.tagName !== 'UL' || !parent) {
 					return;
 				}
 
-				var top = link.getBoundingClientRect().top - parseInt(getComputedStyle(dropdown).paddingTop, 10) - parseInt(getComputedStyle(link).paddingTop, 10);
+				// Beside the dropdown the pointer is in, measured now that it's open, its first entry level with the link. #nav-empty is
+				// positioned in its offset parent (the bar's container), so screen coordinates are taken back to it
+				var parentBox = parent.getBoundingClientRect();
 				var rtl = document.documentElement.getAttribute('dir') === 'rtl';
+				var gap = 4;
 
 				dropdown.style.display = 'none';
 				emptyMenu.innerHTML = dropdown.innerHTML;
 				emptyMenu.style.display = 'block';
-				emptyMenu.style.top = top + 'px';
-				emptyMenu.style.left = (rtl ? position.left - (position.menuWidth - position.width) - emptyMenu.offsetWidth : position.left + position.menuWidth) + 'px';
+
+				var origin = (emptyMenu.offsetParent || document.body).getBoundingClientRect();
+				var style = getComputedStyle(emptyMenu);
+				var first = emptyMenu.querySelector('li > a');
+				var inset = first ? first.getBoundingClientRect().top - emptyMenu.getBoundingClientRect().top : 0;
+				var top = link.getBoundingClientRect().top - inset;
 
 				// Keep it on the screen, above the status bar
-				var box = emptyMenu.getBoundingClientRect();
+				top = Math.max(0, Math.min(top, window.innerHeight - height(status) - emptyMenu.offsetHeight - 8));
 
-				if (box.bottom > window.innerHeight - height(status) || box.top < 0) {
-					emptyMenu.style.top = (window.innerHeight - emptyMenu.offsetHeight - height(status)) + 'px';
-				}
+				emptyMenu.style.top = (top - origin.top - parseFloat(style.marginTop)) + 'px';
+				emptyMenu.style.left = ((rtl ? parentBox.left - gap - emptyMenu.offsetWidth : parentBox.right + gap) - origin.left - parseFloat(style.marginLeft)) + 'px';
 			});
 		});
 
