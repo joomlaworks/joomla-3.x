@@ -183,7 +183,7 @@
 				// positioned in its offset parent (the bar's container), so screen coordinates are taken back to it
 				var parentBox = parent.getBoundingClientRect();
 				var rtl = document.documentElement.getAttribute('dir') === 'rtl';
-				var gap = 4;
+				var gap = 2;
 
 				dropdown.style.display = 'none';
 				emptyMenu.innerHTML = dropdown.innerHTML;
@@ -394,10 +394,10 @@
 		}
 	};
 
-	/* --- Tab rows (and the toolbar on phones) that don't fit scroll sideways (css/template.css): the side with more gets a fade --- */
+	/* --- Tab rows (and the editor buttons, and the toolbar on phones) that don't fit scroll sideways (css/template.css): the side with more gets a fade --- */
 
 	function initTabRows() {
-		var rows = $$('.nav-tabs:not(.nav-stacked), #toolbar').filter(function (row) {
+		var rows = $$('.nav-tabs:not(.nav-stacked), #toolbar, [id="editor-xtd-buttons"]').filter(function (row) {
 			return !row.closest('.tabs-left, .tabs-right');
 		});
 
