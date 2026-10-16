@@ -691,8 +691,8 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 				continue;
 			}
 
-			// Ignore any internal fields or primary keys with value 0.
-			if (($k[0] === '_') || ($k == $key && (($v === 0) || ($v === '0'))))
+			// Ignore any internal fields or primary keys with value 0, or empty (Joomla 3.x UTD: an empty one became NULL, refused by the serial column).
+			if (($k[0] === '_') || ($k == $key && ($v === 0 || $v === '0' || $v === '')))
 			{
 				continue;
 			}
@@ -913,7 +913,8 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 			$replacedQuery = str_replace($prefix, $this->tablePrefix, $sql);
 		}
 
-		return $replacedQuery;
+		// Joomla 3.x UTD: MySQL's backtick-quoted identifiers as PostgreSQL's
+		return JDatabaseDriverPostgresql::translateBackticks($replacedQuery);
 	}
 
 	/**

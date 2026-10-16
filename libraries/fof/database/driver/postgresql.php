@@ -1111,7 +1111,27 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 	 */
 	protected function freeResult($cursor = null)
 	{
-		pg_free_result($cursor ? $cursor : $this->cursor);
+		$result = $cursor ? $cursor : $this->cursor;
+
+		/*
+		 * Joomla 3.x UTD: forget a freed cursor (as the MySQL drivers do), as debug mode frees the last one before every query; and
+		 * since PHP 8.1, freeing a result twice (e.g. one a third-party library freed) throws instead of warning.
+		 */
+		if (static::isPgsqlHandle($result))
+		{
+			try
+			{
+				pg_free_result($result);
+			}
+			catch (Error $e)
+			{
+			}
+		}
+
+		if (!$cursor || $cursor === $this->cursor)
+		{
+			$this->cursor = null;
+		}
 	}
 
 	/**
@@ -1142,8 +1162,8 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 				continue;
 			}
 
-			// Ignore any internal fields or primary keys with value 0.
-			if (($k[0] == "_") || ($k == $key && (($v === 0) || ($v === '0'))))
+			// Ignore any internal fields or primary keys with value 0, or empty (Joomla 3.x UTD: an empty one became NULL, refused by the serial column).
+			if (($k[0] == "_") || ($k == $key && ($v === 0 || $v === '0' || $v === '')))
 			{
 				continue;
 			}
@@ -1563,5 +1583,40 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 	protected static function isPgsqlHandle($handle)
 	{
 		return is_resource($handle) || $handle instanceof \PgSql\Connection || $handle instanceof \PgSql\Result;
+	}
+
+	/**
+	 * Joomla 3.x UTD: leave out the connection and the result when the driver is serialized (e.g. by the callback cache, with an
+	 * object holding the driver among its arguments): PHP 8.1+ refuses to serialize PgSql\Connection and PgSql\Result objects.
+	 *
+	 * @return  array
+	 *
+	 * @since   3.18.0
+	 */
+	public function __sleep()
+	{
+		$serializedProperties = array();
+
+		foreach ((new ReflectionClass($this))->getProperties() as $property)
+		{
+			if (!$property->isStatic() && !static::isPgsqlHandle($this->{$property->name}))
+			{
+				$serializedProperties[] = $property->name;
+			}
+		}
+
+		return $serializedProperties;
+	}
+
+	/**
+	 * Wake up after serialization: connect again when the next query runs.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public function __wakeup()
+	{
+		$this->__construct($this->options);
 	}
 }

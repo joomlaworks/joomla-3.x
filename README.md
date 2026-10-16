@@ -53,6 +53,7 @@ Summary of changes:
 **New features:**
 - The debug console opens from a button at the bottom right, showing the page's time, memory, queries and errors, as a panel with tabs instead of a block at the end of every page; redesigned, light and dark
 - Prothero, a new administrator template next to Isis: Isis' markup (so extensions made for Isis work with it), with a minimal black and white look in the style of shadcn/ui and Vercel, light and dark colour schemes (automatic by default), a choice of colours for the top menu bar and a matching login page. It's the default administrator template of new sites; existing sites keep Isis and can switch in System > Templates
+- PostgreSQL understands MySQL-style backtick-quoted names in queries, so many third-party extensions' SQL works on it unchanged
 
 **Improvements:**
 - More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. The administrator's quick icons, menu and status bar, article tags and Contacts work without them
@@ -72,6 +73,7 @@ Summary of changes:
 - Fixed PHP 8.2+/8.5 deprecation warnings in text logs (e.g. during updates), the administrator's toolbar title, registries and sessions, and SQL list fields
 - Users' and Contacts' Options, the Multilingual Status, batch copy/move of articles and Privacy's data exports no longer fail when Fields or Contacts has been uninstalled
 - "User - Joomla!" can no longer be uninstalled: without it nobody could log in
+- PostgreSQL: pages no longer fail with Debug System on, or with caching on (PHP 8.1+), and new items whose form posts an empty ID save again
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:
@@ -316,6 +318,7 @@ Joomla 3 has always had PostgreSQL drivers, but they fell behind: the main one s
 - **Core extensions:** we've gone the extra mile and added the PostgreSQL install scripts that Banners, Contacts and News Feeds never had, so these can be uninstalled and installed again on PostgreSQL too.
 - **Usernames:** checks that a username or email address isn't taken ignore case, as on MySQL, but not accents: `Àdmin` and `admin` are two users on PostgreSQL (and SQL Server), one on MySQL/MariaDB.
 - **Third-party extensions:** many only ship MySQL database scripts. Moving a site to PostgreSQL copies their tables and data, but check that the extensions themselves support PostgreSQL before relying on them.
+- **MySQL-style queries:** since 3.18, backtick-quoted names (`` `group` ``, `` c.`itemID` ``) are turned into PostgreSQL's quoted names, the most common reason extensions' queries failed on PostgreSQL. MySQL-only functions and syntax (e.g. `GROUP_CONCAT()`, `INSERT IGNORE`) still need the extension to support PostgreSQL.
 
 
 ## SQLITE SUPPORT

@@ -1180,7 +1180,27 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 	 */
 	protected function freeResult($cursor = null)
 	{
-		pg_free_result($cursor ? $cursor : $this->cursor);
+		$result = $cursor ? $cursor : $this->cursor;
+
+		/*
+		 * Joomla 3.x UTD: forget a freed cursor (as the MySQL drivers do), as debug mode frees the last one before every query; and
+		 * since PHP 8.1, freeing a result twice (e.g. one a third-party library freed) throws instead of warning.
+		 */
+		if (static::isPgsqlHandle($result))
+		{
+			try
+			{
+				pg_free_result($result);
+			}
+			catch (Error $e)
+			{
+			}
+		}
+
+		if (!$cursor || $cursor === $this->cursor)
+		{
+			$this->cursor = null;
+		}
 	}
 
 	/**
@@ -1211,8 +1231,8 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 				continue;
 			}
 
-			// Ignore any internal fields or primary keys with value 0.
-			if (($k[0] == '_') || ($k == $key && (($v === 0) || ($v === '0'))))
+			// Ignore any internal fields or primary keys with value 0, or empty (Joomla 3.x UTD: an empty one became NULL, refused by the serial column).
+			if (($k[0] == '_') || ($k == $key && ($v === 0 || $v === '0' || $v === '')))
 			{
 				continue;
 			}
@@ -1443,7 +1463,122 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 			$replacedQuery = str_replace($prefix, $this->tablePrefix, $query);
 		}
 
-		return $replacedQuery;
+		return static::translateBackticks($replacedQuery);
+	}
+
+	/**
+	 * Joomla 3.x UTD: MySQL's backtick-quoted identifiers (`group`, c.`itemID`, `#__table`) as PostgreSQL's double-quoted ones, so
+	 * extensions' MySQL-flavoured SQL keeps mixed-case names and reserved words. String literals (backslash escapes included, as
+	 * the drivers turn standard_conforming_strings off), dollar-quoted strings, quoted identifiers and comments stay as they are.
+	 *
+	 * @param   string  $sql  The SQL statement
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	public static function translateBackticks($sql)
+	{
+		if (strpos($sql, '`') === false)
+		{
+			return $sql;
+		}
+
+		$result = '';
+		$length = strlen($sql);
+		$start  = 0;
+		$i      = 0;
+
+		while ($i < $length)
+		{
+			$char = $sql[$i];
+			$next = $i + 1 < $length ? $sql[$i + 1] : '';
+
+			if ($char === '`')
+			{
+				// The identifier, a doubled backtick standing for one; a double quote in it is doubled
+				$name = '';
+
+				for ($j = $i + 1; $j < $length; $j++)
+				{
+					if ($sql[$j] === '`')
+					{
+						if ($j + 1 < $length && $sql[$j + 1] === '`')
+						{
+							$name .= '`';
+							$j++;
+							continue;
+						}
+
+						break;
+					}
+
+					$name .= $sql[$j];
+				}
+
+				// Not closed: left as it is
+				if ($j >= $length)
+				{
+					break;
+				}
+
+				$result .= substr($sql, $start, $i - $start) . '"' . str_replace('"', '""', $name) . '"';
+				$i = $start = $j + 1;
+			}
+			elseif ($char === '\'' || $char === '"')
+			{
+				for ($i++; $i < $length; $i++)
+				{
+					if ($char === '\'' && $sql[$i] === '\\')
+					{
+						$i++;
+					}
+					elseif ($sql[$i] === $char)
+					{
+						// A doubled quote stands for one: the next pass of the loop starts a new quoted part
+						$i++;
+						break;
+					}
+				}
+			}
+			elseif ($char === '-' && $next === '-')
+			{
+				$end = strpos($sql, "\n", $i);
+				$i   = $end === false ? $length : $end + 1;
+			}
+			elseif ($char === '/' && $next === '*')
+			{
+				// Block comments nest in PostgreSQL
+				$depth = 1;
+
+				for ($i += 2; $i < $length && $depth; $i++)
+				{
+					if ($sql[$i] === '/' && $i + 1 < $length && $sql[$i + 1] === '*')
+					{
+						$depth++;
+						$i++;
+					}
+					elseif ($sql[$i] === '*' && $i + 1 < $length && $sql[$i + 1] === '/')
+					{
+						$depth--;
+						$i++;
+					}
+				}
+			}
+			elseif ($char === '$' && ($i === 0 || !preg_match('/[A-Za-z0-9_$\x80-\xff]/', $sql[$i - 1]))
+				&& preg_match('/\G\$(?:[A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*)?\$/', $sql, $match, 0, $i))
+			{
+				// A dollar-quoted string ($$...$$, $tag$...$tag$)
+				$end = strpos($sql, $match[0], $i + strlen($match[0]));
+				$i   = $end === false ? $length : $end + strlen($match[0]);
+			}
+			else
+			{
+				$i++;
+			}
+		}
+
+		return $result . substr($sql, $start);
 	}
 
 	/**
@@ -1693,5 +1828,40 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 	protected static function isPgsqlHandle($handle)
 	{
 		return is_resource($handle) || $handle instanceof \PgSql\Connection || $handle instanceof \PgSql\Result;
+	}
+
+	/**
+	 * Joomla 3.x UTD: leave out the connection and the result when the driver is serialized (e.g. by the callback cache, with an
+	 * object holding the driver among its arguments): PHP 8.1+ refuses to serialize PgSql\Connection and PgSql\Result objects.
+	 *
+	 * @return  array
+	 *
+	 * @since   3.18.0
+	 */
+	public function __sleep()
+	{
+		$serializedProperties = array();
+
+		foreach ((new ReflectionClass($this))->getProperties() as $property)
+		{
+			if (!$property->isStatic() && !static::isPgsqlHandle($this->{$property->name}))
+			{
+				$serializedProperties[] = $property->name;
+			}
+		}
+
+		return $serializedProperties;
+	}
+
+	/**
+	 * Wake up after serialization: connect again when the next query runs.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public function __wakeup()
+	{
+		$this->__construct($this->options);
 	}
 }
