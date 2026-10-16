@@ -4038,6 +4038,16 @@ class JoomlaInstallerScript
 		// SQLite stores all text as UTF-8, so there is nothing to convert; record it as done, for Extensions: Database
 		if ($db instanceof JDatabaseDriverMysqlonsqlite)
 		{
+			// Collations recorded wrongly before 3.18 (they decide those of a copy on MySQL)
+			try
+			{
+				$db->repairCollations();
+			}
+			catch (Exception $e)
+			{
+				JLog::add(JText::sprintf('JLIB_DATABASE_ERROR_FUNCTION_FAILED', $e->getCode(), $e->getMessage()), JLog::WARNING, 'Update');
+			}
+
 			$db->setQuery('UPDATE ' . $db->quoteName('#__utf8_conversion') . ' SET ' . $db->quoteName('converted') . ' = 5')->execute();
 
 			return;

@@ -7435,6 +7435,12 @@ class WP_MySQL_On_SQLite extends PDO {
 			$sql  = '  ';
 			$sql .= $this->quote_mysql_identifier( $column['COLUMN_NAME'] );
 			$sql .= ' ' . $column['COLUMN_TYPE'];
+
+			// Joomla 3.x UTD patch: a column's own charset and collation, where they aren't the table's (as MySQL writes them);
+			// left out, a copy of the table gave every column the table's collation.
+			if ( null !== $column['COLLATION_NAME'] && $column['COLLATION_NAME'] !== $table_info['TABLE_COLLATION'] ) {
+				$sql .= sprintf( ' CHARACTER SET %s COLLATE %s', $column['CHARACTER_SET_NAME'], $column['COLLATION_NAME'] );
+			}
 			if ( 'NO' === $column['IS_NULLABLE'] ) {
 				$sql .= ' NOT NULL';
 			} elseif ( 'timestamp' === $column['COLUMN_TYPE'] ) {

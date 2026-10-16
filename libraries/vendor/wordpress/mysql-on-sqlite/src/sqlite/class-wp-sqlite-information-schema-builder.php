@@ -559,7 +559,8 @@ class WP_SQLite_Information_Schema_Builder {
 				$table_name,
 				$column_name,
 				$column_node,
-				$column_position
+				$column_position,
+				$table_collation // Joomla 3.x UTD patch
 			);
 
 			try {
@@ -865,7 +866,8 @@ class WP_SQLite_Information_Schema_Builder {
 			array( self::SAVED_DATABASE_NAME, $table_name )
 		)->fetchColumn();
 
-		$column_data = $this->extract_column_data( $table_name, $column_name, $node, (int) $position + 1 );
+		// Joomla 3.x UTD patch: the table's collation for a column without its own
+		$column_data = $this->extract_column_data( $table_name, $column_name, $node, (int) $position + 1, $this->get_recorded_table_collation( $table_is_temporary, $table_name ) );
 		try {
 			$this->insert_values(
 				$this->get_table_name( $table_is_temporary, 'columns' ),
@@ -915,7 +917,8 @@ class WP_SQLite_Information_Schema_Builder {
 		string $new_column_name,
 		WP_Parser_Node $node
 	): void {
-		$column_data = $this->extract_column_data( $table_name, $new_column_name, $node, 0 );
+		// Joomla 3.x UTD patch: the table's collation for a column without its own
+		$column_data = $this->extract_column_data( $table_name, $new_column_name, $node, 0, $this->get_recorded_table_collation( $table_is_temporary, $table_name ) );
 		unset( $column_data['ordinal_position'] );
 		$this->update_values(
 			$this->get_table_name( $table_is_temporary, 'columns' ),
@@ -1504,7 +1507,7 @@ class WP_SQLite_Information_Schema_Builder {
 	 * @param  int            $position    The ordinal position of the column in the table.
 	 * @return array                       Column data for the information schema.
 	 */
-	private function extract_column_data( string $table_name, string $column_name, WP_Parser_Node $node, int $position ): array {
+	private function extract_column_data( string $table_name, string $column_name, WP_Parser_Node $node, int $position, ?string $table_collation = null ): array {
 		list ( $data_type, $column_type ) = $this->get_column_data_types( $node );
 
 		$default  = $this->get_column_default( $node, $data_type, $column_name );
@@ -1513,7 +1516,7 @@ class WP_SQLite_Information_Schema_Builder {
 		$extra    = $this->get_column_extra( $node );
 		$comment  = $this->get_column_comment( $node );
 
-		list ( $charset, $collation )        = $this->get_column_charset_and_collation( $node, $data_type );
+		list ( $charset, $collation )        = $this->get_column_charset_and_collation( $node, $data_type, $table_collation );
 		list ( $char_length, $octet_length ) = $this->get_column_lengths( $node, $data_type, $charset );
 		list ( $precision, $scale )          = $this->get_column_numeric_attributes( $node, $data_type );
 		$datetime_precision                  = $this->get_column_datetime_precision( $node, $data_type );
@@ -2017,12 +2020,51 @@ class WP_SQLite_Information_Schema_Builder {
 	 * @return string               The table collation as stored in information schema.
 	 */
 	private function get_table_collation( WP_Parser_Node $node ): string {
-		$collate_node = $node->get_first_descendant_node( 'collationName' );
-		if ( null === $collate_node ) {
-			// @TODO: Use default DB collation or DB_CHARSET & DB_COLLATE.
-			return 'utf8mb4_0900_ai_ci';
+		/*
+		 * Joomla 3.x UTD patch: only the table's own options count (DEFAULT COLLATE, else DEFAULT CHARSET's default collation).
+		 * The first collation anywhere in the statement was taken, often a column's (`alias` ... COLLATE utf8mb4_bin), which
+		 * then became the table's, and its other columns' once copied to MySQL.
+		 */
+		$charset = null;
+		foreach ( $node->get_descendant_nodes( 'createTableOption' ) as $option ) {
+			$collation_node = $option->get_first_child_node( 'defaultCollation' );
+			if ( null !== $collation_node && null !== $collation_node->get_first_child_node( 'collationName' ) ) {
+				return strtolower( $this->get_value( $collation_node->get_first_child_node( 'collationName' ) ) );
+			}
+
+			$charset_node = $option->get_first_child_node( 'defaultCharset' );
+			if ( null !== $charset_node && null !== $charset_node->get_first_child_node( 'charsetName' ) ) {
+				$charset = strtolower( $this->get_value( $charset_node->get_first_child_node( 'charsetName' ) ) );
+			}
 		}
-		return strtolower( $this->get_value( $collate_node ) );
+
+		if ( 'utf8mb3' === $charset ) {
+			$charset = 'utf8';
+		}
+
+		if ( null !== $charset && isset( self::CHARSET_DEFAULT_COLLATION_MAP[ $charset ] ) ) {
+			return self::CHARSET_DEFAULT_COLLATION_MAP[ $charset ];
+		}
+
+		// @TODO: Use default DB collation or DB_CHARSET & DB_COLLATE.
+		return 'utf8mb4_0900_ai_ci';
+	}
+
+	/**
+	 * Joomla 3.x UTD patch: the collation recorded for a table, which its new or changed columns without their own take.
+	 *
+	 * @param  bool   $table_is_temporary Whether the table is temporary.
+	 * @param  string $table_name         The table name.
+	 * @return string|null                The table collation, or null when the table isn't recorded.
+	 */
+	private function get_recorded_table_collation( bool $table_is_temporary, string $table_name ): ?string {
+		$collation = $this->connection->query(
+			'SELECT table_collation FROM ' . $this->connection->quote_identifier( $this->get_table_name( $table_is_temporary, 'tables' ) )
+			. ' WHERE table_schema = ? AND table_name = ?',
+			array( self::SAVED_DATABASE_NAME, $table_name )
+		)->fetchColumn();
+
+		return false === $collation ? null : (string) $collation;
 	}
 
 	/**
@@ -2446,7 +2488,7 @@ class WP_SQLite_Information_Schema_Builder {
 	 * @param  string         $data_type         The column data type as stored in information schema.
 	 * @return array{ string|null, string|null } The column charset and collation as stored in information schema.
 	 */
-	private function get_column_charset_and_collation( WP_Parser_Node $node, string $data_type ): array {
+	private function get_column_charset_and_collation( WP_Parser_Node $node, string $data_type, ?string $table_collation = null ): array {
 		if ( ! (
 			'char' === $data_type
 			|| 'varchar' === $data_type
@@ -2508,6 +2550,18 @@ class WP_SQLite_Information_Schema_Builder {
 		}
 
 		// Defaults.
+		// Joomla 3.x UTD patch: the table's charset and collation, as in MySQL (a hardcoded utf8mb4_0900_ai_ci before).
+		if ( null === $charset && null === $collation && null !== $table_collation ) {
+			$position = strpos( $table_collation, '_' );
+			$charset  = false === $position ? $table_collation : substr( $table_collation, 0, $position );
+			if ( 'utf8mb3' === $charset ) {
+				$charset = 'utf8';
+			}
+			if ( ! $is_binary ) {
+				$collation = $table_collation;
+			}
+		}
+
 		// @TODO: These are hardcoded now. We should get them from table/DB.
 		if ( null === $charset && null === $collation ) {
 			$charset = 'utf8mb4';

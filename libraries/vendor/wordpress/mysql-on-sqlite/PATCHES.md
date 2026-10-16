@@ -2,7 +2,7 @@
 
 `src/` is the `packages/mysql-on-sqlite/src` folder of [WordPress/sqlite-database-integration](https://github.com/WordPress/sqlite-database-integration) (GPL-2.0-or-later), version 3.0.2, commit `4163f69f3d543ec7d6085bbb0c4e0c36b36c0156`. Joomla 3.x UTD's SQLite database driver (`libraries/joomla/database/driver/mysqlonsqlite.php`) runs MySQL SQL through it.
 
-It is unmodified except for the patches below, all in `src/sqlite/class-wp-mysql-on-sqlite.php` and marked "Joomla 3.x UTD patch". Reapply them when updating the package, unless upstream has fixed the same cases.
+It is unmodified except for the patches below, in `src/sqlite/class-wp-mysql-on-sqlite.php` (1–7, 9) and `src/sqlite/class-wp-sqlite-information-schema-builder.php` (8), each marked "Joomla 3.x UTD patch". Reapply them when updating the package, unless upstream has fixed the same cases.
 
 1. **`querySpecOption` / `selectOption`:** drop MySQL-only SELECT hints (`STRAIGHT_JOIN`, `SQL_NO_CACHE`, `SQL_CACHE`, `HIGH_PRIORITY`, ...), keeping `ALL` and `DISTINCT`. SQLite failed with a syntax error on them.
 2. **`innerJoinType`:** translate `a STRAIGHT_JOIN b` (an inner join with a fixed join order) to `JOIN`.
@@ -12,6 +12,10 @@ It is unmodified except for the patches below, all in `src/sqlite/class-wp-mysql
 6. **`DATE_ADD()` / `DATE_SUB()`:** a negative interval (`DATE_ADD(d, INTERVAL -3600 SECOND)`, which MySQL takes) gave the SQLite modifier `'+-3600 SECOND'`, which SQLite rejects, so the result was NULL. The signed value is passed as it is (negated for `DATE_SUB()`).
 
 7. **`RIGHT()`:** passed on as it is, but before SQLite 3.39.0 `RIGHT` is a join keyword only, so `RIGHT(` was a syntax error. Written as `"RIGHT"(...)`, a quoted identifier on every version, calling the driver's registered `RIGHT()`.
+8. **Collations in the information schema** (still unfixed upstream in 3.1.0): `get_table_collation()` took the first `collationName` anywhere in a CREATE TABLE statement, often a column's (Joomla's `alias` columns are `utf8mb4_bin`), so the table was recorded with it; it now reads the table's own `DEFAULT COLLATE`, else its `DEFAULT CHARSET`'s default collation. Columns without a charset or collation of their own (`get_column_charset_and_collation()`, through `extract_column_data()`) take the table's, as in MySQL, instead of a hardcoded `utf8mb4_0900_ai_ci`, also when added or changed by ALTER TABLE (`get_recorded_table_collation()`). `BINARY` gives the table charset's `_bin`.
+9. **SHOW CREATE TABLE** (`get_mysql_create_table_statement()`): writes `CHARACTER SET x COLLATE y` for columns whose collation isn't the table's, as MySQL does. Without it, a copy of a table on MySQL (`database:export`, `database:convert`) gave every column the table's collation.
+
+Sites whose database was created before patches 8 and 9 have the wrong collations recorded: `JDatabaseDriverMysqlonsqlite::repairCollations()` fixes them (run by the update script).
 
 Known gaps on older SQLite (the package runs from 3.37.0; unused by Joomla core): `RIGHT JOIN`/`FULL JOIN` need SQLite 3.39.0, and `GROUP_CONCAT(... ORDER BY ...)` ignores the ORDER BY before 3.44.0.
 

@@ -74,6 +74,7 @@ Summary of changes:
 - Users' and Contacts' Options, the Multilingual Status, batch copy/move of articles and Privacy's data exports no longer fail when Fields or Contacts has been uninstalled
 - "User - Joomla!" can no longer be uninstalled: without it nobody could log in
 - PostgreSQL: pages no longer fail with Debug System on, or with caching on (PHP 8.1+), and new items whose form posts an empty ID save again
+- SQLite: sites moved to MySQL no longer get case-sensitive titles: the collations of tables and columns are recorded correctly, and updating repairs those of existing sites
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:

@@ -140,6 +140,79 @@ class JDatabaseDriverMysqlonsqlite extends JDatabaseDriverPdomysql
 	}
 
 	/**
+	 * Repair the collations the translation layer recorded before 3.18 (its "information schema", which SHOW CREATE TABLE, SHOW
+	 * FULL COLUMNS and copies to MySQL read): a table got the first collation in its CREATE TABLE statement, often a column's
+	 * (`alias` ... COLLATE utf8mb4_bin), and its columns without one of their own utf8mb4_0900_ai_ci instead of the table's.
+	 * Copied to MySQL, such tables compared text case-sensitively. A table needs it while it has a column of utf8mb4_0900_ai_ci
+	 * and a collation of its own: when that came from its first column with a collation, it gets Joomla's (utf8mb4_unicode_ci),
+	 * and those columns the table's. Safe to run again: repaired tables no longer match.
+	 *
+	 * @return  integer  The number of tables repaired
+	 *
+	 * @since   3.18.0
+	 */
+	public function repairCollations()
+	{
+		$this->connect();
+
+		$pdo     = $this->connection->get_sqlite_pdo();
+		$tables  = WP_MySQL_On_SQLite::RESERVED_PREFIX . 'mysql_information_schema_tables';
+		$columns = WP_MySQL_On_SQLite::RESERVED_PREFIX . 'mysql_information_schema_columns';
+		$default = 'utf8mb4_0900_ai_ci';
+
+		if (!$pdo->query("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = " . $pdo->quote($columns))->fetchColumn())
+		{
+			return 0;
+		}
+
+		$found = $pdo->query(
+			'SELECT t.table_name AS name, t.table_collation AS collation,'
+			. ' (SELECT c.collation_name FROM "' . $columns . '" c WHERE c.table_schema = t.table_schema AND c.table_name = t.table_name'
+			. ' AND c.collation_name IS NOT NULL AND c.collation_name <> \'' . $default . '\' ORDER BY c.ordinal_position LIMIT 1) AS first'
+			. ' FROM "' . $tables . '" t WHERE t.table_collation <> \'' . $default . '\' AND EXISTS (SELECT 1 FROM "' . $columns . '" c'
+			. ' WHERE c.table_schema = t.table_schema AND c.table_name = t.table_name AND c.collation_name = \'' . $default . '\')'
+		)->fetchAll(PDO::FETCH_ASSOC);
+
+		if (!$found)
+		{
+			return 0;
+		}
+
+		$updateTable  = $pdo->prepare('UPDATE "' . $tables . '" SET table_collation = ? WHERE table_name = ?');
+		$updateColumn = $pdo->prepare('UPDATE "' . $columns . '" SET collation_name = ?, character_set_name = ? WHERE table_name = ? AND collation_name = ?');
+
+		$pdo->beginTransaction();
+
+		try
+		{
+			foreach ($found as $table)
+			{
+				$collation = strtolower($table['collation']);
+				$charset   = strpos($collation, '_') === false ? $collation : substr($collation, 0, strpos($collation, '_'));
+
+				// Taken from a column: the table's own default is unknown, so Joomla's
+				if ($table['first'] !== null && strtolower($table['first']) === $collation && in_array($charset, array('utf8mb4', 'utf8'), true))
+				{
+					$collation = $charset . '_unicode_ci';
+				}
+
+				$updateTable->execute(array($collation, $table['name']));
+				$updateColumn->execute(array($collation, $charset, $table['name'], $default));
+			}
+
+			$pdo->commit();
+		}
+		catch (Exception $e)
+		{
+			$pdo->rollBack();
+
+			throw new RuntimeException($e->getMessage(), (int) $e->getCode(), $e);
+		}
+
+		return count($found);
+	}
+
+	/**
 	 * Optimise the database file: update the query planner's statistics (ANALYZE) and, unless only that is asked for, rebuild the
 	 * file without its free pages (VACUUM). Native SQLite statements, which the MySQL translation layer doesn't know. VACUUM needs
 	 * a moment with no other writes; other requests wait for it (busy timeout).
