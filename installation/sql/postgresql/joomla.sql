@@ -689,6 +689,7 @@ INSERT INTO "#__extensions" ("extension_id", "package_id", "name", "type", "elem
 (511, 0, 'rookwood', 'template', 'rookwood', '', 0, 1, 1, 0, '', '{"siteName":"","defaultTheme":"dark","footerHeadline":"","footerEmail":"","footerText":"","social_x":"","social_linkedin":"","social_instagram":"","social_github":"","social_dribbble":"","social_rss":""}', '', '', 0, '1970-01-01 00:00:00', 0, 0),
 (512, 0, 'prothero', 'template', 'prothero', '', 1, 1, 1, 0, '', '{"colorScheme":"auto","logoFile":""}', '', '', 0, '1970-01-01 00:00:00', 0, 0),
 (513, 0, 'plg_system_structureddata', 'plugin', 'structureddata', 'system', 0, 1, 1, 0, '', '{}', '', '', 0, '1970-01-01 00:00:00', 0, 0),
+(514, 0, 'plg_editors_easymde', 'plugin', 'easymde', 'editors', 0, 1, 1, 0, '', '{"height":"500px","spellcheck":"1","upload":"1","folder":"uploads"}', '', '', 0, '1970-01-01 00:00:00', 5, 0),
 (600, 802, 'English (en-GB)', 'language', 'en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '1970-01-01 00:00:00', 0, 0),
 (601, 802, 'English (en-GB)', 'language', 'en-GB', '', 1, 1, 1, 1, '', '', '', '', 0, '1970-01-01 00:00:00', 0, 0),
 (700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '', '', 0, '1970-01-01 00:00:00', 0, 0),

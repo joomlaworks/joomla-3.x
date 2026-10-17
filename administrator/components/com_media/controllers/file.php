@@ -136,6 +136,10 @@ class MediaControllerFile extends JControllerLegacy
 
 			$file['filepath'] = JPath::clean(implode(DIRECTORY_SEPARATOR, array(COM_MEDIA_BASE, $this->folder, $file['name'])));
 
+			// A file of the same name is kept: this one gets the time added to its name
+			$file['filepath'] = $mediaHelper->getUniqueFilePath($file['filepath']);
+			$file['name']     = basename($file['filepath']);
+
 			if (($file['error'] == 1)
 				|| ($uploadMaxSize > 0 && $file['size'] > $uploadMaxSize)
 				|| ($uploadMaxFileSize > 0 && $file['size'] > $uploadMaxFileSize))

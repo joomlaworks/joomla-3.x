@@ -177,6 +177,7 @@ Short notes; the CHANGELOG has the details.
 - **Tags may be uninstalled:** `TagsHelper::isAvailable()` (`Joomla\CMS\Helper\TagsHelper`) tells whether the Tags component is there. Code using the tags tables directly should check it first.
 - **Comparing text as MySQL does:** `UserHelper::getSameTextCondition($db, $column, $value)` builds a SQL condition matching `$value` the way MySQL's default collation compares text (case-insensitively), also on PostgreSQL, SQL Server and SQLite. Use it for "is this name already taken" checks.
 - **PostgreSQL and backticks:** both PostgreSQL drivers turn MySQL-style `` `name` `` quoting into `"name"` outside string literals (`JDatabaseDriverPostgresql::translateBackticks()`), so queries written for MySQL run there.
+- **Uploads that never replace a file:** `(new JHelperMedia)->getUniqueFilePath($path)` returns `$path` when it's free, else the path with the time added to the name (`photo-20261018-143502.jpg`, then `-2`, `-3`...). The Media Manager's upload controllers use it.
 - **Writing PHP configuration files:** the registry's PHP format takes a `sort` option, `$registry->toString('PHP', array('class' => 'JConfig', 'sort' => true))`, which writes the properties in alphabetical order. `configuration.php` is written this way.
 
 ## COMPATIBILITY WITH STOCK JOOMLA 3, JOOMLA 4 AND LATER

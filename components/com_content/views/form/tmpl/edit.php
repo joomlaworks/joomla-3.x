@@ -22,11 +22,12 @@ $this->ignore_fieldsets = array('image-intro', 'image-full', 'jmetadata', 'item_
 $params = $this->state->get('params');
 
 // This checks if the editor config options have ever been saved. If they haven't they will fall back to the original settings.
-$editoroptions = isset($params->show_publishing_options);
+// (A Registry: isset() and assigning a property never reached its values, and the assignment is deprecated since PHP 8.2)
+$editoroptions = $params->exists('show_publishing_options');
 
 if (!$editoroptions)
 {
-	$params->show_urls_images_frontend = '0';
+	$params->set('show_urls_images_frontend', '0');
 }
 
 JFactory::getDocument()->addScriptDeclaration("

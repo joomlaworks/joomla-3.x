@@ -104,6 +104,10 @@ class MediaControllerFile extends JControllerLegacy
 
 			$filepath = JPath::clean($files['final']);
 
+			// A file of the same name is kept: this one gets the time added to its name
+			$filepath     = $mediaHelper->getUniqueFilePath($filepath);
+			$file['name'] = basename($filepath);
+
 			if (!$mediaHelper->canUpload($file, 'com_media')
 				|| strpos(realpath($fileparts['dirname']), JPath::clean(realpath(COM_MEDIA_BASE))) !== 0)
 			{

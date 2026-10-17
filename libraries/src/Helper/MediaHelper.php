@@ -175,6 +175,38 @@ class MediaHelper
 	}
 
 	/**
+	 * A path for an uploaded file which doesn't replace another: the path itself when it's free, else with the time added to
+	 * the name (photo.jpg becomes photo-20261018-143502.jpg), and a number after that if even that is taken.
+	 *
+	 * @param   string  $path  The intended path
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	public function getUniqueFilePath($path)
+	{
+		if (!is_file($path))
+		{
+			return $path;
+		}
+
+		$folder    = dirname($path);
+		$name      = pathinfo($path, PATHINFO_FILENAME);
+		$extension = pathinfo($path, PATHINFO_EXTENSION);
+		$suffix    = $extension !== '' ? '.' . $extension : '';
+		$base      = $name . '-' . date('Ymd-His');
+		$candidate = $folder . DIRECTORY_SEPARATOR . $base . $suffix;
+
+		for ($i = 2; is_file($candidate) && $i < 1000; $i++)
+		{
+			$candidate = $folder . DIRECTORY_SEPARATOR . $base . '-' . $i . $suffix;
+		}
+
+		return $candidate;
+	}
+
+	/**
 	 * Checks if the file can be uploaded
 	 *
 	 * @param   array   $file                File information

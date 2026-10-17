@@ -57,6 +57,7 @@ Summary of changes:
 - PostgreSQL understands MySQL-style backtick-quoted names in queries, so many third-party extensions' SQL works on it unchanged
 - "System - Structured Data & Social Tags": Google structured data (JSON-LD), Open Graph and X (Twitter) card tags for every page, with any template. Articles (with their full text and images), categories, tags and search results describe themselves, and search engines may show large image previews (Google Discover); every other page uses the site's name, description, image, publisher and profiles. Articles' structured data type (Article, News Article, Blog Post, Review, Product, Recipe...) is set for the whole site and can be changed per category and tag. Extensions with tags of their own (e.g. K2) keep them, and can add to these
 - For developers: `addPreconnect()`, `addDnsPrefetch()` and `addPreload()` on the HTML document, written right after the title (preconnects, then dns-prefetches, then preloads) and also sent as HTTP `Link:` headers; documented in the new [API-GUIDE.md](API-GUIDE.md)
+- "Editor - EasyMDE (Markdown)": write in Markdown, with preview and side by side, and drop or paste images, videos and documents to upload them; content is still saved as HTML (nothing Markdown can't express is lost), so articles work everywhere as before
 
 **Improvements:**
 - More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. The administrator's quick icons, menu and status bar, article tags and Contacts work without them
@@ -78,6 +79,7 @@ Summary of changes:
 - Hammond, Finch and Rookwood preload their stylesheets, script and the article's main image, and connect early to X and YouTube when an article embeds them, also through HTTP `Link:` headers (103 Early Hints behind Cloudflare and similar CDNs)
 - CodeMirror 5.65.21 (was 5.60.0, from 2021), with fixes for scrolling and clicks in current browsers
 - Media Manager: WebP, AVIF, MP4, WebM, MOV, MP3, M4A, WAV, CSV, RTF and current Office files can be uploaded by default (SVG deliberately not), the type lists are easy-to-edit textareas, and every file type gets an icon
+- Media Manager: an upload with a name already taken is saved with the time added to its name instead of failing
 
 **Security fixes:**
 - Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors without access (with "Show Unauthorised Links" on); they get the intro text and a link to log in, as with Joomla's own layout
@@ -89,7 +91,7 @@ Summary of changes:
 - Smart Search: full reindexes no longer stop with "The table '#__finder_tokens' is full" on MySQL/MariaDB's default settings, the command line indexer no longer stops on content with modules in it, and Advanced Search's date range works with only a start or an end date
 - Articles with "Link Author" no longer fail when Contacts is uninstalled or disabled
 - Sites updating from before 3.12 keep Beez 3 when they use it (as a third-party template); a site whose template files are missing falls back to another template instead of failing
-- Fixed PHP 8.1+/8.5 deprecation warnings in text logs (e.g. during updates), Joomla Update's extraction (which flooded the server's error log), database iterators, the administrator's toolbar title, registries and sessions, and SQL list fields
+- Fixed PHP 8.1+/8.5 deprecation warnings in text logs (e.g. during updates), the front-end article form, Joomla Update's extraction (which flooded the server's error log), database iterators, the administrator's toolbar title, registries and sessions, and SQL list fields
 - Users' and Contacts' Options, the Multilingual Status, batch copy/move of articles and Privacy's data exports no longer fail when Fields or Contacts has been uninstalled
 - "User - Joomla!" can no longer be uninstalled: without it nobody could log in
 - Sample Data: installing a set after an interrupted install no longer hides every module of the site (and a safeguard in core prevents it anywhere); deleting a menu item no longer hides modules shown on all pages except it
