@@ -944,6 +944,89 @@ class JoomlaInstallerScript
 	public $restoreCoreExtensions = false;
 
 	/**
+	 * Whether a one-time update step has run on this site. The steps are recorded in the custom data of Joomla's own files
+	 * extension (files_joomla), which updates never reset, so each runs once on every site, whichever version it updates from
+	 * (development builds included); new sites have them recorded by the install SQL.
+	 *
+	 * @param   string  $step  The step's name
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	private function isUpdateStepDone($step)
+	{
+		return in_array($step, $this->getUpdateSteps(), true);
+	}
+
+	/**
+	 * Records a one-time update step as done.
+	 *
+	 * @param   string  $step  The step's name
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	private function markUpdateStepDone($step)
+	{
+		$db    = JFactory::getDbo();
+		$steps = $this->getUpdateSteps();
+
+		if (in_array($step, $steps, true))
+		{
+			return;
+		}
+
+		$data = json_decode((string) $this->getJoomlaCustomData(), true);
+		$data = is_array($data) ? $data : array();
+
+		$data['updateSteps'] = array_values(array_merge($steps, array($step)));
+
+		$db->setQuery(
+			$db->getQuery(true)
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('custom_data') . ' = ' . $db->quote(json_encode($data)))
+				->where($db->quoteName('type') . ' = ' . $db->quote('file'))
+				->where($db->quoteName('element') . ' = ' . $db->quote('joomla'))
+		)->execute();
+	}
+
+	/**
+	 * The one-time update steps done on this site.
+	 *
+	 * @return  string[]
+	 *
+	 * @since   3.18.0
+	 */
+	private function getUpdateSteps()
+	{
+		$data = json_decode((string) $this->getJoomlaCustomData(), true);
+
+		return is_array($data) && isset($data['updateSteps']) && is_array($data['updateSteps']) ? $data['updateSteps'] : array();
+	}
+
+	/**
+	 * The custom data of Joomla's own files extension.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	private function getJoomlaCustomData()
+	{
+		$db = JFactory::getDbo();
+
+		return (string) $db->setQuery(
+			$db->getQuery(true)
+				->select($db->quoteName('custom_data'))
+				->from($db->quoteName('#__extensions'))
+				->where($db->quoteName('type') . ' = ' . $db->quote('file'))
+				->where($db->quoteName('element') . ' = ' . $db->quote('joomla'))
+		)->loadResult();
+	}
+
+	/**
 	 * Makes TinyMCE 8 the site's default editor, once, when a site updates to 3.18: only on sites still using the old stock
 	 * default (TinyMCE 4, "tinymce", now "Editor - TinyMCE (legacy)"), and only when TinyMCE 8 is installed and enabled. A
 	 * site which chose another editor (CodeMirror, None, a third-party one) keeps it, and so do users who chose one in their
@@ -955,7 +1038,7 @@ class JoomlaInstallerScript
 	 */
 	protected function switchDefaultEditor()
 	{
-		if (!empty($this->fromVersion) && version_compare($this->fromVersion, '3.18.0', '>='))
+		if ($this->isUpdateStepDone('default-editor'))
 		{
 			return;
 		}
@@ -971,8 +1054,11 @@ class JoomlaInstallerScript
 
 			$config = new JRegistry(new JConfig);
 
+			// Decided once: a site on another editor keeps it, also if it later picks TinyMCE 4
 			if ($config->get('editor') !== 'tinymce')
 			{
+				$this->markUpdateStepDone('default-editor');
+
 				return;
 			}
 
@@ -1016,6 +1102,7 @@ class JoomlaInstallerScript
 			if ($written)
 			{
 				JFactory::getConfig()->set('editor', 'tinymce_latest');
+				$this->markUpdateStepDone('default-editor');
 			}
 		}
 		catch (Exception $e)
@@ -1036,7 +1123,7 @@ class JoomlaInstallerScript
 	 */
 	protected function updateMediaUploadDefaults()
 	{
-		if (!empty($this->fromVersion) && version_compare($this->fromVersion, '3.18.0', '>='))
+		if ($this->isUpdateStepDone('media-upload-defaults'))
 		{
 			return;
 		}
@@ -1076,6 +1163,8 @@ class JoomlaInstallerScript
 					->set($db->quoteName('params') . ' = ' . $db->quote($params->toString()))
 					->where($db->quoteName('extension_id') . ' = ' . (int) $row->extension_id)
 			)->execute();
+
+			$this->markUpdateStepDone('media-upload-defaults');
 		}
 		catch (Exception $e)
 		{

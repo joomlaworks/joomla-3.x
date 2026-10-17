@@ -907,7 +907,7 @@ INSERT INTO "#__extensions" ("extension_id", "package_id", "name", "type", "elem
 (514, 0, 'plg_editors_easymde', 'plugin', 'easymde', 'editors', 0, 1, 1, 0, '', '{"height":"500px","spellcheck":"1","upload":"1","folder":"uploads"}', '', '', 0, '1900-01-01 00:00:00', 5, 0),
 (600, 802, 'English (en-GB)', 'language', 'en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (601, 802, 'English (en-GB)', 'language', 'en-GB', '', 1, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
-(700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
+(700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '{"updateSteps":["media-upload-defaults","default-editor"]}', '', 0, '1900-01-01 00:00:00', 0, 0),
 (802, 0, 'English (en-GB) Language Pack', 'package', 'pkg_en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0);
 
 SET IDENTITY_INSERT "#__extensions" OFF;
