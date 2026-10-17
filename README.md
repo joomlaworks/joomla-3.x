@@ -72,7 +72,7 @@ Summary of changes:
 - The News sample data has a For Subscribers category of 20 registered-only articles (guests see their intro and a link to log in)
 - Sample data articles have a few dozen views each instead of thousands
 - Dashboard modules carry their name and ID as classes (e.g. `mod-k2-dashboard module-id-12`), so each can be styled on its own
-- New sites no longer ship stock Joomla's unused images (`images/banners`, `images/headers`, two logos; existing sites keep theirs), and get an empty `images/uploads` folder for the site's own images
+- New sites no longer ship stock Joomla's unused images (the sample banners, `images/headers`, two logos; existing sites keep theirs), and get an empty `images/uploads` folder for the site's own images
 - `configuration.php` lists its settings alphabetically, so they're easier to find
 
 **Security fixes:**
