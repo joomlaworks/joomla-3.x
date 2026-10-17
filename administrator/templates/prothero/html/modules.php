@@ -56,6 +56,9 @@ function modChrome_well($module, &$params, &$attribs)
 		$headerClass   = $params->get('header_class');
 		$headerClass   = $headerClass ? ' ' . htmlspecialchars($headerClass, ENT_COMPAT, 'UTF-8') : '';
 
+		// The module's name (underscores as dashes) and ID, so a dashboard module can be styled on its own
+		$moduleClass .= ' ' . htmlspecialchars(str_replace('_', '-', (string) $module->module), ENT_COMPAT, 'UTF-8') . ' module-id-' . (int) $module->id;
+
 		echo '<' . $moduleTag . ' class="well well-small' . $moduleClass . '">';
 
 			if ($module->showtitle)

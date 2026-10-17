@@ -71,6 +71,7 @@ Summary of changes:
 - Removed the "Authentication - GMail" plugin (Google stopped accepting its password sign-in in 2022), the "System - P3P Policy" plugin, joomla.org's update site for the Joomla Update component, Global Configuration's Memcache options, unused web service libraries and polyfills for PHP versions below 7.1
 - The News sample data has a For Subscribers category of 20 registered-only articles (guests see their intro and a link to log in)
 - Sample data articles have a few dozen views each instead of thousands
+- Dashboard modules carry their name and ID as classes (e.g. `mod-k2-dashboard module-id-12`), so each can be styled on its own
 - `configuration.php` lists its settings alphabetically, so they're easier to find
 
 **Security fixes:**
