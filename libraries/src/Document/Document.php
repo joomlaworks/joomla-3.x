@@ -584,7 +584,7 @@ class Document
 		{
 			$this->_script[strtolower($type)] = $content;
 		}
-		else
+		elseif (!$this->hasDeclaration($this->_script[strtolower($type)], $content))
 		{
 			$this->_script[strtolower($type)] .= chr(13) . $content;
 		}
@@ -760,6 +760,24 @@ class Document
 	}
 
 	/**
+	 * Whether a declaration was already added: the same text again (e.g. from a loop) is kept once. Declarations are joined
+	 * with chr(13), so only a whole one counts, never a part of a longer one.
+	 *
+	 * @param   string  $declarations  The declarations of a type so far
+	 * @param   string  $content       The declaration being added
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	protected function hasDeclaration($declarations, $content)
+	{
+		$declarations = chr(13) . $declarations . chr(13);
+
+		return $content !== '' && strpos($declarations, chr(13) . $content . chr(13)) !== false;
+	}
+
+	/**
 	 * Adds a stylesheet declaration to the page
 	 *
 	 * @param   string  $content  Style declarations
@@ -775,7 +793,7 @@ class Document
 		{
 			$this->_style[strtolower($type)] = $content;
 		}
-		else
+		elseif (!$this->hasDeclaration($this->_style[strtolower($type)], $content))
 		{
 			$this->_style[strtolower($type)] .= chr(13) . $content;
 		}

@@ -56,6 +56,7 @@ Summary of changes:
 - Prothero, a new administrator template next to Isis: Isis' markup (so extensions made for Isis work with it), with a minimal black and white look in the style of shadcn/ui and Vercel, light and dark colour schemes (automatic by default), a choice of colours for the top menu bar and a matching login page. It's the default administrator template of new sites; existing sites keep Isis and can switch in System > Templates
 - PostgreSQL understands MySQL-style backtick-quoted names in queries, so many third-party extensions' SQL works on it unchanged
 - "System - Structured Data & Social Tags": Google structured data (JSON-LD), Open Graph and X (Twitter) card tags for every page, with any template. Articles (with their full text and images), categories, tags and search results describe themselves, and search engines may show large image previews (Google Discover); every other page uses the site's name, description, image, publisher and profiles. Articles' structured data type (Article, News Article, Blog Post, Review, Product, Recipe...) is set for the whole site and can be changed per category and tag. Extensions with tags of their own (e.g. K2) keep them, and can add to these
+- For developers: `addPreconnect()`, `addDnsPrefetch()` and `addPreload()` on the HTML document, written right after the title (preconnects, then dns-prefetches, then preloads) and also sent as HTTP `Link:` headers; documented in the new [API-GUIDE.md](API-GUIDE.md)
 
 **Improvements:**
 - More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. The administrator's quick icons, menu and status bar, article tags and Contacts work without them
@@ -77,6 +78,7 @@ Summary of changes:
 
 **Security fixes:**
 - Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors without access (with "Show Unauthorised Links" on); they get the intro text and a link to log in, as with Joomla's own layout
+- The head escapes `<link>` addresses and attributes, which extensions could pass unescaped
 
 **Bug fixes:**
 - Uninstalling a core component also uninstalls the modules and plugins which only serve it (e.g. "Smart Search - Contacts", which stopped indexing) and leaves no media folders or language files behind; updates clean up after earlier uninstalls
@@ -93,6 +95,7 @@ Summary of changes:
 - SQLite: searches ignore case and accents in every language, as on MySQL (they did for English letters only)
 - Search: Greek (and other non-Latin) searches typed without accents find their results again, on every database
 - SQLite: sites moved to MySQL no longer get case-sensitive titles: the collations of tables and columns are recorded correctly, and updating (or Extensions: Database's Fix) repairs those of existing sites; moving a database to MariaDB or MySQL 5.7 no longer fails on MySQL 8-only collations
+- The head no longer repeats inline scripts and styles added more than once (e.g. from a loop), and links to the same address with different relations no longer replace each other
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:

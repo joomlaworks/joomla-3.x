@@ -49,13 +49,16 @@ class PlgSystemSef extends JPlugin
 		}
 
 		// Check if a canonical html tag already exists (for instance, added by a component).
-		$canonical = '';
+		$canonical    = '';
+		$canonicalKey = null;
 
 		foreach ($doc->_links as $linkUrl => $link)
 		{
 			if (isset($link['relation']) && $link['relation'] === 'canonical')
 			{
-				$canonical = $linkUrl;
+				// Since 3.18 a link carries its address ('href'): the key is the address only for its first relation
+				$canonical    = isset($link['href']) ? $link['href'] : $linkUrl;
+				$canonicalKey = $linkUrl;
 				break;
 			}
 		}
@@ -64,7 +67,7 @@ class PlgSystemSef extends JPlugin
 		if (!empty($canonical))
 		{
 			// Remove current canonical link.
-			unset($doc->_links[$canonical]);
+			unset($doc->_links[$canonicalKey]);
 
 			// Set the current canonical link but use the SEF system plugin domain field.
 			$canonical = $sefDomain . JUri::getInstance($canonical)->toString(array('path', 'query', 'fragment'));

@@ -54,6 +54,14 @@ class HtmlDocument extends Document
 	public $_custom = array();
 
 	/**
+	 * Whether resource hints (preconnect, dns-prefetch, preload, modulepreload links) are also sent as HTTP `Link:` headers
+	 *
+	 * @var    boolean
+	 * @since  3.18.0
+	 */
+	protected $linkHeaders = true;
+
+	/**
 	 * Name of the template
 	 *
 	 * @var    string
@@ -378,11 +386,162 @@ class HtmlDocument extends Document
 	 */
 	public function addHeadLink($href, $relation, $relType = 'rel', $attribs = array())
 	{
-		$this->_links[$href]['relation'] = $relation;
-		$this->_links[$href]['relType'] = $relType;
-		$this->_links[$href]['attribs'] = $attribs;
+		$href = (string) $href;
+		$key  = $href;
+
+		// Joomla 3.x UTD: one link per address and relation (it was one per address, so e.g. a preconnect and a dns-prefetch
+		// for the same origin replaced each other). The first relation keeps the address as its key, as code reading $_links
+		// expects; further ones get a key of their own, and every entry carries its address.
+		foreach ($this->_links as $existingKey => $link)
+		{
+			$existingHref = isset($link['href']) ? $link['href'] : (string) $existingKey;
+
+			if ($existingHref === $href)
+			{
+				$key = $existingKey;
+
+				if (strtolower((string) $link['relation']) === strtolower((string) $relation)
+					&& strtolower((string) $link['relType']) === strtolower((string) $relType))
+				{
+					break;
+				}
+
+				$key = $href . "\0" . strtolower((string) $relType) . '=' . strtolower((string) $relation);
+			}
+		}
+
+		$this->_links[$key] = array('href' => $href, 'relation' => $relation, 'relType' => $relType, 'attribs' => $attribs);
 
 		return $this;
+	}
+
+	/**
+	 * Adds a preconnect resource hint for the origin of an address (scheme, host and port), followed by a dns-prefetch one
+	 * for browsers without preconnect. The head writes every preconnect first, then every dns-prefetch, before the other
+	 * links; both are also sent as HTTP `Link:` headers (see setLinkHeaders()).
+	 *
+	 * @param   string          $href         An address on the origin, e.g. https://fonts.gstatic.com
+	 * @param   boolean|string  $crossOrigin  true or 'anonymous' (needed for fonts and other CORS requests), 'use-credentials',
+	 *                                        false for none
+	 * @param   boolean         $dnsPrefetch  Whether to add the dns-prefetch hint too
+	 *
+	 * @return  HtmlDocument instance of $this to allow chaining
+	 *
+	 * @since   3.18.0
+	 */
+	public function addPreconnect($href, $crossOrigin = false, $dnsPrefetch = true)
+	{
+		$origin  = $this->getOrigin($href);
+		$attribs = array();
+
+		if ($crossOrigin)
+		{
+			$attribs['crossorigin'] = $crossOrigin === 'use-credentials' ? 'use-credentials' : 'anonymous';
+		}
+
+		$this->addHeadLink($origin, 'preconnect', 'rel', $attribs);
+
+		if ($dnsPrefetch)
+		{
+			$this->addDnsPrefetch($origin);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Adds a dns-prefetch resource hint for the origin of an address.
+	 *
+	 * @param   string  $href  An address on the origin, e.g. https://cdn.example.com
+	 *
+	 * @return  HtmlDocument instance of $this to allow chaining
+	 *
+	 * @since   3.18.0
+	 */
+	public function addDnsPrefetch($href)
+	{
+		return $this->addHeadLink($this->getOrigin($href), 'dns-prefetch');
+	}
+
+	/**
+	 * Adds a preload link: the browser fetches the resource early, as what $as names. Fonts are always fetched in CORS mode,
+	 * so they get crossorigin="anonymous" unless $attribs says otherwise. Preloads come after the preconnect and dns-prefetch
+	 * hints and before the other links, and are also sent as HTTP `Link:` headers (see setLinkHeaders()).
+	 *
+	 * @param   string  $href     The address of the resource
+	 * @param   string  $as       What it is: style, script, font, image, fetch, track, audio, video, document, worker ...
+	 * @param   array   $attribs  More attributes, e.g. array('type' => 'font/woff2'), array('media' => '(min-width: 768px)'),
+	 *                            array('fetchpriority' => 'high')
+	 *
+	 * @return  HtmlDocument instance of $this to allow chaining
+	 *
+	 * @since   3.18.0
+	 */
+	public function addPreload($href, $as, $attribs = array())
+	{
+		$attribs = array_merge(array('as' => (string) $as), (array) $attribs);
+
+		if (strtolower((string) $as) === 'font' && !array_key_exists('crossorigin', $attribs))
+		{
+			$attribs['crossorigin'] = 'anonymous';
+		}
+
+		return $this->addHeadLink($href, 'preload', 'rel', $attribs);
+	}
+
+	/**
+	 * Sets whether resource hints (preconnect, dns-prefetch, preload and modulepreload links) are also sent as HTTP `Link:`
+	 * headers, which reach the browser before the page (and which some servers and CDNs turn into 103 Early Hints). On by
+	 * default.
+	 *
+	 * @param   boolean  $enabled  Whether to send them
+	 *
+	 * @return  HtmlDocument instance of $this to allow chaining
+	 *
+	 * @since   3.18.0
+	 */
+	public function setLinkHeaders($enabled)
+	{
+		$this->linkHeaders = (bool) $enabled;
+
+		return $this;
+	}
+
+	/**
+	 * Whether resource hints are also sent as HTTP `Link:` headers.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	public function getLinkHeaders()
+	{
+		return $this->linkHeaders;
+	}
+
+	/**
+	 * The origin (scheme://host[:port]) of an address, which is what preconnect and dns-prefetch hints name. Addresses without
+	 * a host are returned as they are.
+	 *
+	 * @param   string  $href  The address
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	protected function getOrigin($href)
+	{
+		$href  = trim((string) $href);
+		$parts = parse_url($href);
+
+		if (!is_array($parts) || empty($parts['host']))
+		{
+			return $href;
+		}
+
+		$origin = (isset($parts['scheme']) ? strtolower($parts['scheme']) . ':' : '') . '//' . strtolower($parts['host']);
+
+		return isset($parts['port']) ? $origin . ':' . (int) $parts['port'] : $origin;
 	}
 
 	/**
@@ -419,7 +578,13 @@ class HtmlDocument extends Document
 	 */
 	public function addCustomTag($html)
 	{
-		$this->_custom[] = trim($html);
+		$html = trim((string) $html);
+
+		// The same tag added again (e.g. from a loop) is kept once
+		if (!in_array($html, $this->_custom, true))
+		{
+			$this->_custom[] = $html;
+		}
 
 		return $this;
 	}

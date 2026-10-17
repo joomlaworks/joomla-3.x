@@ -37,7 +37,8 @@ class ModSyndicateHelper
 
 			if (strpos($value, 'application/' . $params->get('format') . '+xml'))
 			{
-				return $link;
+				// Since 3.18 a link carries its address ('href'): the key is the address only for its first relation
+				return isset($document->_links[$link]['href']) ? $document->_links[$link]['href'] : $link;
 			}
 		}
 	}

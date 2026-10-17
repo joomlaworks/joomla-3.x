@@ -11,9 +11,9 @@ namespace Joomla\CMS\Document\Renderer\Html;
 defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Document\DocumentRenderer;
+use Joomla\CMS\Document\HtmlDocument;
 use Joomla\CMS\Helper\TagsHelper;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Utilities\ArrayHelper;
 
 /**
  * HTML document renderer for the document `<head>` element
@@ -131,20 +131,19 @@ class HeadRenderer extends DocumentRenderer
 
 		$buffer .= $tab . '<title>' . htmlspecialchars((string) $document->getTitle(), ENT_COMPAT, 'UTF-8') . '</title>' . $lnEnd;
 
-		// Generate link declarations
-		foreach ($document->_links as $link => $linkAtrr)
+		// Generate link declarations: resource hints first (every preconnect, then every dns-prefetch, then preloads), then the
+		// rest, each group in the order they were added
+		$links = $this->sortLinks($document->_links);
+
+		foreach ($links as $link)
 		{
-			$buffer .= $tab . '<link href="' . $link . '" ' . $linkAtrr['relType'] . '="' . $linkAtrr['relation'] . '"';
+			$buffer .= $tab . '<link href="' . $this->escapeAttribute($link['href']) . '" ' . $link['relType'] . '="'
+				. $this->escapeAttribute($link['relation']) . '"' . $this->linkAttributes($link['attribs']) . ' />' . $lnEnd;
+		}
 
-			if (is_array($linkAtrr['attribs']))
-			{
-				if ($temp = ArrayHelper::toString($linkAtrr['attribs']))
-				{
-					$buffer .= ' ' . $temp;
-				}
-			}
-
-			$buffer .= ' />' . $lnEnd;
+		if ($document instanceof HtmlDocument && $document->getLinkHeaders())
+		{
+			$this->sendLinkHeaders($links);
 		}
 
 		$defaultCssMimes = array('text/css');
@@ -375,5 +374,184 @@ class HeadRenderer extends DocumentRenderer
 		}
 
 		return ltrim($buffer, $tab);
+	}
+
+	/**
+	 * The document's links in output order: preconnect, dns-prefetch, preload/modulepreload, then the others, each group in
+	 * the order the links were added. Each comes with its address and a valid relation type.
+	 *
+	 * @param   array  $links  The document's $_links
+	 *
+	 * @return  array
+	 *
+	 * @since   3.18.0
+	 */
+	protected function sortLinks(array $links)
+	{
+		$groups = array(array(), array(), array(), array());
+
+		foreach ($links as $key => $link)
+		{
+			if (!is_array($link) || !isset($link['relation']))
+			{
+				continue;
+			}
+
+			$link['href']    = isset($link['href']) ? (string) $link['href'] : (string) $key;
+			$link['relType'] = isset($link['relType']) && strtolower((string) $link['relType']) === 'rev' ? 'rev' : 'rel';
+			$link['attribs'] = isset($link['attribs']) && is_array($link['attribs']) ? $link['attribs'] : array();
+
+			$groups[$this->hintRank($link)][] = $link;
+		}
+
+		return array_merge($groups[0], $groups[1], $groups[2], $groups[3]);
+	}
+
+	/**
+	 * A link's group: 0 preconnect, 1 dns-prefetch, 2 preload or modulepreload, 3 anything else.
+	 *
+	 * @param   array  $link  A link (href, relation, relType, attribs)
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.18.0
+	 */
+	protected function hintRank(array $link)
+	{
+		if ($link['relType'] !== 'rel')
+		{
+			return 3;
+		}
+
+		$ranks = array('preconnect' => 0, 'dns-prefetch' => 1, 'preload' => 2, 'modulepreload' => 2);
+		$rel   = strtolower(trim((string) $link['relation']));
+
+		return isset($ranks[$rel]) ? $ranks[$rel] : 3;
+	}
+
+	/**
+	 * A link's other attributes as HTML, escaped. Names that aren't valid attribute names, and values that are null, false
+	 * or not scalar, are left out; true writes an empty value (e.g. crossorigin="").
+	 *
+	 * @param   array  $attribs  The attributes
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	protected function linkAttributes(array $attribs)
+	{
+		$html = '';
+
+		foreach ($attribs as $name => $value)
+		{
+			if (!preg_match('/^[a-zA-Z_:][a-zA-Z0-9_:.-]*$/', (string) $name) || $value === null || $value === false || !is_scalar($value))
+			{
+				continue;
+			}
+
+			$html .= ' ' . $name . '="' . ($value === true ? '' : $this->escapeAttribute($value)) . '"';
+		}
+
+		return $html;
+	}
+
+	/**
+	 * Escapes an attribute value. Entities already in it are kept (no double encoding), as many callers escape addresses
+	 * before adding them (e.g. a URL with &amp; from JRoute).
+	 *
+	 * @param   string  $value  The value
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	protected function escapeAttribute($value)
+	{
+		return htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8', false);
+	}
+
+	/**
+	 * Sends the resource hints among the links as HTTP `Link:` headers (one value each; the application joins them), at most
+	 * 2,000 bytes of Link headers in all, as servers and proxies refuse responses with large headers (nginx answers 502).
+	 * Addresses with characters a header can't carry, and hints the response already has, are left out.
+	 *
+	 * @param   array  $links  The links, from sortLinks()
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function sendLinkHeaders(array $links)
+	{
+		$app = \JFactory::getApplication();
+
+		if (!method_exists($app, 'setHeader') || !method_exists($app, 'getHeaders'))
+		{
+			return;
+		}
+
+		// What this response already has (e.g. the head rendered twice)
+		$sent   = array();
+		$length = 0;
+
+		foreach ((array) $app->getHeaders() as $header)
+		{
+			if (isset($header['name'], $header['value']) && strtolower($header['name']) === 'link')
+			{
+				$sent[]  = (string) $header['value'];
+				$length += strlen((string) $header['value']) + 2;
+			}
+		}
+
+		foreach ($links as $link)
+		{
+			if ($this->hintRank($link) === 3)
+			{
+				continue;
+			}
+
+			$href = htmlspecialchars_decode($link['href'], ENT_QUOTES);
+
+			// A header carries ASCII only, and <, > and whitespace would end the address
+			if ($href === '' || !preg_match('/^[\x21-\x7e]+$/', $href) || strpbrk($href, '<>') !== false)
+			{
+				continue;
+			}
+
+			$value = '<' . $href . '>; rel=' . strtolower(trim((string) $link['relation']));
+
+			foreach (array('as', 'type', 'crossorigin', 'media', 'fetchpriority') as $name)
+			{
+				if (!isset($link['attribs'][$name]) || $link['attribs'][$name] === false || !is_scalar($link['attribs'][$name]))
+				{
+					continue;
+				}
+
+				$param = $link['attribs'][$name] === true ? '' : (string) $link['attribs'][$name];
+
+				if ($param === '' && $name === 'crossorigin')
+				{
+					$value .= '; crossorigin';
+				}
+				elseif (preg_match('/^[a-zA-Z0-9!#$%&\'*+.^_`|~-]+$/', $param))
+				{
+					$value .= '; ' . $name . '=' . $param;
+				}
+				elseif (preg_match('/^[\x20-\x7e]*$/', $param))
+				{
+					$value .= '; ' . $name . '="' . addcslashes($param, '"\\') . '"';
+				}
+			}
+
+			if (in_array($value, $sent, true) || $length + strlen($value) + 2 > 2000)
+			{
+				continue;
+			}
+
+			$app->setHeader('Link', $value);
+			$sent[] = $value;
+			$length += strlen($value) + 2;
+		}
 	}
 }
