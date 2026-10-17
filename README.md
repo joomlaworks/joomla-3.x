@@ -107,6 +107,7 @@ Summary of changes:
 - The head no longer repeats inline scripts and styles added more than once (e.g. from a loop), links to the same address with different relations no longer replace each other, and script attributes set to `false` (e.g. `nomodule`) are left out instead of switched on
 - Media Manager: ICO, OpenDocument, XLS and PPT files can be uploaded again (the default MIME list refused them), and folders with GIMP or Draw files no longer warn on PHP 8
 - Media Manager: Create Folder shows the folder the new one goes in again (an empty grey box), and no longer gives the page the server's path
+- Command line: `article:update` now saves the new `--text` and no longer strips the HTML from articles' text
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:
