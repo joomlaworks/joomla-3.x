@@ -49,7 +49,7 @@ class ExtensionRemoveCommand extends AbstractExtensionCommand
 	 */
 	protected function configure()
 	{
-		$this->addArgument('extensionId', self::ARGUMENT_REQUIRED, 'ID of the extension to remove (see extension:list)');
+		$this->addArgument('extensionId', self::ARGUMENT_REQUIRED, 'ID or name of the extension to remove, e.g. 123, com_k2, plg_system_k2 or tpl_hammond (see extension:list)');
 	}
 
 	/**
@@ -67,7 +67,7 @@ class ExtensionRemoveCommand extends AbstractExtensionCommand
 
 		if (!$extension)
 		{
-			return self::NOT_FOUND;
+			return $this->lookupError;
 		}
 
 		if ((int) $extension->protected === 1)

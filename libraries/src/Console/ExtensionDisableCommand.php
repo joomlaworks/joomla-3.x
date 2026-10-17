@@ -58,7 +58,7 @@ class ExtensionDisableCommand extends AbstractExtensionCommand
 	 */
 	protected function configure()
 	{
-		$this->addArgument('extensionId', self::ARGUMENT_REQUIRED, 'ID of the extension (see extension:list)');
+		$this->addArgument('extensionId', self::ARGUMENT_REQUIRED, 'ID or name of the extension, e.g. 123, com_k2, mod_menu, plg_system_k2 or tpl_hammond (see extension:list)');
 	}
 
 	/**
@@ -78,7 +78,7 @@ class ExtensionDisableCommand extends AbstractExtensionCommand
 
 		if (!$extension)
 		{
-			return self::NOT_FOUND;
+			return $this->lookupError;
 		}
 
 		if (!$this->state && (int) $extension->protected === 1)

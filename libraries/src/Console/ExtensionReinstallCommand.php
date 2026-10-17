@@ -84,7 +84,7 @@ class ExtensionReinstallCommand extends AbstractExtensionCommand
 	 */
 	protected function configure()
 	{
-		$this->addArgument('extensionId', self::ARGUMENT_REQUIRED, 'ID of the extension (see extension:list)');
+		$this->addArgument('extensionId', self::ARGUMENT_REQUIRED, 'ID or name of the extension, e.g. 123, com_k2, mod_menu, plg_system_k2 or tpl_hammond (see extension:list)');
 		$this->addOption('file', null, self::OPTION_REQUIRED, 'Install from this package file (.zip, .tar.gz, ...) or extracted folder');
 		$this->addOption('url', null, self::OPTION_REQUIRED, 'Install from the package at this URL');
 		$this->addOption('sha256', null, self::OPTION_REQUIRED, 'The package\'s known SHA-256 checksum, checked before installing (with --file or --url)');
@@ -107,7 +107,7 @@ class ExtensionReinstallCommand extends AbstractExtensionCommand
 
 		if (!$extension)
 		{
-			return self::NOT_FOUND;
+			return $this->lookupError;
 		}
 
 		$file = (string) $io->getOption('file');

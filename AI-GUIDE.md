@@ -276,6 +276,7 @@ php cli/joomla.php extension:update 10023
 php cli/joomla.php extension:list --type=plugin 'littlewaf'
 php cli/joomla.php extension:install --url=https://example.com/pkg_example.zip
 php cli/joomla.php extension:reinstall 10023     # restore an extension's original files (e.g. after a hack)
+php cli/joomla.php extension:disable plg_system_k2   # by name too: com_k2, plg_<group>_<element>, tpl_<name> (enable, remove, reinstall)
 ```
 
 **Database**
