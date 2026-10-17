@@ -39,8 +39,9 @@
 		const markdown = toMarkdown(html, sources);
 		const block = Array.prototype.some.call(doc.body.children, (node) => BLOCK.test(node.nodeName));
 
+		// Inline, into the text: an element which stays HTML needs no line of its own (see convert.js' standsAlone)
 		if (!block) {
-			cm.replaceSelection(markdown);
+			cm.replaceSelection(markdown.trim().replace(/^(<[^>]+>)\n/, '$1'));
 
 			return;
 		}
@@ -363,8 +364,11 @@
 				editor.value(markdown);
 				sync();
 			},
+			// HTML, as other editors give it: buttons wrap it in their own HTML (the menu item link) and insert that
 			getSelection() {
-				return cm.getSelection();
+				const selected = cm.getSelection();
+
+				return selected ? toHtml(selected, sources).replace(/^<p>((?:(?!<\/?p[\s>])[\s\S])*)<\/p>$/, '$1') : '';
 			},
 			replaceSelection(value) {
 				insert(cm, value, sources);
