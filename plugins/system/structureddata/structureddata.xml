@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.8" type="plugin" group="system" method="upgrade">
+    <name>plg_system_structureddata</name>
+    <author>Joomla 3.x UTD Contributors</author>
+    <creationDate>October 2026</creationDate>
+    <copyright>(C) 2026 JoomlaWorks Ltd. and this project's contributors</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.md</license>
+    <authorUrl>https://github.com/joomlaworks/joomla-3.x</authorUrl>
+    <version>1.0.0</version>
+    <description>PLG_SYSTEM_STRUCTUREDDATA_XML_DESCRIPTION</description>
+    <files>
+        <filename plugin="structureddata">structureddata.php</filename>
+    </files>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_system_structureddata.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_system_structureddata.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic" label="PLG_SYSTEM_STRUCTUREDDATA_FIELDSET_SITE">
+                <field name="site_note" type="note" class="alert alert-info" label="PLG_SYSTEM_STRUCTUREDDATA_SITE_NOTE_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_SITE_NOTE_DESC" />
+                <field name="represents" type="list" label="PLG_SYSTEM_STRUCTUREDDATA_REPRESENTS_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_REPRESENTS_DESC" default="organization" filter="cmd">
+                    <option value="organization">PLG_SYSTEM_STRUCTUREDDATA_REPRESENTS_ORGANIZATION</option>
+                    <option value="person">PLG_SYSTEM_STRUCTUREDDATA_REPRESENTS_PERSON</option>
+                </field>
+                <field name="org_type" type="list" label="PLG_SYSTEM_STRUCTUREDDATA_ORG_TYPE_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_ORG_TYPE_DESC" default="Organization" filter="cmd" showon="represents:organization">
+                    <option value="Organization">Organization</option>
+                    <option value="Corporation">Corporation</option>
+                    <option value="NewsMediaOrganization">NewsMediaOrganization</option>
+                    <option value="OnlineBusiness">OnlineBusiness</option>
+                    <option value="LocalBusiness">LocalBusiness</option>
+                    <option value="EducationalOrganization">EducationalOrganization</option>
+                    <option value="GovernmentOrganization">GovernmentOrganization</option>
+                    <option value="MedicalOrganization">MedicalOrganization</option>
+                    <option value="NGO">NGO</option>
+                    <option value="PerformingGroup">PerformingGroup</option>
+                    <option value="SportsOrganization">SportsOrganization</option>
+                </field>
+                <field name="site_name" type="text" label="PLG_SYSTEM_STRUCTUREDDATA_SITE_NAME_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_SITE_NAME_DESC" default="" filter="string" />
+                <field name="alternate_name" type="text" label="PLG_SYSTEM_STRUCTUREDDATA_ALTERNATE_NAME_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_ALTERNATE_NAME_DESC" default="" filter="string" />
+                <field name="site_description" type="textarea" label="PLG_SYSTEM_STRUCTUREDDATA_SITE_DESCRIPTION_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_SITE_DESCRIPTION_DESC" default="" rows="3" class="input-xxlarge" filter="string" />
+                <field name="logo" type="media" label="PLG_SYSTEM_STRUCTUREDDATA_LOGO_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_LOGO_DESC" default="" />
+                <field name="image" type="media" label="PLG_SYSTEM_STRUCTUREDDATA_IMAGE_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_IMAGE_DESC" default="" />
+                <field name="image_alt" type="text" label="PLG_SYSTEM_STRUCTUREDDATA_IMAGE_ALT_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_IMAGE_ALT_DESC" default="" filter="string" />
+            </fieldset>
+            <fieldset name="contact" label="PLG_SYSTEM_STRUCTUREDDATA_FIELDSET_CONTACT">
+                <field name="contact_note" type="note" class="alert alert-info" description="PLG_SYSTEM_STRUCTUREDDATA_CONTACT_NOTE_DESC" />
+                <field name="street" type="text" label="PLG_SYSTEM_STRUCTUREDDATA_STREET_LABEL" default="" filter="string" />
+                <field name="locality" type="text" label="PLG_SYSTEM_STRUCTUREDDATA_LOCALITY_LABEL" default="" filter="string" />
+                <field name="region" type="text" label="PLG_SYSTEM_STRUCTUREDDATA_REGION_LABEL" default="" filter="string" />
+                <field name="postal_code" type="text" label="PLG_SYSTEM_STRUCTUREDDATA_POSTAL_CODE_LABEL" default="" filter="string" />
+                <field name="country" type="text" label="PLG_SYSTEM_STRUCTUREDDATA_COUNTRY_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_COUNTRY_DESC" default="" filter="string" />
+                <field name="telephone" type="tel" label="PLG_SYSTEM_STRUCTUREDDATA_TELEPHONE_LABEL" default="" filter="string" />
+                <field name="email" type="email" label="PLG_SYSTEM_STRUCTUREDDATA_EMAIL_LABEL" default="" filter="string" validate="email" />
+                <field name="contact_type" type="list" label="PLG_SYSTEM_STRUCTUREDDATA_CONTACT_TYPE_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_CONTACT_TYPE_DESC" default="customer service" filter="string">
+                    <option value="customer service">PLG_SYSTEM_STRUCTUREDDATA_CONTACT_TYPE_CUSTOMER_SERVICE</option>
+                    <option value="technical support">PLG_SYSTEM_STRUCTUREDDATA_CONTACT_TYPE_TECHNICAL_SUPPORT</option>
+                    <option value="billing support">PLG_SYSTEM_STRUCTUREDDATA_CONTACT_TYPE_BILLING_SUPPORT</option>
+                    <option value="sales">PLG_SYSTEM_STRUCTUREDDATA_CONTACT_TYPE_SALES</option>
+                    <option value="reservations">PLG_SYSTEM_STRUCTUREDDATA_CONTACT_TYPE_RESERVATIONS</option>
+                    <option value="press">PLG_SYSTEM_STRUCTUREDDATA_CONTACT_TYPE_PRESS</option>
+                </field>
+            </fieldset>
+            <fieldset name="social" label="PLG_SYSTEM_STRUCTUREDDATA_FIELDSET_SOCIAL">
+                <field name="social_note" type="note" class="alert alert-info" description="PLG_SYSTEM_STRUCTUREDDATA_SOCIAL_NOTE_DESC" />
+                <field name="facebook" type="url" label="PLG_SYSTEM_STRUCTUREDDATA_FACEBOOK_LABEL" default="" filter="url" class="input-xxlarge" />
+                <field name="x" type="url" label="PLG_SYSTEM_STRUCTUREDDATA_X_PROFILE_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_X_PROFILE_DESC" default="" filter="url" class="input-xxlarge" />
+                <field name="instagram" type="url" label="PLG_SYSTEM_STRUCTUREDDATA_INSTAGRAM_LABEL" default="" filter="url" class="input-xxlarge" />
+                <field name="linkedin" type="url" label="PLG_SYSTEM_STRUCTUREDDATA_LINKEDIN_LABEL" default="" filter="url" class="input-xxlarge" />
+                <field name="youtube" type="url" label="PLG_SYSTEM_STRUCTUREDDATA_YOUTUBE_LABEL" default="" filter="url" class="input-xxlarge" />
+                <field name="tiktok" type="url" label="PLG_SYSTEM_STRUCTUREDDATA_TIKTOK_LABEL" default="" filter="url" class="input-xxlarge" />
+                <field name="threads" type="url" label="PLG_SYSTEM_STRUCTUREDDATA_THREADS_LABEL" default="" filter="url" class="input-xxlarge" />
+                <field name="mastodon" type="url" label="PLG_SYSTEM_STRUCTUREDDATA_MASTODON_LABEL" default="" filter="url" class="input-xxlarge" />
+                <field name="bluesky" type="url" label="PLG_SYSTEM_STRUCTUREDDATA_BLUESKY_LABEL" default="" filter="url" class="input-xxlarge" />
+                <field name="github" type="url" label="PLG_SYSTEM_STRUCTUREDDATA_GITHUB_LABEL" default="" filter="url" class="input-xxlarge" />
+                <field name="wikipedia" type="url" label="PLG_SYSTEM_STRUCTUREDDATA_WIKIPEDIA_LABEL" default="" filter="url" class="input-xxlarge" />
+                <field name="other_profiles" type="textarea" label="PLG_SYSTEM_STRUCTUREDDATA_OTHER_PROFILES_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_OTHER_PROFILES_DESC" default="" rows="3" class="input-xxlarge" filter="string" />
+            </fieldset>
+            <fieldset name="content" label="PLG_SYSTEM_STRUCTUREDDATA_FIELDSET_CONTENT">
+                <field name="content_note" type="note" class="alert alert-info" description="PLG_SYSTEM_STRUCTUREDDATA_CONTENT_NOTE_DESC" />
+                <field name="article_type" type="list" label="PLG_SYSTEM_STRUCTUREDDATA_ARTICLE_TYPE_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_ARTICLE_TYPE_DESC" default="Article" filter="cmd">
+                    <option value="Article">PLG_SYSTEM_STRUCTUREDDATA_TYPE_ARTICLE</option>
+                    <option value="NewsArticle">PLG_SYSTEM_STRUCTUREDDATA_TYPE_NEWSARTICLE</option>
+                    <option value="BlogPosting">PLG_SYSTEM_STRUCTUREDDATA_TYPE_BLOGPOSTING</option>
+                    <option value="OpinionNewsArticle">PLG_SYSTEM_STRUCTUREDDATA_TYPE_OPINIONNEWSARTICLE</option>
+                    <option value="AnalysisNewsArticle">PLG_SYSTEM_STRUCTUREDDATA_TYPE_ANALYSISNEWSARTICLE</option>
+                    <option value="ReportageNewsArticle">PLG_SYSTEM_STRUCTUREDDATA_TYPE_REPORTAGENEWSARTICLE</option>
+                    <option value="TechArticle">PLG_SYSTEM_STRUCTUREDDATA_TYPE_TECHARTICLE</option>
+                    <option value="ScholarlyArticle">PLG_SYSTEM_STRUCTUREDDATA_TYPE_SCHOLARLYARTICLE</option>
+                    <option value="Report">PLG_SYSTEM_STRUCTUREDDATA_TYPE_REPORT</option>
+                    <option value="Review">PLG_SYSTEM_STRUCTUREDDATA_TYPE_REVIEW</option>
+                    <option value="Product">PLG_SYSTEM_STRUCTUREDDATA_TYPE_PRODUCT</option>
+                    <option value="Service">PLG_SYSTEM_STRUCTUREDDATA_TYPE_SERVICE</option>
+                    <option value="Course">PLG_SYSTEM_STRUCTUREDDATA_TYPE_COURSE</option>
+                    <option value="Recipe">PLG_SYSTEM_STRUCTUREDDATA_TYPE_RECIPE</option>
+                    <option value="SoftwareApplication">PLG_SYSTEM_STRUCTUREDDATA_TYPE_SOFTWAREAPPLICATION</option>
+                    <option value="WebPage">PLG_SYSTEM_STRUCTUREDDATA_TYPE_WEBPAGE</option>
+                </field>
+                <field name="breadcrumbs" type="radio" label="PLG_SYSTEM_STRUCTUREDDATA_BREADCRUMBS_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_BREADCRUMBS_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="ratings" type="radio" label="PLG_SYSTEM_STRUCTUREDDATA_RATINGS_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_RATINGS_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+            </fieldset>
+            <fieldset name="opengraph" label="PLG_SYSTEM_STRUCTUREDDATA_FIELDSET_OPENGRAPH">
+                <field name="opengraph" type="radio" label="PLG_SYSTEM_STRUCTUREDDATA_OPENGRAPH_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_OPENGRAPH_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="fb_app_id" type="text" label="PLG_SYSTEM_STRUCTUREDDATA_FB_APP_ID_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_FB_APP_ID_DESC" default="" filter="string" showon="opengraph:1" />
+            </fieldset>
+            <fieldset name="xcards" label="PLG_SYSTEM_STRUCTUREDDATA_FIELDSET_X">
+                <field name="xcards" type="radio" label="PLG_SYSTEM_STRUCTUREDDATA_XCARDS_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_XCARDS_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="x_card" type="list" label="PLG_SYSTEM_STRUCTUREDDATA_X_CARD_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_X_CARD_DESC" default="summary_large_image" filter="cmd" showon="xcards:1">
+                    <option value="summary_large_image">PLG_SYSTEM_STRUCTUREDDATA_X_CARD_LARGE</option>
+                    <option value="summary">PLG_SYSTEM_STRUCTUREDDATA_X_CARD_SUMMARY</option>
+                </field>
+                <field name="x_site" type="text" label="PLG_SYSTEM_STRUCTUREDDATA_X_SITE_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_X_SITE_DESC" default="" filter="string" hint="@username" showon="xcards:1" />
+                <field name="x_creator" type="text" label="PLG_SYSTEM_STRUCTUREDDATA_X_CREATOR_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_X_CREATOR_DESC" default="" filter="string" hint="@username" showon="xcards:1" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

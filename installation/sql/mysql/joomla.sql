@@ -675,6 +675,7 @@ INSERT INTO `#__extensions` (`extension_id`, `package_id`, `name`, `type`, `elem
 (510, 0, 'mod_housekeeping', 'module', 'mod_housekeeping', '', 1, 1, 1, 0, '', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (511, 0, 'rookwood', 'template', 'rookwood', '', 0, 1, 1, 0, '', '{"siteName":"","defaultTheme":"dark","footerHeadline":"","footerEmail":"","footerText":"","social_x":"","social_linkedin":"","social_instagram":"","social_github":"","social_dribbble":"","social_rss":""}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (512, 0, 'prothero', 'template', 'prothero', '', 1, 1, 1, 0, '', '{"colorScheme":"auto","logoFile":""}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(513, 0, 'plg_system_structureddata', 'plugin', 'structureddata', 'system', 0, 1, 1, 0, '', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (600, 802, 'English (en-GB)', 'language', 'en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (601, 802, 'English (en-GB)', 'language', 'en-GB', '', 1, 1, 1, 1, '', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),

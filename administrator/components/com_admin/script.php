@@ -384,6 +384,8 @@ class JoomlaInstallerScript
 			'3.18.0-2026-10-11.sql' => null,
 			// Prothero administrator template
 			'3.18.0-2026-10-12.sql' => '3.18.0',
+			// "System - Structured Data & Social Tags" plugin
+			'3.18.0-2026-10-18.sql' => '3.18.0',
 		);
 
 		foreach ($dataMigrationFiles as $file => $addedIn)
@@ -829,6 +831,7 @@ class JoomlaInstallerScript
 			array('plugin', 'sef', 'system'),
 			array('plugin', 'sessiongc', 'system'),
 			array('plugin', 'stats', 'system'),
+			array('plugin', 'structureddata', 'system'),
 			array('plugin', 'tinymce', 'editors'),
 			array('plugin', 'tinymce_latest', 'editors'),
 			array('plugin', 'totp', 'twofactorauth'),
