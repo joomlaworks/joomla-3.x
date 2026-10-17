@@ -69,6 +69,7 @@ Summary of changes:
 - PostgreSQL: table column information includes MySQL's `Key` and `Extra` fields too, for extensions written against MySQL
 - Command line: extensions can add commands of their own (guide for developers: [CLI-GUIDE.md](CLI-GUIDE.md)), which can't take core commands' names; extensions can be enabled, disabled, reinstalled and removed by name (e.g. `plg_system_k2`), and a site whose database settings point nowhere can be pointed at a database of another type with `config:set`
 - Removed the "Authentication - GMail" plugin (Google stopped accepting its password sign-in in 2022), the "System - P3P Policy" plugin, joomla.org's update site for the Joomla Update component, Global Configuration's Memcache options, unused web service libraries and polyfills for PHP versions below 7.1
+- The News sample data has a For Subscribers category of 20 registered-only articles (guests see their intro and a link to log in)
 
 **Security fixes:**
 - Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors without access (with "Show Unauthorised Links" on); they get the intro text and a link to log in, as with Joomla's own layout
@@ -81,6 +82,7 @@ Summary of changes:
 - Fixed PHP 8.2+/8.5 deprecation warnings in text logs (e.g. during updates), the administrator's toolbar title, registries and sessions, and SQL list fields
 - Users' and Contacts' Options, the Multilingual Status, batch copy/move of articles and Privacy's data exports no longer fail when Fields or Contacts has been uninstalled
 - "User - Joomla!" can no longer be uninstalled: without it nobody could log in
+- Sample Data: installing a set after an interrupted install no longer hides every module of the site
 - PostgreSQL: pages no longer fail with Debug System on, or with caching on (PHP 8.1+), new items whose form posts an empty ID save again, `insertid()` works after an INSERT given as text, and Smart Search no longer scans its whole links table for each item it indexes
 - MySQL: no more "mysqli_ping() is deprecated" warnings on PHP 8.4+
 - SQLite: searches ignore case and accents in every language, as on MySQL (they did for English letters only)

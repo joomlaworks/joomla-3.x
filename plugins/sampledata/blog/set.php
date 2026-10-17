@@ -367,6 +367,9 @@ class PlgSampledataBlogSet
 		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_content/tables/');
 		$model = JModelLegacy::getInstance('Article', 'ContentModel', array('ignore_request' => true));
 
+		// An article's own access level (e.g. Registered, for the News set's For Subscribers), when the site has that level
+		$levels = $this->db->setQuery($this->db->getQuery(true)->select($this->db->quoteName('id'))->from($this->db->quoteName('#__viewlevels')))->loadColumn();
+
 		// As in the installer: the latest article was published 25 minutes ago, the others hours and days before it
 		$latest = Factory::getDate('now')->toUnix() - 25 * 60;
 		$chunk  = array_chunk($data['articles'], (int) ceil(count($data['articles']) / $this->articleSteps));
@@ -383,7 +386,8 @@ class PlgSampledataBlogSet
 				'created_by_alias' => $article['created_by_alias'], 'images' => json_decode($article['images'], true),
 				'urls' => json_decode($article['urls'], true), 'attribs' => json_decode($article['attribs'], true),
 				'metadata' => json_decode($article['metadata'], true), 'metadesc' => $article['metadesc'], 'metakey' => $article['metakey'],
-				'access' => $access, 'language' => $language, 'associations' => array(), 'xreference' => '',
+				'access' => isset($article['access']) && in_array((int) $article['access'], array_map('intval', $levels), true) ? (int) $article['access'] : $access,
+				'language' => $language, 'associations' => array(), 'xreference' => '',
 				'tags' => array_values(array_intersect_key($tags, array_flip($article['tags']))),
 			));
 
@@ -893,8 +897,11 @@ class PlgSampledataBlogSet
 			$delete($table, 'modules', $id);
 		}
 
-		$db->setQuery($db->getQuery(true)->delete($db->quoteName('#__modules_menu'))
-			->where($db->quoteName('moduleid') . ' IN (' . $ints($record['modules']) . ')'))->execute();
+		if ($record['modules'])
+		{
+			$db->setQuery($db->getQuery(true)->delete($db->quoteName('#__modules_menu'))
+				->where($db->quoteName('moduleid') . ' IN (' . $ints($record['modules']) . ')'))->execute();
+		}
 
 		// Menu items, the assignments of modules to them, then the set's menus when nothing else is left in them
 		$table = JTable::getInstance('Menu', 'JTable');
@@ -904,8 +911,12 @@ class PlgSampledataBlogSet
 			$delete($table, 'menuitems', $id);
 		}
 
-		$db->setQuery($db->getQuery(true)->delete($db->quoteName('#__modules_menu'))
-			->where('ABS(' . $db->quoteName('menuid') . ') IN (' . $ints($record['menuitems']) . ')'))->execute();
+		// Only with menu items to remove: an empty list is "IN (0)", and menuid 0 is every module shown on all pages
+		if ($record['menuitems'])
+		{
+			$db->setQuery($db->getQuery(true)->delete($db->quoteName('#__modules_menu'))
+				->where('ABS(' . $db->quoteName('menuid') . ') IN (' . $ints($record['menuitems']) . ')'))->execute();
+		}
 
 		foreach ($record['menutypes'] as $menutype)
 		{

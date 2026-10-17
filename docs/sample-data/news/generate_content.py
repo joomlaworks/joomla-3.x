@@ -258,8 +258,64 @@ for c, (alias, title, desc) in enumerate(CATS):
             'has': [e.split(' ')[0].strip('<') for e in extras],
         })
 
-json.dump({'categories': [{'alias': a, 'title': t, 'description': '<p>%s</p>' % d} for a, t, d in CATS], 'articles': articles},
-          open('content.json', 'w'), indent=1, ensure_ascii=False)
+# For Subscribers: in-depth pieces only registered users may read (access Registered; the build's setup.py shows guests their
+# intro text and a link to log in). Generated after the sections, so their articles stay as they were. Each section's images 23
+# and 24 aren't any article's lead image: these use them, two per section.
+SUBSCRIBER_TITLES = [
+    ('politics', 'Inside the coalition talks: the deals made behind closed doors'),
+    ('politics', 'How party funding really works, and who pays for the campaigns'),
+    ('world', 'The quiet diplomacy that ended a decade-long border dispute'),
+    ('world', 'Field notes from the region the headlines forgot'),
+    ('finance', 'Where the big pension funds are moving their money next'),
+    ('finance', 'The small-business loan squeeze, in numbers and in people'),
+    ('technology', 'An insider\'s guide to the chips shortage that never ended'),
+    ('technology', 'What the new AI rules will mean for the apps you use every day'),
+    ('energy', 'The grid upgrade nobody wants to pay for, explained'),
+    ('energy', 'Behind the scenes at the country\'s biggest offshore wind farm'),
+    ('education', 'Why the best teachers are leaving, in their own words'),
+    ('education', 'The data behind the new school league tables'),
+    ('health', 'The waiting-list crisis: a year inside one hospital ward'),
+    ('health', 'What the latest research says about sleep, stress and screens'),
+    ('sports', 'The economics of a title-winning season'),
+    ('sports', 'Training with the national team: a week behind the scenes'),
+    ('culture', 'The fight to save the city\'s independent cinemas'),
+    ('culture', 'The festival directors on what it takes to sell out'),
+    ('opinion', 'The case for a four-day week, from both sides of the table'),
+    ('opinion', 'What our readers told us about trust in the news'),
+]
+for i, (section, headline) in enumerate(SUBSCRIBER_TITLES):
+    when = now - datetime.timedelta(hours=i * 23 + 5 + random.randint(0, 10), minutes=random.randint(0, 59))
+    intro = '<p>%s</p>' % ' '.join(sentence(10, 16) for _ in range(random.randint(2, 3)))
+    body = ['<p>%s</p>' % paragraph() for _ in range(3)]
+    extras = [blockquote(section)]
+    if random.random() < 0.5: extras.append(blist())
+    if random.random() < 0.4: extras.append(table(section))
+    for extra in extras:
+        body.append('<h2>%s</h2>' % sentence(3, 6).rstrip('.'))
+        body.append(extra)
+        body.append('<p>%s</p>' % paragraph())
+    body.append('<p>%s</p>' % paragraph(random.randint(2, 4)))
+    articles.append({
+        'category': 'subscribers',
+        'title': headline,
+        'intro': intro,
+        'full': '\n'.join(body),
+        'image': '%s/%s/%s-%02d.jpg' % (IMG_BASE, section, section, 23 + i % 2),
+        'image_alt': headline,
+        'author': random.choice(REPORTERS),
+        'publish_up': when.strftime('%Y-%m-%d %H:%M'),
+        'featured': False,
+        'tags': [],
+        'hits': random.randint(40, 4000),
+        'has': [e.split(' ')[0].strip('<') for e in extras],
+        'access': 'Registered',
+    })
+
+categories = [{'alias': a, 'title': t, 'description': '<p>%s</p>' % d} for a, t, d in CATS]
+categories.append({'alias': 'subscribers', 'title': 'For Subscribers',
+                   'description': '<p>In-depth reporting, analysis and behind-the-scenes stories for our registered readers. Log in to read them in full.</p>'})
+
+json.dump({'categories': categories, 'articles': articles}, open('content.json', 'w'), indent=1, ensure_ascii=False)
 from collections import Counter
 print(len(articles), 'articles;', sum(a['featured'] for a in articles), 'featured;',
       Counter(h for a in articles for h in a['has']), Counter(t for a in articles for t in a['tags']))

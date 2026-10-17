@@ -37,7 +37,7 @@ for n, a in enumerate(c['articles'], 1):
     d = cli('article:create', '--state=published', '--title=' + a['title'], '--category=' + a['category'], '--text-file=-',
             '--author-alias=' + a['author'], '--publish-up=' + a['publish_up'], '--featured=' + ('yes' if a['featured'] else 'no'),
             '--image-intro=' + img(a['image']), '--image-intro-alt=' + a['image_alt'], '--image-full=' + img(a['image']),
-            '--image-full-alt=' + a['image_alt'], '--tags=' + ','.join(t), stdin=text)
+            '--image-full-alt=' + a['image_alt'], '--tags=' + ','.join(t), '--access=' + a.get('access', 'Public'), stdin=text)
     aid = (d.get('data') or {}).get('id') or ((d.get('data') or {}).get('article') or {}).get('id')
     if aid:
         hits[int(aid)] = int(a['hits'])

@@ -59,13 +59,18 @@ blog = {
     'orderby_pri': 'none', 'orderby_sec': 'rdate', 'order_date': 'published', 'show_pagination': '2', 'show_pagination_results': '0',
     'show_description': '1', 'show_description_image': '0', 'show_subcategory_content': '0', 'show_category_title': '1',
 }
-cats = ['politics', 'world', 'finance', 'technology', 'energy', 'education', 'health', 'sports', 'culture', 'opinion']
+cats = ['politics', 'world', 'finance', 'technology', 'energy', 'education', 'health', 'sports', 'culture', 'opinion', 'subscribers']
 titles = {'politics': 'Politics', 'world': 'World', 'finance': 'Finance', 'technology': 'Technology', 'energy': 'Energy', 'education': 'Education',
-          'health': 'Health', 'sports': 'Sports', 'culture': 'Culture', 'opinion': 'Opinion'}
+          'health': 'Health', 'sports': 'Sports', 'culture': 'Culture', 'opinion': 'Opinion', 'subscribers': 'For Subscribers'}
 sql("UPDATE #__menu SET params = '%s' WHERE home = 1 AND client_id = 0" % json.dumps({'show_intro': '0', 'show_page_heading': '0'}).replace("'", "''"))
 for alias in cats:
     if alias not in have:
-        cli('menu:item:create', '--state=published', '--menu=mainmenu', '--title=' + titles[alias], '--alias=' + alias, '--category-blog=' + alias, '--params=' + json.dumps(blog))
+        # For Subscribers lists its registered-only articles to guests too ("Show Unauthorised Links"), who get their intro and a login link
+        params = dict(blog, show_noauth='1') if alias == 'subscribers' else blog
+        cli('menu:item:create', '--state=published', '--menu=mainmenu', '--title=' + titles[alias], '--alias=' + alias, '--category-blog=' + alias, '--params=' + json.dumps(params))
+
+# The For Subscribers articles show guests their intro text and a link to log in, rather than a "not authorised" error
+sql("UPDATE #__content SET attribs = REPLACE(attribs, '\"show_noauth\":\"\"', '\"show_noauth\":\"1\"') WHERE catid = (SELECT id FROM #__categories WHERE alias = 'subscribers' AND extension = 'com_content')")
 
 # Info pages: a category of their own and a menu
 pages = [

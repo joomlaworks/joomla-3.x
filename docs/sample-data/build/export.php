@@ -34,7 +34,7 @@ foreach ($db->setQuery("SELECT * FROM #__content ORDER BY id")->loadObjectList()
 	$artById[$a->id] = $a->alias;
 	$data['articles'][] = array(
 		'title' => $a->title, 'alias' => $a->alias, 'category' => $catById[$a->catid], 'introtext' => $a->introtext, 'fulltext' => $a->fulltext,
-		'state' => (int) $a->state, 'featured' => (int) $a->featured, 'age' => $newest - strtotime($a->publish_up . ' UTC'),
+		'state' => (int) $a->state, 'featured' => (int) $a->featured, 'access' => (int) $a->access, 'age' => $newest - strtotime($a->publish_up . ' UTC'),
 		'created_by_alias' => $a->created_by_alias, 'images' => $a->images, 'urls' => $a->urls, 'attribs' => $a->attribs,
 		'metadesc' => $a->metadesc, 'metakey' => $a->metakey, 'metadata' => $a->metadata, 'hits' => (int) $a->hits,
 		'tags' => isset($map[$a->id]) ? $map[$a->id] : array(),

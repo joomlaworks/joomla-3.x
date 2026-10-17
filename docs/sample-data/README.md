@@ -41,6 +41,12 @@ authors and headlines, and, in some articles, a table, a list, a quote, an image
 The videos and posts (`news/media.json`) are real and were checked to exist and allow embedding (`news/verify_media.py`, through the
 oEmbed endpoints).
 
+It then adds a **For Subscribers** category: 20 in-depth articles only registered users may read (access level Registered, set by
+`build/import.py`'s `--access`). `news/setup.py` turns on "Show Unauthorised Links" for them and for their menu item, so guests see
+them listed, and an article's intro text with a link to log in; the rest needs an account. Each uses one of the section images no
+other article leads with (each section's 23 and 24). They're generated after the sections, so those stay as they were. The Sample
+Data plugin keeps an article's access level when the site has it.
+
 `blog/generate_content.py` writes `blog/content.json` from it: 20 of the News set's opinion articles as the posts of a personal blog
 (one fictional author, four topics, a post every few days).
 
