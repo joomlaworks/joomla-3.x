@@ -27,11 +27,31 @@ $share  = array(
 	'mail'     => array(JText::_('JGLOBAL_EMAIL'), 'mailto:?subject=' . rawurlencode($item->title) . '&body=' . rawurlencode($url)),
 );
 
+/*
+ * Readers without access to the article (shown it because "Show Unauthorised Links" is on) get its intro text only, and
+ * guests a link to log in and read the rest, as Joomla's own layout does: the view leaves that check to the layout
+ */
+$text  = $item->text;
+$login = '';
+
+if (!$item->params->get('access-view'))
+{
+	$text = JFactory::getUser()->get('guest') ? JHtml::_('content.prepare', $item->introtext, '', 'com_content.article') : '';
+
+	if ($text !== '' && $item->params->get('show_readmore') && (string) $item->fulltext !== '')
+	{
+		$active = JFactory::getApplication()->getMenu()->getActive();
+		$link   = new JUri(JRoute::_('index.php?option=com_users&view=login&Itemid=' . ($active ? (int) $active->id : 0), false));
+		$link->setVar('return', base64_encode(ContentHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language)));
+		$login  = JLayoutHelper::render('joomla.content.readmore', array('item' => $item, 'params' => $item->params, 'link' => $link));
+	}
+}
+
 // Info pages (the company menu): title and text only
 if (HammondHelper::isPage()) : ?>
 <article class="pageView">
 	<h1 class="pageTitle"><?php echo HammondHelper::e($item->title); ?></h1>
-	<div class="itemFullText"><?php echo HammondHelper::lazyImages($item->text, true); ?></div>
+	<div class="itemFullText"><?php echo HammondHelper::lazyImages($text, true) . $login; ?></div>
 </article>
 <?php return; endif; ?>
 <article class="articleView">
@@ -67,7 +87,7 @@ if (HammondHelper::isPage()) : ?>
 	<?php endif; ?>
 
 	<?php echo $item->event->beforeDisplayContent; ?>
-	<div class="itemFullText"><?php echo HammondHelper::lazyImages($item->text, $image['src'] === ''); ?></div>
+	<div class="itemFullText"><?php echo HammondHelper::lazyImages($text, $image['src'] === '') . $login; ?></div>
 	<?php echo $item->event->afterDisplayContent; ?>
 
 	<?php if (!empty($item->tags->itemTags) && JComponentHelper::isEnabled('com_tags')) : ?>

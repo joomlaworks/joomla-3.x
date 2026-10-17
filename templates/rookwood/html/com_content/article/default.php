@@ -20,6 +20,26 @@ $author = RookwoodHelper::author($item);
 $image  = RookwoodHelper::image($item, true);
 $intro  = trim(strip_tags($item->introtext)) !== '' ? RookwoodHelper::excerpt($item) : '';
 
+/*
+ * Readers without access to the article (shown it because "Show Unauthorised Links" is on) get its intro text only, and
+ * guests a link to log in and read the rest, as Joomla's own layout does: the view leaves that check to the layout
+ */
+$text  = $item->text;
+$login = '';
+
+if (!$item->params->get('access-view'))
+{
+	$text = JFactory::getUser()->get('guest') ? JHtml::_('content.prepare', $item->introtext, '', 'com_content.article') : '';
+
+	if ($text !== '' && $item->params->get('show_readmore') && (string) $item->fulltext !== '')
+	{
+		$active = JFactory::getApplication()->getMenu()->getActive();
+		$link   = new JUri(JRoute::_('index.php?option=com_users&view=login&Itemid=' . ($active ? (int) $active->id : 0), false));
+		$link->setVar('return', base64_encode(ContentHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language)));
+		$login  = JLayoutHelper::render('joomla.content.readmore', array('item' => $item, 'params' => $item->params, 'link' => $link));
+	}
+}
+
 // A page (an article with a menu item of its own, e.g. Studio or Contact): its title and lead in a band, then the text
 if (RookwoodHelper::isPage()) : ?>
 <article class="pageView">
@@ -33,7 +53,7 @@ if (RookwoodHelper::isPage()) : ?>
 		</div>
 	</header>
 	<?php echo $item->event->beforeDisplayContent; ?>
-	<div class="container prose pageText"><?php echo RookwoodHelper::lazyImages($item->text, $image['src'] === ''); ?></div>
+	<div class="container prose pageText"><?php echo RookwoodHelper::lazyImages($text, $image['src'] === '') . $login; ?></div>
 	<?php echo $item->event->afterDisplayContent; ?>
 </article>
 <?php return; endif; ?>
@@ -66,7 +86,7 @@ if (RookwoodHelper::isPage()) : ?>
 	<?php endif; ?>
 
 	<?php echo $item->event->beforeDisplayContent; ?>
-	<div class="container prose articleText"><?php echo RookwoodHelper::lazyImages($item->text, $image['src'] === ''); ?></div>
+	<div class="container prose articleText"><?php echo RookwoodHelper::lazyImages($text, $image['src'] === '') . $login; ?></div>
 	<?php echo $item->event->afterDisplayContent; ?>
 
 	<?php // Previous and next, from the "Content - Page Navigation" plugin (its own layout is empty in this template) ?>
