@@ -940,10 +940,10 @@ class JoomlaInstallerScript
 	public $restoreCoreExtensions = false;
 
 	/**
-	 * Gives the Media Manager's upload lists (allowed extensions, image extensions, MIME types) the current defaults on sites
-	 * which still have stock Joomla 3's: those listed types it couldn't upload (its MIME list had no OpenDocument, CSV or
-	 * icon types, and names PHP never reports for Excel and PowerPoint files) and none of today's (WebP, AVIF, MP4, WebM,
-	 * MP3, docx, xlsx, pptx...). A list the site's administrators changed is left as it is.
+	 * Gives the Media Manager's upload lists (allowed extensions, image extensions, MIME types) the current defaults, once, when
+	 * a site updates to 3.18: stock Joomla 3's listed types it couldn't upload (its MIME list had no OpenDocument, CSV or icon
+	 * types, and names PHP never reports for Excel and PowerPoint files) and none of today's (WebP, AVIF, MP4, WebM, MP3,
+	 * docx, xlsx, pptx...). Lists changed after that are left alone by later updates.
 	 *
 	 * @return  void
 	 *
@@ -951,15 +951,10 @@ class JoomlaInstallerScript
 	 */
 	protected function updateMediaUploadDefaults()
 	{
-		$stockExtensions = 'bmp,csv,doc,gif,ico,jpg,jpeg,odg,odp,ods,odt,pdf,png,ppt,txt,xcf,xls,BMP,CSV,DOC,GIF,ICO,JPG,JPEG,ODG,ODP,ODS,ODT,PDF,PNG,PPT,TXT,XCF,XLS';
-		$stockMime       = 'image/jpeg,image/gif,image/png,image/bmp,application/msword,application/excel,application/pdf,application/powerpoint,text/plain,application/x-zip';
-
-		// Stock values, also those of Joomla versions which still listed Flash files
-		$stock = array(
-			'upload_extensions' => array($stockExtensions, str_replace(array(',ppt,', ',PPT,'), array(',ppt,swf,', ',PPT,SWF,'), $stockExtensions)),
-			'image_extensions'  => array('bmp,gif,jpg,png'),
-			'upload_mime'       => array($stockMime, str_replace('image/bmp,', 'image/bmp,application/x-shockwave-flash,', $stockMime)),
-		);
+		if (!empty($this->fromVersion) && version_compare($this->fromVersion, '3.18.0', '>='))
+		{
+			return;
+		}
 
 		try
 		{
@@ -978,30 +973,24 @@ class JoomlaInstallerScript
 				return;
 			}
 
-			$params  = new JRegistry($row->params);
-			$changed = false;
+			$params = new JRegistry($row->params);
 
-			foreach ($stock as $name => $values)
+			foreach (array('upload_extensions', 'image_extensions', 'upload_mime') as $name)
 			{
-				$fields  = $form->xpath('//field[@name="' . $name . '"]');
-				$default = $fields ? (string) $fields[0]['default'] : '';
+				$fields = $form->xpath('//field[@name="' . $name . '"]');
 
-				if ($default !== '' && in_array(str_replace(' ', '', (string) $params->get($name)), $values, true))
+				if ($fields && (string) $fields[0]['default'] !== '')
 				{
-					$params->set($name, $default);
-					$changed = true;
+					$params->set($name, (string) $fields[0]['default']);
 				}
 			}
 
-			if ($changed)
-			{
-				$db->setQuery(
-					$db->getQuery(true)
-						->update($db->quoteName('#__extensions'))
-						->set($db->quoteName('params') . ' = ' . $db->quote($params->toString()))
-						->where($db->quoteName('extension_id') . ' = ' . (int) $row->extension_id)
-				)->execute();
-			}
+			$db->setQuery(
+				$db->getQuery(true)
+					->update($db->quoteName('#__extensions'))
+					->set($db->quoteName('params') . ' = ' . $db->quote($params->toString()))
+					->where($db->quoteName('extension_id') . ' = ' . (int) $row->extension_id)
+			)->execute();
 		}
 		catch (Exception $e)
 		{
