@@ -175,6 +175,373 @@ class MediaHelper
 	}
 
 	/**
+	 * The folder an editor's upload goes to, relative to the images folder: the editor's own folder ("uploads" when it names
+	 * none) and, as the Media Manager's "Organise Editor Uploads" option says, a folder for the year, month or day
+	 * (uploads/2026/10/18). Missing levels are created, each with an index.html.
+	 *
+	 * @param   string                     $folder  The folder the editor asked for
+	 * @param   \Joomla\Registry\Registry  $params  The Media Manager's options
+	 * @param   string                     $base    The images folder (absolute)
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	public function getEditorUploadFolder($folder, $params, $base)
+	{
+		$folder = trim(str_replace('\\', '/', (string) $folder), '/');
+		$folder = $folder === '' ? 'uploads' : $folder;
+
+		if (preg_match('#(^|/)\.\.?(/|$)#', $folder))
+		{
+			return '';
+		}
+
+		$formats  = array('day' => 'Y/m/d', 'month' => 'Y/m', 'year' => 'Y', 'none' => '');
+		$organise = (string) $params->get('upload_organise', 'day');
+		$format   = isset($formats[$organise]) ? $formats[$organise] : $formats['day'];
+
+		if ($format === '')
+		{
+			$target = $folder;
+		}
+		else
+		{
+			// The date where the site is
+			$date = \JFactory::getDate('now');
+			$date->setTimezone(new \DateTimeZone(\JFactory::getConfig()->get('offset', 'UTC') ?: 'UTC'));
+			$target = $folder . '/' . $date->format($format, true);
+		}
+
+		$path = rtrim(str_replace('\\', '/', (string) $base), '/');
+
+		foreach (explode('/', $target) as $part)
+		{
+			$path .= '/' . $part;
+
+			if (!is_dir($path))
+			{
+				if (!@mkdir($path, 0755))
+				{
+					return is_dir(rtrim(str_replace('\\', '/', (string) $base), '/') . '/' . $folder) ? $folder : '';
+				}
+
+				@file_put_contents($path . '/index.html', '<!DOCTYPE html><title></title>');
+			}
+		}
+
+		return $target;
+	}
+
+	/**
+	 * Whether uploaded images are optimised where they're uploaded from: "editors" (the editors' uploads) or "mediamanager"
+	 * (the Media Manager's upload form).
+	 *
+	 * @param   \Joomla\Registry\Registry  $params  The Media Manager's options
+	 * @param   string                     $where   editors or mediamanager
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	public function isOptimiseActive($params, $where)
+	{
+		return $where === 'editors' ? (bool) $params->get('optimise_editors', 1) : (bool) $params->get('optimise_mediamanager', 0);
+	}
+
+	/**
+	 * The image optimisation settings of the Media Manager's options.
+	 *
+	 * @param   \Joomla\Registry\Registry  $params  The Media Manager's options
+	 *
+	 * @return  array  width (0: no resizing), mobile (0: no mobile copy), webp, quality (1-100)
+	 *
+	 * @since   3.18.0
+	 */
+	public function getOptimiseSettings($params)
+	{
+		return array(
+			'width'   => max(0, (int) $params->get('optimise_width', 900)),
+			'mobile'  => max(0, (int) $params->get('optimise_mobile_width', 600)),
+			'webp'    => (bool) $params->get('optimise_webp', 1),
+			'quality' => min(100, max(1, (int) $params->get('optimise_quality', 90))),
+		);
+	}
+
+	/**
+	 * Optimises an uploaded image: turns it upright (phone photos are often stored sideways with an orientation flag), makes
+	 * it at most "width" pixels wide, saves it as WebP when asked (with transparency), drops its metadata (EXIF, which on
+	 * phone photos includes where they were taken), and adds a copy "mobile" pixels wide next to it (photo-600.webp), which
+	 * templates offer to small screens. GIFs (often animated), SVGs and files PHP can't read are left as they are, and so are
+	 * images too large for PHP's memory limit. Images aren't made larger.
+	 *
+	 * @param   string  $path      The image
+	 * @param   array   $settings  getOptimiseSettings(), plus keep_name (true: keep the file's name and format, for files
+	 *                             content already links to)
+	 *
+	 * @return  string  The image's path (another one when converted to WebP)
+	 *
+	 * @since   3.18.0
+	 */
+	public function optimiseImage($path, array $settings)
+	{
+		try
+		{
+			return $this->doOptimiseImage($path, $settings);
+		}
+		catch (\Throwable $e)
+		{
+			return $path;
+		}
+	}
+
+	/**
+	 * See optimiseImage().
+	 *
+	 * @param   string  $path      The image
+	 * @param   array   $settings  The settings
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	private function doOptimiseImage($path, array $settings)
+	{
+		$info = function_exists('imagecreatetruecolor') ? @getimagesize($path) : false;
+
+		if (!$info || empty($info[0]) || empty($info[1]))
+		{
+			return $path;
+		}
+
+		$readers = array(IMAGETYPE_JPEG => 'imagecreatefromjpeg', IMAGETYPE_PNG => 'imagecreatefrompng', IMAGETYPE_WEBP => 'imagecreatefromwebp');
+		$writers = array(IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_WEBP => 'webp');
+
+		if (function_exists('imagecreatefrombmp'))
+		{
+			$readers[IMAGETYPE_BMP] = 'imagecreatefrombmp';
+			$writers[IMAGETYPE_BMP] = 'bmp';
+		}
+
+		if (defined('IMAGETYPE_AVIF') && function_exists('imagecreatefromavif'))
+		{
+			$readers[IMAGETYPE_AVIF] = 'imagecreatefromavif';
+			$writers[IMAGETYPE_AVIF] = 'avif';
+		}
+
+		$type = (int) $info[2];
+
+		if (!isset($readers[$type]) || !function_exists($readers[$type]))
+		{
+			return $path;
+		}
+
+		list($width, $height) = $info;
+
+		// GD needs about 5 bytes a pixel, twice when resizing; an image too large for PHP's memory stays as it is
+		$limit = $this->toBytes(ini_get('memory_limit'));
+
+		if ($limit > 0 && memory_get_usage() + $width * $height * 10 > $limit * 0.9)
+		{
+			return $path;
+		}
+
+		$image = @call_user_func($readers[$type], $path);
+
+		if (!$image)
+		{
+			return $path;
+		}
+
+		// GD writes WebP only from true colour images (palette PNGs); transparency is kept
+		if (!imageistruecolor($image))
+		{
+			imagepalettetotruecolor($image);
+		}
+
+		imagealphablending($image, false);
+		imagesavealpha($image, true);
+
+		// Upright: the EXIF orientation of JPEG photos
+		$rotated = false;
+
+		if ($type === IMAGETYPE_JPEG && function_exists('exif_read_data'))
+		{
+			$exif        = @exif_read_data($path);
+			$orientation = is_array($exif) && isset($exif['Orientation']) ? (int) $exif['Orientation'] : 1;
+			$turns       = array(2 => array(0, true), 3 => array(180, false), 4 => array(180, true), 5 => array(270, true), 6 => array(270, false), 7 => array(90, true), 8 => array(90, false));
+
+			if (isset($turns[$orientation]))
+			{
+				list($angle, $flip) = $turns[$orientation];
+
+				if ($angle)
+				{
+					$image = imagerotate($image, $angle, 0);
+				}
+
+				if ($flip)
+				{
+					imageflip($image, IMG_FLIP_HORIZONTAL);
+				}
+
+				$width   = imagesx($image);
+				$height  = imagesy($image);
+				$rotated = true;
+			}
+		}
+
+		$keepName = !empty($settings['keep_name']);
+		$format   = !$keepName && !empty($settings['webp']) && function_exists('imagewebp') ? 'webp' : $writers[$type];
+		$resize   = $settings['width'] > 0 && $width > $settings['width'];
+		$quality  = (int) $settings['quality'];
+
+		// JPEG is always written again, which drops its metadata; other formats only when something changes
+		$rewrite = $resize || $rotated || $format !== $writers[$type] || $type === IMAGETYPE_JPEG;
+		$target  = $path;
+
+		if ($format !== $writers[$type])
+		{
+			$target = dirname($path) . '/' . pathinfo($path, PATHINFO_FILENAME) . '.' . $format;
+			$target = $target === $path ? $path : $this->getUniqueFilePath($target);
+		}
+
+		if ($rewrite)
+		{
+			$output = $resize ? $this->scaleImage($image, $settings['width']) : $image;
+
+			if (!$this->writeImage($output, $target, $format, $quality))
+			{
+				return $path;
+			}
+
+			if ($target !== $path)
+			{
+				@unlink($path);
+			}
+
+			if ($output !== $image)
+			{
+				$this->freeImage($image);
+				$image = $output;
+			}
+		}
+
+		// The copy for small screens, next to it: photo-600.webp
+		$width = imagesx($image);
+
+		if ($settings['mobile'] > 0 && $width > $settings['mobile'])
+		{
+			$mobile = dirname($target) . '/' . pathinfo($target, PATHINFO_FILENAME) . '-' . (int) $settings['mobile'] . '.' . pathinfo($target, PATHINFO_EXTENSION);
+
+			if (!is_file($mobile))
+			{
+				$small = $this->scaleImage($image, $settings['mobile']);
+				$this->writeImage($small, $mobile, $format, $quality);
+				$this->freeImage($small);
+			}
+		}
+
+		$this->freeImage($image);
+
+		return $target;
+	}
+
+	/**
+	 * An image scaled to a width, transparency kept.
+	 *
+	 * @param   resource|\GdImage  $image  The image
+	 * @param   integer            $width  The width
+	 *
+	 * @return  resource|\GdImage
+	 *
+	 * @since   3.18.0
+	 */
+	private function scaleImage($image, $width)
+	{
+		$height = max(1, (int) round(imagesy($image) * $width / imagesx($image)));
+		$scaled = imagecreatetruecolor($width, $height);
+
+		imagealphablending($scaled, false);
+		imagesavealpha($scaled, true);
+		imagefill($scaled, 0, 0, imagecolorallocatealpha($scaled, 0, 0, 0, 127));
+		imagecopyresampled($scaled, $image, 0, 0, 0, 0, $width, $height, imagesx($image), imagesy($image));
+
+		return $scaled;
+	}
+
+	/**
+	 * Writes an image in a format, through a temporary file renamed into place.
+	 *
+	 * @param   resource|\GdImage  $image    The image
+	 * @param   string             $path     Where
+	 * @param   string             $format   jpg, png, webp, avif or bmp
+	 * @param   integer            $quality  1-100 (lossy formats)
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	private function writeImage($image, $path, $format, $quality)
+	{
+		$temporary = $path . '.' . bin2hex(random_bytes(4)) . '.tmp';
+
+		switch ($format)
+		{
+			case 'jpg':
+				$written = imagejpeg($image, $temporary, $quality);
+				break;
+
+			case 'png':
+				imagesavealpha($image, true);
+				$written = imagepng($image, $temporary, 6);
+				break;
+
+			case 'webp':
+				imagesavealpha($image, true);
+				$written = imagewebp($image, $temporary, $quality);
+				break;
+
+			case 'avif':
+				$written = function_exists('imageavif') && imageavif($image, $temporary, $quality);
+				break;
+
+			case 'bmp':
+				$written = function_exists('imagebmp') && imagebmp($image, $temporary);
+				break;
+
+			default:
+				$written = false;
+		}
+
+		if (!$written || !is_file($temporary) || !@rename($temporary, $path))
+		{
+			@unlink($temporary);
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Frees a GD image (a no-op since PHP 8.0, deprecated since 8.5).
+	 *
+	 * @param   resource|\GdImage  $image  The image
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	private function freeImage($image)
+	{
+		if (PHP_VERSION_ID < 80000 && is_resource($image))
+		{
+			imagedestroy($image);
+		}
+	}
+
+	/**
 	 * A path for an uploaded file which doesn't replace another: the path itself when it's free, else with the time added to
 	 * the name (photo.jpg becomes photo-20261018-143502.jpg), and a number after that if even that is taken.
 	 *

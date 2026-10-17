@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
     <fieldset name="component" label="COM_MEDIA_FIELDSET_OPTIONS_LABEL">
-        <field name="upload_extensions" type="textarea" label="COM_MEDIA_FIELD_LEGAL_EXTENSIONS_LABEL" description="COM_MEDIA_FIELD_LEGAL_EXTENSIONS_DESC" rows="4" cols="50" default="jpg,jpeg,png,gif,webp,avif,bmp,ico,mp4,webm,mov,mp3,m4a,ogg,wav,pdf,txt,csv,rtf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp,odg,xcf" />
+        <field name="spacer_optimise" type="spacer" label="COM_MEDIA_HEADING_OPTIMISE" />
+        <field name="optimise_editors" type="radio" label="COM_MEDIA_FIELD_OPTIMISE_EDITORS_LABEL" description="COM_MEDIA_FIELD_OPTIMISE_EDITORS_DESC" class="btn-group btn-group-yesno" default="1" filter="integer">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="optimise_mediamanager" type="radio" label="COM_MEDIA_FIELD_OPTIMISE_MEDIAMANAGER_LABEL" description="COM_MEDIA_FIELD_OPTIMISE_MEDIAMANAGER_DESC" class="btn-group btn-group-yesno" default="0" filter="integer">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="optimise_width" type="number" label="COM_MEDIA_FIELD_OPTIMISE_WIDTH_LABEL" description="COM_MEDIA_FIELD_OPTIMISE_WIDTH_DESC" default="900" min="0" step="1" filter="integer" showon="optimise_editors:1[OR]optimise_mediamanager:1" />
+        <field name="optimise_mobile_width" type="number" label="COM_MEDIA_FIELD_OPTIMISE_MOBILE_WIDTH_LABEL" description="COM_MEDIA_FIELD_OPTIMISE_MOBILE_WIDTH_DESC" default="600" min="0" step="1" filter="integer" showon="optimise_editors:1[OR]optimise_mediamanager:1" />
+        <field name="optimise_webp" type="radio" label="COM_MEDIA_FIELD_OPTIMISE_WEBP_LABEL" description="COM_MEDIA_FIELD_OPTIMISE_WEBP_DESC" class="btn-group btn-group-yesno" default="1" filter="integer" showon="optimise_editors:1[OR]optimise_mediamanager:1">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="optimise_quality" type="number" label="COM_MEDIA_FIELD_OPTIMISE_QUALITY_LABEL" description="COM_MEDIA_FIELD_OPTIMISE_QUALITY_DESC" default="90" min="1" max="100" step="1" filter="integer" showon="optimise_editors:1[OR]optimise_mediamanager:1" />
+        <field name="upload_organise" type="list" class="input-xlarge" label="COM_MEDIA_FIELD_UPLOAD_ORGANISE_LABEL" description="COM_MEDIA_FIELD_UPLOAD_ORGANISE_DESC" default="day" filter="cmd">
+            <option value="day">COM_MEDIA_FIELD_UPLOAD_ORGANISE_DAY</option>
+            <option value="month">COM_MEDIA_FIELD_UPLOAD_ORGANISE_MONTH</option>
+            <option value="year">COM_MEDIA_FIELD_UPLOAD_ORGANISE_YEAR</option>
+            <option value="none">COM_MEDIA_FIELD_UPLOAD_ORGANISE_NONE</option>
+        </field>
+        <field name="spacer_uploads" type="spacer" label="COM_MEDIA_HEADING_UPLOADS" />
+        <field name="upload_extensions" type="textarea" class="input-xxlarge" label="COM_MEDIA_FIELD_LEGAL_EXTENSIONS_LABEL" description="COM_MEDIA_FIELD_LEGAL_EXTENSIONS_DESC" rows="4" cols="50" default="jpg,jpeg,png,gif,webp,avif,bmp,ico,mp4,webm,mov,mp3,m4a,ogg,wav,pdf,txt,csv,rtf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp,odg,xcf" />
         <field name="upload_maxsize" type="number" label="COM_MEDIA_FIELD_MAXIMUM_SIZE_LABEL" description="COM_MEDIA_FIELD_MAXIMUM_SIZE_DESC" validate="number" min="0" size="50" default="10" />
-        <field name="spacer1" type="spacer" label="COM_MEDIA_FOLDERS_PATH_LABEL" class="text" />
-        <field name="file_path" type="text" label="COM_MEDIA_FIELD_PATH_FILE_FOLDER_LABEL" description="COM_MEDIA_FIELD_PATH_FILE_FOLDER_DESC" size="50" default="images" validate="filePath" exclude="administrator|api|bin|cache|cli|components|includes|language|layouts|libraries|media|modules|plugins|templates|tmp" />
-        <field name="image_path" type="text" label="COM_MEDIA_FIELD_PATH_IMAGE_FOLDER_LABEL" description="COM_MEDIA_FIELD_PATH_IMAGE_FOLDER_DESC" size="50" default="images" validate="filePath" exclude="administrator|api|bin|cache|cli|components|includes|language|layouts|libraries|modules|plugins|templates|tmp" />
         <field name="restrict_uploads" type="radio" label="COM_MEDIA_FIELD_RESTRICT_UPLOADS_LABEL" description="COM_MEDIA_FIELD_RESTRICT_UPLOADS_DESC" class="btn-group btn-group-yesno" default="1">
             <option value="1">JYES</option>
             <option value="0">JNO</option>
@@ -14,10 +34,14 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
-        <field name="image_extensions" type="textarea" label="COM_MEDIA_FIELD_LEGAL_IMAGE_EXTENSIONS_LABEL" description="COM_MEDIA_FIELD_LEGAL_IMAGE_EXTENSIONS_DESC" rows="2" cols="50" default="jpg,jpeg,png,gif,webp,avif,bmp,ico" showon="restrict_uploads:1" />
-        <field name="ignore_extensions" type="textarea" label="COM_MEDIA_FIELD_IGNORED_EXTENSIONS_LABEL" description="COM_MEDIA_FIELD_IGNORED_EXTENSIONS_DESC" rows="2" cols="50" />
-        <field name="upload_mime" type="textarea" label="COM_MEDIA_FIELD_LEGAL_MIME_TYPES_LABEL" description="COM_MEDIA_FIELD_LEGAL_MIME_TYPES_DESC" rows="6" cols="50" default="image/jpeg,image/png,image/gif,image/webp,image/avif,image/bmp,image/x-ms-bmp,image/vnd.microsoft.icon,image/x-icon,image/x-xcf,video/mp4,video/webm,video/quicktime,audio/mpeg,audio/mp4,audio/x-m4a,audio/ogg,audio/wav,audio/x-wav,application/pdf,text/plain,text/csv,text/rtf,application/rtf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.ms-office,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.oasis.opendocument.text,application/vnd.oasis.opendocument.spreadsheet,application/vnd.oasis.opendocument.presentation,application/vnd.oasis.opendocument.graphics" showon="restrict_uploads:1" />
-        <field name="upload_mime_illegal" type="textarea" label="COM_MEDIA_FIELD_ILLEGAL_MIME_TYPES_LABEL" description="COM_MEDIA_FIELD_ILLEGAL_MIME_TYPES_DESC" rows="2" cols="50" default="text/html" showon="restrict_uploads:1" />
+        <field name="image_extensions" type="textarea" class="input-xxlarge" label="COM_MEDIA_FIELD_LEGAL_IMAGE_EXTENSIONS_LABEL" description="COM_MEDIA_FIELD_LEGAL_IMAGE_EXTENSIONS_DESC" rows="2" cols="50" default="jpg,jpeg,png,gif,webp,avif,bmp,ico" showon="restrict_uploads:1" />
+        <field name="ignore_extensions" type="textarea" class="input-xxlarge" label="COM_MEDIA_FIELD_IGNORED_EXTENSIONS_LABEL" description="COM_MEDIA_FIELD_IGNORED_EXTENSIONS_DESC" rows="2" cols="50" />
+        <field name="upload_mime" type="textarea" class="input-xxlarge" label="COM_MEDIA_FIELD_LEGAL_MIME_TYPES_LABEL" description="COM_MEDIA_FIELD_LEGAL_MIME_TYPES_DESC" rows="6" cols="50" default="image/jpeg,image/png,image/gif,image/webp,image/avif,image/bmp,image/x-ms-bmp,image/vnd.microsoft.icon,image/x-icon,image/x-xcf,video/mp4,video/webm,video/quicktime,audio/mpeg,audio/mp4,audio/x-m4a,audio/ogg,audio/wav,audio/x-wav,application/pdf,text/plain,text/csv,text/rtf,application/rtf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.ms-office,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.oasis.opendocument.text,application/vnd.oasis.opendocument.spreadsheet,application/vnd.oasis.opendocument.presentation,application/vnd.oasis.opendocument.graphics" showon="restrict_uploads:1" />
+        <field name="upload_mime_illegal" type="textarea" class="input-xxlarge" label="COM_MEDIA_FIELD_ILLEGAL_MIME_TYPES_LABEL" description="COM_MEDIA_FIELD_ILLEGAL_MIME_TYPES_DESC" rows="2" cols="50" default="text/html" showon="restrict_uploads:1" />
+        <field name="spacer_folders" type="spacer" label="COM_MEDIA_HEADING_FOLDERS" />
+        <field name="folders_note" type="note" class="alert alert-warning" description="COM_MEDIA_FOLDERS_NOTE" />
+        <field name="file_path" type="text" label="COM_MEDIA_FIELD_PATH_FILE_FOLDER_LABEL" description="COM_MEDIA_FIELD_PATH_FILE_FOLDER_DESC" size="50" default="images" validate="filePath" exclude="administrator|api|bin|cache|cli|components|includes|language|layouts|libraries|media|modules|plugins|templates|tmp" />
+        <field name="image_path" type="text" label="COM_MEDIA_FIELD_PATH_IMAGE_FOLDER_LABEL" description="COM_MEDIA_FIELD_PATH_IMAGE_FOLDER_DESC" size="50" default="images" validate="filePath" exclude="administrator|api|bin|cache|cli|components|includes|language|layouts|libraries|modules|plugins|templates|tmp" />
     </fieldset>
     <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
         <field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" filter="rules" validate="rules" component="com_media" section="component" />

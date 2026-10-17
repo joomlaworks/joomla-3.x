@@ -203,6 +203,14 @@ class MediaControllerFile extends JControllerLegacy
 				return false;
 			}
 
+			// Resized, upright, without metadata, WebP and a copy for small screens, when the options say so for the Media Manager
+			$params = JComponentHelper::getParams('com_media');
+
+			if ($mediaHelper->isOptimiseActive($params, 'mediamanager'))
+			{
+				$object_file->filepath = $mediaHelper->optimiseImage($object_file->filepath, $mediaHelper->getOptimiseSettings($params));
+			}
+
 			// Trigger the onContentAfterSave event.
 			$dispatcher->trigger('onContentAfterSave', array('com_media.file', &$object_file, true));
 			$this->setMessage(JText::sprintf('COM_MEDIA_UPLOAD_COMPLETE', substr($object_file->filepath, strlen(COM_MEDIA_BASE))));

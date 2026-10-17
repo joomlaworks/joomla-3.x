@@ -54,6 +54,13 @@ class MediaControllerFile extends JControllerLegacy
 		// Instantiate the media helper
 		$mediaHelper = new JHelperMedia;
 
+		// Editors upload here (TinyMCE, EasyMDE): into uploads when they name no folder, and into the year, month or day's
+		// folder as the "Organise Editor Uploads" option says (created only for users who may upload)
+		if ($user->authorise('core.create', 'com_media'))
+		{
+			$folder = $mediaHelper->getEditorUploadFolder($folder, $params, COM_MEDIA_BASE);
+		}
+
 		// Limits of 0 or -1 (the Media Manager's "no limit", PHP's unlimited memory_limit or post_max_size) don't apply, as in file.php
 		$contentLength = (int) $this->input->server->get('CONTENT_LENGTH', 0, 'INT');
 		$tooLarge      = false;
@@ -245,6 +252,12 @@ class MediaControllerFile extends JControllerLegacy
 				catch (RuntimeException $exception)
 				{
 					// Informational log only
+				}
+
+				// Resized, upright, without metadata, WebP and a copy for small screens, as the Media Manager's options say
+				if ($mediaHelper->isOptimiseActive($params, 'editors'))
+				{
+					$object_file->filepath = $mediaHelper->optimiseImage($object_file->filepath, $mediaHelper->getOptimiseSettings($params));
 				}
 
 				$returnUrl = str_replace(JPATH_ROOT, '',  $object_file->filepath);

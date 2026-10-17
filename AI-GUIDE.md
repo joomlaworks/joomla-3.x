@@ -287,6 +287,12 @@ php cli/joomla.php database:optimize
 php cli/joomla.php database:convert --to=sqlite  # or --to=postgresql / --to=mysqli with --host, --user, --password, --database
 ```
 
+**Images**
+```
+php cli/joomla.php media:optimize images/uploads --dry-run   # what would change (also media:optimise)
+php cli/joomla.php media:optimize images/uploads             # resize, turn upright, drop metadata, add small screen copies
+```
+
 **Logs, cache and search**
 ```
 php cli/joomla.php log:list
@@ -361,6 +367,7 @@ Housekeeping commands like these aren't recorded in the User Actions Log, so it 
 | Users | `user:list`, `user:add`, `user:delete`, `user:block`, `user:unblock`, `user:reset-password`, `user:addtogroup`, `user:removefromgroup` |
 | Extensions | `extension:list`, `extension:install`, `extension:update`, `extension:reinstall`, `extension:remove`, `extension:enable`, `extension:disable`, `extension:discover`, `extension:discover:list`, `extension:discover:install`, `update:extensions:check` |
 | Database | `maintenance:database`, `database:export`, `database:import`, `database:convert`, `database:optimize` |
+| Media | `media:optimize` (also `media:optimise`) |
 | Logs | `log:list`, `log:tail`, `actionlog:list` |
 | Cache, sessions, search | `cache:clean`, `session:gc`, `session:metadata:gc`, `finder:index` |
 | AI assistants | `mcp:serve` |

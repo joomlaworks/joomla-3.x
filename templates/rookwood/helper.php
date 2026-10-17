@@ -479,12 +479,31 @@ abstract class RookwoodHelper
 	 */
 	public static function srcset(array $image)
 	{
+		static $mobile = null;
+
 		$path = ltrim((string) $image['path'], '/');
 
-		if ($path !== '' && !preg_match('#^(https?:)?//#i', $path) && preg_match('/^(.+)\.(webp|jpe?g|png|avif)$/i', $path, $parts)
-			&& is_file(JPATH_ROOT . '/' . $parts[1] . '-960.' . $parts[2]))
+		if ($path === '' || preg_match('#^(https?:)?//#i', $path) || !preg_match('/^(.+)\.(webp|jpe?g|png|avif)$/i', $path, $parts)
+			|| !is_file(JPATH_ROOT . '/' . $path))
 		{
-			return static::url($parts[1] . '-960.' . $parts[2]) . ' 960w, ' . $image['src'] . ' 1920w';
+			return '';
+		}
+
+		// The small screen copy the Media Manager makes on upload (photo-600.webp, its Small Screen Width), or the sample images' -960
+		if ($mobile === null)
+		{
+			$mobile = (int) JComponentHelper::getParams('com_media')->get('optimise_mobile_width', 600);
+		}
+
+		foreach (array_unique(array_filter(array($mobile, 960))) as $width)
+		{
+			if (is_file(JPATH_ROOT . '/' . $parts[1] . '-' . $width . '.' . $parts[2]))
+			{
+				$size = @getimagesize(JPATH_ROOT . '/' . $path);
+
+				return $size && $size[0] > $width
+					? static::url($parts[1] . '-' . $width . '.' . $parts[2]) . ' ' . $width . 'w, ' . $image['src'] . ' ' . (int) $size[0] . 'w' : '';
+			}
 		}
 
 		return '';
