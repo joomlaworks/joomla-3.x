@@ -159,8 +159,14 @@ class ConfigModelApplication extends ConfigModelForm
 			}
 		}
 
-		// Switching to another kind of database would leave the site's data behind, in the old database
-		if ($this->getDatabaseFamily($config->get('dbtype')) !== $this->getDatabaseFamily($data['dbtype']))
+		/*
+		 * Switching to another kind of database would leave the site's data behind, in the old database. Unless that database
+		 * can't be reached or doesn't hold the site (e.g. a copy whose settings name a database which doesn't exist): pointing
+		 * the site at another one, which must connect (below), is how its settings are repaired.
+		 */
+		$switching = $this->getDatabaseFamily($config->get('dbtype')) !== $this->getDatabaseFamily($data['dbtype']);
+
+		if ($switching && $this->canReachCurrentDatabase())
 		{
 			$app->enqueueMessage(JText::_('COM_CONFIG_ERROR_DATABASE_TYPE_SWITCH'), 'error');
 
@@ -170,7 +176,7 @@ class ConfigModelApplication extends ConfigModelForm
 		// A new SQLite database folder (or file, e.g. from the command line) moves the database there
 		$sqliteMove = null;
 
-		if ($data['dbtype'] === 'mysqlonsqlite')
+		if ($data['dbtype'] === 'mysqlonsqlite' && !$switching)
 		{
 			$sqliteMove = $this->getSqliteMoveTarget($data);
 
@@ -540,10 +546,37 @@ class ConfigModelApplication extends ConfigModelForm
 			$this->removeOldSqliteDatabase($oldPath, $sqliteMove);
 		}
 
+		if ($switching)
+		{
+			$app->enqueueMessage(JText::_('COM_CONFIG_DATABASE_TYPE_SWITCHED'), 'warning');
+		}
+
 		// Trigger the after save event.
 		$dispatcher->trigger('onApplicationAfterSave', array($config));
 
 		return $result;
+	}
+
+	/**
+	 * Whether the site's current database answers and holds the site (its extensions table), for the type switch check of save():
+	 * a server which answers without the database, or a database without the site's tables, leaves no data behind.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	private function canReachCurrentDatabase()
+	{
+		try
+		{
+			$db = JFactory::getDbo();
+
+			return in_array(strtolower($db->replacePrefix('#__extensions')), array_map('strtolower', $db->getTableList()), true);
+		}
+		catch (Exception $e)
+		{
+			return false;
+		}
 	}
 
 	/**
