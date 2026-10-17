@@ -63,6 +63,9 @@
 :root[data-scheme] .js-editor-easymde .editor-toolbar i.separator {border-left-color:var(--c-border);border-right-color:transparent;}
 :root[data-scheme] .js-editor-easymde .EasyMDEContainer .CodeMirror,:root[data-scheme] .js-editor-easymde .editor-preview,:root[data-scheme] .js-editor-easymde .editor-preview-side,:root[data-scheme] .EasyMDEContainer .CodeMirror-fullscreen,:root[data-scheme] .EasyMDEContainer .editor-toolbar.fullscreen {background:var(--c-bg);color:var(--c-fg);}
 :root[data-scheme] .js-editor-easymde .CodeMirror-cursor {border-left-color:var(--c-fg);}
+/* The browser's own selection (the editor's input is contenteditable, for spell checking): CodeMirror sets only its background,
+   so Prothero's page-wide ::selection text colour (--c-bg) landed on CodeMirror's lilac; Prothero's inverted selection instead */
+:root[data-scheme] .js-editor-easymde .CodeMirror-line::selection,:root[data-scheme] .js-editor-easymde .CodeMirror-line > span::selection,:root[data-scheme] .js-editor-easymde .CodeMirror-line > span > span::selection {background:var(--c-fg);color:var(--c-bg);}
 :root[data-scheme] .js-editor-easymde .EasyMDEContainer .CodeMirror-focused .CodeMirror-selected,:root[data-scheme] .js-editor-easymde .CodeMirror-selected {background:var(--c-muted);}
 :root[data-scheme] .js-editor-easymde .editor-statusbar {color:var(--c-muted-fg);}
 /* Monochrome syntax colours (CodeMirror's are made for white): markup and Markdown's own signs muted, text and values in the text colour */
