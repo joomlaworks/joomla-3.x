@@ -243,6 +243,8 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 		}
 		else
 		{
+			$keys = $this->getMysqlColumnKeys($tableSub, $defaultSchema);
+
 			foreach ($fields as $field)
 			{
 				if (stristr(strtolower((string) $field->type), 'character varying'))
@@ -266,8 +268,12 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 					'Field' => $field->column_name,
 					'Type' => $field->type,
 					'Null' => $field->null,
-					// @todo: Improve query above to return primary key info as well
-					// 'Key' => ($field->PK == '1' ? 'PRI' : '')
+					// Joomla 3.x UTD: MySQL's other fields too, for code written against its output (e.g. reading Extra or Key)
+					'Collation' => null,
+					'Key' => isset($keys[$field->column_name]) ? $keys[$field->column_name] : '',
+					'Extra' => preg_match('/^nextval\(/i', (string) $field->Default) ? 'auto_increment' : '',
+					'Privileges' => '',
+					'Comment' => (string) $field->comments,
 				);
 			}
 		}
@@ -282,6 +288,110 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Joomla 3.x UTD: the columns' Key field as MySQL's SHOW COLUMNS gives it, for getTableColumns(): PRI for the columns of the
+	 * primary key (without one, of the first unique index whose columns are all NOT NULL, as MySQL shows it), UNI for a column
+	 * with a unique index of its own, MUL for the first column of another index. A query of its own, so that a failure only
+	 * leaves the field empty.
+	 *
+	 * @param   string  $table   The table name, prefix replaced
+	 * @param   string  $schema  The schema
+	 *
+	 * @return  array  Column name => PRI, UNI or MUL
+	 *
+	 * @since   3.18.0
+	 */
+	protected function getMysqlColumnKeys($table, $schema)
+	{
+		$keys = array();
+
+		try
+		{
+			$this->setQuery('
+				SELECT i.indexrelid AS "index", a.attname AS "column", i.indisprimary AS "isPrimary", i.indisunique AS "isUnique",
+					a.attnotnull AS "notNull", CASE WHEN a.attnum = i.indkey[0] THEN 1 ELSE 0 END AS "isFirst", i.indnatts AS "columns"
+				FROM pg_catalog.pg_index i
+				JOIN pg_catalog.pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)
+				WHERE i.indrelid =
+					(SELECT oid FROM pg_catalog.pg_class WHERE relname=' . $this->quote($table) . '
+						AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = ' . $this->quote($schema) . ')
+					)
+				ORDER BY i.indexrelid'
+			);
+
+			$true    = array(true, 't', 1, '1');
+			$indexes = array();
+
+			foreach ($this->loadObjectList() as $row)
+			{
+				$id = (string) $row->index;
+
+				if (!isset($indexes[$id]))
+				{
+					$indexes[$id] = array('primary' => in_array($row->isPrimary, $true, true), 'unique' => in_array($row->isUnique, $true, true),
+						'notNull' => true, 'columns' => array(), 'first' => null, 'count' => (int) $row->columns);
+				}
+
+				$indexes[$id]['columns'][] = $row->column;
+				$indexes[$id]['notNull']   = $indexes[$id]['notNull'] && in_array($row->notNull, $true, true);
+
+				if ((int) $row->isFirst === 1)
+				{
+					$indexes[$id]['first'] = $row->column;
+				}
+			}
+
+			// The primary key; without one, MySQL shows the first unique index whose columns are all NOT NULL as the primary key
+			$primary = null;
+
+			foreach ($indexes as $id => $index)
+			{
+				if ($index['primary'])
+				{
+					$primary = $id;
+				}
+			}
+
+			foreach ($indexes as $id => $index)
+			{
+				if ($primary === null && $index['unique'] && $index['notNull'])
+				{
+					$primary = $id;
+				}
+			}
+
+			if ($primary !== null)
+			{
+				foreach ($indexes[$primary]['columns'] as $column)
+				{
+					$keys[$column] = 'PRI';
+				}
+			}
+
+			foreach ($indexes as $id => $index)
+			{
+				if ($id !== $primary && $index['unique'] && $index['count'] === 1 && !isset($keys[$index['first']]))
+				{
+					$keys[$index['first']] = 'UNI';
+				}
+			}
+
+			foreach ($indexes as $id => $index)
+			{
+				if ($id !== $primary && $index['first'] !== null && !isset($keys[$index['first']]))
+				{
+					$keys[$index['first']] = 'MUL';
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			return array();
+		}
+
+		return $keys;
 	}
 
 	/**
