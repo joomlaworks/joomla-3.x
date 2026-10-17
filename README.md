@@ -75,7 +75,7 @@ Summary of changes:
 - Fixed PHP 8.2+/8.5 deprecation warnings in text logs (e.g. during updates), the administrator's toolbar title, registries and sessions, and SQL list fields
 - Users' and Contacts' Options, the Multilingual Status, batch copy/move of articles and Privacy's data exports no longer fail when Fields or Contacts has been uninstalled
 - "User - Joomla!" can no longer be uninstalled: without it nobody could log in
-- PostgreSQL: pages no longer fail with Debug System on, or with caching on (PHP 8.1+), new items whose form posts an empty ID save again, and `insertid()` works after an INSERT given as text
+- PostgreSQL: pages no longer fail with Debug System on, or with caching on (PHP 8.1+), new items whose form posts an empty ID save again, `insertid()` works after an INSERT given as text, and Smart Search no longer scans its whole links table for each item it indexes
 - MySQL: no more "mysqli_ping() is deprecated" warnings on PHP 8.4+
 - SQLite: searches ignore case and accents in every language, as on MySQL (they did for English letters only)
 - Search: Greek (and other non-Latin) searches typed without accents find their results again, on every database
