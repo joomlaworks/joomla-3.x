@@ -58,7 +58,7 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
 	 * @var    string
 	 * @since  12.1
 	 */
-	protected static $dbMinimum = '9.1.0';
+	protected static $dbMinimum = '9.5.0';
 
 	/**
 	 * Operator used for concatenation

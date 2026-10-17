@@ -51,7 +51,7 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 	 * @var    string
 	 * @since  3.9.0
 	 */
-	protected static $dbMinimum = '9.1.0';
+	protected static $dbMinimum = '9.5.0';
 
 	/**
 	 * Operator used for concatenation
