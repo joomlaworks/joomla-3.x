@@ -89,6 +89,7 @@ class JoomlaInstallerScript
 		// After the data migrations, which may add rows for newly bundled core extensions (e.g. Little WAF)
 		$this->runDataMigrations();
 		$this->updateMediaUploadDefaults();
+		$this->switchDefaultEditor();
 		$this->fixCoreCategorySubmenus();
 
 		if ($this->restoreCoreExtensions)
@@ -941,6 +942,87 @@ class JoomlaInstallerScript
 	 * @since  3.16.0
 	 */
 	public $restoreCoreExtensions = false;
+
+	/**
+	 * Makes TinyMCE 8 the site's default editor, once, when a site updates to 3.18: only on sites still using the old stock
+	 * default (TinyMCE 4, "tinymce", now "Editor - TinyMCE (legacy)"), and only when TinyMCE 8 is installed and enabled. A
+	 * site which chose another editor (CodeMirror, None, a third-party one) keeps it, and so do users who chose one in their
+	 * profile.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function switchDefaultEditor()
+	{
+		if (!empty($this->fromVersion) && version_compare($this->fromVersion, '3.18.0', '>='))
+		{
+			return;
+		}
+
+		$file = JPATH_CONFIGURATION . '/configuration.php';
+
+		try
+		{
+			if (!class_exists('JConfig') || !is_file($file))
+			{
+				return;
+			}
+
+			$config = new JRegistry(new JConfig);
+
+			if ($config->get('editor') !== 'tinymce')
+			{
+				return;
+			}
+
+			$db      = JFactory::getDbo();
+			$enabled = (int) $db->setQuery(
+				$db->getQuery(true)
+					->select('COUNT(*)')
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+					->where($db->quoteName('folder') . ' = ' . $db->quote('editors'))
+					->where($db->quoteName('element') . ' = ' . $db->quote('tinymce_latest'))
+					->where($db->quoteName('enabled') . ' = 1')
+			)->loadResult();
+
+			if (!$enabled || !is_file(JPATH_PLUGINS . '/editors/tinymce_latest/tinymce_latest.php'))
+			{
+				return;
+			}
+
+			$config->set('editor', 'tinymce_latest');
+
+			// As Global Configuration writes it, keeping the file's permissions as they were
+			jimport('joomla.filesystem.file');
+
+			$permissions = fileperms($file) & 0777;
+
+			if (!is_writable($file))
+			{
+				@chmod($file, 0644);
+			}
+
+			$written = JFile::write($file, $config->toString('PHP', array('class' => 'JConfig', 'closingtag' => false, 'sort' => true)));
+
+			@chmod($file, $permissions);
+
+			if (function_exists('opcache_invalidate'))
+			{
+				opcache_invalidate($file);
+			}
+
+			if ($written)
+			{
+				JFactory::getConfig()->set('editor', 'tinymce_latest');
+			}
+		}
+		catch (Exception $e)
+		{
+			// Not worth failing the update for: the site keeps its editor
+		}
+	}
 
 	/**
 	 * Gives the Media Manager's upload lists (allowed extensions, image extensions, MIME types) the current defaults, once, when
