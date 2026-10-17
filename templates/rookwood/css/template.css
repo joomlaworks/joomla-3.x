@@ -401,7 +401,11 @@ ul.menu.buttons {display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;ma
 .prose h3 {margin:1.6em 0 .5em;}
 .prose a {color:var(--c-ink);text-decoration:underline;text-decoration-color:var(--c-accent);text-decoration-thickness:2px;text-underline-offset:3px;}
 .prose a:hover {color:var(--c-accent);}
+/* Buttons in the text (e.g. Joomla's "Register to read more"): the button's own colours, not the text's links */
 .prose a.btn {text-decoration:none;}
+.prose a.btn:not(.btn-link,.btnPrimary) {color:var(--c-ink);}
+.prose a.btn:not(.btn-link,.btnPrimary):hover {color:var(--c-bg);}
+.prose a.btnPrimary,.prose a.btnPrimary:hover {color:var(--c-on-accent);}
 .prose img {border-radius:var(--radius);}
 .prose figure {margin:2em 0;}
 .prose figcaption {margin-top:10px;font-size:.88rem;color:var(--c-muted);}

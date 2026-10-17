@@ -459,6 +459,8 @@ body.megaOpen {overflow:hidden;}
 .itemFullText h2 {font-size:1.6rem;margin:1.6em 0 .6em;}
 .itemFullText h3 {font-size:1.3rem;margin:1.4em 0 .5em;}
 .itemFullText a {color:var(--c-ink);text-decoration:underline;text-decoration-color:var(--c-accent);text-decoration-thickness:2px;text-underline-offset:3px;}
+/* Buttons in the text (e.g. Joomla's "Register to read more"): the button's own look, not the text's links */
+.itemFullText a.btn:not(.btn-link) {color:var(--c-white);font-family:var(--fh);line-height:1.55;text-decoration:none;}
 .itemFullText ul,.itemFullText ol {padding-left:1.3em;}
 .itemFullText li {margin-bottom:.4em;}
 .itemFullText li::marker {color:var(--c-accent);font-family:var(--fh);font-weight:800;}

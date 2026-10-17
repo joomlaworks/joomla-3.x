@@ -353,6 +353,9 @@ body:not(.isHome) .mainNav ul.menu > li.default > a:hover {background:var(--c-so
 .postContent h3 {margin:1.5em 0 .5em;font-size:1.35rem;}
 .postContent a {color:var(--c-ink);text-decoration:underline;text-decoration-color:var(--tone);text-decoration-thickness:.18em;text-underline-offset:2px;}
 .postContent a:hover {background:var(--tone);color:var(--c-on-tone);text-decoration-color:transparent;}
+/* Buttons in the text (e.g. Joomla's "Register to read more"): the button's own look, not the text's links */
+.postContent a.btn:not(.btn-link) {color:var(--c-paper);font-family:var(--fh);line-height:1.6;text-decoration:none;}
+.postContent a.btn:not(.btn-link):hover {background:var(--t1);color:var(--c-on-tone);}
 .postContent ul,.postContent ol {padding-left:1.3em;}
 .postContent li {margin-bottom:.45em;}
 .postContent li::marker {color:var(--c-ink);font-family:var(--fh);font-weight:800;}
