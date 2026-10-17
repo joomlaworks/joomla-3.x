@@ -674,7 +674,7 @@ SQL;
 			\JPath::setPermissions($file, '0644');
 		}
 
-		if (!\JFile::write($file, $config->toString('PHP', array('class' => 'JConfig', 'closingtag' => false))))
+		if (!\JFile::write($file, $config->toString('PHP', array('class' => 'JConfig', 'closingtag' => false, 'sort' => true))))
 		{
 			$io->error($failure ?: 'Cannot write configuration.php. The new database is ready; set these options by hand: '
 				. json_encode(array_diff_key($changes, array('password' => true))));

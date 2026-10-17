@@ -154,7 +154,7 @@ class InstallationModelConfiguration extends JModelBase
 		$registry->set('shared_session', 0);
 
 		// Generate the configuration class string buffer.
-		$buffer = $registry->toString('PHP', array('class' => 'JConfig', 'closingtag' => false));
+		$buffer = $registry->toString('PHP', array('class' => 'JConfig', 'closingtag' => false, 'sort' => true));
 
 		// Build the configuration file path.
 		$path = JPATH_CONFIGURATION . '/configuration.php';

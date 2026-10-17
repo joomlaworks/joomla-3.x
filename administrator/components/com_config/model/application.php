@@ -813,7 +813,7 @@ class ConfigModelApplication extends ConfigModelForm
 		}
 
 		// Attempt to write the configuration file as a PHP class named JConfig.
-		$configuration = $config->toString('PHP', array('class' => 'JConfig', 'closingtag' => false));
+		$configuration = $config->toString('PHP', array('class' => 'JConfig', 'closingtag' => false, 'sort' => true));
 
 		if (!JFile::write($file, $configuration))
 		{

@@ -34,9 +34,16 @@ class Php extends AbstractRegistryFormat
 		$class = !empty($params['class']) ? $params['class'] : 'Registry';
 
 		// Build the object variables string
-		$vars = '';
+		$vars       = '';
+		$properties = get_object_vars($object);
 
-		foreach (get_object_vars($object) as $k => $v)
+		// Joomla 3.x UTD patch: 'sort' writes the properties in alphabetical order (configuration.php, easier to read)
+		if (!empty($params['sort']))
+		{
+			ksort($properties, SORT_STRING | SORT_FLAG_CASE);
+		}
+
+		foreach ($properties as $k => $v)
 		{
 			// Joomla 3.x UTD patch: only valid property names. The name is written as it is, so anything else would be PHP code in
 			// the file (e.g. configuration.php, which every request runs)
