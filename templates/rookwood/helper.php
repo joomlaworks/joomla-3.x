@@ -74,6 +74,7 @@ abstract class RookwoodHelper
 		foreach (static::stylesheets() as $stylesheet)
 		{
 			$document->addStyleSheet($stylesheet);
+			static::preload($stylesheet, 'style');
 		}
 
 		$document->addHeadLink($base . '/images/favicon.svg', 'icon', 'rel', array('type' => 'image/svg+xml'));
@@ -83,7 +84,9 @@ abstract class RookwoodHelper
 			return $page;
 		}
 
-		$document->addScript($base . '/js/template.js?t=' . date('Ymd_Hi', filemtime(__DIR__ . '/js/template.js')), array(), array('defer' => true));
+		$script = $base . '/js/template.js?t=' . date('Ymd_Hi', filemtime(__DIR__ . '/js/template.js'));
+		$document->addScript($script, array(), array('defer' => true));
+		static::preload($script, 'script');
 
 		$app    = JFactory::getApplication();
 		$input  = $app->input;
@@ -259,6 +262,87 @@ abstract class RookwoodHelper
 	}
 
 	/**
+	 * Adds a preload hint. Joomla 3.x UTD (3.18+) writes it before the stylesheets and also sends it as an HTTP Link header,
+	 * which reaches the browser before the page (and which CDNs such as Cloudflare turn into 103 Early Hints); on Joomla
+	 * versions without addPreload() it does nothing.
+	 *
+	 * @param   string  $href     The resource
+	 * @param   string  $as       What it is (style, script, image...)
+	 * @param   array   $attribs  More attributes
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function preload($href, $as, $attribs = array())
+	{
+		$document = JFactory::getDocument();
+
+		if (method_exists($document, 'addPreload'))
+		{
+			$document->addPreload($href, $as, $attribs);
+		}
+	}
+
+	/**
+	 * Preloads the article's main image, which the article view shows at the top (fetchpriority high), with the same srcset
+	 * and sizes as its img(), so the browser preloads the size it will use.
+	 *
+	 * @param   array   $image  image()'s result
+	 * @param   string  $sizes  The sizes attribute its img() gets
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function preloadImage(array $image, $sizes = '100vw')
+	{
+		if ($image['src'] === '')
+		{
+			return;
+		}
+
+		$attribs = array('fetchpriority' => 'high');
+		$srcset  = static::srcset($image);
+
+		if ($srcset !== '')
+		{
+			$attribs['imagesrcset'] = $srcset;
+			$attribs['imagesizes']  = $sizes;
+		}
+
+		static::preload($image['src'], 'image', $attribs);
+	}
+
+	/**
+	 * Resource hints for what an article's text embeds: YouTube videos load lazily, often below the first screen, so only
+	 * their host name is resolved early (a preconnect would mostly go unused).
+	 *
+	 * @param   string  $text  The article's text
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function embedHints($text)
+	{
+		$document = JFactory::getDocument();
+
+		if (!method_exists($document, 'addDnsPrefetch'))
+		{
+			return;
+		}
+
+		foreach (array('https://www.youtube-nocookie.com/embed/', 'https://www.youtube.com/embed/') as $embed)
+		{
+			if (strpos((string) $text, $embed) !== false)
+			{
+				$document->addDnsPrefetch($embed);
+			}
+		}
+	}
+
+	/**
 	 * The template's stylesheets: css/template.css, then css/custom.css when the site has one. custom.css is the site's own CSS:
 	 * it isn't one of the template's files, so no update (Joomla Update, an upload of the files or the command line) touches it.
 	 * Each URL carries the file's modification time, so browsers fetch a changed file.
@@ -385,6 +469,28 @@ abstract class RookwoodHelper
 	}
 
 	/**
+	 * An image's srcset when a smaller copy sits next to it (photo-960.webp beside photo.webp), else an empty string.
+	 *
+	 * @param   array  $image  image()'s result
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	public static function srcset(array $image)
+	{
+		$path = ltrim((string) $image['path'], '/');
+
+		if ($path !== '' && !preg_match('#^(https?:)?//#i', $path) && preg_match('/^(.+)\.(webp|jpe?g|png|avif)$/i', $path, $parts)
+			&& is_file(JPATH_ROOT . '/' . $parts[1] . '-960.' . $parts[2]))
+		{
+			return static::url($parts[1] . '-960.' . $parts[2]) . ' 960w, ' . $image['src'] . ' 1920w';
+		}
+
+		return '';
+	}
+
+	/**
 	 * An img element for an image of the site: when a smaller copy sits next to it (photo-960.webp beside photo.webp), the
 	 * browser picks the size the layout needs (srcset and sizes).
 	 *
@@ -399,14 +505,8 @@ abstract class RookwoodHelper
 	 */
 	public static function img(array $image, $sizes = '100vw', $eager = false, $class = '')
 	{
-		$path   = ltrim((string) $image['path'], '/');
-		$srcset = '';
-
-		if ($path !== '' && !preg_match('#^(https?:)?//#i', $path) && preg_match('/^(.+)\.(webp|jpe?g|png|avif)$/i', $path, $parts)
-			&& is_file(JPATH_ROOT . '/' . $parts[1] . '-960.' . $parts[2]))
-		{
-			$srcset = ' srcset="' . static::e(static::url($parts[1] . '-960.' . $parts[2])) . ' 960w, ' . static::e($image['src']) . ' 1920w" sizes="' . static::e($sizes) . '"';
-		}
+		$srcset = static::srcset($image);
+		$srcset = $srcset !== '' ? ' srcset="' . static::e($srcset) . '" sizes="' . static::e($sizes) . '"' : '';
 
 		return '<img' . ($class ? ' class="' . $class . '"' : '') . ' src="' . static::e($image['src']) . '"' . $srcset . ' alt="' . static::e($image['alt'])
 			. '" width="1920" height="1080"' . ($eager ? ' fetchpriority="high"' : ' loading="lazy" decoding="async"') . ' />';

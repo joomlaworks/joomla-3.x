@@ -47,6 +47,14 @@ if (!$item->params->get('access-view'))
 	}
 }
 
+// Resource hints (also sent as HTTP Link headers): what the text embeds, and the main image (info pages show none)
+HammondHelper::embedHints($text);
+
+if (!HammondHelper::isPage())
+{
+	HammondHelper::preloadImage($image);
+}
+
 // Info pages (the company menu): title and text only
 if (HammondHelper::isPage()) : ?>
 <article class="pageView">

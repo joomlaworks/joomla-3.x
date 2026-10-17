@@ -53,6 +53,8 @@ The result, wherever in the request these calls were made:
 - **`addDnsPrefetch($href)`**: also reduced to the origin.
 - **`addPreload($href, $as, $attribs = array())`**: `$attribs` adds attributes, e.g. `type`, `media`, `fetchpriority`, `crossorigin`. Fonts get `crossorigin="anonymous"` unless you give `crossorigin` yourself, because browsers fetch fonts in CORS mode and would otherwise ignore the preload. A preload must match the real request (same address, same `crossorigin`), or the resource is fetched twice.
 
+**In practice:** Hammond, Finch and Rookwood (`templates/<name>/helper.php`, `preload()`, `preloadImage()`, `embedHints()`) preload their stylesheets and script with the exact addresses they load, the article's main image in the article view (Rookwood's with the same `imagesrcset`/`imagesizes` as its `<img>`), and add a preconnect when an article has an X post (whose script the template loads at once), and a dns-prefetch for YouTube videos (which load lazily). They check `method_exists()` first, so the same templates work on Joomla versions without these methods.
+
 The same links can still be added with `addHeadLink()` (e.g. `addHeadLink($origin, 'preconnect')`), and they're ordered and sent the same way.
 
 ### HTTP Link headers
@@ -65,7 +67,7 @@ Link: <https://fonts.gstatic.com>; rel=preconnect; crossorigin=anonymous, <https
 
 - **Size limit:** at most 2,000 bytes of `Link:` headers per response. Hints beyond that only appear as `<link>` tags. Servers and proxies refuse responses with large headers (nginx answers 502 Bad Gateway), so preloading dozens of files would otherwise break the page.
 - **Skipped:** addresses a header can't carry (non-ASCII characters, spaces, `<` or `>`), and hints the response already has.
-- **Parameters:** `as`, `type`, `crossorigin`, `media` and `fetchpriority` are carried over.
+- **Parameters:** `as`, `type`, `crossorigin`, `media`, `fetchpriority`, `imagesrcset` and `imagesizes` are carried over. Give an image's `srcset` and `sizes` as `imagesrcset` and `imagesizes`, so the browser preloads the size it will use.
 - **Page cache:** the System - Page Cache plugin stores headers with the page, so cached pages send them too.
 - **Turning them off:** `$doc->setLinkHeaders(false)`, e.g. from a system plugin, before the head is rendered. `getLinkHeaders()` tells whether they're on.
 

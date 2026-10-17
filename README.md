@@ -75,6 +75,7 @@ Summary of changes:
 - Dashboard modules carry their name and ID as classes (e.g. `mod-k2-dashboard module-id-12`), so each can be styled on its own
 - New sites no longer ship stock Joomla's unused images (the sample banners, `images/headers`, two logos; existing sites keep theirs), and get an empty `images/uploads` folder for the site's own images
 - `configuration.php` lists its settings alphabetically, so they're easier to find
+- Hammond, Finch and Rookwood preload their stylesheets, script and the article's main image, and connect early to X and YouTube when an article embeds them, also through HTTP `Link:` headers (103 Early Hints behind Cloudflare and similar CDNs)
 
 **Security fixes:**
 - Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors without access (with "Show Unauthorised Links" on); they get the intro text and a link to log in, as with Joomla's own layout

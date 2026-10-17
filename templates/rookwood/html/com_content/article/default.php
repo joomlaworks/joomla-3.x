@@ -40,6 +40,10 @@ if (!$item->params->get('access-view'))
 	}
 }
 
+// Resource hints (also sent as HTTP Link headers): what the text embeds, and the main image with the sizes its img() gets
+RookwoodHelper::embedHints($text);
+RookwoodHelper::preloadImage($image, RookwoodHelper::isPage() ? '100vw' : '(min-width: 1440px) 1400px, 100vw');
+
 // A page (an article with a menu item of its own, e.g. Studio or Contact): its title and lead in a band, then the text
 if (RookwoodHelper::isPage()) : ?>
 <article class="pageView">

@@ -37,6 +37,9 @@ if (!$item->params->get('access-view'))
 	}
 }
 
+// Resource hints (also sent as HTTP Link headers) for what the text embeds
+FinchHelper::embedHints($text);
+
 // Standalone pages (an article with a menu item of its own, e.g. About): title and text only
 if (FinchHelper::isPage()) : ?>
 <article class="pageView">
@@ -62,6 +65,9 @@ $share    = array(
 
 // The intro as the standfirst, when the text doesn't start with it already ("Show Intro Text" off)
 $standfirst = !$params->get('show_intro', 1) ? FinchHelper::excerpt($item) : '';
+
+// The main image, at the top: preloaded (also an HTTP Link header)
+FinchHelper::preloadImage($image);
 ?>
 <article class="postView <?php echo FinchHelper::tone($item); ?>">
 	<header class="postHeader">

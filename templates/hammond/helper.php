@@ -69,6 +69,7 @@ abstract class HammondHelper
 		foreach (static::stylesheets() as $stylesheet)
 		{
 			$document->addStyleSheet($stylesheet);
+			static::preload($stylesheet, 'style');
 		}
 
 		$document->addHeadLink($base . '/images/favicon.svg', 'icon', 'rel', array('type' => 'image/svg+xml'));
@@ -78,7 +79,9 @@ abstract class HammondHelper
 			return $page;
 		}
 
-		$document->addScript($base . '/js/template.js?t=' . date('Ymd_Hi', filemtime(__DIR__ . '/js/template.js')), array(), array('defer' => true));
+		$script = $base . '/js/template.js?t=' . date('Ymd_Hi', filemtime(__DIR__ . '/js/template.js'));
+		$document->addScript($script, array(), array('defer' => true));
+		static::preload($script, 'script');
 
 		$app    = JFactory::getApplication();
 		$input  = $app->input;
@@ -220,6 +223,81 @@ abstract class HammondHelper
 		$image = preg_replace('/#.*$/', '', (string) JFactory::getApplication()->get('offline_image'));
 
 		return $image !== '' && is_file(JPATH_ROOT . '/' . ltrim($image, '/')) ? JUri::root(true) . '/' . ltrim($image, '/') : '';
+	}
+
+	/**
+	 * Adds a preload hint. Joomla 3.x UTD (3.18+) writes it before the stylesheets and also sends it as an HTTP Link header,
+	 * which reaches the browser before the page (and which CDNs such as Cloudflare turn into 103 Early Hints); on Joomla
+	 * versions without addPreload() it does nothing.
+	 *
+	 * @param   string  $href     The resource
+	 * @param   string  $as       What it is (style, script, image...)
+	 * @param   array   $attribs  More attributes
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function preload($href, $as, $attribs = array())
+	{
+		$document = JFactory::getDocument();
+
+		if (method_exists($document, 'addPreload'))
+		{
+			$document->addPreload($href, $as, $attribs);
+		}
+	}
+
+	/**
+	 * Preloads the article's main image, which the article view shows at the top (fetchpriority high).
+	 *
+	 * @param   array  $image  image()'s result
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function preloadImage(array $image)
+	{
+		if ($image['src'] !== '')
+		{
+			static::preload($image['src'], 'image', array('fetchpriority' => 'high'));
+		}
+	}
+
+	/**
+	 * Resource hints for what an article's text embeds. X posts make template.js load X's script at once, so the connection
+	 * to it is opened early; YouTube videos load lazily, often below the first screen, so only their host name is resolved
+	 * (a preconnect would mostly go unused).
+	 *
+	 * @param   string  $text  The article's text
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function embedHints($text)
+	{
+		$document = JFactory::getDocument();
+		$text     = (string) $text;
+
+		if (!method_exists($document, 'addPreconnect'))
+		{
+			return;
+		}
+
+		if (strpos($text, 'twitter-tweet') !== false)
+		{
+			$document->addPreconnect('https://platform.twitter.com');
+		}
+
+		foreach (array('https://www.youtube-nocookie.com/embed/', 'https://www.youtube.com/embed/') as $embed)
+		{
+			if (strpos($text, $embed) !== false)
+			{
+				$document->addDnsPrefetch($embed);
+			}
+		}
 	}
 
 	/**

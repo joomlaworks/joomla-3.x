@@ -521,7 +521,7 @@ class HeadRenderer extends DocumentRenderer
 
 			$value = '<' . $href . '>; rel=' . strtolower(trim((string) $link['relation']));
 
-			foreach (array('as', 'type', 'crossorigin', 'media', 'fetchpriority') as $name)
+			foreach (array('as', 'type', 'crossorigin', 'media', 'fetchpriority', 'imagesrcset', 'imagesizes') as $name)
 			{
 				if (!isset($link['attribs'][$name]) || $link['attribs'][$name] === false || !is_scalar($link['attribs'][$name]))
 				{
