@@ -614,10 +614,22 @@ class ConsoleApplication extends CliApplication
 			{
 				foreach ((array) $result as $command)
 				{
-					if ($command instanceof AbstractCommand && $command->getName() !== '')
+					if (!$command instanceof AbstractCommand || $command->getName() === '')
 					{
-						$this->commands[$command->getName()] = $command;
+						continue;
 					}
+
+					// A name already taken keeps its command: a plugin can't replace a core command (or another plugin's), whose
+					// declarations (read-only, dry runs, code writing) the MCP server relies on
+					if (isset($this->commands[$command->getName()]))
+					{
+						fwrite(defined('STDERR') ? STDERR : STDOUT, sprintf('Skipping %s of %s: the command %s exists already.',
+							get_class($command), $this->getCommandSource($command), $command->getName()) . PHP_EOL);
+
+						continue;
+					}
+
+					$this->commands[$command->getName()] = $command;
 				}
 			}
 
@@ -625,6 +637,22 @@ class ConsoleApplication extends CliApplication
 		}
 
 		return $this->commands;
+	}
+
+	/**
+	 * The file a command's class is defined in, relative to the site's root, for messages.
+	 *
+	 * @param   AbstractCommand  $command  The command
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	protected function getCommandSource(AbstractCommand $command)
+	{
+		$file = (string) (new \ReflectionClass($command))->getFileName();
+
+		return strpos($file, JPATH_ROOT . '/') === 0 ? substr($file, strlen(JPATH_ROOT) + 1) : basename($file);
 	}
 
 	/**

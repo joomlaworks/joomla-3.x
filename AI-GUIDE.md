@@ -366,4 +366,4 @@ Housekeeping commands like these aren't recorded in the User Actions Log, so it 
 | AI assistants | `mcp:serve` |
 | Help | `list`, `help` |
 
-Extensions can add commands of their own; they appear in `list` and, as tools, in the MCP server.
+Extensions can add commands of their own; they appear in `list` and, as tools, in the MCP server. Developers: see [CLI-GUIDE.md](CLI-GUIDE.md).

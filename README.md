@@ -64,7 +64,7 @@ Summary of changes:
 - Removable extensions no longer break each other when one is removed, and uninstalling a component also removes its tag mappings, associations, content history, custom fields and site menu items (except the home item)
 - Lists can be reordered by touch on phones and tablets (drag a row by its handle); Prothero adds a Reorder button on phones
 - PostgreSQL: table column information includes MySQL's `Key` and `Extra` fields too, for extensions written against MySQL
-- Command line: extensions can be enabled, disabled, reinstalled and removed by name (e.g. `plg_system_k2`), and a site whose database settings point nowhere can be pointed at a database of another type with `config:set`
+- Command line: extensions can add commands of their own (guide for developers: [CLI-GUIDE.md](CLI-GUIDE.md)), which can't take core commands' names; extensions can be enabled, disabled, reinstalled and removed by name (e.g. `plg_system_k2`), and a site whose database settings point nowhere can be pointed at a database of another type with `config:set`
 - Removed the "Authentication - GMail" plugin (Google stopped accepting its password sign-in in 2022), the "System - P3P Policy" plugin, joomla.org's update site for the Joomla Update component, Global Configuration's Memcache options, unused web service libraries and polyfills for PHP versions below 7.1
 
 **Bug fixes:**
