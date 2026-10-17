@@ -247,10 +247,22 @@ abstract class FinchHelper
 	 */
 	public static function preloadImage(array $image)
 	{
-		if ($image['src'] !== '')
+		if ($image['src'] === '')
 		{
-			static::preload($image['src'], 'image', array('fetchpriority' => 'high'));
+			return;
 		}
+
+		// With the srcset the image gets, so the browser preloads the size it will use
+		$attribs = array('fetchpriority' => 'high');
+		$srcset  = static::srcsetFor($image['src']);
+
+		if ($srcset !== '')
+		{
+			$attribs['imagesrcset'] = $srcset;
+			$attribs['imagesizes']  = static::SIZES_MAIN;
+		}
+
+		static::preload($image['src'], 'image', $attribs);
 	}
 
 	/**
@@ -449,7 +461,8 @@ abstract class FinchHelper
 		}
 
 		return '<div class="' . $class . '"><a href="' . $link . '" tabindex="-1" aria-hidden="true"><img src="' . static::e($image['src'])
-			. '" alt="' . static::e($image['alt']) . '" width="1280" height="720"' . ($lazy ? ' loading="lazy" decoding="async"' : ' fetchpriority="high"')
+			. '"' . static::srcsetAttributes($image['src'], static::SIZES_CARD)
+			. ' alt="' . static::e($image['alt']) . '" width="1280" height="720"' . ($lazy ? ' loading="lazy" decoding="async"' : ' fetchpriority="high"')
 			. ' /></a></div>';
 	}
 
@@ -792,7 +805,130 @@ abstract class FinchHelper
 	 * @var    string
 	 * @since  3.17.0
 	 */
-	const HTML_ATTRIBUTE = '([^\t\n\f\r \/>][^\t\n\f\r \/>=]*)(?>[\t\n\f\r ]*=[\t\n\f\r ]*(?>"[^"]*"|\'[^\']*\'|[^\t\n\f\r >]+)?)?';
+	/**
+	 * How wide images are shown, for srcset: in the article text, in lists, at the top of an article
+	 */
+	const SIZES_TEXT = '(max-width: 800px) 100vw, 800px';
+	const SIZES_CARD = '(max-width: 767px) 100vw, 600px';
+	const SIZES_MAIN = '(max-width: 900px) 100vw, 900px';
+
+		const HTML_ATTRIBUTE = '([^\t\n\f\r \/>][^\t\n\f\r \/>=]*)(?>[\t\n\f\r ]*=[\t\n\f\r ]*(?>"[^"]*"|\'[^\']*\'|[^\t\n\f\r >]+)?)?';
+
+	/**
+	 * The srcset of an image of the site which has a small screen copy next to it: the copy the Media Manager saves on upload
+	 * (photo-600.webp, its Small Screen Width) or the sample images' -960 one. Empty for other images, images elsewhere and
+	 * addresses a srcset can't hold (spaces, commas).
+	 *
+	 * @param   string  $src  The image's address, as in its src
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	public static function srcsetFor($src)
+	{
+		static $mobile = null, $cache = array();
+
+		$src = (string) $src;
+
+		if (isset($cache[$src]))
+		{
+			return $cache[$src];
+		}
+
+		$cache[$src] = '';
+		$path        = preg_replace('/[?#].*$/', '', $src);
+		$root        = JUri::root(true);
+
+		if (preg_match('#^(https?:)?//#i', $path))
+		{
+			// The site's own address only
+			$site = preg_replace('#^https?:#i', '', rtrim(JUri::root(), '/'));
+			$path = preg_replace('#^https?:#i', '', $path);
+
+			if (stripos($path, $site . '/') !== 0)
+			{
+				return '';
+			}
+
+			$path = substr($path, strlen($site));
+		}
+		elseif ($root !== '' && strpos($path, $root . '/') === 0)
+		{
+			$path = substr($path, strlen($root));
+		}
+
+		$path = rawurldecode(ltrim($path, '/'));
+
+		if ($path === '' || preg_match('#(^|/)\.\.(/|$)|[\s,]#', $path . $src) || !preg_match('/^(.+)\.(webp|jpe?g|png|avif)$/i', $path, $parts))
+		{
+			return '';
+		}
+
+		if ($mobile === null)
+		{
+			$mobile = (int) JComponentHelper::getParams('com_media')->get('optimise_mobile_width', 600);
+		}
+
+		foreach (array_unique(array_filter(array($mobile, 960))) as $width)
+		{
+			if (is_file(JPATH_ROOT . '/' . $parts[1] . '-' . $width . '.' . $parts[2]) && is_file(JPATH_ROOT . '/' . $path))
+			{
+				$size  = @getimagesize(JPATH_ROOT . '/' . $path);
+				$clean = preg_replace('/[?#].*$/', '', $src);
+				$copy  = preg_replace('/(\.[A-Za-z0-9]+)$/', '-' . $width . '$1', $clean);
+
+				return $cache[$src] = $size && $size[0] > $width ? $copy . ' ' . $width . 'w, ' . $clean . ' ' . (int) $size[0] . 'w' : '';
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * srcset and sizes attributes for an image (with a leading space), or nothing when it has no small screen copy.
+	 *
+	 * @param   string|null  $src    The image's address
+	 * @param   string       $sizes  How wide it's shown
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	public static function srcsetAttributes($src, $sizes)
+	{
+		$srcset = $src === null ? '' : static::srcsetFor($src);
+
+		return $srcset === '' ? '' : ' srcset="' . static::e($srcset) . '" sizes="' . static::e($sizes) . '"';
+	}
+
+	/**
+	 * The value of an attribute in a tag's attributes, as browsers read them (entities decoded), or null.
+	 *
+	 * @param   string  $attributes  The tag's attributes
+	 * @param   string  $name        The attribute
+	 *
+	 * @return  string|null
+	 *
+	 * @since   3.18.0
+	 */
+	protected static function attributeValue($attributes, $name)
+	{
+		preg_match_all('/([^\t\n\f\r \/>][^\t\n\f\r \/>=]*)(?>[\t\n\f\r ]*=[\t\n\f\r ]*("[^"]*"|\'[^\']*\'|[^\t\n\f\r >]+)?)?/', (string) $attributes, $matches, PREG_SET_ORDER);
+
+		foreach ($matches as $match)
+		{
+			if (strtolower($match[1]) === $name)
+			{
+				$value = isset($match[2]) ? $match[2] : '';
+				$value = strlen($value) > 1 && ($value[0] === '"' || $value[0] === "'") ? substr($value, 1, -1) : $value;
+
+				return html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+			}
+		}
+
+		return null;
+	}
 
 	/**
 	 * Load the images and embedded frames of some HTML (an article's text, a module) only when they come near the screen:
@@ -839,7 +975,10 @@ abstract class FinchHelper
 
 				preg_match_all('/' . self::HTML_ATTRIBUTE . '/', $match[2], $attributes);
 
-				if (($name === 'img' || $name === 'iframe') && !array_intersect(array_map('strtolower', $attributes[1]), array('loading', 'fetchpriority')))
+				$names  = array_map('strtolower', $attributes[1]);
+				$insert = '';
+
+				if (($name === 'img' || $name === 'iframe') && !array_intersect($names, array('loading', 'fetchpriority')))
 				{
 					if ($name === 'img' && $eagerFirst)
 					{
@@ -847,8 +986,19 @@ abstract class FinchHelper
 					}
 					else
 					{
-						$tag = '<' . $match[1] . ' loading=lazy' . ($name === 'img' ? ' decoding=async' : '') . ' ' . ltrim($match[2]) . '>';
+						$insert .= ' loading=lazy' . ($name === 'img' ? ' decoding=async' : '');
 					}
+				}
+
+				// The small screen copy the Media Manager saves next to uploaded images, for phones (srcset), on images without one
+				if ($name === 'img' && !in_array('srcset', $names, true))
+				{
+					$insert .= static::srcsetAttributes(static::attributeValue($match[2], 'src'), static::SIZES_TEXT);
+				}
+
+				if ($insert !== '')
+				{
+					$tag = '<' . $match[1] . $insert . ' ' . ltrim($match[2]) . '>';
 				}
 
 				$output .= $tag;

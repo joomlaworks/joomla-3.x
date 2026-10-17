@@ -89,7 +89,7 @@ if (HammondHelper::isPage()) : ?>
 
 	<?php if ($image['src'] !== '') : ?>
 	<figure class="articleImage">
-		<img src="<?php echo HammondHelper::e($image['src']); ?>" alt="<?php echo HammondHelper::e($image['alt']); ?>" width="1280" height="720" fetchpriority="high" />
+		<img src="<?php echo HammondHelper::e($image['src']); ?>"<?php echo HammondHelper::srcsetAttributes($image['src'], HammondHelper::SIZES_MAIN); ?> alt="<?php echo HammondHelper::e($image['alt']); ?>" width="1280" height="720" fetchpriority="high" />
 		<?php if ($image['caption'] !== '') : ?><figcaption><?php echo HammondHelper::e($image['caption']); ?></figcaption><?php endif; ?>
 	</figure>
 	<?php endif; ?>

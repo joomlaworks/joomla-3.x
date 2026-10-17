@@ -88,7 +88,7 @@ FinchHelper::preloadImage($image);
 
 	<?php if ($image['src'] !== '') : ?>
 	<figure class="postFigure">
-		<img src="<?php echo FinchHelper::e($image['src']); ?>" alt="<?php echo FinchHelper::e($image['alt']); ?>" width="1280" height="720" fetchpriority="high" />
+		<img src="<?php echo FinchHelper::e($image['src']); ?>"<?php echo FinchHelper::srcsetAttributes($image['src'], FinchHelper::SIZES_MAIN); ?> alt="<?php echo FinchHelper::e($image['alt']); ?>" width="1280" height="720" fetchpriority="high" />
 		<?php if ($image['caption'] !== '') : ?><figcaption><?php echo FinchHelper::e($image['caption']); ?></figcaption><?php endif; ?>
 	</figure>
 	<?php endif; ?>
