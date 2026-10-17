@@ -291,9 +291,14 @@
 				.then((r) => {
 					if (r.messages) {
 						renderMessages(r.messages);
-						goToPage(r.data.view, true);
 
-						return;
+						// A step which worked but has something to say names this view: going to it would start the
+						// installation again (and again), so its messages stay and the next step runs
+						if (!r.data || r.data.view !== 'install') {
+							goToPage(r.data ? r.data.view : 'summary', true);
+
+							return;
+						}
 					}
 
 					done++;

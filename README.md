@@ -109,6 +109,7 @@ Summary of changes:
 - Media Manager: Create Folder shows the folder the new one goes in again (an empty grey box), and no longer gives the page the server's path
 - Command line: `article:update` now saves the new `--text` and no longer strips the HTML from articles' text
 - Hammond, Finch and Rookwood: buttons in article text (e.g. "Register to read more") look like the templates' other buttons again (they were unreadable in Hammond and Finch)
+- Installer: a warning during installation (e.g. while installing sample data) no longer restarts the installation over and over
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:

@@ -785,7 +785,18 @@ class PlgSampledataBlogSet
 				->where($db->quoteName('catid') . ' IN (' . implode(',', array_map('intval', $record['categories'] ?: array(0))) . ')')
 		)->loadColumn();
 
-		$record['tags'] = !ComponentHelper::isEnabled('com_tags') ? array() : $db->setQuery(
+		// Through $db, not ComponentHelper: the installer calls this before configuration.php exists, when Joomla's own
+		// database connection has no settings
+		$tags = (int) $db->setQuery(
+			$db->getQuery(true)
+				->select('COUNT(*)')
+				->from($db->quoteName('#__extensions'))
+				->where($db->quoteName('type') . ' = ' . $db->quote('component'))
+				->where($db->quoteName('element') . ' = ' . $db->quote('com_tags'))
+				->where($db->quoteName('enabled') . ' = 1')
+		)->loadResult();
+
+		$record['tags'] = !$tags ? array() : $db->setQuery(
 			$db->getQuery(true)
 				->select($db->quoteName('id'))
 				->from($db->quoteName('#__tags'))
