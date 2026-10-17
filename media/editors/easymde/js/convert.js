@@ -30,6 +30,28 @@
 		'STYLE', 'TABLE', 'UL', 'VIDEO'];
 	const isBlockElement = (node) => node.nodeType === 1 && BLOCKS.indexOf(node.nodeName) !== -1;
 	const COMMENT = 'joomla-easymde-comment';
+	const RAW = 'joomla-easymde-raw';
+
+	// Elements Turndown treats as blank when they have no content (the rest are void or "meaningful when blank")
+	const BLANKABLE = (node) => !/^(AREA|BASE|BR|COL|COMMAND|EMBED|HR|IMG|INPUT|KEYGEN|LINK|META|PARAM|SOURCE|TRACK|WBR|A|TABLE|THEAD|TBODY|TFOOT|TH|TD|IFRAME|SCRIPT|AUDIO|VIDEO)$/.test(node.nodeName);
+
+	// The HTML of an element which stays HTML, with the comments and empty elements its placeholders stand for put back
+	const outer = (node) => {
+		const copy = node.cloneNode(true);
+
+		copy.querySelectorAll(`${COMMENT}, ${RAW}`).forEach((placeholder) => {
+			if (placeholder.nodeName.toLowerCase() === COMMENT) {
+				placeholder.replaceWith(placeholder.ownerDocument.createComment(placeholder.getAttribute('data-text')));
+			} else {
+				const template = placeholder.ownerDocument.createElement('template');
+
+				template.innerHTML = placeholder.getAttribute('data-html');
+				placeholder.replaceWith(template.content);
+			}
+		});
+
+		return copy.outerHTML;
+	};
 
 	const attributesFit = (node, allowed) => Array.prototype.every.call(node.attributes, (attribute) => allowed.indexOf(attribute.name) !== -1);
 
@@ -60,10 +82,13 @@
 			&& rows.every((row, i) => row.cells.length === width && (i === 0 || Array.prototype.every.call(row.cells, (cell) => cell.nodeName === 'TD')));
 	};
 
+	const isEmptyParagraph = (node) => node.nodeName === 'P' && node.textContent.replace(/[\s\u00a0]/g, '') === ''
+		&& Array.prototype.every.call(node.querySelectorAll('*'), (child) => child.nodeName === 'BR');
+
 	const keepAsHtml = (node) => {
 		const name = node.nodeName.toLowerCase();
 
-		if (name === COMMENT) {
+		if (name === COMMENT || name === RAW) {
 			return false;
 		}
 
@@ -92,6 +117,20 @@
 			return !attributesFit(node, []) || node.childNodes.length !== 1 || !code || code.nodeName !== 'CODE';
 		}
 
+		// A paragraph holding nothing but an element which stays HTML and has no text after its tag (an image with a class or
+		// a size, an iframe): that element's line would be an HTML block, not a paragraph, so the paragraph stays HTML too
+		if (name === 'p' && !node.attributes.length) {
+			// An empty paragraph (spacing: &nbsp; or a <br>), which Markdown has no way to write
+			if (isEmptyParagraph(node)) {
+				return true;
+			}
+
+			const children = Array.prototype.filter.call(node.childNodes, (child) => child.nodeType !== 3 || child.data.trim() !== '');
+			const only = children.length === 1 && children[0].nodeType === 1 ? children[0] : null;
+
+			return !!only && (!only.childNodes.length || isBlockElement(only)) && keepAsHtml(only);
+		}
+
 		if (name === 'img' && hasOwnSources(node)) {
 			return !attributesFit(node, EXPRESSIBLE.img.concat(['srcset', 'sizes']));
 		}
@@ -99,7 +138,22 @@
 		return !(name in EXPRESSIBLE) || !attributesFit(node, EXPRESSIBLE[name]);
 	};
 
-	const turndown = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced', hr: '---', bulletListMarker: '-', emDelimiter: '_' });
+	// Turndown drops blank elements before any rule sees them: empty paragraphs and empty elements with attributes (an anchor
+	// <a id="top"></a>, <div class="clearfix"></div>) stay as they are
+	const turndown = new TurndownService({
+		headingStyle: 'atx',
+		codeBlockStyle: 'fenced',
+		hr: '---',
+		bulletListMarker: '-',
+		emDelimiter: '_',
+		blankReplacement: (content, node) => {
+			if (isEmptyParagraph(node) || node.attributes.length) {
+				return node.isBlock ? `\n\n${outer(node)}\n\n` : outer(node);
+			}
+
+			return node.isBlock ? '\n\n' : '';
+		},
+	});
 
 	if (turndownPluginGfm) {
 		turndown.use(turndownPluginGfm.gfm);
@@ -132,16 +186,21 @@
 		filter: (node) => node.nodeType === 1 && keepAsHtml(node),
 		replacement: (content, node) => {
 			if (node.isBlock) {
-				return `\n\n${node.outerHTML}\n\n`;
+				return `\n\n${outer(node)}\n\n`;
 			}
 
-			return standsAlone(node) ? `\n\n${asHtmlBlock(node.outerHTML)}\n\n` : node.outerHTML;
+			return standsAlone(node) ? `\n\n${asHtmlBlock(outer(node))}\n\n` : outer(node);
 		},
 	});
 
 	turndown.addRule('joomlaComment', {
 		filter: (node) => node.nodeName.toLowerCase() === COMMENT,
 		replacement: (content, node) => `<!--${node.getAttribute('data-text')}-->`,
+	});
+
+	turndown.addRule('joomlaRaw', {
+		filter: (node) => node.nodeName.toLowerCase() === RAW,
+		replacement: (content, node) => (node.getAttribute('data-block') ? `\n\n${node.getAttribute('data-html')}\n\n` : node.getAttribute('data-html')),
 	});
 
 	// Text which looks like markup or an entity stays text: < before a letter, / ! or ?, & before an entity-like name
@@ -177,6 +236,22 @@
 			placeholder.setAttribute('data-text', comment.data);
 			placeholder.textContent = 'comment';
 			comment.parentNode.replaceChild(placeholder, comment);
+		});
+
+		// Empty elements with attributes (<span class="icon-star"></span>, <div class="clearfix"></div>): Turndown would drop
+		// them as blank and collapse the space after them, so they go through as placeholders with text too
+		Array.prototype.filter.call(doc.body.querySelectorAll('*'), (node) => !node.childNodes.length && node.attributes.length && BLANKABLE(node)
+			&& !node.closest('pre, code')).forEach((node) => {
+			const placeholder = doc.createElement(RAW);
+
+			placeholder.setAttribute('data-html', node.outerHTML);
+
+			if (isBlockElement(node)) {
+				placeholder.setAttribute('data-block', '1');
+			}
+
+			placeholder.textContent = 'element';
+			node.parentNode.replaceChild(placeholder, node);
 		});
 
 		return turndown.turndown(doc.body);
