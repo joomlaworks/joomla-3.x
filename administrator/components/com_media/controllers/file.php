@@ -48,6 +48,9 @@ class MediaControllerFile extends JControllerLegacy
 		// Instantiate the media helper
 		$mediaHelper = new JHelperMedia;
 
+		// The "Memory Limit" option, where the server allows it
+		$mediaHelper->raiseMemoryLimit(JComponentHelper::getParams('com_media'));
+
 		// Don't redirect to an external URL.
 		if (!JUri::isInternal($return))
 		{

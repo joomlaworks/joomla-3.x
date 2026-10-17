@@ -14,19 +14,13 @@ $input = JFactory::getApplication()->input;
 $lang  = JFactory::getLanguage();
 $style = JFactory::getApplication()->getUserStateFromRequest('media.list.layout', 'layout', 'thumbs', 'word');
 
-if (DIRECTORY_SEPARATOR == '\\')
-{
-	$base = str_replace(DIRECTORY_SEPARATOR, "\\\\", COM_MEDIA_BASE);
-}
-else
-{
-	$base = COM_MEDIA_BASE;
-}
+// The files folder relative to the site (e.g. "images"), shown before a new folder's name: COM_MEDIA_BASE is the server's path to it
+$base = trim(str_replace('\\', '/', (string) JComponentHelper::getParams('com_media')->get('file_path', 'images')), '/');
 
 JFactory::getDocument()->addScriptDeclaration(
 	"
-		var basepath = '" . $base . "';
-		var viewstyle = '" . $style . "';
+		var basepath = " . json_encode($base) . ";
+		var viewstyle = " . json_encode((string) $style) . ";
 	"
 );
 

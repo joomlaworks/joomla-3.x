@@ -54,6 +54,9 @@ class MediaControllerFile extends JControllerLegacy
 		// Instantiate the media helper
 		$mediaHelper = new JHelperMedia;
 
+		// The "Memory Limit" option, where the server allows it (before the limits below are read)
+		$mediaHelper->raiseMemoryLimit($params);
+
 		// Editors upload here (TinyMCE, EasyMDE): into uploads when they name no folder, and into the year, month or day's
 		// folder as the "Organise Editor Uploads" option says (created only for users who may upload)
 		if ($user->authorise('core.create', 'com_media'))

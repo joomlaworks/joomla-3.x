@@ -175,6 +175,30 @@ class MediaHelper
 	}
 
 	/**
+	 * Raises PHP's memory limit for this request to the Media Manager's "Memory Limit" option (uploads and resizing large
+	 * images need memory), where the server allows it; never lowers it. PHP's own upload limits (upload_max_filesize,
+	 * post_max_size) can't be raised while a request runs.
+	 *
+	 * @param   \Joomla\Registry\Registry  $params  The Media Manager's options
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public function raiseMemoryLimit($params)
+	{
+		$wanted  = (int) $params->get('memory_limit', 0) * 1048576;
+		$current = (string) ini_get('memory_limit');
+
+		if ($wanted <= 0 || $current === '' || (int) $current === -1 || (int) $this->toBytes($current) >= $wanted)
+		{
+			return;
+		}
+
+		@ini_set('memory_limit', (int) ($wanted / 1048576) . 'M');
+	}
+
+	/**
 	 * The folder an editor's upload goes to, relative to the images folder: the editor's own folder ("uploads" when it names
 	 * none) and, as the Media Manager's "Organise Editor Uploads" option says, a folder for the year, month or day
 	 * (uploads/2026/10/18). Missing levels are created, each with an index.html.

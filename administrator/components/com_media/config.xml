@@ -25,7 +25,8 @@
         </field>
         <field name="spacer_uploads" type="spacer" label="COM_MEDIA_HEADING_UPLOADS" />
         <field name="upload_extensions" type="textarea" class="input-xxlarge" label="COM_MEDIA_FIELD_LEGAL_EXTENSIONS_LABEL" description="COM_MEDIA_FIELD_LEGAL_EXTENSIONS_DESC" rows="4" cols="50" default="jpg,jpeg,png,gif,webp,avif,bmp,ico,mp4,webm,mov,mp3,m4a,ogg,wav,pdf,txt,csv,rtf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp,odg,xcf" />
-        <field name="upload_maxsize" type="number" label="COM_MEDIA_FIELD_MAXIMUM_SIZE_LABEL" description="COM_MEDIA_FIELD_MAXIMUM_SIZE_DESC" validate="number" min="0" size="50" default="10" />
+        <field name="upload_maxsize" type="number" label="COM_MEDIA_FIELD_MAXIMUM_SIZE_LABEL" description="COM_MEDIA_FIELD_MAXIMUM_SIZE_DESC" validate="number" min="0" size="50" default="128" />
+        <field name="memory_limit" type="number" label="COM_MEDIA_FIELD_MEMORY_LIMIT_LABEL" description="COM_MEDIA_FIELD_MEMORY_LIMIT_DESC" min="0" step="1" filter="integer" default="" />
         <field name="restrict_uploads" type="radio" label="COM_MEDIA_FIELD_RESTRICT_UPLOADS_LABEL" description="COM_MEDIA_FIELD_RESTRICT_UPLOADS_DESC" class="btn-group btn-group-yesno" default="1">
             <option value="1">JYES</option>
             <option value="0">JNO</option>

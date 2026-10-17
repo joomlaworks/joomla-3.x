@@ -72,7 +72,8 @@
 				el.value = folder;
 			} );
 
-			this.folderpath.value = scope.basepath + (folder ? '/' + folder : '');
+			// A jQuery object: .value set nothing, so the field showed only the folder (empty at the top)
+			this.folderpath.val( scope.basepath + ( folder ? '/' + folder : '' ) );
 
 			q.folder = folder;
 

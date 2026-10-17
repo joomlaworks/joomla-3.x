@@ -89,6 +89,7 @@ class JoomlaInstallerScript
 		// After the data migrations, which may add rows for newly bundled core extensions (e.g. Little WAF)
 		$this->runDataMigrations();
 		$this->updateMediaUploadDefaults();
+		$this->updateMediaUploadMaxSize();
 		$this->switchDefaultEditor();
 		$this->fixCoreCategorySubmenus();
 
@@ -1024,6 +1025,57 @@ class JoomlaInstallerScript
 				->where($db->quoteName('type') . ' = ' . $db->quote('file'))
 				->where($db->quoteName('element') . ' = ' . $db->quote('joomla'))
 		)->loadResult();
+	}
+
+	/**
+	 * Raises the Media Manager's Maximum Size from stock Joomla 3's 10 MB to 128 MB, once, on sites which still have 10 (a
+	 * size an administrator set is kept). The server's PHP limits still apply.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function updateMediaUploadMaxSize()
+	{
+		if ($this->isUpdateStepDone('media-upload-maxsize'))
+		{
+			return;
+		}
+
+		try
+		{
+			$db  = JFactory::getDbo();
+			$row = $db->setQuery(
+				$db->getQuery(true)
+					->select($db->quoteName(array('extension_id', 'params')))
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('type') . ' = ' . $db->quote('component'))
+					->where($db->quoteName('element') . ' = ' . $db->quote('com_media'))
+			)->loadObject();
+
+			if ($row)
+			{
+				$params = new JRegistry($row->params);
+
+				if ((string) $params->get('upload_maxsize', '10') === '10')
+				{
+					$params->set('upload_maxsize', '128');
+
+					$db->setQuery(
+						$db->getQuery(true)
+							->update($db->quoteName('#__extensions'))
+							->set($db->quoteName('params') . ' = ' . $db->quote($params->toString()))
+							->where($db->quoteName('extension_id') . ' = ' . (int) $row->extension_id)
+					)->execute();
+				}
+			}
+
+			$this->markUpdateStepDone('media-upload-maxsize');
+		}
+		catch (Exception $e)
+		{
+			// Not worth failing the update for: the size stays as it was
+		}
 	}
 
 	/**

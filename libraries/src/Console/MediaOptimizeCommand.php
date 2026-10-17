@@ -76,6 +76,8 @@ class MediaOptimizeCommand extends AbstractCommand
 		$params   = ComponentHelper::getParams('com_media');
 		$helper   = new MediaHelper;
 		$settings = $helper->getOptimiseSettings($params);
+
+		$helper->raiseMemoryLimit($params);
 		$images   = realpath(JPATH_ROOT . '/' . trim((string) $params->get('image_path', 'images'), '/'));
 		$folder   = trim(str_replace('\\', '/', (string) $io->getArgument('folder')), '/');
 		$path     = realpath(JPATH_ROOT . '/' . $folder);
