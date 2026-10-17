@@ -150,7 +150,16 @@ class MediaModelList extends JModelLegacy
 					$tmp->path_relative = str_replace($mediaBase, '', $tmp->path);
 					$tmp->size = filesize($tmp->path);
 
-					$ext = strtolower(JFile::getExt($file));
+					$ext   = strtolower(JFile::getExt($file));
+					$image = in_array($ext, array('jpg', 'png', 'gif', 'xcf', 'odg', 'bmp', 'jpeg', 'ico', 'webp', 'avif'), true);
+					$info  = $image ? @getimagesize($tmp->path) : false;
+
+					// Images PHP can't read are listed as documents: GIMP and Draw files, AVIF before PHP 8.1, broken files (their
+					// sizes were read from false, a warning on PHP 8)
+					if ($image && $info === false)
+					{
+						$ext = 'unreadable-image';
+					}
 
 					switch ($ext)
 					{
@@ -163,7 +172,8 @@ class MediaModelList extends JModelLegacy
 						case 'bmp':
 						case 'jpeg':
 						case 'ico':
-							$info = @getimagesize($tmp->path);
+						case 'webp':
+						case 'avif':
 							$tmp->width  = @$info[0];
 							$tmp->height = @$info[1];
 							$tmp->type   = @$info[2];
@@ -198,15 +208,20 @@ class MediaModelList extends JModelLegacy
 
 						// Video
 						case 'mp4':
-							$tmp->icon_32 = 'media/mime-icon-32/' . $ext . '.png';
-							$tmp->icon_16 = 'media/mime-icon-16/' . $ext . '.png';
+						case 'webm':
+						case 'mov':
+						case 'ogv':
+							$icon = $this->getTypeIcon(strtolower(JFile::getExt($file)));
+							$tmp->icon_32 = 'media/mime-icon-32/' . $icon . '.png';
+							$tmp->icon_16 = 'media/mime-icon-16/' . $icon . '.png';
 							$videos[] = $tmp;
 							break;
 
 						// Non-image document
 						default:
-							$tmp->icon_32 = 'media/mime-icon-32/' . $ext . '.png';
-							$tmp->icon_16 = 'media/mime-icon-16/' . $ext . '.png';
+							$icon = $this->getTypeIcon(strtolower(JFile::getExt($file)));
+							$tmp->icon_32 = 'media/mime-icon-32/' . $icon . '.png';
+							$tmp->icon_16 = 'media/mime-icon-16/' . $icon . '.png';
 							$docs[] = $tmp;
 							break;
 					}
@@ -250,5 +265,30 @@ class MediaModelList extends JModelLegacy
 		$list = $this->getList();
 
 		return $list['videos'];
+	}
+
+	/**
+	 * The icon of a file type: its own when the Media Manager has one, else a related type's (docx: doc), else the document
+	 * icon (types with no icon showed a broken image).
+	 *
+	 * @param   string  $ext  The file's extension, in lower case
+	 *
+	 * @return  string  The icon's name, without .png
+	 *
+	 * @since   3.18.0
+	 */
+	protected function getTypeIcon($ext)
+	{
+		static $related = array(
+			'docx' => 'doc', 'rtf' => 'rtf', 'txt' => 'doc', 'csv' => 'xls', 'xlsx' => 'xls', 'ods' => 'xls', 'pptx' => 'ppt', 'odp' => 'ppt',
+			'odg' => 'sxd', 'webm' => 'mp4', 'ogv' => 'mp4', 'm4a' => 'mp3', 'wav' => 'mp3', 'oga' => 'ogg', 'opus' => 'ogg', '7z' => 'zip',
+		);
+
+		if (preg_match('/^[a-z0-9]+$/', $ext) && is_file(JPATH_ROOT . '/media/media/images/mime-icon-32/' . $ext . '.png'))
+		{
+			return $ext;
+		}
+
+		return isset($related[$ext]) ? $related[$ext] : 'doc';
 	}
 }

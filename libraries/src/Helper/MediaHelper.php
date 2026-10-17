@@ -30,7 +30,7 @@ class MediaHelper
 	 */
 	public function isImage($fileName)
 	{
-		static $imageTypes = 'xcf|odg|gif|jpg|png|bmp';
+		static $imageTypes = 'xcf|odg|gif|jpe?g|png|bmp|webp|avif|ico';
 
 		return preg_match("/\.(?:$imageTypes)$/i", $fileName);
 	}
@@ -109,6 +109,34 @@ class MediaHelper
 	}
 
 	/**
+	 * A comma separated list option (file extensions, MIME types) as an array: trimmed, in lower case, without empty entries,
+	 * so the lists can be written in any case and over several lines.
+	 *
+	 * @param   \Joomla\Registry\Registry  $params  The component's options
+	 * @param   string                     $name    The option
+	 *
+	 * @return  string[]
+	 *
+	 * @since   3.18.0
+	 */
+	private function getListOption($params, $name)
+	{
+		$values = array();
+
+		foreach (explode(',', (string) $params->get($name)) as $value)
+		{
+			$value = strtolower(trim($value));
+
+			if ($value !== '')
+			{
+				$values[] = $value;
+			}
+		}
+
+		return $values;
+	}
+
+	/**
 	 * Checks the Mime type
 	 *
 	 * @param   string  $mime       The mime to be checked
@@ -121,14 +149,25 @@ class MediaHelper
 	private function checkMimeType($mime, $component = 'com_media')
 	{
 		$params = ComponentHelper::getParams($component);
+		$mime   = strtolower((string) $mime);
+		$half   = (int) (strlen($mime) / 2);
+
+		// Older libmagic versions (PHP 7.4's) report some types twice in a row, e.g. xlsx's
+		if ($half && strlen($mime) % 2 === 0 && substr($mime, 0, $half) === substr($mime, $half))
+		{
+			$mime = substr($mime, 0, $half);
+		}
+
+		// The illegal MIME types option (a blacklist) was never checked
+		if ($mime !== '' && in_array($mime, $this->getListOption($params, 'upload_mime_illegal'), true))
+		{
+			return false;
+		}
 
 		if ($params->get('check_mime', 1))
 		{
-			// Get the mime type configuration
-			$allowedMime = array_map('trim', explode(',', (string) $params->get('upload_mime')));
-
 			// Mime should be available and in the whitelist
-			return !empty($mime) && in_array($mime, $allowedMime);
+			return $mime !== '' && in_array($mime, $this->getListOption($params, 'upload_mime'), true);
 		}
 
 		// We don't check mime at all or it passes the checks
@@ -179,6 +218,9 @@ class MediaHelper
 
 		array_shift($filetypes);
 
+		// File types are compared in lower case: x.PHP.jpg has an executable extension too, and the lists may use any case
+		$filetypes = array_map('strtolower', $filetypes);
+
 		// Media file names should never have executable extensions buried in them.
 		$executable = array(
 			'php', 'php3', 'php4', 'php5', 'php6', 'php7', 'php8', 'php9', 'phps', 'pht', 'phtml', 'phar',
@@ -203,8 +245,8 @@ class MediaHelper
 		}
 
 		$filetype  = array_pop($filetypes);
-		$allowable = array_map('trim', explode(',', (string) $params->get('upload_extensions')));
-		$ignored   = array_map('trim', explode(',', (string) $params->get('ignore_extensions')));
+		$allowable = $this->getListOption($params, 'upload_extensions');
+		$ignored   = $this->getListOption($params, 'ignore_extensions');
 
 		if ($filetype == '' || $filetype == false || (!in_array($filetype, $allowable) && !in_array($filetype, $ignored)))
 		{
@@ -224,7 +266,7 @@ class MediaHelper
 
 		if ($params->get('restrict_uploads', 1))
 		{
-			$images = array_map('trim', explode(',', (string) $params->get('image_extensions')));
+			$images = $this->getListOption($params, 'image_extensions');
 
 			if (in_array($filetype, $images))
 			{

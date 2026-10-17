@@ -77,10 +77,12 @@ Summary of changes:
 - `configuration.php` lists its settings alphabetically, so they're easier to find
 - Hammond, Finch and Rookwood preload their stylesheets, script and the article's main image, and connect early to X and YouTube when an article embeds them, also through HTTP `Link:` headers (103 Early Hints behind Cloudflare and similar CDNs)
 - CodeMirror 5.65.21 (was 5.60.0, from 2021), with fixes for scrolling and clicks in current browsers
+- Media Manager: WebP, AVIF, MP4, WebM, MOV, MP3, M4A, WAV, CSV, RTF and current Office files can be uploaded by default (SVG deliberately not), the type lists are easy-to-edit textareas, and every file type gets an icon
 
 **Security fixes:**
 - Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors without access (with "Show Unauthorised Links" on); they get the intro text and a link to log in, as with Joomla's own layout
 - The head escapes `<link>`, script and stylesheet addresses and attributes, which extensions could pass unescaped
+- Media uploads compare executable extensions in any case (`x.SHTML.png` got through), and the "Illegal MIME Types" option is actually checked
 
 **Bug fixes:**
 - Uninstalling a core component also uninstalls the modules and plugins which only serve it (e.g. "Smart Search - Contacts", which stopped indexing) and leaves no media folders or language files behind; updates clean up after earlier uninstalls
@@ -98,6 +100,7 @@ Summary of changes:
 - Search: Greek (and other non-Latin) searches typed without accents find their results again, on every database
 - SQLite: sites moved to MySQL no longer get case-sensitive titles: the collations of tables and columns are recorded correctly, and updating (or Extensions: Database's Fix) repairs those of existing sites; moving a database to MariaDB or MySQL 5.7 no longer fails on MySQL 8-only collations
 - The head no longer repeats inline scripts and styles added more than once (e.g. from a loop), links to the same address with different relations no longer replace each other, and script attributes set to `false` (e.g. `nomodule`) are left out instead of switched on
+- Media Manager: ICO, OpenDocument, XLS and PPT files can be uploaded again (the default MIME list refused them), and folders with GIMP or Draw files no longer warn on PHP 8
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:

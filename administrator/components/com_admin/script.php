@@ -88,6 +88,7 @@ class JoomlaInstallerScript
 
 		// After the data migrations, which may add rows for newly bundled core extensions (e.g. Little WAF)
 		$this->runDataMigrations();
+		$this->updateMediaUploadDefaults();
 		$this->fixCoreCategorySubmenus();
 
 		if ($this->restoreCoreExtensions)
@@ -937,6 +938,76 @@ class JoomlaInstallerScript
 	 * @since  3.16.0
 	 */
 	public $restoreCoreExtensions = false;
+
+	/**
+	 * Gives the Media Manager's upload lists (allowed extensions, image extensions, MIME types) the current defaults on sites
+	 * which still have stock Joomla 3's: those listed types it couldn't upload (its MIME list had no OpenDocument, CSV or
+	 * icon types, and names PHP never reports for Excel and PowerPoint files) and none of today's (WebP, AVIF, MP4, WebM,
+	 * MP3, docx, xlsx, pptx...). A list the site's administrators changed is left as it is.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function updateMediaUploadDefaults()
+	{
+		$stockExtensions = 'bmp,csv,doc,gif,ico,jpg,jpeg,odg,odp,ods,odt,pdf,png,ppt,txt,xcf,xls,BMP,CSV,DOC,GIF,ICO,JPG,JPEG,ODG,ODP,ODS,ODT,PDF,PNG,PPT,TXT,XCF,XLS';
+		$stockMime       = 'image/jpeg,image/gif,image/png,image/bmp,application/msword,application/excel,application/pdf,application/powerpoint,text/plain,application/x-zip';
+
+		// Stock values, also those of Joomla versions which still listed Flash files
+		$stock = array(
+			'upload_extensions' => array($stockExtensions, str_replace(array(',ppt,', ',PPT,'), array(',ppt,swf,', ',PPT,SWF,'), $stockExtensions)),
+			'image_extensions'  => array('bmp,gif,jpg,png'),
+			'upload_mime'       => array($stockMime, str_replace('image/bmp,', 'image/bmp,application/x-shockwave-flash,', $stockMime)),
+		);
+
+		try
+		{
+			$form = simplexml_load_file(JPATH_ADMINISTRATOR . '/components/com_media/config.xml');
+			$db   = JFactory::getDbo();
+			$row  = $db->setQuery(
+				$db->getQuery(true)
+					->select($db->quoteName(array('extension_id', 'params')))
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('type') . ' = ' . $db->quote('component'))
+					->where($db->quoteName('element') . ' = ' . $db->quote('com_media'))
+			)->loadObject();
+
+			if (!$form || !$row)
+			{
+				return;
+			}
+
+			$params  = new JRegistry($row->params);
+			$changed = false;
+
+			foreach ($stock as $name => $values)
+			{
+				$fields  = $form->xpath('//field[@name="' . $name . '"]');
+				$default = $fields ? (string) $fields[0]['default'] : '';
+
+				if ($default !== '' && in_array(str_replace(' ', '', (string) $params->get($name)), $values, true))
+				{
+					$params->set($name, $default);
+					$changed = true;
+				}
+			}
+
+			if ($changed)
+			{
+				$db->setQuery(
+					$db->getQuery(true)
+						->update($db->quoteName('#__extensions'))
+						->set($db->quoteName('params') . ' = ' . $db->quote($params->toString()))
+						->where($db->quoteName('extension_id') . ' = ' . (int) $row->extension_id)
+				)->execute();
+			}
+		}
+		catch (Exception $e)
+		{
+			// Not worth failing the update for: the lists stay as they were
+		}
+	}
 
 	/**
 	 * The stock "Categories" entries under Components → Banners/Contacts/News Feeds pointed at com_categories
