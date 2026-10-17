@@ -4,7 +4,7 @@
 -- uninstalled on later updates.
 
 INSERT INTO "#__extensions" ("package_id", "name", "type", "element", "folder", "client_id", "enabled", "access", "protected", "manifest_cache", "params", "custom_data", "system_data", "checked_out", "checked_out_time", "ordering", "state")
-SELECT 0, 'plg_editors_easymde', 'plugin', 'easymde', 'editors', 0, 1, 1, 0, '', '{"height":"500px","spellcheck":"1","upload":"1","folder":"uploads"}', '', '', 0, '1970-01-01 00:00:00', 5, 0
+SELECT 0, 'plg_editors_easymde', 'plugin', 'easymde', 'editors', 0, 1, 1, 0, '', '{"height":"500px","side_by_side":"1","spellcheck":"1","upload":"1","folder":"uploads"}', '', '', 0, '1970-01-01 00:00:00', 5, 0
 WHERE NOT EXISTS (
 	SELECT 1 FROM "#__extensions" WHERE "type" = 'plugin' AND "element" = 'easymde' AND "folder" = 'editors'
 );

@@ -61,7 +61,7 @@ class PlgEditorEasymde extends JPlugin
 
 		foreach (array('BOLD', 'ITALIC', 'STRIKETHROUGH', 'HEADING', 'QUOTE', 'UNORDERED_LIST', 'ORDERED_LIST', 'LINK', 'IMAGE', 'UPLOAD',
 			'TABLE', 'CODE', 'HORIZONTAL_RULE', 'PREVIEW', 'SIDE_BY_SIDE', 'FULLSCREEN', 'UNDO', 'REDO', 'GUIDE', 'UPLOADING', 'UPLOAD_FAILED',
-			'UPLOAD_HINT', 'WORDS', 'LINES') as $key)
+			'UPLOAD_HINT', 'WORDS', 'LINES', 'SIDE_BY_SIDE_LABEL') as $key)
 		{
 			JText::script('PLG_EDITORS_EASYMDE_' . $key);
 		}
@@ -144,6 +144,7 @@ class PlgEditorEasymde extends JPlugin
 		$options = array(
 			'height'      => $this->cssSize($this->params->get('height', '500px'), '500px'),
 			'spellcheck'  => (bool) $this->params->get('spellcheck', 1),
+			'sideBySide'  => (bool) $this->params->get('side_by_side', 1),
 			'readonly'    => !empty($params['readonly']),
 			'guide'       => 'https://www.markdownguide.org/basic-syntax/',
 		);

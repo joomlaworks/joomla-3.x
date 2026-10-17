@@ -194,7 +194,10 @@
 			{ name: 'horizontal-rule', action: EasyMDE.drawHorizontalRule, className: icon('horizontal-rule'), title: text('HORIZONTAL_RULE', 'Horizontal line') },
 			'|',
 			{ name: 'preview', action: EasyMDE.togglePreview, className: `${icon('preview')} no-disable`, title: text('PREVIEW', 'Preview'), noDisable: true },
-			{ name: 'side-by-side', action: EasyMDE.toggleSideBySide, className: `${icon('side-by-side')} no-disable no-mobile`, title: text('SIDE_BY_SIDE', 'Side by side'), noDisable: true, noMobile: true },
+			{
+				name: 'side-by-side', action: EasyMDE.toggleSideBySide, className: `${icon('side-by-side')} no-disable no-mobile`, title: text('SIDE_BY_SIDE', 'Side by side'), noDisable: true, noMobile: true,
+				icon: `<span class="easymde-label">${text('SIDE_BY_SIDE_LABEL', 'Side-by-side')}</span>`,
+			},
 			{ name: 'fullscreen', action: EasyMDE.toggleFullScreen, className: `${icon('fullscreen')} no-disable no-mobile`, title: text('FULLSCREEN', 'Full screen'), noDisable: true, noMobile: true },
 			'|',
 			{ name: 'undo', action: EasyMDE.undo, className: `${icon('undo')} no-disable`, title: text('UNDO', 'Undo'), noDisable: true },
@@ -265,6 +268,8 @@
 		});
 		const cm = editor.codemirror;
 
+		cm.getWrapperElement().parentNode.style.setProperty('--easymde-height', options.height || '500px');
+
 		// Content nobody changed is posted as it was: no normalising of HTML on opening and saving
 		const sync = () => {
 			const value = editor.value();
@@ -284,6 +289,11 @@
 
 		if (options.readonly) {
 			cm.setOption('readOnly', 'nocursor');
+		}
+
+		// Side by side from the start, where there's room for two columns
+		if (options.sideBySide && window.matchMedia('(min-width: 1024px)').matches) {
+			EasyMDE.toggleSideBySide(editor);
 		}
 
 		if (options.upload) {
