@@ -8,6 +8,11 @@ news = json.load(open(os.path.join(HERE, '..', 'news', 'content.json')))
 opinion = [a for a in news['articles'] if a['category'] == 'opinion']
 random.seed(20261006)
 
+
+def hits(lo, hi):
+    """A view count drawn from lo..hi, scaled down to 3..48 (the same draw as before, so the rest of the content stays the same)"""
+    return 3 + (random.randint(lo, hi) - lo) * 45 // (hi - lo)
+
 AUTHOR = 'Finch Hartley'
 categories = [
     {'alias': 'places', 'title': 'Places', 'description': '<p>Cities, towns and the places we share.</p>'},
@@ -50,7 +55,7 @@ for title, category, tags in plan:
         'category': category, 'title': title, 'intro': a['intro'], 'full': a['full'],
         'image': a['image'], 'image_alt': a['image_alt'], 'author': AUTHOR,
         'publish_up': when.strftime('%Y-%m-%d %H:%M'), 'featured': True, 'tags': tags,
-        'hits': random.randint(180, 2600),
+        'hits': hits(180, 2600),
     })
     when -= datetime.timedelta(days=random.randint(2, 4), hours=random.randint(-5, 5), minutes=random.randint(0, 59))
 

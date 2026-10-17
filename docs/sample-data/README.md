@@ -47,6 +47,8 @@ them listed, and an article's intro text with a link to log in; the rest needs a
 other article leads with (each section's 23 and 24). They're generated after the sections, so those stay as they were. The Sample
 Data plugin keeps an article's access level when the site has it.
 
+Each generator draws an article's views (hits) at random and scales them down to 3–48 (`hits()`), so a new site doesn't show thousands of views.
+
 `blog/generate_content.py` writes `blog/content.json` from it: 20 of the News set's opinion articles as the posts of a personal blog
 (one fictional author, four topics, a post every few days).
 

@@ -7,6 +7,11 @@ import datetime, json, os, random
 HERE = os.path.dirname(os.path.abspath(__file__))
 random.seed(20261007)
 
+
+def hits(lo, hi):
+    """A view count drawn from lo..hi, scaled down to 3..48 (the same draw as before, so the rest of the content stays the same)"""
+    return 3 + (random.randint(lo, hi) - lo) * 45 // (hi - lo)
+
 STUDIO = 'images/sampledata/studio/'
 NEWS = 'images/sampledata/news/'
 
@@ -155,14 +160,14 @@ for i, (title, client, image, alt, services, intro, brief, approach, results, fe
     when = start - datetime.timedelta(days=21 * i + random.randint(0, 6), hours=random.randint(0, 6))
     articles.append({'category': 'work', 'title': title, 'intro': '<p>%s</p>' % intro, 'full': case_study(client, brief, approach, results, services),
                      'image': image, 'image_alt': alt, 'author': random.choice(AUTHORS), 'publish_up': when.strftime('%Y-%m-%d %H:%M'),
-                     'featured': featured, 'tags': services, 'hits': random.randint(300, 4000)})
+                     'featured': featured, 'tags': services, 'hits': hits(300, 4000)})
 
 # Journal: a post every week or so, newest first
 for i, (title, image, alt, tags, intro, featured) in enumerate(journal):
     when = start - datetime.timedelta(days=7 * i + random.randint(0, 3), hours=random.randint(1, 8))
     articles.append({'category': 'journal', 'title': title, 'intro': '<p>%s</p>' % intro, 'full': post_body(), 'image': image, 'image_alt': alt,
                      'author': AUTHORS[i % len(AUTHORS)], 'publish_up': when.strftime('%Y-%m-%d %H:%M'), 'featured': featured, 'tags': tags,
-                     'hits': random.randint(150, 3000)})
+                     'hits': hits(150, 3000)})
 
 json.dump({'categories': categories, 'articles': articles}, open(os.path.join(HERE, 'content.json'), 'w'), indent='\t', ensure_ascii=False)
 print(len(articles), 'articles')

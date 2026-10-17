@@ -4,6 +4,11 @@ sample data SQL builder. Deterministic (fixed seed)."""
 import json, random, datetime, html, sys
 
 random.seed(20261005)
+
+
+def hits(lo, hi):
+    """A view count drawn from lo..hi, scaled down to 3..48 (the same draw as before, so the rest of the content stays the same)"""
+    return 3 + (random.randint(lo, hi) - lo) * 45 // (hi - lo)
 MEDIA = json.load(open('media.json'))
 IMG_BASE = sys.argv[1] if len(sys.argv) > 1 else 'images/news'   # build/import.py turns images/news/... into the bundled WebP files
 
@@ -254,7 +259,7 @@ for c, (alias, title, desc) in enumerate(CATS):
             # Featured: the newest two of the news categories (the hero and the featured row pick from these)
             'featured': alias != 'opinion' and i < 2 and c < 6,
             'tags': tags,
-            'hits': random.randint(40, 9000),
+            'hits': hits(40, 9000),
             'has': [e.split(' ')[0].strip('<') for e in extras],
         })
 
@@ -306,7 +311,7 @@ for i, (section, headline) in enumerate(SUBSCRIBER_TITLES):
         'publish_up': when.strftime('%Y-%m-%d %H:%M'),
         'featured': False,
         'tags': [],
-        'hits': random.randint(40, 4000),
+        'hits': hits(40, 4000),
         'has': [e.split(' ')[0].strip('<') for e in extras],
         'access': 'Registered',
     })

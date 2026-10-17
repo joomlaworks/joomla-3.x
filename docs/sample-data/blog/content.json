@@ -36,7 +36,7 @@
     "Cities",
     "Climate"
    ],
-   "hits": 2206
+   "hits": 40
   },
   {
    "category": "ideas",
@@ -51,7 +51,7 @@
    "tags": [
     "Education"
    ],
-   "hits": 1362
+   "hits": 24
   },
   {
    "category": "technology",
@@ -66,7 +66,7 @@
    "tags": [
     "Technology"
    ],
-   "hits": 2469
+   "hits": 45
   },
   {
    "category": "technology",
@@ -81,7 +81,7 @@
    "tags": [
     "Media"
    ],
-   "hits": 2329
+   "hits": 42
   },
   {
    "category": "work-life",
@@ -96,7 +96,7 @@
    "tags": [
     "Work"
    ],
-   "hits": 311
+   "hits": 5
   },
   {
    "category": "work-life",
@@ -111,7 +111,7 @@
    "tags": [
     "Climate"
    ],
-   "hits": 657
+   "hits": 11
   },
   {
    "category": "technology",
@@ -126,7 +126,7 @@
    "tags": [
     "Society"
    ],
-   "hits": 2537
+   "hits": 46
   },
   {
    "category": "technology",
@@ -141,7 +141,7 @@
    "tags": [
     "Technology"
    ],
-   "hits": 1071
+   "hits": 19
   },
   {
    "category": "places",
@@ -157,7 +157,7 @@
     "Cities",
     "Housing"
    ],
-   "hits": 2222
+   "hits": 40
   },
   {
    "category": "ideas",
@@ -172,7 +172,7 @@
    "tags": [
     "Education"
    ],
-   "hits": 860
+   "hits": 15
   },
   {
    "category": "places",
@@ -187,7 +187,7 @@
    "tags": [
     "Cities"
    ],
-   "hits": 425
+   "hits": 7
   },
   {
    "category": "ideas",
@@ -202,7 +202,7 @@
    "tags": [
     "Society"
    ],
-   "hits": 1966
+   "hits": 36
   },
   {
    "category": "ideas",
@@ -217,7 +217,7 @@
    "tags": [
     "Society"
    ],
-   "hits": 684
+   "hits": 12
   },
   {
    "category": "technology",
@@ -233,7 +233,7 @@
     "Technology",
     "Media"
    ],
-   "hits": 831
+   "hits": 15
   },
   {
    "category": "work-life",
@@ -249,7 +249,7 @@
     "Climate",
     "Work"
    ],
-   "hits": 2269
+   "hits": 41
   },
   {
    "category": "places",
@@ -265,7 +265,7 @@
     "Education",
     "Cities"
    ],
-   "hits": 1181
+   "hits": 21
   },
   {
    "category": "work-life",
@@ -280,7 +280,7 @@
    "tags": [
     "Climate"
    ],
-   "hits": 580
+   "hits": 10
   },
   {
    "category": "ideas",
@@ -295,7 +295,7 @@
    "tags": [
     "Society"
    ],
-   "hits": 2212
+   "hits": 40
   },
   {
    "category": "places",
@@ -310,7 +310,7 @@
    "tags": [
     "Culture"
    ],
-   "hits": 1618
+   "hits": 29
   },
   {
    "category": "work-life",
@@ -325,7 +325,7 @@
    "tags": [
     "Society"
    ],
-   "hits": 1535
+   "hits": 28
   }
  ]
 }

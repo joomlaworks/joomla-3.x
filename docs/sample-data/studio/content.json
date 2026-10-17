@@ -26,7 +26,7 @@
 				"Brand identity",
 				"Web design"
 			],
-			"hits": 1493
+			"hits": 17
 		},
 		{
 			"category": "work",
@@ -42,7 +42,7 @@
 				"Product design",
 				"Engineering"
 			],
-			"hits": 3842
+			"hits": 46
 		},
 		{
 			"category": "work",
@@ -58,7 +58,7 @@
 				"Web design",
 				"Motion"
 			],
-			"hits": 2244
+			"hits": 26
 		},
 		{
 			"category": "work",
@@ -74,7 +74,7 @@
 				"Brand identity",
 				"Campaign"
 			],
-			"hits": 2520
+			"hits": 30
 		},
 		{
 			"category": "work",
@@ -90,7 +90,7 @@
 				"E-commerce",
 				"Web design"
 			],
-			"hits": 3146
+			"hits": 37
 		},
 		{
 			"category": "work",
@@ -106,7 +106,7 @@
 				"Engineering",
 				"Product design"
 			],
-			"hits": 310
+			"hits": 3
 		},
 		{
 			"category": "work",
@@ -122,7 +122,7 @@
 				"Brand identity",
 				"Packaging"
 			],
-			"hits": 1174
+			"hits": 13
 		},
 		{
 			"category": "work",
@@ -139,7 +139,7 @@
 				"Web design",
 				"Motion"
 			],
-			"hits": 463
+			"hits": 4
 		},
 		{
 			"category": "work",
@@ -155,7 +155,7 @@
 				"Product design",
 				"Engineering"
 			],
-			"hits": 769
+			"hits": 8
 		},
 		{
 			"category": "journal",
@@ -171,7 +171,7 @@
 				"Design",
 				"Accessibility"
 			],
-			"hits": 1768
+			"hits": 28
 		},
 		{
 			"category": "journal",
@@ -187,7 +187,7 @@
 				"Performance",
 				"Engineering"
 			],
-			"hits": 2740
+			"hits": 43
 		},
 		{
 			"category": "journal",
@@ -202,7 +202,7 @@
 			"tags": [
 				"Engineering"
 			],
-			"hits": 1102
+			"hits": 18
 		},
 		{
 			"category": "journal",
@@ -218,7 +218,7 @@
 				"Design",
 				"Performance"
 			],
-			"hits": 157
+			"hits": 3
 		},
 		{
 			"category": "journal",
@@ -234,7 +234,7 @@
 				"Typography",
 				"Design"
 			],
-			"hits": 2230
+			"hits": 35
 		},
 		{
 			"category": "journal",
@@ -249,7 +249,7 @@
 			"tags": [
 				"Accessibility"
 			],
-			"hits": 2753
+			"hits": 44
 		},
 		{
 			"category": "journal",
@@ -265,7 +265,7 @@
 				"Product design",
 				"Studio life"
 			],
-			"hits": 841
+			"hits": 13
 		},
 		{
 			"category": "journal",
@@ -281,7 +281,7 @@
 				"Engineering",
 				"Product design"
 			],
-			"hits": 2464
+			"hits": 39
 		},
 		{
 			"category": "journal",
@@ -296,7 +296,7 @@
 			"tags": [
 				"Design"
 			],
-			"hits": 2772
+			"hits": 44
 		},
 		{
 			"category": "journal",
@@ -312,7 +312,7 @@
 				"Engineering",
 				"Writing"
 			],
-			"hits": 205
+			"hits": 3
 		},
 		{
 			"category": "journal",
@@ -328,7 +328,7 @@
 				"Motion",
 				"Design"
 			],
-			"hits": 721
+			"hits": 12
 		},
 		{
 			"category": "journal",
@@ -343,7 +343,7 @@
 			"tags": [
 				"Studio life"
 			],
-			"hits": 2064
+			"hits": 33
 		},
 		{
 			"category": "journal",
@@ -358,7 +358,7 @@
 			"tags": [
 				"Performance"
 			],
-			"hits": 2245
+			"hits": 36
 		},
 		{
 			"category": "journal",
@@ -374,7 +374,7 @@
 				"Design",
 				"Studio life"
 			],
-			"hits": 1715
+			"hits": 27
 		},
 		{
 			"category": "journal",
@@ -390,7 +390,7 @@
 				"Sustainability",
 				"Engineering"
 			],
-			"hits": 392
+			"hits": 6
 		},
 		{
 			"category": "journal",
@@ -406,7 +406,7 @@
 				"Motion",
 				"Design"
 			],
-			"hits": 639
+			"hits": 10
 		}
 	]
 }
