@@ -93,7 +93,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 
 		<tbody>
 			<?php foreach ($this->items as $i => $item) : ?>
-				<tr class="<?php echo ($i % 2) ? 'odd' : 'even'; ?>" itemscope itemtype="https://schema.org/Person">
+				<tr class="<?php echo ($i % 2) ? 'odd' : 'even'; ?>">
 					<td class="item-num">
 						<?php echo $i; ?>
 					</td>
@@ -102,56 +102,56 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						<?php if ($this->items[$i]->published == 0) : ?>
 							<span class="label label-warning"><?php echo JText::_('JUNPUBLISHED'); ?></span>
 						<?php endif; ?>
-						<a href="<?php echo JRoute::_(ContactHelperRoute::getContactRoute($item->slug, $item->catid)); ?>" itemprop="url">
-							<span itemprop="name"><?php echo $item->name; ?></span>
+						<a href="<?php echo JRoute::_(ContactHelperRoute::getContactRoute($item->slug, $item->catid)); ?>">
+							<span><?php echo $item->name; ?></span>
 						</a>
 					</td>
 
 					<?php if ($this->params->get('show_position_headings')) : ?>
-						<td class="item-position" itemprop="jobTitle">
+						<td class="item-position">
 							<?php echo $item->con_position; ?>
 						</td>
 					<?php endif; ?>
 
 					<?php if ($this->params->get('show_email_headings')) : ?>
-						<td class="item-email" itemprop="email">
+						<td class="item-email">
 							<?php echo $item->email_to; ?>
 						</td>
 					<?php endif; ?>
 
 					<?php if ($this->params->get('show_telephone_headings')) : ?>
-						<td class="item-phone" itemprop="telephone">
+						<td class="item-phone">
 							<?php echo $item->telephone; ?>
 						</td>
 					<?php endif; ?>
 
 					<?php if ($this->params->get('show_mobile_headings')) : ?>
-						<td class="item-phone" itemprop="telephone">
+						<td class="item-phone">
 							<?php echo $item->mobile; ?>
 						</td>
 					<?php endif; ?>
 
 					<?php if ($this->params->get('show_fax_headings')) : ?>
-						<td class="item-phone" itemprop="faxNumber">
+						<td class="item-phone">
 							<?php echo $item->fax; ?>
 						</td>
 					<?php endif; ?>
 
 					<?php if ($this->params->get('show_suburb_headings')) : ?>
-						<td class="item-suburb" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-							<span itemprop="addressLocality"><?php echo $item->suburb; ?></span>
+						<td class="item-suburb">
+							<span><?php echo $item->suburb; ?></span>
 						</td>
 					<?php endif; ?>
 
 					<?php if ($this->params->get('show_state_headings')) : ?>
-						<td class="item-state" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-							<span itemprop="addressRegion"><?php echo $item->state; ?></span>
+						<td class="item-state">
+							<span><?php echo $item->state; ?></span>
 						</td>
 					<?php endif; ?>
 
 					<?php if ($this->params->get('show_country_headings')) : ?>
-						<td class="item-state" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-							<span itemprop="addressCountry"><?php echo $item->country; ?></span>
+						<td class="item-state">
+							<span><?php echo $item->country; ?></span>
 						</td>
 					<?php endif; ?>
 				</tr>

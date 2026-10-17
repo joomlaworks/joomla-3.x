@@ -18,5 +18,5 @@ $params = $displayData->params;
 		<?php if ($images->image_fulltext_caption) :
 			echo 'class="caption"' . ' title="' . htmlspecialchars($images->image_fulltext_caption) . '"';
 		endif; ?>
-	src="<?php echo htmlspecialchars((string) $images->image_fulltext); ?>" alt="<?php echo htmlspecialchars($images->image_fulltext_alt); ?>" itemprop="image"/> </div>
+	src="<?php echo htmlspecialchars((string) $images->image_fulltext); ?>" alt="<?php echo htmlspecialchars($images->image_fulltext_alt); ?>"/> </div>
 <?php endif; ?>

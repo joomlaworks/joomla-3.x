@@ -37,21 +37,21 @@ if (RookwoodHelper::isPage()) : ?>
 	<?php echo $item->event->afterDisplayContent; ?>
 </article>
 <?php return; endif; ?>
-<article class="articleView" itemscope itemtype="https://schema.org/Article">
+<article class="articleView">
 	<header class="articleHeader container">
 		<div class="articleLabels">
 			<?php echo RookwoodHelper::category((object) array('category_title' => $item->category_title)); ?>
 			<?php echo RookwoodHelper::tags($item, 3); ?>
 		</div>
-		<h1 class="articleTitle" itemprop="headline"><?php echo RookwoodHelper::e($item->title); ?></h1>
+		<h1 class="articleTitle"><?php echo RookwoodHelper::e($item->title); ?></h1>
 		<?php echo $item->event->afterDisplayTitle; ?>
 		<?php if ($intro !== '') : ?>
-		<p class="articleLead" itemprop="description"><?php echo $intro; ?></p>
+		<p class="articleLead"><?php echo $intro; ?></p>
 		<?php endif; ?>
 		<?php if ($author !== '') : ?>
 		<p class="articleByline">
 			<span class="avatar" aria-hidden="true" style="--hue:<?php echo (int) (crc32($author) % 360); ?>"><?php echo RookwoodHelper::e(RookwoodHelper::initials($author)); ?></span>
-			<span class="itemAuthor" itemprop="author"><?php echo RookwoodHelper::e($author); ?></span>
+			<span class="itemAuthor"><?php echo RookwoodHelper::e($author); ?></span>
 			<?php echo RookwoodHelper::date($item); ?>
 			<span class="readingTime"><?php echo JText::sprintf('TPL_ROOKWOOD_READING_TIME', RookwoodHelper::readingTime($item)); ?></span>
 		</p>
@@ -66,7 +66,7 @@ if (RookwoodHelper::isPage()) : ?>
 	<?php endif; ?>
 
 	<?php echo $item->event->beforeDisplayContent; ?>
-	<div class="container prose articleText" itemprop="articleBody"><?php echo RookwoodHelper::lazyImages($item->text, $image['src'] === ''); ?></div>
+	<div class="container prose articleText"><?php echo RookwoodHelper::lazyImages($item->text, $image['src'] === ''); ?></div>
 	<?php echo $item->event->afterDisplayContent; ?>
 
 	<?php // Previous and next, from the "Content - Page Navigation" plugin (its own layout is empty in this template) ?>

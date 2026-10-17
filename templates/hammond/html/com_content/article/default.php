@@ -34,19 +34,19 @@ if (HammondHelper::isPage()) : ?>
 	<div class="itemFullText"><?php echo HammondHelper::lazyImages($item->text, true); ?></div>
 </article>
 <?php return; endif; ?>
-<article class="articleView" itemscope itemtype="https://schema.org/NewsArticle">
+<article class="articleView">
 	<header class="articleHeader">
 		<?php echo HammondHelper::category((object) array('category_title' => $item->category_title, 'category_alias' => $item->category_alias, 'catid' => $item->catid, 'language' => $item->language)); ?>
-		<h1 class="articleTitle" itemprop="headline"><?php echo HammondHelper::e($item->title); ?></h1>
+		<h1 class="articleTitle"><?php echo HammondHelper::e($item->title); ?></h1>
 		<?php echo $item->event->afterDisplayTitle; ?>
 		<?php if (trim(strip_tags($item->introtext)) !== '') : ?>
-		<p class="articleStandfirst" itemprop="description"><?php echo HammondHelper::excerpt($item); ?></p>
+		<p class="articleStandfirst"><?php echo HammondHelper::excerpt($item); ?></p>
 		<?php endif; ?>
 		<div class="articleByline">
 			<?php if ($author !== '') : ?>
 			<span class="avatar" aria-hidden="true" style="--hue:<?php echo (int) (crc32($author) % 360); ?>"><?php echo HammondHelper::e(HammondHelper::initials($author)); ?></span>
 			<span class="bylineText">
-				<span class="itemAuthor" itemprop="author"><?php echo HammondHelper::e($author); ?></span>
+				<span class="itemAuthor"><?php echo HammondHelper::e($author); ?></span>
 				<span class="bylineMeta"><?php echo HammondHelper::date($item); ?> · <?php echo JText::sprintf('TPL_HAMMOND_READING_TIME', HammondHelper::readingTime($item)); ?></span>
 			</span>
 			<?php endif; ?>
@@ -61,13 +61,13 @@ if (HammondHelper::isPage()) : ?>
 
 	<?php if ($image['src'] !== '') : ?>
 	<figure class="articleImage">
-		<img src="<?php echo HammondHelper::e($image['src']); ?>" alt="<?php echo HammondHelper::e($image['alt']); ?>" width="1280" height="720" fetchpriority="high" itemprop="image" />
+		<img src="<?php echo HammondHelper::e($image['src']); ?>" alt="<?php echo HammondHelper::e($image['alt']); ?>" width="1280" height="720" fetchpriority="high" />
 		<?php if ($image['caption'] !== '') : ?><figcaption><?php echo HammondHelper::e($image['caption']); ?></figcaption><?php endif; ?>
 	</figure>
 	<?php endif; ?>
 
 	<?php echo $item->event->beforeDisplayContent; ?>
-	<div class="itemFullText" itemprop="articleBody"><?php echo HammondHelper::lazyImages($item->text, $image['src'] === ''); ?></div>
+	<div class="itemFullText"><?php echo HammondHelper::lazyImages($item->text, $image['src'] === ''); ?></div>
 	<?php echo $item->event->afterDisplayContent; ?>
 
 	<?php if (!empty($item->tags->itemTags) && JComponentHelper::isEnabled('com_tags')) : ?>

@@ -47,10 +47,8 @@ for ($i = $rating; $i < 5; $i++)
 ?>
 <div class="content_rating">
 	<?php if ($rcount) : ?>
-		<p class="unseen element-invisible" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
-			<?php echo JText::sprintf('PLG_VOTE_USER_RATING', '<span itemprop="ratingValue">' . $rating . '</span>', '<span itemprop="bestRating">5</span>'); ?>
-			<meta itemprop="ratingCount" content="<?php echo $rcount; ?>" />
-			<meta itemprop="worstRating" content="1" />
+		<p class="unseen element-invisible">
+			<?php echo JText::sprintf('PLG_VOTE_USER_RATING', $rating, '5'); ?>
 		</p>
 	<?php endif; ?>
 	<?php echo $img; ?>

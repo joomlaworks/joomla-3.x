@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 ?>
 <div aria-label="<?php echo htmlspecialchars((string) $module->title, ENT_QUOTES, 'UTF-8'); ?>" role="navigation">
-	<ul itemscope itemtype="https://schema.org/BreadcrumbList" class="breadcrumb<?php echo $moduleclass_sfx; ?>">
+	<ul class="breadcrumb<?php echo $moduleclass_sfx; ?>">
 		<?php if ($params->get('showHere', 1)) : ?>
 			<li>
 				<?php echo JText::_('MOD_BREADCRUMBS_HERE'); ?>&#160;
@@ -44,11 +44,11 @@ defined('_JEXEC') or die;
 		foreach ($list as $key => $item) :
 			if ($key !== $last_item_key) :
 				// Render all but last item - along with separator ?>
-				<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+				<li>
 					<?php if (!empty($item->link)) : ?>
-						<a itemprop="item" href="<?php echo $item->link; ?>" class="pathway"><span itemprop="name"><?php echo $item->name; ?></span></a>
+						<a href="<?php echo $item->link; ?>" class="pathway"><span><?php echo $item->name; ?></span></a>
 					<?php else : ?>
-						<span itemprop="name">
+						<span>
 							<?php echo $item->name; ?>
 						</span>
 					<?php endif; ?>
@@ -58,15 +58,13 @@ defined('_JEXEC') or die;
 							<?php echo $separator; ?>
 						</span>
 					<?php endif; ?>
-					<meta itemprop="position" content="<?php echo $key + 1; ?>">
 				</li>
 			<?php elseif ($show_last) :
 				// Render last item if reqd. ?>
-				<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="active">
-					<span itemprop="name">
+				<li class="active">
+					<span>
 						<?php echo $item->name; ?>
 					</span>
-					<meta itemprop="position" content="<?php echo $key + 1; ?>">
 				</li>
 			<?php endif;
 		endforeach; ?>

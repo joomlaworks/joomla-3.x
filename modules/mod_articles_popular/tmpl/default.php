@@ -11,9 +11,9 @@ defined('_JEXEC') or die;
 ?>
 <ul class="mostread<?php echo $moduleclass_sfx; ?> mod-list">
 <?php foreach ($list as $item) : ?>
-	<li itemscope itemtype="https://schema.org/Article">
-		<a href="<?php echo $item->link; ?>" itemprop="url">
-			<span itemprop="name">
+	<li>
+		<a href="<?php echo $item->link; ?>">
+			<span>
 				<?php echo $item->title; ?>
 			</span>
 		</a>

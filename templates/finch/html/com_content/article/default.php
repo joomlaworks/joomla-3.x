@@ -43,18 +43,18 @@ $share    = array(
 // The intro as the standfirst, when the text doesn't start with it already ("Show Intro Text" off)
 $standfirst = !$params->get('show_intro', 1) ? FinchHelper::excerpt($item) : '';
 ?>
-<article class="postView <?php echo FinchHelper::tone($item); ?>" itemscope itemtype="https://schema.org/BlogPosting">
+<article class="postView <?php echo FinchHelper::tone($item); ?>">
 	<header class="postHeader">
 		<?php echo FinchHelper::category((object) array('category_title' => $item->category_title, 'catid' => $item->catid, 'language' => $item->language)); ?>
-		<h1 class="postViewTitle" itemprop="headline"><?php echo FinchHelper::e($item->title); ?></h1>
+		<h1 class="postViewTitle"><?php echo FinchHelper::e($item->title); ?></h1>
 		<?php echo $item->event->afterDisplayTitle; ?>
 		<?php if ($standfirst !== '') : ?>
-		<p class="standfirst" itemprop="description"><?php echo $standfirst; ?></p>
+		<p class="standfirst"><?php echo $standfirst; ?></p>
 		<?php endif; ?>
 		<div class="byline">
 			<?php if ($author !== '') : ?>
 			<span class="avatar" aria-hidden="true" style="--hue:<?php echo $hue; ?>"><?php echo FinchHelper::e(FinchHelper::initials($author)); ?></span>
-			<span class="bylineName" itemprop="author"><?php echo FinchHelper::e($author); ?></span>
+			<span class="bylineName"><?php echo FinchHelper::e($author); ?></span>
 			<?php endif; ?>
 			<span class="bylineMeta"><?php echo FinchHelper::date($item); ?><span class="postReading"><?php echo JText::sprintf('TPL_FINCH_READING_TIME', FinchHelper::readingTime($item)); ?></span></span>
 		</div>
@@ -62,13 +62,13 @@ $standfirst = !$params->get('show_intro', 1) ? FinchHelper::excerpt($item) : '';
 
 	<?php if ($image['src'] !== '') : ?>
 	<figure class="postFigure">
-		<img src="<?php echo FinchHelper::e($image['src']); ?>" alt="<?php echo FinchHelper::e($image['alt']); ?>" width="1280" height="720" fetchpriority="high" itemprop="image" />
+		<img src="<?php echo FinchHelper::e($image['src']); ?>" alt="<?php echo FinchHelper::e($image['alt']); ?>" width="1280" height="720" fetchpriority="high" />
 		<?php if ($image['caption'] !== '') : ?><figcaption><?php echo FinchHelper::e($image['caption']); ?></figcaption><?php endif; ?>
 	</figure>
 	<?php endif; ?>
 
 	<?php echo $item->event->beforeDisplayContent; ?>
-	<div class="postContent" itemprop="articleBody"><?php echo FinchHelper::lazyImages($item->text, $image['src'] === ''); ?></div>
+	<div class="postContent"><?php echo FinchHelper::lazyImages($item->text, $image['src'] === ''); ?></div>
 	<?php echo $item->event->afterDisplayContent; ?>
 
 	<footer class="postFooter">

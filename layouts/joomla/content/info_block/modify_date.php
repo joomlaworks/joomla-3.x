@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 ?>
 			<dd class="modified">
 				<span class="icon-calendar" aria-hidden="true"></span>
-				<time datetime="<?php echo JHtml::_('date', $displayData['item']->modified, 'c'); ?>" itemprop="dateModified">
+				<time datetime="<?php echo JHtml::_('date', $displayData['item']->modified, 'c'); ?>">
 					<?php echo JText::sprintf('COM_CONTENT_LAST_UPDATED', JHtml::_('date', $displayData['item']->modified, JText::_('DATE_FORMAT_LC3'))); ?>
 				</time>
 			</dd>

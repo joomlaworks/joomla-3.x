@@ -39,7 +39,7 @@ defined('_JEXEC') or die;
 			$label = $label ?: $link;
 			?>
 			<li>
-				<a href="<?php echo $link; ?>" itemprop="url">
+				<a href="<?php echo $link; ?>">
 					<?php echo $label; ?>
 				</a>
 			</li>

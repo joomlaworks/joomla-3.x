@@ -27,8 +27,7 @@ $isNotPublishedYet = $this->item->publish_up > $currentDate;
 $isExpired         = $this->item->publish_down < $currentDate && $this->item->publish_down !== JFactory::getDbo()->getNullDate();
 
 ?>
-<div class="item-page<?php echo $this->pageclass_sfx; ?>" itemscope itemtype="https://schema.org/Article">
-	<meta itemprop="inLanguage" content="<?php echo ($this->item->language === '*') ? JFactory::getConfig()->get('language') : $this->item->language; ?>" />
+<div class="item-page<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>
 	<div class="page-header">
 		<h1> <?php echo $this->escape($this->params->get('page_heading')); ?> </h1>
@@ -52,7 +51,7 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 	<?php endif; ?>
 	<?php if ($params->get('show_title')) : ?>
 	<div class="page-header">
-		<h2 itemprop="headline">
+		<h2>
 			<?php echo $this->escape($this->item->title); ?>
 		</h2>
 		<?php if ($this->item->state == 0) : ?>
@@ -109,7 +108,7 @@ $isExpired         = $this->item->publish_down < $currentDate && $this->item->pu
 	<?php if (isset ($this->item->toc)) :
 		echo $this->item->toc;
 	endif; ?>
-	<div itemprop="articleBody">
+	<div>
 		<?php echo $this->item->text; ?>
 	</div>
 
