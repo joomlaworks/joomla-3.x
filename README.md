@@ -55,7 +55,7 @@ Summary of changes:
 - The debug console opens from a button at the bottom right, showing the page's time, memory, queries and errors, as a panel with tabs instead of a block at the end of every page; redesigned, light and dark
 - Prothero, a new administrator template next to Isis: Isis' markup (so extensions made for Isis work with it), with a minimal black and white look in the style of shadcn/ui and Vercel, light and dark colour schemes (automatic by default), a choice of colours for the top menu bar and a matching login page. It's the default administrator template of new sites; existing sites keep Isis and can switch in System > Templates
 - PostgreSQL understands MySQL-style backtick-quoted names in queries, so many third-party extensions' SQL works on it unchanged
-- "System - Structured Data & Social Tags": Google structured data (JSON-LD), Open Graph and X (Twitter) card tags for every page, with any template. Articles, categories, tags and search results describe themselves; every other page uses the site's name, description, image, publisher and profiles. Articles' structured data type (Article, News Article, Blog Post, Review, Product, Recipe...) is set for the whole site and can be changed per category and tag. Extensions with tags of their own (e.g. K2) keep them, and can add to these
+- "System - Structured Data & Social Tags": Google structured data (JSON-LD), Open Graph and X (Twitter) card tags for every page, with any template. Articles (with their full text and images), categories, tags and search results describe themselves, and search engines may show large image previews (Google Discover); every other page uses the site's name, description, image, publisher and profiles. Articles' structured data type (Article, News Article, Blog Post, Review, Product, Recipe...) is set for the whole site and can be changed per category and tag. Extensions with tags of their own (e.g. K2) keep them, and can add to these
 
 **Improvements:**
 - More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. The administrator's quick icons, menu and status bar, article tags and Contacts work without them
@@ -69,6 +69,9 @@ Summary of changes:
 - PostgreSQL: table column information includes MySQL's `Key` and `Extra` fields too, for extensions written against MySQL
 - Command line: extensions can add commands of their own (guide for developers: [CLI-GUIDE.md](CLI-GUIDE.md)), which can't take core commands' names; extensions can be enabled, disabled, reinstalled and removed by name (e.g. `plg_system_k2`), and a site whose database settings point nowhere can be pointed at a database of another type with `config:set`
 - Removed the "Authentication - GMail" plugin (Google stopped accepting its password sign-in in 2022), the "System - P3P Policy" plugin, joomla.org's update site for the Joomla Update component, Global Configuration's Memcache options, unused web service libraries and polyfills for PHP versions below 7.1
+
+**Security fixes:**
+- Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors without access (with "Show Unauthorised Links" on); they get the intro text and a link to log in, as with Joomla's own layout
 
 **Bug fixes:**
 - Uninstalling a core component also uninstalls the modules and plugins which only serve it (e.g. "Smart Search - Contacts", which stopped indexing) and leaves no media folders or language files behind; updates clean up after earlier uninstalls

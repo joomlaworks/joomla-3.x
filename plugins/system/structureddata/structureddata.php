@@ -157,6 +157,17 @@ class PlgSystemStructureddata extends CMSPlugin
 			}
 		}
 
+		// Search engines may show large image previews (e.g. Google Discover), whatever else the page's robots meta says
+		if ($this->params->get('max_image_preview', 1))
+		{
+			$robots = trim((string) $doc->getMetaData('robots'));
+
+			if (stripos($robots, 'max-image-preview') === false)
+			{
+				$doc->setMetaData('robots', ($robots !== '' ? rtrim($robots, ', ') . ', ' : '') . 'max-image-preview:large');
+			}
+		}
+
 		if ($data->graph)
 		{
 			$json = json_encode(array('@context' => 'https://schema.org', '@graph' => array_values((array) $data->graph)),
@@ -336,8 +347,8 @@ class PlgSystemStructureddata extends CMSPlugin
 		$db    = Factory::getDbo();
 		$query = $db->getQuery(true)
 			->select($db->quoteName(array('a.id', 'a.title', 'a.alias', 'a.introtext', 'a.fulltext', 'a.catid', 'a.created', 'a.created_by',
-				'a.created_by_alias', 'a.modified', 'a.publish_up', 'a.images', 'a.metakey', 'a.metadesc', 'a.language', 'a.state')))
-			->select($db->quoteName(array('c.title', 'u.name'), array('category_title', 'author_name')))
+				'a.created_by_alias', 'a.modified', 'a.publish_up', 'a.images', 'a.metakey', 'a.metadesc', 'a.language', 'a.state', 'a.access')))
+			->select($db->quoteName(array('c.title', 'c.access', 'u.name'), array('category_title', 'category_access', 'author_name')))
 			->from($db->quoteName('#__content', 'a'))
 			->join('LEFT', $db->quoteName('#__categories', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('a.catid'))
 			->join('LEFT', $db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('a.created_by'))
@@ -350,9 +361,14 @@ class PlgSystemStructureddata extends CMSPlugin
 			return null;
 		}
 
-		$images   = new Registry($row->images);
-		$text     = (string) $row->introtext . ' ' . (string) $row->fulltext;
-		$article  = (object) array(
+		$images = new Registry($row->images);
+		$text   = (string) $row->introtext . ' ' . (string) $row->fulltext;
+
+		// The text as the visitor may read it: without access to the article, Joomla shows its intro text only
+		$levels = Factory::getUser()->getAuthorisedViewLevels();
+		$body   = $this->plainText(in_array((int) $row->access, $levels) && in_array((int) $row->category_access, $levels) ? $text : $row->introtext);
+
+		$article = (object) array(
 			'id'          => (int) $row->id,
 			'title'       => (string) $row->title,
 			'description' => trim((string) $row->metadesc) ?: $this->excerpt($row->introtext ?: $row->fulltext),
@@ -364,20 +380,37 @@ class PlgSystemStructureddata extends CMSPlugin
 			'keywords'    => array(),
 			'tags'        => array(),
 			'language'    => $row->language === '*' ? '' : (string) $row->language,
-			'words'       => count(preg_split('/\s+/u', trim($this->plainText($text)), -1, PREG_SPLIT_NO_EMPTY)),
+			'body'        => $body,
+			'words'       => count(preg_split('/\s+/u', $body, -1, PREG_SPLIT_NO_EMPTY)),
 			'image'       => null,
+			'images'      => array(),
 			'rating'      => null,
 			'type'        => $this->params->get('article_type', 'Article'),
 		);
 
-		// The full text image, else the intro image, else the first image in the text
-		$article->image = $this->image($images->get('image_fulltext'), $images->get('image_fulltext_alt') ?: $row->title)
-			?: $this->image($images->get('image_intro'), $images->get('image_intro_alt') ?: $row->title);
-
-		if (!$article->image && preg_match('/<img\s[^>]*\bsrc\s*=\s*["\']([^"\']+)["\']/i', $text, $match))
+		// The full text image and the intro image, the larger first (the structured data lists both; the social tags use the
+		// first), else the first image in the text
+		foreach (array('image_fulltext', 'image_intro') as $field)
 		{
-			$article->image = $this->image(html_entity_decode($match[1], ENT_QUOTES, 'UTF-8'), $row->title);
+			$image = $this->image($images->get($field), $images->get($field . '_alt') ?: $row->title);
+
+			if ($image && (!$article->images || $article->images[0]['url'] !== $image['url']))
+			{
+				$article->images[] = $image;
+			}
 		}
+
+		if (!$article->images && preg_match('/<img\s[^>]*\bsrc\s*=\s*["\']([^"\']+)["\']/i', $text, $match))
+		{
+			$image = $this->image(html_entity_decode($match[1], ENT_QUOTES, 'UTF-8'), $row->title);
+
+			if ($image)
+			{
+				$article->images[] = $image;
+			}
+		}
+
+		$article->image = $article->images ? $article->images[0] : null;
 
 		// Tags, in their order on the article
 		if (TagsHelper::isAvailable())
@@ -694,7 +727,7 @@ class PlgSystemStructureddata extends CMSPlugin
 	}
 
 	/**
-	 * The article as its type: an article (headline, section, keywords, word count), a review of the subject in its title, a
+	 * The article as its type: an article (headline, text, section, keywords, word count), a review of the subject in its title, a
 	 * product, service, course, recipe or application named by it, or a web page. All carry their description, image, URL,
 	 * language and the page they're on; articles, reviews, recipes and pages also their dates, author and publisher.
 	 *
@@ -717,7 +750,7 @@ class PlgSystemStructureddata extends CMSPlugin
 			'url'              => $article->url,
 			'name'             => $article->title,
 			'description'      => $page->description,
-			'image'            => $page->image ? array($this->imageNode($page->image)) : null,
+			'image'            => $article->images ? array_map(array($this, 'imageNode'), $article->images) : ($page->image ? array($this->imageNode($page->image)) : null),
 			'inLanguage'       => $language,
 			'mainEntityOfPage' => array('@type' => 'WebPage', '@id' => $article->url),
 		);
@@ -737,13 +770,14 @@ class PlgSystemStructureddata extends CMSPlugin
 			$node['headline']       = $this->truncate($article->title, 110);
 			$node['articleSection'] = $article->category;
 			$node['keywords']       = $article->keywords ? implode(', ', $article->keywords) : null;
+			$node['articleBody']    = $article->body;
 			$node['wordCount']      = $article->words ?: null;
 			unset($node['name']);
 		}
 		elseif ($type === 'Review')
 		{
 			$node['itemReviewed'] = array('@type' => 'Thing', 'name' => $article->title);
-			$node['reviewBody']   = $page->description;
+			$node['reviewBody']   = $article->body ?: $page->description;
 		}
 		elseif ($type === 'Product')
 		{

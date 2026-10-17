@@ -100,6 +100,10 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
+                <field name="max_image_preview" type="radio" label="PLG_SYSTEM_STRUCTUREDDATA_MAX_IMAGE_PREVIEW_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_MAX_IMAGE_PREVIEW_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
                 <field name="ratings" type="radio" label="PLG_SYSTEM_STRUCTUREDDATA_RATINGS_LABEL" description="PLG_SYSTEM_STRUCTUREDDATA_RATINGS_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
