@@ -79,7 +79,7 @@ Summary of changes:
 
 **Security fixes:**
 - Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors without access (with "Show Unauthorised Links" on); they get the intro text and a link to log in, as with Joomla's own layout
-- The head escapes `<link>` addresses and attributes, which extensions could pass unescaped
+- The head escapes `<link>`, script and stylesheet addresses and attributes, which extensions could pass unescaped
 
 **Bug fixes:**
 - Uninstalling a core component also uninstalls the modules and plugins which only serve it (e.g. "Smart Search - Contacts", which stopped indexing) and leaves no media folders or language files behind; updates clean up after earlier uninstalls
@@ -96,7 +96,7 @@ Summary of changes:
 - SQLite: searches ignore case and accents in every language, as on MySQL (they did for English letters only)
 - Search: Greek (and other non-Latin) searches typed without accents find their results again, on every database
 - SQLite: sites moved to MySQL no longer get case-sensitive titles: the collations of tables and columns are recorded correctly, and updating (or Extensions: Database's Fix) repairs those of existing sites; moving a database to MariaDB or MySQL 5.7 no longer fails on MySQL 8-only collations
-- The head no longer repeats inline scripts and styles added more than once (e.g. from a loop), and links to the same address with different relations no longer replace each other
+- The head no longer repeats inline scripts and styles added more than once (e.g. from a loop), links to the same address with different relations no longer replace each other, and script attributes set to `false` (e.g. `nomodule`) are left out instead of switched on
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:

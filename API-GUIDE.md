@@ -10,6 +10,7 @@ For commands of your own on the command line, see [CLI-GUIDE.md](CLI-GUIDE.md). 
   - [Resource hints: preconnect, dns-prefetch, preload](#resource-hints-preconnect-dns-prefetch-preload)
   - [HTTP Link headers](#http-link-headers)
   - [Other links](#other-links)
+  - [Scripts and stylesheets](#scripts-and-stylesheets)
   - [Order of output](#order-of-output)
   - [Duplicates](#duplicates)
   - [Reading the document's links](#reading-the-documents-links)
@@ -78,6 +79,44 @@ Link: <https://fonts.gstatic.com>; rel=preconnect; crossorigin=anonymous, <https
 - **One link per address *and* relation.** Before, links were stored by address only, so a second link to the same address replaced the first, whatever its `rel` (a dns-prefetch replaced the preconnect for the same origin, a canonical replaced a feed with the same address). Adding the same address with the same `rel` again still replaces it, now with the new attributes.
 - **Escaped.** The address, the relation and every attribute value are escaped when written. Entities already in them are kept (no double encoding), so `&amp;` from `JRoute::_()` or your own `htmlspecialchars()` stays as it is. Before, the values were written exactly as given, and a value with a quote could add attributes of its own.
 - **Attributes:** names that aren't valid attribute names are left out, and so are values that are `null`, `false` or not scalar. `true` writes an empty value (`crossorigin=""`).
+
+### Scripts and stylesheets
+
+`addScript($url, $options = array(), $attribs = array())` and `addStyleSheet($url, $options = array(), $attribs = array())` take any attribute in `$attribs`. `$options` is for Joomla itself (`version`; `conditional`, for old Internet Explorer comments).
+
+```php
+// A module script with an ID, and a fallback for browsers without modules
+$doc->addScript(JUri::root(true) . '/media/com_example/js/app.js', array(), array('type' => 'module', 'id' => 'example-app'));
+$doc->addScript(JUri::root(true) . '/media/com_example/js/app-legacy.js', array(), array('nomodule' => true, 'defer' => true));
+
+// A script from a CDN with Subresource Integrity
+$doc->addScript('https://cdn.example.com/lib.js', array(), array('async' => true, 'crossorigin' => 'anonymous',
+	'integrity' => 'sha384-…', 'referrerpolicy' => 'no-referrer'));
+
+// Data for the script: arrays are written as JSON
+$doc->addScript(JUri::root(true) . '/media/com_example/js/map.js', array(), array('defer' => true, 'data-config' => array('zoom' => 12)));
+
+// A print stylesheet, and an alternate one
+$doc->addStyleSheet(JUri::root(true) . '/media/com_example/css/print.css', array(), array('media' => 'print'));
+$doc->addStyleSheet(JUri::root(true) . '/media/com_example/css/contrast.css', array(), array('rel' => 'alternate stylesheet', 'title' => 'High contrast'));
+
+// An inline module script
+$doc->addScriptDeclaration('import { start } from "/media/com_example/js/app.js"; start();', 'module');
+```
+
+In an HTML5 document (`$doc->setHtml5(true)`, as Hammond, Finch, Rookwood, Isis and Prothero set), the first two come out as:
+
+```html
+<script src="/media/com_example/js/app.js" type="module" id="example-app"></script>
+<script src="/media/com_example/js/app-legacy.js" nomodule defer></script>
+```
+
+- **Boolean attributes** (`async`, `defer`, `nomodule`, `disabled`, ...): `true` writes the attribute without a value (`name="name"` outside HTML5), and `false` or `null` leaves it out. Since 3.18 this works for every attribute. Stock Joomla 3 did it for `async` and `defer` only, so `'nomodule' => false` wrote `nomodule=""`, which turns `nomodule` *on*. An empty string still writes an empty value (`'crossorigin' => ''` gives `crossorigin=""`).
+- **Escaped:** since 3.18 the URL is escaped too, as link addresses are. Before, a URL with a quote could add attributes of its own. Entities already in it are kept, and a raw `&` becomes `&amp;` (the same URL to the browser). Attribute values were escaped already. Names that aren't valid attribute names are left out (a name with a space could add attributes).
+- **`type`:** a JavaScript or CSS type is left out in HTML5 documents (it's the default); any other, e.g. `module`, is written.
+- **`rel` on a stylesheet** replaces `stylesheet` and is written once (stock Joomla 3 wrote it twice).
+- **One tag per URL:** adding the same URL again merges the attributes into the existing tag, and the tag keeps its place.
+- **Inline scripts and styles** take no attributes, and all declarations of one type share one `<script>` or `<style>` block (see [Duplicates](#duplicates)). Top-level `const`/`let` names in two declarations of the same type therefore collide; wrap yours in a block or a function.
 
 ### Order of output
 

@@ -170,13 +170,14 @@ class HeadRenderer extends DocumentRenderer
 			}
 
 			$relation = isset($attribs['rel']) ? $attribs['rel'] : 'stylesheet';
-			$buffer .= '<link href="' . $src . '" rel="' . $relation . '"';
+			$buffer .= '<link href="' . $this->escapeAttribute($src) . '" rel="' . $this->escapeAttribute($relation) . '"';
 
 			// Add script tag attributes.
 			foreach ($attribs as $attrib => $value)
 			{
-				// Don't add the 'options' attribute. This attribute is for internal use (version, conditional, etc).
-				if ($attrib === 'options')
+				// Don't add the 'options' attribute. This attribute is for internal use (version, conditional, etc). 'rel' is
+				// written above (it came out twice).
+				if ($attrib === 'options' || $attrib === 'rel')
 				{
 					continue;
 				}
@@ -193,13 +194,8 @@ class HeadRenderer extends DocumentRenderer
 					$attrib = 'type';
 				}
 
-				// Add attribute to script tag output.
-				$buffer .= ' ' . htmlspecialchars((string) $attrib, ENT_COMPAT, 'UTF-8');
-
-				// Json encode value if it's an array.
-				$value = !is_scalar($value) ? json_encode($value) : $value;
-
-				$buffer .= '="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '"';
+				// Add attribute to the tag output
+				$buffer .= $this->elementAttribute($attrib, $value, $document->isHtml5());
 			}
 
 			$buffer .= $tagEnd;
@@ -281,7 +277,7 @@ class HeadRenderer extends DocumentRenderer
 				$buffer .= '<!--[if ' . $conditional . ']>';
 			}
 
-			$buffer .= '<script src="' . $src . '"';
+			$buffer .= '<script src="' . $this->escapeAttribute($src) . '"';
 
 			// Add script tag attributes.
 			foreach ($attribs as $attrib => $value)
@@ -309,22 +305,14 @@ class HeadRenderer extends DocumentRenderer
 				{
 					$attrib = 'type';
 				}
-				// B/C defer and async can be set to yes when using the old method.
-				elseif (in_array($attrib, array('defer', 'async')) && $value === true)
+				// B/C defer and async can be set to yes when using the old method: any non-empty value turns them on
+				elseif (in_array($attrib, $html5NoValueAttributes))
 				{
-					$value = $attrib;
+					$value = true;
 				}
 
 				// Add attribute to script tag output.
-				$buffer .= ' ' . htmlspecialchars((string) $attrib, ENT_COMPAT, 'UTF-8');
-
-				if (!($document->isHtml5() && in_array($attrib, $html5NoValueAttributes)))
-				{
-					// Json encode value if it's an array.
-					$value = !is_scalar($value) ? json_encode($value) : $value;
-
-					$buffer .= '="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '"';
-				}
+				$buffer .= $this->elementAttribute($attrib, $value, $document->isHtml5());
 			}
 
 			$buffer .= '></script>';
@@ -454,6 +442,37 @@ class HeadRenderer extends DocumentRenderer
 		}
 
 		return $html;
+	}
+
+	/**
+	 * One attribute of a stylesheet or script tag. Booleans work for every attribute: true writes it without a value (or as
+	 * name="name" outside HTML5), false and null leave it out (stock Joomla 3 did that for async and defer only, so e.g.
+	 * 'nomodule' => false wrote nomodule="", which turns it on). Names that aren't valid attribute names are left out; arrays
+	 * and objects are JSON-encoded; values are escaped as before.
+	 *
+	 * @param   string   $name   The attribute
+	 * @param   mixed    $value  Its value
+	 * @param   boolean  $html5  Whether the document is HTML5
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	protected function elementAttribute($name, $value, $html5)
+	{
+		if (!preg_match('/^[a-zA-Z_:][a-zA-Z0-9_:.-]*$/', (string) $name) || $value === null || $value === false)
+		{
+			return '';
+		}
+
+		if ($value === true)
+		{
+			return ' ' . $name . ($html5 ? '' : '="' . $name . '"');
+		}
+
+		$value = !is_scalar($value) ? json_encode($value) : $value;
+
+		return ' ' . $name . '="' . htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8') . '"';
 	}
 
 	/**
