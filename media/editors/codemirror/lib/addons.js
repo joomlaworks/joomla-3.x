@@ -1,5 +1,5 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -41,7 +41,7 @@
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function (mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -175,7 +175,7 @@
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -377,7 +377,7 @@
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 /**
  * Tag-closer extension for CodeMirror.
@@ -563,7 +563,7 @@
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -591,7 +591,7 @@
       afterCursor = /(^| )cm-fat-cursor($| )/.test(cm.getWrapperElement().className)
     var re = bracketRegex(config)
 
-    // A cursor is defined as between two characters, but in in vim command mode
+    // A cursor is defined as between two characters, but in vim command mode
     // (i.e. not insert mode), the cursor is visually represented as a
     // highlighted box on top of the 2nd character. Otherwise, we allow matches
     // from before or after the cursor.
@@ -724,7 +724,7 @@
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -791,7 +791,7 @@
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -803,56 +803,67 @@
 })(function(CodeMirror) {
 "use strict";
 
-CodeMirror.registerHelper("fold", "brace", function(cm, start) {
-  var line = start.line, lineText = cm.getLine(line);
-  var tokenType;
+function bracketFolding(pairs) {
+  return function(cm, start) {
+    var line = start.line, lineText = cm.getLine(line);
 
-  function findOpening(openCh) {
-    for (var at = start.ch, pass = 0;;) {
-      var found = at <= 0 ? -1 : lineText.lastIndexOf(openCh, at - 1);
-      if (found == -1) {
-        if (pass == 1) break;
-        pass = 1;
-        at = lineText.length;
-        continue;
+    function findOpening(pair) {
+      var tokenType;
+      for (var at = start.ch, pass = 0;;) {
+        var found = at <= 0 ? -1 : lineText.lastIndexOf(pair[0], at - 1);
+        if (found == -1) {
+          if (pass == 1) break;
+          pass = 1;
+          at = lineText.length;
+          continue;
+        }
+        if (pass == 1 && found < start.ch) break;
+        tokenType = cm.getTokenTypeAt(CodeMirror.Pos(line, found + 1));
+        if (!/^(comment|string)/.test(tokenType)) return {ch: found + 1, tokenType: tokenType, pair: pair};
+        at = found - 1;
       }
-      if (pass == 1 && found < start.ch) break;
-      tokenType = cm.getTokenTypeAt(CodeMirror.Pos(line, found + 1));
-      if (!/^(comment|string)/.test(tokenType)) return found + 1;
-      at = found - 1;
     }
-  }
 
-  var startBrace = findOpening("{"), startBracket = findOpening("[")
-  var startToken, endToken, startCh
-  if (startBrace != null && (startBracket == null || startBracket > startBrace)) {
-    startCh = startBrace; startToken = "{"; endToken = "}"
-  } else if (startBracket != null) {
-    startCh = startBracket; startToken = "["; endToken = "]"
-  } else {
-    return
-  }
-
-  var count = 1, lastLine = cm.lastLine(), end, endCh;
-  outer: for (var i = line; i <= lastLine; ++i) {
-    var text = cm.getLine(i), pos = i == line ? startCh : 0;
-    for (;;) {
-      var nextOpen = text.indexOf(startToken, pos), nextClose = text.indexOf(endToken, pos);
-      if (nextOpen < 0) nextOpen = text.length;
-      if (nextClose < 0) nextClose = text.length;
-      pos = Math.min(nextOpen, nextClose);
-      if (pos == text.length) break;
-      if (cm.getTokenTypeAt(CodeMirror.Pos(i, pos + 1)) == tokenType) {
-        if (pos == nextOpen) ++count;
-        else if (!--count) { end = i; endCh = pos; break outer; }
+    function findRange(found) {
+      var count = 1, lastLine = cm.lastLine(), end, startCh = found.ch, endCh
+      outer: for (var i = line; i <= lastLine; ++i) {
+        var text = cm.getLine(i), pos = i == line ? startCh : 0;
+        for (;;) {
+          var nextOpen = text.indexOf(found.pair[0], pos), nextClose = text.indexOf(found.pair[1], pos);
+          if (nextOpen < 0) nextOpen = text.length;
+          if (nextClose < 0) nextClose = text.length;
+          pos = Math.min(nextOpen, nextClose);
+          if (pos == text.length) break;
+          if (cm.getTokenTypeAt(CodeMirror.Pos(i, pos + 1)) == found.tokenType) {
+            if (pos == nextOpen) ++count;
+            else if (!--count) { end = i; endCh = pos; break outer; }
+          }
+          ++pos;
+        }
       }
-      ++pos;
+
+      if (end == null || line == end) return null
+      return {from: CodeMirror.Pos(line, startCh),
+              to: CodeMirror.Pos(end, endCh)};
     }
+
+    var found = []
+    for (var i = 0; i < pairs.length; i++) {
+      var open = findOpening(pairs[i])
+      if (open) found.push(open)
+    }
+    found.sort(function(a, b) { return a.ch - b.ch })
+    for (var i = 0; i < found.length; i++) {
+      var range = findRange(found[i])
+      if (range) return range
+    }
+    return null
   }
-  if (end == null || line == end) return;
-  return {from: CodeMirror.Pos(line, startCh),
-          to: CodeMirror.Pos(end, endCh)};
-});
+}
+
+CodeMirror.registerHelper("fold", "brace", bracketFolding([["{", "}"], ["[", "]"]]));
+
+CodeMirror.registerHelper("fold", "brace-paren", bracketFolding([["{", "}"], ["[", "]"], ["(", ")"]]));
 
 CodeMirror.registerHelper("fold", "import", function(cm, start) {
   function hasImport(line) {
@@ -900,7 +911,7 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -925,9 +936,11 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
     function getRange(allowFolded) {
       var range = finder(cm, pos);
       if (!range || range.to.line - range.from.line < minSize) return null;
+      if (force === "fold") return range;
+
       var marks = cm.findMarksAt(range.from);
       for (var i = 0; i < marks.length; ++i) {
-        if (marks[i].__isFold && force !== "fold") {
+        if (marks[i].__isFold) {
           if (!allowFolded) return null;
           range.cleared = true;
           marks[i].clear();
@@ -1000,18 +1013,18 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
     cm.foldCode(cm.getCursor(), null, "fold");
   };
   CodeMirror.commands.unfold = function(cm) {
-    cm.foldCode(cm.getCursor(), null, "unfold");
+    cm.foldCode(cm.getCursor(), { scanUp: false }, "unfold");
   };
   CodeMirror.commands.foldAll = function(cm) {
     cm.operation(function() {
       for (var i = cm.firstLine(), e = cm.lastLine(); i <= e; i++)
-        cm.foldCode(CodeMirror.Pos(i, 0), null, "fold");
+        cm.foldCode(CodeMirror.Pos(i, 0), { scanUp: false }, "fold");
     });
   };
   CodeMirror.commands.unfoldAll = function(cm) {
     cm.operation(function() {
       for (var i = cm.firstLine(), e = cm.lastLine(); i <= e; i++)
-        cm.foldCode(CodeMirror.Pos(i, 0), null, "unfold");
+        cm.foldCode(CodeMirror.Pos(i, 0), { scanUp: false }, "unfold");
     });
   };
 
@@ -1058,7 +1071,7 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -1080,6 +1093,7 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
       cm.off("fold", onFold);
       cm.off("unfold", onFold);
       cm.off("swapDoc", onChange);
+      cm.off("optionChange", optionChange);
     }
     if (val) {
       cm.state.foldGutter = new State(parseOptions(val));
@@ -1090,6 +1104,7 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
       cm.on("fold", onFold);
       cm.on("unfold", onFold);
       cm.on("swapDoc", onChange);
+      cm.on("optionChange", optionChange);
     }
   });
 
@@ -1179,6 +1194,10 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
     else cm.foldCode(Pos(line, 0), opts);
   }
 
+  function optionChange(cm, option) {
+    if (option == "mode") onChange(cm)
+  }
+
   function onChange(cm) {
     var state = cm.state.foldGutter;
     if (!state) return;
@@ -1222,7 +1241,7 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -1407,7 +1426,7 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -1474,7 +1493,7 @@ CodeMirror.registerHelper("fold", "include", function(cm, start) {
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -1611,7 +1630,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -1740,7 +1759,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -1893,7 +1912,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -1991,7 +2010,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 // Highlighting text that matches the selection
 //
@@ -2159,7 +2178,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -2362,6 +2381,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
 
   function SearchCursor(doc, query, pos, options) {
     this.atOccurrence = false
+    this.afterEmptyMatch = false
     this.doc = doc
     pos = pos ? doc.clipPos(pos) : Pos(0, 0)
     this.pos = {from: pos, to: pos}
@@ -2397,21 +2417,29 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
     findPrevious: function() {return this.find(true)},
 
     find: function(reverse) {
-      var result = this.matches(reverse, this.doc.clipPos(reverse ? this.pos.from : this.pos.to))
-
-      // Implements weird auto-growing behavior on null-matches for
-      // backwards-compatibility with the vim code (unfortunately)
-      while (result && CodeMirror.cmpPos(result.from, result.to) == 0) {
+      var head = this.doc.clipPos(reverse ? this.pos.from : this.pos.to);
+      if (this.afterEmptyMatch && this.atOccurrence) {
+        // do not return the same 0 width match twice
+        head = Pos(head.line, head.ch)
         if (reverse) {
-          if (result.from.ch) result.from = Pos(result.from.line, result.from.ch - 1)
-          else if (result.from.line == this.doc.firstLine()) result = null
-          else result = this.matches(reverse, this.doc.clipPos(Pos(result.from.line - 1)))
+          head.ch--;
+          if (head.ch < 0) {
+            head.line--;
+            head.ch = (this.doc.getLine(head.line) || "").length;
+          }
         } else {
-          if (result.to.ch < this.doc.getLine(result.to.line).length) result.to = Pos(result.to.line, result.to.ch + 1)
-          else if (result.to.line == this.doc.lastLine()) result = null
-          else result = this.matches(reverse, Pos(result.to.line + 1, 0))
+          head.ch++;
+          if (head.ch > (this.doc.getLine(head.line) || "").length) {
+            head.ch = 0;
+            head.line++;
+          }
+        }
+        if (CodeMirror.cmpPos(head, this.doc.clipPos(head)) != 0) {
+           return this.atOccurrence = false
         }
       }
+      var result = this.matches(reverse, head)
+      this.afterEmptyMatch = result && CodeMirror.cmpPos(result.from, result.to) == 0
 
       if (result) {
         this.pos = result
@@ -2456,7 +2484,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -2529,7 +2557,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
 });
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -2549,7 +2577,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
     {name: "Brainfuck", mime: "text/x-brainfuck", mode: "brainfuck", ext: ["b", "bf"]},
     {name: "C", mime: "text/x-csrc", mode: "clike", ext: ["c", "h", "ino"]},
     {name: "C++", mime: "text/x-c++src", mode: "clike", ext: ["cpp", "c++", "cc", "cxx", "hpp", "h++", "hh", "hxx"], alias: ["cpp"]},
-    {name: "Cobol", mime: "text/x-cobol", mode: "cobol", ext: ["cob", "cpy"]},
+    {name: "Cobol", mime: "text/x-cobol", mode: "cobol", ext: ["cob", "cpy", "cbl"]},
     {name: "C#", mime: "text/x-csharp", mode: "clike", ext: ["cs"], alias: ["csharp", "cs"]},
     {name: "Clojure", mime: "text/x-clojure", mode: "clojure", ext: ["clj", "cljc", "cljx"]},
     {name: "ClojureScript", mime: "text/x-clojurescript", mode: "clojure", ext: ["cljs"]},
@@ -2606,7 +2634,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
     {name: "JSON-LD", mime: "application/ld+json", mode: "javascript", ext: ["jsonld"], alias: ["jsonld"]},
     {name: "JSX", mime: "text/jsx", mode: "jsx", ext: ["jsx"]},
     {name: "Jinja2", mime: "text/jinja2", mode: "jinja2", ext: ["j2", "jinja", "jinja2"]},
-    {name: "Julia", mime: "text/x-julia", mode: "julia", ext: ["jl"]},
+    {name: "Julia", mime: "text/x-julia", mode: "julia", ext: ["jl"], alias: ["jl"]},
     {name: "Kotlin", mime: "text/x-kotlin", mode: "clike", ext: ["kt"]},
     {name: "LESS", mime: "text/x-less", mode: "css", ext: ["less"]},
     {name: "LiveScript", mime: "text/x-livescript", mode: "livescript", ext: ["ls"], alias: ["ls"]},

@@ -3506,6 +3506,8 @@ class JoomlaInstallerScript
 			'/administrator/language/en-GB/en-GB.plg_fields_image.sys.ini',
 			'/administrator/language/en-GB/en-GB.plg_system_p3p.ini',
 			'/administrator/language/en-GB/en-GB.plg_system_p3p.sys.ini',
+			// CodeMirror's ASN.1 mode, minified under a wrong name (the editor loads mode/asn.1/asn.1.min.js)
+			'/media/editors/codemirror/mode/asn.1/asn.min.js',
 		);
 
 		// TODO There is an issue while deleting folders using the ftp mode

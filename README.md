@@ -76,6 +76,7 @@ Summary of changes:
 - New sites no longer ship stock Joomla's unused images (the sample banners, `images/headers`, two logos; existing sites keep theirs), and get an empty `images/uploads` folder for the site's own images
 - `configuration.php` lists its settings alphabetically, so they're easier to find
 - Hammond, Finch and Rookwood preload their stylesheets, script and the article's main image, and connect early to X and YouTube when an article embeds them, also through HTTP `Link:` headers (103 Early Hints behind Cloudflare and similar CDNs)
+- CodeMirror 5.65.21 (was 5.60.0, from 2021), with fixes for scrolling and clicks in current browsers
 
 **Security fixes:**
 - Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors without access (with "Show Unauthorised Links" on); they get the intro text and a link to log in, as with Joomla's own layout
