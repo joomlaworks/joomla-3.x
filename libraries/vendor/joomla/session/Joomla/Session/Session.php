@@ -305,6 +305,7 @@ class Session implements \IteratorAggregate
 	 *
 	 * @since   1.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		return new \ArrayIterator($_SESSION);

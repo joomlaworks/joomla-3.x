@@ -11,9 +11,11 @@ defined('FOF_INCLUDED') or die;
 
 class FOFEncryptAesMcrypt extends FOFEncryptAesAbstract implements FOFEncryptAesInterface
 {
-	protected $cipherType = MCRYPT_RIJNDAEL_128;
+	// The mcrypt constants' values: PHP 7.2+ has no mcrypt, and PHP 8 throws on the undefined constants as soon as the class is
+	// instantiated, before isSupported() can say so
+	protected $cipherType = 'rijndael-128';
 
-	protected $cipherMode = MCRYPT_MODE_CBC;
+	protected $cipherMode = 'cbc';
 
 	public function setEncryptionMode($mode = 'cbc', $strength = 128)
 	{
@@ -21,27 +23,27 @@ class FOFEncryptAesMcrypt extends FOFEncryptAesAbstract implements FOFEncryptAes
 		{
 			default:
 			case '128':
-				$this->cipherType = MCRYPT_RIJNDAEL_128;
+				$this->cipherType = 'rijndael-128';
 				break;
 
 			case '192':
-				$this->cipherType = MCRYPT_RIJNDAEL_192;
+				$this->cipherType = 'rijndael-192';
 				break;
 
 			case '256':
-				$this->cipherType = MCRYPT_RIJNDAEL_256;
+				$this->cipherType = 'rijndael-256';
 				break;
 		}
 
 		switch (strtolower($mode))
 		{
 			case 'ecb':
-				$this->cipherMode = MCRYPT_MODE_ECB;
+				$this->cipherMode = 'ecb';
 				break;
 
 			default:
 			case 'cbc':
-				$this->cipherMode = MCRYPT_MODE_CBC;
+				$this->cipherMode = 'cbc';
 				break;
 		}
 

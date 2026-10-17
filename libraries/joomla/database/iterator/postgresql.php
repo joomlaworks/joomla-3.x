@@ -25,6 +25,7 @@ class JDatabaseIteratorPostgresql extends JDatabaseIterator
 	 * @since   3.2.0
 	 * @see     Countable::count()
 	 */
+	#[\ReturnTypeWillChange]
 	public function count()
 	{
 		return pg_num_rows($this->cursor);

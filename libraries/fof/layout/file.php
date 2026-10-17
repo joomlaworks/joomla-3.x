@@ -55,12 +55,16 @@ class FOFLayoutFile extends JLayoutFile
 				$this->basePath . '/' . $filePath
 			);
 
-			reset($files);
-
-			while ((list(, $fileName) = each($files)) && is_null($this->fullPath))
+			// each() was removed in PHP 8.0
+			foreach ($files as $fileName)
 			{
 				$r = $filesystem->pathFind($possiblePaths, $fileName);
 				$this->fullPath = $r === false ? null : $r;
+
+				if (!is_null($this->fullPath))
+				{
+					break;
+				}
 			}
 		}
 

@@ -179,6 +179,7 @@ class ListenersPriorityQueue implements IteratorAggregate, Countable
 	 *
 	 * @since   1.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		// SplPriorityQueue queue is a heap.
@@ -199,6 +200,7 @@ class ListenersPriorityQueue implements IteratorAggregate, Countable
 	 *
 	 * @since   1.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function count()
 	{
 		return \count($this->queue);

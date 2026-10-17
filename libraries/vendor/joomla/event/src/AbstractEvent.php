@@ -138,6 +138,7 @@ abstract class AbstractEvent implements EventInterface, ArrayAccess, Serializabl
 	 *
 	 * @since   1.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function count()
 	{
 		return \count($this->arguments);
@@ -170,6 +171,28 @@ abstract class AbstractEvent implements EventInterface, ArrayAccess, Serializabl
 	}
 
 	/**
+	 * Serialize the event (PHP 7.4+; the Serializable methods are deprecated since PHP 8.1).
+	 *
+	 * @return  array
+	 */
+	public function __serialize()
+	{
+		return array($this->name, $this->arguments, $this->stopped);
+	}
+
+	/**
+	 * Unserialize the event (PHP 7.4+).
+	 *
+	 * @param   array  $data  The serialized event.
+	 *
+	 * @return  void
+	 */
+	public function __unserialize(array $data)
+	{
+		list($this->name, $this->arguments, $this->stopped) = $data;
+	}
+
+	/**
 	 * Tell if the given event argument exists.
 	 *
 	 * @param   string  $name  The argument name.
@@ -178,6 +201,7 @@ abstract class AbstractEvent implements EventInterface, ArrayAccess, Serializabl
 	 *
 	 * @since   1.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists($name)
 	{
 		return $this->hasArgument($name);
@@ -192,6 +216,7 @@ abstract class AbstractEvent implements EventInterface, ArrayAccess, Serializabl
 	 *
 	 * @since   1.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($name)
 	{
 		return $this->getArgument($name);

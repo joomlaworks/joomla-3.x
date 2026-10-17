@@ -144,6 +144,7 @@ abstract class FOFDatabaseIterator implements Iterator
 	 *
 	 * @see     Iterator::current()
 	 */
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return $this->_currentTable;
@@ -156,6 +157,7 @@ abstract class FOFDatabaseIterator implements Iterator
 	 *
 	 * @see     Iterator::key()
 	 */
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return $this->_key;
@@ -168,6 +170,7 @@ abstract class FOFDatabaseIterator implements Iterator
 	 *
 	 * @see     Iterator::next()
 	 */
+	#[\ReturnTypeWillChange]
 	public function next()
 	{
 		// Set the default key as being the number of fetched object
@@ -201,6 +204,7 @@ abstract class FOFDatabaseIterator implements Iterator
 	 *
 	 * @see     Iterator::rewind()
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind()
 	{
 	}
@@ -212,6 +216,7 @@ abstract class FOFDatabaseIterator implements Iterator
 	 *
 	 * @see     Iterator::valid()
 	 */
+	#[\ReturnTypeWillChange]
 	public function valid()
 	{
 		return (bool) $this->_current;

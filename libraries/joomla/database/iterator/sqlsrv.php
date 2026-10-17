@@ -24,6 +24,7 @@ class JDatabaseIteratorSqlsrv extends JDatabaseIterator
 	 * @since   3.0.0
 	 * @see     Countable::count()
 	 */
+	#[\ReturnTypeWillChange]
 	public function count()
 	{
 		return sqlsrv_num_rows($this->cursor);

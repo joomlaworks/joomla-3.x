@@ -24,6 +24,7 @@ class JDatabaseIteratorPdo extends JDatabaseIterator
 	 * @since   3.0.0
 	 * @see     Countable::count()
 	 */
+	#[\ReturnTypeWillChange]
 	public function count()
 	{
 		if (!empty($this->cursor) && $this->cursor instanceof PDOStatement)

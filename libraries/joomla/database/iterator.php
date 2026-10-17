@@ -108,6 +108,7 @@ abstract class JDatabaseIterator implements Countable, Iterator
 	 * @see     Iterator::current()
 	 * @since   3.0.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return $this->_current;
@@ -121,6 +122,7 @@ abstract class JDatabaseIterator implements Countable, Iterator
 	 * @see     Iterator::key()
 	 * @since   3.0.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return $this->_key;
@@ -134,6 +136,7 @@ abstract class JDatabaseIterator implements Countable, Iterator
 	 * @see     Iterator::next()
 	 * @since   3.0.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function next()
 	{
 		// Set the default key as being the number of fetched object
@@ -166,6 +169,7 @@ abstract class JDatabaseIterator implements Countable, Iterator
 	 * @see     Iterator::rewind()
 	 * @since   3.0.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind()
 	{
 	}
@@ -178,6 +182,7 @@ abstract class JDatabaseIterator implements Countable, Iterator
 	 * @see     Iterator::valid()
 	 * @since   3.0.0
 	 */
+	#[\ReturnTypeWillChange]
 	public function valid()
 	{
 		return (bool) $this->_current;

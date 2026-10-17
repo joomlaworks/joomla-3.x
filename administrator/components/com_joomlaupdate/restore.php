@@ -3821,9 +3821,11 @@ abstract class AKEncryptionAESAdapterAbstract
 
 class Mcrypt extends AKEncryptionAESAdapterAbstract implements AKEncryptionAESAdapterInterface
 {
-	protected $cipherType = MCRYPT_RIJNDAEL_128;
+	// The mcrypt constants' values: PHP 7.2+ has no mcrypt, and PHP 8 throws on the undefined constants as soon as the class is
+	// instantiated, before isSupported() can say so
+	protected $cipherType = 'rijndael-128';
 
-	protected $cipherMode = MCRYPT_MODE_CBC;
+	protected $cipherMode = 'cbc';
 
 	public function decrypt($cipherText, $key)
 	{
