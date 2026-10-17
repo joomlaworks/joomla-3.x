@@ -332,6 +332,7 @@ Joomla 3 has always shipped a basic SQLite database driver, but it was never usa
 - **Sessions:** with the "Database" session handler, every page view writes to the database file. A new SQLite site, or one moved with `database:convert`, therefore uses PHP sessions instead (Global Configuration → System → Session Handler → "PHP"), and writes only when content or settings change, or a new visitor arrives. If your server has an object cache such as Memcached, Redis or APCu enabled, prefer that for sessions: it's faster than PHP's session files and also keeps sessions out of the database. `database:convert` keeps those handlers as they are.
 - **Security:** keep the database file out of the web's reach: outside the site's public folder, or in a folder of its own, which Joomla protects for Apache and IIS (with nginx, keep the file's random name too). To move it, change "Path to Database Folder" in Global Configuration → Server → Database (shown for SQLite only): Joomla copies the database there, switches to it and removes the old file.
 - **Backups:** copy the database file while the site is offline (it's a complete copy of the site's data), or use `php cli/joomla.php database:export`.
+- **Copies of a site** (e.g. to try `database:convert` on): if the site caches in Memcached or Redis, give the copy a new `secret` (`php cli/joomla.php config:set secret=...`, any new random value) before using it. Cache entries are named after the `secret`, so a copy sharing the cache server with the original would read and overwrite its entries.
 
 
 ## AI ASSISTANTS (MCP)

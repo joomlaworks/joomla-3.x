@@ -183,7 +183,7 @@ How the tools work, which is useful if you write your own prompts or agents:
 - **No network in dry runs:** a dry run through MCP never downloads anything (installing from a URL plans the download instead).
 - **Templates:** before an assistant changes a template's files, have it run `template_backup` (`template:restore` puts a backup back), and every file it writes keeps its previous version (`template:file:set ... --restore` undoes the last change). Put the site's own CSS in `css/custom.css` (Hammond, Finch and Rookwood load it when it exists, and updates never touch it).
 - **Permissions:** content commands check the acting account's permissions as the administrator would (with `--as`, the account you chose).
-- **Try it on a copy first.** A SQLite copy of a site is quick to make: `php cli/joomla.php database:convert --to=sqlite` on a copy of the files (see the [README](README.md#sqlite-support)).
+- **Try it on a copy first.** A SQLite copy of a site is quick to make: `php cli/joomla.php database:convert --to=sqlite` on a copy of the files (see the [README](README.md#sqlite-support)). If the site caches in Memcached or Redis, give the copy its own `secret` first (`php cli/joomla.php config:set secret=$(php -r 'echo bin2hex(random_bytes(16));')`): cache entries are named after it, so a copy sharing the same server would otherwise read and overwrite the original's.
 
 
 ## USING THE COMMAND LINE YOURSELF
