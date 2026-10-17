@@ -328,6 +328,12 @@ SQL;
 				return self::FAILURE;
 			}
 
+			// Collations an SQLite database recorded wrongly before 3.18 would go into the copy (case-sensitive tables on MySQL)
+			if ($source instanceof \JDatabaseDriverMysqlonsqlite && $source->repairCollations())
+			{
+				$io->text('Repaired the collations recorded in the SQLite database.');
+			}
+
 			$io->text('Exporting the current database ...');
 
 			if ($app->runCommand('database:export', array(), array('folder' => $folder, 'quiet' => true)) !== self::SUCCESS)
@@ -467,6 +473,13 @@ SQL;
 	private function planConversion(CommandIO $io, array $settings, $current)
 	{
 		$tables = count(preg_grep('/^' . preg_quote(Factory::getDbo()->getPrefix(), '/') . '/', Factory::getDbo()->getTableList()));
+
+		$db = Factory::getDbo();
+
+		if ($db instanceof \JDatabaseDriverMysqlonsqlite && ($repairs = $db->countCollationsToRepair()))
+		{
+			$io->plan(sprintf('Repair the collations of %d table(s) recorded wrongly in the SQLite database', $repairs), array('action' => 'repair-collations', 'tables' => $repairs));
+		}
 
 		$io->plan('Take the site offline while copying, unless it already is', array('action' => 'offline'));
 		$io->plan(sprintf('Copy %d table(s) of the %s database to %s, and compare their rows', $tables, $current, $settings['description']),

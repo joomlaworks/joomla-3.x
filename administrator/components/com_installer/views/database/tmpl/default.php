@@ -40,6 +40,10 @@ defined('_JEXEC') or die;
 							<li><?php echo JText::sprintf('COM_INSTALLER_MSG_DATABASE_UPDATEVERSION_ERROR', $this->updateVersion, $this->cmsVersion); ?></li>
 						<?php endif; ?>
 
+						<?php if ($this->collationRepairs) : ?>
+							<li><?php echo JText::plural('COM_INSTALLER_MSG_N_DATABASE_SQLITE_COLLATIONS', $this->collationRepairs); ?></li>
+						<?php endif; ?>
+
 						<?php foreach ($this->errors as $line => $error) : ?>
 							<?php $key = 'COM_INSTALLER_MSG_DATABASE_' . $error->queryType;
 							$msgs = $error->msgElements;

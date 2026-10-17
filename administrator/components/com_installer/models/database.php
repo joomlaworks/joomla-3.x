@@ -195,6 +195,33 @@ class InstallerModelDatabase extends InstallerModel
 	}
 
 	/**
+	 * Joomla 3.x UTD: on SQLite, the number of tables whose collations were recorded wrongly before 3.18 (fix() repairs them, in
+	 * its utf8mb4 step); copies of the database on MySQL would get them.
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.18.0
+	 */
+	public function getCollationRepairs()
+	{
+		$db = $this->getDbo();
+
+		if (!$db instanceof JDatabaseDriverMysqlonsqlite)
+		{
+			return 0;
+		}
+
+		try
+		{
+			return $db->countCollationsToRepair();
+		}
+		catch (Exception $e)
+		{
+			return 0;
+		}
+	}
+
+	/**
 	 * Fix Joomla version in #__extensions table if wrong (doesn't equal JVersion short version).
 	 *
 	 * @return   mixed  string update version if success, false if fail.

@@ -153,30 +153,17 @@ class JDatabaseDriverMysqlonsqlite extends JDatabaseDriverPdomysql
 	 */
 	public function repairCollations()
 	{
-		$this->connect();
-
-		$pdo     = $this->connection->get_sqlite_pdo();
-		$tables  = WP_MySQL_On_SQLite::RESERVED_PREFIX . 'mysql_information_schema_tables';
-		$columns = WP_MySQL_On_SQLite::RESERVED_PREFIX . 'mysql_information_schema_columns';
-		$default = 'utf8mb4_0900_ai_ci';
-
-		if (!$pdo->query("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = " . $pdo->quote($columns))->fetchColumn())
-		{
-			return 0;
-		}
-
-		$found = $pdo->query(
-			'SELECT t.table_name AS name, t.table_collation AS collation,'
-			. ' (SELECT c.collation_name FROM "' . $columns . '" c WHERE c.table_schema = t.table_schema AND c.table_name = t.table_name'
-			. ' AND c.collation_name IS NOT NULL AND c.collation_name <> \'' . $default . '\' ORDER BY c.ordinal_position LIMIT 1) AS first'
-			. ' FROM "' . $tables . '" t WHERE t.table_collation <> \'' . $default . '\' AND EXISTS (SELECT 1 FROM "' . $columns . '" c'
-			. ' WHERE c.table_schema = t.table_schema AND c.table_name = t.table_name AND c.collation_name = \'' . $default . '\')'
-		)->fetchAll(PDO::FETCH_ASSOC);
+		$found = $this->findCollationsToRepair();
 
 		if (!$found)
 		{
 			return 0;
 		}
+
+		$pdo     = $this->connection->get_sqlite_pdo();
+		$tables  = WP_MySQL_On_SQLite::RESERVED_PREFIX . 'mysql_information_schema_tables';
+		$columns = WP_MySQL_On_SQLite::RESERVED_PREFIX . 'mysql_information_schema_columns';
+		$default = 'utf8mb4_0900_ai_ci';
 
 		$updateTable  = $pdo->prepare('UPDATE "' . $tables . '" SET table_collation = ? WHERE table_name = ?');
 		$updateColumn = $pdo->prepare('UPDATE "' . $columns . '" SET collation_name = ?, character_set_name = ? WHERE table_name = ? AND collation_name = ?');
@@ -210,6 +197,48 @@ class JDatabaseDriverMysqlonsqlite extends JDatabaseDriverPdomysql
 		}
 
 		return count($found);
+	}
+
+	/**
+	 * How many tables repairCollations() would repair, without changing anything (Extensions: Database, maintenance:database).
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.18.0
+	 */
+	public function countCollationsToRepair()
+	{
+		return count($this->findCollationsToRepair());
+	}
+
+	/**
+	 * The tables whose collations were recorded wrongly: see repairCollations().
+	 *
+	 * @return  array  Rows with the table's name, its recorded collation, and that of its first column with one (or null)
+	 *
+	 * @since   3.18.0
+	 */
+	protected function findCollationsToRepair()
+	{
+		$this->connect();
+
+		$pdo     = $this->connection->get_sqlite_pdo();
+		$tables  = WP_MySQL_On_SQLite::RESERVED_PREFIX . 'mysql_information_schema_tables';
+		$columns = WP_MySQL_On_SQLite::RESERVED_PREFIX . 'mysql_information_schema_columns';
+		$default = 'utf8mb4_0900_ai_ci';
+
+		if (!$pdo->query("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = " . $pdo->quote($columns))->fetchColumn())
+		{
+			return array();
+		}
+
+		return $pdo->query(
+			'SELECT t.table_name AS name, t.table_collation AS collation,'
+			. ' (SELECT c.collation_name FROM "' . $columns . '" c WHERE c.table_schema = t.table_schema AND c.table_name = t.table_name'
+			. ' AND c.collation_name IS NOT NULL AND c.collation_name <> \'' . $default . '\' ORDER BY c.ordinal_position LIMIT 1) AS first'
+			. ' FROM "' . $tables . '" t WHERE t.table_collation <> \'' . $default . '\' AND EXISTS (SELECT 1 FROM "' . $columns . '" c'
+			. ' WHERE c.table_schema = t.table_schema AND c.table_name = t.table_name AND c.collation_name = \'' . $default . '\')'
+		)->fetchAll(PDO::FETCH_ASSOC);
 	}
 
 	/**

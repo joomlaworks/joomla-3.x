@@ -360,6 +360,12 @@ class JDatabaseDriverMysqli extends JDatabaseDriver
 	{
 		if (is_object($this->connection))
 		{
+			// Joomla 3.x UTD: mysqli_ping() is deprecated since PHP 8.4 (it no longer reconnects since 8.2); stat() asks the server too
+			if (PHP_VERSION_ID >= 80400)
+			{
+				return mysqli_stat($this->connection) !== false;
+			}
+
 			return mysqli_ping($this->connection);
 		}
 

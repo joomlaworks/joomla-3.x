@@ -73,8 +73,9 @@ Summary of changes:
 - Fixed PHP 8.2+/8.5 deprecation warnings in text logs (e.g. during updates), the administrator's toolbar title, registries and sessions, and SQL list fields
 - Users' and Contacts' Options, the Multilingual Status, batch copy/move of articles and Privacy's data exports no longer fail when Fields or Contacts has been uninstalled
 - "User - Joomla!" can no longer be uninstalled: without it nobody could log in
-- PostgreSQL: pages no longer fail with Debug System on, or with caching on (PHP 8.1+), and new items whose form posts an empty ID save again
-- SQLite: sites moved to MySQL no longer get case-sensitive titles: the collations of tables and columns are recorded correctly, and updating repairs those of existing sites
+- PostgreSQL: pages no longer fail with Debug System on, or with caching on (PHP 8.1+), new items whose form posts an empty ID save again, and `insertid()` works after an INSERT given as text
+- MySQL: no more "mysqli_ping() is deprecated" warnings on PHP 8.4+
+- SQLite: sites moved to MySQL no longer get case-sensitive titles: the collations of tables and columns are recorded correctly, and updating (or Extensions: Database's Fix) repairs those of existing sites; moving a database to MariaDB or MySQL 5.7 no longer fails on MySQL 8-only collations
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:

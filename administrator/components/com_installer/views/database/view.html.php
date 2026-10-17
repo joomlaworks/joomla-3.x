@@ -79,6 +79,13 @@ class InstallerViewDatabase extends InstallerViewDefault
 			$this->errorCount++;
 		}
 
+		$this->collationRepairs = (int) $this->get('CollationRepairs');
+
+		if ($this->collationRepairs)
+		{
+			$this->errorCount++;
+		}
+
 		if ($this->errorCount === 0)
 		{
 			$app->enqueueMessage(JText::_('COM_INSTALLER_MSG_DATABASE_OK'), 'notice');

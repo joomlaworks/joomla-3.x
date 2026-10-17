@@ -186,6 +186,11 @@ class MaintenanceDatabaseCommand extends AbstractCommand
 			$problems[] = Text::sprintf('COM_INSTALLER_MSG_DATABASE_UPDATEVERSION_ERROR', $updateVersion ?: Text::_('JNONE'), $cmsVersion);
 		}
 
+		if ($collations = (int) $model->getCollationRepairs())
+		{
+			$problems[] = Text::plural('COM_INSTALLER_MSG_N_DATABASE_SQLITE_COLLATIONS', $collations);
+		}
+
 		foreach ($changeSet->check() as $error)
 		{
 			$elements   = $error->msgElements;

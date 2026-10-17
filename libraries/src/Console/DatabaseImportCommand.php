@@ -85,6 +85,14 @@ class DatabaseImportCommand extends AbstractCommand
 	private $definitions = array();
 
 	/**
+	 * The character sets and collations the database server knows (lowercase names as keys), read once: see withKnownCollations()
+	 *
+	 * @var    array|null
+	 * @since  3.18.0
+	 */
+	private $serverCollations;
+
+	/**
 	 * @return  void
 	 *
 	 * @since   3.17.0
@@ -587,7 +595,7 @@ class DatabaseImportCommand extends AbstractCommand
 				throw new \RuntimeException(sprintf('The structure of %s doesn\'t create that table.', $generic));
 			}
 
-			$statements = array($statement);
+			$statements = array($this->withKnownCollations($statement));
 		}
 		else
 		{
@@ -756,6 +764,96 @@ class DatabaseImportCommand extends AbstractCommand
 				)->execute();
 			}
 		}
+	}
+
+	/**
+	 * A CREATE TABLE statement from a MySQL export with the character sets and collations this server doesn't know replaced: MySQL
+	 * 8's utf8mb4_0900_* collations (also what SQLite databases record for tables created without one) and its utf8mb3 name
+	 * don't exist on MariaDB or MySQL 5.7, which refused the whole table. utf8mb3 becomes utf8 where unknown (its collations
+	 * too), and another unknown collation its character set's _unicode_ci, else that character set's default.
+	 *
+	 * @param   string  $statement  The statement
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	protected function withKnownCollations($statement)
+	{
+		// SQLite's layer records any name (and lists only a few)
+		if (Factory::getDbo() instanceof \JDatabaseDriverMysqlonsqlite)
+		{
+			return $statement;
+		}
+
+		if ($this->serverCollations === null)
+		{
+			$this->serverCollations = array('charsets' => array(), 'collations' => array());
+
+			try
+			{
+				$db = Factory::getDbo();
+
+				foreach ($db->setQuery('SELECT CHARACTER_SET_NAME, DEFAULT_COLLATE_NAME FROM information_schema.CHARACTER_SETS')->loadRowList() as $row)
+				{
+					$this->serverCollations['charsets'][strtolower($row[0])] = strtolower($row[1]);
+				}
+
+				foreach ($db->setQuery('SELECT COLLATION_NAME FROM information_schema.COLLATIONS')->loadColumn() as $name)
+				{
+					$this->serverCollations['collations'][strtolower($name)] = true;
+				}
+			}
+			catch (\Exception $e)
+			{
+				// Not known: the statement is run as it is
+			}
+		}
+
+		$charsets   = $this->serverCollations['charsets'];
+		$collations = $this->serverCollations['collations'];
+
+		if (!$charsets || !$collations)
+		{
+			return $statement;
+		}
+
+		$charset = function ($name) use ($charsets)
+		{
+			$name = strtolower($name);
+
+			return isset($charsets[$name]) || $name !== 'utf8mb3' ? $name : 'utf8';
+		};
+
+		$statement = preg_replace_callback('/\b(CHARACTER\s+SET|CHARSET)(\s*=?\s*)(utf8mb3)\b/i', function ($match) use ($charset)
+		{
+			return $match[1] . $match[2] . $charset($match[3]);
+		}, $statement);
+
+		return preg_replace_callback('/\b(COLLATE)(\s*=?\s*)([a-z0-9]+)_([a-z0-9_]+)\b/i', function ($match) use ($charsets, $collations, $charset)
+		{
+			$name = strtolower($match[3] . '_' . $match[4]);
+
+			if (isset($collations[$name]))
+			{
+				return $match[0];
+			}
+
+			$set = $charset($match[3]);
+
+			// utf8mb3_general_ci as utf8_general_ci: the same collation, under the name older servers know
+			if (isset($collations[$set . '_' . strtolower($match[4])]))
+			{
+				return $match[1] . $match[2] . $set . '_' . strtolower($match[4]);
+			}
+
+			if (isset($collations[$set . '_unicode_ci']))
+			{
+				return $match[1] . $match[2] . $set . '_unicode_ci';
+			}
+
+			return isset($charsets[$set]) ? $match[1] . $match[2] . $charsets[$set] : $match[0];
+		}, $statement);
 	}
 
 	/**

@@ -683,26 +683,15 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
 	public function insertid()
 	{
 		$this->connect();
-		$insertQuery = $this->getQuery(false, true);
-		$table = $insertQuery->__get('insert')->getElements();
 
-		/* find sequence column name */
-		$colNameQuery = $this->getQuery(true);
-		$colNameQuery->select('column_default')
-			->from('information_schema.columns')
-			->where('table_name=' . $this->quote($this->replacePrefix(str_replace('"', '', $table[0]))), 'AND')
-			->where("column_default LIKE '%nextval%'");
+		/*
+		 * Joomla 3.x UTD: the value the session's last INSERT took from a sequence, as the PDO driver's lastInsertId() and MySQL's
+		 * LAST_INSERT_ID() give. The table was read from the last query object built, so an INSERT run as a string failed with an
+		 * error (no object, or one without an INSERT) or gave another table's value (an older INSERT object).
+		 */
+		$this->setQuery('SELECT lastval()');
 
-		$this->setQuery($colNameQuery);
-		$colName = $this->loadRow();
-		$changedColName = str_replace('nextval', 'currval', $colName);
-
-		$insertidQuery = $this->getQuery(true);
-		$insertidQuery->select($changedColName);
-		$this->setQuery($insertidQuery);
-		$insertVal = $this->loadRow();
-
-		return $insertVal[0];
+		return $this->loadResult();
 	}
 
 	/**
