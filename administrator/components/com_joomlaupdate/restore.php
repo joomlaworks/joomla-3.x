@@ -443,7 +443,7 @@ abstract class AKAbstractPart extends AKAbstractObject
 	 *
 	 * @var boolean
 	 */
-	protected $hasRan = false;
+	protected $hasRun = false;
 
 	/**
 	 * The name of the engine part (a.k.a. Domain), used in return table
@@ -1483,7 +1483,7 @@ class AKPostprocDirect extends AKAbstractPostproc
 			@touch($this->filename, $this->timestamp);
 		}
 
-		if (substr($this->filename, -4) === '.php')
+		if (is_string($this->filename) && substr($this->filename, -4) === '.php')
 		{
 			$this->clearFileInOPCache($this->filename);
 		}
@@ -4372,7 +4372,8 @@ class AKEncryptionAES
 
 	protected static function urs($a, $b)
 	{
-		$a &= 0xffffffff;
+		// Callers pass floats (block number / 2^32): truncate them explicitly, as PHP 8.1+ deprecates doing it implicitly
+		$a = (int) $a & 0xffffffff;
 		$b &= 0x1f;  // (bounds check)
 		if ($a & 0x80000000 && $b > 0)
 		{   // if left-most bit set

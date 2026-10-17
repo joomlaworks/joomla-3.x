@@ -79,7 +79,7 @@ Summary of changes:
 - Smart Search: full reindexes no longer stop with "The table '#__finder_tokens' is full" on MySQL/MariaDB's default settings, the command line indexer no longer stops on content with modules in it, and Advanced Search's date range works with only a start or an end date
 - Articles with "Link Author" no longer fail when Contacts is uninstalled or disabled
 - Sites updating from before 3.12 keep Beez 3 when they use it (as a third-party template); a site whose template files are missing falls back to another template instead of failing
-- Fixed PHP 8.2+/8.5 deprecation warnings in text logs (e.g. during updates), the administrator's toolbar title, registries and sessions, and SQL list fields
+- Fixed PHP 8.1+/8.5 deprecation warnings in text logs (e.g. during updates), Joomla Update's extraction (which flooded the server's error log), the administrator's toolbar title, registries and sessions, and SQL list fields
 - Users' and Contacts' Options, the Multilingual Status, batch copy/move of articles and Privacy's data exports no longer fail when Fields or Contacts has been uninstalled
 - "User - Joomla!" can no longer be uninstalled: without it nobody could log in
 - Sample Data: installing a set after an interrupted install no longer hides every module of the site (and a safeguard in core prevents it anywhere); deleting a menu item no longer hides modules shown on all pages except it

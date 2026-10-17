@@ -1164,6 +1164,13 @@ class JoomlaInstallerScript
 	 */
 	private function isBeez3Installed()
 	{
+		// restore.php runs deleteUnexistingFiles() right after extracting, without Joomla: keep the files then (the update's own run
+		// decides)
+		if (!class_exists('JFactory'))
+		{
+			return true;
+		}
+
 		$db = JFactory::getDbo();
 
 		try
