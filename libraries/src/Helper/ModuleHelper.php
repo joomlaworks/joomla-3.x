@@ -718,4 +718,61 @@ abstract class ModuleHelper
 
 		return $db->loadObject();
 	}
+
+	/**
+	 * Remove the module assignments of deleted menu items: "only on" them (menuid = id) and "on all pages except" them
+	 * (menuid = -id). Only positive IDs count, so an empty or unset list never reaches menuid 0, which means "on all pages":
+	 * matching it would hide every module shown on all pages. A module whose only exceptions were these items is on all
+	 * pages again (all pages except none), rather than on none, as a module without rows would be.
+	 *
+	 * @param   integer[]  $menuIds  The menu item IDs
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function removeMenuAssignments(array $menuIds)
+	{
+		$ids = array_values(array_unique(array_filter(array_map('intval', $menuIds), function ($id)
+		{
+			return $id > 0;
+		})));
+
+		if (!$ids)
+		{
+			return;
+		}
+
+		$db         = \JFactory::getDbo();
+		$exceptions = implode(',', array_map(function ($id)
+		{
+			return -$id;
+		}, $ids));
+
+		// The modules with such an exception, before it goes
+		$excepting = $db->setQuery($db->getQuery(true)
+			->select('DISTINCT ' . $db->quoteName('moduleid'))
+			->from($db->quoteName('#__modules_menu'))
+			->where($db->quoteName('menuid') . ' IN (' . $exceptions . ')'))->loadColumn();
+
+		$db->setQuery($db->getQuery(true)
+			->delete($db->quoteName('#__modules_menu'))
+			->where($db->quoteName('menuid') . ' IN (' . implode(',', $ids) . ',' . $exceptions . ')'))->execute();
+
+		foreach (array_map('intval', $excepting) as $moduleId)
+		{
+			$left = (int) $db->setQuery($db->getQuery(true)
+				->select('COUNT(*)')
+				->from($db->quoteName('#__modules_menu'))
+				->where($db->quoteName('moduleid') . ' = ' . $moduleId))->loadResult();
+
+			if ($left === 0)
+			{
+				$db->setQuery($db->getQuery(true)
+					->insert($db->quoteName('#__modules_menu'))
+					->columns($db->quoteName(array('moduleid', 'menuid')))
+					->values($moduleId . ', 0'))->execute();
+			}
+		}
+	}
 }

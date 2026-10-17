@@ -1110,14 +1110,8 @@ class ComponentAdapter extends InstallerAdapter
 			}
 		}
 
-		$db->setQuery(
-			$db->getQuery(true)
-				->delete($db->quoteName('#__modules_menu'))
-				->where($db->quoteName('menuid') . ' IN (' . implode(',', array_merge($ids, array_map(function ($id)
-				{
-					return -$id;
-				}, $ids))) . ')')
-		)->execute();
+		// Their module assignments (modules shown on all pages except them stay on all pages)
+		\JModuleHelper::removeMenuAssignments($ids);
 	}
 
 	/**

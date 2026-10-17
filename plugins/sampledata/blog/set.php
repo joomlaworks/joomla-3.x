@@ -911,12 +911,8 @@ class PlgSampledataBlogSet
 			$delete($table, 'menuitems', $id);
 		}
 
-		// Only with menu items to remove: an empty list is "IN (0)", and menuid 0 is every module shown on all pages
-		if ($record['menuitems'])
-		{
-			$db->setQuery($db->getQuery(true)->delete($db->quoteName('#__modules_menu'))
-				->where('ABS(' . $db->quoteName('menuid') . ') IN (' . $ints($record['menuitems']) . ')'))->execute();
-		}
+		// Their module assignments: never menuid 0 ("on all pages"), which an empty list once matched
+		JModuleHelper::removeMenuAssignments($record['menuitems']);
 
 		foreach ($record['menutypes'] as $menutype)
 		{

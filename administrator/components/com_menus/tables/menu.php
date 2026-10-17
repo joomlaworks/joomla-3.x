@@ -28,17 +28,14 @@ class MenusTableMenu extends JTableMenu
 	 */
 	public function delete($pk = null, $children = false)
 	{
+		// Joomla 3.x UTD: the item's own ID when none is given (the query had none, failing after the item was deleted)
+		$id     = (int) ($pk !== null ? $pk : $this->id);
 		$return = parent::delete($pk, $children);
 
 		if ($return)
 		{
-			// Delete key from the #__modules_menu table
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true)
-				->delete($db->quoteName('#__modules_menu'))
-				->where($db->quoteName('menuid') . ' = ' . $pk);
-			$db->setQuery($query);
-			$db->execute();
+			// Its module assignments; never menuid 0 ("on all pages"), and modules shown on all pages except it stay on all pages
+			JModuleHelper::removeMenuAssignments(array($id));
 		}
 
 		return $return;
