@@ -1736,6 +1736,9 @@ html {height:100%;}
 body {height:100%;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;box-sizing:border-box;}
 a:hover,a:active,a:focus {outline:none;}
 a:focus-visible,button:focus-visible,.btn:focus-visible,[tabindex]:focus-visible {outline:2px solid var(--c-ring);outline-offset:2px;}
+/* Links in the content (list titles, text, messages) have the text's colour: a faint underline is what shows them */
+:where(#content) :is(td,p,dd,.alert) a:not(.btn,.badge,.close,.dropdown-toggle,.chzn-single,.dropdown-menu a,.pagination a) {text-decoration:underline;text-decoration-color:color-mix(in srgb, currentColor 35%, transparent);text-decoration-thickness:1px;}
+:where(#content) :is(td,p,dd,.alert) a:not(.btn,.badge,.close,.dropdown-toggle,.chzn-single,.dropdown-menu a,.pagination a):hover {text-decoration-color:currentColor;}
 ::selection {background:var(--c-fg);color:var(--c-bg);}
 input[type="checkbox"],input[type="radio"],progress {accent-color:var(--c-accent);}
 .small {font-size:12px;}
