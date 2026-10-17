@@ -145,7 +145,7 @@ def post_body():
     body = '<p>%s</p>\n<h2>%s</h2>\n<p>%s</p>\n' % (paragraphs[0], random.choice(['Where we started', 'What we learned', 'The short version', 'In practice']),
                                                     paragraphs[1])
     if random.random() < 0.5:
-        body += '<blockquote><p>%s</p></blockquote>\n' % random.choice(LOREM)[:140].rsplit(' ', 1)[0].rstrip(',') + '.'
+        body += '<blockquote><p>%s</p></blockquote>\n' % (random.choice(LOREM)[:140].rsplit(' ', 1)[0].rstrip(',') + '.')
     if random.random() < 0.5:
         body += '<ul><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Sed do eiusmod tempor incididunt</li></ul>\n'
     body += '<p>%s</p>\n<p>%s</p>' % (paragraphs[2], paragraphs[3])
