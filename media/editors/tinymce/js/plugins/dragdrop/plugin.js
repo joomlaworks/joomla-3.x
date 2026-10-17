@@ -47,6 +47,18 @@ tinymce.PluginManager.add('jdragdrop', function(editor) {
 					// Create the image tag
 					var newNode = tinyMCE.activeEditor.getDoc().createElement ('img');
 					newNode.src= tinyMCE.activeEditor.settings.setCustomDir + resp.location;
+
+					// With a copy for small screens (the Media Manager's Small Screen Copies), a srcset lets phones load it
+					if (resp.srcset && resp.srcset.length > 1) {
+						var candidates = [], width = parseInt(resp.srcset[resp.srcset.length - 1].width, 10);
+
+						for (var s = 0; s < resp.srcset.length; s++) {
+							candidates.push(editor.convertURL(tinyMCE.activeEditor.settings.setCustomDir + resp.srcset[s].location, 'src') + ' ' + parseInt(resp.srcset[s].width, 10) + 'w');
+						}
+
+						newNode.setAttribute('srcset', candidates.join(', '));
+						newNode.setAttribute('sizes', '(max-width: ' + width + 'px) 100vw, ' + width + 'px');
+					}
 					tinyMCE.activeEditor.execCommand('mceInsertContent', false, newNode.outerHTML);
 				}
 			} else {

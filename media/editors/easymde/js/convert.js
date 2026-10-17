@@ -33,6 +33,14 @@
 
 	const attributesFit = (node, allowed) => Array.prototype.every.call(node.attributes, (attribute) => allowed.indexOf(attribute.name) !== -1);
 
+	// An image's srcset of its copy for small screens and itself (photo-600.webp 600w, photo.webp 900w), as the editors' uploads
+	// get: Markdown can't write it, but it follows from the image, so the image stays Markdown and toHtml() puts it back
+	const hasOwnSources = (node) => {
+		const candidates = (node.getAttribute('srcset') || '').split(',').map((candidate) => candidate.trim().split(/\s+/)[0]);
+
+		return candidates.length === 2 && candidates[1] === node.getAttribute('src') && candidates[0].replace(/-\d+(\.[^./]+)$/, '$1') === candidates[1];
+	};
+
 	// A table becomes Markdown only when Markdown can say everything about it: a header row, plain cells, nothing else
 	const tableFits = (table) => {
 		const rows = Array.prototype.slice.call(table.rows);
@@ -82,6 +90,10 @@
 			const code = node.firstChild;
 
 			return !attributesFit(node, []) || node.childNodes.length !== 1 || !code || code.nodeName !== 'CODE';
+		}
+
+		if (name === 'img' && hasOwnSources(node)) {
+			return !attributesFit(node, EXPRESSIBLE.img.concat(['srcset', 'sizes']));
 		}
 
 		return !(name in EXPRESSIBLE) || !attributesFit(node, EXPRESSIBLE[name]);
@@ -137,10 +149,21 @@
 
 	turndown.escape = (text) => escape(text).replace(/&(?=#?[A-Za-z0-9]+;)/g, '&amp;').replace(/<(?=[A-Za-z\/!?])/g, '&lt;');
 
-	const toMarkdown = (html) => {
+	/*
+	 * sources (a Map, optional) collects the srcset and sizes of the images which stay Markdown, by address, for toHtml()
+	 */
+	const toMarkdown = (html, sources) => {
 		const doc = new window.DOMParser().parseFromString(`<body>${html || ''}</body>`, 'text/html');
 		const walker = doc.createTreeWalker(doc.body, window.NodeFilter.SHOW_COMMENT);
 		const comments = [];
+
+		if (sources) {
+			doc.body.querySelectorAll('img[srcset]').forEach((image) => {
+				if (hasOwnSources(image) && !keepAsHtml(image)) {
+					sources.set(image.getAttribute('src'), { srcset: image.getAttribute('srcset'), sizes: image.getAttribute('sizes') || '' });
+				}
+			});
+		}
 
 		// Turndown drops comments: they go through as placeholder elements
 		while (walker.nextNode()) {
@@ -159,8 +182,35 @@
 		return turndown.turndown(doc.body);
 	};
 
-	const toHtml = (markdown) => {
-		const html = marked.parse(markdown || '', { gfm: true, breaks: false, async: false });
+	const attribute = (value) => String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	let currentSources = null;
+	const parser = new marked.Marked({
+		gfm: true,
+		breaks: false,
+		async: false,
+		renderer: {
+			image(token) {
+				const html = marked.Renderer.prototype.image.call(this, token);
+				const found = currentSources && currentSources.get(token.href);
+
+				if (!found || !/^<img [^>]*>$/.test(html)) {
+					return html;
+				}
+
+				return html.replace(/>$/, ` srcset="${attribute(found.srcset)}"${found.sizes ? ` sizes="${attribute(found.sizes)}"` : ''}>`);
+			},
+		},
+	});
+
+	/*
+	 * sources (a Map, optional): srcset and sizes by image address, from toMarkdown() and the uploads
+	 */
+	const toHtml = (markdown, sources) => {
+		currentSources = sources || null;
+
+		const html = parser.parse(markdown || '');
+
+		currentSources = null;
 
 		// An empty paragraph marked leaves next to an HTML block
 		return html.replace(/<p>\s*<\/p>\n?/g, '').trim();

@@ -10,8 +10,6 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
-        <field name="optimise_width" type="number" label="COM_MEDIA_FIELD_OPTIMISE_WIDTH_LABEL" description="COM_MEDIA_FIELD_OPTIMISE_WIDTH_DESC" default="900" min="0" step="1" filter="integer" showon="optimise_editors:1[OR]optimise_mediamanager:1" />
-        <field name="optimise_mobile_width" type="number" label="COM_MEDIA_FIELD_OPTIMISE_MOBILE_WIDTH_LABEL" description="COM_MEDIA_FIELD_OPTIMISE_MOBILE_WIDTH_DESC" default="600" min="0" step="1" filter="integer" showon="optimise_editors:1[OR]optimise_mediamanager:1" />
         <field name="optimise_webp" type="radio" label="COM_MEDIA_FIELD_OPTIMISE_WEBP_LABEL" description="COM_MEDIA_FIELD_OPTIMISE_WEBP_DESC" class="btn-group btn-group-yesno" default="1" filter="integer" showon="optimise_editors:1[OR]optimise_mediamanager:1">
             <option value="1">JYES</option>
             <option value="0">JNO</option>
@@ -23,6 +21,17 @@
             <option value="year">COM_MEDIA_FIELD_UPLOAD_ORGANISE_YEAR</option>
             <option value="none">COM_MEDIA_FIELD_UPLOAD_ORGANISE_NONE</option>
         </field>
+        <field name="spacer_resize" type="spacer" label="COM_MEDIA_HEADING_RESIZE" showon="optimise_editors:1[OR]optimise_mediamanager:1" />
+        <field name="optimise_resize" type="radio" label="COM_MEDIA_FIELD_OPTIMISE_RESIZE_LABEL" description="COM_MEDIA_FIELD_OPTIMISE_RESIZE_DESC" class="btn-group btn-group-yesno" default="0" filter="integer" showon="optimise_editors:1[OR]optimise_mediamanager:1">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="optimise_width" type="number" label="COM_MEDIA_FIELD_OPTIMISE_WIDTH_LABEL" description="COM_MEDIA_FIELD_OPTIMISE_WIDTH_DESC" default="900" min="1" step="1" filter="integer" showon="optimise_editors:1[OR]optimise_mediamanager:1[AND]optimise_resize:1" />
+        <field name="optimise_mobile" type="radio" label="COM_MEDIA_FIELD_OPTIMISE_MOBILE_LABEL" description="COM_MEDIA_FIELD_OPTIMISE_MOBILE_DESC" class="btn-group btn-group-yesno" default="0" filter="integer" showon="optimise_editors:1[OR]optimise_mediamanager:1">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="optimise_mobile_width" type="number" label="COM_MEDIA_FIELD_OPTIMISE_MOBILE_WIDTH_LABEL" description="COM_MEDIA_FIELD_OPTIMISE_MOBILE_WIDTH_DESC" default="600" min="1" step="1" filter="integer" showon="optimise_editors:1[OR]optimise_mediamanager:1[AND]optimise_mobile:1" />
         <field name="spacer_uploads" type="spacer" label="COM_MEDIA_HEADING_UPLOADS" />
         <field name="upload_extensions" type="textarea" class="input-xxlarge" label="COM_MEDIA_FIELD_LEGAL_EXTENSIONS_LABEL" description="COM_MEDIA_FIELD_LEGAL_EXTENSIONS_DESC" rows="4" cols="50" default="jpg,jpeg,png,gif,webp,avif,bmp,ico,mp4,webm,mov,mp3,m4a,ogg,wav,pdf,txt,csv,rtf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp,odg,xcf" />
         <field name="upload_maxsize" type="number" label="COM_MEDIA_FIELD_MAXIMUM_SIZE_LABEL" description="COM_MEDIA_FIELD_MAXIMUM_SIZE_DESC" validate="number" min="0" size="50" default="128" />

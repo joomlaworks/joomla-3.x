@@ -290,7 +290,7 @@ php cli/joomla.php database:convert --to=sqlite  # or --to=postgresql / --to=mys
 **Images**
 ```
 php cli/joomla.php media:optimize images/uploads --dry-run   # what would change (also media:optimise)
-php cli/joomla.php media:optimize images/uploads             # resize, turn upright, drop metadata, add small screen copies
+php cli/joomla.php media:optimize images/uploads             # turn upright, drop metadata; resize and add small screen copies if those options are on
 ```
 
 **Logs, cache and search**

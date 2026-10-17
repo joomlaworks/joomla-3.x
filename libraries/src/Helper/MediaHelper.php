@@ -285,8 +285,8 @@ class MediaHelper
 	public function getOptimiseSettings($params)
 	{
 		return array(
-			'width'   => max(0, (int) $params->get('optimise_width', 900)),
-			'mobile'  => max(0, (int) $params->get('optimise_mobile_width', 600)),
+			'width'   => $params->get('optimise_resize', 0) ? max(0, (int) $params->get('optimise_width', 900)) : 0,
+			'mobile'  => $params->get('optimise_mobile', 0) ? max(0, (int) $params->get('optimise_mobile_width', 600)) : 0,
 			'webp'    => (bool) $params->get('optimise_webp', 1),
 			'quality' => min(100, max(1, (int) $params->get('optimise_quality', 90))),
 		);
@@ -469,6 +469,39 @@ class MediaHelper
 		$this->freeImage($image);
 
 		return $target;
+	}
+
+	/**
+	 * The sources of an optimised image for a srcset: its copy for small screens and the image itself, with their widths.
+	 * Empty when there's no copy.
+	 *
+	 * @param   string  $path      The image
+	 * @param   array   $settings  getOptimiseSettings()
+	 *
+	 * @return  array  Arrays of path and width, narrowest first
+	 *
+	 * @since   3.18.0
+	 */
+	public function getImageSources($path, array $settings)
+	{
+		if ($settings['mobile'] <= 0)
+		{
+			return array();
+		}
+
+		$mobile = dirname($path) . '/' . pathinfo($path, PATHINFO_FILENAME) . '-' . (int) $settings['mobile'] . '.' . pathinfo($path, PATHINFO_EXTENSION);
+		$small  = is_file($mobile) ? @getimagesize($mobile) : false;
+		$large  = $small ? @getimagesize($path) : false;
+
+		if (!$small || !$large || $small[0] >= $large[0])
+		{
+			return array();
+		}
+
+		return array(
+			array('path' => $mobile, 'width' => (int) $small[0]),
+			array('path' => $path, 'width' => (int) $large[0]),
+		);
 	}
 
 	/**

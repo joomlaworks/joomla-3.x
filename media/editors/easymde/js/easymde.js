@@ -34,9 +34,9 @@
 	const BLOCK = /^(address|article|aside|audio|blockquote|div|dl|figure|footer|form|h[1-6]|header|hr|iframe|ol|p|pre|section|table|ul|video)$/i;
 
 	// HTML from the editor buttons (read more, image, article link...) goes in as Markdown; blocks on lines of their own
-	const insert = (cm, html) => {
+	const insert = (cm, html, sources) => {
 		const doc = new window.DOMParser().parseFromString(`<body>${html}</body>`, 'text/html');
-		const markdown = toMarkdown(html);
+		const markdown = toMarkdown(html, sources);
 		const block = Array.prototype.some.call(doc.body.children, (node) => BLOCK.test(node.nodeName));
 
 		if (!block) {
@@ -52,17 +52,26 @@
 	};
 
 	// Relative addresses (images/uploads/x.png) are the site's: in the administrator, the preview needs them from the root
-	const previewHtml = (markdown, root) => {
-		const doc = new window.DOMParser().parseFromString(`<body>${toHtml(markdown)}</body>`, 'text/html');
+	const previewHtml = (markdown, root, sources) => {
+		const doc = new window.DOMParser().parseFromString(`<body>${toHtml(markdown, sources)}</body>`, 'text/html');
+		const relative = (value) => value && !/^([a-z][a-z0-9+.-]*:|\/|#|\?)/i.test(value);
 
 		doc.body.querySelectorAll('[src], [href], [poster]').forEach((node) => {
 			['src', 'href', 'poster'].forEach((name) => {
 				const value = node.getAttribute(name);
 
-				if (value && !/^([a-z][a-z0-9+.-]*:|\/|#|\?)/i.test(value)) {
+				if (relative(value)) {
 					node.setAttribute(name, `${root}/${value}`);
 				}
 			});
+		});
+
+		doc.body.querySelectorAll('img[srcset]').forEach((node) => {
+			node.setAttribute('srcset', node.getAttribute('srcset').split(',').map((candidate) => {
+				const parts = candidate.trim().split(/\s+/);
+
+				return (relative(parts[0]) ? `${root}/${parts[0]}` : parts[0]) + (parts[1] ? ` ${parts[1]}` : '');
+			}).join(', '));
 		});
 
 		return doc.body.innerHTML;
@@ -121,7 +130,7 @@
 	});
 
 	// One file: a placeholder at the cursor ("![Uploading photo.jpg…]()"), then its link, image or player
-	const uploadFile = (cm, upload, file, after) => {
+	const uploadFile = (cm, upload, file, after, sources) => {
 		const name = safeName(file);
 		const placeholder = `![${text('UPLOADING', 'Uploading')} ${name}…]()`;
 
@@ -144,20 +153,32 @@
 
 			// A file of the same name is kept: the Media Manager adds the time to this one's name
 			if (result && result.http === 200 && response && String(response.status) === '1' && response.location) {
-				replace(markup(file, String(response.location).replace(/^\/+/, '')));
+				const path = String(response.location).replace(/^\/+/, '');
+
+				// With a copy for small screens (the Media Manager's Small Screen Copies), the image gets a srcset in the HTML
+				if (/^image\//.test(file.type) && Array.isArray(response.srcset) && response.srcset.length > 1) {
+					const width = parseInt(response.srcset[response.srcset.length - 1].width, 10);
+
+					sources.set(path, {
+						srcset: response.srcset.map((source) => `${String(source.location).replace(/^\/+/, '')} ${parseInt(source.width, 10)}w`).join(', '),
+						sizes: `(max-width: ${width}px) 100vw, ${width}px`,
+					});
+				}
+
+				replace(markup(file, path));
 			} else {
 				fail(response && (response.message || response.error));
 			}
 		});
 	};
 
-	const uploadFiles = (cm, upload, files, after) => {
-		Array.prototype.forEach.call(files, (file) => uploadFile(cm, upload, file, after));
+	const uploadFiles = (cm, upload, files, after, sources) => {
+		Array.prototype.forEach.call(files, (file) => uploadFile(cm, upload, file, after, sources));
 	};
 
 	const icon = (name) => `easymde-icon easymde-icon-${name}`;
 
-	const toolbar = (options) => {
+	const toolbar = (options, sources) => {
 		const items = [
 			{ name: 'bold', action: EasyMDE.toggleBold, className: icon('bold'), title: text('BOLD', 'Bold') },
 			{ name: 'italic', action: EasyMDE.toggleItalic, className: icon('italic'), title: text('ITALIC', 'Italic') },
@@ -181,7 +202,7 @@
 
 					input.type = 'file';
 					input.multiple = true;
-					input.addEventListener('change', () => uploadFiles(editor.codemirror, options.upload, input.files));
+					input.addEventListener('change', () => uploadFiles(editor.codemirror, options.upload, input.files, '', sources));
 					input.click();
 				},
 				className: icon('upload'),
@@ -223,8 +244,10 @@
 		element.setAttribute('data-easymde-ready', '1');
 
 		// The form's textarea keeps the HTML; the editor works on a copy holding the Markdown
+		// srcset and sizes of the images, which Markdown can't hold (see convert.js)
+		const sources = new Map();
 		let html = element.value;
-		let markdown = toMarkdown(html);
+		let markdown = toMarkdown(html, sources);
 		const area = document.createElement('textarea');
 
 		area.className = 'joomla-editor-easymde-markdown';
@@ -250,9 +273,9 @@
 			nativeSpellcheck: !!options.spellcheck,
 			inputStyle: options.spellcheck ? 'contenteditable' : 'textarea',
 			minHeight: options.height || '500px',
-			toolbar: toolbar(options),
+			toolbar: toolbar(options, sources),
 			status: statusbar,
-			previewRender: (value) => previewHtml(value, options.upload ? options.upload.root : ''),
+			previewRender: (value) => previewHtml(value, options.upload ? options.upload.root : '', sources),
 			sideBySideFullscreen: false,
 			unorderedListStyle: '-',
 			blockStyles: { bold: '**', italic: '_', code: '```' },
@@ -274,7 +297,7 @@
 		const sync = () => {
 			const value = editor.value();
 
-			element.value = value === markdown ? html : toHtml(value);
+			element.value = value === markdown ? html : toHtml(value, sources);
 		};
 		let timer = null;
 
@@ -311,7 +334,7 @@
 						instance.replaceSelection('\n');
 					}
 
-					uploadFiles(instance, options.upload, files, '\n');
+					uploadFiles(instance, options.upload, files, '\n', sources);
 				}
 			});
 
@@ -320,7 +343,7 @@
 
 				if (files && files.length && !instance.getOption('readOnly')) {
 					event.preventDefault();
-					uploadFiles(instance, options.upload, files);
+					uploadFiles(instance, options.upload, files, '', sources);
 				}
 			});
 		}
@@ -336,7 +359,7 @@
 			},
 			setValue(value) {
 				html = value;
-				markdown = toMarkdown(value);
+				markdown = toMarkdown(value, sources);
 				editor.value(markdown);
 				sync();
 			},
@@ -344,7 +367,7 @@
 				return cm.getSelection();
 			},
 			replaceSelection(value) {
-				insert(cm, value);
+				insert(cm, value, sources);
 				sync();
 			},
 			disable(disabled) {

@@ -38,10 +38,11 @@ class MediaOptimizeCommand extends AbstractCommand
 	 * @var    string
 	 * @since  3.18.0
 	 */
-	protected $help = 'Optimises the images in a folder (and its folders) with the Media Manager\'s Image Optimisation options: images wider '
-		. 'than the Maximum Width are made that wide, photos stored sideways are turned upright, metadata (EXIF, which on phone photos '
-		. 'includes where they were taken) is dropped, and a copy for small screens is saved next to every image wider than the Small '
-		. 'Screen Width (photo.jpg gets photo-600.jpg). Files keep their names and formats, even with Save as WebP on, as articles, '
+	protected $help = 'Optimises the images in a folder (and its folders) with the Media Manager\'s Image Optimisation options: photos '
+		. 'stored sideways are turned upright and their metadata (EXIF, which on phone photos includes where they were taken) is '
+		. 'dropped; with Limit the Width on, images wider than the Maximum Width are made that wide, and with Small Screen Copies on, '
+		. 'a copy is saved next to every image wider than the Small Screen Width (photo.jpg gets photo-600.jpg). Files keep their '
+		. 'names and formats, even with Save as WebP on, as articles, '
 		. 'modules and settings link to them. GIFs, images already optimised and the small screen copies are left alone, so running it '
 		. 'again changes nothing. The folder is relative to the site (e.g. images/uploads) and must be inside the Media Manager\'s '
 		. 'images folder. Also media:optimise.';

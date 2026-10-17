@@ -258,9 +258,13 @@ class MediaControllerFile extends JControllerLegacy
 				}
 
 				// Resized, upright, without metadata, WebP and a copy for small screens, as the Media Manager's options say
+				$sources = array();
+
 				if ($mediaHelper->isOptimiseActive($params, 'editors'))
 				{
-					$object_file->filepath = $mediaHelper->optimiseImage($object_file->filepath, $mediaHelper->getOptimiseSettings($params));
+					$settings              = $mediaHelper->getOptimiseSettings($params);
+					$object_file->filepath = $mediaHelper->optimiseImage($object_file->filepath, $settings);
+					$sources               = $mediaHelper->getImageSources($object_file->filepath, $settings);
 				}
 
 				$returnUrl = str_replace(JPATH_ROOT, '',  $object_file->filepath);
@@ -271,6 +275,24 @@ class MediaControllerFile extends JControllerLegacy
 					'error'    => JText::sprintf('COM_MEDIA_UPLOAD_COMPLETE', $returnUrl),
 					'location' => str_replace('\\', '/', $returnUrl)
 				);
+
+				// The image's size once stored (optimising can make it narrower than the file the editor read)
+				$size = @getimagesize($object_file->filepath);
+
+				if ($size)
+				{
+					$response['width']  = (int) $size[0];
+					$response['height'] = (int) $size[1];
+				}
+
+				// The editors write these as the image's srcset, so every template offers small screens the copy made for them
+				foreach ($sources as $source)
+				{
+					$response['srcset'][] = array(
+						'location' => str_replace(array(JPATH_ROOT, '\\'), array('', '/'), $source['path']),
+						'width'    => $source['width'],
+					);
+				}
 
 				echo json_encode($response);
 

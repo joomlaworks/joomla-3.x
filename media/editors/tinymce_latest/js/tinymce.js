@@ -109,7 +109,7 @@
 	/**
 	 * Images dropped, pasted or chosen in the image dialog go to the images folder through the Media Manager
 	 */
-	const uploadHandler = (upload) => (blobInfo, progress) => new Promise((resolve, reject) => {
+	const uploadHandler = (upload, sources, uploaded) => (blobInfo, progress) => new Promise((resolve, reject) => {
 		const data = new FormData();
 		const xhr = new XMLHttpRequest();
 
@@ -137,7 +137,12 @@
 			}
 
 			if (xhr.status === 200 && response && String(response.status) === '1' && response.location) {
+				if (Array.isArray(response.srcset) && response.srcset.length > 1) {
+					sources.set(upload.root + response.location, response.srcset.map((source) => ({ url: upload.root + source.location, width: parseInt(source.width, 10) })));
+				}
+
 				resolve(upload.root + response.location);
+				uploaded(upload.root + response.location, response);
 			} else {
 				reject({
 					message: (response && (response.message || response.error)) || text('PLG_TINYMCE_LATEST_UPLOAD_FAILED', 'The image couldn\'t be uploaded.'),
@@ -148,6 +153,69 @@
 
 		xhr.send(data);
 	});
+
+	/**
+	 * Images uploaded with a copy for small screens (the Media Manager's Small Screen Copies) get a srcset, and sizes up to the
+	 * image's own width, so phones load the copy whatever the template. Such a srcset is dropped when the image's address
+	 * changes (another image chosen in the dialog), or it would keep showing the old image.
+	 */
+	const pathOf = (editor, url) => {
+		try {
+			return new URL(url, editor.getDoc().baseURI).pathname;
+		} catch (error) {
+			return '';
+		}
+	};
+
+	/**
+	 * TinyMCE gives a dropped or pasted image the size of the file it read; the Media Manager may have stored it narrower
+	 */
+	const fixSize = (editor, url, response) => {
+		const width = parseInt(response.width, 10);
+		const height = parseInt(response.height, 10);
+
+		if (!width || !height) {
+			return;
+		}
+
+		editor.dom.select('img[width]').forEach((image) => {
+			if (pathOf(editor, image.getAttribute('src') || '') === pathOf(editor, url) && parseInt(image.getAttribute('width'), 10) > width) {
+				editor.dom.setAttribs(image, { width, height });
+			}
+		});
+	};
+
+	const applySources = (editor, sources) => {
+		const uploaded = new Map();
+
+		sources.forEach((list, url) => uploaded.set(pathOf(editor, url), list));
+
+		editor.dom.select('img').forEach((image) => {
+			const src = pathOf(editor, image.getAttribute('data-mce-src') || image.getAttribute('src') || '');
+			const srcset = image.getAttribute('srcset');
+
+			if (srcset) {
+				const candidates = srcset.split(',').map((candidate) => pathOf(editor, candidate.trim().split(/\s+/)[0]));
+
+				if (candidates.length === 2 && candidates[0].replace(/-\d+(\.[^./]+)$/, '$1') === candidates[1] && candidates[1] !== src) {
+					editor.dom.setAttribs(image, { srcset: null, sizes: null });
+				}
+
+				return;
+			}
+
+			const list = uploaded.get(src);
+
+			if (list) {
+				const width = list[list.length - 1].width;
+
+				editor.dom.setAttribs(image, {
+					srcset: list.map((source) => `${editor.convertURL(source.url, 'src', image)} ${source.width}w`).join(', '),
+					sizes: `(max-width: ${width}px) 100vw, ${width}px`,
+				});
+			}
+		});
+	};
 
 	/*
 	 * When TinyMCE's iframe is moved in the page (e.g. by sorting subform rows) the browser reloads it empty: start the editor
@@ -228,8 +296,18 @@
 			options.base_url = joomla.baseURL;
 			options.suffix = '.min';
 
+			const sources = new Map();
+
 			if (joomla.upload) {
-				options.images_upload_handler = uploadHandler(joomla.upload);
+				// TinyMCE puts the uploaded address in once the promise has settled
+				options.images_upload_handler = uploadHandler(joomla.upload, sources, (url, response) => window.setTimeout(() => {
+					const editor = tinymce.get(element.id);
+
+					if (editor) {
+						fixSize(editor, url, response);
+						applySources(editor, sources);
+					}
+				}, 0));
 			}
 
 			options.setup = (editor) => {
@@ -251,6 +329,8 @@
 						}
 					}, true);
 				}
+
+				editor.on('BeforeGetContent', () => applySources(editor, sources));
 
 				watchIframe(editor, element);
 			};
