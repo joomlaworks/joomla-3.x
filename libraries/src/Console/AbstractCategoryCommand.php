@@ -89,7 +89,7 @@ abstract class AbstractCategoryCommand extends AbstractContentCommand
 		$this->addOption('access', null, self::OPTION_REQUIRED, 'The access level: ID or title');
 		$this->addOption('language', null, self::OPTION_REQUIRED, 'The language tag (e.g. en-GB), or * for all');
 		$this->addOption('tags', null, self::OPTION_REQUIRED, 'Tags (IDs or titles, separated by commas; replaces the current ones)');
-		$this->addOption('image', null, self::OPTION_REQUIRED, 'The category image (e.g. images/headers/raindrops.jpg)');
+		$this->addOption('image', null, self::OPTION_REQUIRED, 'The category image (e.g. images/uploads/photo.jpg)');
 		$this->addOption('metadesc', null, self::OPTION_REQUIRED, 'The meta description');
 		$this->addOption('metakey', null, self::OPTION_REQUIRED, 'The meta keywords');
 		$this->addOption('note', null, self::OPTION_REQUIRED, 'An administrator note');

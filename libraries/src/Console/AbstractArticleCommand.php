@@ -49,7 +49,7 @@ abstract class AbstractArticleCommand extends AbstractContentCommand
 		$this->addOption('author-alias', null, self::OPTION_REQUIRED, 'The author name shown instead of the author\'s');
 		$this->addOption('publish-up', null, self::OPTION_REQUIRED, 'Start publishing (e.g. "2026-11-01 09:00", in the site\'s time zone)');
 		$this->addOption('publish-down', null, self::OPTION_REQUIRED, 'Finish publishing (empty for never)');
-		$this->addOption('image-intro', null, self::OPTION_REQUIRED, 'The intro image (e.g. images/headers/blue-flower.jpg)');
+		$this->addOption('image-intro', null, self::OPTION_REQUIRED, 'The intro image (e.g. images/uploads/photo.jpg)');
 		$this->addOption('image-intro-alt', null, self::OPTION_REQUIRED, 'The intro image\'s alternative text');
 		$this->addOption('image-full', null, self::OPTION_REQUIRED, 'The full article image');
 		$this->addOption('image-full-alt', null, self::OPTION_REQUIRED, 'The full article image\'s alternative text');
