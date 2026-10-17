@@ -76,6 +76,8 @@ Summary of changes:
 - "User - Joomla!" can no longer be uninstalled: without it nobody could log in
 - PostgreSQL: pages no longer fail with Debug System on, or with caching on (PHP 8.1+), new items whose form posts an empty ID save again, and `insertid()` works after an INSERT given as text
 - MySQL: no more "mysqli_ping() is deprecated" warnings on PHP 8.4+
+- SQLite: searches ignore case and accents in every language, as on MySQL (they did for English letters only)
+- Search: Greek (and other non-Latin) searches typed without accents find their results again, on every database
 - SQLite: sites moved to MySQL no longer get case-sensitive titles: the collations of tables and columns are recorded correctly, and updating (or Extensions: Database's Fix) repairs those of existing sites; moving a database to MariaDB or MySQL 5.7 no longer fails on MySQL 8-only collations
 
 ## Version 3.17 - released October 10th, 2026

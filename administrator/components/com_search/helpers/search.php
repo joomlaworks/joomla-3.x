@@ -264,8 +264,30 @@ class SearchHelper
 	{
 		$str = JLanguageTransliterate::utf8_latin_to_ascii($str);
 
+		/*
+		 * Joomla 3.x UTD: the accents of other scripts too (Greek tonos, Vietnamese...), as MySQL's utf8mb4_unicode_ci ignores
+		 * them: results its LIKE found ("Αθήνα" for "αθηνα") were dropped by checkNoHtml(). Canonical decomposition keeps one
+		 * character for one, which the highlighting and the snippets rely on. Without PHP's intl extension, Greek only.
+		 */
+		if (class_exists('Normalizer'))
+		{
+			$decomposed = Normalizer::normalize((string) $str, Normalizer::FORM_D);
+
+			if (is_string($decomposed))
+			{
+				$str = Normalizer::normalize(preg_replace('/\p{Mn}+/u', '', $decomposed) ?? $decomposed, Normalizer::FORM_C);
+			}
+		}
+		else
+		{
+			$str = strtr((string) $str, array(
+				'ά' => 'α', 'έ' => 'ε', 'ή' => 'η', 'ί' => 'ι', 'ό' => 'ο', 'ύ' => 'υ', 'ώ' => 'ω', 'ϊ' => 'ι', 'ϋ' => 'υ', 'ΐ' => 'ι',
+				'ΰ' => 'υ', 'Ά' => 'Α', 'Έ' => 'Ε', 'Ή' => 'Η', 'Ί' => 'Ι', 'Ό' => 'Ο', 'Ύ' => 'Υ', 'Ώ' => 'Ω', 'Ϊ' => 'Ι', 'Ϋ' => 'Υ',
+			));
+		}
+
 		// @TODO: remove other prefixes as well?
-		return preg_replace("/[\"'^]([a-z])/ui", '\1', $str);
+		return preg_replace("/[\"'^]([a-z])/ui", '\1', (string) $str);
 	}
 
 	/**
