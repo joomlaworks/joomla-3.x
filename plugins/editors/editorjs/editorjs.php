@@ -185,9 +185,11 @@ class PlgEditorEditorjs extends JPlugin
 			);
 		}
 
-		// The editor buttons (editors-xtd plugins) below the editor, as with Joomla's other editors
+		// The editor buttons (editors-xtd plugins) below the editor, as with Joomla's other editors, except Page Break: a page
+		// break means nothing between blocks (page breaks already in the content stay, as Raw HTML blocks)
 		$xtd = is_array($buttons) || $buttons === true
-			? JLayoutHelper::render('joomla.editors.buttons', $this->_subject->getButtons($id, $buttons, $asset, $author)) : '';
+			? JLayoutHelper::render('joomla.editors.buttons', $this->_subject->getButtons($id, array_merge($hidden, array('pagebreak')), $asset, $author))
+			: '';
 
 		return '<div class="js-editor-editorjs">'
 			. '<textarea name="' . htmlspecialchars($name, ENT_COMPAT, 'UTF-8') . '" id="' . $id . '" cols="' . (int) $col . '" rows="' . (int) $row
