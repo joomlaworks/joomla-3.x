@@ -164,6 +164,7 @@ class PlgEditorEditorjs extends JPlugin
 		$hidden  = is_array($buttons) ? $buttons : array();
 		$options = array(
 			'height'   => $this->cssSize($this->params->get('height', '500px'), '500px'),
+			'width'    => $this->cssSize($this->params->get('width', '800px'), '800px'),
 			'readonly' => !empty($params['readonly']),
 			'readmore' => !in_array('readmore', $hidden, true),
 			'render'   => array(
@@ -208,7 +209,8 @@ class PlgEditorEditorjs extends JPlugin
 			. '<button type="button" class="btn btn-small editorjs-fullscreen" data-editorjs-action="fullscreen" aria-pressed="false">'
 			. JText::_('PLG_EDITORS_EDITORJS_FULLSCREEN') . '</button>'
 			. '</div>'
-			. '<div class="editorjs-holder" id="' . $id . '_editorjs" style="--editorjs-height:' . htmlspecialchars($options['height'], ENT_COMPAT, 'UTF-8') . ';"></div>'
+			. '<div class="editorjs-holder" id="' . $id . '_editorjs" style="--editorjs-height:' . htmlspecialchars($options['height'], ENT_COMPAT, 'UTF-8')
+			. ';--editorjs-width:' . htmlspecialchars($options['width'], ENT_COMPAT, 'UTF-8') . ';"></div>'
 			. $xtd
 			. '</div>';
 	}

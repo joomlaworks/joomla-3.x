@@ -890,8 +890,10 @@
 	const toEditor = (blocks) => blocks.map((block) => (block.type === 'template' ? { type: toolName(block.data.template, block.data.block), data: block.data } : block));
 
 	/*
-	 * The preview: the page the server made, in a dialog, in a sandboxed frame (scripts of embeds run, but in an origin of their
-	 * own, never the administrator's), at a desktop, tablet or phone width
+	 * The preview: the page the server made, in a dialog, at a desktop, tablet or phone width. Its frame keeps the site's origin,
+	 * as the content has on the site itself: without it, frames inside it get an origin of their own too, and players such as
+	 * YouTube's stay black. The sandbox still keeps it from navigating the administrator away. Its content passed the saving
+	 * user's text filter, as on the site.
 	 */
 	const openPreview = (page) => {
 		let dialog = document.querySelector('dialog.editorjs-dialog');
@@ -901,7 +903,7 @@
 			dialog.innerHTML = `<div class="editorjs-dialog-head"><strong>${escapeHtml(text('PREVIEW_TITLE', 'Preview with the site template (not saved)'))}</strong>`
 				+ `<span class="editorjs-dialog-sizes">${[['100%', 'DESKTOP', 'Desktop'], ['768px', 'TABLET', 'Tablet'], ['390px', 'PHONE', 'Phone']].map((size) => `<button type="button" class="btn btn-small" data-width="${size[0]}">${escapeHtml(text(`PREVIEW_${size[1]}`, size[2]))}</button>`).join('')}</span>`
 				+ `<button type="button" class="btn btn-small editorjs-dialog-close">${escapeHtml(text('CLOSE', 'Close'))}</button></div>`
-				+ '<div class="editorjs-dialog-body"><iframe sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" title="Preview"></iframe></div>';
+				+ '<div class="editorjs-dialog-body"><iframe sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" title="Preview"></iframe></div>';
 			document.body.appendChild(dialog);
 			dialog.querySelector('.editorjs-dialog-close').addEventListener('click', () => dialog.close());
 			dialog.querySelector('.editorjs-dialog-sizes').addEventListener('click', (event) => {

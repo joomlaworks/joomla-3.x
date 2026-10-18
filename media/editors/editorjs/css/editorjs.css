@@ -6,7 +6,8 @@
 /* --- Editor --- */
 .js-editor-editorjs,.editorjs-dialog {--editorjs-bg:var(--c-card, #ffffff);--editorjs-fg:var(--c-fg, #1d202b);--editorjs-muted:var(--c-muted-fg, #707684);--editorjs-border:var(--c-border, #d9dbe0);--editorjs-subtle:var(--c-subtle, #f6f7f9);}
 .editorjs-holder {box-sizing:border-box;min-height:var(--editorjs-height, 500px);padding:24px 24px 24px 64px;margin-bottom:8px;background:var(--editorjs-bg);color:var(--editorjs-fg);border:1px solid var(--editorjs-border);border-radius:6px;font-size:16px;line-height:1.6;}
-.editorjs-holder .ce-block__content,.editorjs-holder .ce-toolbar__content {max-width:none;}
+/* The content's width (the plugin's Width option): large images and blocks don't fill the window, also in full screen */
+.editorjs-holder .ce-block__content,.editorjs-holder .ce-toolbar__content {max-width:var(--editorjs-width, 800px);}
 .editorjs-holder .codex-editor__redactor {padding-bottom:80px !important;}
 .editorjs-holder .ce-paragraph {line-height:1.6;}
 .editorjs-holder .ce-header {margin:0.6em 0 0.3em;line-height:1.25;}
