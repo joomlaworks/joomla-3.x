@@ -1,0 +1,44 @@
+/**
+ * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
+ */
+
+/* --- Editor --- */
+.js-editor-editorjs {--editorjs-bg:var(--c-card, #ffffff);--editorjs-fg:var(--c-fg, #1d202b);--editorjs-muted:var(--c-muted-fg, #707684);--editorjs-border:var(--c-border, #d9dbe0);--editorjs-subtle:var(--c-subtle, #f6f7f9);}
+.editorjs-holder {box-sizing:border-box;min-height:var(--editorjs-height, 500px);padding:24px 24px 24px 64px;margin-bottom:8px;background:var(--editorjs-bg);color:var(--editorjs-fg);border:1px solid var(--editorjs-border);border-radius:6px;font-size:16px;line-height:1.6;}
+.editorjs-holder .ce-block__content,.editorjs-holder .ce-toolbar__content {max-width:none;}
+.editorjs-holder .codex-editor__redactor {padding-bottom:80px !important;}
+.editorjs-holder .ce-paragraph {line-height:1.6;}
+.editorjs-holder .ce-header {margin:0.6em 0 0.3em;line-height:1.25;}
+.editorjs-holder h2.ce-header {font-size:1.6em;}
+.editorjs-holder h3.ce-header {font-size:1.35em;}
+.editorjs-holder h4.ce-header {font-size:1.15em;}
+.editorjs-holder h5.ce-header,.editorjs-holder h6.ce-header {font-size:1em;}
+.editorjs-holder .image-tool__image-picture {max-width:100%;height:auto;}
+.editorjs-holder .cdx-input,.editorjs-holder .ce-code__textarea,.editorjs-holder .ce-rawtool__textarea {background:var(--editorjs-subtle);color:var(--editorjs-fg);border-color:var(--editorjs-border);}
+.editorjs-holder .ce-code__textarea,.editorjs-holder .ce-rawtool__textarea {font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;font-size:14px;}
+
+/* Bootstrap 2's input rules (206px wide, a margin, a border) outrank Editor.js' own: the block menu's search field and the inline link field get theirs back */
+.js-editor-editorjs .cdx-search-field__input {box-sizing:border-box;width:100%;height:auto;margin:0;padding:0;border:0;border-radius:0;box-shadow:none;background:transparent;color:inherit;font-size:14px;line-height:inherit;}
+.js-editor-editorjs .ce-inline-tool-input {box-sizing:border-box;width:100%;height:auto;margin:0;border-radius:0;box-shadow:none;font-size:14px;line-height:1.4;}
+
+/* The Read more block: where the introduction ends */
+.editorjs-readmore {display:flex;align-items:center;gap:12px;margin:12px 0;color:var(--editorjs-muted);font-size:14px;user-select:none;}
+.editorjs-readmore::before,.editorjs-readmore::after {content:"";flex:1;border-top:2px dashed var(--editorjs-border);}
+.editorjs-readmore span {font-weight:600;text-transform:uppercase;letter-spacing:0.06em;}
+
+/* --- Dark --- */
+:root[data-scheme="dark"] .js-editor-editorjs .ce-popover,:root[data-scheme="dark"] .js-editor-editorjs .ce-inline-toolbar,:root[data-scheme="dark"] .js-editor-editorjs .ce-conversion-toolbar,:root[data-scheme="dark"] .js-editor-editorjs .ce-settings {--color-background:var(--c-card);--color-text-primary:var(--c-fg);--color-text-secondary:var(--c-muted-fg);--color-border:var(--c-border);--color-background-item-hover:var(--c-muted);--color-background-item-focus:var(--c-muted);--color-shadow:rgba(0,0,0,0.4);}
+:root[data-scheme="dark"] .js-editor-editorjs .ce-toolbar__plus,:root[data-scheme="dark"] .js-editor-editorjs .ce-toolbar__settings-btn {color:var(--c-fg);background:transparent;}
+:root[data-scheme="dark"] .js-editor-editorjs .ce-toolbar__plus:hover,:root[data-scheme="dark"] .js-editor-editorjs .ce-toolbar__settings-btn:hover {background:var(--c-muted);}
+:root[data-scheme="dark"] .js-editor-editorjs .ce-block--selected .ce-block__content {background:var(--c-muted);}
+:root[data-scheme="dark"] .js-editor-editorjs .cdx-search-field {background:var(--c-muted);border-color:var(--c-border);}
+:root[data-scheme="dark"] .js-editor-editorjs .ce-popover-item__icon,:root[data-scheme="dark"] .js-editor-editorjs .ce-inline-tool,:root[data-scheme="dark"] .js-editor-editorjs .ce-inline-toolbar__dropdown {color:var(--c-fg);background:transparent;box-shadow:none;}
+@media (prefers-color-scheme: dark) {
+    :root[data-scheme="auto"] .js-editor-editorjs .ce-popover,:root[data-scheme="auto"] .js-editor-editorjs .ce-inline-toolbar,:root[data-scheme="auto"] .js-editor-editorjs .ce-conversion-toolbar,:root[data-scheme="auto"] .js-editor-editorjs .ce-settings {--color-background:var(--c-card);--color-text-primary:var(--c-fg);--color-text-secondary:var(--c-muted-fg);--color-border:var(--c-border);--color-background-item-hover:var(--c-muted);--color-background-item-focus:var(--c-muted);--color-shadow:rgba(0,0,0,0.4);}
+    :root[data-scheme="auto"] .js-editor-editorjs .ce-toolbar__plus,:root[data-scheme="auto"] .js-editor-editorjs .ce-toolbar__settings-btn {color:var(--c-fg);background:transparent;}
+    :root[data-scheme="auto"] .js-editor-editorjs .ce-toolbar__plus:hover,:root[data-scheme="auto"] .js-editor-editorjs .ce-toolbar__settings-btn:hover {background:var(--c-muted);}
+    :root[data-scheme="auto"] .js-editor-editorjs .ce-block--selected .ce-block__content {background:var(--c-muted);}
+    :root[data-scheme="auto"] .js-editor-editorjs .cdx-search-field {background:var(--c-muted);border-color:var(--c-border);}
+    :root[data-scheme="auto"] .js-editor-editorjs .ce-popover-item__icon,:root[data-scheme="auto"] .js-editor-editorjs .ce-inline-tool,:root[data-scheme="auto"] .js-editor-editorjs .ce-inline-toolbar__dropdown {color:var(--c-fg);background:transparent;box-shadow:none;}
+}

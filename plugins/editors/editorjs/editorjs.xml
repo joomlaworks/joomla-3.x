@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.9" type="plugin" group="editors" method="upgrade">
+    <name>plg_editors_editorjs</name>
+    <version>2.31.7</version>
+    <creationDate>October 2026</creationDate>
+    <author>JoomlaWorks Ltd. (Joomla integration), CodeX (Editor.js)</author>
+    <authorEmail>N/A</authorEmail>
+    <authorUrl>https://editorjs.io</authorUrl>
+    <copyright>(C) 2026 JoomlaWorks Ltd. and this project's contributors; Editor.js (C) CodeX and contributors</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.md</license>
+    <description>PLG_EDITORS_EDITORJS_XML_DESCRIPTION</description>
+    <files>
+        <filename plugin="editorjs">editorjs.php</filename>
+    </files>
+    <media destination="editors" folder="media">
+        <folder>editorjs</folder>
+    </media>
+    <languages>
+        <language tag="en-GB">en-GB.plg_editors_editorjs.ini</language>
+        <language tag="en-GB">en-GB.plg_editors_editorjs.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="note" type="note" class="alert alert-info" label="PLG_EDITORS_EDITORJS_NOTE_LABEL" description="PLG_EDITORS_EDITORJS_NOTE_DESC" />
+                <field name="height" type="text" label="PLG_EDITORS_EDITORJS_FIELD_HEIGHT_LABEL" description="PLG_EDITORS_EDITORJS_FIELD_HEIGHT_DESC" default="500px" filter="string" />
+                <field name="upload" type="radio" label="PLG_EDITORS_EDITORJS_FIELD_UPLOAD_LABEL" description="PLG_EDITORS_EDITORJS_FIELD_UPLOAD_DESC" class="btn-group btn-group-yesno" default="1" filter="integer">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="folder" type="text" label="PLG_EDITORS_EDITORJS_FIELD_FOLDER_LABEL" description="PLG_EDITORS_EDITORJS_FIELD_FOLDER_DESC" default="uploads" filter="path" showon="upload:1" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

@@ -394,6 +394,8 @@ class JoomlaInstallerScript
 			'3.18.0-2026-10-19.sql' => '3.18.0',
 			// "Custom Code" modules (site and administrator)
 			'3.18.0-2026-10-20.sql' => '3.18.0',
+			// "Editor - Blocks (Editor.js)" and the "Custom Blocks" modules (site and administrator)
+			'3.18.0-2026-10-21.sql' => '3.18.0',
 		);
 
 		foreach ($dataMigrationFiles as $file => $addedIn)
@@ -797,6 +799,10 @@ class JoomlaInstallerScript
 			array('module', 'mod_customcode', ''),
 			array('module', 'mod_customcode', '', 1),
 		),
+		'Custom Blocks' => array(
+			array('module', 'mod_customblocks', ''),
+			array('module', 'mod_customblocks', '', 1),
+		),
 		'Other site modules' => array(
 			array('module', 'mod_breadcrumbs', ''),
 			array('module', 'mod_feed', ''),
@@ -847,6 +853,7 @@ class JoomlaInstallerScript
 			array('plugin', 'tinymce', 'editors'),
 			array('plugin', 'tinymce_latest', 'editors'),
 			array('plugin', 'easymde', 'editors'),
+			array('plugin', 'editorjs', 'editors'),
 			array('plugin', 'totp', 'twofactorauth'),
 			array('plugin', 'updatenotification', 'system'),
 			array('plugin', 'webinstaller', 'installer'),
@@ -885,6 +892,7 @@ class JoomlaInstallerScript
 		'plugin:0:editors:codemirror'            => '/media/editors/codemirror',
 		'plugin:0:editors:tinymce_latest'        => '/media/editors/tinymce_latest',
 		'plugin:0:editors:easymde'               => '/media/editors/easymde',
+		'plugin:0:editors:editorjs'              => '/media/editors/editorjs',
 		'plugin:0:installer:webinstaller'        => '/media/plg_installer_webinstaller',
 		'plugin:0:quickicon:privacycheck'        => '/media/plg_quickicon_privacycheck',
 		'plugin:0:system:highlight'              => '/media/plg_system_highlight',

@@ -14,6 +14,10 @@ For commands of your own on the command line, see [CLI-GUIDE.md](CLI-GUIDE.md). 
   - [Order of output](#order-of-output)
   - [Duplicates](#duplicates)
   - [Reading the document's links](#reading-the-documents-links)
+- [Blocks: layouts and the renderer](#blocks-layouts-and-the-renderer)
+  - [Overriding a block](#overriding-a-block)
+  - [Rendering blocks yourself](#rendering-blocks-yourself)
+  - [Opening a module's text in an editor of your choice](#opening-a-modules-text-in-an-editor-of-your-choice)
 - [Other additions](#other-additions)
 - [Compatibility with stock Joomla 3, Joomla 4 and later](#compatibility-with-stock-joomla-3-joomla-4-and-later)
 
@@ -167,6 +171,67 @@ foreach ($doc->_links as $key => $link)
 	}
 }
 ```
+
+## BLOCKS: LAYOUTS AND THE RENDERER
+
+"Editor - Blocks (Editor.js)" writes content as blocks (Editor.js' JSON: a list of `{type, data}`), and the "Custom Blocks" module uses the same editor. The form still gets HTML: when the content is saved, the blocks are rendered on the server, one layout per block type, with the **site's default template**'s overrides. So templates decide what every block's HTML is.
+
+The core layouts are in `layouts/joomla/blocks/`: `paragraph`, `header`, `list`, `image`, `embed`, `quote`, `table`, `code`, `raw`, `delimiter`, `warning` and `readmore`. A block type without a layout writes nothing.
+
+### Overriding a block
+
+Copy the layout into your template and change it:
+
+```
+templates/<your template>/html/layouts/joomla/blocks/quote.php
+```
+
+The layout gets `$displayData` with:
+
+- `data`: the block's data, as Editor.js saves it (each core layout's comment lists its fields; e.g. a quote has `text`, `caption` and `alignment`),
+- `block`: the whole block,
+- `renderer`: the `Joomla\CMS\Blocks\BlockRenderer`, whose helpers every value must go through:
+  - `inline($html)`: text which may hold inline formatting (bold, italic, underline, marker, inline code, links), with everything else removed and links only to http(s), mailto, tel, the site's own paths and anchors,
+  - `url($url)`: an address, empty unless it's one of those,
+  - `siteUrl($url)`: the same, written as editors store addresses of the site (`images/x.webp` rather than `/subfolder/images/x.webp`),
+  - `e($text)`: plain text, escaped,
+  - `plain($html)`: the plain text of formatted text (for `alt` and `title` attributes).
+
+```php
+<?php
+defined('JPATH_BASE') or die;
+
+$r    = $displayData['renderer'];
+$data = $displayData['data'];
+?>
+<figure class="pull-quote">
+	<blockquote><?php echo $r->inline($data['text']); ?></blockquote>
+	<?php if (!empty($data['caption'])) : ?>
+		<figcaption><?php echo $r->inline($data['caption']); ?></figcaption>
+	<?php endif; ?>
+</figure>
+```
+
+The HTML is made when the content is saved: after changing a block's layout, saving the content again rewrites it. The editor keeps the blocks with the HTML (base64 JSON in a hidden element, signed with the site's secret), so it opens them as blocks again. Raw HTML blocks go through the saving user's text filter (Global Configuration), as any HTML does.
+
+### Rendering blocks yourself
+
+```php
+use Joomla\CMS\Blocks\BlockRenderer;
+
+$renderer = new BlockRenderer;           // the site's default template, or new BlockRenderer('mytemplate')
+echo $renderer->render($blocks);         // $blocks: arrays with "type" and "data"
+```
+
+### Opening a module's text in an editor of your choice
+
+A module whose manifest has `<customContent />` is edited in the module form's content field (stored in `#__modules.content`). The manifest may name that field's editor and buttons:
+
+```xml
+<customContent editor="editorjs|none" hide="readmore,pagebreak" />
+```
+
+`editor`, `syntax`, `buttons`, `hide` and `height` are taken (`JModuleHelper::prepareContentField()`); the field's text filter always stays. "Custom Code" uses `editor="codemirror|none" syntax="html" buttons="false"`, "Custom Blocks" the line above.
 
 ## OTHER ADDITIONS
 
