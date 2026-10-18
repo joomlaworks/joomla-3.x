@@ -803,7 +803,7 @@ button.btn::-moz-focus-inner,input[type="submit"].btn::-moz-focus-inner {padding
 #editor-xtd-buttons.btn-toolbar {display:flex;flex-wrap:nowrap;gap:6px;max-width:100%;margin:8px 0;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;}
 #editor-xtd-buttons.btn-toolbar::-webkit-scrollbar {display:none;}
 #editor-xtd-buttons.btn-toolbar::before,#editor-xtd-buttons.btn-toolbar::after {display:none;}
-#editor-xtd-buttons .btn {flex:none;margin:0;white-space:nowrap;}
+#editor-xtd-buttons .btn {flex:none;margin:0;font-size:var(--fs-sm-plus);font-weight:600;white-space:nowrap;}
 fieldset {min-width:0;}
 :not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked)::before,:not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked)::after {display:none;}
 :not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked) > li {flex:none;float:none;margin-bottom:0;}
