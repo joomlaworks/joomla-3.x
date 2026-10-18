@@ -84,6 +84,7 @@ class ExtensionHelper
 
 		// Core module extensions - administrator
 		array('module', 'mod_custom', '', 1),
+		array('module', 'mod_customcode', '', 1),
 		array('module', 'mod_feed', '', 1),
 		array('module', 'mod_housekeeping', '', 1),
 		array('module', 'mod_latest', '', 1),
@@ -113,6 +114,7 @@ class ExtensionHelper
 		array('module', 'mod_banners', '', 0),
 		array('module', 'mod_breadcrumbs', '', 0),
 		array('module', 'mod_custom', '', 0),
+		array('module', 'mod_customcode', '', 0),
 		array('module', 'mod_feed', '', 0),
 		array('module', 'mod_finder', '', 0),
 		array('module', 'mod_footer', '', 0),

@@ -59,6 +59,7 @@ Summary of changes:
 - For developers: `addPreconnect()`, `addDnsPrefetch()` and `addPreload()` on the HTML document, written right after the title (preconnects, then dns-prefetches, then preloads) and also sent as HTTP `Link:` headers; documented in the new [API-GUIDE.md](API-GUIDE.md)
 - "Editor - EasyMDE (Markdown)": write in Markdown, with preview and side by side, and drop or paste images, videos and documents to upload them; content is still saved as HTML (nothing Markdown can't express is lost), so articles work everywhere as before
 - Images uploaded in the editors (optionally in the Media Manager too) are turned upright, saved as WebP and stripped of their metadata (GPS included), and organised in dated folders (`images/uploads/YYYY/MM/DD/`). Resizing (900 pixels) and a 600 pixels copy for phones are options; with the copy, the editors (TinyMCE 8 and 4, EasyMDE) write the image's `srcset`, so phones load it with any template, and Hammond, Finch and Rookwood offer the copies for older images too. `media:optimize` does the same for existing images. The Media Manager's options are reorganised
+- "Custom Code", a new site and administrator module: code of your own (HTML, CSS, JavaScript, embeds, snippets) written in CodeMirror and output as it is
 
 **Improvements:**
 - More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. The administrator's quick icons, menu and status bar, article tags and Contacts work without them
@@ -83,6 +84,8 @@ Summary of changes:
 - Media Manager: an upload with a name already taken is saved with the time added to its name instead of failing
 - Sites updating from TinyMCE 4, the old default editor, get TinyMCE 8 as their default editor (sites with another editor keep theirs)
 - Media Manager: uploads up to 128 MB by default, and a Memory Limit option to raise PHP's memory for resizing large photos where the server allows it
+- The "Custom" module is now "Custom HTML", with content plugins on by default for new modules ("Execute Content-type Plugins", formerly "Prepare Content")
+- CodeMirror gets a Height option and a dark theme in Visual Studio Code's colours, the default on new sites and on updated sites still using the stock theme
 
 **Security fixes:**
 - Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors without access (with "Show Unauthorised Links" on); they get the intro text and a link to log in, as with Joomla's own layout
@@ -110,6 +113,7 @@ Summary of changes:
 - Command line: `article:update` now saves the new `--text` and no longer strips the HTML from articles' text
 - Hammond, Finch and Rookwood: buttons in article text (e.g. "Register to read more") look like the templates' other buttons again (they were unreadable in Hammond and Finch)
 - Installer: a warning during installation (e.g. while installing sample data) no longer restarts the installation over and over
+- CodeMirror no longer asks for a missing stylesheet with its stock theme
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:

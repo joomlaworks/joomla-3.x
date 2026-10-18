@@ -162,7 +162,7 @@ Ask in plain language; the assistant picks the tools. Some things to try:
 - "List the articles of the News category which have no intro image."
 - "Draft an article about our autumn opening hours in the News category, unpublished, so I can review it."
 - "Move all articles tagged 'events-2025' to the Archive."
-- "Add a Custom module with our holiday notice above the content, on every page, until Monday."
+- "Add a Custom HTML module with our holiday notice above the content, on every page, until Monday."
 - "Make the headings of the site a little darker and the body text larger." (it writes `css/custom.css`)
 - "What did the command line or the assistant change this week?"
 

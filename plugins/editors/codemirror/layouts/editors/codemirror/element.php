@@ -32,6 +32,7 @@ $modifier = $params->get('fullScreenMod', array()) ? implode(' + ', $params->get
 		'" cols="', $cols,
 		'" rows="', $rows,
 		'" data-options="', htmlspecialchars(json_encode($options)),
+		(!empty($displayData->height) ? '" data-height="' . htmlspecialchars($displayData->height, ENT_COMPAT, 'UTF-8') : ''),
 		'">', $content, '</textarea>';
 ?>
 

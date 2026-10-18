@@ -96,7 +96,8 @@
                 <field name="modePath" type="hidden" default="media/editors/codemirror/mode/%N/%N" />
             </fieldset>
             <fieldset name="appearance" label="PLG_CODEMIRROR_FIELDSET_APPEARANCE_OPTIONS_LABEL" addfieldpath="plugins/editors/codemirror">
-                <field name="theme" type="filelist" label="PLG_CODEMIRROR_FIELD_THEME_LABEL" description="PLG_CODEMIRROR_FIELD_THEME_DESC" default="" filter="\.css$" stripext="true" hide_none="true" hide_default="false" directory="media/editors/codemirror/theme" />
+                <field name="theme" type="filelist" label="PLG_CODEMIRROR_FIELD_THEME_LABEL" description="PLG_CODEMIRROR_FIELD_THEME_DESC" default="vscode-dark" filter="\.css$" stripext="true" hide_none="true" hide_default="false" directory="media/editors/codemirror/theme" />
+                <field name="height" type="text" label="PLG_CODEMIRROR_FIELD_HEIGHT_LABEL" description="PLG_CODEMIRROR_FIELD_HEIGHT_DESC" default="" hint="500px" class="input-small" filter="string" />
                 <field name="activeLineColor" type="color" label="PLG_CODEMIRROR_FIELD_ACTIVELINE_COLOR_LABEL" description="PLG_CODEMIRROR_FIELD_ACTIVELINE_COLOR_DESC" default="#a4c2eb" filter="color" />
                 <field name="highlightMatchColor" type="color" label="PLG_CODEMIRROR_FIELD_HIGHLIGHT_MATCH_COLOR_LABEL" description="PLG_CODEMIRROR_FIELD_HIGHLIGHT_MATCH_COLOR_DESC" default="#fa542f" filter="color" />
                 <field name="fontFamily" type="fonts" label="PLG_CODEMIRROR_FIELD_FONT_FAMILY_LABEL" description="PLG_CODEMIRROR_FIELD_FONT_FAMILY_DESC" default="0">

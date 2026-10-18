@@ -878,6 +878,8 @@ class ModulesModelModule extends JModelAdmin
 				$this->helpKey = $helpKey ?: $this->helpKey;
 				$this->helpURL = $helpURL ?: $this->helpURL;
 			}
+
+			JModuleHelper::prepareContentField($form, $xml);
 		}
 
 		// Load the default advanced params

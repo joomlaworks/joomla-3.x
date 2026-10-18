@@ -720,6 +720,36 @@ abstract class ModuleHelper
 	}
 
 	/**
+	 * Set up a module form's content field (the text of modules whose manifest has <customContent />) as the module's
+	 * manifest asks: <customContent editor="codemirror|none" syntax="html" buttons="false" /> opens it in CodeMirror, for
+	 * code. Only these attributes are taken; the field's filter (the text filters) always stays.
+	 *
+	 * @param   \JForm             $form  The module form
+	 * @param   \SimpleXMLElement  $xml   The module's manifest
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function prepareContentField($form, $xml)
+	{
+		if (!$xml || !isset($xml->customContent) || !$form->getField('content'))
+		{
+			return;
+		}
+
+		foreach (array('editor', 'syntax', 'buttons', 'hide', 'height') as $attribute)
+		{
+			$value = trim((string) $xml->customContent[$attribute]);
+
+			if ($value !== '')
+			{
+				$form->setFieldAttribute('content', $attribute, $value);
+			}
+		}
+	}
+
+	/**
 	 * Remove the module assignments of deleted menu items: "only on" them (menuid = id) and "on all pages except" them
 	 * (menuid = -id). Only positive IDs count, so an empty or unset list never reaches menuid 0, which means "on all pages":
 	 * matching it would hide every module shown on all pages. A module whose only exceptions were these items is on all

@@ -94,6 +94,15 @@ JFactory::getDocument()->addScriptDeclaration(
 					var id = input.prop('id');
 
 					Joomla.editors.instances[id] = cm.fromTextArea(this, input.data('options'));
+
+					// The Height option, over the template's (Isis and Prothero size it to the window, 400 to 800 pixels) and CodeMirror's
+					if (input.attr('data-height')) {
+						var wrapper = Joomla.editors.instances[id].getWrapperElement();
+
+						wrapper.style.minHeight = '0';
+						wrapper.style.maxHeight = 'none';
+						Joomla.editors.instances[id].setSize(null, input.attr('data-height'));
+					}
 				});
 			}
 

@@ -1,0 +1,57 @@
+/**
+ * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
+ */
+
+/*
+ * vscode-dark: the colours of Visual Studio Code's default dark theme (Dark Modern, with Dark+'s colours for code) for
+ * CodeMirror 5. Its rules are more specific than the plugin's own Active Line and Matching Tag colours (meant for light
+ * themes), so those don't wash it out.
+ */
+
+/* --- Editor --- */
+.cm-s-vscode-dark.CodeMirror {background:#1f1f1f;color:#cccccc;border-color:#2b2b2b;}
+.cm-s-vscode-dark .CodeMirror-gutters {background:#1f1f1f;border-right:0;}
+.cm-s-vscode-dark .CodeMirror-linenumber {color:#6e7681;}
+.cm-s-vscode-dark .CodeMirror-activeline .CodeMirror-linenumber {color:#cccccc;}
+.cm-s-vscode-dark .CodeMirror-guttermarker,.cm-s-vscode-dark .CodeMirror-guttermarker-subtle,.cm-s-vscode-dark .CodeMirror-foldgutter-open,.cm-s-vscode-dark .CodeMirror-foldgutter-folded {color:#c5c5c5;}
+.cm-s-vscode-dark .CodeMirror-cursor {border-left:2px solid #aeafad;}
+.cm-s-vscode-dark.cm-fat-cursor .CodeMirror-cursor {background:#aeafad;}
+.cm-s-vscode-dark div.CodeMirror-selected {background:#3a3d41;}
+.cm-s-vscode-dark.CodeMirror-focused div.CodeMirror-selected {background:#264f78;}
+.cm-s-vscode-dark .CodeMirror-line::selection,.cm-s-vscode-dark .CodeMirror-line > span::selection,.cm-s-vscode-dark .CodeMirror-line > span > span::selection {background:#264f78;}
+.cm-s-vscode-dark .CodeMirror-activeline-background {background:#282828;}
+.cm-s-vscode-dark .CodeMirror-matchingbracket {color:inherit !important;background:rgba(0,100,0,0.1);outline:1px solid #888888;}
+.cm-s-vscode-dark .CodeMirror-nonmatchingbracket {color:#f44747 !important;}
+.cm-s-vscode-dark .CodeMirror-matchingtag {background:rgba(87,87,87,0.72);}
+.cm-s-vscode-dark .cm-matchhighlight {background-color:rgba(173,214,255,0.15);}
+.cm-s-vscode-dark .CodeMirror-searching {background:rgba(234,92,0,0.33);}
+.cm-s-vscode-dark .CodeMirror-foldmarker {background:rgba(38,79,120,0.6);box-shadow:none;color:#cccccc;}
+
+/* --- Code --- */
+.cm-s-vscode-dark .cm-comment {color:#6a9955;}
+.cm-s-vscode-dark .cm-string {color:#ce9178;}
+.cm-s-vscode-dark .cm-string-2 {color:#d16969;}
+.cm-s-vscode-dark .cm-number {color:#b5cea8;}
+.cm-s-vscode-dark .cm-keyword {color:#569cd6;}
+.cm-s-vscode-dark .cm-atom {color:#569cd6;}
+.cm-s-vscode-dark .cm-def {color:#dcdcaa;}
+.cm-s-vscode-dark .cm-builtin {color:#dcdcaa;}
+.cm-s-vscode-dark .cm-variable {color:#9cdcfe;}
+.cm-s-vscode-dark .cm-variable-2 {color:#9cdcfe;}
+.cm-s-vscode-dark .cm-variable-3,.cm-s-vscode-dark .cm-type {color:#4ec9b0;}
+.cm-s-vscode-dark .cm-property {color:#9cdcfe;}
+.cm-s-vscode-dark .cm-operator {color:#d4d4d4;}
+.cm-s-vscode-dark .cm-punctuation {color:#d4d4d4;}
+.cm-s-vscode-dark .cm-meta {color:#569cd6;}
+.cm-s-vscode-dark .cm-qualifier {color:#d7ba7d;}
+.cm-s-vscode-dark .cm-tag {color:#569cd6;}
+.cm-s-vscode-dark .cm-bracket {color:#808080;}
+.cm-s-vscode-dark .cm-attribute {color:#9cdcfe;}
+.cm-s-vscode-dark .cm-header {color:#569cd6;font-weight:bold;}
+.cm-s-vscode-dark .cm-quote {color:#6a9955;}
+.cm-s-vscode-dark .cm-link {color:#3794ff;text-decoration:underline;}
+.cm-s-vscode-dark .cm-url {color:#ce9178;}
+.cm-s-vscode-dark .cm-hr {color:#808080;}
+.cm-s-vscode-dark .cm-error {color:#f44747;}
+.cm-s-vscode-dark .cm-invalidchar {color:#f44747;}

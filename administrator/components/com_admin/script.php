@@ -90,6 +90,7 @@ class JoomlaInstallerScript
 		$this->runDataMigrations();
 		$this->updateMediaUploadDefaults();
 		$this->updateMediaUploadMaxSize();
+		$this->updateCodeMirrorTheme();
 		$this->switchDefaultEditor();
 		$this->fixCoreCategorySubmenus();
 
@@ -389,7 +390,10 @@ class JoomlaInstallerScript
 			'3.18.0-2026-10-12.sql' => '3.18.0',
 			// "System - Structured Data & Social Tags" plugin
 			'3.18.0-2026-10-18.sql' => '3.18.0',
+			// "Editor - EasyMDE (Markdown)" plugin
 			'3.18.0-2026-10-19.sql' => '3.18.0',
+			// "Custom Code" modules (site and administrator)
+			'3.18.0-2026-10-20.sql' => '3.18.0',
 		);
 
 		foreach ($dataMigrationFiles as $file => $addedIn)
@@ -789,6 +793,10 @@ class JoomlaInstallerScript
 			array('component', 'com_wrapper', ''),
 			array('module', 'mod_wrapper', ''),
 		),
+		'Custom Code' => array(
+			array('module', 'mod_customcode', ''),
+			array('module', 'mod_customcode', '', 1),
+		),
 		'Other site modules' => array(
 			array('module', 'mod_breadcrumbs', ''),
 			array('module', 'mod_feed', ''),
@@ -1075,6 +1083,58 @@ class JoomlaInstallerScript
 		catch (Exception $e)
 		{
 			// Not worth failing the update for: the size stays as it was
+		}
+	}
+
+	/**
+	 * Gives CodeMirror the vscode-dark theme (Visual Studio Code's dark colours), once, on sites with the stock theme ("default",
+	 * or none); a theme an administrator chose is kept.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function updateCodeMirrorTheme()
+	{
+		if ($this->isUpdateStepDone('codemirror-theme'))
+		{
+			return;
+		}
+
+		try
+		{
+			$db  = JFactory::getDbo();
+			$row = $db->setQuery(
+				$db->getQuery(true)
+					->select($db->quoteName(array('extension_id', 'params')))
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+					->where($db->quoteName('folder') . ' = ' . $db->quote('editors'))
+					->where($db->quoteName('element') . ' = ' . $db->quote('codemirror'))
+			)->loadObject();
+
+			if ($row)
+			{
+				$params = new JRegistry($row->params);
+
+				if (in_array((string) $params->get('theme', ''), array('', 'default'), true))
+				{
+					$params->set('theme', 'vscode-dark');
+
+					$db->setQuery(
+						$db->getQuery(true)
+							->update($db->quoteName('#__extensions'))
+							->set($db->quoteName('params') . ' = ' . $db->quote($params->toString()))
+							->where($db->quoteName('extension_id') . ' = ' . (int) $row->extension_id)
+					)->execute();
+				}
+			}
+
+			$this->markUpdateStepDone('codemirror-theme');
+		}
+		catch (Exception $e)
+		{
+			// Not worth failing the update for: the theme stays as it was
 		}
 	}
 

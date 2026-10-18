@@ -104,6 +104,8 @@ class ConfigModelModules extends ConfigModelForm
 			{
 				throw new Exception(JText::_('JERROR_LOADFILE_FAILED'));
 			}
+
+			JModuleHelper::prepareContentField($form, $xml);
 		}
 
 		// Load the default advanced params

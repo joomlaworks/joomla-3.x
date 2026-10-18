@@ -245,8 +245,8 @@ class PlgEditorCodemirror extends JPlugin
 			: $this->params->get('syntax', 'html');
 		$options->mode = isset($this->modeAlias[$syntax]) ? $this->modeAlias[$syntax] : $syntax;
 
-		// Load the theme if specified.
-		if ($theme = $this->params->get('theme'))
+		// Load the theme if specified. "default" is CodeMirror's own, in codemirror.css: there's no theme file of that name
+		if (($theme = $this->params->get('theme')) && $theme !== 'default')
 		{
 			$options->theme = $theme;
 			JHtml::_('stylesheet', $this->params->get('basePath', 'media/editors/codemirror/') . 'theme/' . $theme . '.css', array('version' => 'auto'));
@@ -296,7 +296,8 @@ class PlgEditorCodemirror extends JPlugin
 				'cols'    => $col,
 				'rows'    => $row,
 				'content' => $content,
-				'buttons' => $buttons
+				'buttons' => $buttons,
+				'height'  => $this->cssSize($this->params->get('height', '')),
 			);
 
 		$dispatcher = JEventDispatcher::getInstance();
@@ -387,5 +388,27 @@ class PlgEditorCodemirror extends JPlugin
 		$basePath = $this->params->get('basePath', 'media/editors/codemirror/');
 		$ext = JDEBUG ? '.js' : '.min.js';
 		JHtml::_('script', $basePath . 'keymap/' . $keyMap . $ext, array('version' => 'auto'));
+	}
+
+	/**
+	 * A CSS size from the options: a number (pixels) or a number with px, em, rem, vh or %. Empty when it's neither, which leaves
+	 * the height to the template (Isis and Prothero size it to the window) or CodeMirror (300px).
+	 *
+	 * @param   string  $value  The option
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	protected function cssSize($value)
+	{
+		$value = trim((string) $value);
+
+		if (preg_match('/^\d+(\.\d+)?$/', $value))
+		{
+			return $value . 'px';
+		}
+
+		return preg_match('/^\d+(\.\d+)?(px|em|rem|vh|%)$/', $value) ? $value : '';
 	}
 }

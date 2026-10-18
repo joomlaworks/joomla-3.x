@@ -38,7 +38,7 @@ abstract class AbstractModuleCommand extends AbstractContentCommand
 	{
 		$this->addOption('title', null, self::OPTION_REQUIRED, 'The title');
 		$this->addOption('position', null, self::OPTION_REQUIRED, 'The template position (e.g. position-7, sidebar-right)');
-		$this->addOption('content', null, self::OPTION_REQUIRED, 'The content (HTML) of a Custom module (mod_custom)');
+		$this->addOption('content', null, self::OPTION_REQUIRED, 'The content of a Custom HTML or Custom Code module (mod_custom, mod_customcode)');
 		$this->addOption('content-file', null, self::OPTION_REQUIRED, 'Read the content from this file ("-" for the standard input)');
 		$this->addOption('state', null, self::OPTION_REQUIRED, 'published, unpublished or trashed');
 		$this->addOption('show-title', null, self::OPTION_REQUIRED, 'Show the title: yes or no');
