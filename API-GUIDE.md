@@ -16,6 +16,8 @@ For commands of your own on the command line, see [CLI-GUIDE.md](CLI-GUIDE.md). 
   - [Reading the document's links](#reading-the-documents-links)
 - [Blocks: layouts and the renderer](#blocks-layouts-and-the-renderer)
   - [Overriding a block](#overriding-a-block)
+  - [A template's own blocks](#a-templates-own-blocks)
+  - [The preview](#the-preview)
   - [Rendering blocks yourself](#rendering-blocks-yourself)
   - [Opening a module's text in an editor of your choice](#opening-a-modules-text-in-an-editor-of-your-choice)
 - [Other additions](#other-additions)
@@ -213,6 +215,68 @@ $data = $displayData['data'];
 ```
 
 The HTML is made when the content is saved: after changing a block's layout, saving the content again rewrites it. The editor keeps the blocks with the HTML (base64 JSON in a hidden element, signed with the site's secret), so it opens them as blocks again. Raw HTML blocks go through the saving user's text filter (Global Configuration), as any HTML does.
+
+### A template's own blocks
+
+A template offers blocks of its own with two files each, in a folder named after it:
+
+```
+templates/<template>/html/layouts/joomla/blocks/<template>/<block>.xml   the fields
+templates/<template>/html/layouts/joomla/blocks/<template>/<block>.php   the HTML
+```
+
+The editor finds them in every installed site template. The block menu offers the site's default template's blocks, each with its template's name as a note ("Testimonials · Rookwood"); other templates' blocks still open when the content has them. Blocks can be as generic (a grid of cells with an image and text each) or as specific (a pricing table) as you want them. The definition:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<block title="TPL_MYTEMPLATE_BLOCK_GRID" description="TPL_MYTEMPLATE_BLOCK_GRID_DESC" icon="grid">
+    <field name="heading" type="text" label="TPL_MYTEMPLATE_BLOCK_HEADING" />
+    <group name="cells" label="TPL_MYTEMPLATE_BLOCK_CELLS" item="TPL_MYTEMPLATE_BLOCK_CELL" min="3" max="3" columns="3">
+        <field name="image" type="image" label="TPL_MYTEMPLATE_BLOCK_IMAGE" />
+        <field name="title" type="text" label="TPL_MYTEMPLATE_BLOCK_TITLE" />
+        <field name="text" type="richtext" label="TPL_MYTEMPLATE_BLOCK_TEXT" />
+        <field name="link" type="url" label="TPL_MYTEMPLATE_BLOCK_LINK" />
+    </group>
+</block>
+```
+
+- **Field types:** `text`, `richtext` (inline formatting: bold, italic, links, marker...), `textarea` (plain, several lines), `image` (uploaded through the Media Manager, with alt text; the value is `url`, `alt`, `width`, `height` and `srcset`), `url`, `list` (with `<option value="...">LABEL</option>`), `checkbox`.
+- **Groups** (`<group>`): entries of the same fields, from `min` to `max` (Add and Remove buttons), shown in `columns` columns in the editor. Groups hold fields, not other groups.
+- **Icons:** `block`, `hero`, `quote`, `grid`, `columns`.
+- **Labels** are language strings of the template's language file (`language/en-GB/en-GB.tpl_<template>.ini`, also the site-wide copy).
+
+The layout gets `$displayData['data']` with the values by field name (a group's: a list of entries), plus `template`, `name` and `renderer`. Write every value through the renderer's helpers; `$r->image($value, $sizes, $attributes)` writes an image field as an `<img>`, with its srcset and size:
+
+```php
+<?php
+defined('JPATH_BASE') or die;
+
+$r    = $displayData['renderer'];
+$data = $displayData['data'];
+?>
+<section class="grid-cells">
+	<h2><?php echo $r->e($data['heading']); ?></h2>
+	<?php foreach ($data['cells'] as $cell) : ?>
+		<div class="cell">
+			<?php echo $r->image($cell['image'], '(max-width: 767px) 100vw, 33vw'); ?>
+			<h3><?php echo $r->e($cell['title']); ?></h3>
+			<?php echo $r->inline($cell['text']); ?>
+		</div>
+	<?php endforeach; ?>
+</section>
+```
+
+What's saved is the template's folder name and the block's name, never a path: `{"type": "template", "data": {"template": "rookwood", "block": "testimonials", "fields": {...}}}`. A template block is rendered with, in turn:
+
+1. the site template's `html/layouts/joomla/blocks/<template>/<block>.php` (so any template may restyle another's blocks: `templates/hammond/html/layouts/joomla/blocks/rookwood/testimonials.php`),
+2. the layout of the template that has the block, when it's installed, even if it isn't the default,
+3. `layouts/joomla/blocks/template.php`, which writes the values plainly (texts, images, links), so content never comes out empty.
+
+Values go through the saving user's text filter, by field type, like the rest of the content.
+
+### The preview
+
+The editor's Preview button shows the blocks as they are (saved or not) on a page made by the layout `joomla.blocks.preview`: by default, the site template's `css/template.css` and `css/custom.css` around the blocks. A template whose content needs more (its own stylesheets, a wrapper with its article classes, a theme) overrides it in `html/layouts/joomla/blocks/preview.php`; Hammond, Finch and Rookwood do. `$displayData`: `html`, `template`, `params` (the default style's options), `base` (the site's address, for `<base>`), `language`, `direction`, `renderer`. The page is shown in a sandboxed frame: embeds' scripts run, in an origin of their own.
 
 ### Rendering blocks yourself
 

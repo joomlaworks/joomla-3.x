@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testimonials: two to four quotes in a two-column grid -->
+<block title="TPL_ROOKWOOD_BLOCK_TESTIMONIALS" description="TPL_ROOKWOOD_BLOCK_TESTIMONIALS_DESC" icon="quote">
+    <field name="heading" type="text" label="TPL_ROOKWOOD_BLOCK_FIELD_HEADING" />
+    <field name="intro" type="textarea" label="TPL_ROOKWOOD_BLOCK_FIELD_INTRO" />
+    <group name="quotes" label="TPL_ROOKWOOD_BLOCK_FIELD_QUOTES" item="TPL_ROOKWOOD_BLOCK_FIELD_QUOTE_ITEM" min="2" max="4" columns="2">
+        <field name="quote" type="textarea" label="TPL_ROOKWOOD_BLOCK_FIELD_QUOTE" />
+        <field name="name" type="text" label="TPL_ROOKWOOD_BLOCK_FIELD_NAME" />
+        <field name="role" type="text" label="TPL_ROOKWOOD_BLOCK_FIELD_ROLE" />
+        <field name="photo" type="image" label="TPL_ROOKWOOD_BLOCK_FIELD_PHOTO" />
+    </group>
+</block>

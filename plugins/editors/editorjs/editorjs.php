@@ -79,7 +79,9 @@ class PlgEditorEditorjs extends JPlugin
 		JHtml::_('stylesheet', self::MEDIA . '/css/editorjs' . $min . '.css', array('version' => 'auto'));
 		JHtml::_('script', self::MEDIA . '/js/editorjs' . $min . '.js', array('version' => 'auto'));
 
-		foreach (array('READMORE', 'READMORE_HINT', 'READMORE_ONE', 'RENDER_FAILED', 'UPLOAD_FAILED', 'REBUILT', 'PLACEHOLDER') as $key)
+		foreach (array('READMORE', 'READMORE_HINT', 'READMORE_ONE', 'RENDER_FAILED', 'UPLOAD_FAILED', 'REBUILT', 'PLACEHOLDER', 'IMAGE_ALT', 'IMAGE_CHOOSE',
+			'IMAGE_REMOVE', 'REMOVE', 'PREVIEW', 'PREVIEW_TITLE', 'PREVIEW_DESKTOP', 'PREVIEW_TABLET', 'PREVIEW_PHONE', 'CLOSE', 'FULLSCREEN',
+			'FULLSCREEN_EXIT') as $key)
 		{
 			JText::script('PLG_EDITORS_EDITORJS_' . $key);
 		}
@@ -170,6 +172,8 @@ class PlgEditorEditorjs extends JPlugin
 			),
 			'root'     => JUri::root(true),
 			'embeds'   => array('youtube', 'vimeo', 'twitter', 'instagram', 'codepen'),
+			// Templates' blocks: the site template's in the block menu, other installed templates' so their blocks open
+			'blocks'   => array_values(BlockRenderer::getDefinitions()),
 		);
 
 		// Images dropped, pasted or chosen in an image block go to the images folder through the Media Manager, optimised as its
@@ -199,6 +203,11 @@ class PlgEditorEditorjs extends JPlugin
 			// Joomla's editor field passes the content escaped already
 			. $this->checkBlocks($content)
 			. '</textarea>'
+			. '<div class="editorjs-bar">'
+			. '<button type="button" class="btn btn-small editorjs-preview" data-editorjs-action="preview">' . JText::_('PLG_EDITORS_EDITORJS_PREVIEW') . '</button>'
+			. '<button type="button" class="btn btn-small editorjs-fullscreen" data-editorjs-action="fullscreen" aria-pressed="false">'
+			. JText::_('PLG_EDITORS_EDITORJS_FULLSCREEN') . '</button>'
+			. '</div>'
 			. '<div class="editorjs-holder" id="' . $id . '_editorjs" style="--editorjs-height:' . htmlspecialchars($options['height'], ENT_COMPAT, 'UTF-8') . ';"></div>'
 			. $xtd
 			. '</div>';
@@ -240,7 +249,8 @@ class PlgEditorEditorjs extends JPlugin
 
 		// Raw HTML goes through the saving user's text filter, as the form's HTML does, so blocks can't keep what the filters
 		// remove (they're signed below and opened again later, perhaps by someone whose filter keeps more)
-		$blocks = array();
+		$blocks      = array();
+		$definitions = BlockRenderer::getDefinitions();
 
 		foreach ($data['blocks'] as $block)
 		{
@@ -256,13 +266,137 @@ class PlgEditorEditorjs extends JPlugin
 				$block['data']['html'] = JComponentHelper::filterText(isset($block['data']['html']) ? (string) $block['data']['html'] : '');
 			}
 
+			// Templates' blocks: every value too, so a layout which writes one as it is still can't write what the filters remove;
+			// by the definition's field types when the block's template is installed
+			if ($block['type'] === 'template')
+			{
+				$key = (isset($block['data']['template']) ? (string) $block['data']['template'] : '') . '/'
+					. (isset($block['data']['block']) ? (string) $block['data']['block'] : '');
+				$fields = isset($block['data']['fields']) && is_array($block['data']['fields']) ? $block['data']['fields'] : array();
+
+				$block['data'] = array(
+					'template' => isset($block['data']['template']) ? (string) $block['data']['template'] : '',
+					'block'    => isset($block['data']['block']) ? (string) $block['data']['block'] : '',
+					'fields'   => isset($definitions[$key]) ? static::filterFields($definitions[$key]['fields'], $fields) : static::filterValues($fields),
+				);
+			}
+
 			$blocks[] = $block;
 		}
 
 		$renderer = new BlockRenderer;
 		$encoded  = base64_encode(json_encode(array('blocks' => $blocks), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 
-		return array('html' => $renderer->render($blocks), 'blocks' => $encoded, 'signature' => static::sign($encoded));
+		$html   = $renderer->render($blocks);
+		$result = array('html' => $html, 'blocks' => $encoded, 'signature' => static::sign($encoded));
+
+		// The preview: a page showing the blocks as the site template shows content
+		if ($input->post->getInt('preview'))
+		{
+			$result['document'] = $renderer->preview($html);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * A template block's values, by its definition's fields (others are left out), through the user's text filter: formatted
+	 * text as HTML; plain values (text, links, lists, alt text), which layouts escape, filtered and then unescaped again, so
+	 * "a & b" stays "a & b" rather than "a &amp;amp; b" once written.
+	 *
+	 * @param   array    $definition  The fields of the definition (or of a group)
+	 * @param   array    $values      The values
+	 * @param   integer  $depth       How deep this is (groups hold no groups)
+	 *
+	 * @return  array
+	 *
+	 * @since   3.18.0
+	 */
+	protected static function filterFields(array $definition, array $values, $depth = 0)
+	{
+		$plain  = function ($value)
+		{
+			return is_string($value) ? html_entity_decode(JComponentHelper::filterText($value), ENT_QUOTES, 'UTF-8') : '';
+		};
+		$result = array();
+
+		foreach ($definition as $field)
+		{
+			$value = isset($values[$field['name']]) ? $values[$field['name']] : null;
+
+			switch ($field['type'])
+			{
+				case 'richtext':
+					$result[$field['name']] = is_string($value) ? JComponentHelper::filterText($value) : '';
+					break;
+
+				case 'checkbox':
+					$result[$field['name']] = (bool) $value;
+					break;
+
+				case 'image':
+					$result[$field['name']] = !is_array($value) ? null : array(
+						'url'    => $plain(isset($value['url']) ? $value['url'] : ''),
+						'alt'    => $plain(isset($value['alt']) ? $value['alt'] : ''),
+						'width'  => isset($value['width']) ? (int) $value['width'] : 0,
+						'height' => isset($value['height']) ? (int) $value['height'] : 0,
+						'srcset' => array_values(array_map(function ($source) use ($plain)
+						{
+							return array('location' => $plain(isset($source['location']) ? $source['location'] : ''), 'width' => isset($source['width']) ? (int) $source['width'] : 0);
+						}, array_filter(isset($value['srcset']) && is_array($value['srcset']) ? $value['srcset'] : array(), 'is_array'))),
+					);
+					break;
+
+				case 'group':
+					$entries = $depth === 0 && is_array($value) ? array_slice(array_values(array_filter($value, 'is_array')), 0, (int) $field['max']) : array();
+
+					$result[$field['name']] = array_map(function ($entry) use ($field, $depth)
+					{
+						return static::filterFields($field['fields'], $entry, $depth + 1);
+					}, $entries);
+					break;
+
+				default:
+					$result[$field['name']] = $plain($value);
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Every string of a value (arrays walked, to a depth of 5) through the user's text filter.
+	 *
+	 * @param   mixed    $value  The value
+	 * @param   integer  $depth  How deep this is
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.18.0
+	 */
+	protected static function filterValues($value, $depth = 0)
+	{
+		if (is_string($value))
+		{
+			return JComponentHelper::filterText($value);
+		}
+
+		if (!is_array($value))
+		{
+			return is_int($value) || is_float($value) || is_bool($value) ? $value : '';
+		}
+
+		if ($depth > 5)
+		{
+			return array();
+		}
+
+		foreach ($value as $key => $item)
+		{
+			$value[$key] = static::filterValues($item, $depth + 1);
+		}
+
+		return $value;
 	}
 
 	/**

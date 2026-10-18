@@ -472,6 +472,35 @@ ul.menu.buttons {display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;ma
 :root[data-theme="light"] .prose .values li::before {color:var(--c-violet);}
 .prose .values strong {display:block;margin-bottom:8px;font-size:1.3rem;letter-spacing:-0.015em;color:var(--c-ink);}
 
+/* --- Blocks (the Blocks editor's Rookwood blocks: html/layouts/joomla/blocks/rookwood/) --- */
+.blockHero,.blockTestimonials,.blockServices {margin-top:clamp(40px, 6vw, 80px);margin-bottom:clamp(40px, 6vw, 80px);}
+/* The home page's hero, sized for a page's content */
+.hero.blockHero {min-height:clamp(420px, 70vh, 760px);padding:clamp(40px, 7vw, 96px) clamp(24px, 5vw, 64px);border-radius:var(--radius-l);}
+.hero.blockHero.is-compact {min-height:clamp(300px, 42vh, 460px);}
+.prose .hero.blockHero img.heroImage {border-radius:0;}
+.prose .hero.blockHero .displayTitle {margin-top:0;}
+.blockTitle {margin:0 0 .4em;font-size:clamp(2rem, 1.4rem + 2vw, 3.2rem);letter-spacing:-0.03em;}
+.prose .blockTitle {margin-top:0;}
+.blockTestimonials .lead,.blockServices .lead {margin:0 0 32px;}
+.testimonials {display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:20px;}
+/* Each quote has its own colour: its quote mark */
+.testimonial {position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:28px;margin:0;padding:32px;border:2px solid var(--c-line);border-radius:var(--radius-l);background:var(--c-surface);overflow:hidden;}
+.testimonial:nth-child(4n+1) {--tone:var(--c-violet);}
+.testimonial:nth-child(4n+2) {--tone:var(--c-lime);}
+.testimonial:nth-child(4n+3) {--tone:var(--c-pink);}
+.testimonial:nth-child(4n+4) {--tone:var(--c-aqua);}
+.testimonial::before {content:"\201C";position:absolute;top:-.12em;right:18px;font-size:7rem;font-weight:900;line-height:1;color:var(--tone);opacity:.45;pointer-events:none;}
+.testimonial blockquote,.prose .testimonial blockquote {position:relative;margin:0;padding:0;border:0;font-size:1.25rem;font-weight:650;line-height:1.45;letter-spacing:-0.01em;color:var(--c-ink);}
+.testimonial blockquote p {margin:0;}
+.testimonial figcaption,.prose .testimonial figcaption {display:flex;align-items:center;gap:14px;margin:0;font-size:.95rem;color:var(--c-muted);}
+.testimonial figcaption strong {display:block;color:var(--c-ink);}
+.testimonialPhoto,.prose .testimonialPhoto {flex:none;width:52px;height:52px;border-radius:50%;object-fit:cover;}
+.prose .blockServices .services {margin:0;padding:0;list-style:none;}
+.prose .blockServices .service h3 {margin:48px 0 12px;}
+.serviceLink,.prose .serviceLink {color:inherit;text-decoration:none;}
+/* The whole card is the link */
+.serviceLink::after {content:"";position:absolute;inset:0;}
+
 /* --- Joomla core --- */
 /* The stock layouts of components and modules this template doesn't override (Joomla 3's Bootstrap 2 markup, without
    Bootstrap's CSS): enough for them to fit in, e.g. the user pages, Smart Search, front-end editing */
@@ -637,6 +666,10 @@ body.contentpane {padding:24px 0;}
     .mainNav > ul.menu > li.active > a {box-shadow:3px 3px 0 var(--c-accent);}
 }
 
+@media only screen and (min-width:1101px) {
+    .services.count-2 {grid-template-columns:repeat(2, minmax(0,1fr));}
+    .services.count-3 {grid-template-columns:repeat(3, minmax(0,1fr));}
+}
 @media only screen and (max-width:1100px) {
     .services {grid-template-columns:repeat(2, minmax(0,1fr));}
     .stats {grid-template-columns:repeat(2, minmax(0,1fr));gap:40px 32px;}
@@ -670,7 +703,7 @@ body.contentpane {padding:24px 0;}
 @media only screen and (max-width:767px) {
     :root {--gutter:20px;}
     body {font-size:16px;}
-    .services,.stats,.cardGrid,.cardGrid.columns-2,.cardGrid.columns-3,.mosaic {grid-template-columns:1fr;}
+    .services,.stats,.cardGrid,.cardGrid.columns-2,.cardGrid.columns-3,.mosaic,.testimonials {grid-template-columns:1fr;}
     .namesStrip {justify-content:flex-start;gap:10px 28px;}
     .service {min-height:0;}
     .service h3 {margin-top:32px;}

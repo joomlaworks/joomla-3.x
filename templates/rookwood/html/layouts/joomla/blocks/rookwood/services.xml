@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Services: two to eight numbered cards, each in its own colour -->
+<block title="TPL_ROOKWOOD_BLOCK_SERVICES" description="TPL_ROOKWOOD_BLOCK_SERVICES_DESC" icon="grid">
+    <field name="heading" type="text" label="TPL_ROOKWOOD_BLOCK_FIELD_HEADING" />
+    <field name="intro" type="textarea" label="TPL_ROOKWOOD_BLOCK_FIELD_INTRO" />
+    <group name="services" label="TPL_ROOKWOOD_BLOCK_FIELD_SERVICES" item="TPL_ROOKWOOD_BLOCK_FIELD_SERVICE_ITEM" min="2" max="8" columns="4">
+        <field name="title" type="text" label="TPL_ROOKWOOD_BLOCK_FIELD_SERVICE_TITLE" />
+        <field name="text" type="textarea" label="TPL_ROOKWOOD_BLOCK_FIELD_TEXT" />
+        <field name="link" type="url" label="TPL_ROOKWOOD_BLOCK_FIELD_LINK" />
+    </group>
+</block>

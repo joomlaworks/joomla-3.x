@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A hero: a large image behind a title, a lead and up to two buttons -->
+<block title="TPL_ROOKWOOD_BLOCK_HERO" description="TPL_ROOKWOOD_BLOCK_HERO_DESC" icon="hero">
+    <field name="image" type="image" label="TPL_ROOKWOOD_BLOCK_FIELD_IMAGE" />
+    <field name="eyebrow" type="text" label="TPL_ROOKWOOD_BLOCK_FIELD_EYEBROW" />
+    <field name="title" type="richtext" label="TPL_ROOKWOOD_BLOCK_FIELD_TITLE_HIGHLIGHT" />
+    <field name="lead" type="textarea" label="TPL_ROOKWOOD_BLOCK_FIELD_LEAD" />
+    <field name="button" type="text" label="TPL_ROOKWOOD_BLOCK_FIELD_BUTTON" />
+    <field name="link" type="url" label="TPL_ROOKWOOD_BLOCK_FIELD_LINK" />
+    <field name="button2" type="text" label="TPL_ROOKWOOD_BLOCK_FIELD_BUTTON2" />
+    <field name="link2" type="url" label="TPL_ROOKWOOD_BLOCK_FIELD_LINK2" />
+    <field name="size" type="list" label="TPL_ROOKWOOD_BLOCK_FIELD_SIZE" default="large">
+        <option value="large">TPL_ROOKWOOD_BLOCK_SIZE_LARGE</option>
+        <option value="compact">TPL_ROOKWOOD_BLOCK_SIZE_COMPACT</option>
+    </field>
+</block>

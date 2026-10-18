@@ -183,7 +183,30 @@
 	const forDisplay = (url, root) => (url && !/^([a-z][a-z0-9+.-]*:|\/|#)/i.test(url) ? `${root}/${url}` : url);
 	const forStorage = (url, root) => (url && root && url.indexOf(`${root}/`) === 0 ? url.slice(root.length + 1) : (url && !root && /^\/[^/]/.test(url) ? url.slice(1) : url));
 
+	// Images of template blocks: any object of their fields with an address
+	const mapFieldImages = (value, map, depth) => {
+		if (!value || typeof value !== 'object' || depth > 5) {
+			return;
+		}
+
+		if (typeof value.url === 'string') {
+			value.url = map(value.url);
+
+			(Array.isArray(value.srcset) ? value.srcset : []).forEach((source) => {
+				source.location = map(source.location);
+			});
+
+			return;
+		}
+
+		Object.keys(value).forEach((key) => mapFieldImages(value[key], map, depth + 1));
+	};
+
 	const mapImages = (blocks, map) => blocks.forEach((block) => {
+		if (block.data && block.data.fields && (block.type === 'template' || block.type.indexOf('tpl__') === 0)) {
+			mapFieldImages(block.data.fields, map, 0);
+		}
+
 		if (block.type === 'image' && block.data && block.data.file) {
 			const file = block.data.file;
 
@@ -196,6 +219,56 @@
 			}
 		}
 	});
+
+	/*
+	 * Templates' blocks (html/layouts/joomla/blocks/<template>/<block>.xml, read by the editor plugin), by "template/block".
+	 * They're saved as {type: "template", data: {template, block, fields}}, and are Editor.js tools named tpl__<template>__<block>.
+	 */
+	const DEFINITIONS = {};
+	const toolName = (template, block) => `tpl__${template}__${block}`;
+
+	const cleanImage = (value) => {
+		const image = value && typeof value === 'object' ? value : {};
+		const url = safeUrl(image.url);
+
+		return url === '' ? null : {
+			url,
+			alt: typeof image.alt === 'string' ? image.alt : '',
+			width: parseInt(image.width, 10) || 0,
+			height: parseInt(image.height, 10) || 0,
+			srcset: (Array.isArray(image.srcset) ? image.srcset : []).filter((source) => source && safeUrl(source.location) !== '').map((source) => ({ location: safeUrl(source.location), width: parseInt(source.width, 10) || 0 })),
+		};
+	};
+
+	// A template block's values, as its definition's fields say (anything else is left out)
+	const cleanFields = (fields, value, depth) => (fields || []).reduce((result, field) => {
+		const item = value && typeof value === 'object' ? value[field.name] : undefined;
+
+		switch (field.type) {
+			case 'richtext':
+				result[field.name] = sanitizeInline(typeof item === 'string' ? item : '');
+				break;
+			case 'url':
+				result[field.name] = safeUrl(item);
+				break;
+			case 'checkbox':
+				result[field.name] = !!item;
+				break;
+			case 'image':
+				result[field.name] = cleanImage(item);
+				break;
+			case 'list':
+				result[field.name] = (field.options || []).some((option) => option.value === item) ? item : (field.default || '');
+				break;
+			case 'group':
+				result[field.name] = depth > 0 ? [] : (Array.isArray(item) ? item : []).slice(0, field.max || 20).map((entry) => cleanFields(field.fields, entry, depth + 1));
+				break;
+			default:
+				result[field.name] = typeof item === 'string' ? item : '';
+		}
+
+		return result;
+	}, {});
 
 	/*
 	 * Blocks as they're opened: every text sanitised, addresses checked, unknown embeds dropped, so blocks someone wrote into the
@@ -256,7 +329,25 @@
 			case 'delimiter':
 			case 'readmore':
 				return { type: block.type, data: {} };
+			case 'template': {
+				const template = String(data.template || '');
+				const name = String(data.block || '');
+
+				if (!/^[a-z0-9_]{1,50}$/.test(template) || !/^[a-z0-9_-]{1,50}$/.test(name)) {
+					return null;
+				}
+
+				const definition = DEFINITIONS[`${template}/${name}`];
+
+				// Without its definition (its template was removed), kept as it was, every string sanitised
+				return { type: 'template', data: { template, block: name, fields: definition ? cleanFields(definition.fields, data.fields, 0) : sanitizeBlocks([{ type: 'other', data: data.fields || {} }])[0].data } };
+			}
 			default: {
+				// Editor.js' name of a template block
+				if (block.type.indexOf('tpl__') === 0) {
+					return sanitizeBlocks([{ type: 'template', data }])[0] || null;
+				}
+
 				// Blocks of other kinds (templates' own, later): every string sanitised as text
 				const clean = (value) => {
 					if (typeof value === 'string') {
@@ -539,6 +630,297 @@
 		},
 	});
 
+	const ICONS = {
+		block: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg>',
+		hero: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 14h6M7 10h10"/></svg>',
+		quote: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 11H4v-1a4 4 0 0 1 4-4M17 11h-3v-1a4 4 0 0 1 4-4M4 11v5h5v-5M14 11v5h5v-5"/></svg>',
+		grid: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>',
+		columns: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="16" rx="1"/><rect x="17" y="4" width="4" height="16" rx="1"/></svg>',
+	};
+
+	const make = (tag, className, attributes) => {
+		const node = document.createElement(tag);
+
+		if (className) {
+			node.className = className;
+		}
+
+		Object.keys(attributes || {}).forEach((name) => node.setAttribute(name, attributes[name]));
+
+		return node;
+	};
+
+	/*
+	 * A template's block as an Editor.js tool: a form made from its definition (text, formatted text, multi-line text, an image,
+	 * a link, a list, a Yes/No, and groups of entries with a smallest and largest count, shown in columns). The block menu offers
+	 * the site template's blocks; other installed templates' only open blocks already in the content.
+	 */
+	const templateTool = (definition, upload) => class TemplateBlock {
+		static get toolbox() {
+			return definition.menu ? { title: `${definition.title} · ${definition.note}`, icon: ICONS[definition.icon] || ICONS.block } : undefined;
+		}
+
+		static get isReadOnlySupported() {
+			return true;
+		}
+
+		constructor({ data, block, readOnly }) {
+			this.fields = cleanFields(definition.fields, data && data.fields, 0);
+			this.block = block;
+			this.readOnly = readOnly;
+			this.read = () => ({});
+		}
+
+		changed() {
+			if (this.block && typeof this.block.dispatchChange === 'function') {
+				this.block.dispatchChange();
+			}
+		}
+
+		// One field: its element and how to read its value
+		field(field, value, readers) {
+			const wrapper = make('label', `editorjs-tpl-field is-${field.type}`);
+			const label = make('span', 'editorjs-tpl-label');
+			let input;
+
+			label.textContent = field.label;
+			wrapper.appendChild(label);
+
+			switch (field.type) {
+				case 'textarea':
+					input = make('textarea', 'editorjs-tpl-input', { rows: '3' });
+					input.value = value || '';
+					readers[field.name] = () => input.value;
+					break;
+				case 'richtext':
+					input = make('div', 'editorjs-tpl-input editorjs-tpl-rich', { contenteditable: this.readOnly ? 'false' : 'true' });
+					input.innerHTML = sanitizeInline(value || '');
+					readers[field.name] = () => sanitizeInline(input.innerHTML);
+					// Plain text when pasting: Editor.js would make blocks of it
+					input.addEventListener('paste', (event) => {
+						event.preventDefault();
+						event.stopPropagation();
+						document.execCommand('insertText', false, (event.clipboardData || window.clipboardData).getData('text/plain'));
+					});
+					break;
+				case 'checkbox':
+					input = make('input', 'editorjs-tpl-check', { type: 'checkbox' });
+					input.checked = !!value;
+					readers[field.name] = () => input.checked;
+					break;
+				case 'list':
+					input = make('select', 'editorjs-tpl-input');
+					(field.options || []).forEach((option) => {
+						const node = make('option', '', { value: option.value });
+
+						node.textContent = option.text;
+						input.appendChild(node);
+					});
+					input.value = value || field.default || '';
+					readers[field.name] = () => input.value;
+					break;
+				case 'image':
+					return this.imageField(field, value, readers, wrapper);
+				default:
+					input = make('input', 'editorjs-tpl-input', { type: field.type === 'url' ? 'url' : 'text' });
+					input.value = value || '';
+					readers[field.name] = () => (field.type === 'url' ? safeUrl(input.value) : input.value);
+			}
+
+			if (this.readOnly) {
+				input.setAttribute('disabled', 'disabled');
+			}
+
+			wrapper.appendChild(input);
+
+			return wrapper;
+		}
+
+		// An image: a preview, a button to upload one through the Media Manager, its alt text
+		imageField(field, value, readers, wrapper) {
+			let image = value && value.url ? value : null;
+			const preview = make('div', 'editorjs-tpl-image');
+			const alt = make('input', 'editorjs-tpl-input', { type: 'text', placeholder: text('IMAGE_ALT', 'Alternative text') });
+			const choose = make('button', 'editorjs-tpl-button', { type: 'button' });
+			const remove = make('button', 'editorjs-tpl-button', { type: 'button' });
+			const file = make('input', '', { type: 'file', accept: 'image/*', hidden: 'hidden' });
+			const show = () => {
+				preview.innerHTML = image ? `<img src="${escapeHtml(image.url)}" alt="">` : '';
+				remove.hidden = !image;
+			};
+
+			choose.textContent = text('IMAGE_CHOOSE', 'Upload an image');
+			remove.textContent = text('IMAGE_REMOVE', 'Remove');
+			alt.value = image ? image.alt || '' : '';
+			choose.addEventListener('click', () => file.click());
+			remove.addEventListener('click', () => {
+				image = null;
+				show();
+				this.changed();
+			});
+			file.addEventListener('change', () => {
+				if (!file.files.length) {
+					return;
+				}
+
+				choose.disabled = true;
+				upload.uploadByFile(file.files[0]).then((result) => {
+					choose.disabled = false;
+
+					if (result.success) {
+						image = result.file;
+						show();
+						this.changed();
+					}
+				});
+			});
+			readers[field.name] = () => (image ? Object.assign({}, image, { alt: alt.value }) : null);
+
+			show();
+
+			if (this.readOnly || !upload) {
+				choose.hidden = true;
+				remove.hidden = true;
+				alt.disabled = this.readOnly;
+			}
+
+			const actions = make('span', 'editorjs-tpl-actions');
+
+			actions.append(choose, remove, file);
+			wrapper.append(preview, alt, actions);
+
+			return wrapper;
+		}
+
+		// A group: its entries side by side (definition.columns), with Add and Remove within its smallest and largest count
+		group(field, values, readers) {
+			const wrapper = make('div', 'editorjs-tpl-group');
+			const title = make('div', 'editorjs-tpl-label');
+			const entries = make('div', 'editorjs-tpl-entries');
+			const add = make('button', 'editorjs-tpl-button', { type: 'button' });
+			const items = [];
+			const refresh = () => {
+				items.forEach((item, index) => {
+					item.title.textContent = `${field.item} ${index + 1}`;
+					item.remove.hidden = this.readOnly || items.length <= field.min;
+				});
+				add.hidden = this.readOnly || items.length >= field.max;
+			};
+			const addEntry = (value) => {
+				const entry = make('div', 'editorjs-tpl-entry');
+				const head = make('div', 'editorjs-tpl-entry-head');
+				const item = { readers: {}, title: make('span', ''), remove: make('button', 'editorjs-tpl-button', { type: 'button' }) };
+
+				item.remove.textContent = text('REMOVE', 'Remove');
+				item.remove.addEventListener('click', () => {
+					items.splice(items.indexOf(item), 1);
+					entry.remove();
+					refresh();
+					this.changed();
+				});
+				head.append(item.title, item.remove);
+				entry.appendChild(head);
+				(field.fields || []).forEach((child) => entry.appendChild(this.field(child, value ? value[child.name] : undefined, item.readers)));
+				items.push(item);
+				entries.appendChild(entry);
+			};
+
+			title.textContent = field.label;
+			entries.style.setProperty('--columns', String(field.columns || 1));
+			add.textContent = `+ ${field.item}`;
+			add.addEventListener('click', () => {
+				addEntry(null);
+				refresh();
+				this.changed();
+			});
+
+			(values || []).forEach(addEntry);
+
+			while (items.length < field.min) {
+				addEntry(null);
+			}
+
+			refresh();
+			readers[field.name] = () => items.map((item) => Object.keys(item.readers).reduce((result, name) => Object.assign(result, { [name]: item.readers[name]() }), {}));
+			wrapper.append(title, entries, add);
+
+			return wrapper;
+		}
+
+		render() {
+			const root = make('div', 'editorjs-tpl');
+			const head = make('div', 'editorjs-tpl-head');
+			const readers = {};
+
+			head.innerHTML = `<span class="editorjs-tpl-icon">${ICONS[definition.icon] || ICONS.block}</span><strong>${escapeHtml(definition.title)}</strong><small>${escapeHtml(definition.note)}</small>`;
+			root.appendChild(head);
+
+			(definition.fields || []).forEach((field) => {
+				root.appendChild(field.type === 'group' ? this.group(field, this.fields[field.name], readers) : this.field(field, this.fields[field.name], readers));
+			});
+
+			// Keys in the fields are the fields', not Editor.js' (Enter would split the block, Backspace merge it, Tab open the menu)
+			root.addEventListener('keydown', (event) => {
+				if (/^(Enter|Backspace|Delete|Tab|ArrowUp|ArrowDown|ArrowLeft|ArrowRight)$/.test(event.key) && event.target !== root) {
+					event.stopPropagation();
+				}
+			});
+			// Editor.js reads only typing (InputEvent) from a block's input events and fails on the others (checkboxes, file
+			// inputs): those stop here, and the block reports its change itself
+			root.addEventListener('input', (event) => {
+				if (!(event instanceof window.InputEvent)) {
+					event.stopPropagation();
+				}
+
+				this.changed();
+			});
+			root.addEventListener('change', () => this.changed());
+
+			this.read = () => Object.keys(readers).reduce((result, name) => Object.assign(result, { [name]: readers[name]() }), {});
+
+			return root;
+		}
+
+		save() {
+			return { template: definition.template, block: definition.block, fields: cleanFields(definition.fields, this.read(), 0) };
+		}
+	};
+
+	// Template blocks as Editor.js has them: tools named tpl__<template>__<block>
+	const toEditor = (blocks) => blocks.map((block) => (block.type === 'template' ? { type: toolName(block.data.template, block.data.block), data: block.data } : block));
+
+	/*
+	 * The preview: the page the server made, in a dialog, in a sandboxed frame (scripts of embeds run, but in an origin of their
+	 * own, never the administrator's), at a desktop, tablet or phone width
+	 */
+	const openPreview = (page) => {
+		let dialog = document.querySelector('dialog.editorjs-dialog');
+
+		if (!dialog) {
+			dialog = make('dialog', 'editorjs-dialog');
+			dialog.innerHTML = `<div class="editorjs-dialog-head"><strong>${escapeHtml(text('PREVIEW_TITLE', 'Preview with the site template (not saved)'))}</strong>`
+				+ `<span class="editorjs-dialog-sizes">${[['100%', 'DESKTOP', 'Desktop'], ['768px', 'TABLET', 'Tablet'], ['390px', 'PHONE', 'Phone']].map((size) => `<button type="button" class="btn btn-small" data-width="${size[0]}">${escapeHtml(text(`PREVIEW_${size[1]}`, size[2]))}</button>`).join('')}</span>`
+				+ `<button type="button" class="btn btn-small editorjs-dialog-close">${escapeHtml(text('CLOSE', 'Close'))}</button></div>`
+				+ '<div class="editorjs-dialog-body"><iframe sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" title="Preview"></iframe></div>';
+			document.body.appendChild(dialog);
+			dialog.querySelector('.editorjs-dialog-close').addEventListener('click', () => dialog.close());
+			dialog.querySelector('.editorjs-dialog-sizes').addEventListener('click', (event) => {
+				const button = event.target.closest('[data-width]');
+
+				if (button) {
+					dialog.querySelector('iframe').style.width = button.getAttribute('data-width');
+					dialog.querySelectorAll('[data-width]').forEach((other) => other.classList.toggle('active', other === button));
+				}
+			});
+		}
+
+		dialog.querySelector('iframe').srcdoc = page;
+
+		if (!dialog.open) {
+			dialog.showModal();
+		}
+	};
+
 	const tools = (options) => {
 		const list = {
 			header: { class: window.Header, inlineToolbar: true, config: { levels: [2, 3, 4, 5, 6], defaultLevel: 2 } },
@@ -559,6 +941,10 @@
 		if (options.readmore) {
 			list.readmore = { class: ReadMore };
 		}
+
+		(options.blocks || []).forEach((definition) => {
+			list[toolName(definition.template, definition.block)] = { class: templateTool(definition, options.upload ? uploader(options) : null), inlineToolbar: true };
+		});
 
 		// A tool whose script didn't load is left out rather than breaking the editor
 		Object.keys(list).forEach((name) => {
@@ -587,6 +973,11 @@
 
 		const root = options.root || '';
 		const holder = document.getElementById(`${element.id}_editorjs`);
+
+		(options.blocks || []).forEach((definition) => {
+			DEFINITIONS[`${definition.template}/${definition.block}`] = definition;
+		});
+
 		const opened = readContent(element.value);
 
 		mapImages(opened.blocks, (url) => forDisplay(url, root));
@@ -610,7 +1001,7 @@
 		const editor = new window.EditorJS({
 			holder,
 			tools: tools(options),
-			data: { blocks: opened.blocks },
+			data: { blocks: toEditor(opened.blocks) },
 			readOnly: !!options.readonly,
 			placeholder: text('PLACEHOLDER', 'Write, or press Tab for blocks'),
 			minHeight: 80,
@@ -650,11 +1041,15 @@
 		}
 
 		// Server rendering: the blocks' HTML through the site template's layouts
-		const render = (blocks) => {
+		const render = (blocks, preview) => {
 			const data = new FormData();
 
 			data.append('blocks', JSON.stringify({ blocks }));
 			data.append(options.render.token, '1');
+
+			if (preview) {
+				data.append('preview', '1');
+			}
 
 			return window.fetch(options.render.url, { method: 'POST', body: data, credentials: 'same-origin' })
 				.then((response) => response.json())
@@ -702,6 +1097,49 @@
 			return pending;
 		};
 
+		// The bar above the editor: Preview (the blocks as they are now, saved or not, rendered with the site template) and Full Screen
+		const wrapper = element.closest('.js-editor-editorjs');
+		const bar = wrapper ? wrapper.querySelector('.editorjs-bar') : null;
+		const fullscreen = (on) => {
+			const button = bar.querySelector('[data-editorjs-action="fullscreen"]');
+
+			wrapper.classList.toggle('is-fullscreen', on);
+			document.documentElement.classList.toggle('editorjs-fullscreen-open', on);
+			button.setAttribute('aria-pressed', on ? 'true' : 'false');
+			button.textContent = on ? text('FULLSCREEN_EXIT', 'Exit Full Screen') : text('FULLSCREEN', 'Full Screen');
+		};
+
+		if (bar) {
+			bar.addEventListener('click', (event) => {
+				const button = event.target.closest('[data-editorjs-action]');
+
+				if (!button) {
+					return;
+				}
+
+				if (button.getAttribute('data-editorjs-action') === 'fullscreen') {
+					fullscreen(!wrapper.classList.contains('is-fullscreen'));
+
+					return;
+				}
+
+				button.disabled = true;
+				editor.save()
+					.then((output) => render(stored(output), true))
+					.then((result) => openPreview(result.document || ''))
+					.catch((error) => Joomla.renderMessages({ error: [error && error.message ? error.message : text('RENDER_FAILED', 'The blocks couldn\'t be turned into content to save.')] }))
+					.then(() => {
+						button.disabled = false;
+					});
+			});
+
+			document.addEventListener('keydown', (event) => {
+				if (event.key === 'Escape' && wrapper.classList.contains('is-fullscreen') && !document.querySelector('dialog.editorjs-dialog[open]')) {
+					fullscreen(false);
+				}
+			});
+		}
+
 		// The form waits for the blocks to be saved into the textarea
 		if (element.form) {
 			element.form.addEventListener('submit', (event) => {
@@ -741,7 +1179,7 @@
 			index = index < 0 ? editor.blocks.getBlocksCount() : index + 1;
 
 			mapImages(blocks, (url) => forDisplay(url, root));
-			blocks.forEach((block) => {
+			toEditor(blocks).forEach((block) => {
 				editor.blocks.insert(block.type, block.data, undefined, index, false);
 				index += 1;
 			});
@@ -770,7 +1208,7 @@
 				const read = readContent(value);
 
 				mapImages(read.blocks, (url) => forDisplay(url, root));
-				editor.render({ blocks: read.blocks });
+				editor.render({ blocks: toEditor(read.blocks) });
 				dirty = true;
 			},
 			getSelection() {
