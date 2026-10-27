@@ -36,7 +36,7 @@ abstract class ModLatestActionsHelper
 
 		// Set the Start and Limit
 		$model->setState('list.start', 0);
-		$model->setState('list.limit', $params->get('count', 5));
+		$model->setState('list.limit', $params->get('count', 20));
 		$model->setState('list.ordering', 'a.id');
 		$model->setState('list.direction', 'DESC');
 
@@ -64,6 +64,6 @@ abstract class ModLatestActionsHelper
 	 */
 	public static function getTitle($params)
 	{
-		return Text::plural('MOD_LATESTACTIONS_TITLE', $params->get('count', 5));
+		return Text::plural('MOD_LATESTACTIONS_TITLE', $params->get('count', 20));
 	}
 }

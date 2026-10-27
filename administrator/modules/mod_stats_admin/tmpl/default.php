@@ -26,6 +26,10 @@ JFactory::getDocument()->addScriptDeclaration('
 	});
 ');
 ?>
+<?php // The Control Panel shows the icon position's modules without their titles: Quick Icons has headings of its own ?>
+<?php if ($module->position === 'icon' && $module->showtitle) : ?>
+	<h2 class="nav-header stats-module-title"><?php echo htmlspecialchars($module->title, ENT_COMPAT, 'UTF-8'); ?></h2>
+<?php endif; ?>
 <div class="row-striped">
 	<?php foreach ($list as $item) : ?>
 		<div class="row-fluid">

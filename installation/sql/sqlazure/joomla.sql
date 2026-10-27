@@ -797,7 +797,7 @@ INSERT INTO "#__extensions" ("extension_id", "package_id", "name", "type", "elem
 (312, 0, 'mod_toolbar', 'module', 'mod_toolbar', '', 1, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (313, 0, 'mod_multilangstatus', 'module', 'mod_multilangstatus', '', 1, 1, 1, 0, '', '{"cache":"0"}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (314, 0, 'mod_version', 'module', 'mod_version', '', 1, 1, 1, 0, '', '{"format":"short","product":"1","cache":"0"}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
-(315, 0, 'mod_stats_admin', 'module', 'mod_stats_admin', '', 1, 1, 1, 0, '', '{"serverinfo":"0","siteinfo":"0","counter":"0","increase":"0","cache":"1","cache_time":"900","cachemode":"static"}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
+(315, 0, 'mod_stats_admin', 'module', 'mod_stats_admin', '', 1, 1, 1, 0, '', '{"serverinfo":"1","siteinfo":"1","counter":"0","increase":"0","cache":"1","cache_time":"900","cachemode":"static"}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (316, 0, 'mod_tags_popular', 'module', 'mod_tags_popular', '', 0, 1, 1, 0, '', '{"maximum":"5","timeframe":"alltime","owncache":"1"}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (317, 0, 'mod_tags_similar', 'module', 'mod_tags_similar', '', 0, 1, 1, 0, '', '{"maximum":"5","matchtype":"any","owncache":"1"}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (318, 0, 'mod_sampledata', 'module', 'mod_sampledata', '', 1, 1, 1, 0, '', '{}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
@@ -893,7 +893,7 @@ INSERT INTO "#__extensions" ("extension_id", "package_id", "name", "type", "elem
 (493, 0, 'plg_privacy_actionlogs', 'plugin', 'actionlogs', 'privacy', 0, 1, 1, 0, '', '{}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (494, 0, 'plg_captcha_recaptcha_invisible', 'plugin', 'recaptcha_invisible', 'captcha', 0, 0, 1, 0, '', '{"public_key":"","private_key":"","theme":"clean"}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (495, 0, 'plg_privacy_consents', 'plugin', 'consents', 'privacy', 0, 1, 1, 0, '', '{}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
-(496, 0, 'plg_system_littlewaf', 'plugin', 'littlewaf', 'system', 0, 0, 1, 0, '', '{"filter_sourcerer":"1","filter_modulesanywhere":"1","log_blocked":"1"}', '', '', 0, '1900-01-01 00:00:00', -10000, 0),
+(496, 0, 'plg_system_littlewaf', 'plugin', 'littlewaf', 'system', 0, 1, 1, 0, '', '{"filter_sourcerer":"1","filter_modulesanywhere":"1","log_blocked":"1"}', '', '', 0, '1900-01-01 00:00:00', -10000, 0),
 (497, 0, 'plg_installer_webinstaller', 'plugin', 'webinstaller', 'installer', 0, 1, 1, 0, '', '{}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (498, 0, 'plg_editors_tinymce_latest', 'plugin', 'tinymce_latest', 'editors', 0, 1, 1, 0, '', '{}', '', '', 0, '1900-01-01 00:00:00', 4, 0),
 (506, 0, 'protostar', 'template', 'protostar', '', 0, 1, 1, 0, '', '{"templateColor":"","logoFile":"","googleFont":"0","googleFontName":"Open+Sans","fluidContainer":"0"}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
@@ -912,7 +912,7 @@ INSERT INTO "#__extensions" ("extension_id", "package_id", "name", "type", "elem
 (519, 0, 'mod_customblocks', 'module', 'mod_customblocks', '', 1, 1, 1, 0, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (600, 802, 'English (en-GB)', 'language', 'en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (601, 802, 'English (en-GB)', 'language', 'en-GB', '', 1, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
-(700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '{"updateSteps":["media-upload-defaults","default-editor","media-upload-maxsize","codemirror-theme"]}', '', 0, '1900-01-01 00:00:00', 0, 0),
+(700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '{"updateSteps":["media-upload-defaults","default-editor","media-upload-maxsize","codemirror-theme","littlewaf-enabled","latest-actions-count","system-information-module"]}', '', 0, '1900-01-01 00:00:00', 0, 0),
 (802, 0, 'English (en-GB) Language Pack', 'package', 'pkg_en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0);
 
 SET IDENTITY_INSERT "#__extensions" OFF;
@@ -2208,9 +2208,10 @@ INSERT INTO "#__modules" ("id", "asset_id", "title", "note", "content", "orderin
 (79, 52, 'Multilanguage status', '', '', 1, 'status', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 0, 'mod_multilangstatus', 3, 1, '{"layout":"_:default","moduleclass_sfx":"","cache":"0"}', 1, '*'),
 (86, 53, 'Joomla Version', '', '', 1, 'footer', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_version', 3, 1, '{"format":"short","product":"1","layout":"_:default","moduleclass_sfx":"","cache":"0"}', 1, '*'),
 (87, 55, 'Sample Data', '', '', 0, 'cpanel', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_sampledata', 6, 1, '{}', 1, '*'),
-(88, 58, 'Latest Actions', '', '', 0, 'cpanel', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_latestactions', 6, 1, '{}', 1, '*'),
-(89, 59, 'Privacy Dashboard', '', '', 0, 'cpanel', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_privacy_dashboard', 6, 1, '{}', 1, '*'),
-(90, 0, 'Housekeeping', '', '', 3, 'status', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_housekeeping', 1, 1, '', 1, '*');
+(88, 58, 'Latest Actions', '', '', 0, 'cpanel', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_latestactions', 6, 1, '{"count":"20"}', 1, '*'),
+(89, 59, 'Privacy Dashboard', '', '', 0, 'cpanel', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 0, 'mod_privacy_dashboard', 6, 1, '{}', 1, '*'),
+(90, 0, 'Housekeeping', '', '', 3, 'status', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_housekeeping', 1, 1, '', 1, '*'),
+(91, 0, 'System Information', '', '', 2, 'icon', 0, '1900-01-01 00:00:00', '1900-01-01 00:00:00', '1900-01-01 00:00:00', 1, 'mod_stats_admin', 3, 1, '{"serverinfo":"1","siteinfo":"1","counter":"0","increase":"0","layout":"_:default","moduleclass_sfx":"","cache":"1","cache_time":"900","cachemode":"static"}', 1, '*');
 
 SET IDENTITY_INSERT "#__modules" OFF;
 
@@ -2253,7 +2254,8 @@ INSERT INTO "#__modules_menu" ("moduleid", "menuid") VALUES
 (87, 0),
 (88, 0),
 (89, 0),
-(90, 0);
+(90, 0),
+(91, 0);
 
 --
 -- Table structure for table `#__newsfeeds`

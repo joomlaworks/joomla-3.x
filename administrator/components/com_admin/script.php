@@ -91,6 +91,9 @@ class JoomlaInstallerScript
 		$this->updateMediaUploadDefaults();
 		$this->updateMediaUploadMaxSize();
 		$this->updateCodeMirrorTheme();
+		$this->enableLittleWaf();
+		$this->updateLatestActionsCount();
+		$this->addSystemInformationModule();
 		$this->switchDefaultEditor();
 		$this->fixCoreCategorySubmenus();
 
@@ -938,13 +941,14 @@ class JoomlaInstallerScript
 	protected $stockAdministratorModules = array(
 		'mod_housekeeping'      => array('Housekeeping', 'status', 3, 1, 1, ''),
 		'mod_latest'            => array('Recently Added Articles', 'cpanel', 4, 1, 3, '{"count":"5","ordering":"c_dsc","catid":"","user_id":"0","layout":"_:default","moduleclass_sfx":"","cache":"0"}'),
-		'mod_latestactions'     => array('Latest Actions', 'cpanel', 0, 1, 6, '{}'),
+		'mod_latestactions'     => array('Latest Actions', 'cpanel', 0, 1, 6, '{"count":"20"}'),
 		'mod_logged'            => array('Logged-in Users', 'cpanel', 2, 1, 3, '{"count":"5","name":"1","layout":"_:default","moduleclass_sfx":"","cache":"0"}'),
 		'mod_menu'              => array('Admin Menu', 'menu', 1, 1, 3, '{"layout":"","moduleclass_sfx":"","shownew":"1","showhelp":"1","cache":"0"}'),
 		'mod_multilangstatus'   => array('Multilanguage status', 'status', 1, 0, 3, '{"layout":"_:default","moduleclass_sfx":"","cache":"0"}'),
 		'mod_popular'           => array('Popular Articles', 'cpanel', 3, 1, 3, '{"count":"5","catid":"","user_id":"0","layout":"_:default","moduleclass_sfx":"","cache":"0"}'),
-		'mod_privacy_dashboard' => array('Privacy Dashboard', 'cpanel', 0, 1, 6, '{}'),
+		'mod_privacy_dashboard' => array('Privacy Dashboard', 'cpanel', 0, 0, 6, '{}'),
 		'mod_sampledata'        => array('Sample Data', 'cpanel', 0, 1, 6, '{}'),
+		'mod_stats_admin'       => array('System Information', 'icon', 2, 1, 3, '{"serverinfo":"1","siteinfo":"1","counter":"0","increase":"0","layout":"_:default","moduleclass_sfx":"","cache":"1","cache_time":"900","cachemode":"static"}'),
 		'mod_status'            => array('User Status', 'status', 2, 1, 3, ''),
 		'mod_submenu'           => array('Admin Submenu', 'submenu', 1, 1, 3, ''),
 		'mod_title'             => array('Title', 'title', 1, 1, 3, ''),
@@ -1143,6 +1147,145 @@ class JoomlaInstallerScript
 		catch (Exception $e)
 		{
 			// Not worth failing the update for: the theme stays as it was
+		}
+	}
+
+	/**
+	 * Enables Little WAF, once (3.16 and 3.17 installed it disabled): an administrator who disables it afterwards keeps it so.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function enableLittleWaf()
+	{
+		if ($this->isUpdateStepDone('littlewaf-enabled'))
+		{
+			return;
+		}
+
+		try
+		{
+			$db = JFactory::getDbo();
+			$db->setQuery(
+				$db->getQuery(true)
+					->update($db->quoteName('#__extensions'))
+					->set($db->quoteName('enabled') . ' = 1')
+					->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+					->where($db->quoteName('folder') . ' = ' . $db->quote('system'))
+					->where($db->quoteName('element') . ' = ' . $db->quote('littlewaf'))
+					->where($db->quoteName('state') . ' <> -1')
+			)->execute();
+
+			$this->markUpdateStepDone('littlewaf-enabled');
+		}
+		catch (Exception $e)
+		{
+			// Not worth failing the update for: the plugin stays as it was
+		}
+	}
+
+	/**
+	 * Shows 20 actions in the administrator's Latest Actions modules, once, where they show the old default of 5 (modules
+	 * without a saved count get 20 from the module's new default).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function updateLatestActionsCount()
+	{
+		if ($this->isUpdateStepDone('latest-actions-count'))
+		{
+			return;
+		}
+
+		try
+		{
+			$db   = JFactory::getDbo();
+			$rows = $db->setQuery(
+				$db->getQuery(true)
+					->select($db->quoteName(array('id', 'params')))
+					->from($db->quoteName('#__modules'))
+					->where($db->quoteName('module') . ' = ' . $db->quote('mod_latestactions'))
+					->where($db->quoteName('client_id') . ' = 1')
+			)->loadObjectList();
+
+			foreach ($rows as $row)
+			{
+				$params = new JRegistry($row->params);
+
+				if ((string) $params->get('count', '') !== '5')
+				{
+					continue;
+				}
+
+				$params->set('count', '20');
+
+				$db->setQuery(
+					$db->getQuery(true)
+						->update($db->quoteName('#__modules'))
+						->set($db->quoteName('params') . ' = ' . $db->quote($params->toString()))
+						->where($db->quoteName('id') . ' = ' . (int) $row->id)
+				)->execute();
+			}
+
+			$this->markUpdateStepDone('latest-actions-count');
+		}
+		catch (Exception $e)
+		{
+			// Not worth failing the update for: the modules stay as they were
+		}
+	}
+
+	/**
+	 * Publishes the Statistics module as "System Information" (server and site information) last in the administrator's icon
+	 * position, once, on sites which have the module installed but no administrator Statistics module yet.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function addSystemInformationModule()
+	{
+		if ($this->isUpdateStepDone('system-information-module'))
+		{
+			return;
+		}
+
+		try
+		{
+			$db        = JFactory::getDbo();
+			$installed = (int) $db->setQuery(
+				$db->getQuery(true)
+					->select('COUNT(*)')
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('type') . ' = ' . $db->quote('module'))
+					->where($db->quoteName('element') . ' = ' . $db->quote('mod_stats_admin'))
+					->where($db->quoteName('client_id') . ' = 1')
+					->where($db->quoteName('state') . ' <> -1')
+			)->loadResult();
+
+			if ($installed)
+			{
+				// Last in the position: after whatever the site has there
+				$last = (int) $db->setQuery(
+					$db->getQuery(true)
+						->select('MAX(' . $db->quoteName('ordering') . ')')
+						->from($db->quoteName('#__modules'))
+						->where($db->quoteName('position') . ' = ' . $db->quote('icon'))
+						->where($db->quoteName('client_id') . ' = 1')
+				)->loadResult();
+
+				$this->stockAdministratorModules['mod_stats_admin'][2] = max($last + 1, $this->stockAdministratorModules['mod_stats_admin'][2]);
+				$this->createStockAdministratorModule('mod_stats_admin');
+			}
+
+			$this->markUpdateStepDone('system-information-module');
+		}
+		catch (Exception $e)
+		{
+			// Not worth failing the update for: the site goes without the module
 		}
 	}
 

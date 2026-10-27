@@ -14,10 +14,9 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 
 /**
- * Little WAF - a small, opt-in request filter for known attack signatures against
- * abandoned or historically vulnerable third-party extensions. The plugin itself is
- * off by default; once enabled, every protection below is on by default, since
- * turning the plugin on is itself the explicit opt-in.
+ * Little WAF - a small request filter for known attack signatures against abandoned
+ * or historically vulnerable third-party extensions. Enabled by default since 3.18
+ * (new sites, and once on update), with every protection below on.
  *
  * Deliberately not a general-purpose WAF: each filter here targets one specific,
  * previously-observed attack signature against one specific extension. It buys time
