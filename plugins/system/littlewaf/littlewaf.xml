@@ -31,6 +31,24 @@
                     <option value="0">JNO</option>
                 </field>
             </fieldset>
+            <fieldset name="normalizations" label="PLG_SYSTEM_LITTLEWAF_FIELDSET_NORMALIZATIONS" description="PLG_SYSTEM_LITTLEWAF_FIELDSET_NORMALIZATIONS_DESC">
+                <field name="normalize_duplicates" type="radio" label="PLG_SYSTEM_LITTLEWAF_NORMALIZE_DUPLICATES_LABEL" description="PLG_SYSTEM_LITTLEWAF_NORMALIZE_DUPLICATES_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="normalize_question_marks" type="radio" label="PLG_SYSTEM_LITTLEWAF_NORMALIZE_QUESTION_MARKS_LABEL" description="PLG_SYSTEM_LITTLEWAF_NORMALIZE_QUESTION_MARKS_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="normalize_path_ampersand" type="radio" label="PLG_SYSTEM_LITTLEWAF_NORMALIZE_PATH_AMPERSAND_LABEL" description="PLG_SYSTEM_LITTLEWAF_NORMALIZE_PATH_AMPERSAND_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="normalize_search_feeds" type="radio" label="PLG_SYSTEM_LITTLEWAF_NORMALIZE_SEARCH_FEEDS_LABEL" description="PLG_SYSTEM_LITTLEWAF_NORMALIZE_SEARCH_FEEDS_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+            </fieldset>
         </fields>
     </config>
 </extension>

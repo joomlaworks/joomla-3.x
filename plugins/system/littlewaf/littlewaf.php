@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Uri\Uri;
 
 /**
  * Little WAF - a small request filter for known attack signatures against abandoned
@@ -22,6 +23,11 @@ use Joomla\CMS\Plugin\CMSPlugin;
  * previously-observed attack signature against one specific extension. It buys time
  * against a known pattern; it is not a substitute for updating or removing the
  * vulnerable extension it targets.
+ *
+ * It also normalises the addresses of front-end pages (URL Normalizations), with a
+ * permanent redirect: repeated query parameters (crawlers append Joomla's start,
+ * limitstart or format again and again), doubled question marks, text after an
+ * ampersand in the path, and feeds of search results.
  *
  * @since  3.16.0
  */
@@ -81,6 +87,51 @@ class PlgSystemLittlewaf extends CMSPlugin
 			return;
 		}
 
+		$this->filter();
+
+		// After the filters: a request they block gets its 403, not a redirect
+		$this->normalise();
+	}
+
+	/**
+	 * Feeds of search results (a feed for every search a crawler makes up) go to the home page. After routing, when the
+	 * component is known, and still before it runs.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public function onAfterRoute()
+	{
+		if (!$this->app->isClient('site') || !$this->params->get('normalize_search_feeds', 1) || !$this->isRedirectable())
+		{
+			return;
+		}
+
+		$input = $this->app->input;
+
+		if ($input->getCmd('format') !== 'feed')
+		{
+			return;
+		}
+
+		// Core's Search and Smart Search, and components searching with a "search" task or a searchword (K2's item list)
+		if (in_array($input->getCmd('option'), array('com_search', 'com_finder'), true) || $input->getCmd('task') === 'search'
+			|| $input->getString('searchword', '') !== '')
+		{
+			$this->app->redirect(Uri::base(), 301);
+		}
+	}
+
+	/**
+	 * Blocks requests carrying a protected extension's tag.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	private function filter()
+	{
 		$patterns = array();
 		$enabled  = null;
 
@@ -115,6 +166,123 @@ class PlgSystemLittlewaf extends CMSPlugin
 				}
 			}
 		}
+	}
+
+	/**
+	 * Redirects (301) to the normalised address of the request, when the URL Normalizations change it: one redirect for all.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	private function normalise()
+	{
+		if (!$this->isRedirectable())
+		{
+			return;
+		}
+
+		$target = $this->requestTarget();
+
+		if (strpos($target, '&') === false && strpos($target, '??') === false)
+		{
+			return;
+		}
+
+		$normalised = static::normaliseTarget(
+			$target,
+			(bool) $this->params->get('normalize_duplicates', 1),
+			(bool) $this->params->get('normalize_question_marks', 1),
+			(bool) $this->params->get('normalize_path_ampersand', 1)
+		);
+
+		if ($normalised === $target)
+		{
+			return;
+		}
+
+		// Always an absolute address on this site: a path starting with "//" mustn't become another host
+		$this->app->redirect(Uri::getInstance()->toString(array('scheme', 'host', 'port')) . $normalised, 301);
+	}
+
+	/**
+	 * The normalised request target (path and query, as sent: nothing is decoded or reordered).
+	 *
+	 * @param   string   $target      The request target
+	 * @param   boolean  $duplicates  Remove repeated query parameters (the first is kept, where it is) and empty ones; lists
+	 *                                (names ending in "[]") may repeat
+	 * @param   boolean  $questions   Remove question marks starting the query ("??a=1")
+	 * @param   boolean  $ampersand   Remove what follows an ampersand in the path ("/page&a=1"); the query stays
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	public static function normaliseTarget($target, $duplicates = true, $questions = true, $ampersand = true)
+	{
+		$position = strpos($target, '?');
+		$path     = $position === false ? $target : substr($target, 0, $position);
+		$query    = $position === false ? null : substr($target, $position + 1);
+
+		if ($ampersand && ($cut = strpos($path, '&')) !== false)
+		{
+			$path = substr($path, 0, $cut);
+			$path = $path === '' ? '/' : $path;
+		}
+
+		if ($query !== null && $questions)
+		{
+			$query = ltrim($query, '?');
+		}
+
+		if ($query !== null && $duplicates)
+		{
+			$seen = array();
+			$kept = array();
+
+			foreach (explode('&', $query) as $part)
+			{
+				$equals = strpos($part, '=');
+				$name   = urldecode($equals === false ? $part : substr($part, 0, $equals));
+
+				// Nothing PHP would read ("&&", "=value")
+				if (trim($name) === '')
+				{
+					continue;
+				}
+
+				if (substr($name, -2) !== '[]')
+				{
+					// The name as PHP reads it: "a.b", "a b" and "a_b" are one parameter
+					$key = strtr(ltrim($name, ' '), ' .', '__');
+
+					if (isset($seen[$key]))
+					{
+						continue;
+					}
+
+					$seen[$key] = true;
+				}
+
+				$kept[] = $part;
+			}
+
+			$query = implode('&', $kept);
+		}
+
+		return $path . ($query === null || ($query === '' && ($duplicates || $questions)) ? '' : '?' . $query);
+	}
+
+	/**
+	 * Whether the request may be redirected: only a page (GET or HEAD), as a redirect would lose posted data.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	private function isRedirectable()
+	{
+		return in_array(strtoupper($this->server('REQUEST_METHOD')), array('GET', 'HEAD'), true);
 	}
 
 	/**

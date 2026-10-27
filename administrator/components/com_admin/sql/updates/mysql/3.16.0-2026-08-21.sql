@@ -4,7 +4,7 @@
 -- stays disabled here, so this insert alone changes no site behavior.
 
 INSERT INTO `#__extensions` (`package_id`, `name`, `type`, `element`, `folder`, `client_id`, `enabled`, `access`, `protected`, `manifest_cache`, `params`, `custom_data`, `system_data`, `checked_out`, `checked_out_time`, `ordering`, `state`)
-SELECT 0, 'plg_system_littlewaf', 'plugin', 'littlewaf', 'system', 0, 0, 1, 0, '', '{"filter_sourcerer":"1","filter_modulesanywhere":"1","log_blocked":"1"}', '', '', 0, '1970-01-01 00:00:00', -10000, 0
+SELECT 0, 'plg_system_littlewaf', 'plugin', 'littlewaf', 'system', 0, 0, 1, 0, '', '{"filter_sourcerer":"1","filter_modulesanywhere":"1","log_blocked":"1","normalize_duplicates":"1","normalize_question_marks":"1","normalize_path_ampersand":"1","normalize_search_feeds":"1"}', '', '', 0, '1970-01-01 00:00:00', -10000, 0
 FROM DUAL
 WHERE NOT EXISTS (
 	SELECT 1 FROM `#__extensions` WHERE `element` = 'littlewaf' AND `folder` = 'system' AND `type` = 'plugin'

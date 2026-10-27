@@ -63,6 +63,7 @@ Summary of changes:
 - "Editor - Blocks (Editor.js)": write content as blocks (headings, lists, images, embeds, quotes, tables, code, notes, HTML, Read more), saved as HTML which the site template's block layouts decide (templates override any block in `html/layouts/joomla/blocks/`); templates add blocks of their own (a field definition and a layout each; Rookwood comes with Hero, Testimonials and Services); a preview with the site template (desktop, tablet, phone), full screen and a content width (800px by default); a "Custom Blocks" module (site and administrator) builds module content from blocks
 
 **Improvements:**
+- Little WAF's new URL Normalizations (on by default): duplicate query parameters, doubled question marks, text after an ampersand in the path and feeds of search results are sent to the clean address with one 301 redirect
 - Little WAF is enabled by default (new sites, and once on update); Control Panel: Latest Actions shows 20 actions, a "System Information" module (server and site information) beside the quick icons, Privacy Dashboard unpublished on new sites
 - More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. The administrator's quick icons, menu and status bar, article tags and Contacts work without them
 - Uninstalling a component (core or third-party) removes its entries from the Smart Search index
