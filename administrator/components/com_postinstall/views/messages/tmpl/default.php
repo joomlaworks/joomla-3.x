@@ -16,6 +16,8 @@ JHtml::_('formbehavior.chosen', 'select');
 
 <div class="row-fluid">
 	<div class="span10 offset1">
+		<?php // Extensions may add messages of their own: the choice appears once there's more than Joomla's ?>
+		<?php if (count($this->extension_options) > 1) : ?>
 		<form action="index.php" method="post" name="adminForm" class="form-inline" id="adminForm">
 			<input type="hidden" name="option" value="com_postinstall">
 			<input type="hidden" name="task" value="">
@@ -23,6 +25,7 @@ JHtml::_('formbehavior.chosen', 'select');
 			<label for="eid"><?php echo JText::_('COM_POSTINSTALL_MESSAGES_FOR'); ?></label>
 			<?php echo JHtml::_('select.genericlist', $this->extension_options, 'eid', array('onchange' => 'this.form.submit()', 'class' => 'input-xlarge'), 'value', 'text', $this->eid, 'eid'); ?>
 		</form>
+		<?php endif; ?>
 
 		<?php if (empty($this->items)) : ?>
 			<div class="hero-unit">
