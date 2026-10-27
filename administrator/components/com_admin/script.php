@@ -92,6 +92,7 @@ class JoomlaInstallerScript
 		$this->updateMediaUploadMaxSize();
 		$this->updateCodeMirrorTheme();
 		$this->enableLittleWaf();
+		$this->enableIconCaptcha();
 		$this->updateLatestActionsCount();
 		$this->addSystemInformationModule();
 		$this->orderSystemPlugins();
@@ -926,7 +927,6 @@ class JoomlaInstallerScript
 		'plugin:0:authentication:ldap',
 		'plugin:0:captcha:akismet',
 		'plugin:0:captcha:hcaptcha',
-		'plugin:0:captcha:iconcaptcha',
 		'plugin:0:captcha:recaptcha',
 		'plugin:0:captcha:turnstile',
 		'plugin:0:content:confirmconsent',
@@ -1225,6 +1225,42 @@ class JoomlaInstallerScript
 			)->execute();
 
 			$this->markUpdateStepDone('littlewaf-enabled');
+		}
+		catch (Exception $e)
+		{
+			// Not worth failing the update for: the plugin stays as it was
+		}
+	}
+
+	/**
+	 * Enables "CAPTCHA - IconCaptcha" (self-hosted, no keys: ready to be chosen), once: sites which received it disabled from
+	 * a 3.18 development build. An enabled CAPTCHA plugin does nothing until a form uses it.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function enableIconCaptcha()
+	{
+		if ($this->isUpdateStepDone('iconcaptcha-enabled'))
+		{
+			return;
+		}
+
+		try
+		{
+			$db = JFactory::getDbo();
+			$db->setQuery(
+				$db->getQuery(true)
+					->update($db->quoteName('#__extensions'))
+					->set($db->quoteName('enabled') . ' = 1')
+					->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+					->where($db->quoteName('folder') . ' = ' . $db->quote('captcha'))
+					->where($db->quoteName('element') . ' = ' . $db->quote('iconcaptcha'))
+					->where($db->quoteName('state') . ' <> -1')
+			)->execute();
+
+			$this->markUpdateStepDone('iconcaptcha-enabled');
 		}
 		catch (Exception $e)
 		{

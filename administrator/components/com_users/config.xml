@@ -20,7 +20,7 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
-        <field name="captcha" type="plugins" label="COM_USERS_CONFIG_FIELD_CAPTCHA_LABEL" description="COM_USERS_CONFIG_FIELD_CAPTCHA_DESC" folder="captcha" filter="cmd" useglobal="true">
+        <field name="captcha" type="plugins" label="COM_USERS_CONFIG_FIELD_CAPTCHA_LABEL" description="COM_USERS_CONFIG_FIELD_CAPTCHA_DESC" folder="captcha" showdisabled="true" filter="cmd" useglobal="true">
             <option value="0">JOPTION_DO_NOT_USE</option>
         </field>
         <field name="frontend_userparams" type="radio" label="COM_USERS_CONFIG_FIELD_FRONTEND_USERPARAMS_LABEL" description="COM_USERS_CONFIG_FIELD_FRONTEND_USERPARAMS_DESC" class="btn-group btn-group-yesno" default="1">

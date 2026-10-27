@@ -277,7 +277,7 @@
         </field>
     </fieldset>
     <fieldset name="Contact_Form" label="COM_CONTACT_FIELD_CONFIG_CONTACT_FORM" description="COM_CONTACT_FIELD_CONFIG_INDIVIDUAL_CONTACT_DESC">
-        <field name="captcha" type="plugins" label="COM_CONTACT_FIELD_CAPTCHA_LABEL" description="COM_CONTACT_FIELD_CAPTCHA_DESC" folder="captcha" filter="cmd" useglobal="true">
+        <field name="captcha" type="plugins" label="COM_CONTACT_FIELD_CAPTCHA_LABEL" description="COM_CONTACT_FIELD_CAPTCHA_DESC" folder="captcha" showdisabled="true" filter="cmd" useglobal="true">
             <option value="0">JOPTION_DO_NOT_USE</option>
         </field>
         <field name="show_email_form" type="radio" label="COM_CONTACT_FIELD_EMAIL_SHOW_FORM_LABEL" description="COM_CONTACT_FIELD_EMAIL_SHOW_FORM_DESC" default="1" class="btn-group btn-group-yesno">

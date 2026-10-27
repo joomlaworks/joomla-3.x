@@ -1,6 +1,6 @@
 -- Joomla 3.x UTD 3.18.0 migration — October 28, 2026
--- Adds the CAPTCHA plugins "Akismet", "Cloudflare Turnstile", "hCaptcha" and "IconCaptcha" (self-hosted), disabled. Listed in
--- runDataMigrations() with 3.18.0, so what an administrator uninstalled stays uninstalled.
+-- Adds the CAPTCHA plugins "Akismet", "Cloudflare Turnstile" and "hCaptcha" (disabled: they need keys) and "IconCaptcha"
+-- (self-hosted, enabled). Listed in runDataMigrations() with 3.18.0, so what an administrator uninstalled stays uninstalled.
 
 INSERT INTO `#__extensions` (`package_id`, `name`, `type`, `element`, `folder`, `client_id`, `enabled`, `access`, `protected`, `manifest_cache`, `params`, `custom_data`, `system_data`, `checked_out`, `checked_out_time`, `ordering`, `state`)
 SELECT 0, 'plg_captcha_akismet', 'plugin', 'akismet', 'captcha', 0, 0, 1, 0, '', '{"api_key":"","block":"all","unanswered":"allow","test":"0"}', '', '', 0, '0000-00-00 00:00:00', 0, 0
@@ -24,7 +24,7 @@ WHERE NOT EXISTS (
 );
 
 INSERT INTO `#__extensions` (`package_id`, `name`, `type`, `element`, `folder`, `client_id`, `enabled`, `access`, `protected`, `manifest_cache`, `params`, `custom_data`, `system_data`, `checked_out`, `checked_out_time`, `ordering`, `state`)
-SELECT 0, 'plg_captcha_iconcaptcha', 'plugin', 'iconcaptcha', 'captcha', 0, 0, 1, 0, '', '{"theme":"auto","attempts":"5","credits":"1"}', '', '', 0, '0000-00-00 00:00:00', 0, 0
+SELECT 0, 'plg_captcha_iconcaptcha', 'plugin', 'iconcaptcha', 'captcha', 0, 1, 1, 0, '', '{"theme":"auto","attempts":"5","credits":"1"}', '', '', 0, '0000-00-00 00:00:00', 0, 0
 FROM DUAL
 WHERE NOT EXISTS (
 	SELECT 1 FROM `#__extensions` WHERE `type` = 'plugin' AND `element` = 'iconcaptcha' AND `folder` = 'captcha'

@@ -119,12 +119,24 @@ class JFormFieldPlugins extends JFormFieldList
 		{
 			// Get list of plugins
 			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true)
-				->select('element AS value, name AS text')
+			$showDisabled = (string) $this->element['showdisabled'] === 'true';
+			$query        = $db->getQuery(true)
+				->select('element AS value, name AS text, enabled')
 				->from('#__extensions')
-				->where('folder = ' . $db->quote($folder))
-				->where('enabled = 1')
-				->order('ordering, name');
+				->where('type = ' . $db->quote('plugin'))
+				->where('folder = ' . $db->quote($folder));
+
+			// showdisabled="true": installed but disabled plugins too, after the enabled ones (not discovered ones, state -1)
+			if ($showDisabled)
+			{
+				$query->where('state >= 0')
+					->order('enabled DESC, ordering, name');
+			}
+			else
+			{
+				$query->where('enabled = 1')
+					->order('ordering, name');
+			}
 
 			if ((string) $this->element['useaccess'] === 'true')
 			{
@@ -147,6 +159,15 @@ class JFormFieldPlugins extends JFormFieldList
 				$extension = 'plg_' . $folder . '_' . $item->value;
 				$lang->load($extension . '.sys', JPATH_ADMINISTRATOR, null, false, true) || $lang->load($extension . '.sys', $source, null, false, true);
 				$options[$i]->text = JText::_($item->text);
+
+				// Shown, but can't be chosen while disabled, unless it's already the value (a disabled selected option isn't sent)
+				if (!$item->enabled)
+				{
+					$options[$i]->text    = JText::sprintf('JLIB_FORM_FIELD_PLUGINS_DISABLED', $options[$i]->text);
+					$options[$i]->disable = (string) $this->value !== $item->value;
+				}
+
+				unset($options[$i]->enabled);
 
 				// If we are using useglobal update the use global value text with the plugin text.
 				if ($useGlobal && isset($parentOptions[0]) && $item->value === $globalValue)
