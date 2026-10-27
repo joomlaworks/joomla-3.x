@@ -119,6 +119,7 @@ Summary of changes:
 - Media Manager: uploads up to 128 MB by default, and a Memory Limit option to raise PHP's memory for resizing large photos where the server allows it
 - The "Custom" module is now "Custom HTML", with content plugins on by default for new modules ("Execute Content-type Plugins", formerly "Prepare Content")
 - CodeMirror gets a Height option and a dark theme in Visual Studio Code's colours, the default on new sites and on updated sites still using the stock theme
+- English language files sorted by key, with typos, stray spaces and inconsistent wording fixed
 
 **Security fixes:**
 - TinyMCE updated to 8.10.0, with 8.9.3's fix for a stored XSS in its media plugin
