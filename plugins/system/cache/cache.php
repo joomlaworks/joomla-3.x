@@ -356,11 +356,11 @@ class PlgSystemCache extends JPlugin
 		}
 
 		/*
-		 * "private": browsers only. Shared caches (CDNs, proxies) would hand every visitor the page of one, with that
-		 * visitor's form token in it. The Expires header is set first, so the application doesn't add its own 15 minutes.
+		 * Never "private": it would stop caches in front of the site (Varnish, CDNs) from keeping the page at all. The Expires
+		 * header is set first, so the application doesn't add its own 15 minutes.
 		 */
 		$this->app->allowCache(true);
-		$this->app->setHeader('Cache-Control', 'private, max-age=' . $seconds, true);
+		$this->app->setHeader('Cache-Control', 'max-age=' . $seconds, true);
 		$this->app->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + $seconds) . ' GMT', true);
 	}
 
@@ -376,7 +376,7 @@ class PlgSystemCache extends JPlugin
 	{
 		foreach ($this->app->getHeaders() as $header)
 		{
-			if (strtolower($header['name']) === 'cache-control' && preg_match('/^private, max-age=(\d+)$/', $header['value'], $match))
+			if (strtolower($header['name']) === 'cache-control' && preg_match('/^(?:private, )?max-age=(\d+)$/', $header['value'], $match))
 			{
 				$this->app->allowCache(true);
 				$this->app->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + (int) $match[1]) . ' GMT', true);
