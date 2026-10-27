@@ -150,6 +150,9 @@ class PlgSystemCache extends JPlugin
 			// Set HTML page from cache.
 			$this->app->setBody($data);
 
+			// The browser cache time stored with the page, from now
+			$this->keepBrowserCacheTime();
+
 			// Dumps HTML page.
 			echo $this->app->toString((bool) $this->app->get('gzip'));
 
@@ -192,6 +195,112 @@ class PlgSystemCache extends JPlugin
 
 		// Disable compression before caching the page.
 		$this->app->set('gzip', false);
+
+		$this->setBrowserCacheTime();
+	}
+
+	/**
+	 * Lets browsers keep the page for the time the options give the home page or the other pages. Stored with the page
+	 * (headers set after the cache looked for it are), so a cache hit sends the same.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function setBrowserCacheTime()
+	{
+		$minutes = (int) $this->params->get($this->isHomePage() ? 'browsercache_home' : 'browsercache_pages', 0);
+
+		if ($minutes <= 0)
+		{
+			return;
+		}
+
+		/*
+		 * "private": browsers only. Shared caches (CDNs, proxies) would hand every visitor the page of one, with that
+		 * visitor's form token in it. The Expires header is set first, so the application doesn't add its own 15 minutes.
+		 */
+		$this->app->allowCache(true);
+		$this->app->setHeader('Cache-Control', 'private, max-age=' . ($minutes * 60), true);
+		$this->app->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + $minutes * 60) . ' GMT', true);
+	}
+
+	/**
+	 * On a cache hit: the browser cache time the page was stored with, its Expires header counted from now. Without one,
+	 * the page goes out as before (not kept by browsers).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function keepBrowserCacheTime()
+	{
+		foreach ($this->app->getHeaders() as $header)
+		{
+			if (strtolower($header['name']) === 'cache-control' && preg_match('/^private, max-age=(\d+)$/', $header['value'], $match))
+			{
+				$this->app->allowCache(true);
+				$this->app->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + (int) $match[1]) . ' GMT', true);
+
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Whether the page is the home page: the home menu item is active and the request is its own link (Joomla also makes it
+	 * active on pages without a menu item of their own, e.g. tags or search). A language's home page counts too.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	protected function isHomePage()
+	{
+		$active = $this->app->getMenu()->getActive();
+
+		if (!$active || !$active->home)
+		{
+			return false;
+		}
+
+		$input = $this->app->input;
+		$query = $active->query;
+
+		return (isset($query['option']) ? $query['option'] : '') === $input->getCmd('option', '')
+			&& (isset($query['view']) ? $query['view'] : '') === $input->getCmd('view', '')
+			&& (!isset($query['id']) || (int) $query['id'] === $input->getInt('id'));
+	}
+
+	/**
+	 * Empties the page cache when this plugin's options are saved, so new browser cache times and exclusions apply at once
+	 * (cached pages keep the headers they were stored with).
+	 *
+	 * @param   string  $context  The context
+	 * @param   JTable  $table    The saved extension
+	 * @param   boolean $isNew    Whether it is new
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public function onExtensionAfterSave($context, $table, $isNew)
+	{
+		if ($context !== 'com_plugins.plugin' || !isset($table->element, $table->folder) || $table->element !== 'cache'
+			|| $table->folder !== 'system')
+		{
+			return;
+		}
+
+		try
+		{
+			$cache = new JCache(array('defaultgroup' => 'page'));
+			$cache->clean('page');
+		}
+		catch (Exception $e)
+		{
+			// The cache empties itself when its entries expire
+		}
 	}
 
 	/**

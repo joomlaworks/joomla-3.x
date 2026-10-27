@@ -19,14 +19,16 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
+                <field name="heading_browser" type="spacer" label="PLG_CACHE_HEADING_BROWSER" description="PLG_CACHE_HEADING_BROWSER_DESC" />
                 <field name="browsercache" type="radio" label="PLG_CACHE_FIELD_BROWSERCACHE_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_DESC" class="btn-group btn-group-yesno" default="0" filter="integer">
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
+                <field name="browsercache_home" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_HOME_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_HOME_DESC" default="0" min="0" filter="integer" />
+                <field name="browsercache_pages" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_PAGES_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_PAGES_DESC" default="0" min="0" filter="integer" />
+                <field name="heading_exclusions" type="spacer" label="PLG_CACHE_HEADING_EXCLUSIONS" description="PLG_CACHE_HEADING_EXCLUSIONS_DESC" />
                 <field name="exclude_menu_items" type="menuitem" label="PLG_CACHE_FIELD_EXCLUDE_MENU_ITEMS_LABEL" description="PLG_CACHE_FIELD_EXCLUDE_MENU_ITEMS_DESC" multiple="multiple" filter="int_array" />
-            </fieldset>
-            <fieldset name="advanced">
-                <field name="exclude" type="textarea" label="PLG_CACHE_FIELD_EXCLUDE_LABEL" description="PLG_CACHE_FIELD_EXCLUDE_DESC" class="input-xxlarge" rows="15" filter="raw" />
+                <field name="exclude" type="textarea" label="PLG_CACHE_FIELD_EXCLUDE_LABEL" description="PLG_CACHE_FIELD_EXCLUDE_DESC" class="input-xxlarge" rows="8" filter="raw" />
             </fieldset>
         </fields>
     </config>
