@@ -11,39 +11,19 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 
-$lang     = Factory::getLanguage();
-$renderer = Factory::getDocument()->loadRenderer('module');
-$options  = array('style' => 'raw');
-$mod      = JModuleHelper::getModule('mod_feed');
-$param    = array(
-	'rssurl'      => 'https://www.joomla.org/announcements/release-news.feed?type=rss',
-	'rsstitle'    => 0,
-	'rssdesc'     => 0,
-	'rssimage'    => 1,
-	'rssitems'    => 5,
-	'rssitemdesc' => 1,
-	'rssitemdate' => 1,
-	'rssrtl'      => $lang->isRtl() ? 1 : 0,
-	'word_count'  => 200,
-	'cache'       => 0,
-	);
-$params = array('params' => json_encode($param));
-
 JHtml::_('formbehavior.chosen', 'select');
 ?>
 
-<form action="index.php" method="post" name="adminForm" class="form-inline" id="adminForm">
-	<input type="hidden" name="option" value="com_postinstall">
-	<input type="hidden" name="task" value="">
-	<?php echo JHtml::_('form.token'); ?>
-	<label for="eid"><?php echo JText::_('COM_POSTINSTALL_MESSAGES_FOR'); ?></label>
-	<?php echo JHtml::_('select.genericlist', $this->extension_options, 'eid', array('onchange' => 'this.form.submit()', 'class' => 'input-xlarge'), 'value', 'text', $this->eid, 'eid'); ?>
-</form>
-
-<?php if ($this->eid == 700) : ?>
 <div class="row-fluid">
-	<div class="span8">
-<?php endif; ?>
+	<div class="span10 offset1">
+		<form action="index.php" method="post" name="adminForm" class="form-inline" id="adminForm">
+			<input type="hidden" name="option" value="com_postinstall">
+			<input type="hidden" name="task" value="">
+			<?php echo JHtml::_('form.token'); ?>
+			<label for="eid"><?php echo JText::_('COM_POSTINSTALL_MESSAGES_FOR'); ?></label>
+			<?php echo JHtml::_('select.genericlist', $this->extension_options, 'eid', array('onchange' => 'this.form.submit()', 'class' => 'input-xlarge'), 'value', 'text', $this->eid, 'eid'); ?>
+		</form>
+
 		<?php if (empty($this->items)) : ?>
 			<div class="hero-unit">
 				<h2><?php echo JText::_('COM_POSTINSTALL_LBL_NOMESSAGES_TITLE'); ?></h2>
@@ -76,14 +56,5 @@ JHtml::_('formbehavior.chosen', 'select');
 			</fieldset>
 			<?php endforeach; ?>
 		<?php endif; ?>
-<?php if ($this->eid == 700) : ?>
-	</div>
-	<div class="span4"<?php if ($lang->isRtl()) : ?> style="padding-right: 20px;"<?php endif; ?>>
-		<?php // The Feed module shows the news, while it's installed ?>
-		<?php if (is_file(JPATH_ADMINISTRATOR . '/modules/mod_feed/mod_feed.php')) : ?>
-		<h2><?php echo JText::_('COM_POSTINSTALL_LBL_RELEASENEWS'); ?></h2>
-		<?php echo $renderer->render($mod, $params, $options); ?>
-		<?php endif; ?>
 	</div>
 </div>
-<?php endif; ?>
