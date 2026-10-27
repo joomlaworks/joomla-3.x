@@ -284,11 +284,11 @@ class CoreInstallCommand extends AbstractCommand
 		if ($generated)
 		{
 			$io->text('Keep the password somewhere safe: it isn\'t stored anywhere readable and isn\'t shown again. To manage your site, '
-				. 'log in at /administrator/ using the username and password shown above (you can change the password there).');
+				. 'log in at /administrator/ using the administrator username and password shown above (you can change the password there).');
 		}
 		else
 		{
-			$io->text('To manage your site, log in at /administrator/ using the username shown above and the password you specified during '
+			$io->text('To manage your site, log in at /administrator/ using the administrator username shown above and the password you specified during '
 				. 'installation.');
 		}
 
