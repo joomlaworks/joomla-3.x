@@ -70,6 +70,7 @@ Summary of changes:
 - "Editor - Blocks (Editor.js)": write content as blocks (headings, lists, images, embeds, quotes, tables, code, notes, HTML, Read more), saved as HTML which the site template's block layouts decide (templates override any block in `html/layouts/joomla/blocks/`); templates add blocks of their own (a field definition and a layout each; Rookwood comes with Hero, Testimonials and Services); a preview with the site template (desktop, tablet, phone), full screen and a content width (800px by default); a "Custom Blocks" module (site and administrator) builds module content from blocks
 
 **Improvements:**
+- SQLite driver: MySQL on SQLite 3.1.1 (temporary tables, transactions and date arithmetic fixed upstream), Joomla's patches kept
 - Three unused libraries removed: HTML5 Shiv (for Internet Explorer 8), Google's reCAPTCHA PHP client and a duplicate copy of PHP UTF-8
 - PHPMailer updated from 5.2.28 (2020) to 7.1.1 (May 2026), with Joomla's mailer and extensions using PHPMailer's old class names working as before
 - Larger modals for picking images, articles, modules, menu items, contacts and fields: most of the window instead of 800 by 500 pixels
@@ -119,6 +120,7 @@ Summary of changes:
 - CodeMirror gets a Height option and a dark theme in Visual Studio Code's colours, the default on new sites and on updated sites still using the stock theme
 
 **Security fixes:**
+- TinyMCE updated to 8.10.0, with 8.9.3's fix for a stored XSS in its media plugin
 - Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors without access (with "Show Unauthorised Links" on); they get the intro text and a link to log in, as with Joomla's own layout
 - The head escapes `<link>`, script and stylesheet addresses and attributes, which extensions could pass unescaped
 - Media uploads compare executable extensions in any case (`x.SHTML.png` got through), and the "Illegal MIME Types" option is actually checked

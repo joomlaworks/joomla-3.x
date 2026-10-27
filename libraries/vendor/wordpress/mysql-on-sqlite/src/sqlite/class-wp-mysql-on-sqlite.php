@@ -83,12 +83,6 @@ class WP_MySQL_On_SQLite extends PDO {
 	const GLOBAL_VARIABLES_TABLE_NAME = self::RESERVED_PREFIX . 'global_variables';
 
 	/**
-	 * Name of the connection-private TEMP table used to build empty result sets
-	 * without acquiring a write lock on the database. See create_result_statement_from_data().
-	 */
-	private const EMPTY_RESULT_TABLE_NAME = self::RESERVED_PREFIX . 'empty_result';
-
-	/**
 	 * The name of the SQLite driver version variable.
 	 *
 	 * This internal variable is used to store the latest version of the SQLite
@@ -334,6 +328,23 @@ class WP_MySQL_On_SQLite extends PDO {
 		'%x' => '%o',
 		'%Y' => '%Y',
 		'%y' => '%y',
+	);
+
+	/**
+	 * Map MySQL INTERVAL units to SQLite units and value multipliers.
+	 *
+	 * MICROSECOND is excluded because DATETIME() drops fractional seconds.
+	 * Composite units, such as HOUR_MINUTE, are not supported.
+	 */
+	private const INTERVAL_UNIT_MAP = array(
+		WP_MySQL_Lexer::SECOND_SYMBOL  => array( 'SECOND', 1 ),
+		WP_MySQL_Lexer::MINUTE_SYMBOL  => array( 'MINUTE', 1 ),
+		WP_MySQL_Lexer::HOUR_SYMBOL    => array( 'HOUR', 1 ),
+		WP_MySQL_Lexer::DAY_SYMBOL     => array( 'DAY', 1 ),
+		WP_MySQL_Lexer::WEEK_SYMBOL    => array( 'DAY', 7 ),
+		WP_MySQL_Lexer::MONTH_SYMBOL   => array( 'MONTH', 1 ),
+		WP_MySQL_Lexer::QUARTER_SYMBOL => array( 'MONTH', 3 ),
+		WP_MySQL_Lexer::YEAR_SYMBOL    => array( 'YEAR', 1 ),
 	);
 
 	/**
@@ -677,14 +688,6 @@ class WP_MySQL_On_SQLite extends PDO {
 	 * @var bool
 	 */
 	private $is_readonly;
-
-	/**
-	 * Whether the TEMP table backing empty result sets has been created on this
-	 * connection. See create_result_statement_from_data().
-	 *
-	 * @var bool
-	 */
-	private $empty_result_table_ready = false;
 
 	/**
 	 * Type of wrapper transaction that is active for the MySQL query emulation.
@@ -1145,8 +1148,8 @@ class WP_MySQL_On_SQLite extends PDO {
 			 * [GRAMMAR]
 			 * simpleStatement: selectStatement | showStatement | utilityStatement | ...
 			 */
-			if ( null !== $child_node && $child_node->has_child_node() ) {
-				$statement_node = $child_node->get_first_child_node();
+			$statement_node = null !== $child_node ? $child_node->get_first_child_node() : null;
+			if ( null !== $statement_node ) {
 				if (
 					'selectStatement' === $statement_node->rule_name
 					|| 'showStatement' === $statement_node->rule_name
@@ -1180,11 +1183,25 @@ class WP_MySQL_On_SQLite extends PDO {
 				$this->last_result_statement = $this->create_result_statement_from_data( array(), array() );
 			}
 
+			/*
+			 * PDO SQLite reports affected rows only for INSERT, UPDATE, and DELETE.
+			 * For other statements, it can report the row count of the last write,
+			 * including the driver's internal writes. Use 0 for them instead.
+			 *
+			 * [GRAMMAR]
+			 * simpleStatement: insertStatement | replaceStatement | updateStatement | deleteStatement | ...
+			 */
+			$reports_affected_rows = null !== $statement_node && in_array(
+				$statement_node->rule_name,
+				array( 'insertStatement', 'replaceStatement', 'updateStatement', 'deleteStatement' ),
+				true
+			);
+
 			$stmt = new WP_MySQL_On_SQLite_Statement(
 				$this->last_result_statement,
 				$query,
 				$this->create_column_meta_resolver( $this->last_column_meta ),
-				$this->last_affected_rows
+				$reports_affected_rows ? $this->last_affected_rows : 0
 			);
 			if ( null !== $fetch_mode ) {
 				$stmt->setFetchMode( $fetch_mode, ...$fetch_mode_args );
@@ -2925,14 +2942,22 @@ class WP_MySQL_On_SQLite extends PDO {
 
 		// Handle IF NOT EXISTS.
 		if ( $subnode->has_child_node( 'ifNotExists' ) ) {
-			$tables_table = $this->information_schema_builder->get_table_name( $table_is_temporary, 'tables' );
-			$table_exists = $this->execute_sqlite_query(
-				sprintf(
-					'SELECT 1 FROM %s WHERE table_schema = ? AND table_name = ?',
-					$this->quote_sqlite_identifier( $tables_table )
-				),
-				array( $this->get_saved_db_name(), $table_name )
-			)->fetchColumn();
+			if ( $table_is_temporary ) {
+				/*
+				 * The temporary information schema tables are created with the
+				 * first temporary table of a session, so they may not exist yet.
+				 */
+				$table_exists = $this->information_schema_builder->temporary_table_exists( $table_name );
+			} else {
+				$tables_table = $this->information_schema_builder->get_table_name( false, 'tables' );
+				$table_exists = $this->execute_sqlite_query(
+					sprintf(
+						'SELECT 1 FROM %s WHERE table_schema = ? AND table_name = ?',
+						$this->quote_sqlite_identifier( $tables_table )
+					),
+					array( $this->get_saved_db_name(), $table_name )
+				)->fetchColumn();
+			}
 
 			if ( $table_exists ) {
 				$this->last_result_statement = $this->create_result_statement_from_data( array(), array() );
@@ -4382,6 +4407,8 @@ class WP_MySQL_On_SQLite extends PDO {
 					return null;
 				}
 				return $this->translate_sequence( $node->get_children() );
+			case 'bitExpr':
+				return $this->translate_bit_expr( $node );
 			case 'simpleExprBody':
 				return $this->translate_simple_expr_body( $node );
 			case 'predicateOperations':
@@ -4985,7 +5012,84 @@ class WP_MySQL_On_SQLite extends PDO {
 			}
 		}
 
+		/*
+		 * Reject "INTERVAL n unit + expr": the parser includes following AND, OR,
+		 * and XOR conditions in "expr", unlike MySQL. It also reads
+		 * "expr + INTERVAL 1 DAY + x" as "expr + (INTERVAL 1 DAY + x)".
+		 *
+		 * TODO: Support prefix intervals after switching to the LALR(1) parser.
+		 */
+		if ( null !== $token && WP_MySQL_Lexer::INTERVAL_SYMBOL === $token->id ) {
+			throw $this->new_not_supported_exception(
+				'INTERVAL n unit followed by "+"; use "(expr + INTERVAL n unit)" instead'
+			);
+		}
+
 		return $this->translate_sequence( $node->get_children() );
+	}
+
+	/**
+	 * Translate a "bitExpr" AST node.
+	 *
+	 * Translate interval additions and subtractions to a single date function
+	 * call, applying each interval from left to right, as MySQL does.
+	 *
+	 * TODO: After switching to LALR(1), use the tree's operator grouping
+	 * and remove the loop over this parser's flat interval sequence.
+	 *
+	 * @param  WP_Parser_Node $node       The "bitExpr" AST node.
+	 * @return string|null                The translated value.
+	 * @throws WP_MySQL_On_SQLite_Exception When the translation fails.
+	 */
+	private function translate_bit_expr( WP_Parser_Node $node ): ?string {
+		/*
+		 * The first child is an expression. Each interval adds four children:
+		 * operator, INTERVAL, value, unit. A final "op bitExpr" may follow.
+		 */
+		$children  = $node->get_children();
+		$count     = count( $children );
+		$sql       = $this->translate( $children[0] );
+		$intervals = array();
+		$i         = 1;
+		while (
+			isset( $children[ $i + 1 ] )
+			&& $children[ $i + 1 ] instanceof WP_Parser_Token
+			&& WP_MySQL_Lexer::INTERVAL_SYMBOL === $children[ $i + 1 ]->id
+		) {
+			$intervals[] = array(
+				WP_MySQL_Lexer::MINUS_OPERATOR === $children[ $i ]->id,
+				$children[ $i + 2 ],
+				$children[ $i + 3 ],
+			);
+			$i          += 4;
+		}
+		if ( count( $intervals ) > 0 ) {
+			$sql = $this->translate_interval_arithmetic( $sql, $intervals );
+		}
+
+		if ( $i === $count ) {
+			return $sql;
+		}
+
+		/*
+		 * The parser groups "a + b + INTERVAL 1 DAY" as "a + (b + INTERVAL 1 DAY)".
+		 * MySQL applies the interval to "a + b". Reject this form to avoid
+		 * applying the interval to only part of the expression. For simplicity,
+		 * also reject operators that bind less tightly than "+", such as "|".
+		 *
+		 * TODO: Remove this guard and support mixed arithmetic with LALR(1).
+		 */
+		$operator = $children[ $i ];
+		$operand  = $children[ $i + 1 ];
+		if ( $operand->has_child_token( WP_MySQL_Lexer::INTERVAL_SYMBOL ) ) {
+			throw $this->new_not_supported_exception(
+				sprintf(
+					'INTERVAL after the "%s" operator; add parentheses to make the grouping explicit',
+					$operator->get_value()
+				)
+			);
+		}
+		return sprintf( '%s %s %s', $sql, $this->translate( $operator ), $this->translate( $operand ) );
 	}
 
 	/**
@@ -5099,6 +5203,15 @@ class WP_MySQL_On_SQLite extends PDO {
 		}
 
 		switch ( $child->id ) {
+			case WP_MySQL_Lexer::IF_SYMBOL:
+				// CASE also supports SQLite versions before IIF() was added in 3.32.0.
+				$nodes = $node->get_child_nodes();
+				return sprintf(
+					'CASE WHEN %s THEN %s ELSE %s END',
+					$this->translate( $nodes[0] ),
+					$this->translate( $nodes[1] ),
+					$this->translate( $nodes[2] )
+				);
 			case WP_MySQL_Lexer::DATABASE_SYMBOL:
 				return $this->quote_sqlite_value( $this->db_name );
 			case WP_MySQL_Lexer::CURRENT_TIMESTAMP_SYMBOL:
@@ -5112,21 +5225,9 @@ class WP_MySQL_On_SQLite extends PDO {
 			case WP_MySQL_Lexer::DATE_ADD_SYMBOL:
 			case WP_MySQL_Lexer::DATE_SUB_SYMBOL:
 				$nodes = $node->get_child_nodes();
-				$value = $this->translate( $nodes[1] );
-				$unit  = $this->translate( $nodes[2] );
-				if ( 'WEEK' === $unit ) {
-					$unit  = 'DAY';
-					$value = 7 * $value;
-				}
-				/*
-				 * Joomla 3.x UTD patch: the interval can be negative, which MySQL takes, but a '+' before it made
-				 * an invalid SQLite modifier ('+-3600 SECOND') and a NULL result. SQLite takes signed numbers.
-				 */
-				return sprintf(
-					"DATETIME(%s, %s || ' %s')",
+				return $this->translate_interval_arithmetic(
 					$this->translate( $nodes[0] ),
-					WP_MySQL_Lexer::DATE_SUB_SYMBOL === $child->id ? '(-(' . $value . '))' : '(' . $value . ')',
-					$unit
+					array( array( WP_MySQL_Lexer::DATE_SUB_SYMBOL === $child->id, $nodes[1], $nodes[2] ) )
 				);
 			case WP_MySQL_Lexer::LEFT_SYMBOL:
 				$nodes = $node->get_child_nodes();
@@ -5150,6 +5251,62 @@ class WP_MySQL_On_SQLite extends PDO {
 			default:
 				return $this->translate_sequence( $node->get_children() );
 		}
+	}
+
+	/**
+	 * Translate MySQL date arithmetic to a SQLite DATE() or DATETIME() call.
+	 *
+	 * Each interval becomes a modifier, and SQLite applies them from left to right.
+	 * Parenthesize the value before appending the unit: SQLite evaluates "||"
+	 * before "*". Negate the value for subtraction so negative intervals work
+	 * without invalid sign combinations such as "+-5 HOUR".
+	 * Convert units where needed, e.g., WEEK to 7 days.
+	 *
+	 * MySQL returns a date when it adds only date units to a date. The driver
+	 * stores dates as 10-character strings, so use DATE() for such inputs.
+	 *
+	 * @param  string $expr      The translated date expression.
+	 * @param  array  $intervals List of intervals, each as an array of:
+	 *                           - bool           Whether the interval is subtracted.
+	 *                           - WP_Parser_Node The interval value expression node.
+	 *                           - WP_Parser_Node The "interval" AST node holding the unit.
+	 * @return string            The translated value.
+	 * @throws WP_MySQL_On_SQLite_Exception When the translation fails.
+	 */
+	private function translate_interval_arithmetic( string $expr, array $intervals ): string {
+		$modifiers  = array();
+		$date_units = true;
+		foreach ( $intervals as list( $subtract, $value, $interval ) ) {
+			// Token IDs also cover unit synonyms, e.g., SQL_TSI_HOUR.
+			$unit_token = $interval->get_first_descendant_token();
+			if ( ! isset( self::INTERVAL_UNIT_MAP[ $unit_token->id ] ) ) {
+				throw $this->new_not_supported_exception(
+					sprintf( 'INTERVAL unit: %s', $unit_token->get_value() )
+				);
+			}
+
+			list( $unit, $multiplier ) = self::INTERVAL_UNIT_MAP[ $unit_token->id ];
+
+			$value_sql = sprintf( '(%s)', $this->translate( $value ) );
+			if ( 1 !== $multiplier ) {
+				$value_sql = sprintf( '(%s * %d)', $value_sql, $multiplier );
+			}
+			if ( $subtract ) {
+				$value_sql = '-' . $value_sql;
+			}
+			$modifiers[] = sprintf( "%s || ' %s'", $value_sql, $unit );
+			$date_units  = $date_units && in_array( $unit, array( 'DAY', 'MONTH', 'YEAR' ), true );
+		}
+
+		$modifiers_sql = implode( ', ', $modifiers );
+		if ( ! $date_units ) {
+			return sprintf( 'DATETIME(%s, %s)', $expr, $modifiers_sql );
+		}
+		return sprintf(
+			'CASE WHEN LENGTH(%1$s) = 10 THEN DATE(%1$s, %2$s) ELSE DATETIME(%1$s, %2$s) END',
+			$expr,
+			$modifiers_sql
+		);
 	}
 
 	/**
@@ -5245,12 +5402,12 @@ class WP_MySQL_On_SQLite extends PDO {
 				} elseif ( is_string( $found_rows ) ) {
 					return (int) $this->execute_sqlite_query(
 						sprintf( 'SELECT COUNT(*) FROM (%s)', $found_rows )
-					)->fetchColumn()[0];
+					)->fetchColumn();
 				} elseif ( is_array( $found_rows ) && isset( $found_rows[0] ) ) {
 					return (int) $this->execute_sqlite_query(
 						sprintf( 'SELECT COUNT(*) FROM (%s)', $found_rows[0] ),
 						$found_rows[1] ?? array()
-					)->fetchColumn()[0];
+					)->fetchColumn();
 				} else {
 					return 0;
 				}
@@ -5550,8 +5707,8 @@ class WP_MySQL_On_SQLite extends PDO {
 				}
 			}
 
-			$table_is_temporary = $this->information_schema_builder->temporary_table_exists( $table_name );
-			$sqlite_table_name  = $this->information_schema_builder->get_table_name( $table_is_temporary, $table_name );
+			// Temporary tables are not listed in the information schema.
+			$sqlite_table_name = $this->information_schema_builder->get_table_name( false, $table_name );
 
 			// We need to fetch the SQLite column information, because the information
 			// schema tables don't contain records for the information schema itself.
@@ -5722,7 +5879,7 @@ class WP_MySQL_On_SQLite extends PDO {
 		}
 
 		// 7. If foreign key constraints were enabled, verify and enable them.
-		if ( '1' === $pragma_foreign_keys ) {
+		if ( 1 === (int) $pragma_foreign_keys ) {
 			$this->execute_sqlite_query( 'PRAGMA foreign_key_check' );
 			$this->execute_sqlite_query( 'PRAGMA foreign_keys = ON' );
 		}
@@ -6409,6 +6566,20 @@ class WP_MySQL_On_SQLite extends PDO {
 				| self::SQL_MODES['ANSI_QUOTES']
 				| self::SQL_MODES['IGNORE_SPACE']
 				| self::SQL_MODES['ONLY_FULL_GROUP_BY'];
+		}
+
+		if ( ( $sql_modes & self::SQL_MODES['TRADITIONAL'] ) !== 0 ) {
+			$sql_modes |= self::SQL_MODES['STRICT_TRANS_TABLES']
+				| self::SQL_MODES['STRICT_ALL_TABLES']
+				| self::SQL_MODES['NO_ZERO_IN_DATE']
+				| self::SQL_MODES['NO_ZERO_DATE']
+				| self::SQL_MODES['ERROR_FOR_DIVISION_BY_ZERO']
+				| self::SQL_MODES['NO_ENGINE_SUBSTITUTION'];
+
+			// TRADITIONAL included NO_AUTO_CREATE_USER until its removal in MySQL 8.0.11.
+			if ( ! $this->is_sql_mode_removed( 'NO_AUTO_CREATE_USER' ) ) {
+				$sql_modes |= self::SQL_MODES['NO_AUTO_CREATE_USER'];
+			}
 		}
 
 		$this->active_sql_modes = $sql_modes;
@@ -7213,7 +7384,7 @@ class WP_MySQL_On_SQLite extends PDO {
 				}
 				$rows[] = sprintf( '  PRIMARY KEY (%s)', implode( ', ', $column_list ) );
 			} else {
-				$is_unique = '0' === $info['NON_UNIQUE'];
+				$is_unique = 0 === (int) $info['NON_UNIQUE'];
 
 				// Prefix the original index name with the table name.
 				// This is to avoid conflicting index names in SQLite.
@@ -7505,7 +7676,7 @@ class WP_MySQL_On_SQLite extends PDO {
 				$sql .= implode( ', ', array_map( $format_index_column, $constraint ) );
 				$sql .= ')';
 			} else {
-				$is_unique = '0' === $info['NON_UNIQUE'];
+				$is_unique = 0 === (int) $info['NON_UNIQUE'];
 
 				$sql  = sprintf(
 					'  %s%s%sKEY ',
@@ -7819,38 +7990,22 @@ class WP_MySQL_On_SQLite extends PDO {
 	 * @return PDOStatement   The corresponding PDO SQLite statement.
 	 */
 	private function create_result_statement_from_data( array $columns, array $rows ): PDOStatement {
+		/*
+		 * The statement writes nothing, but PDO SQLite can report the row count
+		 * of the last write for it. Default the affected rows to 0.
+		 */
+		$this->last_affected_rows = $this->last_affected_rows ?? 0;
+
 		$pdo = $this->connection->get_pdo();
 
 		/*
-		 * With 0 columns, we need to create a PDO statement that has no columns.
-		 * This can be done using a noop INSERT statement that modifies no data.
+		 * With 0 columns, we need a PDO statement with no columns and no rows.
+		 *
+		 * An unknown pragma has no columns, needs no table, takes no locks,
+		 * and SQLite ignores it.
 		 */
 		if ( 0 === count( $columns ) ) {
-			/*
-			 * Build a 0-column statement to represent an empty result set.
-			 *
-			 * A no-op "INSERT ... WHERE FALSE" into a regular table still acquires
-			 * SQLite's write lock, even though it writes nothing. That makes
-			 * no-write statements such as "SET sql_mode = ..." fatal with
-			 * "database is locked" whenever another connection holds the write
-			 * lock. Writing to a connection-private TEMP table uses the temp
-			 * database, which has no shared lock, so it never contends.
-			 */
-			if ( ! $this->empty_result_table_ready ) {
-				$pdo->exec(
-					sprintf(
-						'CREATE TEMP TABLE IF NOT EXISTS %s ( placeholder_for_empty_insert )',
-						$this->quote_sqlite_identifier( self::EMPTY_RESULT_TABLE_NAME )
-					)
-				);
-				$this->empty_result_table_ready = true;
-			}
-			return $pdo->query(
-				sprintf(
-					'INSERT INTO %s ( placeholder_for_empty_insert ) SELECT NULL WHERE FALSE',
-					$this->quote_sqlite_identifier( self::EMPTY_RESULT_TABLE_NAME )
-				)
-			);
+			return $pdo->query( 'PRAGMA ' . self::RESERVED_PREFIX . 'empty_result' );
 		}
 
 		/*
