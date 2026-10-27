@@ -91,12 +91,12 @@ class PlgSystemCache extends JPlugin
 		);
 
 		/*
-		 * The page cache's own times (seconds; empty: Global Configuration's Cache Time). Each page is stored with the moment
-		 * it stops being fresh, and kept for the longest fresh time plus the stale time.
+		 * The page cache's own times (seconds; 1 and 3 minutes by default; 0: Global Configuration's Cache Time). Each page is
+		 * stored with the moment it stops being fresh, and kept for the longest fresh time plus the stale time.
 		 */
 		$global = max(1, (int) $this->app->get('cachetime', 15)) * 60;
-		$home   = (int) $this->params->get('pagecache_home', 0);
-		$pages  = (int) $this->params->get('pagecache_pages', 0);
+		$home   = (int) $this->params->get('pagecache_home', 60);
+		$pages  = (int) $this->params->get('pagecache_pages', 180);
 		$stale  = max(0, (int) $this->params->get('pagecache_stale', 0));
 
 		if ($home > 0 || $pages > 0 || $stale > 0)
