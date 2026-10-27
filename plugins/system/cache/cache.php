@@ -153,7 +153,7 @@ class PlgSystemCache extends JPlugin
 		// The page as it was: a 200 with its stored headers (those set before rendering, e.g. security headers, stay)
 		$this->app->setHeader('status', 200, true);
 		$this->app->setBody(JCache::getWorkarounds($copy));
-		$this->keepBrowserCacheTime();
+		$this->keepBrowserCacheTime(isset($copy['stored']) ? (int) $copy['stored'] : null);
 
 		echo $this->app->toString((bool) $this->app->get('gzip'));
 
@@ -282,8 +282,8 @@ class PlgSystemCache extends JPlugin
 			// Set HTML page from cache.
 			$this->app->setBody($data);
 
-			// The browser cache time stored with the page, from now
-			$this->keepBrowserCacheTime();
+			// The cache time stored with the page, counted from when it was stored
+			$this->keepBrowserCacheTime($this->_cache->getStoredTime());
 
 			// Dumps HTML page.
 			echo $this->app->toString((bool) $this->app->get('gzip'));
@@ -397,21 +397,27 @@ class PlgSystemCache extends JPlugin
 	}
 
 	/**
-	 * On a cache hit: the browser cache time the page was stored with, its Expires header counted from now. Without one,
-	 * the page goes out as before (not kept by browsers).
+	 * On a cache hit: the cache time the page was stored with. Its Age header and Expires count from when the page was
+	 * stored, so caches in front of the site (Varnish, CDNs) and browsers don't keep a page Joomla had kept for a while for
+	 * their whole time again. Without a stored cache time, the page goes out as before (not kept).
+	 *
+	 * @param   integer|null  $stored  When the page was stored (timestamp); null when unknown: counted from now
 	 *
 	 * @return  void
 	 *
 	 * @since   3.18.0
 	 */
-	protected function keepBrowserCacheTime()
+	protected function keepBrowserCacheTime($stored = null)
 	{
 		foreach ($this->app->getHeaders() as $header)
 		{
 			if (strtolower($header['name']) === 'cache-control' && preg_match('/^(?:private, )?max-age=(\d+)(?:,|$)/', $header['value'], $match))
 			{
+				$from = $stored !== null ? min($stored, time()) : time();
+
 				$this->app->allowCache(true);
-				$this->app->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + (int) $match[1]) . ' GMT', true);
+				$this->app->setHeader('Age', (string) (time() - $from), true);
+				$this->app->setHeader('Expires', gmdate('D, d M Y H:i:s', $from + (int) $match[1]) . ' GMT', true);
 
 				return;
 			}

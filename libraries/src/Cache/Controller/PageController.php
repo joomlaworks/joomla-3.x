@@ -79,6 +79,14 @@ class PageController extends CacheController
 	protected $_staleCopy = null;
 
 	/**
+	 * When the page served from the cache was stored (a timestamp; null when unknown, e.g. stored before 3.18)
+	 *
+	 * @var    integer|null
+	 * @since  3.18.0
+	 */
+	protected $_storedAt = null;
+
+	/**
 	 * A refresh marker older than this many seconds belongs to a request which never finished
 	 *
 	 * @var    integer
@@ -125,6 +133,18 @@ class PageController extends CacheController
 	public function getStaleCopy()
 	{
 		return $this->_staleCopy;
+	}
+
+	/**
+	 * When the page get() returned from the cache was stored: what its Age header is counted from.
+	 *
+	 * @return  integer|null  A timestamp; null when unknown
+	 *
+	 * @since   3.18.0
+	 */
+	public function getStoredTime()
+	{
+		return $this->_storedAt;
 	}
 
 	/**
@@ -223,8 +243,9 @@ class PageController extends CacheController
 				$this->cache->unlock($id, $group);
 			}
 
-			$data = $data[0];
-			$data = Cache::getWorkarounds($data);
+			$data            = $data[0];
+			$this->_storedAt = is_array($data) && isset($data['stored']) ? (int) $data['stored'] : null;
+			$data            = Cache::getWorkarounds($data);
 
 			$this->_setEtag($id);
 
@@ -315,9 +336,11 @@ class PageController extends CacheController
 				$data['headers'] = $headers;
 			}
 
+			$data['stored'] = time();
+
 			if ($this->_fresh !== null)
 			{
-				$data['expires'] = time() + $this->_fresh;
+				$data['expires'] = $data['stored'] + $this->_fresh;
 			}
 		}
 
