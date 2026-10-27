@@ -334,8 +334,9 @@ class PlgSystemCache extends JPlugin
 	}
 
 	/**
-	 * Lets browsers keep the page for the time the options give the home page or the other pages. Stored with the page
-	 * (headers set after the cache looked for it are), so a cache hit sends the same.
+	 * The cache times the options give the page (home page or other pages): browsers' (max-age) and, apart from it, caches
+	 * in front of the site's (s-maxage), with stale-while-revalidate and stale-if-error. Nothing when neither is set, as
+	 * before. Stored with the page (headers set after the cache looked for it are), so a cache hit sends the same.
 	 *
 	 * @return  void
 	 *
@@ -343,31 +344,34 @@ class PlgSystemCache extends JPlugin
 	 */
 	protected function setBrowserCacheTime()
 	{
-		if (!$this->params->get('browsercache_send', 0))
-		{
-			return;
-		}
+		$home    = $this->isHomePage();
+		$browser = $this->params->get('browsercache_send', 0)
+			? max(0, $home ? (int) $this->params->get('browsercache_home', 60) : (int) $this->params->get('browsercache_pages', 180))
+			: 0;
+		$shared  = max(0, (int) $this->params->get($home ? 'sharedcache_home' : 'sharedcache_pages', 0));
 
-		$seconds = $this->isHomePage() ? (int) $this->params->get('browsercache_home', 60) : (int) $this->params->get('browsercache_pages', 180);
-
-		if ($seconds <= 0)
+		if ($browser === 0 && $shared === 0)
 		{
 			return;
 		}
 
 		/*
-		 * Never "private": it would stop caches in front of the site (Varnish, CDNs) from keeping the page at all. The Expires
-		 * header is set first, so the application doesn't add its own 15 minutes.
+		 * Never "private": it would stop caches in front of the site (Varnish, CDNs) from keeping the page at all. With only
+		 * a shared time, browsers get max-age=0 (they ask every time) while those caches keep the page.
 		 */
-		$directives = array('max-age=' . $seconds);
+		$directives = array('max-age=' . $browser);
+
+		if ($shared > 0)
+		{
+			$directives[] = 's-maxage=' . $shared;
+		}
 
 		/*
-		 * How long a cache may still send the page after that, while it fetches a fresh copy (empty: as long as max-age, so
-		 * the home page and the other pages each get their own), and when the site answers with an error. Caches in front of
-		 * the site (Varnish, CDNs) use them most.
+		 * How long a cache may still send the page after that, while it fetches a fresh copy (empty: as long as the longest
+		 * time above, so the home page and the other pages each get their own), and when the site answers with an error
 		 */
 		$whileRevalidate = trim((string) $this->params->get('browsercache_swr', ''));
-		$whileRevalidate = $whileRevalidate === '' ? $seconds : (int) $whileRevalidate;
+		$whileRevalidate = $whileRevalidate === '' ? max($browser, $shared) : (int) $whileRevalidate;
 		$ifError         = (int) $this->params->get('browsercache_sie', 3600);
 
 		if ($whileRevalidate > 0)
@@ -380,9 +384,10 @@ class PlgSystemCache extends JPlugin
 			$directives[] = 'stale-if-error=' . $ifError;
 		}
 
+		// Expires set first, so the application doesn't add its own 15 minutes
 		$this->app->allowCache(true);
 		$this->app->setHeader('Cache-Control', implode(', ', $directives), true);
-		$this->app->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + $seconds) . ' GMT', true);
+		$this->app->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + $browser) . ' GMT', true);
 	}
 
 	/**

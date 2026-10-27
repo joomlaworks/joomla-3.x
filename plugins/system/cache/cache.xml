@@ -35,8 +35,11 @@
                 </field>
                 <field name="browsercache_home" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_HOME_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_HOME_DESC" default="60" min="0" filter="integer" showon="browsercache_send:1" />
                 <field name="browsercache_pages" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_PAGES_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_PAGES_DESC" default="180" min="0" filter="integer" showon="browsercache_send:1" />
-                <field name="browsercache_swr" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_SWR_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_SWR_DESC" default="" min="0" filter="string" showon="browsercache_send:1" />
-                <field name="browsercache_sie" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_SIE_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_SIE_DESC" default="3600" min="0" filter="integer" showon="browsercache_send:1" />
+                <field name="heading_advanced" type="spacer" label="PLG_CACHE_HEADING_ADVANCED" description="PLG_CACHE_HEADING_ADVANCED_DESC" />
+                <field name="sharedcache_home" type="number" label="PLG_CACHE_FIELD_SHAREDCACHE_HOME_LABEL" description="PLG_CACHE_FIELD_SHAREDCACHE_HOME_DESC" default="" min="0" filter="integer" />
+                <field name="sharedcache_pages" type="number" label="PLG_CACHE_FIELD_SHAREDCACHE_PAGES_LABEL" description="PLG_CACHE_FIELD_SHAREDCACHE_PAGES_DESC" default="" min="0" filter="integer" />
+                <field name="browsercache_swr" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_SWR_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_SWR_DESC" default="" min="0" filter="string" />
+                <field name="browsercache_sie" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_SIE_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_SIE_DESC" default="3600" min="0" filter="integer" />
                 <field name="heading_exclusions" type="spacer" label="PLG_CACHE_HEADING_EXCLUSIONS" description="PLG_CACHE_HEADING_EXCLUSIONS_DESC" />
                 <field name="exclude_menu_items" type="menuitem" label="PLG_CACHE_FIELD_EXCLUDE_MENU_ITEMS_LABEL" description="PLG_CACHE_FIELD_EXCLUDE_MENU_ITEMS_DESC" multiple="multiple" filter="int_array" />
                 <field name="exclude" type="textarea" label="PLG_CACHE_FIELD_EXCLUDE_LABEL" description="PLG_CACHE_FIELD_EXCLUDE_DESC" class="input-xxlarge" rows="8" filter="raw" />
