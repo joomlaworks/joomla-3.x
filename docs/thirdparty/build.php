@@ -31,7 +31,8 @@ foreach (isset($composer['packages']) ? $composer['packages'] : $composer as $pa
  * - check: array(file, pattern): the pattern's first group must be the version; a "date" group (YYYY-MM-DD) gives the date
  * - composer: a package name in installed.json: its version and time
  * - use: "shared" when extensions may use it too (front-end libraries loaded through JHtml, editors, libraries extensions call),
- *   "core" when only Joomla 3.x UTD's own code does (a judgement, shown as the "Used by" column)
+ *   "core" when only Joomla 3.x UTD's own code does, "sub:<name>" for a sub-package of one of its extensions (a judgement,
+ *   shown as the "Used by" column). Icons bundled as images or SVG aren't listed; icon fonts are
  * - upstream: where releases are published, for --latest: "npm:<package>", "packagist:<vendor/package>", "github:<owner/repo>",
  *   or "current" (always current: online services, whose current API the plugins use, and software without newer releases)
  * - date: the release date found elsewhere (YYYY-MM-DD: the project's releases, tags, registry or announcements; for
@@ -81,15 +82,14 @@ $groups = array(
 			'check' => array('media/editors/codemirror/lib/codemirror.js', '/CodeMirror\.version = "([0-9.]+)"/')),
 		array('name' => 'EasyMDE', 'use' => 'shared', 'upstream' => 'npm:easymde', 'version' => '2.21.0', 'date' => '2026-05-03', 'dateSource' => 'GitHub tag 2.21.0; npm agrees', 'license' => 'MIT', 'url' => 'https://github.com/Ionaru/easy-markdown-editor', 'path' => 'media/editors/easymde/vendor/easymde',
 			'check' => array('media/editors/easymde/vendor/easymde/easymde.min.css', '/easymde v([0-9.]+)/')),
-		array('name' => 'marked', 'use' => 'core', 'upstream' => 'npm:marked', 'version' => '18.1.2', 'date' => '2026-10-26', 'dateSource' => 'GitHub release v18.1.2', 'license' => 'MIT', 'url' => 'https://marked.js.org', 'note' => 'Part of the EasyMDE editor (Joomla 3.x UTD\'s Markdown editor): converts Markdown to HTML', 'path' => 'media/editors/easymde/vendor/marked',
+		array('name' => 'marked', 'use' => 'sub:EasyMDE', 'upstream' => 'npm:marked', 'version' => '18.1.2', 'date' => '2026-10-26', 'dateSource' => 'GitHub release v18.1.2', 'license' => 'MIT', 'url' => 'https://marked.js.org', 'note' => 'Converts the editor\'s Markdown to HTML', 'path' => 'media/editors/easymde/vendor/marked',
 			'check' => array('media/editors/easymde/vendor/marked/marked.umd.js', '/marked v([0-9.]+)/')),
-		array('name' => 'Turndown', 'use' => 'core', 'upstream' => 'npm:turndown', 'version' => '7.2.4', 'date' => '2026-04-03', 'dateSource' => 'GitHub tag v7.2.4; npm agrees', 'license' => 'MIT', 'url' => 'https://github.com/mixmark-io/turndown', 'note' => 'Part of the EasyMDE editor (Joomla 3.x UTD\'s Markdown editor): converts HTML to Markdown', 'path' => 'media/editors/easymde/vendor/turndown'),
+		array('name' => 'Turndown', 'use' => 'sub:EasyMDE', 'upstream' => 'npm:turndown', 'version' => '7.2.4', 'date' => '2026-04-03', 'dateSource' => 'GitHub tag v7.2.4; npm agrees', 'license' => 'MIT', 'url' => 'https://github.com/mixmark-io/turndown', 'note' => 'Converts HTML to Markdown for the editor', 'path' => 'media/editors/easymde/vendor/turndown'),
 		array('name' => 'Editor.js', 'use' => 'shared', 'upstream' => 'npm:@editorjs/editorjs', 'version' => '2.31.7', 'date' => '2026-09-17', 'dateSource' => 'GitHub release v2.31.7; npm agrees', 'license' => 'Apache-2.0', 'url' => 'https://editorjs.io', 'path' => 'media/editors/editorjs/vendor/editorjs',
 			'check' => array('media/editors/editorjs/vendor/editorjs/editorjs.umd.js', '/"([0-9]+\.[0-9]+\.[0-9]+)"/')),
 	),
 	'Fonts and Icons' => array(
 		array('name' => 'IcoMoon (Joomla icon font)', 'use' => 'shared', 'version' => '', 'date' => '2013-10-02', 'dateSource' => 'Joomla\'s last change to the font (joomla-cms 48e2895, "Added new IcoMoon icon font set")', 'license' => 'Royalty-free', 'url' => 'https://icomoon.io', 'path' => 'media/jui/fonts'),
-		array('name' => 'Bootstrap Icons', 'use' => 'core', 'upstream' => 'npm:bootstrap-icons', 'version' => '1.13.2', 'date' => '2026-10-08', 'dateSource' => 'GitHub release v1.13.2; npm agrees', 'license' => 'MIT', 'url' => 'https://icons.getbootstrap.com', 'note' => 'Part of the EasyMDE editor (Joomla 3.x UTD\'s Markdown editor): its toolbar icons', 'path' => 'media/editors/easymde/vendor/bootstrap-icons'),
 	),
 	// Not bundled: services the CAPTCHA plugins connect to, with the API version they use
 	'External Services' => array(
@@ -201,24 +201,49 @@ function highestStable(array $versions)
 
 /**
  * @param   string  $upstream  npm:..., packagist:... or github:...
+ * @param   string  $major     The bundled version's major version, for the latest release of that series
  *
- * @return  string|null  The latest release's version
+ * @return  array|null  version (the latest release), and series: the latest release in $major and its date (npm and
+ *                      Packagist only), or null when nothing was found
  */
-function latestRelease($upstream)
+function latestRelease($upstream, $major)
 {
 	list($type, $name) = explode(':', $upstream, 2);
+	$releases = array();
 
 	switch ($type)
 	{
 		case 'npm':
-			$data = fetchJson('https://registry.npmjs.org/' . str_replace('/', '%2F', $name) . '/latest');
+			$data = fetchJson('https://registry.npmjs.org/' . str_replace('/', '%2F', $name));
 
-			return isset($data['version']) ? ltrim($data['version'], 'v') : null;
+			if (!isset($data['dist-tags']['latest']))
+			{
+				return null;
+			}
+
+			foreach (isset($data['time']) ? $data['time'] : array() as $version => $time)
+			{
+				$releases[$version] = substr($time, 0, 10);
+			}
+
+			$latest = ltrim($data['dist-tags']['latest'], 'v');
+			break;
 
 		case 'packagist':
 			$data = fetchJson('https://repo.packagist.org/p2/' . $name . '.json');
 
-			return isset($data['packages'][$name]) ? highestStable(array_column($data['packages'][$name], 'version')) : null;
+			if (!isset($data['packages'][$name]))
+			{
+				return null;
+			}
+
+			foreach ($data['packages'][$name] as $package)
+			{
+				$releases[ltrim($package['version'], 'vV')] = isset($package['time']) ? substr($package['time'], 0, 10) : '';
+			}
+
+			$latest = highestStable(array_keys($releases));
+			break;
 
 		case 'github':
 			// The latest release, else the highest tag
@@ -226,15 +251,27 @@ function latestRelease($upstream)
 
 			if (isset($data['tag_name']))
 			{
-				return ltrim($data['tag_name'], 'vV');
+				return array('version' => ltrim($data['tag_name'], 'vV'), 'series' => null);
 			}
 
-			$data = fetchJson('https://api.github.com/repos/' . $name . '/tags?per_page=100');
+			$data   = fetchJson('https://api.github.com/repos/' . $name . '/tags?per_page=100');
+			$latest = is_array($data) ? highestStable(array_column($data, 'name')) : null;
 
-			return is_array($data) ? highestStable(array_column($data, 'name')) : null;
+			return $latest === null ? null : array('version' => $latest, 'series' => null);
+
+		default:
+			return null;
 	}
 
-	return null;
+	$inSeries = highestStable(array_filter(array_keys($releases), function ($version) use ($major)
+	{
+		return strpos(ltrim($version, 'vV'), $major . '.') === 0;
+	}));
+
+	return array(
+		'version' => $latest,
+		'series'  => $inSeries === null ? null : array('major' => $major, 'version' => $inSeries, 'date' => $releases[$inSeries]),
+	);
 }
 
 if (in_array('--latest', $argv, true))
@@ -248,16 +285,19 @@ if (in_array('--latest', $argv, true))
 				continue;
 			}
 
-			$version = latestRelease($entry['upstream']);
+			// Composer-managed entries take their version from installed.json
+			$version = isset($entry['composer'], $packages[$entry['composer']]) ? ltrim($packages[$entry['composer']]['version'], 'vV')
+				: (isset($entry['version']) ? (string) $entry['version'] : '');
+			$found   = latestRelease($entry['upstream'], (string) strtok($version, '.'));
 
-			if ($version === null)
+			if ($found === null)
 			{
 				fwrite(STDERR, $entry['name'] . ': no latest release found at ' . $entry['upstream'] . "\n");
 
 				continue;
 			}
 
-			$latest[$entry['upstream']] = array('version' => $version, 'checked' => gmdate('Y-m-d'));
+			$latest[$entry['upstream']] = array_filter(array('version' => $found['version'], 'series' => $found['series'], 'checked' => gmdate('Y-m-d')));
 		}
 	}
 
@@ -327,6 +367,17 @@ foreach ($groups as $group => $entries)
 		$upstream = isset($entry['upstream']) ? $entry['upstream'] : '';
 		$known    = isset($latest[$upstream]['version']);
 
+		// Not the latest release, but the latest of its series, which is still maintained (a release within a year of the check)
+		$series = '';
+
+		if ($known && isset($latest[$upstream]['series']['version']) && $entry['version'] !== ''
+			&& version_compare(ltrim($entry['version'], 'v'), $latest[$upstream]['version'], '<')
+			&& version_compare(ltrim($entry['version'], 'v'), $latest[$upstream]['series']['version'], '>=')
+			&& strtotime($latest[$upstream]['series']['date']) >= strtotime($latest[$upstream]['checked'] . ' -1 year'))
+		{
+			$series = $latest[$upstream]['series']['major'] . '.x';
+		}
+
 		$out[$group][] = array(
 			'name'       => $entry['name'],
 			'version'    => $entry['version'],
@@ -339,7 +390,10 @@ foreach ($groups as $group => $entries)
 			'latest'     => $known ? $latest[$upstream]['version'] : '',
 			'isLatest'   => $upstream === 'current' || ($known && $entry['version'] !== '' && version_compare(ltrim($entry['version'], 'v'), $latest[$upstream]['version'], '>=')),
 			'checked'    => $known ? str_replace('-', '.', $latest[$upstream]['checked']) : '',
-			'use'        => isset($entry['use']) && $entry['use'] === 'shared' ? 'shared' : 'core',
+			'use'        => isset($entry['use']) ? $entry['use'] : 'core',
+			'series'     => $series,
+			'seriesLatest' => $known && isset($latest[$upstream]['series']['version']) && $latest[$upstream]['series']['version'] !== $latest[$upstream]['version']
+				? $latest[$upstream]['series']['major'] . '.x: ' . $latest[$upstream]['series']['version'] . ' (' . str_replace('-', '.', $latest[$upstream]['series']['date']) . ')' : '',
 		);
 	}
 }

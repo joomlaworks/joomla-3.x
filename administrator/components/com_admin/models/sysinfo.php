@@ -397,6 +397,25 @@ class AdminModelSysInfo extends JModelLegacy
 	}
 
 	/**
+	 * @param   array  $entry  A third-party software entry
+	 *
+	 * @return  string  Who uses it: Joomla 3.x UTD only, extensions too, or one of its extensions (a sub-package)
+	 *
+	 * @since   3.18.0
+	 */
+	public function getThirdPartyUse(array $entry)
+	{
+		$use = isset($entry['use']) ? (string) $entry['use'] : 'core';
+
+		if (strpos($use, 'sub:') === 0)
+		{
+			return JText::sprintf('COM_ADMIN_THIRD_PARTY_USE_SUB', substr($use, 4));
+		}
+
+		return JText::_($use === 'shared' ? 'COM_ADMIN_THIRD_PARTY_USE_SHARED' : 'COM_ADMIN_THIRD_PARTY_USE_CORE');
+	}
+
+	/**
 	 * Method to get the PHP info
 	 *
 	 * @return  string  PHP info

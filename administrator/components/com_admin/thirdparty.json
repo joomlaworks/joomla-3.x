@@ -12,7 +12,9 @@
             "latest": "5.3.8",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         }
     ],
     "Editors": [
@@ -28,7 +30,9 @@
             "latest": "6.0.2",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "5.x",
+            "seriesLatest": "5.x: 5.65.21 (2026.02.07)"
         },
         {
             "name": "EasyMDE",
@@ -42,7 +46,9 @@
             "latest": "2.21.0",
             "isLatest": true,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "Editor.js",
@@ -56,7 +62,9 @@
             "latest": "2.31.7",
             "isLatest": true,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "marked",
@@ -66,11 +74,13 @@
             "license": "MIT",
             "url": "https://marked.js.org",
             "path": "media/editors/easymde/vendor/marked",
-            "note": "Part of the EasyMDE editor (Joomla 3.x UTD's Markdown editor): converts Markdown to HTML",
+            "note": "Converts the editor's Markdown to HTML",
             "latest": "18.1.2",
             "isLatest": true,
             "checked": "2026.10.27",
-            "use": "core"
+            "use": "sub:EasyMDE",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "TinyMCE",
@@ -84,7 +94,9 @@
             "latest": "8.10.0",
             "isLatest": true,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": "4.x: 4.9.11 (2020.07.13)"
         },
         {
             "name": "TinyMCE (legacy)",
@@ -98,7 +110,9 @@
             "latest": "8.10.0",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": "4.x: 4.9.11 (2020.07.13)"
         },
         {
             "name": "Turndown",
@@ -108,11 +122,13 @@
             "license": "MIT",
             "url": "https://github.com/mixmark-io/turndown",
             "path": "media/editors/easymde/vendor/turndown",
-            "note": "Part of the EasyMDE editor (Joomla 3.x UTD's Markdown editor): converts HTML to Markdown",
+            "note": "Converts HTML to Markdown for the editor",
             "latest": "7.2.4",
             "isLatest": true,
             "checked": "2026.10.27",
-            "use": "core"
+            "use": "sub:EasyMDE",
+            "series": "",
+            "seriesLatest": ""
         }
     ],
     "External Services": [
@@ -128,7 +144,9 @@
             "latest": "",
             "isLatest": true,
             "checked": "",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "Cloudflare Turnstile",
@@ -142,7 +160,9 @@
             "latest": "",
             "isLatest": true,
             "checked": "",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "Google reCAPTCHA",
@@ -156,7 +176,9 @@
             "latest": "",
             "isLatest": true,
             "checked": "",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "hCaptcha",
@@ -170,24 +192,12 @@
             "latest": "",
             "isLatest": true,
             "checked": "",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": ""
         }
     ],
     "Fonts and Icons": [
-        {
-            "name": "Bootstrap Icons",
-            "version": "1.13.2",
-            "date": "2026.10.08",
-            "dateSource": "GitHub release v1.13.2; npm agrees",
-            "license": "MIT",
-            "url": "https://icons.getbootstrap.com",
-            "path": "media/editors/easymde/vendor/bootstrap-icons",
-            "note": "Part of the EasyMDE editor (Joomla 3.x UTD's Markdown editor): its toolbar icons",
-            "latest": "1.13.2",
-            "isLatest": true,
-            "checked": "2026.10.27",
-            "use": "core"
-        },
         {
             "name": "IcoMoon (Joomla icon font)",
             "version": "",
@@ -200,7 +210,9 @@
             "latest": "",
             "isLatest": false,
             "checked": "",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         }
     ],
     "JavaScript Libraries": [
@@ -216,7 +228,9 @@
             "latest": "2.0.7",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": "1.x: 1.5.0 (2025.07.09)"
         },
         {
             "name": "Ajax Chosen",
@@ -230,7 +244,9 @@
             "latest": "",
             "isLatest": false,
             "checked": "",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "Chosen",
@@ -244,7 +260,9 @@
             "latest": "1.8.7",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "Jcrop",
@@ -258,7 +276,9 @@
             "latest": "3.0.1",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "jQuery",
@@ -272,7 +292,9 @@
             "latest": "4.0.0",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": "1.x: 1.12.4 (2016.05.20)"
         },
         {
             "name": "jQuery Migrate",
@@ -286,7 +308,9 @@
             "latest": "4.0.2",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": "1.x: 1.4.1 (2016.05.20)"
         },
         {
             "name": "jQuery MiniColors",
@@ -300,7 +324,9 @@
             "latest": "2.3.6",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "jQuery Simple Colors",
@@ -314,7 +340,9 @@
             "latest": "",
             "isLatest": false,
             "checked": "",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "jQuery UI (Core, Sortable)",
@@ -328,7 +356,9 @@
             "latest": "1.14.2",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "MediaElement.js",
@@ -342,7 +372,9 @@
             "latest": "7.1.0",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": "2.x: 2.23.5 (2017.01.06)"
         },
         {
             "name": "MooTools Core",
@@ -356,7 +388,9 @@
             "latest": "1.6.0",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "MooTools More",
@@ -370,7 +404,9 @@
             "latest": "1.6.0",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "Polyfill.io polyfills (classList, Event, Map, filter)",
@@ -384,7 +420,9 @@
             "latest": "3.25.3",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "Punycode.js",
@@ -398,7 +436,9 @@
             "latest": "2.3.1",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": "1.x: 1.4.1 (2016.03.20)"
         },
         {
             "name": "SqueezeBox",
@@ -412,7 +452,9 @@
             "latest": "",
             "isLatest": false,
             "checked": "",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         }
     ],
     "PHP Libraries": [
@@ -428,7 +470,9 @@
             "latest": "",
             "isLatest": false,
             "checked": "",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "FOF (Framework on Framework)",
@@ -442,7 +486,9 @@
             "latest": "",
             "isLatest": false,
             "checked": "",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "IconCaptcha",
@@ -456,7 +502,9 @@
             "latest": "4.0.6",
             "isLatest": true,
             "checked": "2026.10.27",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "IDNA Convert",
@@ -470,7 +518,9 @@
             "latest": "4.2.2",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "lessphp",
@@ -484,7 +534,9 @@
             "latest": "0.5.0",
             "isLatest": true,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "MySQL on SQLite (WordPress)",
@@ -498,7 +550,9 @@
             "latest": "3.1.1",
             "isLatest": true,
             "checked": "2026.10.27",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "PHP Encryption (Defuse)",
@@ -512,7 +566,9 @@
             "latest": "2.4.0",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": "1.x: 1.2.1 (2015.03.14)"
         },
         {
             "name": "phpass",
@@ -526,7 +582,9 @@
             "latest": "",
             "isLatest": true,
             "checked": "",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "PHPMailer",
@@ -540,7 +598,9 @@
             "latest": "7.1.1",
             "isLatest": true,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "PSR Container",
@@ -554,7 +614,9 @@
             "latest": "2.0.2",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": "1.x: 1.1.2 (2021.11.05)"
         },
         {
             "name": "PSR Log",
@@ -568,7 +630,9 @@
             "latest": "3.0.2",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": "1.x: 1.1.4 (2021.05.03)"
         },
         {
             "name": "SimplePie",
@@ -582,7 +646,9 @@
             "latest": "1.9.0",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "sodium_compat",
@@ -596,7 +662,9 @@
             "latest": "2.5.2",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": "1.x: 1.24.2 (2026.08.18)"
         },
         {
             "name": "Symfony Polyfill (ctype)",
@@ -610,7 +678,9 @@
             "latest": "1.37.0",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "Symfony Polyfill (PHP 7.3)",
@@ -624,7 +694,9 @@
             "latest": "1.37.0",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "shared"
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         },
         {
             "name": "Symfony Yaml",
@@ -638,7 +710,9 @@
             "latest": "8.1.9",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": "2.x: 2.8.52 (2018.11.11)"
         },
         {
             "name": "TYPO3 PHAR Stream Wrapper",
@@ -652,7 +726,9 @@
             "latest": "4.0.0",
             "isLatest": false,
             "checked": "2026.10.27",
-            "use": "core"
+            "use": "core",
+            "series": "",
+            "seriesLatest": "2.x: 2.2.2 (2021.09.20)"
         }
     ]
 }

@@ -36,18 +36,30 @@ defined('_JEXEC') or die;
 								<br /><small class="muted"><?php echo $this->escape($entry['note']); ?></small>
 							<?php endif; ?>
 						</td>
-						<?php if (empty($entry['isLatest']) && !empty($entry['latest'])) : ?>
-							<td><span class="hasTooltip" title="<?php echo $this->escape(JText::sprintf('COM_ADMIN_THIRD_PARTY_LATEST', $entry['latest'], $entry['checked'])); ?>"><?php echo $entry['version'] !== '' ? $this->escape($entry['version']) : '&#8212;'; ?></span></td>
-						<?php else : ?>
-							<td><?php echo $entry['version'] !== '' ? $this->escape($entry['version']) : '&#8212;'; ?></td>
-						<?php endif; ?>
+						<?php
+						// Versions in bold, green when current (the latest release, or the latest of a series still maintained)
+						$current = !empty($entry['isLatest']) || !empty($entry['series']);
+						$version = '<strong' . ($current ? ' class="text-success"' : '') . '>' . ($entry['version'] !== '' ? $this->escape($entry['version']) : '&#8212;') . '</strong>';
+						$title   = '';
+
+						if (!empty($entry['series']))
+						{
+							$title = JText::sprintf('COM_ADMIN_THIRD_PARTY_SERIES', $entry['series'], $entry['latest'], $entry['checked']);
+						}
+						elseif (empty($entry['isLatest']) && !empty($entry['latest']))
+						{
+							$title = JText::sprintf('COM_ADMIN_THIRD_PARTY_LATEST', $entry['latest'], $entry['checked'])
+								. (!empty($entry['seriesLatest']) ? ' ' . JText::sprintf('COM_ADMIN_THIRD_PARTY_SERIES_LATEST', $entry['seriesLatest']) : '');
+						}
+						?>
+						<td><?php echo $title !== '' ? '<span class="hasTooltip" title="' . $this->escape($title) . '">' . $version . '</span>' : $version; ?></td>
 						<?php if ($entry['date'] !== '' && !empty($entry['dateSource'])) : ?>
 							<td><span class="hasTooltip" title="<?php echo $this->escape(JText::sprintf('COM_ADMIN_THIRD_PARTY_DATE_SOURCE', $entry['dateSource'])); ?>"><?php echo $this->escape($entry['date']); ?></span></td>
 						<?php else : ?>
 							<td><?php echo $entry['date'] !== '' ? $this->escape($entry['date']) : '&#8212;'; ?></td>
 						<?php endif; ?>
 						<td class="hidden-phone"><?php echo $this->escape($entry['license']); ?></td>
-						<td><?php echo JText::_(isset($entry['use']) && $entry['use'] === 'shared' ? 'COM_ADMIN_THIRD_PARTY_USE_SHARED' : 'COM_ADMIN_THIRD_PARTY_USE_CORE'); ?></td>
+						<td><?php echo $this->escape($this->getModel()->getThirdPartyUse($entry)); ?></td>
 						<td class="hidden-phone"><code><?php echo $this->escape($entry['path']); ?></code></td>
 					</tr>
 				<?php endforeach; ?>
