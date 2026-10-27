@@ -524,8 +524,8 @@ class WebApplication extends BaseApplication
 		}
 		else
 		{
-			// Expires.
-			$this->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + 900) . ' GMT');
+			// Expires (unless set already, e.g. from when a cached view was stored: a single-value header keeps the first)
+			$this->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + $this->getBrowserCacheTime()) . ' GMT');
 
 			// Last modified.
 			if ($this->modifiedDate instanceof \JDate)
@@ -684,6 +684,21 @@ class WebApplication extends BaseApplication
 		}
 
 		return $this;
+	}
+
+	/**
+	 * How long browsers may keep a response marked cachable (allowCache(true)) without Cache-Control of its own: Global
+	 * Configuration's Cache Time (it was a fixed 15 minutes, that setting's default), else 15 minutes.
+	 *
+	 * @return  integer  Seconds
+	 *
+	 * @since   3.18.0
+	 */
+	public function getBrowserCacheTime()
+	{
+		$minutes = (int) $this->get('cachetime', 15);
+
+		return ($minutes > 0 ? $minutes : 15) * 60;
 	}
 
 	/**

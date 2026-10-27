@@ -73,10 +73,16 @@ class ViewController extends CacheController
 			{
 				echo Cache::getWorkarounds($data);
 
-				// What the view told the browser when it ran (see below)
+				// What the view told the browser when it ran (see below), its time counted from when the view was stored
 				if (!empty($data['viewcachable']))
 				{
-					\JFactory::getApplication()->allowCache(true);
+					$app = \JFactory::getApplication();
+					$app->allowCache(true);
+
+					if (isset($data['stored']) && method_exists($app, 'getBrowserCacheTime'))
+					{
+						$app->setHeader('Expires', gmdate('D, d M Y H:i:s', (int) $data['stored'] + $app->getBrowserCacheTime()) . ' GMT', true);
+					}
 				}
 			}
 			else
@@ -145,6 +151,7 @@ class ViewController extends CacheController
 			if (!$cachableBefore && $app->allowCache())
 			{
 				$data['viewcachable'] = true;
+				$data['stored']       = time();
 			}
 		}
 
