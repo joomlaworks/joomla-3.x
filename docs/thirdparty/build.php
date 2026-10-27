@@ -187,6 +187,19 @@ if ($errors)
 	exit(1);
 }
 
+// Groups and their entries alphabetically, so entries are easy to spot
+uksort($out, 'strcasecmp');
+
+foreach ($out as &$entries)
+{
+	usort($entries, function ($a, $b)
+	{
+		return strcasecmp($a['name'], $b['name']);
+	});
+}
+
+unset($entries);
+
 file_put_contents(
 	$root . '/administrator/components/com_admin/thirdparty.json',
 	json_encode($out, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n"

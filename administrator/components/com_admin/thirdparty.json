@@ -1,5 +1,146 @@
 {
+    "CSS and JavaScript frameworks": [
+        {
+            "name": "Bootstrap",
+            "version": "2.3.2",
+            "date": "",
+            "license": "Apache-2.0",
+            "url": "https://getbootstrap.com/2.3.2/",
+            "path": "media/jui/js/bootstrap.js",
+            "note": "JavaScript and CSS"
+        }
+    ],
+    "Editors": [
+        {
+            "name": "CodeMirror",
+            "version": "5.65.21",
+            "date": "",
+            "license": "MIT",
+            "url": "https://codemirror.net/5/",
+            "path": "media/editors/codemirror",
+            "note": ""
+        },
+        {
+            "name": "EasyMDE",
+            "version": "2.21.0",
+            "date": "",
+            "license": "MIT",
+            "url": "https://github.com/Ionaru/easy-markdown-editor",
+            "path": "media/editors/easymde/vendor/easymde",
+            "note": ""
+        },
+        {
+            "name": "Editor.js",
+            "version": "2.31.7",
+            "date": "",
+            "license": "Apache-2.0",
+            "url": "https://editorjs.io",
+            "path": "media/editors/editorjs/vendor/editorjs",
+            "note": ""
+        },
+        {
+            "name": "marked",
+            "version": "18.1.1",
+            "date": "",
+            "license": "MIT",
+            "url": "https://marked.js.org",
+            "path": "media/editors/easymde/vendor/marked",
+            "note": ""
+        },
+        {
+            "name": "TinyMCE",
+            "version": "8.9.2",
+            "date": "",
+            "license": "GPL-2.0-or-later",
+            "url": "https://www.tiny.cloud",
+            "path": "media/editors/tinymce_latest",
+            "note": ""
+        },
+        {
+            "name": "TinyMCE (legacy)",
+            "version": "4.5.12",
+            "date": "2020.07.03",
+            "license": "LGPL-2.1",
+            "url": "https://www.tiny.cloud",
+            "path": "media/editors/tinymce",
+            "note": ""
+        },
+        {
+            "name": "Turndown",
+            "version": "7.2.4",
+            "date": "",
+            "license": "MIT",
+            "url": "https://github.com/mixmark-io/turndown",
+            "path": "media/editors/easymde/vendor/turndown",
+            "note": ""
+        }
+    ],
+    "Fonts and icons": [
+        {
+            "name": "Bootstrap Icons",
+            "version": "1.13.2",
+            "date": "",
+            "license": "MIT",
+            "url": "https://icons.getbootstrap.com",
+            "path": "media/editors/easymde/vendor/bootstrap-icons",
+            "note": ""
+        },
+        {
+            "name": "IcoMoon (Joomla icon font)",
+            "version": "",
+            "date": "",
+            "license": "Royalty-free",
+            "url": "https://icomoon.io",
+            "path": "media/jui/fonts",
+            "note": ""
+        }
+    ],
     "JavaScript libraries": [
+        {
+            "name": "Ajax Autocomplete for jQuery",
+            "version": "1.4.11",
+            "date": "",
+            "license": "MIT",
+            "url": "https://github.com/devbridge/jQuery-Autocomplete",
+            "path": "media/jui/js/jquery.autocomplete.js",
+            "note": ""
+        },
+        {
+            "name": "Ajax Chosen",
+            "version": "",
+            "date": "",
+            "license": "MIT",
+            "url": "https://github.com/meltingice/ajax-chosen",
+            "path": "media/jui/js/ajax-chosen.js",
+            "note": ""
+        },
+        {
+            "name": "Chosen",
+            "version": "1.6.2",
+            "date": "",
+            "license": "MIT",
+            "url": "https://harvesthq.github.io/chosen/",
+            "path": "media/jui/js/chosen.jquery.js",
+            "note": ""
+        },
+        {
+            "name": "HTML5 Shiv",
+            "version": "3.7.3",
+            "date": "",
+            "license": "MIT",
+            "url": "https://github.com/aFarkas/html5shiv",
+            "path": "media/jui/js/html5.js",
+            "note": ""
+        },
+        {
+            "name": "Jcrop",
+            "version": "2.0.4",
+            "date": "",
+            "license": "MIT",
+            "url": "https://github.com/tapmodo/Jcrop",
+            "path": "media/system/js/jquery.Jcrop.js",
+            "note": ""
+        },
         {
             "name": "jQuery",
             "version": "1.12.4",
@@ -16,60 +157,6 @@
             "license": "MIT",
             "url": "https://github.com/jquery/jquery-migrate",
             "path": "media/jui/js/jquery-migrate.js",
-            "note": ""
-        },
-        {
-            "name": "jQuery UI (Core, Sortable)",
-            "version": "1.9.2",
-            "date": "2013.07.14",
-            "license": "MIT",
-            "url": "https://jqueryui.com",
-            "path": "media/jui/js/jquery.ui.core.js",
-            "note": ""
-        },
-        {
-            "name": "MooTools Core",
-            "version": "1.4.5",
-            "date": "",
-            "license": "MIT",
-            "url": "https://mootools.net",
-            "path": "media/system/js/mootools-core.js",
-            "note": ""
-        },
-        {
-            "name": "MooTools More",
-            "version": "1.4.0.1",
-            "date": "",
-            "license": "MIT",
-            "url": "https://mootools.net/more",
-            "path": "media/system/js/mootools-more.js",
-            "note": ""
-        },
-        {
-            "name": "Chosen",
-            "version": "1.6.2",
-            "date": "",
-            "license": "MIT",
-            "url": "https://harvesthq.github.io/chosen/",
-            "path": "media/jui/js/chosen.jquery.js",
-            "note": ""
-        },
-        {
-            "name": "Ajax Chosen",
-            "version": "",
-            "date": "",
-            "license": "MIT",
-            "url": "https://github.com/meltingice/ajax-chosen",
-            "path": "media/jui/js/ajax-chosen.js",
-            "note": ""
-        },
-        {
-            "name": "Ajax Autocomplete for jQuery",
-            "version": "1.4.11",
-            "date": "",
-            "license": "MIT",
-            "url": "https://github.com/devbridge/jQuery-Autocomplete",
-            "path": "media/jui/js/jquery.autocomplete.js",
             "note": ""
         },
         {
@@ -91,12 +178,48 @@
             "note": "Adapted by Peter van Westen"
         },
         {
-            "name": "Jcrop",
-            "version": "2.0.4",
+            "name": "jQuery UI (Core, Sortable)",
+            "version": "1.9.2",
+            "date": "2013.07.14",
+            "license": "MIT",
+            "url": "https://jqueryui.com",
+            "path": "media/jui/js/jquery.ui.core.js",
+            "note": ""
+        },
+        {
+            "name": "MediaElement.js",
+            "version": "2.23.0",
             "date": "",
             "license": "MIT",
-            "url": "https://github.com/tapmodo/Jcrop",
-            "path": "media/system/js/jquery.Jcrop.js",
+            "url": "https://www.mediaelementjs.com",
+            "path": "media/media/js/mediaelement-and-player.js",
+            "note": ""
+        },
+        {
+            "name": "MooTools Core",
+            "version": "1.4.5",
+            "date": "",
+            "license": "MIT",
+            "url": "https://mootools.net",
+            "path": "media/system/js/mootools-core.js",
+            "note": ""
+        },
+        {
+            "name": "MooTools More",
+            "version": "1.4.0.1",
+            "date": "",
+            "license": "MIT",
+            "url": "https://mootools.net/more",
+            "path": "media/system/js/mootools-more.js",
+            "note": ""
+        },
+        {
+            "name": "Polyfill.io polyfills (classList, Event, Map, filter)",
+            "version": "3.14.0",
+            "date": "",
+            "license": "MIT",
+            "url": "https://github.com/Financial-Times/polyfill-library",
+            "path": "media/system/js/polyfill.map.js",
             "note": ""
         },
         {
@@ -116,132 +239,90 @@
             "url": "https://github.com/digitarald/squeezebox",
             "path": "media/system/js/modal.js",
             "note": "Patched by Joomla"
-        },
-        {
-            "name": "HTML5 Shiv",
-            "version": "3.7.3",
-            "date": "",
-            "license": "MIT",
-            "url": "https://github.com/aFarkas/html5shiv",
-            "path": "media/jui/js/html5.js",
-            "note": ""
-        },
-        {
-            "name": "Polyfill.io polyfills (classList, Event, Map, filter)",
-            "version": "3.14.0",
-            "date": "",
-            "license": "MIT",
-            "url": "https://github.com/Financial-Times/polyfill-library",
-            "path": "media/system/js/polyfill.map.js",
-            "note": ""
-        },
-        {
-            "name": "MediaElement.js",
-            "version": "2.23.0",
-            "date": "",
-            "license": "MIT",
-            "url": "https://www.mediaelementjs.com",
-            "path": "media/media/js/mediaelement-and-player.js",
-            "note": ""
-        }
-    ],
-    "CSS and JavaScript frameworks": [
-        {
-            "name": "Bootstrap",
-            "version": "2.3.2",
-            "date": "",
-            "license": "Apache-2.0",
-            "url": "https://getbootstrap.com/2.3.2/",
-            "path": "media/jui/js/bootstrap.js",
-            "note": "JavaScript and CSS"
-        }
-    ],
-    "Editors": [
-        {
-            "name": "TinyMCE",
-            "version": "8.9.2",
-            "date": "",
-            "license": "GPL-2.0-or-later",
-            "url": "https://www.tiny.cloud",
-            "path": "media/editors/tinymce_latest",
-            "note": ""
-        },
-        {
-            "name": "TinyMCE (legacy)",
-            "version": "4.5.12",
-            "date": "2020.07.03",
-            "license": "LGPL-2.1",
-            "url": "https://www.tiny.cloud",
-            "path": "media/editors/tinymce",
-            "note": ""
-        },
-        {
-            "name": "CodeMirror",
-            "version": "5.65.21",
-            "date": "",
-            "license": "MIT",
-            "url": "https://codemirror.net/5/",
-            "path": "media/editors/codemirror",
-            "note": ""
-        },
-        {
-            "name": "EasyMDE",
-            "version": "2.21.0",
-            "date": "",
-            "license": "MIT",
-            "url": "https://github.com/Ionaru/easy-markdown-editor",
-            "path": "media/editors/easymde/vendor/easymde",
-            "note": ""
-        },
-        {
-            "name": "marked",
-            "version": "18.1.1",
-            "date": "",
-            "license": "MIT",
-            "url": "https://marked.js.org",
-            "path": "media/editors/easymde/vendor/marked",
-            "note": ""
-        },
-        {
-            "name": "Turndown",
-            "version": "7.2.4",
-            "date": "",
-            "license": "MIT",
-            "url": "https://github.com/mixmark-io/turndown",
-            "path": "media/editors/easymde/vendor/turndown",
-            "note": ""
-        },
-        {
-            "name": "Editor.js",
-            "version": "2.31.7",
-            "date": "",
-            "license": "Apache-2.0",
-            "url": "https://editorjs.io",
-            "path": "media/editors/editorjs/vendor/editorjs",
-            "note": ""
-        }
-    ],
-    "Fonts and icons": [
-        {
-            "name": "IcoMoon (Joomla icon font)",
-            "version": "",
-            "date": "",
-            "license": "Royalty-free",
-            "url": "https://icomoon.io",
-            "path": "media/jui/fonts",
-            "note": ""
-        },
-        {
-            "name": "Bootstrap Icons",
-            "version": "1.13.2",
-            "date": "",
-            "license": "MIT",
-            "url": "https://icons.getbootstrap.com",
-            "path": "media/editors/easymde/vendor/bootstrap-icons",
-            "note": ""
         }
     ],
     "PHP libraries": [
+        {
+            "name": "Akeeba Restore (Kickstart)",
+            "version": "",
+            "date": "",
+            "license": "GPL-2.0-or-later",
+            "url": "https://github.com/akeeba/kickstart",
+            "path": "administrator/components/com_joomlaupdate/restore.php",
+            "note": "Joomla Update's extractor; patched"
+        },
+        {
+            "name": "FOF (Framework on Framework)",
+            "version": "2.5.5",
+            "date": "2016.08.19",
+            "license": "GPL-2.0-or-later",
+            "url": "https://github.com/akeeba/fof",
+            "path": "libraries/fof",
+            "note": ""
+        },
+        {
+            "name": "Google reCAPTCHA PHP client",
+            "version": "1.1.2",
+            "date": "2015.09.02",
+            "license": "BSD-3-Clause",
+            "url": "https://github.com/google/recaptcha",
+            "path": "libraries/vendor/google/recaptcha",
+            "note": ""
+        },
+        {
+            "name": "IDNA Convert",
+            "version": "0.8.0",
+            "date": "2011.03.11",
+            "license": "LGPL-2.1",
+            "url": "https://github.com/phlylabs/idna-convert",
+            "path": "libraries/idna_convert",
+            "note": ""
+        },
+        {
+            "name": "lessphp",
+            "version": "0.5.0",
+            "date": "",
+            "license": "MIT",
+            "url": "https://github.com/leafo/lessphp",
+            "path": "libraries/vendor/leafo/lessphp",
+            "note": "With Joomla's PHP 8 fixes"
+        },
+        {
+            "name": "MySQL on SQLite (WordPress)",
+            "version": "3.0.2",
+            "date": "",
+            "license": "GPL-2.0-or-later",
+            "url": "https://github.com/WordPress/sqlite-database-integration",
+            "path": "libraries/vendor/wordpress/mysql-on-sqlite",
+            "note": "Patched (PATCHES.md)"
+        },
+        {
+            "name": "PHP Encryption (Defuse)",
+            "version": "",
+            "date": "",
+            "license": "BSD-2-Clause",
+            "url": "https://github.com/defuse/php-encryption",
+            "path": "libraries/php-encryption",
+            "note": ""
+        },
+        {
+            "name": "PHP UTF-8",
+            "version": "0.5",
+            "date": "",
+            "license": "LGPL-2.1",
+            "url": "https://sourceforge.net/projects/phputf8/",
+            "path": "libraries/phputf8",
+            "note": ""
+        },
+        {
+            "name": "phpass",
+            "version": "0.5",
+            "date": "",
+            "license": "Public domain",
+            "url": "https://www.openwall.com/phpass/",
+            "path": "libraries/phpass",
+            "note": ""
+        },
         {
             "name": "PHPMailer",
             "version": "5.2.28",
@@ -252,6 +333,24 @@
             "note": "With Joomla's backported fixes"
         },
         {
+            "name": "PSR Container",
+            "version": "1.0.0",
+            "date": "2017.02.14",
+            "license": "MIT",
+            "url": "https://www.php-fig.org/psr/psr-11/",
+            "path": "libraries/vendor/psr/container",
+            "note": ""
+        },
+        {
+            "name": "PSR Log",
+            "version": "1.1.4",
+            "date": "2021.05.03",
+            "license": "MIT",
+            "url": "https://www.php-fig.org/psr/psr-3/",
+            "path": "libraries/vendor/psr/log",
+            "note": ""
+        },
+        {
             "name": "SimplePie",
             "version": "1.3.3",
             "date": "2021.12.24",
@@ -259,15 +358,6 @@
             "url": "https://simplepie.org",
             "path": "libraries/vendor/simplepie/simplepie",
             "note": "Joomla's maintained copy"
-        },
-        {
-            "name": "lessphp",
-            "version": "0.5.0",
-            "date": "",
-            "license": "MIT",
-            "url": "https://github.com/leafo/lessphp",
-            "path": "libraries/vendor/leafo/lessphp",
-            "note": "With Joomla's PHP 8 fixes"
         },
         {
             "name": "sodium_compat",
@@ -306,24 +396,6 @@
             "note": ""
         },
         {
-            "name": "PSR Log",
-            "version": "1.1.4",
-            "date": "2021.05.03",
-            "license": "MIT",
-            "url": "https://www.php-fig.org/psr/psr-3/",
-            "path": "libraries/vendor/psr/log",
-            "note": ""
-        },
-        {
-            "name": "PSR Container",
-            "version": "1.0.0",
-            "date": "2017.02.14",
-            "license": "MIT",
-            "url": "https://www.php-fig.org/psr/psr-11/",
-            "path": "libraries/vendor/psr/container",
-            "note": ""
-        },
-        {
             "name": "TYPO3 PHAR Stream Wrapper",
             "version": "2.2.2",
             "date": "2021.09.20",
@@ -331,78 +403,6 @@
             "url": "https://github.com/TYPO3/phar-stream-wrapper",
             "path": "libraries/vendor/typo3/phar-stream-wrapper",
             "note": "Patched"
-        },
-        {
-            "name": "Google reCAPTCHA PHP client",
-            "version": "1.1.2",
-            "date": "2015.09.02",
-            "license": "BSD-3-Clause",
-            "url": "https://github.com/google/recaptcha",
-            "path": "libraries/vendor/google/recaptcha",
-            "note": ""
-        },
-        {
-            "name": "MySQL on SQLite (WordPress)",
-            "version": "3.0.2",
-            "date": "",
-            "license": "GPL-2.0-or-later",
-            "url": "https://github.com/WordPress/sqlite-database-integration",
-            "path": "libraries/vendor/wordpress/mysql-on-sqlite",
-            "note": "Patched (PATCHES.md)"
-        },
-        {
-            "name": "FOF (Framework on Framework)",
-            "version": "2.5.5",
-            "date": "2016.08.19",
-            "license": "GPL-2.0-or-later",
-            "url": "https://github.com/akeeba/fof",
-            "path": "libraries/fof",
-            "note": ""
-        },
-        {
-            "name": "Akeeba Restore (Kickstart)",
-            "version": "",
-            "date": "",
-            "license": "GPL-2.0-or-later",
-            "url": "https://github.com/akeeba/kickstart",
-            "path": "administrator/components/com_joomlaupdate/restore.php",
-            "note": "Joomla Update's extractor; patched"
-        },
-        {
-            "name": "phpass",
-            "version": "0.5",
-            "date": "",
-            "license": "Public domain",
-            "url": "https://www.openwall.com/phpass/",
-            "path": "libraries/phpass",
-            "note": ""
-        },
-        {
-            "name": "PHP UTF-8",
-            "version": "0.5",
-            "date": "",
-            "license": "LGPL-2.1",
-            "url": "https://sourceforge.net/projects/phputf8/",
-            "path": "libraries/phputf8",
-            "note": ""
-        },
-        {
-            "name": "IDNA Convert",
-            "version": "0.8.0",
-            "date": "2011.03.11",
-            "license": "LGPL-2.1",
-            "url": "https://github.com/phlylabs/idna-convert",
-            "path": "libraries/idna_convert",
-            "note": ""
-        },
-        {
-            "name": "PHP Encryption (Defuse)",
-            "version": "",
-            "date": "",
-            "license": "BSD-2-Clause",
-            "url": "https://github.com/defuse/php-encryption",
-            "path": "libraries/php-encryption",
-            "note": ""
         }
     ]
 }

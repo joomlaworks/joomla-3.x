@@ -651,7 +651,7 @@ class AdminModelSysInfo extends JModelLegacy
 		if ($cache_path = trim((string) $registry->get('cache_path', '')))
 		{
 			// Frontend and backend use same directory for caching.
-			$this->addDirectory($cache_path, $cache_path, 'COM_ADMIN_CACHE_DIRECTORY');
+			$this->addDirectory($this->getSiteRelativePath($cache_path), $cache_path, 'COM_ADMIN_CACHE_DIRECTORY');
 		}
 		else
 		{
@@ -659,37 +659,49 @@ class AdminModelSysInfo extends JModelLegacy
 			$this->addDirectory('administrator/cache', JPATH_CACHE, 'COM_ADMIN_CACHE_DIRECTORY');
 		}
 
+		$log_path = $registry->get('log_path', JPATH_ADMINISTRATOR . '/logs');
+		$tmp_path = $registry->get('tmp_path', JPATH_ROOT . '/tmp');
+
 		if ($public)
 		{
-			$this->addDirectory(
-				'log',
-				$registry->get('log_path', JPATH_ADMINISTRATOR . '/logs'),
-				'COM_ADMIN_LOG_DIRECTORY'
-			);
-			$this->addDirectory(
-				'tmp',
-				$registry->get('tmp_path', JPATH_ROOT . '/tmp'),
-				'COM_ADMIN_TEMP_DIRECTORY'
-			);
+			$this->addDirectory('log', $log_path, 'COM_ADMIN_LOG_DIRECTORY');
+			$this->addDirectory('tmp', $tmp_path, 'COM_ADMIN_TEMP_DIRECTORY');
 		}
 		else
 		{
-			$this->addDirectory(
-				$registry->get('log_path', JPATH_ADMINISTRATOR . '/logs'),
-				$registry->get('log_path', JPATH_ADMINISTRATOR . '/logs'),
-				'COM_ADMIN_LOG_DIRECTORY'
-			);
-			$this->addDirectory(
-				$registry->get('tmp_path', JPATH_ROOT . '/tmp'),
-				$registry->get('tmp_path', JPATH_ROOT . '/tmp'),
-				'COM_ADMIN_TEMP_DIRECTORY'
-			);
+			$this->addDirectory($this->getSiteRelativePath($log_path), $log_path, 'COM_ADMIN_LOG_DIRECTORY');
+			$this->addDirectory($this->getSiteRelativePath($tmp_path), $tmp_path, 'COM_ADMIN_TEMP_DIRECTORY');
 		}
 
 		// Alphabetically (folders were listed by kind: administrator, site, language folders, the configured paths)
 		uksort($this->directories, 'strnatcasecmp');
 
 		return $this->directories;
+	}
+
+	/**
+	 * A configured folder as shown: relative to the site's root when it's inside the site, else as configured.
+	 *
+	 * @param   string  $path  The folder
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	private function getSiteRelativePath($path)
+	{
+		$root   = realpath(JPATH_ROOT);
+		$folder = realpath($path);
+
+		if ($root === false || $folder === false)
+		{
+			return $path;
+		}
+
+		$root   = rtrim(str_replace('\\', '/', $root), '/') . '/';
+		$folder = str_replace('\\', '/', $folder);
+
+		return strpos($folder, $root) === 0 ? substr($folder, strlen($root)) : $path;
 	}
 
 	/**
