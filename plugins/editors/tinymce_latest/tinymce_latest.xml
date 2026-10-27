@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.9" type="plugin" group="editors" method="upgrade">
     <name>plg_editors_tinymce_latest</name>
-    <version>8.9.2</version>
+    <version>8.10.0</version>
     <creationDate>October 2026</creationDate>
     <author>JoomlaWorks Ltd. (Joomla integration), Tiny Technologies, Inc. (TinyMCE)</author>
     <authorEmail>N/A</authorEmail>
