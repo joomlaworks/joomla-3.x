@@ -245,6 +245,9 @@ class PlgSystemCache extends JPlugin
 	 */
 	public function onAfterInitialise()
 	{
+		// First, so a cached page carries it too
+		$this->setLoggedInHeader();
+
 		if ($this->app->isClient('administrator') || $this->app->get('offline', '0') || $this->app->getMessageQueue())
 		{
 			return;
@@ -308,6 +311,9 @@ class PlgSystemCache extends JPlugin
 	 */
 	public function onAfterRender()
 	{
+		// Again, for the user as the request leaves them (a plugin may have logged them in)
+		$this->setLoggedInHeader();
+
 		if ($this->_cache->getCaching() === false)
 		{
 			return;
@@ -409,6 +415,24 @@ class PlgSystemCache extends JPlugin
 
 				return;
 			}
+		}
+	}
+
+	/**
+	 * Tells caches in front of the site (Varnish, CDNs) whether the response is for a logged-in user: "X-Logged-In: True" or
+	 * "False" (option "logged_in_header", on by default). They can then store guests' pages (dropping the session cookie
+	 * Joomla sends with them) and never a logged-in user's; on requests they go by Joomla's joomla_user_state cookie, set
+	 * at login. Site only; not stored with cached pages, as it's set before the page cache looks for one.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function setLoggedInHeader()
+	{
+		if ($this->app->isClient('site') && $this->params->get('logged_in_header', 1))
+		{
+			$this->app->setHeader('X-Logged-In', JFactory::getUser()->guest ? 'False' : 'True', true);
 		}
 	}
 

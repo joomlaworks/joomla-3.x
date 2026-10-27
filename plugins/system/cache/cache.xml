@@ -40,6 +40,10 @@
                 <field name="sharedcache_pages" type="number" label="PLG_CACHE_FIELD_SHAREDCACHE_PAGES_LABEL" description="PLG_CACHE_FIELD_SHAREDCACHE_PAGES_DESC" default="" min="0" filter="integer" />
                 <field name="browsercache_swr" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_SWR_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_SWR_DESC" default="" min="0" filter="string" />
                 <field name="browsercache_sie" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_SIE_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_SIE_DESC" default="3600" min="0" filter="integer" />
+                <field name="logged_in_header" type="radio" label="PLG_CACHE_FIELD_LOGGED_IN_HEADER_LABEL" description="PLG_CACHE_FIELD_LOGGED_IN_HEADER_DESC" class="btn-group btn-group-yesno" default="1" filter="integer">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
                 <field name="heading_exclusions" type="spacer" label="PLG_CACHE_HEADING_EXCLUSIONS" description="PLG_CACHE_HEADING_EXCLUSIONS_DESC" />
                 <field name="exclude_menu_items" type="menuitem" label="PLG_CACHE_FIELD_EXCLUDE_MENU_ITEMS_LABEL" description="PLG_CACHE_FIELD_EXCLUDE_MENU_ITEMS_DESC" multiple="multiple" filter="int_array" />
                 <field name="exclude" type="textarea" label="PLG_CACHE_FIELD_EXCLUDE_LABEL" description="PLG_CACHE_FIELD_EXCLUDE_DESC" class="input-xxlarge" rows="8" filter="raw" />
