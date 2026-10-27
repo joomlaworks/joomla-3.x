@@ -11,6 +11,7 @@ namespace Joomla\CMS\Console;
 defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Version;
 
 /**
  * Installs a new site on SQLite from the command line, with the installer's own code (the "installation" folder), as the web
@@ -84,7 +85,7 @@ class CoreInstallCommand extends AbstractCommand
 	 */
 	protected function doExecute(CommandIO $io)
 	{
-		$io->title('Install Joomla');
+		$io->title($io->isDryRun() ? 'Install ' . Version::DISTRIBUTION : 'Installing ' . Version::DISTRIBUTION . '... Hold tight!');
 
 		$configuration = JPATH_CONFIGURATION . '/configuration.php';
 
@@ -233,7 +234,8 @@ class CoreInstallCommand extends AbstractCommand
 			'sample_file'          => $sampleData === '' ? '' : $sampleSets[$sampleData]['file'],
 		);
 
-		$result = $this->install($io, $options);
+		$started = microtime(true);
+		$result  = $this->install($io, $options);
 
 		if ($result !== self::SUCCESS)
 		{
@@ -241,6 +243,9 @@ class CoreInstallCommand extends AbstractCommand
 		}
 
 		$removed = $this->removeInstallationFolder();
+		$seconds = round(microtime(true) - $started, 1);
+
+		$io->writeln();
 
 		if (!$removed)
 		{
@@ -257,8 +262,11 @@ class CoreInstallCommand extends AbstractCommand
 		$io->setData('prefix', $prefix);
 		$io->setData('sampleData', $sampleData === '' ? null : $sampleData);
 		$io->setData('installationFolderRemoved', $removed);
+		$io->setData('seconds', $seconds);
 
-		$io->success(sprintf('Joomla is installed: "%s", on the SQLite database %s.', $siteName, $database));
+		$io->success(sprintf('Joomla installation completed in %s seconds for "%s", using the SQLite database in %s.', number_format($seconds, 1), $siteName,
+			$database));
+		$io->writeln();
 
 		// In JSON, the data above has them
 		if (!$io->isJson())
@@ -268,6 +276,7 @@ class CoreInstallCommand extends AbstractCommand
 				'Email'         => $email,
 				'Password'      => $generated ? $password : '(as given with --admin-password)',
 			));
+			$io->writeln();
 		}
 
 		if ($generated)
@@ -496,7 +505,7 @@ class CoreInstallCommand extends AbstractCommand
 		{
 			$database = new \InstallationModelDatabase;
 
-			$io->text('Creating the database ...');
+			$io->text('1. Creating the database ...');
 
 			/*
 			 * Like on the web, the installer first asks whoever installs to delete a file it writes in the "installation" folder,
@@ -526,7 +535,7 @@ class CoreInstallCommand extends AbstractCommand
 
 			$options = (array) $session->get('setup.options', array());
 
-			$io->text('Creating the tables and data ...');
+			$io->text('2. Creating the tables and data ...');
 
 			if (!$database->installCmsData($options))
 			{
@@ -537,7 +546,7 @@ class CoreInstallCommand extends AbstractCommand
 
 			if ($options['sample_file'] !== '')
 			{
-				$io->text('Installing the sample data ...');
+				$io->text('3. Installing the sample data ...');
 
 				if (!$database->installSampleData($options))
 				{
@@ -547,7 +556,7 @@ class CoreInstallCommand extends AbstractCommand
 				}
 			}
 
-			$io->text('Writing the configuration and creating the Super User ...');
+			$io->text(($options['sample_file'] !== '' ? '4' : '3') . '. Writing the configuration and creating the Super User ...');
 
 			if (!(new \InstallationModelConfiguration)->setup($options) || !is_file(JPATH_CONFIGURATION . '/configuration.php'))
 			{
