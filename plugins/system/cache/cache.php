@@ -209,9 +209,9 @@ class PlgSystemCache extends JPlugin
 	 */
 	protected function setBrowserCacheTime()
 	{
-		$minutes = (int) $this->params->get($this->isHomePage() ? 'browsercache_home' : 'browsercache_pages', 0);
+		$seconds = (int) $this->params->get($this->isHomePage() ? 'browsercache_home' : 'browsercache_pages', 0);
 
-		if ($minutes <= 0)
+		if ($seconds <= 0)
 		{
 			return;
 		}
@@ -221,8 +221,8 @@ class PlgSystemCache extends JPlugin
 		 * visitor's form token in it. The Expires header is set first, so the application doesn't add its own 15 minutes.
 		 */
 		$this->app->allowCache(true);
-		$this->app->setHeader('Cache-Control', 'private, max-age=' . ($minutes * 60), true);
-		$this->app->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + $minutes * 60) . ' GMT', true);
+		$this->app->setHeader('Cache-Control', 'private, max-age=' . $seconds, true);
+		$this->app->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + $seconds) . ' GMT', true);
 	}
 
 	/**
