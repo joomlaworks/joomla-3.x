@@ -78,6 +78,7 @@ class AdminViewSysinfo extends JViewLegacy
 		$this->info         = $this->get('info');
 		$this->php_info     = $this->get('PhpInfo');
 		$this->directory    = $this->get('directory');
+		$this->thirdParty   = $this->get('ThirdParty');
 
 		$this->addToolbar();
 		$this->_setSubMenu();

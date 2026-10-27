@@ -89,6 +89,10 @@ class AdminViewSysinfo extends JViewLegacy
 				'title' => JText::_('COM_ADMIN_DIRECTORY_PERMISSIONS', true),
 				'data'  => $model->getSafeData('directory', true)
 			),
+			'thirdParty' => array(
+				'title' => JText::_('COM_ADMIN_THIRD_PARTY_SOFTWARE', true),
+				'data'  => $this->getThirdPartyLines($model->getSafeData('thirdParty'))
+			),
 			'phpInfo' => array(
 				'title' => JText::_('COM_ADMIN_PHP_INFORMATION', true),
 				'data'  => $model->getSafeData('phpInfoArray')
@@ -98,6 +102,30 @@ class AdminViewSysinfo extends JViewLegacy
 				'data'  => $model->getSafeData('extensions')
 			)
 		);
+	}
+
+	/**
+	 * The third-party software as group => name => "version, date, licence, location".
+	 *
+	 * @param   array  $groups  The model's data
+	 *
+	 * @return  array
+	 *
+	 * @since   3.18.0
+	 */
+	protected function getThirdPartyLines($groups)
+	{
+		$lines = array();
+
+		foreach ($groups as $group => $entries)
+		{
+			foreach ($entries as $entry)
+			{
+				$lines[$group][$entry['name']] = implode(', ', array_filter(array($entry['version'], $entry['date'], $entry['license'], $entry['path'])));
+			}
+		}
+
+		return $lines;
 	}
 
 	/**

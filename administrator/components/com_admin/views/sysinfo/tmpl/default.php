@@ -23,16 +23,20 @@ JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 			<?php echo $this->loadTemplate('system'); ?>
 			<?php echo JHtml::_('bootstrap.endTab'); ?>
 
-			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'phpsettings', JText::_('COM_ADMIN_PHP_SETTINGS')); ?>
-			<?php echo $this->loadTemplate('phpsettings'); ?>
-			<?php echo JHtml::_('bootstrap.endTab'); ?>
-
 			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'config', JText::_('COM_ADMIN_CONFIGURATION_FILE')); ?>
 			<?php echo $this->loadTemplate('config'); ?>
 			<?php echo JHtml::_('bootstrap.endTab'); ?>
 
 			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'directory', JText::_('COM_ADMIN_DIRECTORY_PERMISSIONS')); ?>
 			<?php echo $this->loadTemplate('directory'); ?>
+			<?php echo JHtml::_('bootstrap.endTab'); ?>
+
+			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'thirdparty', JText::_('COM_ADMIN_THIRD_PARTY_SOFTWARE')); ?>
+			<?php echo $this->loadTemplate('thirdparty'); ?>
+			<?php echo JHtml::_('bootstrap.endTab'); ?>
+
+			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'phpsettings', JText::_('COM_ADMIN_PHP_SETTINGS')); ?>
+			<?php echo $this->loadTemplate('phpsettings'); ?>
 			<?php echo JHtml::_('bootstrap.endTab'); ?>
 
 			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'phpinfo', JText::_('COM_ADMIN_PHP_INFORMATION')); ?>

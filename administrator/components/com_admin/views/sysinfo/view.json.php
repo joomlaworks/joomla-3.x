@@ -60,6 +60,7 @@ class AdminViewSysinfo extends JViewLegacy
 			'phpSettings' => $model->getSafeData('phpSettings'),
 			'config'      => $model->getSafeData('config'),
 			'directories' => $model->getSafeData('directory', true),
+			'thirdParty'  => $model->getSafeData('thirdParty'),
 			'phpInfo'     => $model->getSafeData('phpInfoArray'),
 			'extensions'  => $model->getSafeData('extensions')
 		);
