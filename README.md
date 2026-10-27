@@ -70,6 +70,7 @@ Summary of changes:
 - "Editor - Blocks (Editor.js)": write content as blocks (headings, lists, images, embeds, quotes, tables, code, notes, HTML, Read more), saved as HTML which the site template's block layouts decide (templates override any block in `html/layouts/joomla/blocks/`); templates add blocks of their own (a field definition and a layout each; Rookwood comes with Hero, Testimonials and Services); a preview with the site template (desktop, tablet, phone), full screen and a content width (800px by default); a "Custom Blocks" module (site and administrator) builds module content from blocks
 
 **Improvements:**
+- PHPMailer updated from 5.2.28 (2020) to 7.1.1 (May 2026), with Joomla's mailer and extensions using PHPMailer's old class names working as before
 - Larger modals for picking images, articles, modules, menu items, contacts and fields: most of the window instead of 800 by 500 pixels
 - **Little WAF**, enabled by default (new sites, and once on update), first of all system plugins, and all its options on one page:
   - Generic protections against whole classes of attack, whatever extensions a site has: scans for other platforms' files (WordPress's `wp-login.php` and `xmlrpc.php`, `.git`, `.env`, phpMyAdmin, backups) get a plain 404 before Joomla builds a page for them; executable uploads (`shell.php.jpg`, `.htaccess`), PHP-serialized objects (object injection) and attack tools (sqlmap, Nikto, WPScan, ...) get a 403

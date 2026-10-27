@@ -1212,22 +1212,24 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "dev-joomla-backports",
-            "version_normalized": "dev-joomla-backports",
+            "version": "v7.1.1",
+            "version_normalized": "7.1.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/joomla-backports/PHPMailer.git",
-                "reference": "3bac61142e875279af98f16afef696b6bb7a19c9"
+                "url": "https://github.com/PHPMailer/PHPMailer.git",
+                "reference": "1bc1716a507a65e039d4ac9d9adebbbd0d346e15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-backports/PHPMailer/zipball/3bac61142e875279af98f16afef696b6bb7a19c9",
-                "reference": "3bac61142e875279af98f16afef696b6bb7a19c9",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/1bc1716a507a65e039d4ac9d9adebbbd0d346e15",
+                "reference": "1bc1716a507a65e039d4ac9d9adebbbd0d346e15",
                 "shasum": ""
             },
             "require": {
+                "php": ">=5.5.0",
                 "ext-ctype": "*",
-                "php": ">=5.0.0"
+                "ext-filter": "*",
+                "ext-hash": "*"
             },
             "require-dev": {
                 "doctrine/annotations": "1.2.*",
@@ -1252,23 +1254,17 @@
             "suggest": {
                 "league/oauth2-google": "Needed for Google XOAUTH2 authentication"
             },
-            "time": "2021-08-13T06:59:24+00:00",
+            "time": "2026-05-18T08:06:14+00:00",
             "default-branch": true,
             "type": "library",
             "installation-source": "dist",
             "autoload": {
-                "classmap": [
-                    "class.phpmailer.php",
-                    "class.phpmaileroauth.php",
-                    "class.phpmaileroauthgoogle.php",
-                    "class.smtp.php",
-                    "class.pop3.php",
-                    "extras/EasyPeasyICS.php",
-                    "extras/ntlm_sasl_client.php"
-                ]
+                "psr-4": {
+                    "PHPMailer\\PHPMailer\\": "src/"
+                }
             },
             "license": [
-                "LGPL-2.1"
+                "LGPL-2.1-only"
             ],
             "authors": [
                 {

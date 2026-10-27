@@ -45,6 +45,7 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'P' => 
         array (
             'Psr\\Log\\' => 8,
+            'PHPMailer\\PHPMailer\\' => 20,
             'Psr\\Container\\' => 14,
         ),
         'J' => 
@@ -89,6 +90,10 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'ReCaptcha\\' => 
         array (
             0 => __DIR__ . '/..' . '/google/recaptcha/src/ReCaptcha',
+        ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
         'Psr\\Log\\' => 
         array (
@@ -176,7 +181,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
     public static $classMap = array (
         'CallbackFilterIterator' => __DIR__ . '/..' . '/joomla/compat/src/CallbackFilterIterator.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'EasyPeasyICS' => __DIR__ . '/..' . '/phpmailer/phpmailer/extras/EasyPeasyICS.php',
         'Joomla\\Application\\AbstractApplication' => __DIR__ . '/..' . '/joomla/application/src/AbstractApplication.php',
         'Joomla\\Application\\AbstractCliApplication' => __DIR__ . '/..' . '/joomla/application/src/AbstractCliApplication.php',
         'Joomla\\Application\\AbstractDaemonApplication' => __DIR__ . '/..' . '/joomla/application/src/AbstractDaemonApplication.php',
@@ -279,10 +283,8 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'Joomla\\Utilities\\IpHelper' => __DIR__ . '/..' . '/joomla/utilities/src/IpHelper.php',
         'JsonException' => __DIR__ . '/..' . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
         'JsonSerializable' => __DIR__ . '/..' . '/joomla/compat/src/JsonSerializable.php',
-        'PHPMailer' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmailer.php',
-        'PHPMailerOAuth' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmaileroauth.php',
-        'PHPMailerOAuthGoogle' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmaileroauthgoogle.php',
-        'POP3' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.pop3.php',
+        'PHPMailer' => __DIR__ . '/../../..' . '/libraries/src/Mail/phpmailer-aliases.php',
+        'POP3' => __DIR__ . '/../../..' . '/libraries/src/Mail/phpmailer-aliases.php',
         'Psr\\Container\\ContainerExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerExceptionInterface.php',
         'Psr\\Container\\ContainerInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerInterface.php',
         'Psr\\Container\\NotFoundExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/NotFoundExceptionInterface.php',
@@ -303,7 +305,7 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'ReCaptcha\\RequestMethod\\SocketPost' => __DIR__ . '/..' . '/google/recaptcha/src/ReCaptcha/RequestMethod/SocketPost.php',
         'ReCaptcha\\RequestParameters' => __DIR__ . '/..' . '/google/recaptcha/src/ReCaptcha/RequestParameters.php',
         'ReCaptcha\\Response' => __DIR__ . '/..' . '/google/recaptcha/src/ReCaptcha/Response.php',
-        'SMTP' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.smtp.php',
+        'SMTP' => __DIR__ . '/../../..' . '/libraries/src/Mail/phpmailer-aliases.php',
         'SimplePie' => __DIR__ . '/..' . '/simplepie/simplepie/library/SimplePie.php',
         'SimplePie_Author' => __DIR__ . '/..' . '/simplepie/simplepie/library/SimplePie/Author.php',
         'SimplePie_Cache' => __DIR__ . '/..' . '/simplepie/simplepie/library/SimplePie/Cache.php',
@@ -374,8 +376,7 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'lessc_formatter_compressed' => __DIR__ . '/..' . '/leafo/lessphp/lessc.inc.php',
         'lessc_formatter_lessjs' => __DIR__ . '/..' . '/leafo/lessphp/lessc.inc.php',
         'lessc_parser' => __DIR__ . '/..' . '/leafo/lessphp/lessc.inc.php',
-        'ntlm_sasl_client_class' => __DIR__ . '/..' . '/phpmailer/phpmailer/extras/ntlm_sasl_client.php',
-        'phpmailerException' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmailer.php',
+        'phpmailerException' => __DIR__ . '/../../..' . '/libraries/src/Mail/phpmailer-aliases.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

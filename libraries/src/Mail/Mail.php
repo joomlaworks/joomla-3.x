@@ -21,6 +21,34 @@ use Joomla\CMS\Log\Log;
 class Mail extends \PHPMailer
 {
 	/**
+	 * PHPMailer's message keys and Joomla's language strings for them
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const LANGUAGE_STRINGS = array(
+		'authenticate'         => 'PHPMAILER_AUTHENTICATE',
+		'connect_host'         => 'PHPMAILER_CONNECT_HOST',
+		'data_not_accepted'    => 'PHPMAILER_DATA_NOT_ACCEPTED',
+		'empty_message'        => 'PHPMAILER_EMPTY_MESSAGE',
+		'encoding'             => 'PHPMAILER_ENCODING',
+		'execute'              => 'PHPMAILER_EXECUTE',
+		'extension_missing'    => 'PHPMAILER_EXTENSION_MISSING',
+		'file_access'          => 'PHPMAILER_FILE_ACCESS',
+		'file_open'            => 'PHPMAILER_FILE_OPEN',
+		'from_failed'          => 'PHPMAILER_FROM_FAILED',
+		'instantiate'          => 'PHPMAILER_INSTANTIATE',
+		'invalid_address'      => 'PHPMAILER_INVALID_ADDRESS',
+		'mailer_not_supported' => 'PHPMAILER_MAILER_IS_NOT_SUPPORTED',
+		'provide_address'      => 'PHPMAILER_PROVIDE_ADDRESS',
+		'recipients_failed'    => 'PHPMAILER_RECIPIENTS_FAILED',
+		'signing'              => 'PHPMAILER_SIGNING_ERROR',
+		'smtp_connect_failed'  => 'PHPMAILER_SMTP_CONNECT_FAILED',
+		'smtp_error'           => 'PHPMAILER_SMTP_ERROR',
+		'variable_set'         => 'PHPMAILER_VARIABLE_SET',
+	);
+
+	/**
 	 * Mail instances container.
 	 *
 	 * @var    Mail[]
@@ -47,8 +75,19 @@ class Mail extends \PHPMailer
 	{
 		parent::__construct($exceptions);
 
-		// PHPMailer has an issue using the relative path for its language files
-		$this->setLanguage('en_gb', __DIR__ . '/language/');
+		// PHPMailer's messages in the site's language. PHPMailer reads language files as text (no PHP), so Joomla's strings are
+		// set here, over its English, which stays for messages Joomla has no string for
+		$this->setLanguage('en');
+
+		$language = Factory::getLanguage();
+
+		foreach (self::LANGUAGE_STRINGS as $key => $string)
+		{
+			if ($language->hasKey($string))
+			{
+				static::$language[$key] = \JText::_($string);
+			}
+		}
 
 		// Configure a callback function to handle errors when $this->debug() is called
 		$this->Debugoutput = function ($message, $level)

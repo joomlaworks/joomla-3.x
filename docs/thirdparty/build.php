@@ -96,8 +96,8 @@ $groups = array(
 			'note' => 'Service by Automattic (REST API 1.1); used by "CAPTCHA - Akismet"'),
 	),
 	'PHP Libraries' => array(
-		array('name' => 'PHPMailer', 'version' => '5.2.28', 'license' => 'LGPL-2.1', 'url' => 'https://github.com/PHPMailer/PHPMailer', 'path' => 'libraries/vendor/phpmailer/phpmailer',
-			'note' => 'With Joomla\'s backported fixes', 'check' => array('libraries/vendor/phpmailer/phpmailer/class.phpmailer.php', "/\\\$Version = '([0-9.]+)\+/")),
+		array('name' => 'PHPMailer', 'composer' => 'phpmailer/phpmailer', 'license' => 'LGPL-2.1', 'url' => 'https://github.com/PHPMailer/PHPMailer', 'path' => 'libraries/vendor/phpmailer/phpmailer',
+			'note' => 'Patched (php_uname() guard)'),
 		array('name' => 'SimplePie', 'composer' => 'simplepie/simplepie', 'license' => 'BSD-3-Clause', 'url' => 'https://simplepie.org', 'path' => 'libraries/vendor/simplepie/simplepie',
 			'note' => 'Joomla\'s maintained copy'),
 		array('name' => 'lessphp', 'version' => '0.5.0', 'license' => 'MIT', 'url' => 'https://github.com/leafo/lessphp', 'path' => 'libraries/vendor/leafo/lessphp',

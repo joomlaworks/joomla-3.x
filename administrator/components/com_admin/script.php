@@ -4421,6 +4421,13 @@ class JoomlaInstallerScript
 			'/administrator/language/en-GB/en-GB.plg_fields_image.sys.ini',
 			'/administrator/language/en-GB/en-GB.plg_system_p3p.ini',
 			'/administrator/language/en-GB/en-GB.plg_system_p3p.sys.ini',
+			// PHPMailer 5.2 (7.1 since 3.18: src/; its language file is Joomla's strings, set by the Mail class)
+			'/libraries/vendor/phpmailer/phpmailer/PHPMailerAutoload.php',
+			'/libraries/vendor/phpmailer/phpmailer/class.phpmailer.php',
+			'/libraries/vendor/phpmailer/phpmailer/class.phpmaileroauth.php',
+			'/libraries/vendor/phpmailer/phpmailer/class.phpmaileroauthgoogle.php',
+			'/libraries/vendor/phpmailer/phpmailer/class.pop3.php',
+			'/libraries/vendor/phpmailer/phpmailer/class.smtp.php',
 			// CodeMirror's ASN.1 mode, minified under a wrong name (the editor loads mode/asn.1/asn.1.min.js)
 			'/media/editors/codemirror/mode/asn.1/asn.min.js',
 		);
@@ -4696,6 +4703,8 @@ class JoomlaInstallerScript
 			'/libraries/vendor/symfony/polyfill-php56',
 			'/libraries/vendor/symfony/polyfill-php71',
 			'/libraries/vendor/symfony/polyfill-util',
+			'/libraries/src/Mail/language',
+			'/libraries/vendor/phpmailer/phpmailer/extras',
 			'/media/plg_captcha_recaptcha_invisible',
 			'/plugins/authentication/gmail',
 			'/plugins/captcha/recaptcha/postinstall',

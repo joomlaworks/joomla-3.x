@@ -372,12 +372,12 @@
         },
         {
             "name": "PHPMailer",
-            "version": "5.2.28",
-            "date": "",
+            "version": "7.1.1",
+            "date": "2026.05.18",
             "license": "LGPL-2.1",
             "url": "https://github.com/PHPMailer/PHPMailer",
             "path": "libraries/vendor/phpmailer/phpmailer",
-            "note": "With Joomla's backported fixes"
+            "note": "Patched (php_uname() guard)"
         },
         {
             "name": "PSR Container",
