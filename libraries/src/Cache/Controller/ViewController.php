@@ -72,6 +72,12 @@ class ViewController extends CacheController
 			if ($wrkarounds)
 			{
 				echo Cache::getWorkarounds($data);
+
+				// What the view told the browser when it ran (see below)
+				if (!empty($data['viewcachable']))
+				{
+					\JFactory::getApplication()->allowCache(true);
+				}
 			}
 			else
 			{
@@ -96,6 +102,10 @@ class ViewController extends CacheController
 			return false;
 		}
 
+		$app            = \JFactory::getApplication();
+		$headersBefore  = $app->getHeaders();
+		$cachableBefore = $app->allowCache();
+
 		// Capture and echo output
 		ob_start();
 		ob_implicit_flush(false);
@@ -111,6 +121,31 @@ class ViewController extends CacheController
 		if ($wrkarounds)
 		{
 			$data = Cache::setWorkarounds($data);
+
+			/*
+			 * The response headers the view set (e.g. Last-Modified, ETag) and whether it allowed browsers to cache the page:
+			 * a cache hit doesn't run the view, so without them its pages lost those headers and were sent as "no-cache".
+			 * Only what the view added, not the headers set before it by the rest of the request.
+			 */
+			$added = array();
+
+			foreach ($app->getHeaders() as $header)
+			{
+				if (!in_array($header, $headersBefore, true))
+				{
+					$added[] = $header;
+				}
+			}
+
+			if ($added)
+			{
+				$data['headers'] = $added;
+			}
+
+			if (!$cachableBefore && $app->allowCache())
+			{
+				$data['viewcachable'] = true;
+			}
 		}
 
 		// Store the cache data
