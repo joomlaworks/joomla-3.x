@@ -9,7 +9,7 @@
     <authorUrl>www.joomla.org</authorUrl>
     <version>3.0.0</version>
     <description>MOD_CUSTOM_XML_DESCRIPTION</description>
-    <customContent />
+    <customContent editor="tinymce_latest|tinymce|none" />
     <files>
         <filename module="mod_custom">mod_custom.php</filename>
         <folder>tmpl</folder>

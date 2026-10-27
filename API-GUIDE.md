@@ -298,7 +298,7 @@ A module whose manifest has `<customContent />` is edited in the module form's c
 <customContent editor="editorjs|none" hide="readmore,pagebreak" />
 ```
 
-`editor`, `syntax`, `buttons`, `hide` and `height` are taken (`JModuleHelper::prepareContentField()`); the field's text filter always stays. "Custom Code" uses `editor="codemirror|none" syntax="html" buttons="false"`, "Custom Blocks" the line above.
+`editor`, `syntax`, `buttons`, `hide` and `height` are taken (`JModuleHelper::prepareContentField()`); the field's text filter always stays. "Custom Code" uses `editor="codemirror|none" syntax="html" buttons="false"`, "Custom Blocks" the line above, and "Custom HTML" `editor="tinymce_latest|tinymce|none"`.
 
 ## EDITORS: CHOOSING ONE AND SWITCHING
 
