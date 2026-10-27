@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.4" type="plugin" group="captcha" method="upgrade">
     <name>plg_captcha_recaptcha</name>
-    <version>3.4.0</version>
+    <version>3.18.0</version>
     <creationDate>December 2011</creationDate>
     <author>Joomla! Project</author>
     <authorEmail>admin@joomla.org</authorEmail>
@@ -18,37 +18,47 @@
     <languages>
         <language tag="en-GB">en-GB.plg_captcha_recaptcha.ini</language>
         <language tag="en-GB">en-GB.plg_captcha_recaptcha.sys.ini</language>
-    </languages>
-    <config>
+    </languages>    <config>
         <fields name="params">
             <fieldset name="basic">
-                <field name="message" type="note" label="PLG_RECAPTCHA_VERSION_1_WARNING_LABEL" showon="version:1.0" />
-                <field name="version" type="list" label="PLG_RECAPTCHA_VERSION_LABEL" description="PLG_RECAPTCHA_VERSION_DESC" default="2.0" size="1">
-                    <option value="1.0">PLG_RECAPTCHA_VERSION_V1</option>
-                    <option value="2.0">PLG_RECAPTCHA_VERSION_V2</option>
+                <field name="type" type="list" label="PLG_RECAPTCHA_TYPE_LABEL" description="PLG_RECAPTCHA_TYPE_DESC" default="checkbox" filter="cmd">
+                    <option value="checkbox">PLG_RECAPTCHA_TYPE_CHECKBOX</option>
+                    <option value="invisible">PLG_RECAPTCHA_TYPE_INVISIBLE</option>
+                    <option value="score">PLG_RECAPTCHA_TYPE_SCORE</option>
                 </field>
                 <field name="public_key" type="text" label="PLG_RECAPTCHA_PUBLIC_KEY_LABEL" description="PLG_RECAPTCHA_PUBLIC_KEY_DESC" default="" required="true" filter="string" size="100" class="input-xxlarge" />
                 <field name="private_key" type="text" label="PLG_RECAPTCHA_PRIVATE_KEY_LABEL" description="PLG_RECAPTCHA_PRIVATE_KEY_DESC" default="" required="true" filter="string" size="100" class="input-xxlarge" />
-                <field name="theme" type="list" label="PLG_RECAPTCHA_THEME_LABEL" description="PLG_RECAPTCHA_THEME_DESC" default="clean" showon="version:1.0" filter="">
-                    <option value="clean">PLG_RECAPTCHA_THEME_CLEAN</option>
-                    <option value="white">PLG_RECAPTCHA_THEME_WHITE</option>
-                    <option value="blackglass">PLG_RECAPTCHA_THEME_BLACKGLASS</option>
-                    <option value="red">PLG_RECAPTCHA_THEME_RED</option>
-                </field>
-                <field name="theme2" type="list" label="PLG_RECAPTCHA_THEME_LABEL" description="PLG_RECAPTCHA_THEME_DESC" default="light" showon="version:2.0" filter="">
+                <field name="theme" type="list" label="PLG_RECAPTCHA_THEME_LABEL" description="PLG_RECAPTCHA_THEME_DESC" default="light" filter="cmd" showon="type:checkbox">
                     <option value="light">PLG_RECAPTCHA_THEME_LIGHT</option>
                     <option value="dark">PLG_RECAPTCHA_THEME_DARK</option>
                 </field>
-                <field name="size" type="list" label="PLG_RECAPTCHA_SIZE_LABEL" description="PLG_RECAPTCHA_SIZE_DESC" default="normal" showon="version:2.0" filter="">
+                <field name="size" type="list" label="PLG_RECAPTCHA_SIZE_LABEL" description="PLG_RECAPTCHA_SIZE_DESC" default="normal" filter="cmd" showon="type:checkbox">
                     <option value="normal">PLG_RECAPTCHA_THEME_NORMAL</option>
                     <option value="compact">PLG_RECAPTCHA_THEME_COMPACT</option>
                 </field>
-                <field name="tabindex" type="number" label="PLG_RECAPTCHA_TABINDEX_LABEL" description="PLG_RECAPTCHA_TABINDEX_DESC" default="0" showon="version:2.0" min="0" />
-                <field name="callback" type="text" label="PLG_RECAPTCHA_CALLBACK_LABEL" description="PLG_RECAPTCHA_CALLBACK_DESC" default="" showon="version:2.0" filter="string" />
-                <field name="expired_callback" type="text" label="PLG_RECAPTCHA_EXPIRED_CALLBACK_LABEL" description="PLG_RECAPTCHA_EXPIRED_CALLBACK_DESC" default="" showon="version:2.0" filter="string" />
-                <field name="error_callback" type="text" label="PLG_RECAPTCHA_ERROR_CALLBACK_LABEL" description="PLG_RECAPTCHA_ERROR_CALLBACK_DESC" default="" showon="version:2.0" filter="string" />
+                <field name="badge" type="list" label="PLG_RECAPTCHA_BADGE_LABEL" description="PLG_RECAPTCHA_BADGE_DESC" default="bottomright" filter="cmd" showon="type:invisible">
+                    <option value="bottomright">PLG_RECAPTCHA_BADGE_BOTTOMRIGHT</option>
+                    <option value="bottomleft">PLG_RECAPTCHA_BADGE_BOTTOMLEFT</option>
+                    <option value="inline">PLG_RECAPTCHA_BADGE_INLINE</option>
+                </field>
+                <field name="score" type="list" label="PLG_RECAPTCHA_SCORE_LABEL" description="PLG_RECAPTCHA_SCORE_DESC" default="0.5" filter="string" showon="type:score">
+                    <option value="0.1">0.1</option>
+                    <option value="0.2">0.2</option>
+                    <option value="0.3">0.3</option>
+                    <option value="0.4">0.4</option>
+                    <option value="0.5">0.5</option>
+                    <option value="0.6">0.6</option>
+                    <option value="0.7">0.7</option>
+                    <option value="0.8">0.8</option>
+                    <option value="0.9">0.9</option>
+                </field>
+                <field name="heading_advanced" type="spacer" label="PLG_RECAPTCHA_HEADING_ADVANCED" description="PLG_RECAPTCHA_HEADING_ADVANCED_DESC" showon="type:checkbox,invisible" />
+                <field name="tabindex" type="number" label="PLG_RECAPTCHA_TABINDEX_LABEL" description="PLG_RECAPTCHA_TABINDEX_DESC" default="0" min="0" filter="integer" showon="type:checkbox,invisible" />
+                <field name="callback" type="text" label="PLG_RECAPTCHA_CALLBACK_LABEL" description="PLG_RECAPTCHA_CALLBACK_DESC" default="" filter="string" showon="type:checkbox,invisible" />
+                <field name="expired_callback" type="text" label="PLG_RECAPTCHA_EXPIRED_CALLBACK_LABEL" description="PLG_RECAPTCHA_EXPIRED_CALLBACK_DESC" default="" filter="string" showon="type:checkbox,invisible" />
+                <field name="error_callback" type="text" label="PLG_RECAPTCHA_ERROR_CALLBACK_LABEL" description="PLG_RECAPTCHA_ERROR_CALLBACK_DESC" default="" filter="string" showon="type:checkbox,invisible" />
             </fieldset>
         </fields>
-    </config>
+    </config>>
 </extension>
 

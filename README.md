@@ -54,6 +54,7 @@ Summary of changes:
 - **Faster, sturdier caching:** campaign and social links (`utm_*`, `fbclid`, `gclid`, ...) now get cached pages (about 18 ms instead of 200 ms to render one in our tests), cached pages skip the work of third-party system plugins, the file cache reads about 30% faster, a page being cached is rendered once instead of by every request waiting for it, and cache times are precise across Joomla, Varnish or CDNs and browsers (an `Age` header, times counted from when a page was stored); plus fixes for blank pages, browser caching, form tokens and Redis/APCu that stock Joomla 3 never had
 
 **New features:**
+- "CAPTCHA - Google reCAPTCHA": one plugin for the checkbox, invisible and score (v3, new) types, replacing the two reCAPTCHA plugins (settings moved over on update); v1 support removed (Google shut it down in 2018)
 - Little WAF can hide the administrator's login behind a secret key in its address (`/administrator/?key` or `?name=value`; off by default): without it, visitors go to the home page
 - System Information has a Third-party Software tab: the libraries, frameworks, editors, fonts and PHP libraries included, with version, date, licence and home page; Folder Permissions is sorted alphabetically (folders inside the site without the server's full path) and PHP Settings sits next to PHP Information
 - Media Manager: drag and drop files onto the list to upload them into the folder shown, with progress for each (also in the image picker, which selects a dropped image), using the Media Manager's optimisation settings
@@ -120,6 +121,7 @@ Summary of changes:
 - Media uploads compare executable extensions in any case (`x.SHTML.png` got through), and the "Illegal MIME Types" option is actually checked
 
 **Bug fixes:**
+- Invisible reCAPTCHA no longer refuses forms that take more than two minutes to fill in (its check now runs when the form is sent)
 - **Caching** (all bugs of stock Joomla 3):
   - A damaged cache entry (an interrupted write) no longer serves an empty page until it expires
   - Browser caching of cached pages works: browsers get a 304 for a page they already have

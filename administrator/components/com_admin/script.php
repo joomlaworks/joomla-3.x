@@ -96,6 +96,7 @@ class JoomlaInstallerScript
 		$this->addSystemInformationModule();
 		$this->orderSystemPlugins();
 		$this->removeObsoletePluginParams();
+		$this->mergeRecaptchaPlugins();
 		$this->switchDefaultEditor();
 		$this->fixCoreCategorySubmenus();
 
@@ -852,7 +853,6 @@ class JoomlaInstallerScript
 			array('plugin', 'module', 'editors-xtd'),
 			array('plugin', 'profile', 'user'),
 			array('plugin', 'recaptcha', 'captcha'),
-			array('plugin', 'recaptcha_invisible', 'captcha'),
 			array('plugin', 'sef', 'system'),
 			array('plugin', 'sessiongc', 'system'),
 			array('plugin', 'stats', 'system'),
@@ -895,7 +895,6 @@ class JoomlaInstallerScript
 		'module:1::mod_housekeeping'             => '/media/mod_housekeeping',
 		'module:1::mod_sampledata'               => '/media/mod_sampledata',
 		'plugin:0:captcha:recaptcha'             => '/media/plg_captcha_recaptcha',
-		'plugin:0:captcha:recaptcha_invisible'   => '/media/plg_captcha_recaptcha_invisible',
 		'plugin:0:editors:codemirror'            => '/media/editors/codemirror',
 		'plugin:0:editors:tinymce_latest'        => '/media/editors/tinymce_latest',
 		'plugin:0:editors:easymde'               => '/media/editors/easymde',
@@ -917,7 +916,6 @@ class JoomlaInstallerScript
 	protected $removableCoreExtensionsDisabled = array(
 		'plugin:0:authentication:ldap',
 		'plugin:0:captcha:recaptcha',
-		'plugin:0:captcha:recaptcha_invisible',
 		'plugin:0:content:confirmconsent',
 		'plugin:0:content:finder',
 		'plugin:0:content:vote',
@@ -1372,6 +1370,250 @@ class JoomlaInstallerScript
 		{
 			// Not worth failing the update for: unread options do no harm
 		}
+	}
+
+	/**
+	 * "CAPTCHA - reCAPTCHA" and "CAPTCHA - reCAPTCHA Invisible" became one plugin in 3.18, "CAPTCHA - Google reCAPTCHA"
+	 * (recaptcha), with a type: checkbox, invisible or score. On every update until it's done: the old options of recaptcha
+	 * (version, theme2) become the new ones; when the invisible plugin is still installed, its keys and options move into
+	 * recaptcha (as the invisible type) if the site uses it and not the checkbox one (or only the invisible one has keys),
+	 * every setting naming it names recaptcha instead (Global Configuration, component, menu item and contact options), and
+	 * its row is removed (its files are on the cleanup list). A site which uninstalled recaptcha keeps its protection: the
+	 * invisible plugin's row becomes the recaptcha one.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function mergeRecaptchaPlugins()
+	{
+		try
+		{
+			$db   = JFactory::getDbo();
+			$rows = $db->setQuery(
+				$db->getQuery(true)
+					->select($db->quoteName(array('extension_id', 'element', 'enabled', 'params')))
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+					->where($db->quoteName('folder') . ' = ' . $db->quote('captcha'))
+					->where($db->quoteName('element') . ' IN (' . $db->quote('recaptcha') . ', ' . $db->quote('recaptcha_invisible') . ')')
+			)->loadObjectList('element');
+
+			$checkbox  = isset($rows['recaptcha']) ? $rows['recaptcha'] : null;
+			$invisible = isset($rows['recaptcha_invisible']) ? $rows['recaptcha_invisible'] : null;
+			$params    = $checkbox ? $this->getRecaptchaParams($checkbox->params) : null;
+
+			if ($invisible)
+			{
+				$old     = json_decode((string) $invisible->params, true);
+				$old     = is_array($old) ? $old : array();
+				$moved   = array_merge(
+					array_intersect_key($old, array_flip(array('public_key', 'private_key', 'badge', 'tabindex', 'callback', 'expired_callback', 'error_callback'))),
+					array('type' => 'invisible')
+				);
+				$hasKeys = function ($values)
+				{
+					return trim((string) (isset($values['public_key']) ? $values['public_key'] : '')) !== ''
+						&& trim((string) (isset($values['private_key']) ? $values['private_key'] : '')) !== '';
+				};
+
+				if (!$checkbox)
+				{
+					// recaptcha was uninstalled: the invisible plugin's row becomes it
+					$db->setQuery(
+						$db->getQuery(true)
+							->update($db->quoteName('#__extensions'))
+							->set($db->quoteName('element') . ' = ' . $db->quote('recaptcha'))
+							->set($db->quoteName('name') . ' = ' . $db->quote('plg_captcha_recaptcha'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode((object) $moved)))
+							->where($db->quoteName('extension_id') . ' = ' . (int) $invisible->extension_id)
+					)->execute();
+				}
+				else
+				{
+					$global = class_exists('JConfig') ? (string) (new JConfig)->captcha : '';
+
+					if ($hasKeys($moved) && (!$hasKeys($params) || $global === 'recaptcha_invisible' || ($global !== 'recaptcha'
+						&& !$this->countCaptchaChoices('recaptcha') && ($invisible->enabled || $this->countCaptchaChoices('recaptcha_invisible')))))
+					{
+						$params = $moved;
+					}
+
+					$db->setQuery(
+						$db->getQuery(true)
+							->update($db->quoteName('#__extensions'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode((object) $params)))
+							->set($db->quoteName('enabled') . ' = ' . (int) ($checkbox->enabled || $invisible->enabled))
+							->where($db->quoteName('extension_id') . ' = ' . (int) $checkbox->extension_id)
+					)->execute();
+
+					$db->setQuery(
+						$db->getQuery(true)
+							->delete($db->quoteName('#__extensions'))
+							->where($db->quoteName('extension_id') . ' = ' . (int) $invisible->extension_id)
+					)->execute();
+				}
+
+				$this->renameCaptchaChoice('recaptcha_invisible', 'recaptcha');
+
+				return;
+			}
+
+			if ($checkbox && $params !== json_decode((string) $checkbox->params, true))
+			{
+				$db->setQuery(
+					$db->getQuery(true)
+						->update($db->quoteName('#__extensions'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode((object) $params)))
+						->where($db->quoteName('extension_id') . ' = ' . (int) $checkbox->extension_id)
+				)->execute();
+			}
+		}
+		catch (Exception $e)
+		{
+			// Not worth failing the update for: the plugin falls back to the checkbox type
+		}
+	}
+
+	/**
+	 * The options of "CAPTCHA - reCAPTCHA" as 3.18's plugin reads them: v1 (shut down by Google in 2018) and v2 become the
+	 * checkbox type, with v2's theme.
+	 *
+	 * @param   string  $json  The stored options
+	 *
+	 * @return  array
+	 *
+	 * @since   3.18.0
+	 */
+	private function getRecaptchaParams($json)
+	{
+		$params = json_decode((string) $json, true);
+		$params = is_array($params) ? $params : array();
+
+		if (isset($params['type']))
+		{
+			return $params;
+		}
+
+		$params['type']  = 'checkbox';
+		$params['theme'] = isset($params['theme2']) && $params['theme2'] === 'dark' ? 'dark' : 'light';
+		unset($params['version'], $params['theme2']);
+
+		return $params;
+	}
+
+	/**
+	 * @param   string  $plugin  A captcha plugin's element
+	 *
+	 * @return  integer  How many component, menu item and contact options choose it
+	 *
+	 * @since   3.18.0
+	 */
+	private function countCaptchaChoices($plugin)
+	{
+		$db    = JFactory::getDbo();
+		$count = 0;
+
+		foreach ($this->getCaptchaChoiceTables() as $table)
+		{
+			$count += (int) $db->setQuery(
+				$db->getQuery(true)
+					->select('COUNT(*)')
+					->from($db->quoteName($table))
+					->where($db->quoteName('params') . ' LIKE ' . $db->quote('%"captcha":"' . $plugin . '"%'))
+			)->loadResult();
+		}
+
+		return $count;
+	}
+
+	/**
+	 * Makes every choice of a captcha plugin (Global Configuration, component, menu item and contact options) name another.
+	 *
+	 * @param   string  $from  The element chosen
+	 * @param   string  $to    The element to choose instead
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	private function renameCaptchaChoice($from, $to)
+	{
+		$db = JFactory::getDbo();
+
+		foreach ($this->getCaptchaChoiceTables() as $table)
+		{
+			$db->setQuery(
+				$db->getQuery(true)
+					->update($db->quoteName($table))
+					->set($db->quoteName('params') . ' = REPLACE(' . $db->quoteName('params') . ', '
+						. $db->quote('"captcha":"' . $from . '"') . ', ' . $db->quote('"captcha":"' . $to . '"') . ')')
+					->where($db->quoteName('params') . ' LIKE ' . $db->quote('%"captcha":"' . $from . '"%'))
+			)->execute();
+		}
+
+		$file = JPATH_CONFIGURATION . '/configuration.php';
+
+		if (!class_exists('JConfig') || !is_file($file))
+		{
+			return;
+		}
+
+		$config = new JRegistry(new JConfig);
+
+		if ($config->get('captcha') !== $from)
+		{
+			return;
+		}
+
+		$config->set('captcha', $to);
+
+		// As Global Configuration writes it, keeping the file's permissions as they were
+		jimport('joomla.filesystem.file');
+
+		$permissions = fileperms($file) & 0777;
+
+		if (!is_writable($file))
+		{
+			@chmod($file, 0644);
+		}
+
+		$written = JFile::write($file, $config->toString('PHP', array('class' => 'JConfig', 'closingtag' => false, 'sort' => true)));
+
+		@chmod($file, $permissions);
+
+		if (function_exists('opcache_invalidate'))
+		{
+			opcache_invalidate($file);
+		}
+
+		if ($written)
+		{
+			JFactory::getConfig()->set('captcha', $to);
+		}
+	}
+
+	/**
+	 * @return  array  The tables whose rows' options can choose a captcha plugin, those the site has
+	 *
+	 * @since   3.18.0
+	 */
+	private function getCaptchaChoiceTables()
+	{
+		$db       = JFactory::getDbo();
+		$prefix   = $db->getPrefix();
+		$existing = array_map('strtolower', $db->getTableList());
+		$tables   = array();
+
+		foreach (array('#__extensions', '#__menu', '#__contact_details') as $table)
+		{
+			if (in_array(strtolower(str_replace('#__', $prefix, $table)), $existing, true))
+			{
+				$tables[] = $table;
+			}
+		}
+
+		return $tables;
 	}
 
 	/**
@@ -4124,6 +4366,8 @@ class JoomlaInstallerScript
 			// Joomla 3.18.0
 			'/administrator/language/en-GB/en-GB.plg_authentication_gmail.ini',
 			'/administrator/language/en-GB/en-GB.plg_authentication_gmail.sys.ini',
+			'/administrator/language/en-GB/en-GB.plg_captcha_recaptcha_invisible.ini',
+			'/administrator/language/en-GB/en-GB.plg_captcha_recaptcha_invisible.sys.ini',
 			'/administrator/language/en-GB/en-GB.plg_fields_image.ini',
 			'/administrator/language/en-GB/en-GB.plg_fields_image.sys.ini',
 			'/administrator/language/en-GB/en-GB.plg_system_p3p.ini',
@@ -4403,7 +4647,10 @@ class JoomlaInstallerScript
 			'/libraries/vendor/symfony/polyfill-php56',
 			'/libraries/vendor/symfony/polyfill-php71',
 			'/libraries/vendor/symfony/polyfill-util',
+			'/media/plg_captcha_recaptcha_invisible',
 			'/plugins/authentication/gmail',
+			'/plugins/captcha/recaptcha/postinstall',
+			'/plugins/captcha/recaptcha_invisible',
 			'/plugins/system/p3p',
 			'/administrator/templates/isis/less',
 			'/templates/protostar/less',
