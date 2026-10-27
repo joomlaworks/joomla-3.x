@@ -78,6 +78,11 @@
 	overflow: visible;
 }
 
+/* A block: inline, the line it sat on made the box a few pixels taller than the window, and scroll */
+.sbox-content-iframe#sbox-content iframe {
+	display: block;
+}
+
 /* Hides scrollbars */
 .body-overlayed {
 	overflow: hidden;
@@ -159,8 +164,9 @@
 	#sbox-content {
 		-webkit-overflow-scrolling: touch;
 	}
+	/* auto: "scroll" drew scrollbars around a window which fits (see the iframe's size in modal.js) */
 	#sbox-content.sbox-content-iframe {
-		overflow: scroll;
+		overflow: auto;
 		-webkit-overflow-scrolling: touch;
 	}
 }

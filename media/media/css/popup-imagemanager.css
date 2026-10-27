@@ -89,3 +89,9 @@ a:hover {
 label.hidelabeltxt {
 	text-indent: -9999em;
 }
+
+/* The file field fits narrow windows (phones) instead of widening the page past them */
+#upload-file {
+	max-width: 100%;
+	box-sizing: border-box;
+}

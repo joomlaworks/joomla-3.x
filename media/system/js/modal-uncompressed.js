@@ -249,9 +249,11 @@ var SqueezeBox = {
 				top: (scroll.y + (box.y - this.size.y - this.options.marginInner.y) / 2).toInt()
 			};
 		} else {
+			// Small screens: the whole width and height, 20px from the top and the bottom (the height left out the inner margin
+			// and the top's 20px, so the bottom of the window and its scrollbar were off the screen)
 			var to = {
 				width: box.x - 40,
-				height: box.y,
+				height: box.y - 40 - this.options.marginInner.y,
 				left: (scroll.x + 10).toInt(),
 				top: (scroll.y + 20).toInt()
 			};
@@ -448,8 +450,9 @@ SqueezeBox.handlers.extend({
 			var modal_width = this.options.size.x;
 			var modal_height = this.options.size.y;
 		} else {
-			var modal_width = box.x;
-			var modal_height = box.y - 50;
+			// The window's inner size on small screens (see resize()): the whole window made it wider and taller than its box
+			var modal_width = box.x - 40;
+			var modal_height = box.y - 40 - this.options.marginInner.y;
 		}
 		this.asset = new Element('iframe', Object.merge({
 			src: url,
