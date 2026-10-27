@@ -434,7 +434,7 @@
             "license": "LGPL-2.1",
             "url": "https://github.com/phlylabs/idna-convert",
             "path": "libraries/idna_convert",
-            "note": "Patched by Joomla 3.x UTD (PHP 8)",
+            "note": "Patched by Joomla and by Joomla 3.x UTD (PHP 8)",
             "latest": "4.2.2",
             "isLatest": false,
             "checked": "2026.10.27"
@@ -538,7 +538,7 @@
             "license": "BSD-3-Clause",
             "url": "https://simplepie.org",
             "path": "libraries/vendor/simplepie/simplepie",
-            "note": "Joomla's maintained copy, patched by Joomla 3.x UTD (PHP 8)",
+            "note": "Patched by Joomla (its maintained fork) and by Joomla 3.x UTD (PHP 8)",
             "latest": "1.9.0",
             "isLatest": false,
             "checked": "2026.10.27"
