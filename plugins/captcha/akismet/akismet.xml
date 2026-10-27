@@ -10,6 +10,7 @@
     <description>PLG_CAPTCHA_AKISMET_XML_DESCRIPTION</description>
     <files>
         <filename plugin="akismet">akismet.php</filename>
+        <folder>images</folder>
     </files>
     <languages>
         <language tag="en-GB">en-GB.plg_captcha_akismet.ini</language>

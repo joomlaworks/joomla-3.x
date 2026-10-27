@@ -84,6 +84,17 @@ $groups = array(
 		array('name' => 'IcoMoon (Joomla icon font)', 'version' => '', 'license' => 'Royalty-free', 'url' => 'https://icomoon.io', 'path' => 'media/jui/fonts'),
 		array('name' => 'Bootstrap Icons', 'version' => '1.13.2', 'license' => 'MIT', 'url' => 'https://icons.getbootstrap.com', 'path' => 'media/editors/easymde/vendor/bootstrap-icons'),
 	),
+	// Not bundled: services the CAPTCHA plugins connect to, with the API version they use
+	'External Services' => array(
+		array('name' => 'Google reCAPTCHA', 'version' => 'v2, v3', 'license' => 'Google\'s terms of service', 'url' => 'https://developers.google.com/recaptcha', 'path' => 'plugins/captcha/recaptcha',
+			'note' => 'Service by Google; used by "CAPTCHA - Google reCAPTCHA"'),
+		array('name' => 'Cloudflare Turnstile', 'version' => 'v0', 'license' => 'Cloudflare\'s terms of service', 'url' => 'https://developers.cloudflare.com/turnstile/', 'path' => 'plugins/captcha/turnstile',
+			'note' => 'Service by Cloudflare; used by "CAPTCHA - Cloudflare Turnstile"'),
+		array('name' => 'hCaptcha', 'version' => 'v1', 'license' => 'hCaptcha\'s terms of service', 'url' => 'https://www.hcaptcha.com', 'path' => 'plugins/captcha/hcaptcha',
+			'note' => 'Service by Intuition Machines; used by "CAPTCHA - hCaptcha"'),
+		array('name' => 'Akismet', 'version' => '1.1', 'license' => 'Akismet\'s terms of service', 'url' => 'https://akismet.com', 'path' => 'plugins/captcha/akismet',
+			'note' => 'Service by Automattic (REST API 1.1); used by "CAPTCHA - Akismet"'),
+	),
 	'PHP Libraries' => array(
 		array('name' => 'PHPMailer', 'version' => '5.2.28', 'license' => 'LGPL-2.1', 'url' => 'https://github.com/PHPMailer/PHPMailer', 'path' => 'libraries/vendor/phpmailer/phpmailer',
 			'note' => 'With Joomla\'s backported fixes', 'check' => array('libraries/vendor/phpmailer/phpmailer/class.phpmailer.php', "/\\\$Version = '([0-9.]+)\+/")),

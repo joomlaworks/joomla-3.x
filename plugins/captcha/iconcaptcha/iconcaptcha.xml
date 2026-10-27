@@ -10,6 +10,7 @@
     <description>PLG_CAPTCHA_ICONCAPTCHA_XML_DESCRIPTION</description>
     <files>
         <filename plugin="iconcaptcha">iconcaptcha.php</filename>
+        <folder>images</folder>
         <filename>token.php</filename>
     </files>
     <media folder="media">

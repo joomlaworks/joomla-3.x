@@ -10,6 +10,7 @@
     <description>PLG_CAPTCHA_HCAPTCHA_XML_DESCRIPTION</description>
     <files>
         <filename plugin="hcaptcha">hcaptcha.php</filename>
+        <folder>images</folder>
     </files>
     <media folder="media">
         <folder>plg_captcha_hcaptcha</folder>

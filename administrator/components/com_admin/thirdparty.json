@@ -75,6 +75,44 @@
             "note": ""
         }
     ],
+    "External Services": [
+        {
+            "name": "Akismet",
+            "version": "1.1",
+            "date": "",
+            "license": "Akismet's terms of service",
+            "url": "https://akismet.com",
+            "path": "plugins/captcha/akismet",
+            "note": "Service by Automattic (REST API 1.1); used by \"CAPTCHA - Akismet\""
+        },
+        {
+            "name": "Cloudflare Turnstile",
+            "version": "v0",
+            "date": "",
+            "license": "Cloudflare's terms of service",
+            "url": "https://developers.cloudflare.com/turnstile/",
+            "path": "plugins/captcha/turnstile",
+            "note": "Service by Cloudflare; used by \"CAPTCHA - Cloudflare Turnstile\""
+        },
+        {
+            "name": "Google reCAPTCHA",
+            "version": "v2, v3",
+            "date": "",
+            "license": "Google's terms of service",
+            "url": "https://developers.google.com/recaptcha",
+            "path": "plugins/captcha/recaptcha",
+            "note": "Service by Google; used by \"CAPTCHA - Google reCAPTCHA\""
+        },
+        {
+            "name": "hCaptcha",
+            "version": "v1",
+            "date": "",
+            "license": "hCaptcha's terms of service",
+            "url": "https://www.hcaptcha.com",
+            "path": "plugins/captcha/hcaptcha",
+            "note": "Service by Intuition Machines; used by \"CAPTCHA - hCaptcha\""
+        }
+    ],
     "Fonts and Icons": [
         {
             "name": "Bootstrap Icons",
