@@ -94,6 +94,7 @@ class JoomlaInstallerScript
 		$this->enableLittleWaf();
 		$this->updateLatestActionsCount();
 		$this->addSystemInformationModule();
+		$this->orderSystemPlugins();
 		$this->switchDefaultEditor();
 		$this->fixCoreCategorySubmenus();
 
@@ -918,7 +919,6 @@ class JoomlaInstallerScript
 		'plugin:0:content:finder',
 		'plugin:0:content:vote',
 		'plugin:0:system:languagecode',
-		'plugin:0:system:littlewaf',
 		'plugin:0:system:privacyconsent',
 		'plugin:0:system:redirect',
 		'plugin:0:system:stats',
@@ -953,6 +953,39 @@ class JoomlaInstallerScript
 		'mod_submenu'           => array('Admin Submenu', 'submenu', 1, 1, 3, ''),
 		'mod_title'             => array('Title', 'title', 1, 1, 3, ''),
 		'mod_version'           => array('Joomla Version', 'footer', 1, 1, 3, '{"format":"short","product":"1","layout":"_:default","moduleclass_sfx":"","cache":"0"}'),
+	);
+
+	/**
+	 * The order of execution of the core system plugins: element => array(ordering, the ordering of 3.17 and before).
+	 *
+	 * Little WAF first (it blocks, redirects and adds headers, so cached pages get all three), then what must run before
+	 * Page Cache serves a stored page in onAfterInitialise (the Language Filter's language detection and redirects, Remember
+	 * Me's login), then Page Cache, ahead of third-party plugins (ordering 0 by default), whose events never run on a cached
+	 * page. Every other plugin after them, in Joomla's old relative order, and Debug last, so it reports the others' work.
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	protected $systemPluginOrdering = array(
+		'littlewaf'          => array(-100, -10000),
+		'languagefilter'     => array(-90, 1),
+		'remember'           => array(-80, 7),
+		'cache'              => array(-70, 9),
+		'redirect'           => array(1, 3),
+		'log'                => array(2, 5),
+		'logout'             => array(3, 6),
+		'sef'                => array(4, 8),
+		'highlight'          => array(5, 7),
+		'languagecode'       => array(6, 10),
+		'fields'             => array(7, 0),
+		'privacyconsent'     => array(8, 0),
+		'actionlogs'         => array(9, 0),
+		'structureddata'     => array(10, 0),
+		'stats'              => array(11, 0),
+		'updatenotification' => array(12, 0),
+		'sessiongc'          => array(13, 0),
+		'logrotation'        => array(14, 0),
+		'debug'              => array(1000, 4),
 	);
 
 	/**
@@ -1286,6 +1319,46 @@ class JoomlaInstallerScript
 		catch (Exception $e)
 		{
 			// Not worth failing the update for: the site goes without the module
+		}
+	}
+
+	/**
+	 * Puts the core system plugins in their order of execution ($systemPluginOrdering), once: only plugins still at the
+	 * ordering Joomla gave them, so an order the site admin chose is kept.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function orderSystemPlugins()
+	{
+		if ($this->isUpdateStepDone('system-plugin-order'))
+		{
+			return;
+		}
+
+		try
+		{
+			$db = JFactory::getDbo();
+
+			foreach ($this->systemPluginOrdering as $element => $ordering)
+			{
+				$db->setQuery(
+					$db->getQuery(true)
+						->update($db->quoteName('#__extensions'))
+						->set($db->quoteName('ordering') . ' = ' . (int) $ordering[0])
+						->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+						->where($db->quoteName('folder') . ' = ' . $db->quote('system'))
+						->where($db->quoteName('element') . ' = ' . $db->quote($element))
+						->where($db->quoteName('ordering') . ' = ' . (int) $ordering[1])
+				)->execute();
+			}
+
+			$this->markUpdateStepDone('system-plugin-order');
+		}
+		catch (Exception $e)
+		{
+			// Not worth failing the update for: the plugins keep their order
 		}
 	}
 
@@ -2099,10 +2172,10 @@ class JoomlaInstallerScript
 					$db->quoteName('enabled') . ' = ' . (in_array($key, $this->removableCoreExtensionsDisabled, true) ? 0 : 1),
 				);
 
-				// Little WAF must run before every other system plugin, see its install SQL
-				if ($key === 'plugin:0:system:littlewaf')
+				// A system plugin takes its place in the order of execution (see $systemPluginOrdering)
+				if ($type === 'plugin' && $folder === 'system' && isset($this->systemPluginOrdering[$element]))
 				{
-					$values[] = $db->quoteName('ordering') . ' = -10000';
+					$values[] = $db->quoteName('ordering') . ' = ' . (int) $this->systemPluginOrdering[$element][0];
 				}
 
 				$query = $db->getQuery(true)

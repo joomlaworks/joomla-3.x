@@ -222,8 +222,11 @@ class PlgSystemLittlewaf extends CMSPlugin
 
 	/**
 	 * Adds the security headers chosen, except those the response already has (from PHP or an extension; headers the web
-	 * server adds aren't visible here). Code which sets one of them later with "replace" (e.g. Users' Referrer-Policy on
-	 * its password reset pages) still decides.
+	 * server adds aren't visible here). PHP sends them itself, not the application: the page cache stores the
+	 * application's headers with a page and adds them again when it serves it, which would send these twice (with two
+	 * values after a change of settings), and the application drops a value of "0" (X-XSS-Protection's). Code which sets
+	 * one of them later still decides: the application's headers replace PHP's of the same name (e.g. Users'
+	 * Referrer-Policy on its password reset pages).
 	 *
 	 * @return  void
 	 *
@@ -271,18 +274,10 @@ class PlgSystemLittlewaf extends CMSPlugin
 				continue;
 			}
 
-			// The application drops a header whose value is "0" (X-XSS-Protection's), so PHP sends that one itself
-			if ($value === '0')
+			if (!headers_sent())
 			{
-				if (!headers_sent())
-				{
-					header($header[0] . ': 0');
-				}
-
-				continue;
+				header($header[0] . ': ' . $value);
 			}
-
-			$this->app->setHeader($header[0], $value);
 		}
 	}
 
