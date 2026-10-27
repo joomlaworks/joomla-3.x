@@ -87,7 +87,8 @@ class FinderModelSuggestions extends JModelList
 		$termIdString = implode(',', $termIds);
 
 		// Select required fields
-		$termQuery->select('DISTINCT(t.term)')
+		// Named: databases name an unaliased DISTINCT(t.term) differently (SQLite "(t.term)"), and getItems() reads ->term
+		$termQuery->select('DISTINCT t.term AS term')
 			->select('t.links')
 			->select('t.weight')
 			->from($db->quoteName('#__finder_terms') . ' AS t')
