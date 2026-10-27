@@ -1,0 +1,138 @@
+{
+    "github:WordPress/sqlite-database-integration": {
+        "version": "3.1.1",
+        "checked": "2026-10-27"
+    },
+    "github:mootools/mootools-core": {
+        "version": "1.6.0",
+        "checked": "2026-10-27"
+    },
+    "github:mootools/mootools-more": {
+        "version": "1.6.0",
+        "checked": "2026-10-27"
+    },
+    "github:phlylabs/idna-convert": {
+        "version": "4.2.2",
+        "checked": "2026-10-27"
+    },
+    "npm:@claviska/jquery-minicolors": {
+        "version": "2.3.6",
+        "checked": "2026-10-27"
+    },
+    "npm:@editorjs/editorjs": {
+        "version": "2.31.7",
+        "checked": "2026-10-27"
+    },
+    "npm:bootstrap": {
+        "version": "5.3.8",
+        "checked": "2026-10-27"
+    },
+    "npm:bootstrap-icons": {
+        "version": "1.13.2",
+        "checked": "2026-10-27"
+    },
+    "npm:chosen-js": {
+        "version": "1.8.7",
+        "checked": "2026-10-27"
+    },
+    "npm:codemirror": {
+        "version": "6.0.2",
+        "checked": "2026-10-27"
+    },
+    "npm:devbridge-autocomplete": {
+        "version": "2.0.7",
+        "checked": "2026-10-27"
+    },
+    "npm:easymde": {
+        "version": "2.21.0",
+        "checked": "2026-10-27"
+    },
+    "npm:jcrop": {
+        "version": "3.0.1",
+        "checked": "2026-10-27"
+    },
+    "npm:jquery": {
+        "version": "4.0.0",
+        "checked": "2026-10-27"
+    },
+    "npm:jquery-migrate": {
+        "version": "4.0.2",
+        "checked": "2026-10-27"
+    },
+    "npm:jquery-ui": {
+        "version": "1.14.2",
+        "checked": "2026-10-27"
+    },
+    "npm:marked": {
+        "version": "18.1.2",
+        "checked": "2026-10-27"
+    },
+    "npm:mediaelement": {
+        "version": "7.1.0",
+        "checked": "2026-10-27"
+    },
+    "npm:polyfill-service": {
+        "version": "3.25.3",
+        "checked": "2026-10-27"
+    },
+    "npm:punycode": {
+        "version": "2.3.1",
+        "checked": "2026-10-27"
+    },
+    "npm:tinymce": {
+        "version": "8.10.0",
+        "checked": "2026-10-27"
+    },
+    "npm:turndown": {
+        "version": "7.2.4",
+        "checked": "2026-10-27"
+    },
+    "packagist:defuse/php-encryption": {
+        "version": "2.4.0",
+        "checked": "2026-10-27"
+    },
+    "packagist:fabianwennink/iconcaptcha": {
+        "version": "4.0.6",
+        "checked": "2026-10-27"
+    },
+    "packagist:leafo/lessphp": {
+        "version": "0.5.0",
+        "checked": "2026-10-27"
+    },
+    "packagist:paragonie/sodium_compat": {
+        "version": "2.5.2",
+        "checked": "2026-10-27"
+    },
+    "packagist:phpmailer/phpmailer": {
+        "version": "7.1.1",
+        "checked": "2026-10-27"
+    },
+    "packagist:psr/container": {
+        "version": "2.0.2",
+        "checked": "2026-10-27"
+    },
+    "packagist:psr/log": {
+        "version": "3.0.2",
+        "checked": "2026-10-27"
+    },
+    "packagist:simplepie/simplepie": {
+        "version": "1.9.0",
+        "checked": "2026-10-27"
+    },
+    "packagist:symfony/polyfill-ctype": {
+        "version": "1.37.0",
+        "checked": "2026-10-27"
+    },
+    "packagist:symfony/polyfill-php73": {
+        "version": "1.37.0",
+        "checked": "2026-10-27"
+    },
+    "packagist:symfony/yaml": {
+        "version": "8.1.9",
+        "checked": "2026-10-27"
+    },
+    "packagist:typo3/phar-stream-wrapper": {
+        "version": "4.0.0",
+        "checked": "2026-10-27"
+    }
+}

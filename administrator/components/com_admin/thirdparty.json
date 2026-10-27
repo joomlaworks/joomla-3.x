@@ -8,7 +8,10 @@
             "license": "Apache-2.0",
             "url": "https://getbootstrap.com/2.3.2/",
             "path": "media/jui/js/bootstrap.js",
-            "note": "JavaScript and CSS"
+            "note": "JavaScript and CSS",
+            "latest": "5.3.8",
+            "isLatest": false,
+            "checked": "2026.10.27"
         }
     ],
     "Editors": [
@@ -20,7 +23,10 @@
             "license": "MIT",
             "url": "https://codemirror.net/5/",
             "path": "media/editors/codemirror",
-            "note": ""
+            "note": "",
+            "latest": "6.0.2",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "EasyMDE",
@@ -30,7 +36,10 @@
             "license": "MIT",
             "url": "https://github.com/Ionaru/easy-markdown-editor",
             "path": "media/editors/easymde/vendor/easymde",
-            "note": ""
+            "note": "",
+            "latest": "2.21.0",
+            "isLatest": true,
+            "checked": "2026.10.27"
         },
         {
             "name": "Editor.js",
@@ -40,7 +49,10 @@
             "license": "Apache-2.0",
             "url": "https://editorjs.io",
             "path": "media/editors/editorjs/vendor/editorjs",
-            "note": ""
+            "note": "",
+            "latest": "2.31.7",
+            "isLatest": true,
+            "checked": "2026.10.27"
         },
         {
             "name": "marked",
@@ -50,7 +62,10 @@
             "license": "MIT",
             "url": "https://marked.js.org",
             "path": "media/editors/easymde/vendor/marked",
-            "note": ""
+            "note": "",
+            "latest": "18.1.2",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "TinyMCE",
@@ -60,7 +75,10 @@
             "license": "GPL-2.0-or-later",
             "url": "https://www.tiny.cloud",
             "path": "media/editors/tinymce_latest",
-            "note": ""
+            "note": "",
+            "latest": "8.10.0",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "TinyMCE (legacy)",
@@ -70,7 +88,10 @@
             "license": "LGPL-2.1",
             "url": "https://www.tiny.cloud",
             "path": "media/editors/tinymce",
-            "note": ""
+            "note": "",
+            "latest": "8.10.0",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "Turndown",
@@ -80,7 +101,10 @@
             "license": "MIT",
             "url": "https://github.com/mixmark-io/turndown",
             "path": "media/editors/easymde/vendor/turndown",
-            "note": ""
+            "note": "",
+            "latest": "7.2.4",
+            "isLatest": true,
+            "checked": "2026.10.27"
         }
     ],
     "External Services": [
@@ -92,7 +116,10 @@
             "license": "Akismet's terms of service",
             "url": "https://akismet.com",
             "path": "plugins/captcha/akismet",
-            "note": "Service by Automattic (REST API 1.1); used by \"CAPTCHA - Akismet\""
+            "note": "Service by Automattic (REST API 1.1); used by \"CAPTCHA - Akismet\"",
+            "latest": "",
+            "isLatest": true,
+            "checked": ""
         },
         {
             "name": "Cloudflare Turnstile",
@@ -102,7 +129,10 @@
             "license": "Cloudflare's terms of service",
             "url": "https://developers.cloudflare.com/turnstile/",
             "path": "plugins/captcha/turnstile",
-            "note": "Service by Cloudflare; used by \"CAPTCHA - Cloudflare Turnstile\""
+            "note": "Service by Cloudflare; used by \"CAPTCHA - Cloudflare Turnstile\"",
+            "latest": "",
+            "isLatest": true,
+            "checked": ""
         },
         {
             "name": "Google reCAPTCHA",
@@ -112,7 +142,10 @@
             "license": "Google's terms of service",
             "url": "https://developers.google.com/recaptcha",
             "path": "plugins/captcha/recaptcha",
-            "note": "Service by Google; used by \"CAPTCHA - Google reCAPTCHA\""
+            "note": "Service by Google; used by \"CAPTCHA - Google reCAPTCHA\"",
+            "latest": "",
+            "isLatest": true,
+            "checked": ""
         },
         {
             "name": "hCaptcha",
@@ -122,7 +155,10 @@
             "license": "hCaptcha's terms of service",
             "url": "https://www.hcaptcha.com",
             "path": "plugins/captcha/hcaptcha",
-            "note": "Service by Intuition Machines; used by \"CAPTCHA - hCaptcha\""
+            "note": "Service by Intuition Machines; used by \"CAPTCHA - hCaptcha\"",
+            "latest": "",
+            "isLatest": true,
+            "checked": ""
         }
     ],
     "Fonts and Icons": [
@@ -134,7 +170,10 @@
             "license": "MIT",
             "url": "https://icons.getbootstrap.com",
             "path": "media/editors/easymde/vendor/bootstrap-icons",
-            "note": ""
+            "note": "",
+            "latest": "1.13.2",
+            "isLatest": true,
+            "checked": "2026.10.27"
         },
         {
             "name": "IcoMoon (Joomla icon font)",
@@ -144,7 +183,10 @@
             "license": "Royalty-free",
             "url": "https://icomoon.io",
             "path": "media/jui/fonts",
-            "note": ""
+            "note": "",
+            "latest": "",
+            "isLatest": false,
+            "checked": ""
         }
     ],
     "JavaScript Libraries": [
@@ -156,7 +198,10 @@
             "license": "MIT",
             "url": "https://github.com/devbridge/jQuery-Autocomplete",
             "path": "media/jui/js/jquery.autocomplete.js",
-            "note": ""
+            "note": "",
+            "latest": "2.0.7",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "Ajax Chosen",
@@ -166,7 +211,10 @@
             "license": "MIT",
             "url": "https://github.com/meltingice/ajax-chosen",
             "path": "media/jui/js/ajax-chosen.js",
-            "note": "Upstream commit c2948d0 (never tagged); texts translated by Joomla"
+            "note": "Upstream commit c2948d0 (never tagged); texts translated by Joomla",
+            "latest": "",
+            "isLatest": false,
+            "checked": ""
         },
         {
             "name": "Chosen",
@@ -176,7 +224,10 @@
             "license": "MIT",
             "url": "https://harvesthq.github.io/chosen/",
             "path": "media/jui/js/chosen.jquery.js",
-            "note": ""
+            "note": "",
+            "latest": "1.8.7",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "Jcrop",
@@ -186,7 +237,10 @@
             "license": "MIT",
             "url": "https://github.com/tapmodo/Jcrop",
             "path": "media/system/js/jquery.Jcrop.js",
-            "note": ""
+            "note": "",
+            "latest": "3.0.1",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "jQuery",
@@ -196,7 +250,10 @@
             "license": "MIT",
             "url": "https://jquery.com",
             "path": "media/jui/js/jquery.js",
-            "note": "Patched by Joomla"
+            "note": "Patched by Joomla",
+            "latest": "4.0.0",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "jQuery Migrate",
@@ -206,7 +263,10 @@
             "license": "MIT",
             "url": "https://github.com/jquery/jquery-migrate",
             "path": "media/jui/js/jquery-migrate.js",
-            "note": ""
+            "note": "",
+            "latest": "4.0.2",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "jQuery MiniColors",
@@ -216,7 +276,10 @@
             "license": "MIT",
             "url": "https://github.com/claviska/jquery-minicolors",
             "path": "media/jui/js/jquery.minicolors.js",
-            "note": ""
+            "note": "",
+            "latest": "2.3.6",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "jQuery Simple Colors",
@@ -226,7 +289,10 @@
             "license": "MIT",
             "url": "https://github.com/tkrotoff/jquery-simplecolorpicker",
             "path": "media/jui/js/jquery.simplecolors.js",
-            "note": "Adapted by Peter van Westen"
+            "note": "Adapted by Peter van Westen",
+            "latest": "",
+            "isLatest": false,
+            "checked": ""
         },
         {
             "name": "jQuery UI (Core, Sortable)",
@@ -236,7 +302,10 @@
             "license": "MIT",
             "url": "https://jqueryui.com",
             "path": "media/jui/js/jquery.ui.core.js",
-            "note": ""
+            "note": "",
+            "latest": "1.14.2",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "MediaElement.js",
@@ -246,7 +315,10 @@
             "license": "MIT",
             "url": "https://www.mediaelementjs.com",
             "path": "media/media/js/mediaelement-and-player.js",
-            "note": ""
+            "note": "",
+            "latest": "7.1.0",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "MooTools Core",
@@ -256,7 +328,10 @@
             "license": "MIT",
             "url": "https://mootools.net",
             "path": "media/system/js/mootools-core.js",
-            "note": ""
+            "note": "",
+            "latest": "1.6.0",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "MooTools More",
@@ -266,7 +341,10 @@
             "license": "MIT",
             "url": "https://mootools.net/more",
             "path": "media/system/js/mootools-more.js",
-            "note": ""
+            "note": "",
+            "latest": "1.6.0",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "Polyfill.io polyfills (classList, Event, Map, filter)",
@@ -276,7 +354,10 @@
             "license": "MIT",
             "url": "https://github.com/Financial-Times/polyfill-service",
             "path": "media/system/js/polyfill.map.js",
-            "note": ""
+            "note": "",
+            "latest": "3.25.3",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "Punycode.js",
@@ -286,7 +367,10 @@
             "license": "MIT",
             "url": "https://github.com/mathiasbynens/punycode.js",
             "path": "media/system/js/punycode.js",
-            "note": ""
+            "note": "",
+            "latest": "2.3.1",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "SqueezeBox",
@@ -296,7 +380,10 @@
             "license": "MIT",
             "url": "https://github.com/joomla/joomla-cms/commits/3.10.12/media/system/js/modal-uncompressed.js",
             "path": "media/system/js/modal.js",
-            "note": "Patched by Joomla"
+            "note": "Patched by Joomla",
+            "latest": "",
+            "isLatest": false,
+            "checked": ""
         }
     ],
     "PHP Libraries": [
@@ -308,7 +395,10 @@
             "license": "GPL-2.0-or-later",
             "url": "https://github.com/akeeba/kickstart",
             "path": "administrator/components/com_joomlaupdate/restore.php",
-            "note": "Joomla Update's extractor; patched"
+            "note": "Joomla Update's extractor; patched",
+            "latest": "",
+            "isLatest": false,
+            "checked": ""
         },
         {
             "name": "FOF (Framework on Framework)",
@@ -318,7 +408,10 @@
             "license": "GPL-2.0-or-later",
             "url": "https://github.com/akeeba/fof",
             "path": "libraries/fof",
-            "note": ""
+            "note": "",
+            "latest": "",
+            "isLatest": false,
+            "checked": ""
         },
         {
             "name": "IconCaptcha",
@@ -328,7 +421,10 @@
             "license": "MIT",
             "url": "https://github.com/fabianwennink/IconCaptcha-PHP",
             "path": "libraries/vendor/fabianwennink/iconcaptcha",
-            "note": "With its widget (media/plg_captcha_iconcaptcha)"
+            "note": "With its widget (media/plg_captcha_iconcaptcha)",
+            "latest": "4.0.6",
+            "isLatest": true,
+            "checked": "2026.10.27"
         },
         {
             "name": "IDNA Convert",
@@ -338,7 +434,10 @@
             "license": "LGPL-2.1",
             "url": "https://github.com/phlylabs/idna-convert",
             "path": "libraries/idna_convert",
-            "note": ""
+            "note": "",
+            "latest": "4.2.2",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "lessphp",
@@ -348,7 +447,10 @@
             "license": "MIT",
             "url": "https://github.com/leafo/lessphp",
             "path": "libraries/vendor/leafo/lessphp",
-            "note": "With Joomla's PHP 8 fixes"
+            "note": "With Joomla's PHP 8 fixes",
+            "latest": "0.5.0",
+            "isLatest": true,
+            "checked": "2026.10.27"
         },
         {
             "name": "MySQL on SQLite (WordPress)",
@@ -358,7 +460,10 @@
             "license": "GPL-2.0-or-later",
             "url": "https://github.com/WordPress/sqlite-database-integration",
             "path": "libraries/vendor/wordpress/mysql-on-sqlite",
-            "note": "Patched (PATCHES.md)"
+            "note": "Patched (PATCHES.md)",
+            "latest": "3.1.1",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "PHP Encryption (Defuse)",
@@ -368,7 +473,10 @@
             "license": "BSD-2-Clause",
             "url": "https://github.com/defuse/php-encryption",
             "path": "libraries/php-encryption",
-            "note": "Patched for PHP 8 (string casts)"
+            "note": "Patched for PHP 8 (string casts)",
+            "latest": "2.4.0",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "phpass",
@@ -378,7 +486,10 @@
             "license": "Public domain",
             "url": "https://www.openwall.com/phpass/",
             "path": "libraries/phpass",
-            "note": ""
+            "note": "",
+            "latest": "",
+            "isLatest": true,
+            "checked": ""
         },
         {
             "name": "PHPMailer",
@@ -388,7 +499,10 @@
             "license": "LGPL-2.1",
             "url": "https://github.com/PHPMailer/PHPMailer",
             "path": "libraries/vendor/phpmailer/phpmailer",
-            "note": "Patched (php_uname() guard)"
+            "note": "Patched (php_uname() guard)",
+            "latest": "7.1.1",
+            "isLatest": true,
+            "checked": "2026.10.27"
         },
         {
             "name": "PSR Container",
@@ -398,7 +512,10 @@
             "license": "MIT",
             "url": "https://www.php-fig.org/psr/psr-11/",
             "path": "libraries/vendor/psr/container",
-            "note": ""
+            "note": "",
+            "latest": "2.0.2",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "PSR Log",
@@ -408,7 +525,10 @@
             "license": "MIT",
             "url": "https://www.php-fig.org/psr/psr-3/",
             "path": "libraries/vendor/psr/log",
-            "note": ""
+            "note": "",
+            "latest": "3.0.2",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "SimplePie",
@@ -418,7 +538,10 @@
             "license": "BSD-3-Clause",
             "url": "https://simplepie.org",
             "path": "libraries/vendor/simplepie/simplepie",
-            "note": "Joomla's maintained copy"
+            "note": "Joomla's maintained copy",
+            "latest": "1.9.0",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "sodium_compat",
@@ -428,7 +551,10 @@
             "license": "ISC",
             "url": "https://github.com/paragonie/sodium_compat",
             "path": "libraries/vendor/paragonie/sodium_compat",
-            "note": ""
+            "note": "",
+            "latest": "2.5.2",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "Symfony Polyfill (ctype)",
@@ -438,7 +564,10 @@
             "license": "MIT",
             "url": "https://github.com/symfony/polyfill-ctype",
             "path": "libraries/vendor/symfony/polyfill-ctype",
-            "note": ""
+            "note": "",
+            "latest": "1.37.0",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "Symfony Polyfill (PHP 7.3)",
@@ -448,7 +577,10 @@
             "license": "MIT",
             "url": "https://github.com/symfony/polyfill-php73",
             "path": "libraries/vendor/symfony/polyfill-php73",
-            "note": ""
+            "note": "",
+            "latest": "1.37.0",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "Symfony Yaml",
@@ -458,7 +590,10 @@
             "license": "MIT",
             "url": "https://symfony.com/components/Yaml",
             "path": "libraries/vendor/symfony/yaml",
-            "note": ""
+            "note": "",
+            "latest": "8.1.9",
+            "isLatest": false,
+            "checked": "2026.10.27"
         },
         {
             "name": "TYPO3 PHAR Stream Wrapper",
@@ -468,7 +603,10 @@
             "license": "MIT",
             "url": "https://github.com/TYPO3/phar-stream-wrapper",
             "path": "libraries/vendor/typo3/phar-stream-wrapper",
-            "note": "Patched"
+            "note": "Patched",
+            "latest": "4.0.0",
+            "isLatest": false,
+            "checked": "2026.10.27"
         }
     ]
 }

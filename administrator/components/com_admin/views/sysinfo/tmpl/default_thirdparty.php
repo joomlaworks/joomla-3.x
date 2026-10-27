@@ -28,14 +28,18 @@ defined('_JEXEC') or die;
 			</thead>
 			<tbody>
 				<?php foreach ($entries as $entry) : ?>
-					<tr>
+					<tr<?php echo !empty($entry['isLatest']) ? ' class="success"' : ''; ?>>
 						<td>
 							<a href="<?php echo $this->escape($entry['url']); ?>" target="_blank" rel="noopener noreferrer"><?php echo $this->escape($entry['name']); ?></a>
 							<?php if (!empty($entry['note'])) : ?>
 								<br /><small class="muted"><?php echo $this->escape($entry['note']); ?></small>
 							<?php endif; ?>
 						</td>
-						<td><?php echo $entry['version'] !== '' ? $this->escape($entry['version']) : '&#8212;'; ?></td>
+						<?php if (empty($entry['isLatest']) && !empty($entry['latest'])) : ?>
+							<td><span class="hasTooltip" title="<?php echo $this->escape(JText::sprintf('COM_ADMIN_THIRD_PARTY_LATEST', $entry['latest'], $entry['checked'])); ?>"><?php echo $entry['version'] !== '' ? $this->escape($entry['version']) : '&#8212;'; ?></span></td>
+						<?php else : ?>
+							<td><?php echo $entry['version'] !== '' ? $this->escape($entry['version']) : '&#8212;'; ?></td>
+						<?php endif; ?>
 						<?php if ($entry['date'] !== '' && !empty($entry['dateSource'])) : ?>
 							<td><span class="hasTooltip" title="<?php echo $this->escape(JText::sprintf('COM_ADMIN_THIRD_PARTY_DATE_SOURCE', $entry['dateSource'])); ?>"><?php echo $this->escape($entry['date']); ?></span></td>
 						<?php else : ?>
