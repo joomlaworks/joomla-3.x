@@ -652,8 +652,8 @@
         },
         {
             "name": "sodium_compat",
-            "version": "1.17.1",
-            "date": "2022.03.23",
+            "version": "1.24.2",
+            "date": "2026.08.18",
             "dateSource": "Composer (installed.json)",
             "license": "ISC",
             "url": "https://github.com/paragonie/sodium_compat",
@@ -663,7 +663,7 @@
             "isLatest": false,
             "checked": "2026.10.27",
             "use": "core",
-            "series": "",
+            "series": "1.x",
             "seriesLatest": "1.x: 1.24.2 (2026.08.18)"
         },
         {

@@ -175,12 +175,12 @@
             'dev_requirement' => false,
         ),
         'paragonie/sodium_compat' => array(
-            'pretty_version' => 'v1.17.1',
-            'version' => '1.17.1.0',
+            'pretty_version' => 'v1.24.2',
+            'version' => '1.24.2.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../paragonie/sodium_compat',
             'aliases' => array(),
-            'reference' => 'ac994053faac18d386328c91c7900f930acadf1e',
+            'reference' => '4524c98a826776c9a32d6ce06932563cb10f3995',
             'dev_requirement' => false,
         ),
         'phpmailer/phpmailer' => array(
