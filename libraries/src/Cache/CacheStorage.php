@@ -131,8 +131,6 @@ class CacheStorage
 	 */
 	public static function getInstance($handler = null, $options = array())
 	{
-		static $now = null;
-
 		// @deprecated  4.0  This class path is autoloaded, manual inclusion is no longer necessary
 		self::addIncludePath(__DIR__ . '/Storage');
 
@@ -146,12 +144,8 @@ class CacheStorage
 			}
 		}
 
-		if (is_null($now))
-		{
-			$now = time();
-		}
-
-		$options['now'] = $now;
+		// The time now, not when the process started (long-running processes: the MCP server, indexing)
+		$options['now'] = time();
 
 		// We can't cache this since options may change...
 		$handler = strtolower(preg_replace('/[^A-Z0-9_\.-]/i', '', $handler));

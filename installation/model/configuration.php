@@ -121,6 +121,7 @@ class InstallationModelConfiguration extends JModelBase
 		$registry->set('cache_handler', 'file');
 		$registry->set('cachetime', 15);
 		$registry->set('cache_platformprefix', 0);
+		$registry->set('cache_ignored_params', \Joomla\CMS\Cache\Cache::IGNORED_QUERY_PARAMETERS);
 
 		// Meta settings.
 		$registry->set('MetaDesc', isset($options->site_metadesc) ? $options->site_metadesc : '');

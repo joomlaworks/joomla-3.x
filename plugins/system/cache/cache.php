@@ -33,6 +33,14 @@ class PlgSystemCache extends JPlugin
 	public $_cache_key;
 
 	/**
+	 * Whether the address has query parameters the page cache ignores (tracking parameters)
+	 *
+	 * @var    boolean
+	 * @since  3.18.0
+	 */
+	protected $ignoredParameters = false;
+
+	/**
 	 * Application object.
 	 *
 	 * @var    JApplicationCms
@@ -86,7 +94,11 @@ class PlgSystemCache extends JPlugin
 			JPluginHelper::importPlugin('pagecache');
 
 			$parts = JEventDispatcher::getInstance()->trigger('onPageCacheGetKey');
-			$parts[] = JUri::getInstance()->toString();
+
+			// Without the parameters links get from analytics and social services, which never change the page
+			list($url, $this->ignoredParameters) = JCache::withoutIgnoredParameters(JUri::getInstance()->toString());
+
+			$parts[] = $url;
 
 			$key = md5(serialize($parts));
 		}
@@ -121,6 +133,16 @@ class PlgSystemCache extends JPlugin
 		}
 
 		$data = $this->_cache->get($this->getCacheKey());
+
+		/*
+		 * An address with tracking parameters gets the page of the address without them, but its own page is never stored:
+		 * it may hold those parameters (in links built from the current address), which other visitors would then get
+		 */
+		if ($data === false && $this->ignoredParameters && $this->_cache->getCaching())
+		{
+			$this->_cache->unlock($this->getCacheKey(), 'page');
+			$this->_cache->setCaching(false);
+		}
 
 		// If page exist in cache, show cached page.
 		if ($data !== false)

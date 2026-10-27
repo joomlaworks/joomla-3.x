@@ -96,6 +96,7 @@ class JConfig
 	public $cachetime = '15';
 	public $cache_handler = 'file';
 	public $cache_platformprefix = '0';
+	public $cache_ignored_params = 'aznpid, campid, cof, customid, cx, dclid, dm_i, ef_id, epik, fb_*, fbclid, gad_source, gbraid, gclid, gclsrc, gdffi, gdfms, gdftrk, hsa_*, ie, igshid, irclickid, ito, li_fat_id, matomo_*, mc_*, mkcid, mkevt, mkrid, mkwid, ml_subscriber*, msclkid, mtm_*, nb_klid, ndclid, origin, pcrid, piwik_*, pk_*, redirect_log_mongo_id, redirect_mongo_id, rtid, s_kwcid, sb_referer_host, sccid, siteurl, si, sms_*, srsltid, toolid, trk_*, ttclid, twclid, utm_*, wbraid, yclid, zanpid';
 	public $memcached_persist = '1';
 	public $memcached_compress = '0';
 	public $memcached_server_host = 'localhost';

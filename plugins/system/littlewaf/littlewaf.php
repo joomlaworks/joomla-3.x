@@ -527,7 +527,7 @@ class PlgSystemLittlewaf extends CMSPlugin
 
 		$target = $this->requestTarget();
 
-		if (strpos($target, '&') === false && strpos($target, '??') === false)
+		if (strpos($target, '&') === false && strpos($target, '??') === false && substr($target, -1) !== '?')
 		{
 			return;
 		}
@@ -536,7 +536,8 @@ class PlgSystemLittlewaf extends CMSPlugin
 			$target,
 			(bool) $this->params->get('normalize_duplicates', 1),
 			(bool) $this->params->get('normalize_question_marks', 1),
-			(bool) $this->params->get('normalize_path_ampersand', 1)
+			(bool) $this->params->get('normalize_path_ampersand', 1),
+			(bool) $this->params->get('normalize_entities', 1)
 		);
 
 		if ($normalised === $target)
@@ -554,14 +555,15 @@ class PlgSystemLittlewaf extends CMSPlugin
 	 * @param   string   $target      The request target
 	 * @param   boolean  $duplicates  Remove repeated query parameters (the first is kept, where it is) and empty ones; lists
 	 *                                (names ending in "[]") may repeat
-	 * @param   boolean  $questions   Remove question marks starting the query ("??a=1")
+	 * @param   boolean  $questions   Remove question marks starting the query ("??a=1") and an empty query ("/page?")
 	 * @param   boolean  $ampersand   Remove what follows an ampersand in the path ("/page&a=1"); the query stays
+	 * @param   boolean  $entities    Unescape HTML-escaped ampersands in the query ("a=1&amp;b=2", also "&amp;amp;")
 	 *
 	 * @return  string
 	 *
 	 * @since   3.18.0
 	 */
-	public static function normaliseTarget($target, $duplicates = true, $questions = true, $ampersand = true)
+	public static function normaliseTarget($target, $duplicates = true, $questions = true, $ampersand = true, $entities = true)
 	{
 		$position = strpos($target, '?');
 		$path     = $position === false ? $target : substr($target, 0, $position);
@@ -576,6 +578,12 @@ class PlgSystemLittlewaf extends CMSPlugin
 		if ($query !== null && $questions)
 		{
 			$query = ltrim($query, '?');
+		}
+
+		// Links copied out of HTML ("&amp;"): PHP reads "amp;b" as the name
+		while ($query !== null && $entities && stripos($query, '&amp;') !== false)
+		{
+			$query = str_ireplace('&amp;', '&', $query);
 		}
 
 		if ($query !== null && $duplicates)

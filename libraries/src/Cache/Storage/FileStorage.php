@@ -39,6 +39,14 @@ class FileStorage extends CacheStorage
 	protected $_locked_files = array();
 
 	/**
+	 * Cache folders known to exist in this request (each read and write checked them twice)
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	protected $folders = array();
+
+	/**
 	 * Constructor
 	 *
 	 * @param   array  $options  Optional parameters
@@ -114,38 +122,38 @@ class FileStorage extends CacheStorage
 			return false;
 		}
 
-		if ($checkTime == false || ($checkTime == true && $this->_checkExpire($id, $group) === true))
+		// One stat (filemtime) and the read: a missing file fails both, an empty one reads as nothing
+		if ($checkTime == true && !$this->isFresh($path))
 		{
-			if (file_exists($path))
+			return false;
+		}
+
+		if (isset($this->_locked_files[$path]))
+		{
+			$_fileopen = $this->_locked_files[$path];
+		}
+		else
+		{
+			$_fileopen = @fopen($path, 'rb');
+
+			// There is no lock, we have to close file after store data
+			$close = true;
+		}
+
+		if ($_fileopen)
+		{
+			// On Windows system we can not use file_get_contents on the file locked by yourself
+			$data = stream_get_contents($_fileopen);
+
+			if ($close)
 			{
-				if (isset($this->_locked_files[$path]))
-				{
-					$_fileopen = $this->_locked_files[$path];
-				}
-				else
-				{
-					$_fileopen = @fopen($path, 'rb');
+				@fclose($_fileopen);
+			}
 
-					// There is no lock, we have to close file after store data
-					$close = true;
-				}
-
-				if ($_fileopen)
-				{
-					// On Windows system we can not use file_get_contents on the file locked by yourself
-					$data = stream_get_contents($_fileopen);
-
-					if ($close)
-					{
-						@fclose($_fileopen);
-					}
-
-					if ($data !== false)
-					{
-						// Remove the initial die() statement
-						return str_replace('<?php die("Access Denied"); ?>#x#', '', $data);
-					}
-				}
+			if ($data !== false && $data !== '')
+			{
+				// Remove the initial die() statement
+				return str_replace('<?php die("Access Denied"); ?>#x#', '', $data);
 			}
 		}
 
@@ -277,6 +285,9 @@ class FileStorage extends CacheStorage
 		$return = true;
 		$folder = $group;
 
+		// Folders it deletes are made again by the next write
+		$this->folders = array();
+
 		if (trim($folder) == '')
 		{
 			$mode = 'notgroup';
@@ -381,7 +392,8 @@ class FileStorage extends CacheStorage
 					break;
 				}
 
-				usleep(100);
+				// 10 ms between tries, so the wait (up to a tenth of the lock time: 1.5 s by default) can see the other request finish
+				usleep(10000);
 				$data_lock = (bool) @flock($_fileopen, LOCK_EX|LOCK_NB);
 				$lock_counter++;
 			}
@@ -420,6 +432,14 @@ class FileStorage extends CacheStorage
 			@fclose($this->_locked_files[$path]);
 			unset($this->_locked_files[$path]);
 
+			// A lock released without storing leaves the empty file lock() made, as the shutdown clean-up does
+			clearstatcache(true, $path);
+
+			if (@filesize($path) === 0)
+			{
+				@unlink($path);
+			}
+
 			return $ret;
 		}
 
@@ -443,28 +463,36 @@ class FileStorage extends CacheStorage
 	{
 		$path = $this->_getFilePath($id, $group);
 
-		// Check prune period
-		if (file_exists($path))
+		// If, right now, the file does not exist then return false
+		return $path !== false && $this->isFresh($path) && @filesize($path) > 0;
+	}
+
+	/**
+	 * Whether a cache file exists and hasn't expired; an expired one is deleted.
+	 *
+	 * @param   string  $path  The file
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	protected function isFresh($path)
+	{
+		$time = @filemtime($path);
+
+		if ($time === false)
 		{
-			$time = @filemtime($path);
-
-			if (($time + $this->_lifetime) < $this->_now || empty($time))
-			{
-				@unlink($path);
-
-				return false;
-			}
-
-			// If, right now, the file does not exist then return false
-			if (@filesize($path) == 0)
-			{
-				return false;
-			}
-
-			return true;
+			return false;
 		}
 
-		return false;
+		if (($time + $this->_lifetime) < $this->_now || empty($time))
+		{
+			@unlink($path);
+
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -488,18 +516,23 @@ class FileStorage extends CacheStorage
 			return false;
 		}
 
-		// If the folder doesn't exist try to create it
-		if (!is_dir($dir))
+		if (!isset($this->folders[$dir]))
 		{
-			// Make sure the index file is there
-			$indexFile = $dir . '/index.html';
-			@mkdir($dir) && file_put_contents($indexFile, '<!DOCTYPE html><title></title>');
-		}
+			// If the folder doesn't exist try to create it
+			if (!is_dir($dir))
+			{
+				// Make sure the index file is there
+				$indexFile = $dir . '/index.html';
+				@mkdir($dir) && file_put_contents($indexFile, '<!DOCTYPE html><title></title>');
+			}
 
-		// Make sure the folder exists
-		if (!is_dir($dir))
-		{
-			return false;
+			// Make sure the folder exists
+			if (!is_dir($dir))
+			{
+				return false;
+			}
+
+			$this->folders[$dir] = true;
 		}
 
 		return $dir . '/' . $name . '.php';

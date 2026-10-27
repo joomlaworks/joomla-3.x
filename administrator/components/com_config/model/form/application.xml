@@ -26,6 +26,7 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
+        <field name="cache_ignored_params" type="textarea" label="COM_CONFIG_FIELD_CACHE_IGNORED_PARAMS_LABEL" description="COM_CONFIG_FIELD_CACHE_IGNORED_PARAMS_DESC" default="aznpid, campid, cof, customid, cx, dclid, dm_i, ef_id, epik, fb_*, fbclid, gad_source, gbraid, gclid, gclsrc, gdffi, gdfms, gdftrk, hsa_*, ie, igshid, irclickid, ito, li_fat_id, matomo_*, mc_*, mkcid, mkevt, mkrid, mkwid, ml_subscriber*, msclkid, mtm_*, nb_klid, ndclid, origin, pcrid, piwik_*, pk_*, redirect_log_mongo_id, redirect_mongo_id, rtid, s_kwcid, sb_referer_host, sccid, siteurl, si, sms_*, srsltid, toolid, trk_*, ttclid, twclid, utm_*, wbraid, yclid, zanpid" filter="string" rows="5" cols="60" />
         <field name="caching" type="list" label="COM_CONFIG_FIELD_CACHE_LABEL" description="COM_CONFIG_FIELD_CACHE_DESC" default="2" filter="integer">
             <option value="0">COM_CONFIG_FIELD_VALUE_CACHE_OFF</option>
             <option value="1">COM_CONFIG_FIELD_VALUE_CACHE_CONSERVATIVE</option>

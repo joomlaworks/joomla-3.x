@@ -57,6 +57,10 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
+                <field name="normalize_entities" type="radio" label="PLG_SYSTEM_LITTLEWAF_NORMALIZE_ENTITIES_LABEL" description="PLG_SYSTEM_LITTLEWAF_NORMALIZE_ENTITIES_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
                 <field name="normalize_path_ampersand" type="radio" label="PLG_SYSTEM_LITTLEWAF_NORMALIZE_PATH_AMPERSAND_LABEL" description="PLG_SYSTEM_LITTLEWAF_NORMALIZE_PATH_AMPERSAND_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>

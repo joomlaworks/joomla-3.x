@@ -286,7 +286,8 @@ class ApcuStorage extends CacheStorage
 					break;
 				}
 
-				usleep(100);
+				// 10 ms between tries, so the wait (up to a tenth of the lock time: 1.5 s by default) can see the other request finish
+				usleep(10000);
 				$data_lock = apcu_add($cache_id, 1, $locktime);
 				$lock_counter++;
 			}

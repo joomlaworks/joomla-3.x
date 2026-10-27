@@ -22,6 +22,15 @@ use Joomla\String\StringHelper;
 class Cache
 {
 	/**
+	 * The query parameters the page cache ignores by default (Global Configuration's "Ignored Query Parameters"): those
+	 * analytics, advertising, e-mail and social services add to links, which never change a page. "*" stands for any text.
+	 *
+	 * @var    string
+	 * @since  3.18.0
+	 */
+	const IGNORED_QUERY_PARAMETERS = 'aznpid, campid, cof, customid, cx, dclid, dm_i, ef_id, epik, fb_*, fbclid, gad_source, gbraid, gclid, gclsrc, gdffi, gdfms, gdftrk, hsa_*, ie, igshid, irclickid, ito, li_fat_id, matomo_*, mc_*, mkcid, mkevt, mkrid, mkwid, ml_subscriber*, msclkid, mtm_*, nb_klid, ndclid, origin, pcrid, piwik_*, pk_*, redirect_log_mongo_id, redirect_mongo_id, rtid, s_kwcid, sb_referer_host, sccid, siteurl, si, sms_*, srsltid, toolid, trk_*, ttclid, twclid, utm_*, wbraid, yclid, zanpid';
+
+	/**
 	 * Storage handler
 	 *
 	 * @var    CacheStorage[]
@@ -430,6 +439,9 @@ class Cache
 					break;
 				}
 
+				// A short wait: this lock is an entry kept for the cache's lifetime, which an interrupted request never removes,
+				// so a long one would hold every visitor of that page until it expires (the handlers' own locks expire or are
+				// released with the process, and wait longer)
 				usleep(100);
 				$data_lock = $handler->get($id2, $group, $this->_options['checkTime']);
 				$lock_counter++;
@@ -494,6 +506,10 @@ class Cache
 
 		if (isset(self::$_handler[$hash]))
 		{
+			// The handler is kept for the whole process: long-running ones (the command line's MCP server, indexing) must see
+			// entries expire
+			self::$_handler[$hash]->_now = time();
+
 			return self::$_handler[$hash];
 		}
 
@@ -798,6 +814,85 @@ class Cache
 		}
 
 		return md5(serialize($safeuriaddon));
+	}
+
+	/**
+	 * An address without the query parameters the page cache ignores (Global Configuration's "Ignored Query Parameters", by
+	 * default IGNORED_QUERY_PARAMETERS): the rest of it is kept as it was, in its order.
+	 *
+	 * @param   string       $url     The address
+	 * @param   string|null  $ignore  The names, separated by commas, spaces or lines ("*" for any text); null for the
+	 *                                site's setting
+	 *
+	 * @return  array  The address, and whether a parameter was left out
+	 *
+	 * @since   3.18.0
+	 */
+	public static function withoutIgnoredParameters($url, $ignore = null)
+	{
+		static $patterns = array();
+
+		if ($ignore === null)
+		{
+			$ignore = \JFactory::getConfig()->get('cache_ignored_params');
+			$ignore = $ignore === null ? static::IGNORED_QUERY_PARAMETERS : (string) $ignore;
+		}
+
+		if (!isset($patterns[$ignore]))
+		{
+			$names = array();
+
+			foreach (preg_split('/[\s,]+/', $ignore, -1, PREG_SPLIT_NO_EMPTY) as $name)
+			{
+				$names[] = str_replace('\\*', '.*', preg_quote($name, '/'));
+			}
+
+			$patterns[$ignore] = $names ? '/^(?:' . implode('|', $names) . ')$/i' : '';
+		}
+
+		$position = strpos($url, '?');
+
+		if ($patterns[$ignore] === '' || $position === false)
+		{
+			return array($url, false);
+		}
+
+		$fragment = '';
+
+		if (($hash = strpos($url, '#', $position)) !== false)
+		{
+			$fragment = substr($url, $hash);
+			$url      = substr($url, 0, $hash);
+		}
+
+		$kept    = array();
+		$removed = false;
+
+		foreach (explode('&', substr($url, $position + 1)) as $part)
+		{
+			$name = urldecode(strstr($part . '=', '=', true));
+
+			// Lists (name[]=...) by the name before the brackets
+			$base = strstr($name . '[', '[', true);
+
+			if ($name !== '' && preg_match($patterns[$ignore], $base))
+			{
+				$removed = true;
+
+				continue;
+			}
+
+			$kept[] = $part;
+		}
+
+		if (!$removed)
+		{
+			return array($url . $fragment, false);
+		}
+
+		$query = implode('&', $kept);
+
+		return array(substr($url, 0, $position) . ($query !== '' ? '?' . $query : '') . $fragment, true);
 	}
 
 	/**
