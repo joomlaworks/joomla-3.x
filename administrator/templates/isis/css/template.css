@@ -1614,6 +1614,8 @@ h6 {font-size:12px;line-height:14px;}
 
 /* --- Isis: Forms --- */
 .form-horizontal .control-label {padding-right:5px;text-align:left;}
+/* A note without a label leaves an empty, floated label column, which its text flowed around (the first line indented) */
+.form-horizontal .control-label:empty {display:none;}
 .form-horizontal .control-label .spacer hr {width:380px;}
 @media (max-width:420px) {
     .form-horizontal .control-label .spacer hr {width:220px;}

@@ -19,6 +19,7 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
+                <field name="further_reading" type="note" description="PLG_CACHE_FURTHER_READING" />
                 <field name="heading_pagecache" type="spacer" label="PLG_CACHE_HEADING_PAGECACHE" description="PLG_CACHE_HEADING_PAGECACHE_DESC" />
                 <field name="pagecache_home" type="number" label="PLG_CACHE_FIELD_PAGECACHE_HOME_LABEL" description="PLG_CACHE_FIELD_PAGECACHE_HOME_DESC" default="60" min="0" filter="integer" />
                 <field name="pagecache_pages" type="number" label="PLG_CACHE_FIELD_PAGECACHE_PAGES_LABEL" description="PLG_CACHE_FIELD_PAGECACHE_PAGES_DESC" default="180" min="0" filter="integer" />

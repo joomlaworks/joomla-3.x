@@ -401,6 +401,8 @@ class JoomlaInstallerScript
 			'3.18.0-2026-10-20.sql' => '3.18.0',
 			// "Editor - Blocks (Editor.js)" and the "Custom Blocks" modules (site and administrator)
 			'3.18.0-2026-10-21.sql' => '3.18.0',
+			// "System - Page Cache has new options" (post-installation message)
+			'3.18.0-2026-10-27.sql' => '3.18.0',
 		);
 
 		foreach ($dataMigrationFiles as $file => $addedIn)
