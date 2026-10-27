@@ -359,8 +359,29 @@ class PlgSystemCache extends JPlugin
 		 * Never "private": it would stop caches in front of the site (Varnish, CDNs) from keeping the page at all. The Expires
 		 * header is set first, so the application doesn't add its own 15 minutes.
 		 */
+		$directives = array('max-age=' . $seconds);
+
+		/*
+		 * How long a cache may still send the page after that, while it fetches a fresh copy (empty: as long as max-age, so
+		 * the home page and the other pages each get their own), and when the site answers with an error. Caches in front of
+		 * the site (Varnish, CDNs) use them most.
+		 */
+		$whileRevalidate = trim((string) $this->params->get('browsercache_swr', ''));
+		$whileRevalidate = $whileRevalidate === '' ? $seconds : (int) $whileRevalidate;
+		$ifError         = (int) $this->params->get('browsercache_sie', 3600);
+
+		if ($whileRevalidate > 0)
+		{
+			$directives[] = 'stale-while-revalidate=' . $whileRevalidate;
+		}
+
+		if ($ifError > 0)
+		{
+			$directives[] = 'stale-if-error=' . $ifError;
+		}
+
 		$this->app->allowCache(true);
-		$this->app->setHeader('Cache-Control', 'max-age=' . $seconds, true);
+		$this->app->setHeader('Cache-Control', implode(', ', $directives), true);
 		$this->app->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + $seconds) . ' GMT', true);
 	}
 
@@ -376,7 +397,7 @@ class PlgSystemCache extends JPlugin
 	{
 		foreach ($this->app->getHeaders() as $header)
 		{
-			if (strtolower($header['name']) === 'cache-control' && preg_match('/^(?:private, )?max-age=(\d+)$/', $header['value'], $match))
+			if (strtolower($header['name']) === 'cache-control' && preg_match('/^(?:private, )?max-age=(\d+)(?:,|$)/', $header['value'], $match))
 			{
 				$this->app->allowCache(true);
 				$this->app->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + (int) $match[1]) . ' GMT', true);
