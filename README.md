@@ -50,6 +50,8 @@ Summary of changes:
 - Smart Search fixes for large sites, the command line indexer and Advanced Search's dates ([#9](https://github.com/joomlaworks/joomla-3.x/issues/9), [#21](https://github.com/joomlaworks/joomla-3.x/issues/21), [#23](https://github.com/joomlaworks/joomla-3.x/issues/23)), plus more PHP 8.2–8.5 fixes ([#20](https://github.com/joomlaworks/joomla-3.x/issues/20))
 - Prothero, a new black and white administrator template with a dark mode, the default on new sites; Isis stays, and works with the same extensions
 - Google structured data, Open Graph and X cards for every page, from a new core plugin, on by default
+- **Little WAF, now on by default and much more than a filter:** it blocks scans for WordPress and other platforms' files, executable uploads, PHP object injection and attack tools, sends safe security headers, and sends the malformed addresses crawlers make up to their clean address, before any other plugin runs
+- **Faster, sturdier caching:** campaign and social links (`utm_*`, `fbclid`, `gclid`, ...) now get cached pages (about 18 ms instead of 200 ms to render one in our tests), cached pages skip the work of third-party system plugins, the file cache reads about 30% faster, and a page being cached is rendered once instead of by every request waiting for it; plus fixes for blank pages, browser caching, form tokens and Redis/APCu that stock Joomla 3 never had
 
 **New features:**
 - The debug console opens from a button at the bottom right, showing the page's time, memory, queries and errors, as a panel with tabs instead of a block at the end of every page; redesigned, light and dark
@@ -63,10 +65,17 @@ Summary of changes:
 - "Editor - Blocks (Editor.js)": write content as blocks (headings, lists, images, embeds, quotes, tables, code, notes, HTML, Read more), saved as HTML which the site template's block layouts decide (templates override any block in `html/layouts/joomla/blocks/`); templates add blocks of their own (a field definition and a layout each; Rookwood comes with Hero, Testimonials and Services); a preview with the site template (desktop, tablet, phone), full screen and a content width (800px by default); a "Custom Blocks" module (site and administrator) builds module content from blocks
 
 **Improvements:**
-- The core system plugins run in a better order: Little WAF, Language Filter, Remember Me and Page Cache first, so cached pages skip the work of third-party system plugins; Debug last
-- Little WAF's new generic protections (probes for WordPress and other platforms' files, executable uploads, PHP object injection, attack tools) and security headers (the safe ones on by default)
-- Little WAF's new URL Normalizations (on by default): duplicate query parameters, doubled question marks, text after an ampersand in the path and feeds of search results are sent to the clean address with one 301 redirect
-- Little WAF is enabled by default (new sites, and once on update); Control Panel: Latest Actions shows 20 actions, a "System Information" module (server and site information) beside the quick icons, Privacy Dashboard unpublished on new sites
+- **Little WAF**, enabled by default (new sites, and once on update), first of all system plugins, and all its options on one page:
+  - Generic protections against whole classes of attack, whatever extensions a site has: scans for other platforms' files (WordPress's `wp-login.php` and `xmlrpc.php`, `.git`, `.env`, phpMyAdmin, backups) get a plain 404 before Joomla builds a page for them; executable uploads (`shell.php.jpg`, `.htaccess`), PHP-serialized objects (object injection) and attack tools (sqlmap, Nikto, WPScan, ...) get a 403
+  - Security headers: `X-Content-Type-Options`, `X-XSS-Protection` and `Referrer-Policy` on by default; `X-Frame-Options`, HSTS and `Permissions-Policy` when you choose them
+  - URL Normalizations: duplicate query parameters (crawlers repeating `start`, `limitstart` or `format`), doubled or empty question marks, HTML-escaped ampersands (`&amp;`), text after an ampersand in the path and feeds of search results are sent to the clean address with one 301 redirect, so search engines index one address per page
+- **Caching and performance:**
+  - The page cache ignores tracking parameters (`utm_*`, `fbclid`, `gclid`, `msclkid`, ... 58 by default, editable in Global Configuration): visitors from campaigns and social links get the cached page instead of a new copy each (an article: about 18 ms from the cache instead of 200 ms rendered), while analytics still see the parameters
+  - The core system plugins run in a better order: Little WAF, Language Filter, Remember Me and Page Cache first, so cached pages skip the work of third-party system plugins; Debug last
+  - The file cache reads about 30% faster (20,000 cache hits: 442 ms before, 306 ms now), which counts on pages with many cached modules
+  - A request for a page (or module) that another request is caching now waits for it, instead of rendering it again: no more pile-ups on busy pages when their cache expires (file, APCu and Memcached; with a page taking 0.5 s to render, a second request got it after 0.41 s, where it used to give up after 0.03 s and render it again)
+  - Measured on a local test site (PHP 8.5): the figures show proportions, not what a production server does
+- Control Panel: Latest Actions shows 20 actions, a "System Information" module (server and site information) sits beside the quick icons, and Privacy Dashboard is unpublished on new sites
 - More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. The administrator's quick icons, menu and status bar, article tags and Contacts work without them
 - Uninstalling a component (core or third-party) removes its entries from the Smart Search index
 - Uninstalling a core component removes its own database tables (shared ones stay); every removable component has install and uninstall SQL for MySQL, PostgreSQL and SQL Server, so restoring brings its tables back. Updating from an earlier version also removes the tables of core components uninstalled before
@@ -98,9 +107,13 @@ Summary of changes:
 - Media uploads compare executable extensions in any case (`x.SHTML.png` got through), and the "Illegal MIME Types" option is actually checked
 
 **Bug fixes:**
-- Caching and HTTP headers: view caching keeps the headers views set (e.g. `Last-Modified`, `ETag`) and their browser caching; the page cache no longer sends the headers of plugins which run before it twice, or after they were turned off; `setHeader()` sends a value of `0`
-- Cache fixes: a damaged cache entry no longer serves an empty page; browser caching of cached pages works (304); cached pages give every visitor their own form token in Joomla's script options and HTML5-style forms; with Redis, APCu or WinCache, Clear Cache also removes the mobile copies and never touches data that isn't the site's cache (Redis without the blocking `KEYS *`)
-- Page cache: tracking parameters (`utm_*`, `fbclid`, `gclid`, ... a list in Global Configuration) no longer give every campaign link its own cached copy; faster file cache reads; requests for a page being cached wait for it instead of rendering it again; Little WAF also fixes HTML-escaped ampersands in addresses
+- **Caching** (all bugs of stock Joomla 3):
+  - A damaged cache entry (an interrupted write) no longer serves an empty page until it expires
+  - Browser caching of cached pages works: browsers get a 304 for a page they already have
+  - Cached pages, views and modules give every visitor their own form token, in Joomla's script options and in HTML5-style forms (Joomla's AJAX requests and those forms failed for everyone but the visitor who filled the cache)
+  - View caching keeps the HTTP headers views set (e.g. `Last-Modified`, `ETag`) and their browser caching; the page cache no longer repeats, or keeps sending after they were turned off, the headers of plugins which run before it; `setHeader()` sends a value of `0`
+  - Redis, APCu and WinCache: Clear Cache also removes the mobile copies and never touches data that isn't the site's cache (sessions, other sites); Redis no longer blocks its server with `KEYS *` (cleaning a group among 7,300 keys: 83 ms, the other 4,500 left alone)
+  - Long-running processes (the MCP server, indexing) see cache entries expire
 - Uninstalling a core component also uninstalls the modules and plugins which only serve it (e.g. "Smart Search - Contacts", which stopped indexing) and leaves no media folders or language files behind; updates clean up after earlier uninstalls
 - Smart Search: full reindexes no longer stop with "The table '#__finder_tokens' is full" on MySQL/MariaDB's default settings, the command line indexer no longer stops on content with modules in it, and Advanced Search's date range works with only a start or an end date
 - Articles with "Link Author" no longer fail when Contacts is uninstalled or disabled
