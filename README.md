@@ -70,6 +70,7 @@ Summary of changes:
 - "Editor - Blocks (Editor.js)": write content as blocks (headings, lists, images, embeds, quotes, tables, code, notes, HTML, Read more), saved as HTML which the site template's block layouts decide (templates override any block in `html/layouts/joomla/blocks/`); templates add blocks of their own (a field definition and a layout each; Rookwood comes with Hero, Testimonials and Services); a preview with the site template (desktop, tablet, phone), full screen and a content width (800px by default); a "Custom Blocks" module (site and administrator) builds module content from blocks
 
 **Improvements:**
+- Library updates: jQuery UI 1.14.2 (with the 1.9 helpers kept for extensions), SimplePie 1.9.0 (needs PHP 7.2; core doesn't use it), sodium_compat 1.24.2, Ajax Autocomplete 1.5.0
 - SQLite driver: MySQL on SQLite 3.1.1 (temporary tables, transactions and date arithmetic fixed upstream), Joomla's patches kept
 - Three unused libraries removed: HTML5 Shiv (for Internet Explorer 8), Google's reCAPTCHA PHP client and a duplicate copy of PHP UTF-8
 - PHPMailer updated from 5.2.28 (2020) to 7.1.1 (May 2026), with Joomla's mailer and extensions using PHPMailer's old class names working as before

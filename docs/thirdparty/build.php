@@ -106,7 +106,7 @@ $groups = array(
 		array('name' => 'PHPMailer', 'use' => 'shared', 'upstream' => 'packagist:phpmailer/phpmailer', 'composer' => 'phpmailer/phpmailer', 'license' => 'LGPL-2.1', 'url' => 'https://github.com/PHPMailer/PHPMailer', 'path' => 'libraries/vendor/phpmailer/phpmailer',
 			'note' => 'Patched by Joomla 3.x UTD (php_uname() guard)'),
 		array('name' => 'SimplePie', 'use' => 'shared', 'upstream' => 'packagist:simplepie/simplepie', 'composer' => 'simplepie/simplepie', 'license' => 'BSD-3-Clause', 'url' => 'https://simplepie.org', 'path' => 'libraries/vendor/simplepie/simplepie',
-			'note' => 'Patched by Joomla (its maintained fork) and by Joomla 3.x UTD (PHP 8)'),
+			'note' => 'Needs PHP 7.2 (unused by core; JFactory::getFeedParser() returns false on PHP 7.1); patched by Joomla 3.x UTD (PHP 8.5, upstream #949 and #979)'),
 		array('name' => 'lessphp', 'use' => 'shared', 'upstream' => 'packagist:leafo/lessphp', 'version' => '0.5.0', 'date' => '2014-11-24', 'dateSource' => 'Packagist and GitHub tag v0.5.0', 'license' => 'MIT', 'url' => 'https://github.com/leafo/lessphp', 'path' => 'libraries/vendor/leafo/lessphp',
 			'note' => 'Patched by Joomla and by Joomla 3.x UTD (PHP 8)', 'check' => array('libraries/vendor/leafo/lessphp/lessc.inc.php', '/VERSION = "v([0-9.]+)"/')),
 		array('name' => 'sodium_compat', 'use' => 'core', 'upstream' => 'packagist:paragonie/sodium_compat', 'composer' => 'paragonie/sodium_compat', 'license' => 'ISC', 'url' => 'https://github.com/paragonie/sodium_compat', 'note' => 'Patched by Joomla 3.x UTD (PHP 8)', 'path' => 'libraries/vendor/paragonie/sodium_compat'),

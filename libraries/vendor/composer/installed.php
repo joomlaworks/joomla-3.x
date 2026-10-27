@@ -217,12 +217,12 @@
             'dev_requirement' => false,
         ),
         'simplepie/simplepie' => array(
-            'pretty_version' => '1.3.3',
-            'version' => '1.3.3.0',
+            'pretty_version' => '1.9.0',
+            'version' => '1.9.0.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../simplepie/simplepie',
             'aliases' => array(),
-            'reference' => '9f6fdaa79d9888ae8f1626b4f2e6b5ff7ca29bb3',
+            'reference' => '76cccb1b2c5dcaf44f304c925ab30c0f48643992',
             'dev_requirement' => false,
         ),
         'symfony/polyfill-ctype' => array(

@@ -4426,6 +4426,8 @@ class JoomlaInstallerScript
 			'/media/jui/js/html5-uncompressed.js',
 			'/media/jui/js/html5.js',
 			'/libraries/src/Captcha/Google/HttpBridgePostRequestMethod.php',
+			// SimplePie 1.3 (1.9 since 3.18)
+			'/libraries/vendor/simplepie/simplepie/LICENSE.txt',
 			// PHPMailer 5.2 (7.1 since 3.18: src/; its language file is Joomla's strings, set by the Mail class)
 			'/libraries/vendor/phpmailer/phpmailer/PHPMailerAutoload.php',
 			'/libraries/vendor/phpmailer/phpmailer/class.phpmailer.php',
@@ -4713,6 +4715,7 @@ class JoomlaInstallerScript
 			'/libraries/src/Mail/language',
 			'/libraries/vendor/fabianwennink',
 			'/libraries/vendor/google',
+			'/libraries/vendor/simplepie/simplepie/idn',
 			'/libraries/vendor/phpmailer/phpmailer/extras',
 			'/media/plg_captcha_recaptcha_invisible',
 			'/plugins/authentication/gmail',

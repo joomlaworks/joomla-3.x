@@ -36,6 +36,14 @@ class JSimplepieFactory
 	{
 		JLog::add(__METHOD__ . ' is deprecated.   Use JFeedFactory() or supply Simple Pie instead.', JLog::WARNING, 'deprecated');
 
+		// SimplePie 1.9 needs PHP 7.2: its constructor ends the request on older PHP
+		if (PHP_VERSION_ID < 70200)
+		{
+			JLog::add(JText::_('JLIB_UTIL_ERROR_LOADING_FEED_DATA') . ' (SimplePie needs PHP 7.2 or newer)', JLog::WARNING, 'jerror');
+
+			return false;
+		}
+
 		$cache = JFactory::getCache('feed_parser', 'callback');
 
 		if ($cacheTime > 0)
@@ -43,7 +51,7 @@ class JSimplepieFactory
 			$cache->setLifeTime($cacheTime);
 		}
 
-		$simplepie = new SimplePie(null, null, 0);
+		$simplepie = new SimplePie;
 
 		$simplepie->enable_cache(false);
 		$simplepie->set_feed_url($url);

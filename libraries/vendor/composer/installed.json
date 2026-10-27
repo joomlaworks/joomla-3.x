@@ -1344,26 +1344,32 @@
         },
         {
             "name": "simplepie/simplepie",
-            "version": "1.3.3",
-            "version_normalized": "1.3.3.0",
+            "version": "1.9.0",
+            "version_normalized": "1.9.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/simplepie/simplepie.git",
-                "reference": "9f6fdaa79d9888ae8f1626b4f2e6b5ff7ca29bb3"
+                "reference": "76cccb1b2c5dcaf44f304c925ab30c0f48643992"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/simplepie/simplepie/zipball/9f6fdaa79d9888ae8f1626b4f2e6b5ff7ca29bb3",
-                "reference": "9f6fdaa79d9888ae8f1626b4f2e6b5ff7ca29bb3",
+                "url": "https://api.github.com/repos/simplepie/simplepie/zipball/76cccb1b2c5dcaf44f304c925ab30c0f48643992",
+                "reference": "76cccb1b2c5dcaf44f304c925ab30c0f48643992",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.2.0"
+                "php": ">=7.2.0",
+                "ext-pcre": "*",
+                "ext-xml": "*",
+                "ext-xmlreader": "*"
             },
-            "time": "2021-12-24T02:44:57+00:00",
+            "time": "2025-09-12T06:34:27+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
+                "psr-4": {
+                    "SimplePie\\": "src"
+                },
                 "psr-0": {
                     "SimplePie": "library"
                 }
