@@ -36,7 +36,6 @@
             <folder>tmp</folder>
             <file>htaccess.txt</file>
             <file>web.config.txt</file>
-            <file>LICENSE.md</file>
             <file>LICENSE.txt</file>
             <file>index.php</file>
         </files>

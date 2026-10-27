@@ -467,7 +467,7 @@ Joomla 3.x UTD is an independent community project. It is not affiliated with, e
 
 The Joomla!® name and logo are trademarks of Open Source Matters, Inc. in the United States and other countries. This project does not use the Joomla! logo.
 
-This distribution is free software, released under the GNU General Public License version 2 or later. See LICENSE.md.
+This distribution is free software, released under the GNU General Public License version 2 or later. See LICENSE.txt.
 
 Original Joomla! code: Copyright &copy; 2005 - 2025 Open Source Matters, Inc.
 

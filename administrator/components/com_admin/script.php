@@ -4426,6 +4426,8 @@ class JoomlaInstallerScript
 			'/media/jui/js/html5-uncompressed.js',
 			'/media/jui/js/html5.js',
 			'/libraries/src/Captcha/Google/HttpBridgePostRequestMethod.php',
+			// The licence's Markdown copy (LICENSE.txt, identical, is the licence file)
+			'/LICENSE.md',
 			// SimplePie 1.3 (1.9 since 3.18)
 			'/libraries/vendor/simplepie/simplepie/LICENSE.txt',
 			// PHPMailer 5.2 (7.1 since 3.18: src/; its language file is Joomla's strings, set by the Mail class)
