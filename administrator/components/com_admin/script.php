@@ -95,6 +95,7 @@ class JoomlaInstallerScript
 		$this->updateLatestActionsCount();
 		$this->addSystemInformationModule();
 		$this->orderSystemPlugins();
+		$this->removeObsoletePluginParams();
 		$this->switchDefaultEditor();
 		$this->fixCoreCategorySubmenus();
 
@@ -1319,6 +1320,55 @@ class JoomlaInstallerScript
 		catch (Exception $e)
 		{
 			// Not worth failing the update for: the site goes without the module
+		}
+	}
+
+	/**
+	 * Removes plugin options nothing reads any more from the stored parameters (on every update: removing them twice changes
+	 * nothing). The Page Cache's "cachetime" was its own page cache lifetime in old Joomla versions; Joomla 3 dropped the
+	 * field but kept writing "15" into every site's parameters.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected function removeObsoletePluginParams()
+	{
+		$obsolete = array('cache' => array('cachetime'));
+
+		try
+		{
+			$db = JFactory::getDbo();
+
+			foreach ($obsolete as $element => $names)
+			{
+				$row = $db->setQuery(
+					$db->getQuery(true)
+						->select($db->quoteName(array('extension_id', 'params')))
+						->from($db->quoteName('#__extensions'))
+						->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+						->where($db->quoteName('folder') . ' = ' . $db->quote('system'))
+						->where($db->quoteName('element') . ' = ' . $db->quote($element))
+				)->loadObject();
+
+				$params = $row ? json_decode((string) $row->params, true) : null;
+
+				if (!is_array($params) || !array_intersect_key($params, array_flip($names)))
+				{
+					continue;
+				}
+
+				$db->setQuery(
+					$db->getQuery(true)
+						->update($db->quoteName('#__extensions'))
+						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode((object) array_diff_key($params, array_flip($names)))))
+						->where($db->quoteName('extension_id') . ' = ' . (int) $row->extension_id)
+				)->execute();
+			}
+		}
+		catch (Exception $e)
+		{
+			// Not worth failing the update for: unread options do no harm
 		}
 	}
 

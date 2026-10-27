@@ -53,6 +53,81 @@ class PageController extends CacheController
 	protected $_headersBefore = null;
 
 	/**
+	 * How long, in seconds, the page being made stays fresh (stored with it); null: as long as it's stored (the cache
+	 * lifetime), as before
+	 *
+	 * @var    integer|null
+	 * @since  3.18.0
+	 */
+	protected $_fresh = null;
+
+	/**
+	 * How long, in seconds, a page may still be served after it's no longer fresh: to other visitors while one request makes
+	 * a fresh copy, and instead of an error page when making it fails. 0: never
+	 *
+	 * @var    integer
+	 * @since  3.18.0
+	 */
+	protected $_stale = 0;
+
+	/**
+	 * The stale copy of the page this request is making again (see getStaleCopy())
+	 *
+	 * @var    array|null
+	 * @since  3.18.0
+	 */
+	protected $_staleCopy = null;
+
+	/**
+	 * A refresh marker older than this many seconds belongs to a request which never finished
+	 *
+	 * @var    integer
+	 * @since  3.18.0
+	 */
+	const REFRESH_TIMEOUT = 30;
+
+	/**
+	 * Sets how long the page being made stays fresh.
+	 *
+	 * @param   integer|null  $seconds  Seconds; null for the cache lifetime
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public function setFreshTime($seconds)
+	{
+		$this->_fresh = $seconds === null ? null : max(1, (int) $seconds);
+	}
+
+	/**
+	 * Sets how long stale pages may still be served.
+	 *
+	 * @param   integer  $seconds  Seconds; 0 for never
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public function setStaleTime($seconds)
+	{
+		$this->_stale = max(0, (int) $seconds);
+	}
+
+	/**
+	 * The page this request is making again, as it was stored (the data getWorkarounds() takes), while it may still be served:
+	 * what to send instead of an error page if making it fails. Null when there's none.
+	 *
+	 * @return  array|null
+	 *
+	 * @since   3.18.0
+	 */
+	public function getStaleCopy()
+	{
+		return $this->_staleCopy;
+	}
+
+	/**
 	 * Get the cached page data
 	 *
 	 * @param   boolean  $id     The cache data ID
@@ -97,8 +172,40 @@ class PageController extends CacheController
 		$data = $this->getStored($id, $group);
 
 		$this->_locktest = (object) array('locked' => null, 'locklooped' => null);
+		$refreshing      = false;
 
-		if ($data === false)
+		/*
+		 * A page past its fresh time: within the stale time one request makes it again (marked with a refresh entry, and
+		 * holding the page's lock) and the others get the stale copy meanwhile, at once, never waiting for the lock; past it,
+		 * it's a miss
+		 */
+		if ($data !== false && is_array($data[0]) && isset($data[0]['expires']) && $data[0]['expires'] < time())
+		{
+			if ($this->_stale > 0 && $data[0]['expires'] + $this->_stale >= time())
+			{
+				if (!$this->isRefreshing($id, $group))
+				{
+					$this->cache->store((string) time(), $id . '_refresh', $group);
+
+					// A brief try (about 0.1 s): a request arriving at the same moment may hold it already
+					$lock = $this->cache->lock($id, $group, 1);
+
+					if ($lock->locked === true)
+					{
+						$this->_locktest  = $lock;
+						$this->_staleCopy = $data[0];
+						$refreshing       = true;
+						$data             = false;
+					}
+				}
+			}
+			else
+			{
+				$data = false;
+			}
+		}
+
+		if ($data === false && !$refreshing)
 		{
 			$this->_locktest = $this->cache->lock($id, $group);
 
@@ -190,8 +297,8 @@ class PageController extends CacheController
 
 			/*
 			 * Only the headers set after the cache looked for the page: what ran before it (e.g. a security plugin's headers)
-			 * runs on every request, cached or not, so storing it would send those headers twice on a cache hit (two values
-			 * after a change of settings)
+			 * runs on every request, cached or not, so a stored copy would repeat those which may appear more than once, and
+			 * keep sending those it stopped sending
 			 */
 			if (isset($data['headers']) && is_array($this->_headersBefore))
 			{
@@ -207,6 +314,11 @@ class PageController extends CacheController
 
 				$data['headers'] = $headers;
 			}
+
+			if ($this->_fresh !== null)
+			{
+				$data['expires'] = time() + $this->_fresh;
+			}
 		}
 
 		$result = $this->cache->store(serialize($data), $id, $group);
@@ -216,7 +328,29 @@ class PageController extends CacheController
 			$this->cache->unlock($id, $group);
 		}
 
+		if ($this->_staleCopy !== null)
+		{
+			$this->cache->remove($id . '_refresh', $group);
+		}
+
 		return $result;
+	}
+
+	/**
+	 * Whether another request is making the page again (a refresh entry less than REFRESH_TIMEOUT seconds old).
+	 *
+	 * @param   string  $id     The cache data ID
+	 * @param   string  $group  The cache data group
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	protected function isRefreshing($id, $group)
+	{
+		$started = $this->cache->get($id . '_refresh', $group);
+
+		return $started !== false && (int) $started > time() - static::REFRESH_TIMEOUT;
 	}
 
 	/**

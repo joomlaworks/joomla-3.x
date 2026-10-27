@@ -49,6 +49,23 @@ class PlgSystemCache extends JPlugin
 	protected $app;
 
 	/**
+	 * How long, in seconds, the home page and the other pages stay fresh, and stale pages may still be served (0 each when
+	 * the plugin's times aren't set: the cache lifetime, as before)
+	 *
+	 * @var    integer[]
+	 * @since  3.18.0
+	 */
+	protected $times = array('home' => 0, 'pages' => 0, 'stale' => 0);
+
+	/**
+	 * The exception handler in place before this plugin's
+	 *
+	 * @var    callable|null
+	 * @since  3.18.0
+	 */
+	protected $previousExceptionHandler;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param   object  &$subject  The object to observe.
@@ -73,9 +90,121 @@ class PlgSystemCache extends JPlugin
 			'caching'      => false,
 		);
 
+		/*
+		 * The page cache's own times (seconds; empty: Global Configuration's Cache Time). Each page is stored with the moment
+		 * it stops being fresh, and kept for the longest fresh time plus the stale time.
+		 */
+		$global = max(1, (int) $this->app->get('cachetime', 15)) * 60;
+		$home   = (int) $this->params->get('pagecache_home', 0);
+		$pages  = (int) $this->params->get('pagecache_pages', 0);
+		$stale  = max(0, (int) $this->params->get('pagecache_stale', 0));
+
+		if ($home > 0 || $pages > 0 || $stale > 0)
+		{
+			$this->times = array('home' => $home > 0 ? $home : $global, 'pages' => $pages > 0 ? $pages : $global, 'stale' => $stale);
+
+			$options['lifetime'] = (int) ceil((max($this->times['home'], $this->times['pages']) + $stale) / 60);
+		}
+
 		// Instantiate cache with previous options and create the cache key identifier.
 		$this->_cache     = JCache::getInstance('page', $options);
 		$this->_cache_key = JUri::getInstance()->toString();
+
+		if ($stale > 0)
+		{
+			$this->_cache->setStaleTime($stale);
+
+			// A page which fails to render gets its stale copy instead of the error page
+			if ($this->app->isClient('site'))
+			{
+				$this->previousExceptionHandler = set_exception_handler(array($this, 'handleException'));
+				JError::setErrorHandling(E_ERROR, 'callback', array($this, 'handleError'));
+			}
+		}
+	}
+
+	/**
+	 * Serves the stale copy of the page instead of an error page, when this request was making it again and failed with a
+	 * server error (not a 4xx: a deleted article must give its 404). The error is still written to PHP's error log.
+	 *
+	 * @param   Exception|Throwable  $error  The error
+	 *
+	 * @return  boolean  False when there's no stale copy to serve
+	 *
+	 * @since   3.18.0
+	 */
+	protected function serveStaleCopy($error)
+	{
+		$copy = $this->_cache->getStaleCopy();
+		$code = (int) $error->getCode();
+
+		if ($copy === null || ($code >= 400 && $code < 500))
+		{
+			return false;
+		}
+
+		error_log(sprintf('Page Cache served a stale copy of %s after an error: %s', $this->_cache_key, $error->getMessage()));
+
+		while (ob_get_level())
+		{
+			ob_end_clean();
+		}
+
+		// The page as it was: a 200 with its stored headers (those set before rendering, e.g. security headers, stay)
+		$this->app->setHeader('status', 200, true);
+		$this->app->setBody(JCache::getWorkarounds($copy));
+		$this->keepBrowserCacheTime();
+
+		echo $this->app->toString((bool) $this->app->get('gzip'));
+
+		$this->app->close();
+
+		return true;
+	}
+
+	/**
+	 * Uncaught exceptions: the stale copy, else the handler before this one.
+	 *
+	 * @param   Exception|Throwable  $exception  The exception
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public function handleException($exception)
+	{
+		if ($this->serveStaleCopy($exception))
+		{
+			return;
+		}
+
+		if ($this->previousExceptionHandler)
+		{
+			call_user_func($this->previousExceptionHandler, $exception);
+
+			return;
+		}
+
+		Joomla\CMS\Exception\ExceptionHandler::handleException($exception);
+	}
+
+	/**
+	 * JError's errors (JError::raiseError()): the stale copy, else Joomla's error page.
+	 *
+	 * @param   JException  $error  The error
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.18.0
+	 */
+	public function handleError($error)
+	{
+		if ($this->serveStaleCopy($error))
+		{
+			return null;
+		}
+
+		return JError::customErrorPage($error);
 	}
 
 	/**
@@ -196,6 +325,11 @@ class PlgSystemCache extends JPlugin
 		// Disable compression before caching the page.
 		$this->app->set('gzip', false);
 
+		if ($this->times['home'] > 0)
+		{
+			$this->_cache->setFreshTime($this->isHomePage() ? $this->times['home'] : $this->times['pages']);
+		}
+
 		$this->setBrowserCacheTime();
 	}
 
@@ -209,7 +343,12 @@ class PlgSystemCache extends JPlugin
 	 */
 	protected function setBrowserCacheTime()
 	{
-		$seconds = (int) $this->params->get($this->isHomePage() ? 'browsercache_home' : 'browsercache_pages', 0);
+		if (!$this->params->get('browsercache_send', 0))
+		{
+			return;
+		}
+
+		$seconds = $this->isHomePage() ? (int) $this->params->get('browsercache_home', 60) : (int) $this->params->get('browsercache_pages', 180);
 
 		if ($seconds <= 0)
 		{
