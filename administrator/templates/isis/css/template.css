@@ -2075,12 +2075,14 @@ textarea:focus,input:focus,.uneditable-input:focus {box-shadow:none;border:1px s
 .com_cpanel .well > .row-striped > .row-fluid,.com_cpanel .well > .list-striped > .row-fluid {padding:8px 14px;}
 .com_cpanel .well > .row-striped > .row-fluid [class*="span"],.com_cpanel .well > .list-striped > .row-fluid [class*="span"] {margin-left:0;}
 .com_cpanel .well > .row-striped > li,.com_cpanel .well > .list-striped > li {padding-left:15px;padding-right:15px;}
-/* The Statistics module beside the quick icons: a label and its value on one row, in the narrow column */
+/* The Statistics module beside the quick icons: a label and its value on one row, the value on a line of its own when they don't fit */
 .com_cpanel .cpanel-links .stats-module-title {margin:12px 0 5px;}
-.com_cpanel .cpanel-links .row-striped .row-fluid {display:flex;align-items:baseline;gap:12px;}
+/* The colour of the sidebar's links (Quick Icons) before it: the rows aren't a .sidebar-nav list */
+.com_cpanel .cpanel-links .row-striped {color:var(--c-gray);}
+.com_cpanel .cpanel-links .row-striped .row-fluid {display:flex;flex-wrap:wrap;align-items:baseline;gap:0 12px;}
 .com_cpanel .cpanel-links .row-striped .row-fluid > [class*="span"] {float:none;width:auto;margin:0;}
 .com_cpanel .cpanel-links .row-striped .row-fluid > .span4 {flex:0 1 auto;}
-.com_cpanel .cpanel-links .row-striped .row-fluid > .span8 {flex:1 1 45%;min-width:0;text-align:end;overflow-wrap:break-word;}
+.com_cpanel .cpanel-links .row-striped .row-fluid > .span8 {flex:1 1 auto;text-align:end;}
 
 /* --- Isis: Post-installation Messages --- */
 .com_postinstall fieldset {background-color:#fafafa;border:1px solid var(--c-border-input);border-radius:5px;margin:0 0 18px;padding:4px 18px 18px;}

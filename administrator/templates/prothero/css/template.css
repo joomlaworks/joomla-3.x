@@ -2420,12 +2420,15 @@ input[type="checkbox"]:focus,input[type="radio"]:focus {box-shadow:none;}
 /* The quick icons column: a sidebar, as on the list pages */
 .com_cpanel .cpanel-links {padding:14px 10px;background:var(--c-subtle);border:1px solid var(--c-border);border-radius:var(--radius-lg);}
 .com_cpanel .cpanel-links .quick-icons {margin-bottom:0;}
-/* The Statistics module beside the quick icons: a label and its value on one row, in the narrow column */
+/* The Statistics module beside the quick icons: a label and its value on one row, the value on a line of its own when they don't fit */
 .com_cpanel .cpanel-links .stats-module-title {margin:12px 0 5px;}
-.com_cpanel .cpanel-links .row-striped .row-fluid {display:flex;align-items:baseline;gap:12px;}
+/* The colours of the sidebar's links (Quick Icons) before it: the rows aren't a .sidebar-nav list */
+.com_cpanel .cpanel-links .row-striped {color:var(--c-fg-soft);}
+.com_cpanel .cpanel-links .row-striped [class^="icon-"],.com_cpanel .cpanel-links .row-striped [class*=" icon-"] {color:var(--c-muted-fg);}
+.com_cpanel .cpanel-links .row-striped .row-fluid {display:flex;flex-wrap:wrap;align-items:baseline;gap:0 12px;}
 .com_cpanel .cpanel-links .row-striped .row-fluid > [class*="span"] {float:none;width:auto;margin:0;}
 .com_cpanel .cpanel-links .row-striped .row-fluid > .span4 {flex:0 1 auto;}
-.com_cpanel .cpanel-links .row-striped .row-fluid > .span8 {flex:1 1 45%;min-width:0;text-align:end;overflow-wrap:break-word;}
+.com_cpanel .cpanel-links .row-striped .row-fluid > .span8 {flex:1 1 auto;text-align:end;}
 .com_cpanel .well > .row-striped,.com_cpanel .well > .list-striped {margin:0 -18px -14px;}
 .com_cpanel .well > .row-striped > .row-fluid,.com_cpanel .well > .list-striped > .row-fluid {padding:10px 18px;}
 .com_cpanel .well > .row-striped > .row-fluid [class*="span"],.com_cpanel .well > .list-striped > .row-fluid [class*="span"] {margin-left:0;}
