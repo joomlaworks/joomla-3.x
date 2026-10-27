@@ -51,6 +51,9 @@ class MediaControllerFile extends JControllerLegacy
 		$file   = $this->input->files->get('Filedata', '', 'array');
 		$folder = $this->input->get('folder', '', 'path');
 
+		// Files dropped on the Media Manager's lists (and the image picker): into the folder shown, as its upload form does
+		$mediaManager = $this->input->getCmd('context') === 'mediamanager';
+
 		// Instantiate the media helper
 		$mediaHelper = new JHelperMedia;
 
@@ -59,7 +62,7 @@ class MediaControllerFile extends JControllerLegacy
 
 		// Editors upload here (TinyMCE, EasyMDE): into uploads when they name no folder, and into the year, month or day's
 		// folder as the "Organise Editor Uploads" option says (created only for users who may upload)
-		if ($user->authorise('core.create', 'com_media'))
+		if (!$mediaManager && $user->authorise('core.create', 'com_media'))
 		{
 			$folder = $mediaHelper->getEditorUploadFolder($folder, $params, COM_MEDIA_BASE);
 		}
@@ -260,7 +263,7 @@ class MediaControllerFile extends JControllerLegacy
 				// Resized, upright, without metadata, WebP and a copy for small screens, as the Media Manager's options say
 				$sources = array();
 
-				if ($mediaHelper->isOptimiseActive($params, 'editors'))
+				if ($mediaHelper->isOptimiseActive($params, $mediaManager ? 'mediamanager' : 'editors'))
 				{
 					$settings              = $mediaHelper->getOptimiseSettings($params);
 					$object_file->filepath = $mediaHelper->optimiseImage($object_file->filepath, $settings);
@@ -273,7 +276,9 @@ class MediaControllerFile extends JControllerLegacy
 					'status'   => '1',
 					'message'  => JText::sprintf('COM_MEDIA_UPLOAD_COMPLETE', $returnUrl),
 					'error'    => JText::sprintf('COM_MEDIA_UPLOAD_COMPLETE', $returnUrl),
-					'location' => str_replace('\\', '/', $returnUrl)
+					'location' => str_replace('\\', '/', $returnUrl),
+					// Relative to the Media Manager's folder, as its lists name files (optimising may rename it, e.g. to .webp)
+					'path'     => ltrim(str_replace(array(JPath::clean(COM_MEDIA_BASE), '\\'), array('', '/'), JPath::clean($object_file->filepath)), '/'),
 				);
 
 				// The image's size once stored (optimising can make it narrower than the file the editor read)
@@ -301,10 +306,14 @@ class MediaControllerFile extends JControllerLegacy
 		}
 		else
 		{
+			// A file the input filter refused (an executable or a double extension, e.g. shell.php.jpg): name it as such
+			$raw     = $this->input->files->get('Filedata', null, 'raw');
+			$message = is_array($raw) && !empty($raw['name']) ? 'JLIB_MEDIA_ERROR_WARNFILETYPE' : 'COM_MEDIA_ERROR_BAD_REQUEST';
+
 			$response = array(
 				'status'  => '0',
-				'error'   => JText::_('COM_MEDIA_ERROR_BAD_REQUEST'),
-				'message' => JText::_('COM_MEDIA_ERROR_BAD_REQUEST')
+				'error'   => JText::_($message),
+				'message' => JText::_($message)
 			);
 
 			echo json_encode($response);

@@ -58,6 +58,9 @@ class MediaViewMediaList extends JViewLegacy
 		$user = JFactory::getUser();
 		$this->canDelete = $user->authorise('core.delete', 'com_media');
 
+		// Files dropped on the list upload into its folder
+		MediaHelper::dropUpload((string) $this->state->folder);
+
 		parent::display($tpl);
 	}
 }

@@ -39,6 +39,9 @@ class MediaViewImagesList extends JViewLegacy
 		$this->folders = &$folders;
 		$this->state   = &$state;
 
+		// Files dropped on the list upload into its folder; a single image is then selected
+		MediaHelper::dropUpload((string) $this->state->folder, true);
+
 		parent::display($tpl);
 	}
 

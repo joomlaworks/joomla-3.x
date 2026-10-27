@@ -235,4 +235,49 @@ abstract class MediaHelper
 
 		return $link;
 	}
+
+	/**
+	 * Lets files dropped on a list of the Media Manager (or the image picker) upload into the folder it shows, for users who
+	 * may upload: media/js/dropupload.js, through the JSON upload with the Media Manager's options (as its upload form).
+	 *
+	 * @param   string   $folder  The folder shown, relative to the media folder
+	 * @param   boolean  $picker  The image picker (a single dropped image is selected after the list reloads)
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function dropUpload($folder, $picker = false)
+	{
+		if (!JFactory::getUser()->authorise('core.create', 'com_media'))
+		{
+			return;
+		}
+
+		$params  = JComponentHelper::getParams('com_media');
+		$base    = trim(str_replace(array(JPATH_ROOT, '\\'), array('', '/'), COM_MEDIA_BASE), '/');
+		$keys    = array('HINT', 'UPLOADING', 'DONE', 'FAILED', 'TOO_LARGE', 'SUMMARY', 'CLOSE');
+		$strings = array();
+
+		foreach ($keys as $key)
+		{
+			$strings[strtolower($key)] = JText::_('COM_MEDIA_DROP_' . $key);
+		}
+
+		JHtml::_('behavior.core');
+		JFactory::getDocument()->addScriptOptions(
+			'com_media.dropUpload',
+			array(
+				'url'      => JUri::base(true) . '/index.php?option=com_media&task=file.upload&format=json&context=mediamanager',
+				'token'    => JSession::getFormToken(),
+				'folder'   => (string) $folder,
+				'shown'    => $base . ($folder !== '' ? '/' . $folder : ''),
+				'picker'   => (bool) $picker,
+				'maxBytes' => (int) ((float) $params->get('upload_maxsize', 0) * 1024 * 1024),
+				'text'     => $strings,
+			)
+		);
+		JHtml::_('script', 'media/dropupload.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
+		JHtml::_('stylesheet', 'media/dropupload.min.css', array('version' => 'auto', 'relative' => true));
+	}
 }

@@ -52,7 +52,7 @@ class PlgButtonMenu extends JPlugin
 		$button->link    = $link;
 		$button->text    = JText::_('PLG_EDITORS-XTD_MENU_BUTTON_MENU');
 		$button->name    = 'share-alt';
-		$button->options = "{handler: 'iframe', size: {x: 800, y: 500}}";
+		$button->options = "{handler: 'iframe', size: {x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140)}}";
 
 		return $button;
 		}

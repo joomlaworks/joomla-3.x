@@ -54,6 +54,7 @@ Summary of changes:
 - **Faster, sturdier caching:** campaign and social links (`utm_*`, `fbclid`, `gclid`, ...) now get cached pages (about 18 ms instead of 200 ms to render one in our tests), cached pages skip the work of third-party system plugins, the file cache reads about 30% faster, a page being cached is rendered once instead of by every request waiting for it, and cache times are precise across Joomla, Varnish or CDNs and browsers (an `Age` header, times counted from when a page was stored); plus fixes for blank pages, browser caching, form tokens and Redis/APCu that stock Joomla 3 never had
 
 **New features:**
+- Media Manager: drag and drop files onto the list to upload them into the folder shown, with progress for each (also in the image picker, which selects a dropped image), using the Media Manager's optimisation settings
 - The debug console opens from a button at the bottom right, showing the page's time, memory, queries and errors, as a panel with tabs instead of a block at the end of every page; redesigned, light and dark
 - Prothero, a new administrator template next to Isis: Isis' markup (so extensions made for Isis work with it), with a minimal black and white look in the style of shadcn/ui and Vercel, light and dark colour schemes (automatic by default), a choice of colours for the top menu bar and a matching login page. It's the default administrator template of new sites; existing sites keep Isis and can switch in System > Templates
 - PostgreSQL understands MySQL-style backtick-quoted names in queries, so many third-party extensions' SQL works on it unchanged
@@ -65,6 +66,7 @@ Summary of changes:
 - "Editor - Blocks (Editor.js)": write content as blocks (headings, lists, images, embeds, quotes, tables, code, notes, HTML, Read more), saved as HTML which the site template's block layouts decide (templates override any block in `html/layouts/joomla/blocks/`); templates add blocks of their own (a field definition and a layout each; Rookwood comes with Hero, Testimonials and Services); a preview with the site template (desktop, tablet, phone), full screen and a content width (800px by default); a "Custom Blocks" module (site and administrator) builds module content from blocks
 
 **Improvements:**
+- Larger modals for picking images, articles, modules, menu items, contacts and fields: most of the window instead of 800 by 500 pixels
 - **Little WAF**, enabled by default (new sites, and once on update), first of all system plugins, and all its options on one page:
   - Generic protections against whole classes of attack, whatever extensions a site has: scans for other platforms' files (WordPress's `wp-login.php` and `xmlrpc.php`, `.git`, `.env`, phpMyAdmin, backups) get a plain 404 before Joomla builds a page for them; executable uploads (`shell.php.jpg`, `.htaccess`), PHP-serialized objects (object injection) and attack tools (sqlmap, Nikto, WPScan, ...) get a 403
   - Security headers: `X-Content-Type-Options`, `X-XSS-Protection` and `Referrer-Policy` on by default; `X-Frame-Options`, HSTS and `Permissions-Policy` when you choose them

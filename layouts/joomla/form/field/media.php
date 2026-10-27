@@ -172,7 +172,7 @@ echo '	<input type="text" name="' . $name . '" id="' . $id . '" value="'
 <?php echo ($readonly ? ''
 		: ($link ?: 'index.php?option=com_media&amp;view=images&amp;tmpl=component&amp;asset=' . $asset . '&amp;author='
 	. $authorField) . '&amp;fieldid=' . $id . '&amp;folder=' . $folder) . '"'
-	. ' rel="{handler: \'iframe\', size: {x: 800, y: 500}}"'; ?>>
+	. ' rel="{handler: \'iframe\', size: {x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140)}}"'; ?>>
  <?php echo JText::_('JLIB_FORM_BUTTON_SELECT'); ?></a><a class="btn hasTooltip" title="<?php echo JText::_('JLIB_FORM_BUTTON_CLEAR'); ?>" href="#" onclick="jInsertFieldValue('', '<?php echo $id; ?>'); return false;">
 	<span class="icon-remove" aria-hidden="true"></span></a>
 
