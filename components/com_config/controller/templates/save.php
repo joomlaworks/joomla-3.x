@@ -87,10 +87,13 @@ class ConfigControllerTemplatesSave extends JControllerBase
 			// Save the data in the session.
 			$app->setUserState('com_config.config.global.data', $data);
 
-			// Save failed, go back to the screen and display a notice.
-			$message = JText::sprintf('JERROR_SAVE_FAILED');
+			// Save failed, go back to the screen with the reason (the administrator's controller reports invalid data itself)
+			if ($error = $controllerClass->getError())
+			{
+				$app->enqueueMessage($error, 'error');
+			}
 
-			$app->redirect(JRoute::_('index.php?option=com_config&controller=config.display.templates', false), $message, 'error');
+			$app->redirect(JRoute::_('index.php?option=com_config&controller=config.display.templates', false));
 
 			return false;
 		}

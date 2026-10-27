@@ -557,7 +557,7 @@ class ModuleAdapter extends InstallerAdapter
 		{
 			$this->parent->abort(
 				\JText::sprintf(
-					'JLIB_INSTALLER_ERROR_MOD_UNINSTALL_UNKNOWN_CLIENT',
+					'JLIB_INSTALLER_ABORT_MOD_UNINSTALL_UNKNOWN_CLIENT',
 					$this->extension->client_id
 				)
 			);

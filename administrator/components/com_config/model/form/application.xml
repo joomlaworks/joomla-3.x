@@ -33,8 +33,6 @@
             <option value="2">COM_CONFIG_FIELD_VALUE_CACHE_PROGRESSIVE</option>
         </field>
     </fieldset>
-    <fieldset name="memcache" label="COM_CONFIG_MEMCACHE_SETTINGS_LABEL">
-    </fieldset>
     <fieldset name="database" label="CONFIG_DATABASE_SETTINGS_LABEL">
         <field name="dbtype" type="databaseconnection" label="COM_CONFIG_FIELD_DATABASE_TYPE_LABEL" description="COM_CONFIG_FIELD_DATABASE_TYPE_DESC" supported="mysql,mysqli,pgsql,pdomysql,postgresql,sqlsrv,sqlazure,mysqlonsqlite" filter="string" />
         <field name="host" type="text" label="COM_CONFIG_FIELD_DATABASE_HOST_LABEL" description="COM_CONFIG_FIELD_DATABASE_HOST_DESC" required="true" filter="string" showon="dbtype!:mysqlonsqlite" size="30" />

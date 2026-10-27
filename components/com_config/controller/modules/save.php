@@ -102,8 +102,12 @@ class ConfigControllerModulesSave extends JControllerBase
 
 			$this->app->setUserState('com_config.modules.global.data', $data);
 
-			// Save failed, go back to the screen and display a notice.
-			$this->app->enqueueMessage(JText::_('JERROR_SAVE_FAILED'));
+			// Save failed, go back to the screen with the reason (the administrator's controller reports invalid data itself)
+			if ($error = $controllerClass->getError())
+			{
+				$this->app->enqueueMessage($error, 'error');
+			}
+
 			$this->app->redirect(JRoute::_('index.php?option=com_config&controller=config.display.modules' . $moduleId . $redirect, false));
 		}
 

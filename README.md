@@ -120,6 +120,7 @@ Summary of changes:
 - The "Custom" module is now "Custom HTML", with content plugins on by default for new modules ("Execute Content-type Plugins", formerly "Prepare Content")
 - CodeMirror gets a Height option and a dark theme in Visual Studio Code's colours, the default on new sites and on updated sites still using the stock theme
 - English language files sorted by key, with typos, stray spaces and inconsistent wording fixed
+- Unused language strings removed (the old MySQL driver, FTP logins, Mcrypt and others)
 
 **Security fixes:**
 - TinyMCE updated to 8.10.0, with 8.9.3's fix for a stored XSS in its media plugin
@@ -157,6 +158,7 @@ Summary of changes:
 - Hammond, Finch and Rookwood: buttons in article text (e.g. "Register to read more") look like the templates' other buttons again (they were unreadable in Hammond and Finch)
 - Installer: a warning during installation (e.g. while installing sample data) no longer restarts the installation over and over
 - CodeMirror no longer asks for a missing stylesheet with its stock theme
+- Missing language strings added: messages and labels that showed their keys (Language Overrides, Privacy, the logout image, the extension installer, front-end Template and Module options)
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:
