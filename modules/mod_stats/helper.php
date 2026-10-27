@@ -61,7 +61,9 @@ class ModStatsHelper
 			$rows[$i] = new stdClass;
 			$rows[$i]->title = JText::_($db->name);
 			// The SQLite driver reports MySQL's version to the code; show SQLite's
-			$rows[$i]->data  = $db instanceof JDatabaseDriverMysqlonsqlite ? $db->getVersionDescription() : $db->getVersion();
+			$rows[$i]->data  = $db instanceof JDatabaseDriverMysqlonsqlite
+				? JText::sprintf('MOD_STATS_SQLITE_VERSION', $db->getSqliteVersion(), strtok($db->getVersion(), '-'))
+				: $db->getVersion();
 			$i++;
 
 			$rows[$i] = new stdClass;
