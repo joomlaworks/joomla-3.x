@@ -36,7 +36,11 @@ defined('_JEXEC') or die;
 							<?php endif; ?>
 						</td>
 						<td><?php echo $entry['version'] !== '' ? $this->escape($entry['version']) : '&#8212;'; ?></td>
-						<td><?php echo $entry['date'] !== '' ? $this->escape($entry['date']) : '&#8212;'; ?></td>
+						<?php if ($entry['date'] !== '' && !empty($entry['dateSource'])) : ?>
+							<td><span class="hasTooltip" title="<?php echo $this->escape(JText::sprintf('COM_ADMIN_THIRD_PARTY_DATE_SOURCE', $entry['dateSource'])); ?>"><?php echo $this->escape($entry['date']); ?></span></td>
+						<?php else : ?>
+							<td><?php echo $entry['date'] !== '' ? $this->escape($entry['date']) : '&#8212;'; ?></td>
+						<?php endif; ?>
 						<td><?php echo $this->escape($entry['license']); ?></td>
 						<td class="hidden-phone"><code><?php echo $this->escape($entry['path']); ?></code></td>
 					</tr>

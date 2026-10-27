@@ -26,7 +26,8 @@ foreach (isset($composer['packages']) ? $composer['packages'] : $composer as $pa
  * group => entries: name, version, license, url, path, and how to check them:
  * - check: array(file, pattern): the pattern's first group must be the version; a "date" group (YYYY-MM-DD) gives the date
  * - composer: a package name in installed.json: its version and time
- * - date: a date stated elsewhere (YYYY-MM-DD), with "dateSource" saying where
+ * - date: the release date found elsewhere (YYYY-MM-DD: the project's releases, tags, registry or announcements; for
+ *   copies Joomla adapted and kept, Joomla's last change), with "dateSource" saying where (shown as the date's tooltip)
  */
 $groups = array(
 	'JavaScript Libraries' => array(
@@ -36,53 +37,53 @@ $groups = array(
 			'check' => array('media/jui/js/jquery-migrate.js', '/jQuery Migrate - v([0-9.]+) - (?<date>\d{4}-\d{2}-\d{2})/')),
 		array('name' => 'jQuery UI (Core, Sortable)', 'version' => '1.9.2', 'license' => 'MIT', 'url' => 'https://jqueryui.com', 'path' => 'media/jui/js/jquery.ui.core.js',
 			'check' => array('media/jui/js/jquery.ui.core.js', '/jQuery UI - v([0-9.]+) - (?<date>\d{4}-\d{2}-\d{2})/')),
-		array('name' => 'MooTools Core', 'version' => '1.4.5', 'license' => 'MIT', 'url' => 'https://mootools.net', 'path' => 'media/system/js/mootools-core.js',
+		array('name' => 'MooTools Core', 'version' => '1.4.5', 'date' => '2012-02-27', 'dateSource' => 'GitHub tag 1.4.5 (annotated)', 'license' => 'MIT', 'url' => 'https://mootools.net', 'path' => 'media/system/js/mootools-core.js',
 			'check' => array('media/system/js/mootools-core-uncompressed.js', "/version: '([0-9.]+)'/")),
-		array('name' => 'MooTools More', 'version' => '1.4.0.1', 'license' => 'MIT', 'url' => 'https://mootools.net/more', 'path' => 'media/system/js/mootools-more.js',
+		array('name' => 'MooTools More', 'version' => '1.4.0.1', 'date' => '2011-09-10', 'dateSource' => 'GitHub tag 1.4.0.1 (annotated)', 'license' => 'MIT', 'url' => 'https://mootools.net/more', 'path' => 'media/system/js/mootools-more.js',
 			'check' => array('media/system/js/mootools-more.js', '/version:"([0-9.]+)"/')),
-		array('name' => 'Chosen', 'version' => '1.6.2', 'license' => 'MIT', 'url' => 'https://harvesthq.github.io/chosen/', 'path' => 'media/jui/js/chosen.jquery.js',
+		array('name' => 'Chosen', 'version' => '1.6.2', 'date' => '2016-08-02', 'dateSource' => 'GitHub release v1.6.2', 'license' => 'MIT', 'url' => 'https://harvesthq.github.io/chosen/', 'path' => 'media/jui/js/chosen.jquery.js',
 			'check' => array('media/jui/js/chosen.jquery.js', '/Version ([0-9.]+)/')),
-		array('name' => 'Ajax Chosen', 'version' => '', 'license' => 'MIT', 'url' => 'https://github.com/meltingice/ajax-chosen', 'path' => 'media/jui/js/ajax-chosen.js'),
-		array('name' => 'Ajax Autocomplete for jQuery', 'version' => '1.4.11', 'license' => 'MIT', 'url' => 'https://github.com/devbridge/jQuery-Autocomplete', 'path' => 'media/jui/js/jquery.autocomplete.js',
+		array('name' => 'Ajax Chosen', 'version' => '', 'date' => '2013-01-24', 'dateSource' => 'Upstream commit c2948d0 ("Fix compatibility with jQuery 1.9.x"), which the file matches (98%; Joomla translated its texts); never tagged', 'license' => 'MIT', 'url' => 'https://github.com/meltingice/ajax-chosen', 'path' => 'media/jui/js/ajax-chosen.js', 'note' => 'Upstream commit c2948d0 (never tagged); texts translated by Joomla'),
+		array('name' => 'Ajax Autocomplete for jQuery', 'version' => '1.4.11', 'date' => '2020-05-01', 'dateSource' => 'GitHub tag v1.4.11; npm agrees', 'license' => 'MIT', 'url' => 'https://github.com/devbridge/jQuery-Autocomplete', 'path' => 'media/jui/js/jquery.autocomplete.js',
 			'check' => array('media/jui/js/jquery.autocomplete.js', '/Ajax Autocomplete for jQuery, version ([0-9.]+)/')),
-		array('name' => 'jQuery MiniColors', 'version' => '', 'license' => 'MIT', 'url' => 'https://github.com/claviska/jquery-minicolors', 'path' => 'media/jui/js/jquery.minicolors.js'),
-		array('name' => 'jQuery Simple Colors', 'version' => '', 'license' => 'MIT', 'url' => 'https://github.com/tkrotoff/jquery-simplecolorpicker', 'path' => 'media/jui/js/jquery.simplecolors.js',
+		array('name' => 'jQuery MiniColors', 'version' => '2.2.4', 'date' => '2016-03-18', 'dateSource' => 'GitHub release 2.2.4, which the file matches exactly', 'license' => 'MIT', 'url' => 'https://github.com/claviska/jquery-minicolors', 'path' => 'media/jui/js/jquery.minicolors.js'),
+		array('name' => 'jQuery Simple Colors', 'version' => '', 'date' => '2014-03-31', 'dateSource' => 'Joomla\'s last change to its code (joomla-cms 2c887d1; a 2019 commit only added the licence)', 'license' => 'MIT', 'url' => 'https://github.com/tkrotoff/jquery-simplecolorpicker', 'path' => 'media/jui/js/jquery.simplecolors.js',
 			'note' => 'Adapted by Peter van Westen'),
-		array('name' => 'Jcrop', 'version' => '2.0.4', 'license' => 'MIT', 'url' => 'https://github.com/tapmodo/Jcrop', 'path' => 'media/system/js/jquery.Jcrop.js',
+		array('name' => 'Jcrop', 'version' => '2.0.4', 'date' => '2015-11-18', 'dateSource' => 'GitHub tag v2.0.4 (commit date)', 'license' => 'MIT', 'url' => 'https://github.com/tapmodo/Jcrop', 'path' => 'media/system/js/jquery.Jcrop.js',
 			'check' => array('media/system/js/jquery.Jcrop.js', '/Jcrop[^\n]*v([0-9.]+)/')),
-		array('name' => 'Punycode.js', 'version' => '1.4.1', 'license' => 'MIT', 'url' => 'https://github.com/mathiasbynens/punycode.js', 'path' => 'media/system/js/punycode.js',
+		array('name' => 'Punycode.js', 'version' => '1.4.1', 'date' => '2016-03-20', 'dateSource' => 'GitHub tag v1.4.1; npm agrees', 'license' => 'MIT', 'url' => 'https://github.com/mathiasbynens/punycode.js', 'path' => 'media/system/js/punycode.js',
 			'check' => array('media/system/js/punycode-uncompressed.js', '/mths.be\/punycode v([0-9.]+)/')),
-		array('name' => 'SqueezeBox', 'version' => '1.3', 'license' => 'MIT', 'url' => 'https://github.com/digitarald/squeezebox', 'path' => 'media/system/js/modal.js',
+		array('name' => 'SqueezeBox', 'version' => '1.3', 'date' => '2014-07-12', 'dateSource' => 'Joomla\'s last change to its copy (joomla-cms 131a543); the upstream project is gone', 'license' => 'MIT', 'url' => 'https://github.com/joomla/joomla-cms/commits/3.10.12/media/system/js/modal-uncompressed.js', 'path' => 'media/system/js/modal.js',
 			'note' => 'Patched by Joomla', 'check' => array('media/system/js/modal-uncompressed.js', '/@version\s+([0-9.]+)/')),
-		array('name' => 'HTML5 Shiv', 'version' => '3.7.3', 'license' => 'MIT', 'url' => 'https://github.com/aFarkas/html5shiv', 'path' => 'media/jui/js/html5.js',
+		array('name' => 'HTML5 Shiv', 'version' => '3.7.3', 'date' => '2015-07-20', 'dateSource' => 'GitHub release 3.7.3; npm agrees', 'license' => 'MIT', 'url' => 'https://github.com/aFarkas/html5shiv', 'path' => 'media/jui/js/html5.js',
 			'check' => array('media/jui/js/html5-uncompressed.js', '/HTML5 Shiv ([0-9.]+)/')),
-		array('name' => 'Polyfill.io polyfills (classList, Event, Map, filter)', 'version' => '3.14.0', 'license' => 'MIT', 'url' => 'https://github.com/Financial-Times/polyfill-library', 'path' => 'media/system/js/polyfill.map.js',
+		array('name' => 'Polyfill.io polyfills (classList, Event, Map, filter)', 'version' => '3.14.0', 'date' => '2016-11-17', 'dateSource' => 'npm, polyfill-service 3.14.0 (GitHub release 2016-11-18)', 'license' => 'MIT', 'url' => 'https://github.com/Financial-Times/polyfill-service', 'path' => 'media/system/js/polyfill.map.js',
 			'check' => array('media/system/js/polyfill.map-uncompressed.js', '/v([0-9.]+)/')),
-		array('name' => 'MediaElement.js', 'version' => '2.23.0', 'license' => 'MIT', 'url' => 'https://www.mediaelementjs.com', 'path' => 'media/media/js/mediaelement-and-player.js',
+		array('name' => 'MediaElement.js', 'version' => '2.23.0', 'date' => '2016-09-07', 'dateSource' => 'GitHub release 2.23.0 (npm: 2016-10-24)', 'license' => 'MIT', 'url' => 'https://www.mediaelementjs.com', 'path' => 'media/media/js/mediaelement-and-player.js',
 			'check' => array('media/media/js/mediaelement-and-player.js', '/([0-9]+\.[0-9]+\.[0-9]+)/')),
 	),
 	'CSS and JavaScript Frameworks' => array(
-		array('name' => 'Bootstrap', 'version' => '2.3.2', 'license' => 'Apache-2.0', 'url' => 'https://getbootstrap.com/2.3.2/', 'path' => 'media/jui/js/bootstrap.js',
+		array('name' => 'Bootstrap', 'version' => '2.3.2', 'date' => '2013-05-17', 'dateSource' => 'Bootstrap blog, "Bootstrap 2.3.2 released" (its GitHub release record is from July 2013)', 'license' => 'Apache-2.0', 'url' => 'https://getbootstrap.com/2.3.2/', 'path' => 'media/jui/js/bootstrap.js',
 			'note' => 'JavaScript and CSS', 'check' => array('media/jui/js/bootstrap.js', '/bootstrap-transition\.js v([0-9.]+)/')),
 	),
 	'Editors' => array(
-		array('name' => 'TinyMCE', 'version' => '8.9.2', 'license' => 'GPL-2.0-or-later', 'url' => 'https://www.tiny.cloud', 'path' => 'media/editors/tinymce_latest',
+		array('name' => 'TinyMCE', 'version' => '8.9.2', 'date' => '2026-09-23', 'dateSource' => 'TinyMCE changelog ("8.9.2 - 2026-09-23"); npm agrees', 'license' => 'GPL-2.0-or-later', 'url' => 'https://www.tiny.cloud', 'path' => 'media/editors/tinymce_latest',
 			'check' => array('media/editors/tinymce_latest/tinymce.min.js', '/TinyMCE version ([0-9.]+)/')),
 		array('name' => 'TinyMCE (legacy)', 'version' => '4.5.12', 'license' => 'LGPL-2.1', 'url' => 'https://www.tiny.cloud', 'path' => 'media/editors/tinymce',
 			'check' => array('media/editors/tinymce/changelog.txt', '/Version ([0-9.]+) \((?<date>\d{4}-\d{2}-\d{2})\)/')),
-		array('name' => 'CodeMirror', 'version' => '5.65.21', 'license' => 'MIT', 'url' => 'https://codemirror.net/5/', 'path' => 'media/editors/codemirror',
+		array('name' => 'CodeMirror', 'version' => '5.65.21', 'date' => '2026-02-07', 'dateSource' => 'GitHub tag 5.65.21 (codemirror/codemirror5); npm agrees', 'license' => 'MIT', 'url' => 'https://codemirror.net/5/', 'path' => 'media/editors/codemirror',
 			'check' => array('media/editors/codemirror/lib/codemirror.js', '/CodeMirror\.version = "([0-9.]+)"/')),
-		array('name' => 'EasyMDE', 'version' => '2.21.0', 'license' => 'MIT', 'url' => 'https://github.com/Ionaru/easy-markdown-editor', 'path' => 'media/editors/easymde/vendor/easymde',
+		array('name' => 'EasyMDE', 'version' => '2.21.0', 'date' => '2026-05-03', 'dateSource' => 'GitHub tag 2.21.0; npm agrees', 'license' => 'MIT', 'url' => 'https://github.com/Ionaru/easy-markdown-editor', 'path' => 'media/editors/easymde/vendor/easymde',
 			'check' => array('media/editors/easymde/vendor/easymde/easymde.min.css', '/easymde v([0-9.]+)/')),
-		array('name' => 'marked', 'version' => '18.1.1', 'license' => 'MIT', 'url' => 'https://marked.js.org', 'path' => 'media/editors/easymde/vendor/marked',
+		array('name' => 'marked', 'version' => '18.1.1', 'date' => '2026-10-12', 'dateSource' => 'GitHub release v18.1.1; npm agrees', 'license' => 'MIT', 'url' => 'https://marked.js.org', 'path' => 'media/editors/easymde/vendor/marked',
 			'check' => array('media/editors/easymde/vendor/marked/marked.umd.js', '/marked v([0-9.]+)/')),
-		array('name' => 'Turndown', 'version' => '7.2.4', 'license' => 'MIT', 'url' => 'https://github.com/mixmark-io/turndown', 'path' => 'media/editors/easymde/vendor/turndown'),
-		array('name' => 'Editor.js', 'version' => '2.31.7', 'license' => 'Apache-2.0', 'url' => 'https://editorjs.io', 'path' => 'media/editors/editorjs/vendor/editorjs',
+		array('name' => 'Turndown', 'version' => '7.2.4', 'date' => '2026-04-03', 'dateSource' => 'GitHub tag v7.2.4; npm agrees', 'license' => 'MIT', 'url' => 'https://github.com/mixmark-io/turndown', 'path' => 'media/editors/easymde/vendor/turndown'),
+		array('name' => 'Editor.js', 'version' => '2.31.7', 'date' => '2026-09-17', 'dateSource' => 'GitHub release v2.31.7; npm agrees', 'license' => 'Apache-2.0', 'url' => 'https://editorjs.io', 'path' => 'media/editors/editorjs/vendor/editorjs',
 			'check' => array('media/editors/editorjs/vendor/editorjs/editorjs.umd.js', '/"([0-9]+\.[0-9]+\.[0-9]+)"/')),
 	),
 	'Fonts and Icons' => array(
-		array('name' => 'IcoMoon (Joomla icon font)', 'version' => '', 'license' => 'Royalty-free', 'url' => 'https://icomoon.io', 'path' => 'media/jui/fonts'),
-		array('name' => 'Bootstrap Icons', 'version' => '1.13.2', 'license' => 'MIT', 'url' => 'https://icons.getbootstrap.com', 'path' => 'media/editors/easymde/vendor/bootstrap-icons'),
+		array('name' => 'IcoMoon (Joomla icon font)', 'version' => '', 'date' => '2013-10-02', 'dateSource' => 'Joomla\'s last change to the font (joomla-cms 48e2895, "Added new IcoMoon icon font set")', 'license' => 'Royalty-free', 'url' => 'https://icomoon.io', 'path' => 'media/jui/fonts'),
+		array('name' => 'Bootstrap Icons', 'version' => '1.13.2', 'date' => '2026-10-08', 'dateSource' => 'GitHub release v1.13.2; npm agrees', 'license' => 'MIT', 'url' => 'https://icons.getbootstrap.com', 'path' => 'media/editors/easymde/vendor/bootstrap-icons'),
 	),
 	// Not bundled: services the CAPTCHA plugins connect to, with the API version they use
 	'External Services' => array(
@@ -100,7 +101,7 @@ $groups = array(
 			'note' => 'Patched (php_uname() guard)'),
 		array('name' => 'SimplePie', 'composer' => 'simplepie/simplepie', 'license' => 'BSD-3-Clause', 'url' => 'https://simplepie.org', 'path' => 'libraries/vendor/simplepie/simplepie',
 			'note' => 'Joomla\'s maintained copy'),
-		array('name' => 'lessphp', 'version' => '0.5.0', 'license' => 'MIT', 'url' => 'https://github.com/leafo/lessphp', 'path' => 'libraries/vendor/leafo/lessphp',
+		array('name' => 'lessphp', 'version' => '0.5.0', 'date' => '2014-11-24', 'dateSource' => 'Packagist and GitHub tag v0.5.0', 'license' => 'MIT', 'url' => 'https://github.com/leafo/lessphp', 'path' => 'libraries/vendor/leafo/lessphp',
 			'note' => 'With Joomla\'s PHP 8 fixes', 'check' => array('libraries/vendor/leafo/lessphp/lessc.inc.php', '/VERSION = "v([0-9.]+)"/')),
 		array('name' => 'sodium_compat', 'composer' => 'paragonie/sodium_compat', 'license' => 'ISC', 'url' => 'https://github.com/paragonie/sodium_compat', 'path' => 'libraries/vendor/paragonie/sodium_compat'),
 		array('name' => 'Symfony Polyfill (ctype)', 'composer' => 'symfony/polyfill-ctype', 'license' => 'MIT', 'url' => 'https://github.com/symfony/polyfill-ctype', 'path' => 'libraries/vendor/symfony/polyfill-ctype'),
@@ -113,19 +114,19 @@ $groups = array(
 		array('name' => 'IconCaptcha', 'version' => '4.0.6', 'license' => 'MIT', 'url' => 'https://github.com/fabianwennink/IconCaptcha-PHP', 'path' => 'libraries/vendor/fabianwennink/iconcaptcha',
 			'note' => 'With its widget (media/plg_captcha_iconcaptcha)', 'date' => '2025-06-16', 'dateSource' => 'CHANGELOG.md ("June 16, 2025")', 'check' => array('libraries/vendor/fabianwennink/iconcaptcha/CHANGELOG.md', '/^## ([0-9.]+) - /m')),
 		array('name' => 'Google reCAPTCHA PHP client', 'composer' => 'google/recaptcha', 'license' => 'BSD-3-Clause', 'url' => 'https://github.com/google/recaptcha', 'path' => 'libraries/vendor/google/recaptcha'),
-		array('name' => 'MySQL on SQLite (WordPress)', 'version' => '3.0.2', 'license' => 'GPL-2.0-or-later', 'url' => 'https://github.com/WordPress/sqlite-database-integration', 'path' => 'libraries/vendor/wordpress/mysql-on-sqlite',
+		array('name' => 'MySQL on SQLite (WordPress)', 'version' => '3.0.2', 'date' => '2026-09-10', 'dateSource' => 'GitHub release v3.0.2', 'license' => 'GPL-2.0-or-later', 'url' => 'https://github.com/WordPress/sqlite-database-integration', 'path' => 'libraries/vendor/wordpress/mysql-on-sqlite',
 			'note' => 'Patched (PATCHES.md)', 'check' => array('libraries/vendor/wordpress/mysql-on-sqlite/PATCHES.md', '/version ([0-9.]+), commit/')),
 		array('name' => 'FOF (Framework on Framework)', 'version' => '2.5.5', 'license' => 'GPL-2.0-or-later', 'url' => 'https://github.com/akeeba/fof', 'path' => 'libraries/fof',
 			'check' => array('libraries/fof/version.txt', '/^([0-9.]+)\s+(?<date>\d{4}-\d{2}-\d{2})/')),
-		array('name' => 'Akeeba Restore (Kickstart)', 'version' => '', 'license' => 'GPL-2.0-or-later', 'url' => 'https://github.com/akeeba/kickstart', 'path' => 'administrator/components/com_joomlaupdate/restore.php',
+		array('name' => 'Akeeba Restore (Kickstart)', 'version' => '', 'date' => '2022-02-12', 'dateSource' => 'Joomla\'s last change before 3.x\'s end (joomla-cms, OPcache support, #37003)', 'license' => 'GPL-2.0-or-later', 'url' => 'https://github.com/akeeba/kickstart', 'path' => 'administrator/components/com_joomlaupdate/restore.php',
 			'note' => 'Joomla Update\'s extractor; patched'),
-		array('name' => 'phpass', 'version' => '0.5', 'license' => 'Public domain', 'url' => 'https://www.openwall.com/phpass/', 'path' => 'libraries/phpass',
+		array('name' => 'phpass', 'version' => '0.5', 'date' => '2017-05-07', 'dateSource' => 'Openwall, date of phpass-0.5.tar.gz', 'license' => 'Public domain', 'url' => 'https://www.openwall.com/phpass/', 'path' => 'libraries/phpass',
 			'check' => array('libraries/phpass/PasswordHash.php', '/Version ([0-9.]+)/')),
-		array('name' => 'PHP UTF-8', 'version' => '0.5', 'license' => 'LGPL-2.1', 'url' => 'https://sourceforge.net/projects/phputf8/', 'path' => 'libraries/phputf8',
+		array('name' => 'PHP UTF-8', 'version' => '0.5', 'date' => '2007-08-12', 'dateSource' => 'SourceForge, phputf8 0.5 files', 'license' => 'LGPL-2.1', 'url' => 'https://sourceforge.net/projects/phputf8/', 'path' => 'libraries/phputf8',
 			'check' => array('libraries/phputf8/README', '/Version ([0-9.]+)/')),
 		array('name' => 'IDNA Convert', 'version' => '0.8.0', 'license' => 'LGPL-2.1', 'url' => 'https://github.com/phlylabs/idna-convert', 'path' => 'libraries/idna_convert',
 			'check' => array('libraries/idna_convert/idna_convert.class.php', '/@version ([0-9.]+) (?<date>\d{4}-\d{2}-\d{2})/')),
-		array('name' => 'PHP Encryption (Defuse)', 'version' => '', 'license' => 'BSD-2-Clause', 'url' => 'https://github.com/defuse/php-encryption', 'path' => 'libraries/php-encryption'),
+		array('name' => 'PHP Encryption (Defuse)', 'version' => '1.1', 'date' => '2015-01-24', 'dateSource' => 'GitHub tag v1.1 (annotated), which Crypto.php matches but for PHP 8 casts', 'license' => 'BSD-2-Clause', 'url' => 'https://github.com/defuse/php-encryption', 'path' => 'libraries/php-encryption', 'note' => 'Patched for PHP 8 (string casts)'),
 	),
 );
 
@@ -136,7 +137,8 @@ foreach ($groups as $group => $entries)
 {
 	foreach ($entries as $entry)
 	{
-		$date = '';
+		$date   = '';
+		$source = '';
 
 		if (isset($entry['composer']))
 		{
@@ -150,6 +152,7 @@ foreach ($groups as $group => $entries)
 			$package          = $packages[$entry['composer']];
 			$entry['version'] = ltrim($package['version'], 'v');
 			$date             = isset($package['time']) ? substr($package['time'], 0, 10) : '';
+			$source           = $date !== '' ? 'Composer (installed.json)' : '';
 		}
 		elseif (isset($entry['check']))
 		{
@@ -171,13 +174,15 @@ foreach ($groups as $group => $entries)
 				continue;
 			}
 
-			$date = isset($match['date']) ? $match['date'] : '';
+			$date   = isset($match['date']) ? $match['date'] : '';
+			$source = $date !== '' ? $file : '';
 		}
 
-		// A date the software states somewhere the check can't read it
+		// A date found elsewhere: the project's releases, tags or announcements
 		if ($date === '' && isset($entry['date']))
 		{
-			$date = $entry['date'];
+			$date   = $entry['date'];
+			$source = isset($entry['dateSource']) ? $entry['dateSource'] : '';
 		}
 
 		if (!file_exists($root . '/' . $entry['path']))
@@ -188,13 +193,14 @@ foreach ($groups as $group => $entries)
 		}
 
 		$out[$group][] = array(
-			'name'    => $entry['name'],
-			'version' => $entry['version'],
-			'date'    => $date !== '' ? str_replace('-', '.', $date) : '',
-			'license' => $entry['license'],
-			'url'     => $entry['url'],
-			'path'    => $entry['path'],
-			'note'    => isset($entry['note']) ? $entry['note'] : '',
+			'name'       => $entry['name'],
+			'version'    => $entry['version'],
+			'date'       => $date !== '' ? str_replace('-', '.', $date) : '',
+			'dateSource' => $source,
+			'license'    => $entry['license'],
+			'url'        => $entry['url'],
+			'path'       => $entry['path'],
+			'note'       => isset($entry['note']) ? $entry['note'] : '',
 		);
 	}
 }
