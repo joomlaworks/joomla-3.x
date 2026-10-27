@@ -62,7 +62,7 @@
             "license": "MIT",
             "url": "https://marked.js.org",
             "path": "media/editors/easymde/vendor/marked",
-            "note": "",
+            "note": "Part of the EasyMDE editor (Joomla 3.x UTD's Markdown editor): converts Markdown to HTML",
             "latest": "18.1.2",
             "isLatest": true,
             "checked": "2026.10.27"
@@ -101,7 +101,7 @@
             "license": "MIT",
             "url": "https://github.com/mixmark-io/turndown",
             "path": "media/editors/easymde/vendor/turndown",
-            "note": "",
+            "note": "Part of the EasyMDE editor (Joomla 3.x UTD's Markdown editor): converts HTML to Markdown",
             "latest": "7.2.4",
             "isLatest": true,
             "checked": "2026.10.27"
@@ -170,7 +170,7 @@
             "license": "MIT",
             "url": "https://icons.getbootstrap.com",
             "path": "media/editors/easymde/vendor/bootstrap-icons",
-            "note": "",
+            "note": "Part of the EasyMDE editor (Joomla 3.x UTD's Markdown editor): its toolbar icons",
             "latest": "1.13.2",
             "isLatest": true,
             "checked": "2026.10.27"
@@ -380,7 +380,7 @@
             "license": "MIT",
             "url": "https://github.com/joomla/joomla-cms/commits/3.10.12/media/system/js/modal-uncompressed.js",
             "path": "media/system/js/modal.js",
-            "note": "Patched by Joomla",
+            "note": "Patched by Joomla and by Joomla 3.x UTD (modals on phones)",
             "latest": "",
             "isLatest": false,
             "checked": ""
@@ -395,7 +395,7 @@
             "license": "GPL-2.0-or-later",
             "url": "https://github.com/akeeba/kickstart",
             "path": "administrator/components/com_joomlaupdate/restore.php",
-            "note": "Joomla Update's extractor; patched",
+            "note": "Joomla Update's extractor; patched by Joomla and by Joomla 3.x UTD (safe paths, PHP 8)",
             "latest": "",
             "isLatest": false,
             "checked": ""
@@ -408,7 +408,7 @@
             "license": "GPL-2.0-or-later",
             "url": "https://github.com/akeeba/fof",
             "path": "libraries/fof",
-            "note": "",
+            "note": "Patched by Joomla and by Joomla 3.x UTD (PHP 8, database drivers)",
             "latest": "",
             "isLatest": false,
             "checked": ""
@@ -434,7 +434,7 @@
             "license": "LGPL-2.1",
             "url": "https://github.com/phlylabs/idna-convert",
             "path": "libraries/idna_convert",
-            "note": "",
+            "note": "Patched by Joomla 3.x UTD (PHP 8)",
             "latest": "4.2.2",
             "isLatest": false,
             "checked": "2026.10.27"
@@ -447,7 +447,7 @@
             "license": "MIT",
             "url": "https://github.com/leafo/lessphp",
             "path": "libraries/vendor/leafo/lessphp",
-            "note": "With Joomla's PHP 8 fixes",
+            "note": "Patched by Joomla and by Joomla 3.x UTD (PHP 8)",
             "latest": "0.5.0",
             "isLatest": true,
             "checked": "2026.10.27"
@@ -460,7 +460,7 @@
             "license": "GPL-2.0-or-later",
             "url": "https://github.com/WordPress/sqlite-database-integration",
             "path": "libraries/vendor/wordpress/mysql-on-sqlite",
-            "note": "Patched (PATCHES.md)",
+            "note": "Patched by Joomla 3.x UTD (PATCHES.md)",
             "latest": "3.1.1",
             "isLatest": true,
             "checked": "2026.10.27"
@@ -473,7 +473,7 @@
             "license": "BSD-2-Clause",
             "url": "https://github.com/defuse/php-encryption",
             "path": "libraries/php-encryption",
-            "note": "Patched for PHP 8 (string casts)",
+            "note": "Patched by Joomla 3.x UTD (PHP 8)",
             "latest": "2.4.0",
             "isLatest": false,
             "checked": "2026.10.27"
@@ -486,7 +486,7 @@
             "license": "Public domain",
             "url": "https://www.openwall.com/phpass/",
             "path": "libraries/phpass",
-            "note": "",
+            "note": "Patched by Joomla 3.x UTD (PHP 8)",
             "latest": "",
             "isLatest": true,
             "checked": ""
@@ -499,7 +499,7 @@
             "license": "LGPL-2.1",
             "url": "https://github.com/PHPMailer/PHPMailer",
             "path": "libraries/vendor/phpmailer/phpmailer",
-            "note": "Patched (php_uname() guard)",
+            "note": "Patched by Joomla 3.x UTD (php_uname() guard)",
             "latest": "7.1.1",
             "isLatest": true,
             "checked": "2026.10.27"
@@ -538,7 +538,7 @@
             "license": "BSD-3-Clause",
             "url": "https://simplepie.org",
             "path": "libraries/vendor/simplepie/simplepie",
-            "note": "Joomla's maintained copy",
+            "note": "Joomla's maintained copy, patched by Joomla 3.x UTD (PHP 8)",
             "latest": "1.9.0",
             "isLatest": false,
             "checked": "2026.10.27"
@@ -551,7 +551,7 @@
             "license": "ISC",
             "url": "https://github.com/paragonie/sodium_compat",
             "path": "libraries/vendor/paragonie/sodium_compat",
-            "note": "",
+            "note": "Patched by Joomla 3.x UTD (PHP 8)",
             "latest": "2.5.2",
             "isLatest": false,
             "checked": "2026.10.27"
@@ -590,7 +590,7 @@
             "license": "MIT",
             "url": "https://symfony.com/components/Yaml",
             "path": "libraries/vendor/symfony/yaml",
-            "note": "",
+            "note": "Patched by Joomla 3.x UTD (PHP 8)",
             "latest": "8.1.9",
             "isLatest": false,
             "checked": "2026.10.27"
@@ -603,7 +603,7 @@
             "license": "MIT",
             "url": "https://github.com/TYPO3/phar-stream-wrapper",
             "path": "libraries/vendor/typo3/phar-stream-wrapper",
-            "note": "Patched",
+            "note": "Patched by Joomla 3.x UTD (PHP 8.4, safe unserialize)",
             "latest": "4.0.0",
             "isLatest": false,
             "checked": "2026.10.27"
