@@ -45,6 +45,14 @@ class PageController extends CacheController
 	protected $_locktest = null;
 
 	/**
+	 * The response headers set before the cache looked for the page (null until it missed)
+	 *
+	 * @var    array|null
+	 * @since  3.18.0
+	 */
+	protected $_headersBefore = null;
+
+	/**
 	 * Get the cached page data
 	 *
 	 * @param   boolean  $id     The cache data ID
@@ -113,6 +121,8 @@ class PageController extends CacheController
 		$this->_id    = $id;
 		$this->_group = $group;
 
+		$this->_headersBefore = \JFactory::getApplication()->getHeaders();
+
 		return false;
 	}
 
@@ -170,6 +180,26 @@ class PageController extends CacheController
 					'headers'   => true,
 				)
 			);
+
+			/*
+			 * Only the headers set after the cache looked for the page: what ran before it (e.g. a security plugin's headers)
+			 * runs on every request, cached or not, so storing it would send those headers twice on a cache hit (two values
+			 * after a change of settings)
+			 */
+			if (isset($data['headers']) && is_array($this->_headersBefore))
+			{
+				$headers = array();
+
+				foreach ($data['headers'] as $header)
+				{
+					if (!in_array($header, $this->_headersBefore, true))
+					{
+						$headers[] = $header;
+					}
+				}
+
+				$data['headers'] = $headers;
+			}
 		}
 
 		$result = $this->cache->store(serialize($data), $id, $group);

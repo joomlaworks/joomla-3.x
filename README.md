@@ -98,7 +98,7 @@ Summary of changes:
 - Media uploads compare executable extensions in any case (`x.SHTML.png` got through), and the "Illegal MIME Types" option is actually checked
 
 **Bug fixes:**
-- View caching keeps the HTTP headers views set (e.g. `Last-Modified`, `ETag`) and their browser caching on cached pages
+- Caching and HTTP headers: view caching keeps the headers views set (e.g. `Last-Modified`, `ETag`) and their browser caching; the page cache no longer sends the headers of plugins which run before it twice, or after they were turned off; `setHeader()` sends a value of `0`
 - Uninstalling a core component also uninstalls the modules and plugins which only serve it (e.g. "Smart Search - Contacts", which stopped indexing) and leaves no media folders or language files behind; updates clean up after earlier uninstalls
 - Smart Search: full reindexes no longer stop with "The table '#__finder_tokens' is full" on MySQL/MariaDB's default settings, the command line indexer no longer stops on content with modules in it, and Advanced Search's date range works with only a start or an end date
 - Articles with "Link Author" no longer fail when Contacts is uninstalled or disabled

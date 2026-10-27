@@ -754,7 +754,11 @@ class WebApplication extends BaseApplication
 		 */
 		$single = in_array(strtolower($name), $this->singleValueResponseHeaders);
 
-		if ($value && (!$keys || ($keys && ($replace || !$single))))
+		// An empty value sets nothing; "0" is a value (X-XSS-Protection: 0, Content-Length: 0), except as a status (exception
+		// codes are passed as statuses, and 0 is none)
+		$hasValue = $value !== '' && ($value !== '0' || strtolower($name) !== 'status');
+
+		if ($hasValue && (!$keys || ($keys && ($replace || !$single))))
 		{
 			// Add the header to the internal array.
 			$this->response->headers[] = array('name' => $name, 'value' => $value);
