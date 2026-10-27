@@ -96,7 +96,7 @@ Summary of changes:
 - Lists can be reordered by touch on phones and tablets (drag a row by its handle); Prothero adds a Reorder button on phones
 - The old schema.org microdata attributes are gone from the site's HTML (core layouts and the three templates); structured data comes as JSON-LD instead
 - PostgreSQL: table column information includes MySQL's `Key` and `Extra` fields too, for extensions written against MySQL
-- `core:install` numbers its steps and says how long the installation took (on SQLite, about 1.5 seconds, or 3.5 with sample data)
+- `core:install` numbers its steps and says how long the installation took (on SQLite, about 1.5 seconds, or 3.5 with sample data); in a terminal, command line messages wrap at word boundaries
 - Command line: extensions can add commands of their own (guide for developers: [CLI-GUIDE.md](CLI-GUIDE.md)), which can't take core commands' names; extensions can be enabled, disabled, reinstalled and removed by name (e.g. `plg_system_k2`), and a site whose database settings point nowhere can be pointed at a database of another type with `config:set`
 - Removed the "Authentication - GMail" plugin (Google stopped accepting its password sign-in in 2022), the "System - P3P Policy" plugin, joomla.org's update site for the Joomla Update component, Global Configuration's Memcache options, unused web service libraries and polyfills for PHP versions below 7.1
 - The News sample data has a For Subscribers category of 20 registered-only articles (guests see their intro and a link to log in)

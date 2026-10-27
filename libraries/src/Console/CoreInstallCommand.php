@@ -85,6 +85,8 @@ class CoreInstallCommand extends AbstractCommand
 	 */
 	protected function doExecute(CommandIO $io)
 	{
+		// Apart from whatever the shell printed before (e.g. a copy of the files)
+		$io->writeln();
 		$io->title($io->isDryRun() ? 'Install ' . Version::DISTRIBUTION : 'Installing ' . Version::DISTRIBUTION . '... Hold tight!');
 
 		$configuration = JPATH_CONFIGURATION . '/configuration.php';

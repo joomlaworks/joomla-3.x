@@ -622,7 +622,8 @@ class CommandIO
 
 		$styles = array('success' => '32', 'warning' => '33', 'error' => '31');
 		$labels = array('success' => '[OK] ', 'warning' => '[WARNING] ', 'error' => '[ERROR] ');
-		$line   = (isset($labels[$type]) ? $labels[$type] : '') . $text;
+		$stream = $type === 'error' ? $this->stderr : $this->stdout;
+		$line   = $this->wrap((isset($labels[$type]) ? $labels[$type] : '') . $text, $stream);
 		$line   = isset($styles[$type]) ? $this->style($line, $styles[$type]) : $line;
 
 		if ($type === 'error')
@@ -646,6 +647,76 @@ class CommandIO
 	private function style($text, $codes)
 	{
 		return $this->ansi ? "\033[" . $codes . 'm' . $text . "\033[0m" : $text;
+	}
+
+	/**
+	 * Wrap a message at spaces to the terminal's width, so the terminal doesn't break its words. Only for a terminal whose
+	 * width is known: piped and redirected output stays one line per message.
+	 *
+	 * @param   string    $text    The message
+	 * @param   resource  $stream  Where it goes
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	private function wrap($text, $stream)
+	{
+		$columns = static::streamIsInteractive($stream) ? static::terminalWidth() : 0;
+
+		if ($columns < 20)
+		{
+			return $text;
+		}
+
+		$lines = array();
+
+		foreach (explode("\n", $text) as $paragraph)
+		{
+			$line = '';
+
+			foreach (explode(' ', $paragraph) as $word)
+			{
+				if ($line !== '' && static::width($line . ' ' . $word) > $columns)
+				{
+					$lines[] = $line;
+					$line    = $word;
+				}
+				else
+				{
+					$line = $line === '' ? $word : $line . ' ' . $word;
+				}
+			}
+
+			$lines[] = $line;
+		}
+
+		return implode("\n", $lines);
+	}
+
+	/**
+	 * @return  integer  The terminal's width in columns, or 0 when it isn't known
+	 *
+	 * @since   3.18.0
+	 */
+	private static function terminalWidth()
+	{
+		static $columns = null;
+
+		if ($columns !== null)
+		{
+			return $columns;
+		}
+
+		$columns = (int) getenv('COLUMNS');
+
+		if ($columns <= 0 && DIRECTORY_SEPARATOR === '/' && function_exists('shell_exec'))
+		{
+			$size    = trim((string) @shell_exec('stty size 2>/dev/null'));
+			$columns = preg_match('/^\d+ (\d+)$/', $size, $match) ? (int) $match[1] : 0;
+		}
+
+		return $columns;
 	}
 
 	/**

@@ -29,7 +29,7 @@ foreach (isset($composer['packages']) ? $composer['packages'] : $composer as $pa
  * - date: a date stated elsewhere (YYYY-MM-DD), with "dateSource" saying where
  */
 $groups = array(
-	'JavaScript libraries' => array(
+	'JavaScript Libraries' => array(
 		array('name' => 'jQuery', 'version' => '1.12.4', 'license' => 'MIT', 'url' => 'https://jquery.com', 'path' => 'media/jui/js/jquery.js',
 			'note' => 'Patched by Joomla', 'check' => array('media/jui/js/jquery.js', '/jQuery JavaScript Library v([0-9.]+)-joomla.*?Date: (?<date>\d{4}-\d{2}-\d{2})/s')),
 		array('name' => 'jQuery Migrate', 'version' => '1.4.1', 'license' => 'MIT', 'url' => 'https://github.com/jquery/jquery-migrate', 'path' => 'media/jui/js/jquery-migrate.js',
@@ -61,7 +61,7 @@ $groups = array(
 		array('name' => 'MediaElement.js', 'version' => '2.23.0', 'license' => 'MIT', 'url' => 'https://www.mediaelementjs.com', 'path' => 'media/media/js/mediaelement-and-player.js',
 			'check' => array('media/media/js/mediaelement-and-player.js', '/([0-9]+\.[0-9]+\.[0-9]+)/')),
 	),
-	'CSS and JavaScript frameworks' => array(
+	'CSS and JavaScript Frameworks' => array(
 		array('name' => 'Bootstrap', 'version' => '2.3.2', 'license' => 'Apache-2.0', 'url' => 'https://getbootstrap.com/2.3.2/', 'path' => 'media/jui/js/bootstrap.js',
 			'note' => 'JavaScript and CSS', 'check' => array('media/jui/js/bootstrap.js', '/bootstrap-transition\.js v([0-9.]+)/')),
 	),
@@ -80,11 +80,11 @@ $groups = array(
 		array('name' => 'Editor.js', 'version' => '2.31.7', 'license' => 'Apache-2.0', 'url' => 'https://editorjs.io', 'path' => 'media/editors/editorjs/vendor/editorjs',
 			'check' => array('media/editors/editorjs/vendor/editorjs/editorjs.umd.js', '/"([0-9]+\.[0-9]+\.[0-9]+)"/')),
 	),
-	'Fonts and icons' => array(
+	'Fonts and Icons' => array(
 		array('name' => 'IcoMoon (Joomla icon font)', 'version' => '', 'license' => 'Royalty-free', 'url' => 'https://icomoon.io', 'path' => 'media/jui/fonts'),
 		array('name' => 'Bootstrap Icons', 'version' => '1.13.2', 'license' => 'MIT', 'url' => 'https://icons.getbootstrap.com', 'path' => 'media/editors/easymde/vendor/bootstrap-icons'),
 	),
-	'PHP libraries' => array(
+	'PHP Libraries' => array(
 		array('name' => 'PHPMailer', 'version' => '5.2.28', 'license' => 'LGPL-2.1', 'url' => 'https://github.com/PHPMailer/PHPMailer', 'path' => 'libraries/vendor/phpmailer/phpmailer',
 			'note' => 'With Joomla\'s backported fixes', 'check' => array('libraries/vendor/phpmailer/phpmailer/class.phpmailer.php', "/\\\$Version = '([0-9.]+)\+/")),
 		array('name' => 'SimplePie', 'composer' => 'simplepie/simplepie', 'license' => 'BSD-3-Clause', 'url' => 'https://simplepie.org', 'path' => 'libraries/vendor/simplepie/simplepie',

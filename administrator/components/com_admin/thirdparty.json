@@ -1,5 +1,5 @@
 {
-    "CSS and JavaScript frameworks": [
+    "CSS and JavaScript Frameworks": [
         {
             "name": "Bootstrap",
             "version": "2.3.2",
@@ -75,7 +75,7 @@
             "note": ""
         }
     ],
-    "Fonts and icons": [
+    "Fonts and Icons": [
         {
             "name": "Bootstrap Icons",
             "version": "1.13.2",
@@ -95,7 +95,7 @@
             "note": ""
         }
     ],
-    "JavaScript libraries": [
+    "JavaScript Libraries": [
         {
             "name": "Ajax Autocomplete for jQuery",
             "version": "1.4.11",
@@ -241,7 +241,7 @@
             "note": "Patched by Joomla"
         }
     ],
-    "PHP libraries": [
+    "PHP Libraries": [
         {
             "name": "Akeeba Restore (Kickstart)",
             "version": "",
