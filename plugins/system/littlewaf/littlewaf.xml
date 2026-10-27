@@ -48,6 +48,12 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
+                <field name="heading_admin" type="spacer" label="PLG_SYSTEM_LITTLEWAF_HEADING_ADMIN" description="PLG_SYSTEM_LITTLEWAF_HEADING_ADMIN_DESC" />
+                <field name="admin_key_enabled" type="radio" label="PLG_SYSTEM_LITTLEWAF_ADMIN_KEY_ENABLED_LABEL" description="PLG_SYSTEM_LITTLEWAF_ADMIN_KEY_ENABLED_DESC" class="btn-group btn-group-yesno" default="0" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="admin_key" type="text" label="PLG_SYSTEM_LITTLEWAF_ADMIN_KEY_LABEL" description="PLG_SYSTEM_LITTLEWAF_ADMIN_KEY_DESC" default="" filter="string" hint="PLG_SYSTEM_LITTLEWAF_ADMIN_KEY_HINT" showon="admin_key_enabled:1" />
                 <field name="heading_normalizations" type="spacer" label="PLG_SYSTEM_LITTLEWAF_HEADING_NORMALIZATIONS" description="PLG_SYSTEM_LITTLEWAF_HEADING_NORMALIZATIONS_DESC" />
                 <field name="normalize_duplicates" type="radio" label="PLG_SYSTEM_LITTLEWAF_NORMALIZE_DUPLICATES_LABEL" description="PLG_SYSTEM_LITTLEWAF_NORMALIZE_DUPLICATES_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
                     <option value="1">JYES</option>

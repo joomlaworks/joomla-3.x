@@ -174,10 +174,13 @@ class PlgSystemLittlewaf extends CMSPlugin
 	public function onAfterInitialise()
 	{
 		// Only ever filters site (frontend) requests. The administrator application is
-		// never touched, since legitimate content authoring there (e.g. a trusted editor
+		// never filtered, since legitimate content authoring there (e.g. a trusted editor
 		// intentionally using a real Sourcerer {source} tag) must not be blocked by this.
+		// Its login can be hidden behind a secret key, though.
 		if ($this->app->isClient('administrator'))
 		{
+			$this->requireAdminKey();
+
 			return;
 		}
 
@@ -188,6 +191,46 @@ class PlgSystemLittlewaf extends CMSPlugin
 
 		// After the filters: a request they block gets its 403, not a redirect
 		$this->normalise();
+	}
+
+	/**
+	 * Hides the administrator's login from anyone without the secret key: visitors who aren't logged in are sent to the
+	 * site's home page unless the address has the key (`?keyword`, or `?name=value` for a key with a value). Once given, the
+	 * key is remembered for the session, so the login form's own requests pass (Joomla keeps it when the user logs out).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	private function requireAdminKey()
+	{
+		$key = trim((string) $this->params->get('admin_key', ''));
+
+		// A key PHP couldn't read back from the address (its names turn "." and spaces into "_") would lock everyone out
+		if (!$this->params->get('admin_key_enabled', 0) || !preg_match('/^([A-Za-z0-9_-]+)(?:=(.+))?$/', $key, $match)
+			|| !Factory::getUser()->guest)
+		{
+			return;
+		}
+
+		$session = Factory::getSession();
+
+		if ($session->get('admin_key', false, 'littlewaf'))
+		{
+			return;
+		}
+
+		$name  = $match[1];
+		$given = isset($_GET[$name]) && is_string($_GET[$name]) ? $_GET[$name] : null;
+
+		if ($given !== null && (!isset($match[2]) || hash_equals($match[2], $given)))
+		{
+			$session->set('admin_key', true, 'littlewaf');
+
+			return;
+		}
+
+		$this->app->redirect(Uri::root());
 	}
 
 	/**
