@@ -270,6 +270,15 @@
             "note": ""
         },
         {
+            "name": "IconCaptcha",
+            "version": "4.0.6",
+            "date": "2025.06.16",
+            "license": "MIT",
+            "url": "https://github.com/fabianwennink/IconCaptcha-PHP",
+            "path": "libraries/vendor/fabianwennink/iconcaptcha",
+            "note": "With its widget (media/plg_captcha_iconcaptcha)"
+        },
+        {
             "name": "IDNA Convert",
             "version": "0.8.0",
             "date": "2011.03.11",

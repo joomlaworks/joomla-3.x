@@ -99,6 +99,8 @@ $groups = array(
 		array('name' => 'PSR Container', 'composer' => 'psr/container', 'license' => 'MIT', 'url' => 'https://www.php-fig.org/psr/psr-11/', 'path' => 'libraries/vendor/psr/container'),
 		array('name' => 'TYPO3 PHAR Stream Wrapper', 'composer' => 'typo3/phar-stream-wrapper', 'license' => 'MIT', 'url' => 'https://github.com/TYPO3/phar-stream-wrapper', 'path' => 'libraries/vendor/typo3/phar-stream-wrapper',
 			'note' => 'Patched'),
+		array('name' => 'IconCaptcha', 'version' => '4.0.6', 'license' => 'MIT', 'url' => 'https://github.com/fabianwennink/IconCaptcha-PHP', 'path' => 'libraries/vendor/fabianwennink/iconcaptcha',
+			'note' => 'With its widget (media/plg_captcha_iconcaptcha)', 'date' => '2025-06-16', 'dateSource' => 'CHANGELOG.md ("June 16, 2025")', 'check' => array('libraries/vendor/fabianwennink/iconcaptcha/CHANGELOG.md', '/^## ([0-9.]+) - /m')),
 		array('name' => 'Google reCAPTCHA PHP client', 'composer' => 'google/recaptcha', 'license' => 'BSD-3-Clause', 'url' => 'https://github.com/google/recaptcha', 'path' => 'libraries/vendor/google/recaptcha'),
 		array('name' => 'MySQL on SQLite (WordPress)', 'version' => '3.0.2', 'license' => 'GPL-2.0-or-later', 'url' => 'https://github.com/WordPress/sqlite-database-integration', 'path' => 'libraries/vendor/wordpress/mysql-on-sqlite',
 			'note' => 'Patched (PATCHES.md)', 'check' => array('libraries/vendor/wordpress/mysql-on-sqlite/PATCHES.md', '/version ([0-9.]+), commit/')),
@@ -159,6 +161,12 @@ foreach ($groups as $group => $entries)
 			}
 
 			$date = isset($match['date']) ? $match['date'] : '';
+		}
+
+		// A date the software states somewhere the check can't read it
+		if ($date === '' && isset($entry['date']))
+		{
+			$date = $entry['date'];
 		}
 
 		if (!file_exists($root . '/' . $entry['path']))

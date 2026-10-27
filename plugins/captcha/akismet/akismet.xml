@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.8" type="plugin" group="captcha" method="upgrade">
+    <name>plg_captcha_akismet</name>
+    <author>Joomla 3.x UTD Contributors</author>
+    <creationDate>October 2026</creationDate>
+    <copyright>(C) 2026 JoomlaWorks Ltd. and this project's contributors</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.md</license>
+    <authorUrl>https://github.com/joomlaworks/joomla-3.x</authorUrl>
+    <version>3.18.0</version>
+    <description>PLG_CAPTCHA_AKISMET_XML_DESCRIPTION</description>
+    <files>
+        <filename plugin="akismet">akismet.php</filename>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_captcha_akismet.ini</language>
+        <language tag="en-GB">en-GB.plg_captcha_akismet.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="api_key" type="text" label="PLG_CAPTCHA_AKISMET_API_KEY_LABEL" description="PLG_CAPTCHA_AKISMET_API_KEY_DESC" default="" required="true" filter="string" size="100" class="input-xxlarge" />
+                <field name="block" type="list" label="PLG_CAPTCHA_AKISMET_BLOCK_LABEL" description="PLG_CAPTCHA_AKISMET_BLOCK_DESC" default="all" filter="string">
+                    <option value="all">PLG_CAPTCHA_AKISMET_BLOCK_ALL</option>
+                    <option value="blatant">PLG_CAPTCHA_AKISMET_BLOCK_BLATANT</option>
+                </field>
+                <field name="unanswered" type="list" label="PLG_CAPTCHA_AKISMET_UNANSWERED_LABEL" description="PLG_CAPTCHA_AKISMET_UNANSWERED_DESC" default="allow" filter="string">
+                    <option value="allow">PLG_CAPTCHA_AKISMET_UNANSWERED_ALLOW</option>
+                    <option value="refuse">PLG_CAPTCHA_AKISMET_UNANSWERED_REFUSE</option>
+                </field>
+                <field name="test" type="radio" label="PLG_CAPTCHA_AKISMET_TEST_LABEL" description="PLG_CAPTCHA_AKISMET_TEST_DESC" class="btn-group btn-group-yesno" default="0" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

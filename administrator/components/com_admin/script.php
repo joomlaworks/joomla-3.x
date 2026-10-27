@@ -404,6 +404,8 @@ class JoomlaInstallerScript
 			'3.18.0-2026-10-21.sql' => '3.18.0',
 			// "System - Page Cache has new options" (post-installation message)
 			'3.18.0-2026-10-27.sql' => '3.18.0',
+			// The CAPTCHA plugins Akismet, Cloudflare Turnstile, hCaptcha and IconCaptcha
+			'3.18.0-2026-10-28.sql' => '3.18.0',
 		);
 
 		foreach ($dataMigrationFiles as $file => $addedIn)
@@ -852,7 +854,11 @@ class JoomlaInstallerScript
 			array('plugin', 'menu', 'editors-xtd'),
 			array('plugin', 'module', 'editors-xtd'),
 			array('plugin', 'profile', 'user'),
+			array('plugin', 'akismet', 'captcha'),
+			array('plugin', 'hcaptcha', 'captcha'),
+			array('plugin', 'iconcaptcha', 'captcha'),
 			array('plugin', 'recaptcha', 'captcha'),
+			array('plugin', 'turnstile', 'captcha'),
 			array('plugin', 'sef', 'system'),
 			array('plugin', 'sessiongc', 'system'),
 			array('plugin', 'stats', 'system'),
@@ -894,7 +900,10 @@ class JoomlaInstallerScript
 		'component:0::com_wrapper'               => '/media/com_wrapper',
 		'module:1::mod_housekeeping'             => '/media/mod_housekeeping',
 		'module:1::mod_sampledata'               => '/media/mod_sampledata',
+		'plugin:0:captcha:hcaptcha'              => '/media/plg_captcha_hcaptcha',
+		'plugin:0:captcha:iconcaptcha'           => '/media/plg_captcha_iconcaptcha',
 		'plugin:0:captcha:recaptcha'             => '/media/plg_captcha_recaptcha',
+		'plugin:0:captcha:turnstile'             => '/media/plg_captcha_turnstile',
 		'plugin:0:editors:codemirror'            => '/media/editors/codemirror',
 		'plugin:0:editors:tinymce_latest'        => '/media/editors/tinymce_latest',
 		'plugin:0:editors:easymde'               => '/media/editors/easymde',
@@ -915,7 +924,11 @@ class JoomlaInstallerScript
 	 */
 	protected $removableCoreExtensionsDisabled = array(
 		'plugin:0:authentication:ldap',
+		'plugin:0:captcha:akismet',
+		'plugin:0:captcha:hcaptcha',
+		'plugin:0:captcha:iconcaptcha',
 		'plugin:0:captcha:recaptcha',
+		'plugin:0:captcha:turnstile',
 		'plugin:0:content:confirmconsent',
 		'plugin:0:content:finder',
 		'plugin:0:content:vote',

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.8" type="plugin" group="captcha" method="upgrade">
+    <name>plg_captcha_turnstile</name>
+    <author>Joomla 3.x UTD Contributors</author>
+    <creationDate>October 2026</creationDate>
+    <copyright>(C) 2026 JoomlaWorks Ltd. and this project's contributors</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.md</license>
+    <authorUrl>https://github.com/joomlaworks/joomla-3.x</authorUrl>
+    <version>3.18.0</version>
+    <description>PLG_CAPTCHA_TURNSTILE_XML_DESCRIPTION</description>
+    <files>
+        <filename plugin="turnstile">turnstile.php</filename>
+    </files>
+    <media folder="media">
+        <folder>plg_captcha_turnstile</folder>
+    </media>
+    <languages>
+        <language tag="en-GB">en-GB.plg_captcha_turnstile.ini</language>
+        <language tag="en-GB">en-GB.plg_captcha_turnstile.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="public_key" type="text" label="PLG_CAPTCHA_TURNSTILE_PUBLIC_KEY_LABEL" description="PLG_CAPTCHA_TURNSTILE_PUBLIC_KEY_DESC" default="" required="true" filter="string" size="100" class="input-xxlarge" />
+                <field name="private_key" type="text" label="PLG_CAPTCHA_TURNSTILE_PRIVATE_KEY_LABEL" description="PLG_CAPTCHA_TURNSTILE_PRIVATE_KEY_DESC" default="" required="true" filter="string" size="100" class="input-xxlarge" />
+                <field name="theme" type="list" label="PLG_CAPTCHA_TURNSTILE_THEME_LABEL" description="PLG_CAPTCHA_TURNSTILE_THEME_DESC" default="auto" filter="string">
+                    <option value="auto">PLG_CAPTCHA_TURNSTILE_THEME_AUTO</option>
+                    <option value="light">PLG_CAPTCHA_TURNSTILE_THEME_LIGHT</option>
+                    <option value="dark">PLG_CAPTCHA_TURNSTILE_THEME_DARK</option>
+                </field>
+                <field name="size" type="list" label="PLG_CAPTCHA_TURNSTILE_SIZE_LABEL" description="PLG_CAPTCHA_TURNSTILE_SIZE_DESC" default="normal" filter="string">
+                    <option value="normal">PLG_CAPTCHA_TURNSTILE_SIZE_NORMAL</option>
+                    <option value="flexible">PLG_CAPTCHA_TURNSTILE_SIZE_FLEXIBLE</option>
+                    <option value="compact">PLG_CAPTCHA_TURNSTILE_SIZE_COMPACT</option>
+                </field>
+                <field name="appearance" type="list" label="PLG_CAPTCHA_TURNSTILE_APPEARANCE_LABEL" description="PLG_CAPTCHA_TURNSTILE_APPEARANCE_DESC" default="always" filter="string">
+                    <option value="always">PLG_CAPTCHA_TURNSTILE_APPEARANCE_ALWAYS</option>
+                    <option value="interaction-only">PLG_CAPTCHA_TURNSTILE_APPEARANCE_INTERACTION</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

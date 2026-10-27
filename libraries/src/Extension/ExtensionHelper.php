@@ -146,7 +146,11 @@ class ExtensionHelper
 		array('plugin', 'ldap', 'authentication', 0),
 
 		// Core plugin extensions - captcha
+		array('plugin', 'akismet', 'captcha', 0),
+		array('plugin', 'hcaptcha', 'captcha', 0),
+		array('plugin', 'iconcaptcha', 'captcha', 0),
 		array('plugin', 'recaptcha', 'captcha', 0),
+		array('plugin', 'turnstile', 'captcha', 0),
 
 		// Core plugin extensions - content
 		array('plugin', 'confirmconsent', 'content', 0),

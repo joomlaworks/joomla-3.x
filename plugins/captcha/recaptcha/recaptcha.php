@@ -9,12 +9,12 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Http\HttpFactory;
+use Joomla\CMS\Captcha\CaptchaHttp;
 use Joomla\Utilities\IpHelper;
 
 /**
  * Google reCAPTCHA: the v2 checkbox, v2 invisible and v3 (score) types. Answers are verified with Google's siteverify
- * API over cURL.
+ * API (CaptchaHttp: cURL).
  *
  * @since  2.5
  */
@@ -254,8 +254,7 @@ class PlgCaptchaRecaptcha extends JPlugin
 	}
 
 	/**
-	 * Asks Google's siteverify API about a token: with cURL, else through Joomla's HTTP client (PHP's streams); both use
-	 * Global Configuration's proxy.
+	 * Asks Google's siteverify API about a token.
 	 *
 	 * @param   string  $secret    The secret key
 	 * @param   string  $response  The token
@@ -268,64 +267,9 @@ class PlgCaptchaRecaptcha extends JPlugin
 	 */
 	private function verify($secret, $response, $remoteip)
 	{
-		$data = http_build_query(array('secret' => $secret, 'response' => $response, 'remoteip' => $remoteip), '', '&');
-		$body = false;
+		$result = CaptchaHttp::verify(self::VERIFY_URL, array('secret' => $secret, 'response' => $response, 'remoteip' => $remoteip));
 
-		if (function_exists('curl_init'))
-		{
-			$curl    = curl_init(self::VERIFY_URL);
-			$options = array(
-				CURLOPT_POST           => true,
-				CURLOPT_POSTFIELDS     => $data,
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_CONNECTTIMEOUT => 5,
-				CURLOPT_TIMEOUT        => 10,
-				CURLOPT_HTTPHEADER     => array('Content-Type: application/x-www-form-urlencoded'),
-			);
-			$config = JFactory::getConfig();
-
-			if ($config->get('proxy_enable') && $config->get('proxy_host'))
-			{
-				$options[CURLOPT_PROXY] = $config->get('proxy_host') . ($config->get('proxy_port') ? ':' . $config->get('proxy_port') : '');
-
-				if ($config->get('proxy_user'))
-				{
-					$options[CURLOPT_PROXYUSERPWD] = $config->get('proxy_user') . ':' . $config->get('proxy_pass');
-				}
-			}
-
-			curl_setopt_array($curl, $options);
-			$body   = curl_exec($curl);
-			$status = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-			// A no-op since PHP 8.0, deprecated in 8.5
-			if (PHP_VERSION_ID < 80000)
-			{
-				curl_close($curl);
-			}
-
-			if ($status !== 200)
-			{
-				$body = false;
-			}
-		}
-		else
-		{
-			// Its streams: Joomla's client would still choose its cURL transport when only curl_init() is disabled
-			try
-			{
-				$answer = HttpFactory::getHttp(null, 'stream')->post(self::VERIFY_URL, $data, array('Content-Type' => 'application/x-www-form-urlencoded'), 10);
-				$body   = $answer->code === 200 ? $answer->body : false;
-			}
-			catch (\Exception $e)
-			{
-				$body = false;
-			}
-		}
-
-		$result = is_string($body) ? json_decode($body, true) : null;
-
-		if (!is_array($result))
+		if ($result === null)
 		{
 			throw new \RuntimeException(JText::_('PLG_RECAPTCHA_ERROR_RECAPTCHA_NOT_REACHABLE'));
 		}
