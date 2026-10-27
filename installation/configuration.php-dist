@@ -32,6 +32,7 @@ class JConfig
 	public $offline_image = '';
 	public $sitename = 'Joomla!';            // Name of Joomla site
 	public $editor = 'tinymce_latest';
+	public $editor_site = '';
 	public $captcha = '0';
 	public $list_limit = '50';
 	public $access = '1';

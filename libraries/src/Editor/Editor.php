@@ -10,6 +10,7 @@ namespace Joomla\CMS\Editor;
 
 defined('JPATH_PLATFORM') or die;
 
+use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\Registry\Registry;
 
 /**
@@ -82,6 +83,27 @@ class Editor extends \JObject
 	 * @since  2.5
 	 */
 	protected static $instances = array();
+
+	/**
+	 * The content editors which can be switched between, with their names' language strings
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const SWITCHABLE_EDITORS = array(
+		'tinymce_latest' => 'JLIB_EDITOR_SWITCH_TINYMCE_LATEST',
+		'tinymce'        => 'JLIB_EDITOR_SWITCH_TINYMCE',
+		'easymde'        => 'JLIB_EDITOR_SWITCH_EASYMDE',
+		'editorjs'       => 'JLIB_EDITOR_SWITCH_EDITORJS',
+	);
+
+	/**
+	 * The session namespace of the editor chosen with the switcher
+	 *
+	 * @var    string
+	 * @since  3.18.0
+	 */
+	const SWITCH_NAMESPACE = 'editorswitch';
 
 	/**
 	 * Constructor
@@ -333,7 +355,136 @@ class Editor extends \JObject
 			}
 		}
 
+		if ($return !== null && $this->canSwitch($params))
+		{
+			$return = $this->getSwitcher($args['id']) . $return;
+		}
+
 		return $return;
+	}
+
+	/**
+	 * The content editors the user may switch between: enabled, and of an access level the user has.
+	 *
+	 * @return  array  Editor (plugin element) => its translated name
+	 *
+	 * @since   3.18.0
+	 */
+	public static function getSwitchableEditors()
+	{
+		$editors = array();
+
+		foreach (self::SWITCHABLE_EDITORS as $name => $key)
+		{
+			if (\JPluginHelper::getPlugin('editors', $name))
+			{
+				$editors[$name] = \JText::_($key);
+			}
+		}
+
+		return $editors;
+	}
+
+	/**
+	 * Records the editor a logged-in user chose with the switcher (posted as editor_switch, with the form token) for the
+	 * rest of the session. A switch posted on its own (editor_switch_return) is answered with a redirect to the same page.
+	 * Called by the application before it decides the user's editor.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function switchFromRequest()
+	{
+		$app    = \JFactory::getApplication();
+		$editor = $app->input->post->get('editor_switch', '', 'cmd');
+
+		if ($editor === '' || \JFactory::getUser()->guest || !\JSession::checkToken('post'))
+		{
+			return;
+		}
+
+		$editors = self::getSwitchableEditors();
+
+		if (isset($editors[$editor]))
+		{
+			\JFactory::getSession()->set('editor', $editor, self::SWITCH_NAMESPACE);
+		}
+
+		if ($app->input->post->getInt('editor_switch_return'))
+		{
+			$app->redirect(\JUri::getInstance()->toString(), 303);
+		}
+	}
+
+	/**
+	 * @return  string|null  The editor the user chose with the switcher in this session, while it may still be used
+	 *
+	 * @since   3.18.0
+	 */
+	public static function getSessionEditor()
+	{
+		$editor  = (string) \JFactory::getSession()->get('editor', '', self::SWITCH_NAMESPACE);
+		$editors = $editor !== '' ? self::getSwitchableEditors() : array();
+
+		return isset($editors[$editor]) ? $editor : null;
+	}
+
+	/**
+	 * Whether this editor gets the switcher: in the administrator (the site keeps the user's or the site's editor), a content
+	 * editor which follows the user's choice (one the caller named, e.g. with a field's editor attribute, stays as it is),
+	 * editable, for a user with another editor to choose.
+	 *
+	 * @param   array  $params  The display parameters ('switcher' => false leaves it out)
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	protected function canSwitch(array $params)
+	{
+		$app = \JFactory::getApplication();
+
+		if ((isset($params['switcher']) && !$params['switcher']) || !empty($params['readonly'])
+			|| !isset(self::SWITCHABLE_EDITORS[$this->_name])
+			|| !($app instanceof \JApplicationCms) || !$app->isClient('administrator')
+			|| $this->_name !== $app->get('editor') || \JFactory::getUser()->guest)
+		{
+			return false;
+		}
+
+		return count(self::getSwitchableEditors()) > 1;
+	}
+
+	/**
+	 * @param   string  $id  The editor's id
+	 *
+	 * @return  string  The switcher's markup (layout joomla.editors.switcher)
+	 *
+	 * @since   3.18.0
+	 */
+	protected function getSwitcher($id)
+	{
+		static $assets = false;
+
+		if (!$assets)
+		{
+			$assets = true;
+
+			\JHtml::_('stylesheet', 'system/editor-switch.min.css', array('version' => 'auto', 'relative' => true));
+			\JHtml::_('script', 'system/editor-switch.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
+		}
+
+		$option = \JFactory::getApplication()->input->get('option', '', 'cmd');
+
+		return \JLayoutHelper::render('joomla.editors.switcher', array(
+			'id'      => $id,
+			'current' => $this->_name,
+			'editors' => self::getSwitchableEditors(),
+			'token'   => \JSession::getFormToken(),
+			// Core components' edit forms have a reload task (FormController::reload()), which keeps what wasn't saved
+			'core'    => $option !== '' && ExtensionHelper::checkIfCoreExtension('component', $option, 1),
+		));
 	}
 
 	/**

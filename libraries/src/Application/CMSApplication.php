@@ -665,9 +665,21 @@ class CMSApplication extends WebApplication
 		// Load the library language files
 		$this->loadLibraryLanguage();
 
-		// Set user specific editor.
+		// Set user specific editor: in the administrator the one chosen with an editor's switcher in this session, else the user's own
 		$user = \JFactory::getUser();
 		$editor = $user->getParam('editor', $this->get('editor'));
+
+		if (!$user->guest && $this->isClient('administrator'))
+		{
+			\Joomla\CMS\Editor\Editor::switchFromRequest();
+			$editor = \Joomla\CMS\Editor\Editor::getSessionEditor() ?: $editor;
+		}
+
+		// The site's own editor (Global Configuration), whatever the user's setting
+		if ($this->isClient('site') && (string) $this->get('editor_site') !== '' && \JPluginHelper::isEnabled('editors', $this->get('editor_site')))
+		{
+			$editor = $this->get('editor_site');
+		}
 
 		if (!\JPluginHelper::isEnabled('editors', $editor))
 		{

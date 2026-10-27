@@ -20,6 +20,9 @@ For commands of your own on the command line, see [CLI-GUIDE.md](CLI-GUIDE.md). 
   - [The preview](#the-preview)
   - [Rendering blocks yourself](#rendering-blocks-yourself)
   - [Opening a module's text in an editor of your choice](#opening-a-modules-text-in-an-editor-of-your-choice)
+- [Editors: choosing one and switching](#editors-choosing-one-and-switching)
+  - [Naming the editor yourself](#naming-the-editor-yourself)
+  - [Switching without losing unsaved changes](#switching-without-losing-unsaved-changes)
 - [Other additions](#other-additions)
 - [Compatibility with stock Joomla 3, Joomla 4 and later](#compatibility-with-stock-joomla-3-joomla-4-and-later)
 
@@ -296,6 +299,36 @@ A module whose manifest has `<customContent />` is edited in the module form's c
 ```
 
 `editor`, `syntax`, `buttons`, `hide` and `height` are taken (`JModuleHelper::prepareContentField()`); the field's text filter always stays. "Custom Code" uses `editor="codemirror|none" syntax="html" buttons="false"`, "Custom Blocks" the line above.
+
+## EDITORS: CHOOSING ONE AND SWITCHING
+
+In the administrator, an editor that follows the user's choice gets a menu above it, "Editor: TinyMCE", which switches between TinyMCE, TinyMCE (legacy), Markdown (EasyMDE) and Blocks (Editor.js). Only enabled editors the user's access levels allow are listed. The choice lasts until the session ends; the user's own Editor setting and Global Configuration stay as they were. The site shows no menu, and Global Configuration's "Default Editor (Site)" may set one editor for everyone there.
+
+### Naming the editor yourself
+
+An editor you name stays as it is, without the menu:
+
+- **A form field:** `<field type="editor" editor="codemirror|none" ... />` (the first one enabled, else the next).
+- **A module's text:** `<customContent editor="editorjs|none" />` in the manifest (see [Opening a module's text in an editor of your choice](#opening-a-modules-text-in-an-editor-of-your-choice)).
+- **In code:** pass `'switcher' => false` in `display()`'s `$params`, e.g. `JEditor::getInstance('tinymce_latest')->display($name, $html, $width, $height, $col, $row, true, $id, null, null, array('switcher' => false))`. An instance of an editor other than the user's never gets the menu; one that happens to be the user's would.
+
+An editor follows the user's choice when it's the one Joomla works out for the user: a field without `editor`, `JFactory::getEditor()`, or `JEditor::getInstance(JFactory::getConfig()->get('editor'))`. These get the menu.
+
+All four editors store HTML, so the content needs no conversion of its own: each editor reads the HTML the form has. Blocks keeps its block data in a hidden, signed element at the start of the content. The other editors leave it there, so going back to Blocks restores the blocks (also template blocks, which can't be made from HTML). If the text was changed in another editor, Blocks makes the blocks again from the HTML and says so.
+
+### Switching without losing unsaved changes
+
+Switching posts the edit form to its `reload` task with the chosen editor (`editor_switch`). Joomla's `FormController::reload()` keeps the posted data in the session and opens the form again, now in the other editor, without saving anything. Core components' forms are found automatically, from the task of their Save button.
+
+A component of your own gets this too once its form says which task to post:
+
+```html
+<form action="..." method="post" name="adminForm" id="adminForm" data-editor-reload="item.reload">
+```
+
+The task must keep the posted data and open the form again with it. A controller extending `JControllerForm` has `reload()` already (the edit view's model must read `$app->getUserState('com_x.edit.item.data')` in `loadFormData()`, as Joomla's models do). Without the attribute, or with `data-editor-reload=""`, switching asks the user to confirm ("changes you haven't saved will be lost") and loads the page again.
+
+The menu is the layout `joomla.editors.switcher`, which templates can override. `Joomla\CMS\Editor\Editor::getSwitchableEditors()` lists the editors it offers and `getSessionEditor()` returns the one chosen in this session, if any.
 
 ## OTHER ADDITIONS
 

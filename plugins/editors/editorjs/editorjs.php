@@ -416,8 +416,8 @@ class PlgEditorEditorjs extends JPlugin
 	}
 
 	/**
-	 * Content as the editor gets it: the hidden blocks element is kept only in the exact form the editor writes and with a
-	 * valid signature; any other data-blocks attribute (written by hand, changed, or reordered by another editor) is disarmed,
+	 * Content as the editor gets it: the hidden blocks element is kept only in the exact form the editor writes (other
+	 * editors may leave a space in it) and with a valid signature; any other data-blocks attribute (written by hand, changed, or reordered by another editor) is disarmed,
 	 * so its blocks are made from the HTML, which the text filters checked. The content is escaped, as Joomla's editor field
 	 * passes it.
 	 *
@@ -439,7 +439,9 @@ class PlgEditorEditorjs extends JPlugin
 		$kept    = array();
 		$content = preg_replace_callback(
 			'#&lt;div class=&quot;joomla-blocks&quot; hidden=&quot;hidden&quot; data-version=&quot;1&quot; data-hash=&quot;[0-9a-f]{1,8}&quot;'
-			. ' data-signature=&quot;([0-9a-f]{64})&quot; data-blocks=&quot;([A-Za-z0-9+/=]+)&quot;&gt;&lt;/div&gt;#',
+			. ' data-signature=&quot;([0-9a-f]{64})&quot; data-blocks=&quot;([A-Za-z0-9+/=]+)&quot;&gt;'
+			// Other editors write an empty element with a (non-breaking) space in it: TinyMCE, EasyMDE
+			. '(?:[ \t\r\n]|&amp;nbsp;|&amp;\#160;|\xC2\xA0)*&lt;/div&gt;#',
 			function ($match) use (&$kept)
 			{
 				if (!$kept && hash_equals(static::sign($match[2]), $match[1]))
