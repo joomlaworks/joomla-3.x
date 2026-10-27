@@ -129,8 +129,7 @@ class JFormFieldPlugins extends JFormFieldList
 			// showdisabled="true": installed but disabled plugins too, after the enabled ones (not discovered ones, state -1)
 			if ($showDisabled)
 			{
-				$query->where('state >= 0')
-					->order('enabled DESC, ordering, name');
+				$query->where('state >= 0');
 			}
 			else
 			{
@@ -167,14 +166,26 @@ class JFormFieldPlugins extends JFormFieldList
 					$options[$i]->disable = (string) $this->value !== $item->value;
 				}
 
-				unset($options[$i]->enabled);
-
 				// If we are using useglobal update the use global value text with the plugin text.
 				if ($useGlobal && isset($parentOptions[0]) && $item->value === $globalValue)
 				{
 					$text                   = JText::_($extension);
 					$parentOptions[0]->text = JText::sprintf('JGLOBAL_USE_GLOBAL_VALUE', ($text === '' || $text === $extension ? $item->value : $text));
 				}
+			}
+
+			// Enabled plugins first, then disabled ones, each group by the names people read
+			if ($showDisabled)
+			{
+				usort($options, function ($a, $b)
+				{
+					return $b->enabled - $a->enabled ?: strnatcasecmp($a->text, $b->text);
+				});
+			}
+
+			foreach ($options as $item)
+			{
+				unset($item->enabled);
 			}
 		}
 		else
