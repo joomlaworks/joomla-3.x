@@ -24,6 +24,10 @@ use Joomla\CMS\Uri\Uri;
  * against a known pattern; it is not a substitute for updating or removing the
  * vulnerable extension it targets.
  *
+ * Generic protections catch whole classes of attack which never look like a real
+ * request: probes for other platforms' files, executable uploads, PHP-serialized
+ * objects and known attack tools. It can also send security headers.
+ *
  * It also normalises the addresses of front-end pages (URL Normalizations), with a
  * permanent redirect: repeated query parameters (crawlers append Joomla's start,
  * limitstart or format again and again), doubled question marks, text after an
@@ -64,6 +68,96 @@ class PlgSystemLittlewaf extends CMSPlugin
 	const LOG_MAX_SIZE = 10485760;
 
 	/**
+	 * Path segments of other platforms and of files no site serves through Joomla (lower case): a request for them is a probe
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const PROBE_SEGMENTS = array(
+		'wp-admin', 'wp-content', 'wp-includes', 'wp-json', 'wp-login.php', 'wp-config.php', 'wp-cron.php', 'xmlrpc.php',
+		'wlwmanifest.xml', '.git', '.svn', '.hg', '.bzr', '.aws', '.ssh', '.vscode', '.idea', '.ds_store', 'phpmyadmin',
+		'adminer.php', 'phpinfo.php', 'eval-stdin.php', 'cgi-bin',
+	);
+
+	/**
+	 * Last path segments which are backups, dumps or secrets (".env", ".env.local", "dump.sql", "configuration.php.bak", ...)
+	 *
+	 * @var    string
+	 * @since  3.18.0
+	 */
+	const PROBE_FILE = '/^\.env(?:\..*)?$|\.(?:sql|sql\.gz|sql\.zip|bak|old|orig|save|swp)$|~$/';
+
+	/**
+	 * Parts of an uploaded file's name which make it executable on a web server: Joomla's own forbidden extensions
+	 * (InputFilter::isSafeFile()), in any position (shell.php.jpg), and server configuration files
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const EXECUTABLE_EXTENSIONS = array(
+		'php', 'phps', 'pht', 'phtml', 'php3', 'php4', 'php5', 'php6', 'php7', 'php8', 'php9', 'phar', 'inc', 'pl', 'cgi', 'fcgi',
+		'java', 'jar', 'py', 'asp', 'aspx', 'jsp', 'shtml',
+	);
+
+	/**
+	 * Names of server configuration files, which change how a folder's files run
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const SERVER_FILES = array('.htaccess', '.htpasswd', '.user.ini', 'php.ini', 'web.config');
+
+	/**
+	 * A PHP-serialized object ("O:8:\"stdClass\":1:{", or "C:" for Serializable), as object injection sends it ("O:+8:" was
+	 * accepted by old PHP versions)
+	 *
+	 * @var    string
+	 * @since  3.18.0
+	 */
+	const SERIALIZED_OBJECT = '/[OC]:\+?\d+:"[A-Za-z0-9_\\\\]+":\d+:\{/';
+
+	/**
+	 * User agents of attack and scanning tools (matched case-insensitively)
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const SCANNERS = array(
+		'sqlmap', 'nikto', 'nuclei', 'masscan', 'zgrab', 'wpscan', 'acunetix', 'netsparker', 'nessus', 'openvas', 'w3af', 'havij',
+		'dirbuster', 'gobuster', 'fuzz faster u fool', 'nmap scripting engine', 'commix', 'jaeles', 'arachni', 'skipfish',
+	);
+
+	/**
+	 * The security headers: param => the header, and the values it may have (null: any value without control characters)
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const HEADERS = array(
+		'header_nosniff'            => array('X-Content-Type-Options', array('nosniff')),
+		'header_xss_protection'     => array('X-XSS-Protection', array('0', '1; mode=block')),
+		'header_referrer_policy'    => array('Referrer-Policy', array(
+			'no-referrer', 'no-referrer-when-downgrade', 'origin', 'origin-when-cross-origin', 'same-origin', 'strict-origin',
+			'strict-origin-when-cross-origin',
+		)),
+		'header_frame_options'      => array('X-Frame-Options', array('SAMEORIGIN', 'DENY')),
+		'header_hsts'               => array('Strict-Transport-Security', array('max-age=31536000', 'max-age=31536000; includeSubDomains')),
+		'header_permissions_policy' => array('Permissions-Policy', null),
+	);
+
+	/**
+	 * The headers' defaults: only those which can't change how a site works are sent unless the site admin chooses
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const HEADER_DEFAULTS = array(
+		'header_nosniff'         => 'nosniff',
+		'header_xss_protection'  => '0',
+		'header_referrer_policy' => 'strict-origin-when-cross-origin',
+	);
+
+	/**
 	 * @var    \Joomla\CMS\Application\CMSApplication
 	 * @since  3.16.0
 	 */
@@ -87,6 +181,9 @@ class PlgSystemLittlewaf extends CMSPlugin
 			return;
 		}
 
+		$this->sendSecurityHeaders();
+		$this->blockProbes();
+		$this->filterGeneric();
 		$this->filter();
 
 		// After the filters: a request they block gets its 403, not a redirect
@@ -120,6 +217,262 @@ class PlgSystemLittlewaf extends CMSPlugin
 			|| $input->getString('searchword', '') !== '')
 		{
 			$this->app->redirect(Uri::base(), 301);
+		}
+	}
+
+	/**
+	 * Adds the security headers chosen, except those the response already has (from PHP or an extension; headers the web
+	 * server adds aren't visible here). Code which sets one of them later with "replace" (e.g. Users' Referrer-Policy on
+	 * its password reset pages) still decides.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	private function sendSecurityHeaders()
+	{
+		$present = array();
+
+		foreach ($this->app->getHeaders() as $header)
+		{
+			$present[strtolower($header['name'])] = true;
+		}
+
+		foreach (headers_list() as $line)
+		{
+			$present[strtolower(trim(strstr($line, ':', true)))] = true;
+		}
+
+		foreach (static::HEADERS as $param => $header)
+		{
+			$defaults = static::HEADER_DEFAULTS;
+			$default  = array_key_exists($param, $defaults) ? $defaults[$param] : '';
+			$value   = trim((string) $this->params->get($param, $default));
+
+			// The switch of X-Content-Type-Options is a Yes/No
+			if ($param === 'header_nosniff')
+			{
+				$value = $value === '0' ? '' : 'nosniff';
+			}
+
+			if ($value === '' || isset($present[strtolower($header[0])]))
+			{
+				continue;
+			}
+
+			if ($header[1] === null ? preg_match('/[\x00-\x1F\x7F]/', $value) : !in_array($value, $header[1], true))
+			{
+				continue;
+			}
+
+			// Browsers ignore it over plain HTTP, and a site which can't keep HTTPS mustn't promise it
+			if ($param === 'header_hsts' && !$this->app->isSSLConnection())
+			{
+				continue;
+			}
+
+			// The application drops a header whose value is "0" (X-XSS-Protection's), so PHP sends that one itself
+			if ($value === '0')
+			{
+				if (!headers_sent())
+				{
+					header($header[0] . ': 0');
+				}
+
+				continue;
+			}
+
+			$this->app->setHeader($header[0], $value);
+		}
+	}
+
+	/**
+	 * Answers requests for other platforms' files, version control folders, backups and secrets with a plain 404, before
+	 * Joomla builds its error page for them (with the shipped .htaccess, every missing file reaches Joomla). Not logged:
+	 * scans send them by the hundred.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	private function blockProbes()
+	{
+		if (!$this->params->get('block_probes', 1) || !static::isProbe($this->requestPath()))
+		{
+			return;
+		}
+
+		$this->app->setHeader('status', 404, true);
+		$this->app->setBody('Not Found');
+
+		echo $this->app->toString();
+		$this->app->close();
+	}
+
+	/**
+	 * Whether a path (relative to the site, decoded) asks for another platform's file, a version control folder, a backup or a
+	 * secret.
+	 *
+	 * @param   string  $path  The path
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	public static function isProbe($path)
+	{
+		$segments = array_values(array_filter(explode('/', strtolower($path)), 'strlen'));
+
+		if (!$segments)
+		{
+			return false;
+		}
+
+		if (array_intersect($segments, static::PROBE_SEGMENTS))
+		{
+			return true;
+		}
+
+		return (bool) preg_match(static::PROBE_FILE, end($segments));
+	}
+
+	/**
+	 * The request's path relative to the site's base, percent-decoded (index.php and path info included).
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	private function requestPath()
+	{
+		$target = $this->requestTarget();
+		$path   = rawurldecode((string) strtok($target, '?'));
+		$base   = rtrim(Uri::base(true), '/');
+
+		if ($base !== '' && stripos($path, $base . '/') === 0)
+		{
+			$path = substr($path, strlen($base));
+		}
+
+		return $path;
+	}
+
+	/**
+	 * The generic protections: executable uploads, PHP-serialized objects and attack tools are blocked (403).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	private function filterGeneric()
+	{
+		if ($this->params->get('block_scanners', 1))
+		{
+			$agent = strtolower($this->server('HTTP_USER_AGENT'));
+
+			foreach (static::SCANNERS as $scanner)
+			{
+				if (strpos($agent, $scanner) !== false)
+				{
+					$this->block('scanners', 'user agent');
+				}
+			}
+		}
+
+		if ($this->params->get('block_executable_uploads', 1) && !empty($_FILES))
+		{
+			foreach ($this->flatten(array_map(function ($file) { return isset($file['name']) ? $file['name'] : ''; }, $_FILES)) as $name)
+			{
+				if (static::isExecutableName($name))
+				{
+					$this->block('executable_uploads', 'file names');
+				}
+			}
+		}
+
+		if ($this->params->get('block_serialized', 1))
+		{
+			$values = $this->getRequestValues();
+
+			foreach ($values as $where => $value)
+			{
+				if ($this->matches(static::SERIALIZED_OBJECT, $value))
+				{
+					$this->block('serialized', $where);
+				}
+			}
+
+			foreach ($this->getHeaderValues() as $where => $value)
+			{
+				if ($this->matches(static::SERIALIZED_OBJECT, $value))
+				{
+					$this->block('serialized', $where);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Whether an uploaded file's name makes it executable on a web server (any part after the first dot, and server
+	 * configuration files), as Windows servers read it too (trailing dots and spaces dropped).
+	 *
+	 * @param   string  $name  The file name
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	public static function isExecutableName($name)
+	{
+		$name = (string) $name;
+
+		// A NUL byte ends the name where the file system writes it
+		if (strpos($name, "\0") !== false)
+		{
+			return true;
+		}
+
+		$name = strtolower(rtrim(substr(strrchr('/' . str_replace('\\', '/', $name), '/'), 1), ". \t"));
+
+		if (in_array($name, static::SERVER_FILES, true))
+		{
+			return true;
+		}
+
+		$parts = explode('.', $name);
+		array_shift($parts);
+
+		foreach ($parts as $part)
+		{
+			if (in_array(rtrim($part, ' '), static::EXECUTABLE_EXTENSIONS, true))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * The request's cookies and headers (names as PHP gives them: HTTP_USER_AGENT, ...), where object injection is sent too.
+	 *
+	 * @return  \Generator  where => value
+	 *
+	 * @since   3.18.0
+	 */
+	private function getHeaderValues()
+	{
+		foreach ($this->flatten($_COOKIE) as $value)
+		{
+			yield 'cookies' => $value;
+		}
+
+		foreach ($_SERVER as $name => $value)
+		{
+			if (strpos($name, 'HTTP_') === 0 && $name !== 'HTTP_COOKIE' && is_scalar($value))
+			{
+				yield 'headers' => (string) $value;
+			}
 		}
 	}
 

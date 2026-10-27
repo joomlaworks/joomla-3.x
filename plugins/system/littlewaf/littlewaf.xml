@@ -27,6 +27,23 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
+                <field name="heading_generic" type="spacer" label="PLG_SYSTEM_LITTLEWAF_HEADING_GENERIC" description="PLG_SYSTEM_LITTLEWAF_HEADING_GENERIC_DESC" />
+                <field name="block_probes" type="radio" label="PLG_SYSTEM_LITTLEWAF_BLOCK_PROBES_LABEL" description="PLG_SYSTEM_LITTLEWAF_BLOCK_PROBES_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="block_executable_uploads" type="radio" label="PLG_SYSTEM_LITTLEWAF_BLOCK_EXECUTABLE_UPLOADS_LABEL" description="PLG_SYSTEM_LITTLEWAF_BLOCK_EXECUTABLE_UPLOADS_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="block_serialized" type="radio" label="PLG_SYSTEM_LITTLEWAF_BLOCK_SERIALIZED_LABEL" description="PLG_SYSTEM_LITTLEWAF_BLOCK_SERIALIZED_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="block_scanners" type="radio" label="PLG_SYSTEM_LITTLEWAF_BLOCK_SCANNERS_LABEL" description="PLG_SYSTEM_LITTLEWAF_BLOCK_SCANNERS_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
                 <field name="log_blocked" type="radio" label="PLG_SYSTEM_LITTLEWAF_LOG_BLOCKED_LABEL" description="PLG_SYSTEM_LITTLEWAF_LOG_BLOCKED_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
@@ -48,6 +65,37 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
+                <field name="heading_headers" type="spacer" label="PLG_SYSTEM_LITTLEWAF_HEADING_HEADERS" description="PLG_SYSTEM_LITTLEWAF_HEADING_HEADERS_DESC" />
+                <field name="header_nosniff" type="radio" label="PLG_SYSTEM_LITTLEWAF_HEADER_NOSNIFF_LABEL" description="PLG_SYSTEM_LITTLEWAF_HEADER_NOSNIFF_DESC" class="btn-group btn-group-yesno" default="1" filter="uint">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="header_xss_protection" type="list" label="PLG_SYSTEM_LITTLEWAF_HEADER_XSS_PROTECTION_LABEL" description="PLG_SYSTEM_LITTLEWAF_HEADER_XSS_PROTECTION_DESC" default="0" filter="string">
+                    <option value="">PLG_SYSTEM_LITTLEWAF_OPTION_DONT_SEND</option>
+                    <option value="0">0</option>
+                    <option value="1; mode=block">1; mode=block</option>
+                </field>
+                <field name="header_referrer_policy" type="list" label="PLG_SYSTEM_LITTLEWAF_HEADER_REFERRER_POLICY_LABEL" description="PLG_SYSTEM_LITTLEWAF_HEADER_REFERRER_POLICY_DESC" default="strict-origin-when-cross-origin" filter="string">
+                    <option value="">PLG_SYSTEM_LITTLEWAF_OPTION_DONT_SEND</option>
+                    <option value="no-referrer">no-referrer</option>
+                    <option value="no-referrer-when-downgrade">no-referrer-when-downgrade</option>
+                    <option value="origin">origin</option>
+                    <option value="origin-when-cross-origin">origin-when-cross-origin</option>
+                    <option value="same-origin">same-origin</option>
+                    <option value="strict-origin">strict-origin</option>
+                    <option value="strict-origin-when-cross-origin">strict-origin-when-cross-origin</option>
+                </field>
+                <field name="header_frame_options" type="list" label="PLG_SYSTEM_LITTLEWAF_HEADER_FRAME_OPTIONS_LABEL" description="PLG_SYSTEM_LITTLEWAF_HEADER_FRAME_OPTIONS_DESC" default="" filter="string">
+                    <option value="">PLG_SYSTEM_LITTLEWAF_OPTION_DONT_SEND</option>
+                    <option value="SAMEORIGIN">SAMEORIGIN</option>
+                    <option value="DENY">DENY</option>
+                </field>
+                <field name="header_hsts" type="list" label="PLG_SYSTEM_LITTLEWAF_HEADER_HSTS_LABEL" description="PLG_SYSTEM_LITTLEWAF_HEADER_HSTS_DESC" default="" filter="string">
+                    <option value="">PLG_SYSTEM_LITTLEWAF_OPTION_DONT_SEND</option>
+                    <option value="max-age=31536000">max-age=31536000</option>
+                    <option value="max-age=31536000; includeSubDomains">max-age=31536000; includeSubDomains</option>
+                </field>
+                <field name="header_permissions_policy" type="text" label="PLG_SYSTEM_LITTLEWAF_HEADER_PERMISSIONS_POLICY_LABEL" description="PLG_SYSTEM_LITTLEWAF_HEADER_PERMISSIONS_POLICY_DESC" default="" filter="string" hint="camera=(), microphone=(), geolocation=()" />
             </fieldset>
         </fields>
     </config>
