@@ -179,16 +179,6 @@
             "note": ""
         },
         {
-            "name": "HTML5 Shiv",
-            "version": "3.7.3",
-            "date": "2015.07.20",
-            "dateSource": "GitHub release 3.7.3; npm agrees",
-            "license": "MIT",
-            "url": "https://github.com/aFarkas/html5shiv",
-            "path": "media/jui/js/html5.js",
-            "note": ""
-        },
-        {
             "name": "Jcrop",
             "version": "2.0.4",
             "date": "2015.11.18",
@@ -331,16 +321,6 @@
             "note": ""
         },
         {
-            "name": "Google reCAPTCHA PHP client",
-            "version": "1.1.2",
-            "date": "2015.09.02",
-            "dateSource": "Composer (installed.json)",
-            "license": "BSD-3-Clause",
-            "url": "https://github.com/google/recaptcha",
-            "path": "libraries/vendor/google/recaptcha",
-            "note": ""
-        },
-        {
             "name": "IconCaptcha",
             "version": "4.0.6",
             "date": "2025.06.16",
@@ -389,16 +369,6 @@
             "url": "https://github.com/defuse/php-encryption",
             "path": "libraries/php-encryption",
             "note": "Patched for PHP 8 (string casts)"
-        },
-        {
-            "name": "PHP UTF-8",
-            "version": "0.5",
-            "date": "2007.08.12",
-            "dateSource": "SourceForge, phputf8 0.5 files",
-            "license": "LGPL-2.1",
-            "url": "https://sourceforge.net/projects/phputf8/",
-            "path": "libraries/phputf8",
-            "note": ""
         },
         {
             "name": "phpass",

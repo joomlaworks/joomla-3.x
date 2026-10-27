@@ -10,15 +10,6 @@
         'dev' => false,
     ),
     'versions' => array(
-        'google/recaptcha' => array(
-            'pretty_version' => '1.1.2',
-            'version' => '1.1.2.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../google/recaptcha',
-            'aliases' => array(),
-            'reference' => '2b7e00566afca82a38a1d3adb8e42c118006296e',
-            'dev_requirement' => false,
-        ),
         'joomla/application' => array(
             'pretty_version' => '1.9.3',
             'version' => '1.9.3.0',

@@ -394,9 +394,7 @@ class JApplication extends BaseApplication
 		{
 			$document = JFactory::getDocument();
 
-			jimport('phputf8.utils.ascii');
-
-			if (($this->client->engine == JApplicationWebClient::TRIDENT) && !utf8_is_ascii($url))
+			if (($this->client->engine == JApplicationWebClient::TRIDENT) && preg_match('/[^\x00-\x7F]/', $url))
 			{
 				// MSIE type browser and/or server cause issues when URL contains utf8 character,so use a javascript redirect method
 				echo '<html><head><meta http-equiv="content-type" content="text/html; charset=' . $document->getCharset() . '" />'

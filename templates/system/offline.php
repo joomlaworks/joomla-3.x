@@ -17,7 +17,6 @@ $app = JFactory::getApplication();
 $this->setHtml5(true);
 
 // Add html5 shiv
-JHtml::_('script', 'jui/html5.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
 
 // Styles
 JHtml::_('stylesheet', 'templates/system/css/offline.css', array('version' => 'auto'));

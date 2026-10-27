@@ -80,7 +80,6 @@ class ExtensionHelper
 		array('library', 'idna_convert', '', 0),
 		array('library', 'joomla', '', 0),
 		array('library', 'phpass', '', 0),
-		array('library', 'phputf8', '', 0),
 
 		// Core module extensions - administrator
 		array('module', 'mod_custom', '', 1),
