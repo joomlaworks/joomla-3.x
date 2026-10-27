@@ -13,7 +13,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\Utilities\IpHelper;
 
 /**
- * IconCaptcha (self-hosted, libraries/vendor/fabianwennink/iconcaptcha): visitors pick the icon shown the fewest times.
+ * IconCaptcha (self-hosted, its library in lib/): visitors pick the icon shown the fewest times.
  * Challenges are made and checked on the site itself, through com_ajax, and kept in the visitor's session; nothing is sent
  * to another service. Needs PHP 7.4 and GD; the library is only loaded where it can run.
  *
@@ -181,7 +181,7 @@ class PlgCaptchaIconcaptcha extends JPlugin
 	 */
 	private function getIconCaptcha()
 	{
-		JLoader::registerNamespace('IconCaptcha', JPATH_LIBRARIES . '/vendor/fabianwennink/iconcaptcha/src', false, false, 'psr4');
+		JLoader::registerNamespace('IconCaptcha', __DIR__ . '/lib/src', false, false, 'psr4');
 		JLoader::register('PlgCaptchaIconcaptchaToken', __DIR__ . '/token.php');
 
 		// The session IconCaptcha keeps its challenges in

@@ -420,7 +420,7 @@
             "dateSource": "CHANGELOG.md (\"June 16, 2025\")",
             "license": "MIT",
             "url": "https://github.com/fabianwennink/IconCaptcha-PHP",
-            "path": "libraries/vendor/fabianwennink/iconcaptcha",
+            "path": "plugins/captcha/iconcaptcha/lib",
             "note": "With its widget (media/plg_captcha_iconcaptcha)",
             "latest": "4.0.6",
             "isLatest": true,

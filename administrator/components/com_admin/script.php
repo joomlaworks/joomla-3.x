@@ -4711,6 +4711,7 @@ class JoomlaInstallerScript
 			'/libraries/phputf8',
 			'/libraries/src/Captcha/Google',
 			'/libraries/src/Mail/language',
+			'/libraries/vendor/fabianwennink',
 			'/libraries/vendor/google',
 			'/libraries/vendor/phpmailer/phpmailer/extras',
 			'/media/plg_captcha_recaptcha_invisible',

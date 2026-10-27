@@ -12,6 +12,7 @@
         <filename plugin="iconcaptcha">iconcaptcha.php</filename>
         <folder>images</folder>
         <filename>token.php</filename>
+        <folder>lib</folder>
     </files>
     <media folder="media">
         <folder>plg_captcha_iconcaptcha</folder>
