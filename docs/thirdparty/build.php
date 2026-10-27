@@ -44,7 +44,7 @@ $groups = array(
 			'note' => 'Patched by Joomla', 'check' => array('media/jui/js/jquery.js', '/jQuery JavaScript Library v([0-9.]+)-joomla.*?Date: (?<date>\d{4}-\d{2}-\d{2})/s')),
 		array('name' => 'jQuery Migrate', 'use' => 'shared', 'upstream' => 'npm:jquery-migrate', 'version' => '1.4.1', 'license' => 'MIT', 'url' => 'https://github.com/jquery/jquery-migrate', 'path' => 'media/jui/js/jquery-migrate.js',
 			'check' => array('media/jui/js/jquery-migrate.js', '/jQuery Migrate - v([0-9.]+) - (?<date>\d{4}-\d{2}-\d{2})/')),
-		array('name' => 'jQuery UI (Core, Sortable)', 'use' => 'shared', 'upstream' => 'npm:jquery-ui', 'version' => '1.9.2', 'license' => 'MIT', 'url' => 'https://jqueryui.com', 'path' => 'media/jui/js/jquery.ui.core.js',
+		array('name' => 'jQuery UI (Core, Sortable)', 'use' => 'shared', 'upstream' => 'npm:jquery-ui', 'version' => '1.14.2', 'license' => 'MIT', 'url' => 'https://jqueryui.com', 'note' => 'Built by Joomla 3.x UTD from its official build, with the 1.9 helpers it removed', 'path' => 'media/jui/js/jquery.ui.core.js',
 			'check' => array('media/jui/js/jquery.ui.core.js', '/jQuery UI - v([0-9.]+) - (?<date>\d{4}-\d{2}-\d{2})/')),
 		array('name' => 'MooTools Core', 'use' => 'shared', 'upstream' => 'github:mootools/mootools-core', 'version' => '1.4.5', 'date' => '2012-02-27', 'dateSource' => 'GitHub tag 1.4.5 (annotated)', 'license' => 'MIT', 'url' => 'https://mootools.net', 'path' => 'media/system/js/mootools-core.js',
 			'check' => array('media/system/js/mootools-core-uncompressed.js', "/version: '([0-9.]+)'/")),
