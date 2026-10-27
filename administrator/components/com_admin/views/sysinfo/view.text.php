@@ -121,7 +121,8 @@ class AdminViewSysinfo extends JViewLegacy
 		{
 			foreach ($entries as $entry)
 			{
-				$lines[$group][$entry['name']] = implode(', ', array_filter(array($entry['version'], $entry['date'], $entry['license'], $entry['path'])));
+				$lines[$group][$entry['name']] = implode(', ', array_filter(array($entry['version'], $entry['date'], $entry['license'],
+					JText::_(isset($entry['use']) && $entry['use'] === 'shared' ? 'COM_ADMIN_THIRD_PARTY_USE_SHARED' : 'COM_ADMIN_THIRD_PARTY_USE_CORE'), $entry['path'])));
 			}
 		}
 

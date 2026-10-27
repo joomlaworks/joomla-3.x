@@ -19,10 +19,11 @@ defined('_JEXEC') or die;
 			<caption class="text-left"><strong><?php echo $this->escape($group); ?></strong></caption>
 			<thead>
 				<tr>
-					<th scope="col" style="width:30%"><?php echo JText::_('COM_ADMIN_THIRD_PARTY_NAME'); ?></th>
-					<th scope="col" style="width:11%"><?php echo JText::_('COM_ADMIN_THIRD_PARTY_VERSION'); ?></th>
-					<th scope="col" style="width:11%"><?php echo JText::_('COM_ADMIN_THIRD_PARTY_DATE'); ?></th>
-					<th scope="col" style="width:13%"><?php echo JText::_('COM_ADMIN_THIRD_PARTY_LICENSE'); ?></th>
+					<th scope="col" style="width:26%"><?php echo JText::_('COM_ADMIN_THIRD_PARTY_NAME'); ?></th>
+					<th scope="col" style="width:10%"><?php echo JText::_('COM_ADMIN_THIRD_PARTY_VERSION'); ?></th>
+					<th scope="col" style="width:10%"><?php echo JText::_('COM_ADMIN_THIRD_PARTY_DATE'); ?></th>
+					<th scope="col" class="hidden-phone" style="width:12%"><?php echo JText::_('COM_ADMIN_THIRD_PARTY_LICENSE'); ?></th>
+					<th scope="col" style="width:13%"><?php echo JText::_('COM_ADMIN_THIRD_PARTY_USED_BY'); ?></th>
 					<th scope="col" class="hidden-phone"><?php echo JText::_('COM_ADMIN_THIRD_PARTY_LOCATION'); ?></th>
 				</tr>
 			</thead>
@@ -45,7 +46,8 @@ defined('_JEXEC') or die;
 						<?php else : ?>
 							<td><?php echo $entry['date'] !== '' ? $this->escape($entry['date']) : '&#8212;'; ?></td>
 						<?php endif; ?>
-						<td><?php echo $this->escape($entry['license']); ?></td>
+						<td class="hidden-phone"><?php echo $this->escape($entry['license']); ?></td>
+						<td><?php echo JText::_(isset($entry['use']) && $entry['use'] === 'shared' ? 'COM_ADMIN_THIRD_PARTY_USE_SHARED' : 'COM_ADMIN_THIRD_PARTY_USE_CORE'); ?></td>
 						<td class="hidden-phone"><code><?php echo $this->escape($entry['path']); ?></code></td>
 					</tr>
 				<?php endforeach; ?>

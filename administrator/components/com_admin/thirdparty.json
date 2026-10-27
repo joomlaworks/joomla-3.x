@@ -11,7 +11,8 @@
             "note": "JavaScript and CSS",
             "latest": "5.3.8",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         }
     ],
     "Editors": [
@@ -26,7 +27,8 @@
             "note": "",
             "latest": "6.0.2",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "EasyMDE",
@@ -39,7 +41,8 @@
             "note": "",
             "latest": "2.21.0",
             "isLatest": true,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "Editor.js",
@@ -52,7 +55,8 @@
             "note": "",
             "latest": "2.31.7",
             "isLatest": true,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "marked",
@@ -65,7 +69,8 @@
             "note": "Part of the EasyMDE editor (Joomla 3.x UTD's Markdown editor): converts Markdown to HTML",
             "latest": "18.1.2",
             "isLatest": true,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         },
         {
             "name": "TinyMCE",
@@ -78,7 +83,8 @@
             "note": "",
             "latest": "8.10.0",
             "isLatest": true,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "TinyMCE (legacy)",
@@ -91,7 +97,8 @@
             "note": "",
             "latest": "8.10.0",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "Turndown",
@@ -104,7 +111,8 @@
             "note": "Part of the EasyMDE editor (Joomla 3.x UTD's Markdown editor): converts HTML to Markdown",
             "latest": "7.2.4",
             "isLatest": true,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         }
     ],
     "External Services": [
@@ -119,7 +127,8 @@
             "note": "Service by Automattic (REST API 1.1); used by \"CAPTCHA - Akismet\"",
             "latest": "",
             "isLatest": true,
-            "checked": ""
+            "checked": "",
+            "use": "core"
         },
         {
             "name": "Cloudflare Turnstile",
@@ -132,7 +141,8 @@
             "note": "Service by Cloudflare; used by \"CAPTCHA - Cloudflare Turnstile\"",
             "latest": "",
             "isLatest": true,
-            "checked": ""
+            "checked": "",
+            "use": "core"
         },
         {
             "name": "Google reCAPTCHA",
@@ -145,7 +155,8 @@
             "note": "Service by Google; used by \"CAPTCHA - Google reCAPTCHA\"",
             "latest": "",
             "isLatest": true,
-            "checked": ""
+            "checked": "",
+            "use": "core"
         },
         {
             "name": "hCaptcha",
@@ -158,7 +169,8 @@
             "note": "Service by Intuition Machines; used by \"CAPTCHA - hCaptcha\"",
             "latest": "",
             "isLatest": true,
-            "checked": ""
+            "checked": "",
+            "use": "core"
         }
     ],
     "Fonts and Icons": [
@@ -173,7 +185,8 @@
             "note": "Part of the EasyMDE editor (Joomla 3.x UTD's Markdown editor): its toolbar icons",
             "latest": "1.13.2",
             "isLatest": true,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         },
         {
             "name": "IcoMoon (Joomla icon font)",
@@ -186,7 +199,8 @@
             "note": "",
             "latest": "",
             "isLatest": false,
-            "checked": ""
+            "checked": "",
+            "use": "shared"
         }
     ],
     "JavaScript Libraries": [
@@ -201,7 +215,8 @@
             "note": "",
             "latest": "2.0.7",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "Ajax Chosen",
@@ -214,7 +229,8 @@
             "note": "Upstream commit c2948d0 (never tagged); texts translated by Joomla",
             "latest": "",
             "isLatest": false,
-            "checked": ""
+            "checked": "",
+            "use": "shared"
         },
         {
             "name": "Chosen",
@@ -227,7 +243,8 @@
             "note": "",
             "latest": "1.8.7",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "Jcrop",
@@ -240,7 +257,8 @@
             "note": "",
             "latest": "3.0.1",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         },
         {
             "name": "jQuery",
@@ -253,7 +271,8 @@
             "note": "Patched by Joomla",
             "latest": "4.0.0",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "jQuery Migrate",
@@ -266,7 +285,8 @@
             "note": "",
             "latest": "4.0.2",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "jQuery MiniColors",
@@ -279,7 +299,8 @@
             "note": "",
             "latest": "2.3.6",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "jQuery Simple Colors",
@@ -292,7 +313,8 @@
             "note": "Adapted by Peter van Westen",
             "latest": "",
             "isLatest": false,
-            "checked": ""
+            "checked": "",
+            "use": "shared"
         },
         {
             "name": "jQuery UI (Core, Sortable)",
@@ -305,7 +327,8 @@
             "note": "",
             "latest": "1.14.2",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "MediaElement.js",
@@ -318,7 +341,8 @@
             "note": "",
             "latest": "7.1.0",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         },
         {
             "name": "MooTools Core",
@@ -331,7 +355,8 @@
             "note": "",
             "latest": "1.6.0",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "MooTools More",
@@ -344,7 +369,8 @@
             "note": "",
             "latest": "1.6.0",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "Polyfill.io polyfills (classList, Event, Map, filter)",
@@ -357,7 +383,8 @@
             "note": "",
             "latest": "3.25.3",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "Punycode.js",
@@ -370,7 +397,8 @@
             "note": "",
             "latest": "2.3.1",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "SqueezeBox",
@@ -383,7 +411,8 @@
             "note": "Patched by Joomla and by Joomla 3.x UTD (modals on phones)",
             "latest": "",
             "isLatest": false,
-            "checked": ""
+            "checked": "",
+            "use": "shared"
         }
     ],
     "PHP Libraries": [
@@ -398,7 +427,8 @@
             "note": "Joomla Update's extractor; patched by Joomla and by Joomla 3.x UTD (safe paths, PHP 8)",
             "latest": "",
             "isLatest": false,
-            "checked": ""
+            "checked": "",
+            "use": "core"
         },
         {
             "name": "FOF (Framework on Framework)",
@@ -411,7 +441,8 @@
             "note": "Patched by Joomla and by Joomla 3.x UTD (PHP 8, database drivers)",
             "latest": "",
             "isLatest": false,
-            "checked": ""
+            "checked": "",
+            "use": "shared"
         },
         {
             "name": "IconCaptcha",
@@ -424,7 +455,8 @@
             "note": "With its widget (media/plg_captcha_iconcaptcha)",
             "latest": "4.0.6",
             "isLatest": true,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         },
         {
             "name": "IDNA Convert",
@@ -437,7 +469,8 @@
             "note": "Patched by Joomla and by Joomla 3.x UTD (PHP 8)",
             "latest": "4.2.2",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         },
         {
             "name": "lessphp",
@@ -450,7 +483,8 @@
             "note": "Patched by Joomla and by Joomla 3.x UTD (PHP 8)",
             "latest": "0.5.0",
             "isLatest": true,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "MySQL on SQLite (WordPress)",
@@ -463,7 +497,8 @@
             "note": "Patched by Joomla 3.x UTD (PATCHES.md)",
             "latest": "3.1.1",
             "isLatest": true,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         },
         {
             "name": "PHP Encryption (Defuse)",
@@ -476,7 +511,8 @@
             "note": "Patched by Joomla 3.x UTD (PHP 8)",
             "latest": "2.4.0",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         },
         {
             "name": "phpass",
@@ -489,7 +525,8 @@
             "note": "Patched by Joomla 3.x UTD (PHP 8)",
             "latest": "",
             "isLatest": true,
-            "checked": ""
+            "checked": "",
+            "use": "core"
         },
         {
             "name": "PHPMailer",
@@ -502,7 +539,8 @@
             "note": "Patched by Joomla 3.x UTD (php_uname() guard)",
             "latest": "7.1.1",
             "isLatest": true,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "PSR Container",
@@ -515,7 +553,8 @@
             "note": "",
             "latest": "2.0.2",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         },
         {
             "name": "PSR Log",
@@ -528,7 +567,8 @@
             "note": "",
             "latest": "3.0.2",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         },
         {
             "name": "SimplePie",
@@ -541,7 +581,8 @@
             "note": "Patched by Joomla (its maintained fork) and by Joomla 3.x UTD (PHP 8)",
             "latest": "1.9.0",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "sodium_compat",
@@ -554,7 +595,8 @@
             "note": "Patched by Joomla 3.x UTD (PHP 8)",
             "latest": "2.5.2",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         },
         {
             "name": "Symfony Polyfill (ctype)",
@@ -567,7 +609,8 @@
             "note": "",
             "latest": "1.37.0",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "Symfony Polyfill (PHP 7.3)",
@@ -580,7 +623,8 @@
             "note": "",
             "latest": "1.37.0",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "shared"
         },
         {
             "name": "Symfony Yaml",
@@ -593,7 +637,8 @@
             "note": "Patched by Joomla 3.x UTD (PHP 8)",
             "latest": "8.1.9",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         },
         {
             "name": "TYPO3 PHAR Stream Wrapper",
@@ -606,7 +651,8 @@
             "note": "Patched by Joomla 3.x UTD (PHP 8.4, safe unserialize)",
             "latest": "4.0.0",
             "isLatest": false,
-            "checked": "2026.10.27"
+            "checked": "2026.10.27",
+            "use": "core"
         }
     ]
 }
