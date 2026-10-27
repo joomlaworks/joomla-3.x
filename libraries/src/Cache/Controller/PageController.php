@@ -73,9 +73,16 @@ class PageController extends CacheController
 		// If the etag matches the page id ... set a no change header and exit : utilize browser cache
 		if (!headers_sent() && isset($_SERVER['HTTP_IF_NONE_MATCH']))
 		{
-			$etag = stripslashes($_SERVER['HTTP_IF_NONE_MATCH']);
+			// The ETag is sent quoted (see _setEtag()), and browsers send it back so: "id", W/"id", or several, comma-separated
+			$etags = array_map(
+				function ($etag)
+				{
+					return trim(preg_replace('#^W/#', '', trim($etag)), '"');
+				},
+				explode(',', stripslashes((string) $_SERVER['HTTP_IF_NONE_MATCH']))
+			);
 
-			if ($etag == $id)
+			if (in_array($id, $etags, true))
 			{
 				$browserCache = isset($this->options['browsercache']) ? $this->options['browsercache'] : false;
 
@@ -87,7 +94,7 @@ class PageController extends CacheController
 		}
 
 		// We got a cache hit... set the etag header and echo the page data
-		$data = $this->cache->get($id, $group);
+		$data = $this->getStored($id, $group);
 
 		$this->_locktest = (object) array('locked' => null, 'locklooped' => null);
 
@@ -98,7 +105,7 @@ class PageController extends CacheController
 			// If locklooped is true try to get the cached data again; it could exist now.
 			if ($this->_locktest->locked === true && $this->_locktest->locklooped === true)
 			{
-				$data = $this->cache->get($id, $group);
+				$data = $this->getStored($id, $group);
 			}
 		}
 
@@ -109,7 +116,7 @@ class PageController extends CacheController
 				$this->cache->unlock($id, $group);
 			}
 
-			$data = unserialize(trim((string) $data));
+			$data = $data[0];
 			$data = Cache::getWorkarounds($data);
 
 			$this->_setEtag($id);

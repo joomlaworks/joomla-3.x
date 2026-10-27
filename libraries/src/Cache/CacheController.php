@@ -157,7 +157,7 @@ class CacheController
 	 */
 	public function get($id, $group = null)
 	{
-		$data = $this->cache->get($id, $group);
+		$data = $this->getStored($id, $group);
 
 		if ($data === false)
 		{
@@ -166,7 +166,7 @@ class CacheController
 			// If locklooped is true try to get the cached data again; it could exist now.
 			if ($locktest->locked === true && $locktest->locklooped === true)
 			{
-				$data = $this->cache->get($id, $group);
+				$data = $this->getStored($id, $group);
 			}
 
 			if ($locktest->locked === true)
@@ -178,8 +178,7 @@ class CacheController
 		// Check again because we might get it from second attempt
 		if ($data !== false)
 		{
-			// Trim to fix unserialize errors
-			$data = unserialize(trim((string) $data));
+			$data = $data[0];
 		}
 
 		return $data;
@@ -216,5 +215,39 @@ class CacheController
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Gets an entry stored by a controller (serialized) and decodes it. An entry which can't be decoded (cut short by an
+	 * interrupted or concurrent write, a full disk) is removed and counts as a miss, so the page is made and stored again:
+	 * it was served as an empty page until it expired.
+	 *
+	 * @param   string  $id     The cache data ID
+	 * @param   string  $group  The cache data group
+	 *
+	 * @return  array|boolean  False on a miss, else an array holding the value
+	 *
+	 * @since   3.18.0
+	 */
+	protected function getStored($id, $group = null)
+	{
+		$data = $this->cache->get($id, $group);
+
+		if ($data === false)
+		{
+			return false;
+		}
+
+		$data  = trim((string) $data);
+		$value = @unserialize($data);
+
+		if ($value === false && $data !== serialize(false))
+		{
+			$this->cache->remove($id, $group);
+
+			return false;
+		}
+
+		return array($value);
 	}
 }

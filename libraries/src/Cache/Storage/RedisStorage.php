@@ -86,6 +86,7 @@ class RedisStorage extends CacheStorage
 		}
 
 		static::$_redis = new \Redis;
+		$connection     = false;
 
 		try
 		{
@@ -230,32 +231,25 @@ class RedisStorage extends CacheStorage
 			return false;
 		}
 
-		$allKeys = static::$_redis->keys('*');
-		$data    = array();
-		$secret  = $this->_hash;
+		$data = array();
 
-		if (!empty($allKeys))
+		foreach ($this->getSiteKeys() as $key)
 		{
-			foreach ($allKeys as $key)
+			$group = $this->getKeyGroup($key);
+
+			if ($group !== null)
 			{
-				$namearr = explode('-', $key);
-
-				if ($namearr !== false && $namearr[0] == $secret && $namearr[1] == 'cache')
+				if (!isset($data[$group]))
 				{
-					$group = $namearr[2];
-
-					if (!isset($data[$group]))
-					{
-						$item = new CacheStorageHelper($group);
-					}
-					else
-					{
-						$item = $data[$group];
-					}
-
-					$item->updateSize(strlen($key)*8);
-					$data[$group] = $item;
+					$item = new CacheStorageHelper($group);
 				}
+				else
+				{
+					$item = $data[$group];
+				}
+
+				$item->updateSize(strlen($key)*8);
+				$data[$group] = $item;
 			}
 		}
 
@@ -325,29 +319,49 @@ class RedisStorage extends CacheStorage
 			return false;
 		}
 
-		$allKeys = static::$_redis->keys('*');
-
-		if ($allKeys === false)
+		foreach ($this->getSiteKeys() as $key)
 		{
-			$allKeys = array();
-		}
-
-		$secret = $this->_hash;
-
-		foreach ($allKeys as $key)
-		{
-			if (strpos($key, $secret . '-cache-' . $group . '-') === 0 && $mode == 'group')
-			{
-				static::$_redis->del($key);
-			}
-
-			if (strpos($key, $secret . '-cache-' . $group . '-') !== 0 && $mode != 'group')
+			if ($this->isCleaned($this->getKeyGroup($key), $group, $mode))
 			{
 				static::$_redis->del($key);
 			}
 		}
 
 		return true;
+	}
+
+	/**
+	 * This site's cache keys (also the mobile copies' "M-" ones), found with SCAN: KEYS walks the whole database in one
+	 * command and blocks the server meanwhile, with every other site's and application's keys in it.
+	 *
+	 * @return  string[]
+	 *
+	 * @since   3.18.0
+	 */
+	protected function getSiteKeys()
+	{
+		$keys  = array();
+		$retry = static::$_redis->getOption(\Redis::OPT_SCAN);
+
+		// Without it, SCAN may give empty batches before its end
+		static::$_redis->setOption(\Redis::OPT_SCAN, \Redis::SCAN_RETRY);
+
+		foreach (array('', 'M-') as $prefix)
+		{
+			$iterator = null;
+
+			while (($batch = static::$_redis->scan($iterator, $prefix . $this->_hash . '-cache-*', 1000)) !== false)
+			{
+				foreach ($batch as $key)
+				{
+					$keys[] = $key;
+				}
+			}
+		}
+
+		static::$_redis->setOption(\Redis::OPT_SCAN, $retry);
+
+		return $keys;
 	}
 
 	/**

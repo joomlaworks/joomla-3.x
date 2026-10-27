@@ -65,7 +65,7 @@ class OutputController extends CacheController
 		);
 
 		// If we have data in cache use that.
-		$data = $this->cache->get($id, $group);
+		$data = $this->getStored($id, $group);
 
 		$this->_locktest             = new \stdClass;
 		$this->_locktest->locked     = null;
@@ -77,13 +77,13 @@ class OutputController extends CacheController
 
 			if ($this->_locktest->locked == true && $this->_locktest->locklooped == true)
 			{
-				$data = $this->cache->get($id, $group);
+				$data = $this->getStored($id, $group);
 			}
 		}
 
 		if ($data !== false)
 		{
-			$data = unserialize(trim((string) $data));
+			$data = $data[0];
 			echo $data;
 
 			if ($this->_locktest->locked == true)
@@ -159,7 +159,7 @@ class OutputController extends CacheController
 	 */
 	public function get($id, $group = null)
 	{
-		$data = $this->cache->get($id, $group);
+		$data = $this->getStored($id, $group);
 
 		if ($data === false)
 		{
@@ -168,7 +168,7 @@ class OutputController extends CacheController
 			// If locklooped is true try to get the cached data again; it could exist now.
 			if ($locktest->locked === true && $locktest->locklooped === true)
 			{
-				$data = $this->cache->get($id, $group);
+				$data = $this->getStored($id, $group);
 			}
 
 			if ($locktest->locked === true)
@@ -180,8 +180,7 @@ class OutputController extends CacheController
 		// Check again because we might get it from second attempt
 		if ($data !== false)
 		{
-			// Trim to fix unserialize errors
-			$data = unserialize(trim((string) $data));
+			$data = $data[0];
 		}
 
 		return $data;

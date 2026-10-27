@@ -369,6 +369,55 @@ class CacheStorage
 	}
 
 	/**
+	 * The group of a key in a shared store (APCu, Redis, WinCache) when it belongs to this site's cache: keys are
+	 * "<hash>-cache-<group>-<name>", with "M-" in front of them for mobile copies (Platform Specific Caching). Anything else
+	 * in the store (another site's cache, sessions, other applications' data) gives null and must be left alone.
+	 *
+	 * @param   string  $key  The key
+	 *
+	 * @return  string|null
+	 *
+	 * @since   3.18.0
+	 */
+	protected function getKeyGroup($key)
+	{
+		$key    = (string) $key;
+		$prefix = $this->_hash . '-cache-';
+
+		if (strpos($key, 'M-' . $prefix) === 0)
+		{
+			$key = substr($key, 2);
+		}
+
+		if (strpos($key, $prefix) !== 0)
+		{
+			return null;
+		}
+
+		$rest = substr($key, strlen($prefix));
+		$end  = strrpos($rest, '-');
+
+		return $end ? substr($rest, 0, $end) : null;
+	}
+
+	/**
+	 * Whether clean() removes a key of this site's cache: in "group" mode (the default) the keys of the group, in "notgroup"
+	 * mode the others.
+	 *
+	 * @param   string|null  $keyGroup  The key's group (getKeyGroup())
+	 * @param   string       $group     The group being cleaned
+	 * @param   string       $mode      The mode [group|notgroup]
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.18.0
+	 */
+	protected function isCleaned($keyGroup, $group, $mode)
+	{
+		return $keyGroup !== null && (($keyGroup === (string) $group) === ($mode !== 'notgroup'));
+	}
+
+	/**
 	 * Get a cache ID string from an ID/group pair
 	 *
 	 * @param   string  $id     The cache data ID

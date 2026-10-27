@@ -62,7 +62,6 @@ class ApcuStorage extends CacheStorage
 	{
 		$allinfo = apcu_cache_info();
 		$keys    = $allinfo['cache_list'];
-		$secret  = $this->_hash;
 
 		$data = array();
 
@@ -84,12 +83,10 @@ class ApcuStorage extends CacheStorage
 				$name = $key['key'];
 			}
 
-			$namearr = explode('-', (string) $name);
+			$group = $this->getKeyGroup($name);
 
-			if ($namearr !== false && $namearr[0] == $secret && $namearr[1] == 'cache')
+			if ($group !== null)
 			{
-				$group = $namearr[2];
-
 				if (!isset($data[$group]))
 				{
 					$item = new CacheStorageHelper($group);
@@ -164,7 +161,6 @@ class ApcuStorage extends CacheStorage
 	{
 		$allinfo = apcu_cache_info();
 		$keys    = $allinfo['cache_list'];
-		$secret  = $this->_hash;
 
 		foreach ($keys as $key)
 		{
@@ -184,7 +180,7 @@ class ApcuStorage extends CacheStorage
 				$internalKey = $key['key'];
 			}
 
-			if (strpos((string) $internalKey, $secret . '-cache-' . $group . '-') === 0 xor $mode != 'group')
+			if ($this->isCleaned($this->getKeyGroup($internalKey), $group, $mode))
 			{
 				apcu_delete($internalKey);
 			}
@@ -204,7 +200,6 @@ class ApcuStorage extends CacheStorage
 	{
 		$allinfo = apcu_cache_info();
 		$keys    = $allinfo['cache_list'];
-		$secret  = $this->_hash;
 
 		foreach ($keys as $key)
 		{
@@ -224,7 +219,8 @@ class ApcuStorage extends CacheStorage
 				$internalKey = $key['key'];
 			}
 
-			if (strpos((string) $internalKey, $secret . '-cache-'))
+			// Fetching an expired entry removes it
+			if ($this->getKeyGroup($internalKey) !== null)
 			{
 				apcu_fetch($internalKey);
 			}

@@ -337,7 +337,8 @@ class Log
 
 		// Sanitize inputs.
 		$priority = (int) $priority;
-		$category = strtolower($category);
+		// An entry without a category has none (null); strtolower() gave '' for it, PHP 8.1+ with a deprecation
+		$category = strtolower((string) $category);
 
 		// Let's go iterate over the loggers and get all the ones we need.
 		foreach ((array) $this->lookup as $signature => $rules)

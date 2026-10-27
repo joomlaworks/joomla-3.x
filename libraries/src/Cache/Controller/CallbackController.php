@@ -91,7 +91,7 @@ class CallbackController extends CacheController
 			$id = $this->_makeId($callback, $args);
 		}
 
-		$data = $this->cache->get($id);
+		$data = $this->getStored($id);
 
 		$locktest = (object) array('locked' => null, 'locklooped' => null);
 
@@ -102,7 +102,7 @@ class CallbackController extends CacheController
 			// If locklooped is true try to get the cached data again; it could exist now.
 			if ($locktest->locked === true && $locktest->locklooped === true)
 			{
-				$data = $this->cache->get($id);
+				$data = $this->getStored($id);
 			}
 		}
 
@@ -113,7 +113,7 @@ class CallbackController extends CacheController
 				$this->cache->unlock($id);
 			}
 
-			$data = unserialize(trim((string) $data));
+			$data = $data[0];
 
 			if ($wrkarounds)
 			{

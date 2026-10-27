@@ -62,17 +62,15 @@ class WincacheStorage extends CacheStorage
 	{
 		$allinfo = wincache_ucache_info();
 		$keys    = $allinfo['ucache_entries'];
-		$secret  = $this->_hash;
 		$data    = array();
 
 		foreach ($keys as $key)
 		{
 			$name    = $key['key_name'];
-			$namearr = explode('-', (string) $name);
+			$group = $this->getKeyGroup($name);
 
-			if ($namearr !== false && $namearr[0] == $secret && $namearr[1] == 'cache')
+			if ($group !== null)
 			{
-				$group = $namearr[2];
 
 				if (!isset($data[$group]))
 				{
@@ -148,11 +146,10 @@ class WincacheStorage extends CacheStorage
 	{
 		$allinfo = wincache_ucache_info();
 		$keys    = $allinfo['ucache_entries'];
-		$secret  = $this->_hash;
 
 		foreach ($keys as $key)
 		{
-			if (strpos($key['key_name'], $secret . '-cache-' . $group . '-') === 0 xor $mode != 'group')
+			if ($this->isCleaned($this->getKeyGroup($key['key_name']), $group, $mode))
 			{
 				wincache_ucache_delete($key['key_name']);
 			}
@@ -172,11 +169,11 @@ class WincacheStorage extends CacheStorage
 	{
 		$allinfo = wincache_ucache_info();
 		$keys    = $allinfo['ucache_entries'];
-		$secret  = $this->_hash;
 
 		foreach ($keys as $key)
 		{
-			if (strpos($key['key_name'], $secret . '-cache-'))
+			// Fetching an expired entry removes it
+			if ($this->getKeyGroup($key['key_name']) !== null)
 			{
 				wincache_ucache_get($key['key_name']);
 			}

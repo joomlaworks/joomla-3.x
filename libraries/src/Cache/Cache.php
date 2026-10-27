@@ -562,15 +562,26 @@ class Cache
 			}
 		}
 
-		// The following code searches for a token in the cached page and replaces it with the proper token.
+		/*
+		 * Cached data carries the form token of the visit which stored it: every visitor gets their own instead, in forms
+		 * (closed with "/>" or ">") and in the script options Joomla's scripts send with their requests (csrf.token), which
+		 * a cached head (views, modules) or page brings back too
+		 */
+		$token = \JSession::getFormToken();
+
+		if (method_exists($document, 'getScriptOptions') && $document->getScriptOptions('csrf.token'))
+		{
+			$document->addScriptOptions('csrf.token', $token, false);
+		}
+
 		if (isset($data['body']))
 		{
-			$token       = \JSession::getFormToken();
-			$search      = '#<input type="hidden" name="[0-9a-f]{32}" value="1" />#';
-			$replacement = '<input type="hidden" name="' . $token . '" value="1" />';
-
-			$data['body'] = preg_replace($search, $replacement, $data['body']);
-			$body         = $data['body'];
+			$data['body'] = preg_replace(
+				array('#(<input type="hidden" name=")[0-9a-f]{32}(" value="1"\s*/?>)#', '#("csrf\.token":")[0-9a-f]{32}(")#'),
+				'${1}' . $token . '${2}',
+				$data['body']
+			);
+			$body = $data['body'];
 		}
 
 		// Get the document body out of the cache.
@@ -804,14 +815,19 @@ class Cache
 			return '';
 		}
 
-		$webclient = new WebClient;
+		// Asked for every cache ID (each cached module, the page): the user agent is parsed once per user agent
+		static $prefixes = array();
 
-		if ($webclient->mobile)
+		$agent = isset($_SERVER['HTTP_USER_AGENT']) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+
+		if (!isset($prefixes[$agent]))
 		{
-			return 'M-';
+			$webclient = new WebClient;
+
+			$prefixes[$agent] = $webclient->mobile ? 'M-' : '';
 		}
 
-		return '';
+		return $prefixes[$agent];
 	}
 
 	/**

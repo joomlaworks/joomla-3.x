@@ -40,7 +40,7 @@ class ViewController extends CacheController
 			$id = $this->_makeId($view, $method);
 		}
 
-		$data = $this->cache->get($id);
+		$data = $this->getStored($id);
 
 		$locktest = (object) array('locked' => null, 'locklooped' => null);
 
@@ -54,7 +54,7 @@ class ViewController extends CacheController
 			 */
 			if ($locktest->locked === true && $locktest->locklooped === true)
 			{
-				$data = $this->cache->get($id);
+				$data = $this->getStored($id);
 			}
 
 			// False means that locking is either turned off or maxtime has been exceeded. Execute the view.
@@ -67,7 +67,7 @@ class ViewController extends CacheController
 				$this->cache->unlock($id);
 			}
 
-			$data = unserialize(trim((string) $data));
+			$data = $data[0];
 
 			if ($wrkarounds)
 			{
