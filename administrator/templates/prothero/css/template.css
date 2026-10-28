@@ -2519,6 +2519,8 @@ body .mce-notification {background-color:var(--c-popover);border-color:var(--c-b
 body .mce-notification *,body .mce-notification .mce-progress .mce-text {color:var(--c-fg);}
 
 /* --- Prothero: Core stylesheets --- */
+/* JalaliDatePicker (date fields of languages using the Jalali calendar): its colours from the tokens, light and dark */
+html jdp-container {--jdp-color-0:var(--c-popover);--jdp-color-1:var(--c-subtle);--jdp-color-2:var(--c-muted);--jdp-color-3:var(--c-border);--jdp-color-4:var(--c-muted-fg);--jdp-color-5:var(--c-fg);--jdp-primary:var(--c-primary);--jdp-red:var(--c-danger);}
 /* Stylesheets core code adds (media/jui, media/system, the editor's options) have fixed light colours: the template's instead, for dark too */
 #sbox-window {background-color:var(--c-popover);}
 .tinymce-latest-builder {--tmb-border:var(--c-border);--tmb-bg:var(--c-card);--tmb-bar-bg:var(--c-subtle);--tmb-item-bg:var(--c-card);--tmb-accent:var(--c-ring);--tmb-target:var(--c-muted);}
