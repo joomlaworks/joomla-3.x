@@ -318,33 +318,12 @@ class JFormFieldCalendar extends JFormField
 	protected function getLayoutData()
 	{
 		$data      = parent::getLayoutData();
-		$tag       = JFactory::getLanguage()->getTag();
-		$calendar  = JFactory::getLanguage()->getCalendar();
 		$direction = strtolower((string) JFactory::getDocument()->getDirection());
 
-		// Get the appropriate file for the current language date helper
-		$helperPath = 'system/calendar-locales/date/gregorian/date-helper.min.js';
-
-		if (!empty($calendar) && is_dir(JPATH_ROOT . '/media/system/js/calendar-locales/date/' . strtolower((string) $calendar)))
-		{
-			$helperPath = 'system/calendar-locales/date/' . strtolower((string) $calendar) . '/date-helper.min.js';
-		}
-
-		// Get the appropriate locale file for the current language
-		$localesPath = 'system/calendar-locales/en.js';
-
-		if (is_file(JPATH_ROOT . '/media/system/js/calendar-locales/' . strtolower((string) $tag) . '.js'))
-		{
-			$localesPath = 'system/calendar-locales/' . strtolower((string) $tag) . '.js';
-		}
-		elseif (is_file(JPATH_ROOT . '/media/system/js/calendar-locales/' . $tag . '.js'))
-		{
-			$localesPath = 'system/calendar-locales/' . $tag . '.js';
-		}
-		elseif (is_file(JPATH_ROOT . '/media/system/js/calendar-locales/' . strtolower(substr((string) $tag, 0, -3)) . '.js'))
-		{
-			$localesPath = 'system/calendar-locales/' . strtolower(substr((string) $tag, 0, -3)) . '.js';
-		}
+		// The browser's date input needs no scripts (the calendar's locales and date helpers were removed in 3.18); the
+		// two names stay for template overrides of the layout
+		$helperPath  = '';
+		$localesPath = '';
 
 		$extraData = array(
 			'value'        => $this->value,

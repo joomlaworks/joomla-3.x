@@ -750,6 +750,270 @@
 		});
 	}
 
+	/* --- The date field (layout joomla.form.field.calendar: the browser's date input, Now and Clear buttons) --- */
+
+	const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+	const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+	const pad = (number, size) => String(number).padStart(size || 2, '0');
+
+	CMS.dateField = {
+		/**
+		 * The browser's input type for a strftime format: datetime-local, date, time or month
+		 *
+		 * @param  {string}  format  e.g. %Y-%m-%d %H:%M:%S
+		 *
+		 * @return  {string}
+		 */
+		typeOf(format) {
+			const time = /%[HIklMSpPRTrX]/.test(format);
+			const day = /%[dejaAuwDFxcsU]/.test(format);
+
+			if (!/%[YyCGgmbBhDFxcs]/.test(format) && !day) {
+				return time ? 'time' : 'date';
+			}
+
+			if (time) {
+				return 'datetime-local';
+			}
+
+			return day || !/%[mbBh]/.test(format) ? 'date' : 'month';
+		},
+
+		/**
+		 * The parts of a value of the browser's input (2026-08-24T15:45:10, 2026-08-24, 15:45, 2026-08)
+		 *
+		 * @param  {string}  value
+		 *
+		 * @return  {Object|null}  Y, m, d, H, M, S
+		 */
+		parse(value) {
+			const match = String(value || '').match(/^(?:(\d{4,})-(\d{2})(?:-(\d{2}))?)?T?(?:(\d{2}):(\d{2})(?::(\d{2}))?)?/);
+
+			if (!value || !match || (!match[1] && !match[4])) {
+				return null;
+			}
+
+			const now = new Date();
+
+			return {
+				Y: match[1] ? Number(match[1]) : now.getFullYear(),
+				m: match[2] ? Number(match[2]) : now.getMonth() + 1,
+				d: match[3] ? Number(match[3]) : 1,
+				H: match[4] ? Number(match[4]) : 0,
+				M: match[5] ? Number(match[5]) : 0,
+				S: match[6] ? Number(match[6]) : 0,
+			};
+		},
+
+		/**
+		 * Writes date parts in a strftime format, as PHP reads it back (English names)
+		 *
+		 * @param  {Object}  parts   Y, m, d, H, M, S
+		 * @param  {string}  format
+		 *
+		 * @return  {string}
+		 */
+		format(parts, format) {
+			const date = new Date(parts.Y, parts.m - 1, parts.d, parts.H, parts.M, parts.S);
+			const hour12 = parts.H % 12 || 12;
+			const codes = {
+				Y: () => parts.Y, y: () => pad(parts.Y % 100), C: () => pad(Math.floor(parts.Y / 100)), m: () => pad(parts.m),
+				d: () => pad(parts.d), e: () => String(parts.d).padStart(2, ' '), H: () => pad(parts.H), k: () => String(parts.H).padStart(2, ' '),
+				I: () => pad(hour12), l: () => String(hour12).padStart(2, ' '), M: () => pad(parts.M), S: () => pad(parts.S),
+				p: () => (parts.H < 12 ? 'AM' : 'PM'), P: () => (parts.H < 12 ? 'am' : 'pm'), B: () => MONTHS[parts.m - 1],
+				b: () => MONTHS[parts.m - 1].slice(0, 3), h: () => MONTHS[parts.m - 1].slice(0, 3), A: () => DAYS[date.getDay()],
+				a: () => DAYS[date.getDay()].slice(0, 3), u: () => date.getDay() || 7, w: () => date.getDay(),
+				j: () => pad(Math.round((date - new Date(parts.Y, 0, 1)) / 86400000) + 1, 3),
+				F: () => parts.Y + '-' + pad(parts.m) + '-' + pad(parts.d), D: () => pad(parts.m) + '/' + pad(parts.d) + '/' + pad(parts.Y % 100),
+				T: () => pad(parts.H) + ':' + pad(parts.M) + ':' + pad(parts.S), R: () => pad(parts.H) + ':' + pad(parts.M),
+				s: () => Math.floor(date.getTime() / 1000), '%': () => '%', n: () => '\n', t: () => '\t',
+			};
+
+			return String(format).replace(/%([a-zA-Z%])/g, (all, code) => (codes[code] ? String(codes[code]()) : all));
+		},
+
+		/**
+		 * The browser's input value for now, in the input's type: in the time zone the field shows (data-utc-offset,
+		 * minutes; the user's or the site's), else the browser's
+		 *
+		 * @param  {string}   type
+		 * @param  {boolean}  seconds
+		 * @param  {string}   offset  Minutes east of UTC, or null
+		 *
+		 * @return  {string}
+		 */
+		now(type, seconds, offset) {
+			const zoned = offset !== null && offset !== undefined && offset !== '' && !isNaN(offset);
+			const d = zoned ? new Date(Date.now() + Number(offset) * 60000) : new Date();
+			const get = (part) => d[(zoned ? 'getUTC' : 'get') + part]();
+			const date = get('FullYear') + '-' + pad(get('Month') + 1) + '-' + pad(get('Date'));
+			const time = pad(get('Hours')) + ':' + pad(get('Minutes')) + (seconds ? ':' + pad(get('Seconds')) : '');
+
+			return { date, month: date.slice(0, 7), time, 'datetime-local': date + 'T' + time }[type] || date;
+		},
+
+		/**
+		 * Writes the input's date into the field's posted value, in the field's format
+		 *
+		 * @param  {HTMLElement}  wrapper  .cms-date
+		 */
+		update(wrapper) {
+			const input = wrapper.querySelector('.cms-date-input');
+			const value = wrapper.querySelector('.cms-date-value');
+
+			if (input && value) {
+				const parts = CMS.dateField.parse(input.value);
+
+				value.value = parts ? CMS.dateField.format(parts, value.getAttribute('data-format') || '%Y-%m-%d') : '';
+			}
+		},
+
+		/**
+		 * Turns a text field into a date field (the old calendar's Calendar.setup(), extensions' own fields)
+		 *
+		 * @param  {HTMLInputElement}  field
+		 * @param  {string}            format  strftime format of the field's value
+		 */
+		attach(field, format) {
+			if (!field || field.closest('.cms-date') || !field.parentNode) {
+				return;
+			}
+
+			const wrapper = document.createElement('span');
+			const input = document.createElement('input');
+			const type = CMS.dateField.typeOf(format);
+			const parts = CMS.dateField.parseFormatted(field.value, format);
+
+			wrapper.className = 'cms-date field-calendar';
+			input.type = type;
+			input.className = 'cms-date-input';
+
+			if (/%[ST]/.test(format)) {
+				input.step = 1;
+			}
+
+			input.readOnly = field.readOnly;
+			input.disabled = field.disabled;
+			field.parentNode.insertBefore(wrapper, field);
+			wrapper.appendChild(input);
+
+			if (parts) {
+				input.value = CMS.dateField.format(parts, { date: '%F', month: '%Y-%m', time: input.step === '1' ? '%T' : '%R', 'datetime-local': input.step === '1' ? '%FT%T' : '%FT%R' }[type]);
+			}
+
+			if (field.id) {
+				input.id = field.id;
+				field.id += '_value';
+			}
+
+			field.type = 'hidden';
+			field.classList.add('cms-date-value');
+			field.setAttribute('data-format', format);
+			wrapper.appendChild(field);
+		},
+
+		/**
+		 * Reads a value written in a strftime format back (numbers only: what the old calendar's fields held)
+		 *
+		 * @param  {string}  value
+		 * @param  {string}  format
+		 *
+		 * @return  {Object|null}
+		 */
+		parseFormatted(value, format) {
+			const order = [];
+			const pattern = String(format).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/%([a-zA-Z%])/g, (all, code) => {
+				const map = { Y: 'Y', y: 'y', m: 'm', d: 'd', e: 'd', H: 'H', k: 'H', I: 'I', l: 'I', M: 'M', S: 'S', p: 'p', P: 'p' };
+
+				if (code === 'F' || code === 'T' || code === 'R') {
+					order.push.apply(order, { F: ['Y', 'm', 'd'], T: ['H', 'M', 'S'], R: ['H', 'M'] }[code]);
+
+					return { F: '(\\d{4})-(\\d{1,2})-(\\d{1,2})', T: '(\\d{1,2}):(\\d{1,2}):(\\d{1,2})', R: '(\\d{1,2}):(\\d{1,2})' }[code];
+				}
+
+				if (!map[code]) {
+					return code === '%' ? '%' : '.*?';
+				}
+
+				order.push(map[code]);
+
+				return map[code] === 'p' ? '([AaPp][Mm])' : '\\s*(\\d{1,4})';
+			});
+			const match = String(value || '').trim().match(new RegExp('^' + pattern + '$'));
+
+			if (!value || !match) {
+				return null;
+			}
+
+			const parts = { Y: new Date().getFullYear(), m: 1, d: 1, H: 0, M: 0, S: 0 };
+			let pm = null;
+
+			order.forEach((key, i) => {
+				const part = match[i + 1];
+
+				if (key === 'p') {
+					pm = /^p/i.test(part);
+				} else if (key === 'y') {
+					parts.Y = 2000 + Number(part);
+				} else if (key === 'I') {
+					parts.H = Number(part) % 12;
+				} else {
+					parts[key] = Number(part);
+				}
+			});
+
+			if (pm) {
+				parts.H += 12;
+			}
+
+			return parts;
+		},
+	};
+
+	// One set of listeners for every date field, also those subforms add later; capturing, so the posted value is
+	// written before the field's own change handlers run (search filters submit their form on change)
+	if (!CMS.dateField.listening) {
+		CMS.dateField.listening = true;
+
+		const sync = (event) => {
+			const wrapper = event.target.classList && event.target.classList.contains('cms-date-input') ? event.target.closest('.cms-date') : null;
+
+			if (wrapper) {
+				CMS.dateField.update(wrapper);
+			}
+		};
+
+		document.addEventListener('input', sync, true);
+		document.addEventListener('change', sync, true);
+
+		document.addEventListener('click', (event) => {
+			const button = event.target.closest ? event.target.closest('.cms-date-now, .cms-date-clear') : null;
+			const wrapper = button ? button.closest('.cms-date') : null;
+			const input = wrapper ? wrapper.querySelector('.cms-date-input') : null;
+
+			if (!input) {
+				return;
+			}
+
+			input.value = button.classList.contains('cms-date-now') ? CMS.dateField.now(input.type, input.step === '1', input.getAttribute('data-utc-offset')) : '';
+			CMS.dateField.update(wrapper);
+			input.dispatchEvent(new Event('input', { bubbles: true }));
+			input.dispatchEvent(new Event('change', { bubbles: true }));
+			input.focus();
+		});
+	}
+
+	// The old calendar's script object: extensions call it after adding fields; the browser's input needs no start
+	if (!window.JoomlaCalendar) {
+		window.JoomlaCalendar = {
+			init() {},
+			getCalObject() {
+				return null;
+			},
+			onSubmit() {},
+		};
+	}
+
 	/* --- Form validation (behavior.formvalidator: document.formvalidator, what validate.js was) --- */
 
 	/*

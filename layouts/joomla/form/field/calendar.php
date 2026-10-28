@@ -9,12 +9,8 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\Utilities\ArrayHelper;
-
 extract($displayData);
 
-// Get some system objects.
-$document = JFactory::getDocument();
 
 /**
  * Layout variables
@@ -47,86 +43,116 @@ $document = JFactory::getDocument();
  * @var   array    $options         Options available for this field.
  *
  * Calendar Specific
- * @var   string   $localesPath     The relative path for the locale file
- * @var   string   $helperPath      The relative path for the helper file
+ * @var   string   $format          The strftime format of the value (what the form posts)
  * @var   string   $minYear         The minimum year, that will be subtracted/added to current year
  * @var   string   $maxYear         The maximum year, that will be subtracted/added to current year
- * @var   integer  $todaybutton     The today button
- * @var   integer  $weeknumbers     The week numbers display
+ * @var   integer  $todaybutton     The Today/Now button
  * @var   integer  $showtime        The time selector display
- * @var   integer  $filltable       The previous/next month filling
- * @var   integer  $timeformat      The time format
- * @var   integer  $singleheader    Display different header row for month/year
- * @var   integer  $direction       The document direction
+ *
+ * Since 3.18 the browser's own date input ($weeknumbers, $filltable, $timeformat and $singleheader no longer apply; the
+ * date's format on screen is the browser's): the value is posted by a hidden field in $format, as the calendar posted it
  */
 
-$inputvalue = '';
+// The value, read back from $format, as the browser's input holds it
+$dateFormat = JHtml::strftimeToDateFormat($format);
+$hasTime    = (bool) preg_match('/%[HIklMSpPRTrX]/', $format);
+$hasDay     = (bool) preg_match('/%[dejaAuwDFxcsU]/', $format);
+$hasYear    = (bool) preg_match('/%[YyCGgmbBhDFxcs]/', $format);
+$seconds    = (bool) preg_match('/%[ST]/', $format) || ($hasTime && (bool) $showtime && !preg_match('/%[MR]/', $format));
+$type       = !$hasYear && !$hasDay ? ($hasTime ? 'time' : 'date') : ($hasTime ? 'datetime-local' : ($hasDay || !preg_match('/%[mbBh]/', $format) ? 'date' : 'month'));
+$native     = '';
 
-// Build the attributes array.
-$attributes = array();
-
-empty($size)      ? null : $attributes['size'] = $size;
-empty($maxlength) ? null : $attributes['maxlength'] = ' maxlength="' . $maxLength . '"';
-empty($class)     ? null : $attributes['class'] = $class;
-!$readonly        ? null : $attributes['readonly'] = 'readonly';
-!$disabled        ? null : $attributes['disabled'] = 'disabled';
-empty($onchange)  ? null : $attributes['onchange'] = $onchange;
-
-if ($required)
+if (strtoupper((string) $value) === 'NOW')
 {
-	$attributes['required'] = '';
-	$attributes['aria-required'] = 'true';
+	$value = JFactory::getDate()->format($dateFormat);
 }
 
-// Handle the special case for "now".
-if (strtoupper($value) == 'NOW')
+if ((string) $value !== '' && $value !== '0000-00-00 00:00:00')
 {
-	$value = JFactory::getDate()->format('Y-m-d H:i:s');
+	$date = DateTime::createFromFormat('!' . $dateFormat, (string) $value, new DateTimeZone('UTC'));
+
+	if (!$date && strtotime((string) $value) !== false)
+	{
+		$date = new DateTime('@' . strtotime((string) $value));
+	}
+
+	if ($date)
+	{
+		$nativeFormats = array(
+			'date'           => 'Y-m-d',
+			'month'          => 'Y-m',
+			'time'           => $seconds ? 'H:i:s' : 'H:i',
+			'datetime-local' => $seconds ? 'Y-m-d\TH:i:s' : 'Y-m-d\TH:i',
+		);
+		$native = $date->format($nativeFormats[$type]);
+	}
+}
+else
+{
+	$value = '';
 }
 
-$readonly = isset($attributes['readonly']) && $attributes['readonly'] == 'readonly';
-$disabled = isset($attributes['disabled']) && $attributes['disabled'] == 'disabled';
+// minyear/maxyear: years before/after this one (or a year itself)
+$limits = array();
 
-if (is_array($attributes))
+foreach (array('min' => isset($minYear) ? $minYear : '', 'max' => isset($maxYear) ? $maxYear : '') as $limit => $year)
 {
-	$attributes = ArrayHelper::toString($attributes);
+	if (is_numeric($year) && $type !== 'time')
+	{
+		$year   = abs((int) $year) > 999 ? (int) $year : (int) date('Y') + (int) $year;
+		$day    = $limit === 'min' ? '01-01' : '12-31';
+		$values = array('date' => "$year-$day", 'month' => $year . ($limit === 'min' ? '-01' : '-12'), 'datetime-local' => "$year-$day" . ($limit === 'min' ? 'T00:00' : 'T23:59'));
+		$limits[$limit] = sprintf('%04d', $year) . substr($values[$type], strlen((string) $year));
+	}
 }
 
-$cssFileExt = ($direction === 'rtl') ? '-rtl.css' : '.css';
+$locked = $readonly || $disabled;
 
-// The static assets for the calendar
-JHtml::_('script', $localesPath, false, true, false, false, true);
-JHtml::_('script', $helperPath, false, true, false, false, true);
-JHtml::_('script', 'system/calendar-field.min.js', false, true, false, false, true);
-JHtml::_('stylesheet', 'system/calendar-field' . $cssFileExt, array(), true);
+// The time zone the value is shown in (the field's filter), so Now is the user's now, not the browser's clock
+$timezone = null;
+
+switch (strtoupper(isset($filter) && is_string($filter) ? $filter : ''))
+{
+	case 'USER_UTC':
+		$timezone = JFactory::getUser()->getTimezone();
+		break;
+	case 'SERVER_UTC':
+		$timezone = new DateTimeZone(JFactory::getConfig()->get('offset') ?: 'UTC');
+		break;
+}
+
+JHtml::_('behavior.core');
+JHtml::_('behavior.styles');
+
+$attributes = array(
+	'type'      => $type,
+	'id'        => $id,
+	'class'     => trim('cms-date-input ' . $class),
+	'value'     => $native,
+	'step'      => $seconds ? '1' : null,
+	'min'       => isset($limits['min']) ? $limits['min'] : null,
+	'max'       => isset($limits['max']) ? $limits['max'] : null,
+	'onchange'  => !empty($onchange) ? $onchange : null,
+	'data-utc-offset' => $timezone ? (string) ((new DateTime('now', $timezone))->getOffset() / 60) : null,
+);
 ?>
-<div class="field-calendar">
-	<?php if (!$readonly && !$disabled) : ?>
-	<div class="input-append">
+<span class="cms-date field-calendar">
+	<input<?php
+		foreach ($attributes as $attribute => $attributeValue)
+		{
+			if ($attributeValue !== null)
+			{
+				echo ' ' . $attribute . '="' . htmlspecialchars((string) $attributeValue, ENT_COMPAT, 'UTF-8') . '"';
+			}
+		}
+
+		echo $readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', !empty($autofocus) ? ' autofocus' : '';
+	?> />
+	<input type="hidden" class="cms-date-value" name="<?php echo $name; ?>" value="<?php echo htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8'); ?>" data-format="<?php echo htmlspecialchars((string) $format, ENT_COMPAT, 'UTF-8'); ?>"<?php echo $disabled ? ' disabled' : ''; ?> />
+	<?php if (!$locked) : ?>
+		<?php if ($todaybutton) : ?>
+			<button type="button" class="btn cms-date-now"><?php echo JText::_($type === 'date' || $type === 'month' ? 'JLIB_HTML_BEHAVIOR_TODAY' : 'JLIB_FORM_FIELD_CALENDAR_NOW'); ?></button>
 		<?php endif; ?>
-		<input type="text" id="<?php echo $id; ?>" name="<?php
-		echo $name; ?>" value="<?php
-		echo htmlspecialchars(($value !== '0000-00-00 00:00:00') ? $value : '', ENT_COMPAT, 'UTF-8'); ?>" <?php echo $attributes; ?>
-		<?php echo !empty($hint) ? 'placeholder="' . htmlspecialchars($hint, ENT_COMPAT, 'UTF-8') . '"' : ''; ?> data-alt-value="<?php
-		echo htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8'); ?>" autocomplete="off"/>
-		<button type="button" class="<?php echo ($readonly || $disabled) ? 'hidden ' : ''; ?>btn btn-secondary"
-			id="<?php echo  $id; ?>_btn"
-			data-inputfield="<?php echo $id; ?>"
-			data-dayformat="<?php echo $format; ?>"
-			data-button="<?php echo $id; ?>_btn"
-			data-firstday="<?php echo JFactory::getLanguage()->getFirstDay(); ?>"
-			data-weekend="<?php echo JFactory::getLanguage()->getWeekEnd(); ?>"
-			data-today-btn="<?php echo $todaybutton; ?>"
-			data-week-numbers="<?php echo $weeknumbers; ?>"
-			data-show-time="<?php echo $showtime; ?>"
-			data-show-others="<?php echo $filltable; ?>"
-			data-time-24="<?php echo $timeformat; ?>"
-			data-only-months-nav="<?php echo $singleheader; ?>"
-			<?php echo isset($minYear) && strlen($minYear) ? 'data-min-year="' . $minYear . '"' : ''; ?>
-			<?php echo isset($maxYear) && strlen($maxYear) ? 'data-max-year="' . $maxYear . '"' : ''; ?>
-			title="<?php echo JText::_('JLIB_HTML_BEHAVIOR_OPEN_CALENDAR'); ?>"
-		><span class="icon-calendar" aria-hidden="true"></span></button>
-		<?php if (!$readonly && !$disabled) : ?>
-	</div>
-<?php endif; ?>
-</div>
+		<button type="button" class="btn cms-date-clear" title="<?php echo JText::_('JCLEAR'); ?>" aria-label="<?php echo JText::_('JCLEAR'); ?>"><?php echo JHtml::_('icons.svg', 'x-lg', '', array('size' => 12)); ?></button>
+	<?php endif; ?>
+</span>

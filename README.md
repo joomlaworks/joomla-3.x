@@ -128,6 +128,7 @@ Summary of changes:
 - The front-end article form no longer asks logged-in users to solve a CAPTCHA (an Articles option brings it back)
 - Administrator-only extensions keep their scripts and styles in their own folders instead of `media/`, so a password-protected `/administrator` never affects the site
 - `media/` folders are named after their extensions (`com_contact`, `com_media`), shared files (the debug console's, the e-mail form's icon, and all of `media/jui`: Bootstrap, jQuery, Chosen, IcoMoon...; the language flags in `media/system/images/flags`, the switcher's styles in `global.css`) are in `media/system`, and old names still load them through `JHtml` (direct links to `media/jui` files need changing)
+- Date fields use the browser's date input, with Now and Clear buttons; the calendar scripts (about 140 KB) removed, dates posted as before
 - Colour fields use the browser's colour picker, with the value as text and a Clear button; MiniColors and Simple Colors (jQuery plugins) removed
 - Core icons are SVG (Bootstrap Icons, one file each) in the text colour, sharp and dark-mode friendly: the Media Manager, Contacts, breadcrumbs, content icons, vote stars, feeds, tooltips, modals
 - Language flags redrawn: sharp WebP at twice the old size, current flags, the GIFs removed (old names still load them)

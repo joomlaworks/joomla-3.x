@@ -553,20 +553,8 @@ abstract class JHtmlBehavior
 
 		JLog::add('JHtmlBehavior::calendar is deprecated as the static assets are being loaded in the relative layout.', JLog::WARNING, 'deprecated');
 
-		$document = JFactory::getDocument();
-		$tag      = JFactory::getLanguage()->getTag();
-		$attribs  = array('title' => JText::_('JLIB_HTML_BEHAVIOR_GREEN'), 'media' => 'all');
-
-		JHtml::_('stylesheet', 'system/calendar-jos.css', array('version' => 'auto', 'relative' => true), $attribs);
-		JHtml::_('script', $tag . '/calendar.js', array('version' => 'auto', 'relative' => true));
-		JHtml::_('script', $tag . '/calendar-setup.js', array('version' => 'auto', 'relative' => true));
-
-		$translation = static::calendartranslation();
-
-		if ($translation)
-		{
-			$document->addScriptDeclaration($translation);
-		}
+		// The old calendar was removed in 3.18: global.js' Calendar.setup() turns the field into the browser's date input
+		static::cms();
 
 		static::$loaded[__METHOD__] = true;
 	}

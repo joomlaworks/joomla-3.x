@@ -99,3 +99,10 @@ div.mod-languages a {text-decoration:none;}
 .cms-color-option input:checked + .cms-color-chip {outline:2px solid currentColor;outline-offset:2px;}
 .cms-color-option input:focus-visible + .cms-color-chip {outline:2px dashed currentColor;outline-offset:2px;}
 .cms-color-option input:disabled + .cms-color-chip {cursor:default;opacity:0.4;}
+
+/* --- Date field (layout joomla.form.field.calendar) --- */
+.cms-date {display:inline-flex;align-items:stretch;gap:4px;max-width:100%;vertical-align:middle;}
+.cms-date .cms-date-input {width:auto;min-width:0;margin:0;font-variant-numeric:tabular-nums;}
+.cms-date .cms-date-now,.cms-date .cms-date-clear {display:inline-flex;align-items:center;justify-content:center;margin:0;white-space:nowrap;}
+.cms-date .cms-date-clear {padding:0 9px;}
+.cms-date .cms-date-input::-webkit-calendar-picker-indicator {cursor:pointer;}

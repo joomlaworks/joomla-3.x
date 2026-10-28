@@ -4939,6 +4939,16 @@ class JoomlaInstallerScript
 			'/media/system/css/chosen-sprite@2x.png',
 			'/media/system/js/fields/calendar.js',
 			'/media/system/js/fields/calendar.min.js',
+			// The calendars, replaced by the browser's date input (layout joomla.form.field.calendar)
+			'/media/system/js/calendar-field.js',
+			'/media/system/js/calendar-field.min.js',
+			'/media/system/js/calendar.js',
+			'/media/system/js/calendar-uncompressed.js',
+			'/media/system/js/calendar-setup.js',
+			'/media/system/js/calendar-setup-uncompressed.js',
+			'/media/system/css/calendar-field.css',
+			'/media/system/css/calendar-field-rtl.css',
+			'/media/system/css/calendar-jos.css',
 			// Unused: IcoMoon's design sources, its Internet Explorer files and formats, old colour picker images, Chosen's
 			// high density sprite (its stylesheet never used it)
 			'/media/system/fonts/IcoMoon.dev.svg',
@@ -5352,6 +5362,7 @@ class JoomlaInstallerScript
 			'/media/mod_languages/css',
 			'/media/system/css/fields',
 			'/media/system/js/fields',
+			'/media/system/js/calendar-locales',
 			'/media/mailto',
 			'/media/media',
 			'/media/com_mailto',
