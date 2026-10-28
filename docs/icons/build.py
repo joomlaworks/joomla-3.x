@@ -2,11 +2,13 @@
 file each, unchanged, with the licence beside them; JHtml::_('icons.svg', $name, $label, array('path' => $folder)) writes
 one into the page, drawn in the text colour. Also writes the few icons stylesheets use as backgrounds, in a fixed colour.
 
-Usage: build.py <bootstrap-icons package folder> <site root>    (npm bootstrap-icons 1.13.2)
-Add an icon to FOLDERS and run this again rather than copying files by hand."""
+Usage: build.py <bootstrap-icons package folder> <site root>    (npm bootstrap-icons 1.13.2; needs svgo)
+Add an icon to FOLDERS and run this again rather than copying files by hand. Every file written goes through svgo
+(docs/icons/svgo.config.mjs)."""
 import os
 import re
 import shutil
+import subprocess
 import sys
 
 FOLDERS = {
@@ -35,6 +37,8 @@ COLOURED = {
 }
 
 package, root = sys.argv[1], sys.argv[2]
+written = []
+config = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'svgo.config.mjs')
 licence = 'Bootstrap Icons 1.13.2, https://icons.getbootstrap.com\n\n' + open(package + '/LICENSE').read()
 
 for folder, names in FOLDERS.items():
@@ -42,6 +46,7 @@ for folder, names in FOLDERS.items():
 
     for name in names:
         shutil.copyfile('%s/icons/%s.svg' % (package, name), '%s/%s/%s.svg' % (root, folder, name))
+        written.append('%s/%s/%s.svg' % (root, folder, name))
 
     open(root + '/' + folder + '/license.txt', 'w').write(licence)
     print(folder, len(names), 'icons')
@@ -50,7 +55,11 @@ for target, (name, colour) in COLOURED.items():
     svg = open('%s/icons/%s.svg' % (package, name)).read()
     svg = re.sub(r'\sclass="[^"]*"', '', svg.replace('fill="currentColor"', 'fill="%s"' % colour))
     open(root + '/' + target, 'w').write(svg)
+    written.append(root + '/' + target)
     print(target, name)
 
 if os.path.exists(root + '/media/com_finder/images'):
     open(root + '/media/com_finder/images/license.txt', 'w').write(licence)
+
+subprocess.run(['svgo', '--quiet', '--config', config] + written, check=True)
+print(len(written), 'files optimised')

@@ -21,7 +21,6 @@ FinchHelper::prepare($this, 'component');
 	<jdoc:include type="head" />
 </head>
 <body class="contentpane modal">
-	<?php echo FinchHelper::sprite(); ?>
 	<div class="container">
 		<jdoc:include type="message" />
 		<jdoc:include type="component" />

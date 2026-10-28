@@ -21,7 +21,6 @@ HammondHelper::prepare($this, 'component');
 	<jdoc:include type="head" />
 </head>
 <body class="contentpane modal">
-	<?php echo HammondHelper::sprite(); ?>
 	<div class="container">
 		<jdoc:include type="message" />
 		<jdoc:include type="component" />

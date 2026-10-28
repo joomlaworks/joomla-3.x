@@ -21,7 +21,6 @@ $page = RookwoodHelper::prepare($this, 'component');
 	<jdoc:include type="head" />
 </head>
 <body class="contentpane modal">
-	<?php echo RookwoodHelper::sprite(); ?>
 	<div class="container">
 		<jdoc:include type="message" />
 		<jdoc:include type="component" />

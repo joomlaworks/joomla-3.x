@@ -21,7 +21,6 @@ $page = HammondHelper::prepare($this);
 	<jdoc:include type="head" />
 </head>
 <body id="top" class="<?php echo HammondHelper::e($page->bodyClass); ?>">
-	<?php echo HammondHelper::sprite(); ?>
 	<a class="skipLink" href="#content"><?php echo JText::_('TPL_HAMMOND_SKIP_TO_CONTENT'); ?></a>
 
 	<header class="siteHeader">

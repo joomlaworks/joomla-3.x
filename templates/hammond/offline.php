@@ -21,7 +21,6 @@ $page = HammondHelper::prepare($this, 'offline');
 	<jdoc:include type="head" />
 </head>
 <body class="site isOffline">
-	<?php echo HammondHelper::sprite(); ?>
 	<main class="siteMain errorPage offlinePage">
 		<div class="container containerNarrow">
 			<h1 class="offlineTitle"><?php echo HammondHelper::logo(); ?></h1>

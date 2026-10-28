@@ -21,7 +21,6 @@ $page = FinchHelper::prepare($this, 'offline');
 	<jdoc:include type="head" />
 </head>
 <body class="site isOffline">
-	<?php echo FinchHelper::sprite(); ?>
 	<main class="siteMain errorPage offlinePage">
 		<div class="container containerPost">
 			<h1 class="offlineTitle"><?php echo FinchHelper::logo($page->siteName); ?></h1>

@@ -21,7 +21,6 @@ $page = RookwoodHelper::prepare($this, 'offline');
 	<jdoc:include type="head" />
 </head>
 <body class="site isOffline">
-	<?php echo RookwoodHelper::sprite(); ?>
 	<main class="siteMain errorPage offlinePage">
 		<div class="container containerNarrow">
 			<h1 class="offlineTitle"><?php echo RookwoodHelper::logo(); ?></h1>

@@ -33,7 +33,6 @@ $tpl  = $this->baseurl . '/templates/' . $this->template;
 	<link href="<?php echo htmlspecialchars($tpl, ENT_QUOTES, 'UTF-8'); ?>/images/favicon.svg" rel="icon" type="image/svg+xml" />
 </head>
 <body class="site isError">
-	<?php echo FinchHelper::sprite(); ?>
 	<main class="siteMain errorPage">
 		<div class="container containerPost">
 			<?php echo FinchHelper::logo(FinchHelper::siteName()); ?>

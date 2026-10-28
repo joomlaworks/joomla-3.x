@@ -180,7 +180,8 @@ abstract class HammondHelper
 	}
 
 	/**
-	 * The template's SVG icons, once at the top of the page; icon() refers to them.
+	 * Nothing since 3.18: each icon is its own file (images/icons), written in place by icon(). Kept for copies of this
+	 * template whose pages still call it.
 	 *
 	 * @return  string
 	 *
@@ -188,7 +189,7 @@ abstract class HammondHelper
 	 */
 	public static function sprite()
 	{
-		return (string) file_get_contents(__DIR__ . '/images/icons.svg');
+		return '';
 	}
 
 	/**
@@ -378,7 +379,35 @@ abstract class HammondHelper
 	 */
 	public static function icon($name, $class = '')
 	{
-		return '<svg class="icon icon-' . $name . ($class ? ' ' . $class : '') . '" aria-hidden="true" focusable="false"><use href="#i-' . $name . '"></use></svg>';
+		list($viewBox, $body) = static::iconFile($name);
+
+		return '<svg class="icon icon-' . $name . ($class ? ' ' . $class : '') . '" viewBox="' . $viewBox . '" aria-hidden="true" focusable="false">'
+			. $body . '</svg>';
+	}
+
+	/**
+	 * An icon's file (images/icons/<name>.svg), read once per request
+	 *
+	 * @param   string  $name  The icon's name
+	 *
+	 * @return  array  Its viewBox and its contents ('' when there's no such icon)
+	 *
+	 * @since   3.18.0
+	 */
+	protected static function iconFile($name)
+	{
+		static $icons = array();
+
+		if (!isset($icons[$name]))
+		{
+			$file = __DIR__ . '/images/icons/' . preg_replace('/[^a-z0-9-]/', '', (string) $name) . '.svg';
+
+			$icons[$name] = is_file($file) && preg_match('#<svg\b[^>]*\sviewBox="([^"]*)"[^>]*>(.*)</svg>#s', (string) file_get_contents($file), $svg)
+				? array($svg[1], trim($svg[2]))
+				: array('0 0 24 24', '');
+		}
+
+		return $icons[$name];
 	}
 
 	/**
