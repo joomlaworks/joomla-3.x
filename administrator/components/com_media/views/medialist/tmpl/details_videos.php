@@ -19,6 +19,7 @@ $dispatcher = JEventDispatcher::getInstance();
 
 <?php foreach ($this->videos as $i => $video) : ?>
 	<?php $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$video, &$params, 0)); ?>
+	<?php $cover = $video->cover ? $this->escape(COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $video->cover))) : ''; ?>
 	<tr>
 		<?php if ($this->canDelete) : ?>
 			<td>
@@ -27,13 +28,13 @@ $dispatcher = JEventDispatcher::getInstance();
 		<?php endif; ?>
 
 		<td>
-			<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL, '/', str_replace('%2F', '/', rawurlencode((string) $video->path_relative)); ?>" title="<?php echo $this->escape($video->title); ?>">
+			<a class="video-preview"<?php echo $cover ? ' data-cover="' . $cover . '"' : ''; ?> href="<?php echo COM_MEDIA_BASEURL, '/', str_replace('%2F', '/', rawurlencode((string) $video->path_relative)); ?>" title="<?php echo $this->escape($video->title); ?>">
 				<?php echo JHtml::_('image', $video->icon_16, $this->escape($video->title), null, true); ?>
 			</a>
 		</td>
 
 		<td class="description">
-			<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL, '/', str_replace('%2F', '/', rawurlencode((string) $video->path_relative)); ?>" title="<?php echo $this->escape($video->name); ?>">
+			<a class="video-preview"<?php echo $cover ? ' data-cover="' . $cover . '"' : ''; ?> href="<?php echo COM_MEDIA_BASEURL, '/', str_replace('%2F', '/', rawurlencode((string) $video->path_relative)); ?>" title="<?php echo $this->escape($video->name); ?>">
 				<?php echo $this->escape($video->name); ?>
 			</a>
 		</td>

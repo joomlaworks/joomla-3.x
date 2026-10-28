@@ -73,7 +73,7 @@ $doc->addScriptDeclaration(
 				$(this).on('click', function(e) {
 					e.preventDefault();
 					window.parent.jQuery('#videoPreview').modal('show');
-					window.parent.MediaManager.playVideo($(this).attr('href'));
+					window.parent.MediaManager.playVideo($(this).attr('href'), $(this).attr('data-cover') || '');
 
 					return false;
 				});

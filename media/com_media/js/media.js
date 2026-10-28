@@ -555,14 +555,21 @@ function jMediaRefreshImgpathTip(tip, els)
 		/**
 		 * Shows a video in the preview window's player (the browser's own); the lists call it from their iframe
 		 *
-		 * @param   string  src  The video's address
+		 * @param   string  src     The video's address
+		 * @param   string  poster  An image of the same name, shown before it plays ('' for none)
 		 *
 		 * @return  void
 		 */
-		playVideo: function(src) {
+		playVideo: function(src, poster) {
 			var video = document.getElementById('videoPreviewPlayer');
 
 			if (video) {
+				if (poster) {
+					video.setAttribute('poster', poster);
+				} else {
+					video.removeAttribute('poster');
+				}
+
 				video.src = src;
 				video.load();
 			}

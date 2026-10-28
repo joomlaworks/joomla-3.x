@@ -135,7 +135,7 @@ class MediaModelList extends JModelLegacy
 			$folderList = JFolder::folders($basePath);
 		}
 
-		// Images with an audio file's name (song.mp3 and song.jpg) are its cover; the first type of this list wins
+		// Images with an audio or video file's name (song.mp3 and song.jpg) are its cover or poster; the first type of this list wins
 		$covers = array();
 
 		foreach ($fileList ?: array() as $file)
@@ -229,6 +229,7 @@ class MediaModelList extends JModelLegacy
 							$icon = $this->getTypeIcon(strtolower(JFile::getExt($file)));
 							$tmp->icon_32 = 'com_media/mime-icon-32/' . $icon . '.png';
 							$tmp->icon_16 = 'com_media/mime-icon-16/' . $icon . '.png';
+							$tmp->cover   = $this->findCover($file, $tmp->path_relative, $covers);
 							$videos[] = $tmp;
 							break;
 
@@ -244,15 +245,7 @@ class MediaModelList extends JModelLegacy
 							$icon = $this->getTypeIcon(strtolower(JFile::getExt($file)));
 							$tmp->icon_32 = 'com_media/mime-icon-32/' . $icon . '.png';
 							$tmp->icon_16 = 'com_media/mime-icon-16/' . $icon . '.png';
-							$tmp->cover   = '';
-
-							if (isset($covers[strtolower(JFile::stripExt($file))]))
-							{
-								$folder     = dirname($tmp->path_relative);
-								$tmp->cover = ($folder === '.' || $folder === '/' || $folder === '\\' ? '' : rtrim($folder, '/') . '/')
-									. $covers[strtolower(JFile::stripExt($file))][1];
-							}
-
+							$tmp->cover   = $this->findCover($file, $tmp->path_relative, $covers);
 							$audios[] = $tmp;
 							break;
 
@@ -318,6 +311,31 @@ class MediaModelList extends JModelLegacy
 		$list = $this->getList();
 
 		return $list['audios'];
+	}
+
+	/**
+	 * The cover of an audio file or the poster of a video: an image of the same name in its folder
+	 *
+	 * @param   string  $file          The file's name
+	 * @param   string  $pathRelative  Its path from the media folder
+	 * @param   array   $covers        The folder's images by lower-case name without extension: array(rank, file name)
+	 *
+	 * @return  string  The image's path from the media folder, '' when there's none
+	 *
+	 * @since   3.18.0
+	 */
+	protected function findCover($file, $pathRelative, array $covers)
+	{
+		$key = strtolower(JFile::stripExt($file));
+
+		if (!isset($covers[$key]))
+		{
+			return '';
+		}
+
+		$folder = dirname($pathRelative);
+
+		return ($folder === '.' || $folder === '/' || $folder === '\\' ? '' : rtrim($folder, '/') . '/') . $covers[$key][1];
 	}
 
 	/**
