@@ -553,30 +553,19 @@ function jMediaRefreshImgpathTip(tip, els)
 	var MediaManager = scope.MediaManager = {
 
 		/**
-		 * Plays a video in the preview window's player (MediaElement.js, #mejsPlayer), made on its first use; the lists
-		 * call it from their iframe
+		 * Shows a video in the preview window's player (the browser's own); the lists call it from their iframe
 		 *
 		 * @param   string  src  The video's address
 		 *
 		 * @return  void
 		 */
 		playVideo: function(src) {
-			var video = document.getElementById('mejsPlayer');
+			var video = document.getElementById('videoPreviewPlayer');
 
-			if (!video || !window.MediaElementPlayer) {
-				return;
+			if (video) {
+				video.src = src;
+				video.load();
 			}
-
-			if (!this.player) {
-				// Its icons are an SVG sprite: its address, as the default is relative to the page
-				video.setAttribute('src', src);
-				this.player = new window.MediaElementPlayer(video, { iconSprite: (Joomla.getOptions('com_media.player') || {}).iconSprite || 'mejs-controls.svg' });
-
-				return;
-			}
-
-			this.player.setSrc(src);
-			this.player.load();
 		},
 
 		/**
@@ -585,8 +574,10 @@ function jMediaRefreshImgpathTip(tip, els)
 		 * @return  void
 		 */
 		pauseVideo: function() {
-			if (this.player) {
-				this.player.pause();
+			var video = document.getElementById('videoPreviewPlayer');
+
+			if (video) {
+				video.pause();
 			}
 		},
 

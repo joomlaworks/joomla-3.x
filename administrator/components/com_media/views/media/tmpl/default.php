@@ -27,11 +27,6 @@ JFactory::getDocument()->addScriptDeclaration(
 JHtml::_('behavior.keepalive');
 JHtml::_('bootstrap.framework');
 JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true));
-JHtml::_('script', 'com_media/mediaelement-and-player.min.js', array('version' => 'auto', 'relative' => true));
-JHtml::_('stylesheet', 'com_media/mediaelementplayer.min.css', array('version' => 'auto', 'relative' => true));
-
-// The player's icons (an SVG sprite), by address: MediaElement.js takes one relative to the page otherwise
-JFactory::getDocument()->addScriptOptions('com_media.player', array('iconSprite' => JUri::root(true) . '/media/com_media/images/mejs-controls.svg'));
 JHtml::_('behavior.styles');
 
 ?>
@@ -135,7 +130,7 @@ echo JHtml::_(
 		'footer' => '<button type="button" class="btn" data-dismiss="modal">'
 			. JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>',
 	),
-	'<div id="videoPlayer" style="z-index: -100;"><video id="mejsPlayer" style="height: 250px;"></video></div>'
+	'<div id="videoPlayer"><video id="videoPreviewPlayer" controls="controls" preload="metadata" style="display:block;width:100%;max-height:60vh;background:#000;"></video></div>'
 );
 ?>
 	<!-- End Content -->

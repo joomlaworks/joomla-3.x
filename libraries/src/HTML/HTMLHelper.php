@@ -115,7 +115,7 @@ abstract class HTMLHelper
 	const DROPPED_FILES = array(
 		'js'  => array(
 			'system/html5fallback', 'system/polyfill.classlist', 'system/polyfill.event', 'system/polyfill.filter', 'system/polyfill.map',
-			'system/polyfill.xpath', 'system/progressbar', 'com_joomlaupdate/json2',
+			'system/polyfill.xpath', 'system/progressbar', 'system/punycode', 'com_joomlaupdate/json2',
 		),
 		'css' => array('com_finder/indexer'),
 	);

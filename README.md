@@ -72,7 +72,7 @@ Summary of changes:
 - MooTools is gone from the core: one shared script, `global.js` (namespace `CMS`), replaces `core.js` and does what MooTools did (modals, tooltips, tabs, sliders, tree, password meter) in plain JavaScript; old names keep working, and MooTools stays available for extensions that ask for it. Polyfills for old browsers are gone too
 
 **Improvements:**
-- Library updates: jQuery UI 1.14.2 (with the 1.9 helpers kept for extensions), MediaElement.js 7.1.0 (the Media Manager's video player, without jQuery), SimplePie 1.9.0 (needs PHP 7.2; core doesn't use it), sodium_compat 1.24.2, Ajax Autocomplete 1.5.0
+- Library updates: jQuery UI 1.14.2 (with the 1.9 helpers kept for extensions), SimplePie 1.9.0 (needs PHP 7.2; core doesn't use it), sodium_compat 1.24.2, Ajax Autocomplete 1.5.0
 - SQLite driver: MySQL on SQLite 3.1.1 (temporary tables, transactions and date arithmetic fixed upstream), Joomla's patches kept
 - Three unused libraries removed: HTML5 Shiv (for Internet Explorer 8), Google's reCAPTCHA PHP client and a duplicate copy of PHP UTF-8
 - PHPMailer updated from 5.2.28 (2020) to 7.1.1 (May 2026), with Joomla's mailer and extensions using PHPMailer's old class names working as before
@@ -126,6 +126,7 @@ Summary of changes:
 - The front-end article form no longer asks logged-in users to solve a CAPTCHA (an Articles option brings it back)
 - Administrator-only extensions keep their scripts and styles in their own folders instead of `media/`, so a password-protected `/administrator` never affects the site
 - `media/` folders are named after their extensions (`com_contact`, `com_media`), shared files (the debug console's, the e-mail form's icon) are in `media/system`, and old names still load them
+- The Media Manager previews videos in the browser's own player (MediaElement.js removed); punycode.js removed (the browser converts international domains)
 - Form validation, edit forms' remembered tabs, the switcher and the combo box without jQuery (part of `global.js`; validation also of the site's `frontend.js`)
 - Every stylesheet of our own and Joomla's is written in one style (one rule per line), without Internet Explorer hacks; administrator-only scripts and styles named after their extension, Joomla Update's three scripts in one; the media player's Flash and Silverlight fallbacks removed
 - The editors, CAPTCHA plugins and two-factor authentication keep their files in their own plugin folders; each extension's folder in `media/` has one stylesheet and one script named after it (`com_x/css/x.css`, `com_x/js/x.js`), the Media Manager's included; unused files removed

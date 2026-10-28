@@ -377,22 +377,6 @@
             "seriesLatest": ""
         },
         {
-            "name": "MediaElement.js",
-            "version": "7.1.0",
-            "date": "2025.11.12",
-            "dateSource": "npm, mediaelement 7.1.0",
-            "license": "MIT",
-            "url": "https://www.mediaelementjs.com",
-            "path": "media/com_media/js/mediaelement-and-player.js",
-            "note": "The Media Manager's video preview; its icon sprite is media/com_media/images/mejs-controls.svg",
-            "latest": "7.1.0",
-            "isLatest": true,
-            "checked": "2026.10.27",
-            "use": "core",
-            "series": "",
-            "seriesLatest": "2.x: 2.23.5 (2017.01.06)"
-        },
-        {
             "name": "MooTools Core",
             "version": "1.4.5",
             "date": "2012.02.27",
@@ -423,22 +407,6 @@
             "use": "shared",
             "series": "",
             "seriesLatest": ""
-        },
-        {
-            "name": "Punycode.js",
-            "version": "1.4.1",
-            "date": "2016.03.20",
-            "dateSource": "GitHub tag v1.4.1; npm agrees",
-            "license": "MIT",
-            "url": "https://github.com/mathiasbynens/punycode.js",
-            "path": "media/system/js/punycode.js",
-            "note": "",
-            "latest": "2.3.1",
-            "isLatest": false,
-            "checked": "2026.10.27",
-            "use": "shared",
-            "series": "",
-            "seriesLatest": "1.x: 1.4.1 (2016.03.20)"
         }
     ],
     "PHP Libraries": [

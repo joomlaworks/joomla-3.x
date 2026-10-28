@@ -4545,7 +4545,20 @@ class JoomlaInstallerScript
 			'/media/com_media/js/flashmediaelement.swf',
 			'/media/com_media/js/flashmediaelement-cdn.swf',
 			'/media/com_media/js/silverlightmediaelement.xap',
-			// MediaElement.js 2.23's images (7.1 draws an SVG sprite)
+			// MediaElement.js (the browser's own player instead) and punycode.js (the browser's IDNA instead) removed (3.18)
+			'/media/com_media/js/mediaelement-and-player.js',
+			'/media/com_media/js/mediaelement-and-player.min.js',
+			'/media/com_media/js/mediaelement-license.txt',
+			'/media/com_media/css/mediaelementplayer.css',
+			'/media/com_media/css/mediaelementplayer.min.css',
+			'/media/com_media/images/mejs-controls.svg',
+			'/media/media/js/mediaelement-and-player.js',
+			'/media/media/js/mediaelement-and-player.min.js',
+			'/media/media/css/mediaelementplayer.css',
+			'/media/media/css/mediaelementplayer.min.css',
+			'/media/system/js/punycode.js',
+			'/media/system/js/punycode-uncompressed.js',
+			// MediaElement.js 2.23's images
 			'/media/com_media/images/background.png',
 			'/media/com_media/images/bigplay.png',
 			'/media/com_media/images/bigplay.svg',

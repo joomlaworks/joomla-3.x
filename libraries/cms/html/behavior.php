@@ -252,9 +252,6 @@ abstract class JHtmlBehavior
 
 		// Its message for invalid fields
 		JText::script('JLIB_FORM_FIELD_INVALID');
-
-		// The email check turns internationalised domains into ASCII with it
-		JHtml::_('script', 'system/punycode.js', array('version' => 'auto', 'relative' => true));
 		static::$loaded[__METHOD__] = true;
 	}
 

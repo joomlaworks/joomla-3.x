@@ -802,8 +802,19 @@
 		setHandler('password', (value) => /^\S[\S ]{2,98}\S$/.test(value));
 		setHandler('numeric', (value) => /^(\d|-)?(\d|,)*\.?\d*$/.test(value));
 		setHandler('email', (value) => {
-			// punycode.js (behavior.formvalidator loads it) turns an internationalised domain into ASCII
-			const ascii = window.punycode ? window.punycode.toASCII(value) : value;
+			// An internationalised domain in ASCII (xn--), by the browser's own IDNA (punycode.js did it before 3.18); only
+			// for domains of letters, digits, dots, hyphens and non-ASCII characters, as a URL would drop a port or path
+			const at = value.lastIndexOf('@');
+			const domain = value.slice(at + 1);
+			let ascii = value;
+
+			if (at > -1 && /[^\x00-\x7F]/.test(domain) && !/[^A-Za-z0-9.\-\u0080-\uFFFF]/.test(domain)) {
+				try {
+					ascii = value.slice(0, at + 1) + new URL('http://' + domain).hostname;
+				} catch (error) {
+					ascii = value;
+				}
+			}
 
 			return /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(ascii);
 		});
