@@ -245,17 +245,16 @@ abstract class JHtmlBehavior
 			return;
 		}
 
-		// Include core
+		// The validator is part of global.js and frontend.js (CMS.formValidator, document.formvalidator): it attaches to the
+		// forms when the page carries this option
 		static::core();
+		JFactory::getDocument()->addScriptOptions('system.formvalidator', true);
 
-		// Include jQuery
-		JHtml::_('jquery.framework');
-
-		// Add validate.js language strings
+		// Its message for invalid fields
 		JText::script('JLIB_FORM_FIELD_INVALID');
 
+		// The email check turns internationalised domains into ASCII with it
 		JHtml::_('script', 'system/punycode.js', array('version' => 'auto', 'relative' => true));
-		JHtml::_('script', 'system/validate.js', array('version' => 'auto', 'relative' => true));
 		static::$loaded[__METHOD__] = true;
 	}
 

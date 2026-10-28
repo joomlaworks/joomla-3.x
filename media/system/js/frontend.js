@@ -6,7 +6,7 @@
 
 /*
  * The site's slim version of global.js: the namespace window.CMS with only what pages for visitors use (options, strings,
- * forms, lists, messages, AJAX, keepalive, captions, highlighting) and the old Joomla.* names. JHtml behavior.core loads it
+ * forms, form validation, lists, messages, AJAX, keepalive, captions, highlighting) and the old Joomla.* names. JHtml behavior.core loads it
  * on the site; anything needing more (modals, tooltips, front-end editing, the media field) loads global.js, which has
  * all of this too and takes this file's place in the page. A second copy of the same code, kept by hand: change both
  * files together.
@@ -585,6 +585,252 @@
 
 			return highlighter;
 		},
+	};
+
+	/* --- Form validation (behavior.formvalidator: document.formvalidator, what validate.js was) --- */
+
+	/*
+	 * Forms with class form-validate: fields are checked when they lose focus and all of them when the form is sent
+	 * (isValid(), which the forms' submitbutton functions call). Required fields (required, class required) need a
+	 * value; class validate-<name> runs a handler (username, password, numeric, email, or one added with setHandler());
+	 * a pattern attribute is checked first. Invalid fields and their labels get class invalid and aria-invalid.
+	 */
+	const createValidator = () => {
+		const handlers = {};
+		const custom = {};
+		const labels = new WeakMap();
+		const attached = new WeakSet();
+
+		// Handlers got the field as a jQuery object: they still do where jQuery is loaded
+		const wrap = (element) => (window.jQuery ? window.jQuery(element) : element);
+
+		const setHandler = (name, fn, enabled) => {
+			handlers[name] = { enabled: enabled === '' ? true : enabled, exec: fn };
+		};
+
+		const findLabel = (id, form) => {
+			if (!id || !form) {
+				return false;
+			}
+
+			const own = form.querySelector('#' + CSS.escape(id + '-lbl'));
+
+			if (own) {
+				return [own];
+			}
+
+			const found = Array.prototype.slice.call(form.querySelectorAll('label[for="' + CSS.escape(id) + '"]'));
+
+			return found.length ? found : false;
+		};
+
+		const handleResponse = (state, element) => {
+			if (!labels.has(element)) {
+				labels.set(element, findLabel(element.id, element.form));
+			}
+
+			const label = labels.get(element);
+
+			element.classList.toggle('invalid', state === false);
+			element.setAttribute('aria-invalid', state === false ? 'true' : 'false');
+
+			if (label) {
+				label.forEach((item) => item.classList.toggle('invalid', state === false));
+			}
+		};
+
+		// What jQuery's val() gave: the value without carriage returns, a multiple select's chosen values (null for none)
+		const valueOf = (element) => {
+			if (element.tagName === 'SELECT' && element.multiple) {
+				const chosen = Array.prototype.filter.call(element.options, (option) => option.selected).map((option) => option.value);
+
+				return chosen.length ? chosen : null;
+			}
+
+			return typeof element.value === 'string' ? element.value.replace(/\r/g, '') : '';
+		};
+
+		const validate = (element) => {
+			if (typeof element === 'string') {
+				element = document.getElementById(element.replace(/^#/, ''));
+			}
+
+			if (!element) {
+				return true;
+			}
+
+			// Disabled fields aren't sent
+			if (element.disabled || element.hasAttribute('disabled')) {
+				handleResponse(true, element);
+
+				return true;
+			}
+
+			const required = element.hasAttribute('required') || element.classList.contains('required');
+			const value = valueOf(element);
+
+			if (required) {
+				if (element.tagName === 'FIELDSET' && (element.classList.contains('radio') || element.classList.contains('checkboxes'))) {
+					if (!element.querySelector('input:checked')) {
+						handleResponse(false, element);
+
+						return false;
+					}
+				} else if (!value || element.classList.contains('placeholder') || (element.type === 'checkbox' && !element.checked)) {
+					// Class placeholder: the field shows a placeholder, it's empty
+					handleResponse(false, element);
+
+					return false;
+				}
+			}
+
+			const match = (element.getAttribute('class') || '').match(/validate-([a-zA-Z0-9_-]+)/);
+			const handler = match ? match[1] : '';
+			const pattern = element.getAttribute('pattern');
+
+			// A pattern attribute first, then the handlers
+			if (pattern) {
+				const text = Array.isArray(value) ? value.join(',') : String(value || '');
+
+				if (text.length) {
+					const valid = new RegExp('^' + pattern + '$').test(text);
+
+					handleResponse(valid, element);
+
+					return valid;
+				}
+
+				handleResponse(!required, element);
+
+				return !required;
+			}
+
+			if (handler && handler !== 'none' && handlers[handler] && value && handlers[handler].exec(value, wrap(element)) !== true) {
+				handleResponse(false, element);
+
+				return false;
+			}
+
+			handleResponse(true, element);
+
+			return true;
+		};
+
+		const isValid = (form) => {
+			const invalid = [];
+			let valid = true;
+
+			Array.prototype.forEach.call(form.querySelectorAll('input, textarea, select, fieldset'), (field) => {
+				// Fields with class novalidate (the Permissions field, filters...) are left out
+				if (!field.classList.contains('novalidate') && validate(field) === false) {
+					valid = false;
+					invalid.push(field);
+				}
+			});
+
+			Object.keys(custom).forEach((key) => {
+				if (custom[key].exec() !== true) {
+					valid = false;
+				}
+			});
+
+			if (!valid && invalid.length) {
+				const message = Joomla.JText._('JLIB_FORM_FIELD_INVALID');
+				const errors = [];
+
+				for (let i = invalid.length - 1; i >= 0; i--) {
+					const label = labels.get(invalid[i]);
+
+					if (label) {
+						errors.push(message + label.map((item) => item.textContent).join('').replace('*', ''));
+					}
+				}
+
+				Joomla.renderMessages({ error: errors });
+			}
+
+			return valid;
+		};
+
+		const attachToForm = (form) => {
+			if (!form || attached.has(form)) {
+				return;
+			}
+
+			attached.add(form);
+
+			const fields = [];
+
+			Array.prototype.forEach.call(form.querySelectorAll('input, textarea, select, fieldset, button'), (element) => {
+				const tag = element.tagName.toLowerCase();
+				const type = (element.getAttribute('type') || '').toLowerCase();
+
+				if ((tag === 'input' || tag === 'button') && (type === 'submit' || type === 'image')) {
+					// Submit buttons with class validate check the form first
+					if (element.classList.contains('validate')) {
+						element.addEventListener('click', (event) => {
+							if (!isValid(form)) {
+								event.preventDefault();
+								event.stopPropagation();
+							}
+						});
+					}
+				} else if (tag !== 'button' && !(tag === 'input' && type === 'button')) {
+					if (element.classList.contains('required')) {
+						element.setAttribute('aria-required', 'true');
+						element.setAttribute('required', 'required');
+					}
+
+					if (tag !== 'fieldset') {
+						element.addEventListener('blur', () => validate(element));
+
+						if (element.classList.contains('validate-email')) {
+							element.setAttribute('type', 'email');
+						}
+					}
+
+					fields.push(element);
+				}
+			});
+
+			if (window.jQuery) {
+				window.jQuery(form).data('inputfields', fields.map(wrap));
+			}
+		};
+
+		setHandler('username', (value) => !/[<|>|"|'|%|;|(|)|&]/i.test(value));
+		setHandler('password', (value) => /^\S[\S ]{2,98}\S$/.test(value));
+		setHandler('numeric', (value) => /^(\d|-)?(\d|,)*\.?\d*$/.test(value));
+		setHandler('email', (value) => {
+			// punycode.js (behavior.formvalidator loads it) turns an internationalised domain into ASCII
+			const ascii = window.punycode ? window.punycode.toASCII(value) : value;
+
+			return /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(ascii);
+		});
+
+		const attachAll = () => Array.prototype.forEach.call(document.querySelectorAll('form.form-validate'), attachToForm);
+
+		return { isValid, validate, setHandler, attachToForm, custom, attachAll };
+	};
+
+	// From the start, so scripts can add handlers before the page is ready; attached to the forms once it is, on pages
+	// which asked for it (behavior.formvalidator). frontend.js may have made it already: the same one is kept
+	CMS.formValidator = CMS.formValidator || createValidator();
+	document.formvalidator = CMS.formValidator;
+
+	CMS.ready(() => {
+		if (CMS.options.get('system.formvalidator')) {
+			CMS.formValidator.attachAll();
+		}
+	});
+
+	// The old constructor: a validator of its own, attached to the forms at once
+	window.JFormValidator = function JFormValidator() {
+		const validator = createValidator();
+
+		validator.attachAll();
+
+		return validator;
 	};
 
 	/* --- Keeping the session alive (behavior.keepalive) --- */

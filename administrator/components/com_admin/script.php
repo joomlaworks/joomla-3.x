@@ -4574,6 +4574,8 @@ class JoomlaInstallerScript
 			'/media/system/js/switcher-uncompressed.js',
 			'/media/system/js/combobox.js',
 			'/media/system/js/combobox-uncompressed.js',
+			'/media/system/js/validate.js',
+			'/media/system/js/validate-uncompressed.js',
 			// SqueezeBox's shadow images for old browsers (unused since 3.18's global.css)
 			'/media/system/images/modal/bg_e.png',
 			'/media/system/images/modal/bg_n.png',
