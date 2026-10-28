@@ -265,6 +265,22 @@
             "seriesLatest": ""
         },
         {
+            "name": "JalaliDatePicker",
+            "version": "1.0.0",
+            "date": "2026.07.07",
+            "dateSource": "npm release 1.0.0",
+            "license": "MIT",
+            "url": "https://github.com/majidh1/JalaliDatePicker",
+            "path": "media/system/js/jalalidatepicker.min.js",
+            "note": "Date fields of languages using the Jalali calendar",
+            "latest": "",
+            "isLatest": false,
+            "checked": "",
+            "use": "core",
+            "series": "",
+            "seriesLatest": ""
+        },
+        {
             "name": "Jcrop",
             "version": "2.0.4",
             "date": "2015.11.18",

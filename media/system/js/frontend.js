@@ -756,6 +756,48 @@
 	const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	const pad = (number, size) => String(number).padStart(size || 2, '0');
 
+	const jalaliCalendar = (jy) => {
+		const breaks = [-61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181, 1210, 1635, 2060, 2097, 2192, 2262, 2324, 2394, 2456, 3178];
+		const gy = jy + 621;
+		let leapJ = -14;
+		let jp = breaks[0];
+		let jump = 0;
+
+		for (let i = 1; i < breaks.length; i++) {
+			jump = breaks[i] - jp;
+
+			if (jy < breaks[i]) {
+				break;
+			}
+
+			leapJ += Math.trunc(jump / 33) * 8 + Math.trunc((jump % 33) / 4);
+			jp = breaks[i];
+		}
+
+		let n = jy - jp;
+
+		leapJ += Math.trunc(n / 33) * 8 + Math.trunc(((n % 33) + 3) / 4);
+
+		if (jump % 33 === 4 && jump - n === 4) {
+			leapJ += 1;
+		}
+
+		const leapG = Math.trunc(gy / 4) - Math.trunc((Math.trunc(gy / 100) + 1) * 3 / 4) - 150;
+
+		if (jump - n < 6) {
+			n = n - jump + Math.trunc((jump + 4) / 33) * 33;
+		}
+
+		const leap = (((n + 1) % 33) - 1) % 4;
+
+		return { leap: leap === -1 ? 4 : leap, gy, march: 20 + leapJ - leapG };
+	};
+	const jalaliDayNumber = (gy, gm, gd) => {
+		const d = Math.trunc((gy + Math.trunc((gm - 8) / 6) + 100100) * 1461 / 4) + Math.trunc((153 * ((gm + 9) % 12) + 2) / 5) + gd - 34840408;
+
+		return d - Math.trunc(Math.trunc((gy + 100100 + Math.trunc((gm - 8) / 6)) / 100) * 3 / 4) + 752;
+	};
+
 	CMS.dateField = {
 		/**
 		 * Date parts as the value of a browser's input of that input's type
@@ -771,6 +813,72 @@
 			return CMS.dateField.format(parts, {
 				date: '%F', month: '%Y-%m', time: seconds ? '%T' : '%R', 'datetime-local': seconds ? '%FT%T' : '%FT%R',
 			}[input.type] || '%F');
+		},
+
+		/**
+		 * A Gregorian date as a Jalali one, and back (Borkowski's algorithm, as jalaali-js; the same as
+		 * Joomla\CMS\Date\Jalali, checked against ICU's Persian calendar for 1900-2100)
+		 *
+		 * @param  {number}  year
+		 * @param  {number}  month  1-12
+		 * @param  {number}  day
+		 *
+		 * @return  {number[]}  year, month, day
+		 */
+		toJalali(year, month, day) {
+			const dayNumber = jalaliDayNumber(year, month, day);
+			let jy = year - 621;
+			const calendar = jalaliCalendar(jy);
+			let k = dayNumber - jalaliDayNumber(year, 3, calendar.march);
+
+			if (k >= 0) {
+				if (k <= 185) {
+					return [jy, 1 + Math.trunc(k / 31), (k % 31) + 1];
+				}
+
+				k -= 186;
+			} else {
+				jy -= 1;
+				k += calendar.leap === 1 ? 180 : 179;
+			}
+
+			return [jy, 7 + Math.trunc(k / 30), (k % 30) + 1];
+		},
+
+		toGregorian(year, month, day) {
+			const calendar = jalaliCalendar(year);
+			const dayNumber = jalaliDayNumber(calendar.gy, 3, calendar.march) + (month - 1) * 31 - Math.trunc(month / 7) * (month - 7) + day - 1;
+			let j = 4 * dayNumber + 139361631;
+
+			j += Math.trunc(Math.trunc((4 * dayNumber + 183187720) / 146097) * 3 / 4) * 4 - 3908;
+
+			const i = Math.trunc((j % 1461) / 4) * 5 + 308;
+			const gm = (Math.trunc(i / 153) % 12) + 1;
+
+			return [Math.trunc(j / 1461) - 100100 + Math.trunc((8 - gm) / 6), gm, Math.trunc((i % 153) / 5) + 1];
+		},
+
+		/**
+		 * A Jalali field's text (YYYY/MM/DD, with hh:mm[:ss]) written into the field's posted value, as a Gregorian date
+		 *
+		 * @param  {HTMLElement}  wrapper  .cms-date
+		 */
+		updateJalali(wrapper) {
+			const text = wrapper.querySelector('.cms-date-jalali');
+			const value = wrapper.querySelector('.cms-date-value');
+			const match = text.value.trim().match(/^(\d{3,4})\/(\d{1,2})\/(\d{1,2})(?:\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?$/);
+
+			if (!match || match[2] < 1 || match[2] > 12 || match[3] < 1 || match[3] > 31) {
+				value.value = '';
+
+				return;
+			}
+
+			const g = CMS.dateField.toGregorian(Number(match[1]), Number(match[2]), Number(match[3]));
+
+			value.value = CMS.dateField.format({
+				Y: g[0], m: g[1], d: g[2], H: Number(match[4] || 0), M: Number(match[5] || 0), S: Number(match[6] || 0),
+			}, value.getAttribute('data-format') || '%Y-%m-%d');
 		},
 
 		/**
@@ -1010,6 +1118,8 @@
 					text.dispatchEvent(Object.assign(new Event('input', { bubbles: true }), { cmsDate: true }));
 					text.dispatchEvent(Object.assign(new Event('change', { bubbles: true }), { cmsDate: true }));
 				}
+			} else if (target.classList.contains('cms-date-jalali')) {
+				CMS.dateField.updateJalali(wrapper);
 			} else if (target.classList.contains('cms-date-text')) {
 				// Typed in the language's format: the picker opens on that date
 				const input = wrapper.querySelector('.cms-date-input');
@@ -1029,6 +1139,28 @@
 			const wrapper = button ? button.closest('.cms-date') : null;
 			const input = wrapper ? wrapper.querySelector('.cms-date-input') : null;
 			const text = wrapper ? wrapper.querySelector('.cms-date-text') : null;
+			const jalali = wrapper ? wrapper.querySelector('.cms-date-jalali') : null;
+
+			// Jalali fields: today's Jalali date (and the time, in the time zone the field shows)
+			if (jalali) {
+				let value = '';
+
+				if (button.classList.contains('cms-date-now')) {
+					const now = CMS.dateField.parse(CMS.dateField.now('datetime-local', true, jalali.getAttribute('data-utc-offset')));
+					const j = CMS.dateField.toJalali(now.Y, now.m, now.d);
+					const time = jalali.hasAttribute('data-jdp-only-date') ? '' : ' ' + pad(now.H) + ':' + pad(now.M) + (jalali.getAttribute('data-jdp-has-second') === 'true' ? ':' + pad(now.S) : '');
+
+					value = j[0] + '/' + pad(j[1]) + '/' + pad(j[2]) + time;
+				}
+
+				jalali.value = value;
+				CMS.dateField.updateJalali(wrapper);
+				jalali.dispatchEvent(Object.assign(new Event('input', { bubbles: true }), { cmsDate: true }));
+				jalali.dispatchEvent(Object.assign(new Event('change', { bubbles: true }), { cmsDate: true }));
+				jalali.focus();
+
+				return;
+			}
 
 			if (!input) {
 				return;
@@ -1056,6 +1188,17 @@
 			field.focus();
 		});
 	}
+
+	// JalaliDatePicker (loaded by the layout for languages using the Jalali calendar): fields set time, seconds and limits
+	// through their data-jdp-* attributes
+	CMS.ready(() => {
+		if (window.jalaliDatepicker && document.querySelector('.cms-date-jalali[data-jdp]')) {
+			window.jalaliDatepicker.startWatch({
+				selector: '.cms-date-jalali[data-jdp]', time: true, hasSecond: 'attr', minDate: 'attr', maxDate: 'attr', zIndex: 2000,
+				showTodayBtn: true, showEmptyBtn: true, autoReadOnlyInput: false,
+			});
+		}
+	});
 
 	// The old calendar's script object: extensions call it after adding fields; the browser's input needs no start
 	if (!window.JoomlaCalendar) {

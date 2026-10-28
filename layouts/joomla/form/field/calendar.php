@@ -114,6 +114,16 @@ $user = JFactory::getUser();
 $mode = $user->getParam('date_fields') ?: JFactory::getConfig()->get('date_fields', 'browser');
 $text = $mode === 'language';
 
+// Languages using the Jalali calendar (metadata calendar "jalali", as the Persian packs set it): Jalali dates with
+// JalaliDatePicker, whatever the option; the form still posts the Gregorian date in $format
+$jalali     = $type !== 'time' && strtolower((string) JFactory::getLanguage()->getCalendar()) === 'jalali';
+$jalaliDate = function ($gregorian) use ($hasTime, $seconds)
+{
+	list($y, $m, $d) = Joomla\CMS\Date\Jalali::toJalali((int) $gregorian->format('Y'), (int) $gregorian->format('n'), (int) $gregorian->format('j'));
+
+	return sprintf('%04d/%02d/%02d', $y, $m, $d) . ($hasTime ? ' ' . $gregorian->format($seconds ? 'H:i:s' : 'H:i') : '');
+};
+
 // The time zone the value is shown in (the field's filter), so Now is the user's now, not the browser's clock
 $timezone = null;
 
@@ -165,6 +175,65 @@ $pattern = preg_replace_callback('/%([a-zA-Z%])|([\\^$.*+?()[\]{}|\/])/', functi
 
 	return isset($codes[$match[1]]) ? $codes[$match[1]] : '\\S+';
 }, $format);
+
+if ($jalali)
+{
+	JHtml::_('script', 'system/jalalidatepicker.min.js', array('version' => 'auto', 'relative' => true));
+	JHtml::_('stylesheet', 'system/jalalidatepicker.min.css', array('version' => 'auto', 'relative' => true));
+
+	// The limits as Jalali dates (the browser's input's min/max: YYYY-MM-DD, YYYY-MM-DDThh:mm or YYYY-MM for months)
+	$limit = function ($native)
+	{
+		if ($native === null)
+		{
+			return null;
+		}
+
+		$day = strlen($native) >= 10 ? (int) substr($native, 8, 2) : 1;
+
+		return vsprintf('%04d/%02d/%02d', Joomla\CMS\Date\Jalali::toJalali((int) substr($native, 0, 4), (int) substr($native, 5, 2), $day));
+	};
+	$jalaliAttributes = array(
+		'type'        => 'text',
+		'id'          => $id,
+		'class'       => trim('cms-date-jalali ' . $class),
+		'value'       => !empty($date) && $native !== '' ? $jalaliDate($date) : '',
+		'placeholder' => 'YYYY/MM/DD' . ($hasTime ? ($seconds ? ' hh:mm:ss' : ' hh:mm') : ''),
+		'pattern'     => '\d{3,4}/\d{1,2}/\d{1,2}' . ($hasTime ? ' \d{1,2}:\d{1,2}' . ($seconds ? ':\d{1,2}' : '') : ''),
+		'dir'         => 'ltr',
+		'autocomplete' => 'off',
+		'data-jdp'    => $locked ? null : '',
+		'data-jdp-only-date' => $hasTime ? null : '',
+		'data-jdp-has-second' => $seconds ? 'true' : 'false',
+		'data-jdp-min-date' => $limit(isset($limits['min']) ? $limits['min'] : null),
+		'data-jdp-max-date' => $limit(isset($limits['max']) ? $limits['max'] : null),
+		'data-utc-offset' => $attributes['data-utc-offset'],
+		'onchange'    => !empty($onchange) ? $onchange : null,
+	);
+	?>
+<span class="cms-date field-calendar is-jalali">
+	<input<?php
+		foreach ($jalaliAttributes as $attribute => $attributeValue)
+		{
+			if ($attributeValue !== null)
+			{
+				echo ' ' . $attribute . ($attributeValue === '' && strpos($attribute, 'data-jdp') === 0 ? '' : '="' . htmlspecialchars((string) $attributeValue, ENT_COMPAT, 'UTF-8') . '"');
+			}
+		}
+
+		echo $readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', !empty($autofocus) ? ' autofocus' : '';
+	?> />
+	<input type="hidden" class="cms-date-value" name="<?php echo $name; ?>" value="<?php echo htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8'); ?>" data-format="<?php echo htmlspecialchars((string) $format, ENT_COMPAT, 'UTF-8'); ?>"<?php echo $disabled ? ' disabled' : ''; ?> />
+	<?php if (!$locked) : ?>
+		<?php if ($todaybutton) : ?>
+			<button type="button" class="btn cms-date-now"><?php echo JText::_($hasTime ? 'JLIB_FORM_FIELD_CALENDAR_NOW' : 'JLIB_HTML_BEHAVIOR_TODAY'); ?></button>
+		<?php endif; ?>
+		<button type="button" class="btn cms-date-clear" title="<?php echo JText::_('JCLEAR'); ?>" aria-label="<?php echo JText::_('JCLEAR'); ?>"><?php echo JHtml::_('icons.svg', 'x-lg', '', array('size' => 12)); ?></button>
+	<?php endif; ?>
+</span>
+	<?php
+	return;
+}
 ?>
 <span class="cms-date field-calendar<?php echo $text ? ' is-text' : ''; ?>">
 	<?php if ($text) : ?>
