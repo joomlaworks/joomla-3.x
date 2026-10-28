@@ -471,8 +471,9 @@ class Editor extends \JObject
 		{
 			$assets = true;
 
-			\JHtml::_('stylesheet', 'system/editor-switch.min.css', array('version' => 'auto', 'relative' => true));
-			\JHtml::_('script', 'system/editor-switch.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
+			// CMS.editorSwitch (global.js) and its styles (global.css)
+			\JHtml::_('behavior.core');
+			\JHtml::_('behavior.styles');
 		}
 
 		$option = \JFactory::getApplication()->input->get('option', '', 'cmd');

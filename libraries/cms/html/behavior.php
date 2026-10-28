@@ -89,11 +89,32 @@ abstract class JHtmlBehavior
 
 		JHtml::_('form.csrf');
 
-		// global.js: what core.js was (the Joomla namespace, mapped to CMS) and the vanilla behaviours below
+		// global.js: what core.js was (the Joomla namespace, mapped to CMS) and the vanilla behaviours below, with its styles
 		JHtml::_('script', 'system/global.min.js', array('version' => 'auto', 'relative' => true));
+		static::styles();
 
 		// Add core and base uri paths so javascript scripts can use them.
 		JFactory::getDocument()->addScriptOptions('system.paths', array('root' => JUri::root(true), 'base' => JUri::base(true)));
+
+		static::$loaded[__METHOD__] = true;
+	}
+
+	/**
+	 * Loads media/system/css/global.css, the styles of what global.js draws (the modal, the tree, the editor switcher), always
+	 * with global.js (behavior.core).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function styles()
+	{
+		if (isset(static::$loaded[__METHOD__]))
+		{
+			return;
+		}
+
+		JHtml::_('stylesheet', 'system/global.min.css', array('version' => 'auto', 'relative' => true));
 
 		static::$loaded[__METHOD__] = true;
 	}
@@ -350,9 +371,9 @@ abstract class JHtmlBehavior
 		// Load the necessary files if they haven't yet been loaded
 		if (!isset(static::$loaded[__METHOD__]))
 		{
-			// CMS.modal (global.js), without MooTools or jQuery; the box keeps SqueezeBox's markup and stylesheet
+			// CMS.modal (global.js), without MooTools or jQuery; the box keeps SqueezeBox's markup and styles (global.css)
 			static::core();
-			JHtml::_('stylesheet', 'system/modal.css', array('version' => 'auto', 'relative' => true));
+			static::styles();
 			JText::script('JLIB_HTML_BEHAVIOR_CLOSE');
 		}
 
@@ -455,9 +476,9 @@ abstract class JHtmlBehavior
 	 */
 	public static function tree($id, $params = array(), $root = array())
 	{
-		// CMS.tree (global.js), what MooTree was, with its stylesheet and icons
+		// CMS.tree (global.js), what MooTree was, with its styles (global.css) and icons
 		static::core();
-		JHtml::_('stylesheet', 'system/mootree.css', array('version' => 'auto', 'relative' => true));
+		static::styles();
 
 		if (isset(static::$loaded[__METHOD__][$id]))
 		{
@@ -653,15 +674,9 @@ abstract class JHtmlBehavior
 		// If we are in the frontend or logged in as a user, we can use the ajax component to reduce the load
 		$uri = 'index.php' . (JFactory::getApplication()->isClient('site') || !JFactory::getUser()->guest ? '?option=com_ajax&format=json' : '');
 
-		// Include core and polyfill for browsers lower than IE 9.
+		// global.js starts CMS.keepalive when the page carries these options
 		static::core();
-		static::polyfill('event', 'lt IE 9');
-
-		// Add keepalive script options.
 		JFactory::getDocument()->addScriptOptions('system.keepalive', array('interval' => $refreshTime * 1000, 'uri' => JRoute::_($uri)));
-
-		// Add script.
-		JHtml::_('script', 'system/keepalive.js', array('version' => 'auto', 'relative' => true));
 
 		static::$loaded[__METHOD__] = true;
 

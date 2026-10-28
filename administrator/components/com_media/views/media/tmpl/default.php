@@ -29,12 +29,8 @@ JHtml::_('bootstrap.framework');
 JHtml::_('script', 'media/mediamanager.min.js', array('version' => 'auto', 'relative' => true));
 JHtml::_('script', 'media/mediaelement-and-player.js', array('version' => 'auto', 'relative' => true));
 JHtml::_('stylesheet', 'media/mediaelementplayer.css', array('version' => 'auto', 'relative' => true));
-JHtml::_('stylesheet', 'system/mootree.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('behavior.styles');
 
-if ($lang->isRtl())
-{
-	JHtml::_('stylesheet', 'system/mootree_rtl.css', array('version' => 'auto', 'relative' => true));
-}
 ?>
 <div class="row-fluid">
 	<!-- Begin Sidebar -->

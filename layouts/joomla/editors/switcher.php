@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 /**
  * The editor switcher, above an editor which follows the user's choice (Joomla\CMS\Editor\Editor::display()).
- * Handled by media/system/js/editor-switch.js; the choice lasts for the session.
+ * Handled by CMS.editorSwitch (media/system/js/global.js); the choice lasts for the session.
  *
  * @var  array  $displayData  id (the editor's), current (its name), editors (name => label), token (the form token),
  *                            core (true for core components, whose edit forms have a reload task)

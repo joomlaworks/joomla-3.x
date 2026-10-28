@@ -42,6 +42,19 @@ abstract class HTMLHelper
 	public static $formatOptions = array('format.depth' => 0, 'format.eol' => "\n", 'format.indent' => "\t");
 
 	/**
+	 * Media files merged into media/system/js/global.js and media/system/css/global.css, or replaced by them (their names in
+	 * media/system, without -uncompressed or .min): asking for one through script() or stylesheet() loads global.js or
+	 * global.css, so extensions naming the old files keep working
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const GLOBAL_FILES = array(
+		'js'  => array('core', 'editor-switch', 'keepalive', 'modal', 'mootree', 'passwordstrength', 'tabs'),
+		'css' => array('editor-switch', 'modal', 'mootree', 'mootree_rtl'),
+	);
+
+	/**
 	 * An array to hold included paths
 	 *
 	 * @var    string[]
@@ -634,6 +647,8 @@ abstract class HTMLHelper
 			$options['detectDebug']   = isset($options['detectDebug']) ? $options['detectDebug'] : true;
 		}
 
+		static::mapGlobalFile('css', $file, $options);
+
 		$includes = static::includeRelativeFiles('css', $file, $options['relative'], $options['detectBrowser'], $options['detectDebug']);
 
 		// If only path is required
@@ -714,11 +729,7 @@ abstract class HTMLHelper
 			static::_('behavior.framework');
 		}
 
-		// core.js is part of global.js: asking for it loads that, so a page never has both
-		if ($options['relative'] && preg_match('#^system/core(?:-uncompressed|\.min)?\.js$#', $file))
-		{
-			$file = 'system/global.min.js';
-		}
+		static::mapGlobalFile('js', $file, $options);
 
 		$includes = static::includeRelativeFiles('js', $file, $options['relative'], $options['detectBrowser'], $options['detectDebug']);
 
@@ -1119,6 +1130,29 @@ abstract class HTMLHelper
 		}
 
 		return static::$includePaths;
+	}
+
+	/**
+	 * A request for a file merged into global.js or global.css becomes one for that (see GLOBAL_FILES)
+	 *
+	 * @param   string  $type     js or css
+	 * @param   string  &$file    The file asked for
+	 * @param   array   &$options The script() or stylesheet() options
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	protected static function mapGlobalFile($type, &$file, array &$options)
+	{
+		$names = implode('|', array_map('preg_quote', static::GLOBAL_FILES[$type]));
+
+		if (preg_match('#^(?:/?media/system/' . $type . '/|system/)(?:' . $names . ')(?:-uncompressed|\.min)?\.' . $type . '(?:\?.*)?$#', $file, $match)
+			&& ($options['relative'] || strpos($file, 'system/') !== 0))
+		{
+			$file                = 'system/global.min.' . $type;
+			$options['relative'] = true;
+		}
 	}
 
 	/**

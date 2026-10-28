@@ -9,7 +9,10 @@
  * needed MooTools). Older names stay as aliases of the new code (see LEGACY at the end): Joomla.submitform() is
  * CMS.form.submit(), SqueezeBox.open() is CMS.modal.open(), jModalClose() is CMS.modal.close(), and so on.
  * media/system/js/core.js and core-uncompressed.js are copies of this file's minified and full versions, for pages
- * which name core.js themselves; it runs once however often it's loaded.
+ * which name core.js themselves; it runs once however often it's loaded. Its styles are in media/system/css/global.css.
+ *
+ * Parts are ports of MIT-licensed MooTools code: the modal of SqueezeBox 1.3 (Harald Kirschner, Rouven Weßling), the tree of
+ * MooTree (Rasmus Schultz, mindplay.dk), the password meter of Form.PasswordStrength (Al Kent).
  */
 ((window, document) => {
 	'use strict';
@@ -2029,6 +2032,176 @@
 		icons: TREE_ICONS,
 		create: (config, root) => new Tree(config, root),
 	};
+
+	/* --- Keeping the session alive (behavior.keepalive) --- */
+
+	CMS.keepalive = {
+		timer: null,
+
+		/**
+		 * Asks the site for a page now and then, so a long edit doesn't outlive the session
+		 *
+		 * @param  {Object}  options  interval (milliseconds, 45 seconds by default), uri (com_ajax by default)
+		 */
+		start(options) {
+			options = options || {};
+
+			if (CMS.keepalive.timer) {
+				window.clearInterval(CMS.keepalive.timer);
+			}
+
+			const paths = CMS.options.get('system.paths');
+			const uri = options.uri ? options.uri.replace(/&amp;/g, '&')
+				: (paths ? paths.root + '/index.php' : window.location.pathname) + '?option=com_ajax&format=json';
+
+			CMS.keepalive.timer = window.setInterval(() => CMS.request({ url: uri, onSuccess() {}, onError() {} }), options.interval || 45000);
+
+			return CMS.keepalive;
+		},
+
+		stop() {
+			window.clearInterval(CMS.keepalive.timer);
+			CMS.keepalive.timer = null;
+
+			return CMS.keepalive;
+		},
+	};
+
+	// Pages which asked for it carry its options (JHtml behavior.keepalive)
+	CMS.ready(() => {
+		const options = CMS.options.get('system.keepalive');
+
+		if (options) {
+			CMS.keepalive.start(options);
+		}
+	});
+
+	/* --- The editor switcher (layout joomla.editors.switcher, administrator) --- */
+
+	/*
+	 * The chosen editor is posted as editor_switch and kept for the session. With the form's reload task
+	 * (data-editor-reload="item.reload" on the form; core components' edit forms find theirs from their Save button), the form
+	 * is posted to it, so what wasn't saved comes back in the other editor. Otherwise, once confirmed, the switch is posted on
+	 * its own and the page loads again.
+	 */
+	const SAVE_TASK = /submitbutton\(\s*['"]([A-Za-z0-9_]+)\.(?:apply|save)['"]/;
+
+	const hiddenInput = (form, name, value) => {
+		let input = form.querySelector('input[type="hidden"][name="' + name + '"]');
+
+		if (!input) {
+			input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = name;
+			form.appendChild(input);
+		}
+
+		input.value = value;
+	};
+
+	CMS.editorSwitch = {
+		// The form's reload task, '' when it has none
+		reloadTask(switcher, form) {
+			if (!form || !form.elements.task) {
+				return '';
+			}
+
+			if (form.hasAttribute('data-editor-reload')) {
+				return form.getAttribute('data-editor-reload');
+			}
+
+			if (switcher.getAttribute('data-core') !== '1') {
+				return '';
+			}
+
+			for (const element of document.querySelectorAll('[onclick*="submitbutton"]')) {
+				const match = SAVE_TASK.exec(element.getAttribute('onclick'));
+
+				if (match) {
+					return match[1] + '.reload';
+				}
+			}
+
+			return '';
+		},
+
+		// False when the user cancelled
+		to(switcher, editor) {
+			const form = switcher.closest('form');
+			const task = CMS.editorSwitch.reloadTask(switcher, form);
+
+			if (task) {
+				hiddenInput(form, 'editor_switch', editor);
+				Joomla.submitform(task, form);
+
+				return true;
+			}
+
+			if (!window.confirm(switcher.getAttribute('data-confirm'))) {
+				return false;
+			}
+
+			const post = document.createElement('form');
+
+			post.method = 'post';
+			post.action = window.location.href;
+			post.hidden = true;
+			hiddenInput(post, 'editor_switch', editor);
+			hiddenInput(post, 'editor_switch_return', '1');
+			hiddenInput(post, switcher.getAttribute('data-token'), '1');
+			document.body.appendChild(post);
+			post.submit();
+
+			return true;
+		},
+	};
+
+	const closeSwitchers = (except) => {
+		for (const details of document.querySelectorAll('.editor-switch details[open]')) {
+			if (details !== except) {
+				details.open = false;
+			}
+		}
+	};
+
+	document.addEventListener('click', (event) => {
+		if (!event.target.closest) {
+			return;
+		}
+
+		const button = event.target.closest('[data-editor-switch-to]');
+
+		closeSwitchers(event.target.closest('.editor-switch details'));
+
+		if (!button || button.disabled) {
+			return;
+		}
+
+		const switcher = button.closest('[data-editor-switch]');
+
+		if (switcher.classList.contains('is-switching')) {
+			return;
+		}
+
+		button.closest('details').open = false;
+		switcher.classList.add('is-switching');
+
+		// Still on the page (cancelled, or the form refused to submit): the switcher may be used again
+		if (!CMS.editorSwitch.to(switcher, button.getAttribute('data-editor-switch-to'))) {
+			switcher.classList.remove('is-switching');
+		} else {
+			window.setTimeout(() => switcher.classList.remove('is-switching'), 3000);
+		}
+	});
+
+	document.addEventListener('keydown', (event) => {
+		const details = event.key === 'Escape' && event.target.closest ? event.target.closest('.editor-switch details[open]') : null;
+
+		if (details) {
+			details.open = false;
+			details.querySelector('summary').focus();
+		}
+	});
 
 	/* --- The old names --- */
 
