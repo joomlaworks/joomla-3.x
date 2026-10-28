@@ -31,9 +31,9 @@ $dispatcher = JEventDispatcher::getInstance();
 			<?php if ($this->canDelete):?>
 			<?php echo JHtml::_('grid.id', $i, $this->escape($img->name), false, 'rm', 'cb-image'); ?>
 			<?php endif; ?>
-			<label for="cb-image<?php echo $i ?>">
+			<a class="img-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $img->path_relative)); ?>" tabindex="-1">
 				<?php echo JHtml::_('image', COM_MEDIA_BASEURL . '/' . $this->escape($img->path_relative), JText::sprintf('COM_MEDIA_IMAGE_TITLE', $this->escape($img->title), JHtml::_('number.bytes', $img->size)), array('width' => $img->width_60, 'height' => $img->height_60)); ?>
-			</label>
+			</a>
 		</div>
 
 		<div class="imgPreview nowrap small">

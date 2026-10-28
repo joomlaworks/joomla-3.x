@@ -104,20 +104,23 @@
 }
 
 /* --- Media Manager: list --- */
-/* The whole tile opens what its name links to (video, audio, folder, up); the checkbox and delete button stay above it.
-   Images keep theirs: the picture selects, the bar under it previews */
+/* The whole tile opens what its name links to (image, video, audio, folder, up); the checkbox and delete button stay
+   above it */
 .manager:not(.media-picker) > .imgOutline {position:relative;}
 .manager:not(.media-picker) > .imgOutline > :is(.small:not(.imgPreview), .imgTotal) a {position:static;text-decoration:none;}
 .manager:not(.media-picker) > .imgOutline > :is(.small:not(.imgPreview), .imgTotal) a::after {content:"";position:absolute;inset:0;z-index:1;}
 .manager:not(.media-picker) > .imgOutline > .close {position:relative;z-index:2;}
-.manager:not(.media-picker) > .imgOutline input[type="checkbox"] {z-index:2;}
-/* Images show their checkbox too, where the other tiles have theirs (the picture, its label, still selects) */
-.manager:not(.media-picker) > .imgOutline .imgThumb input[type="checkbox"] {display:block;}
-.manager:not(.media-picker) > .imgOutline .imgThumb label::before {display:none;}
+/* Every tile's checkbox, larger, in its top corner: only the box selects, the rest of the tile opens the file */
+.manager:not(.media-picker) > .imgOutline input[type="checkbox"] {display:block;position:absolute;top:3px;left:3px;z-index:2;width:20px;height:20px;margin:0;opacity:1;cursor:pointer;}
+:where([dir="rtl"]) .manager:not(.media-picker) > .imgOutline input[type="checkbox"] {left:auto;right:3px;}
+.manager:not(.media-picker) > .imgOutline:has(input[type="checkbox"]:checked) {outline:2px solid var(--c-primary, #46a546);outline-offset:-2px;}
+/* Images: the picture opens the preview, as the name does */
+.manager:not(.media-picker) > .imgOutline .imgPreview a {text-decoration:none;}
+.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]):hover,.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]:focus-visible),.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]):hover .imgPreview a,.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]:focus-visible) .imgPreview a {background-image:linear-gradient(rgba(128, 128, 128, 0.16), rgba(128, 128, 128, 0.16));}
 /* Names in full on up to two lines (the link's title has the whole name) */
 .manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview) {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;line-height:1.3;padding:0 6px;}
 .manager:not(.media-picker) > .imgOutline .imgPreview a {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;height:auto;max-height:none;padding:3px 6px;white-space:normal;overflow:hidden;overflow-wrap:anywhere;line-height:1.3;}
-.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]):is(:hover, :focus-within),.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]):is(:hover, :focus-within) > .height-50 {background-image:linear-gradient(rgba(128, 128, 128, 0.16), rgba(128, 128, 128, 0.16));}
+.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]):hover,.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]:focus-visible),.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]):hover > .height-50,.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]:focus-visible) > .height-50 {background-image:linear-gradient(rgba(128, 128, 128, 0.16), rgba(128, 128, 128, 0.16));}
 
 /* --- Dropping files on the Media Manager's lists --- */
 .media-drop-overlay {position:fixed;inset:8px;z-index:1050;display:flex;align-items:center;justify-content:center;padding:24px;border:3px dashed currentColor;border-radius:10px;background:rgba(128, 128, 128, 0.18);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:none;}

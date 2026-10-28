@@ -2001,7 +2001,7 @@ ul.manager .height-50 .icon-folder-2 {height:35px;width:35px;line-height:35px;fo
 .thumbnails-media .thumbnail .controls,.thumbnails-media .thumbnail .imginfoBorder {display:none;}
 .thumbnails-media .imgThumb {position:relative;z-index:1;width:100%;display:inline-block;}
 .thumbnails-media .imgThumb input {display:none;}
-.thumbnails-media .imgThumb label,.thumbnails-media .imgThumb .imgThumbInside {display:block;line-height:100px;position:relative;width:100%;border-radius:var(--radius-lg);overflow:hidden;}
+.thumbnails-media .imgThumb label,.thumbnails-media .imgThumb .imgThumbInside,.thumbnails-media .imgThumb > a.img-preview {display:block;line-height:100px;position:relative;width:100%;border-radius:var(--radius-lg);overflow:hidden;}
 .thumbnails-media .imgThumb label:before,.thumbnails-media .imgThumb .imgThumbInside:before {font-family:"IcoMoon";font-style:normal;content:"G";position:absolute;top:0;left:0;background-color:var(--c-primary);color:var(--c-on-primary);line-height:26px;width:26px;transform:scale(0.5);opacity:0;border-radius:var(--radius-lg) 0 var(--radius) 0;}
 .thumbnails-media .imgThumb img {width:auto;}
 .thumbnails-media .selected :checked + label,.thumbnails-media .selected .imgThumbInside,.thumbnails-media .imgInput :checked + label,.thumbnails-media .imgInput .imgThumbInside {background-color:var(--c-muted);}
@@ -2026,7 +2026,7 @@ ul.manager .height-50 .icon-folder-2 {height:35px;width:35px;line-height:35px;fo
 #mediamanager-form .checkbox input {margin-top:3px;}
 #mediamanager-form .thumbnails {margin:0 -8px;overflow-x:hidden;}
 #mediamanager-form .thumbnails .thumbnail {height:136px;width:136px;margin:8px;}
-#mediamanager-form .thumbnails .imgThumb label,#mediamanager-form .thumbnails .imgTotal {line-height:136px;}
+#mediamanager-form .thumbnails .imgThumb label,#mediamanager-form .thumbnails .imgThumb > a.img-preview,#mediamanager-form .thumbnails .imgTotal {line-height:136px;}
 #mediamanager-form .icon-search::before {padding-right:5px;padding-left:1px;}
 #mediamanager-form .height-50 {background-color:var(--c-subtle);height:77px;position:relative;z-index:1;width:100%;display:inline-block;}
 #mediamanager-form .height-50 a,#mediamanager-form .height-50 .icon-folder-2 {display:inline-block;line-height:75px;margin-top:-1px;}
