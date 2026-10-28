@@ -208,10 +208,10 @@ class PlgSystemDebug extends JPlugin
 		// Only if debugging or language debug is enabled.
 		if ((JDEBUG || $this->debugLang) && $this->isAuthorisedDisplayDebug())
 		{
-			JHtml::_('stylesheet', 'cms/debug.css', array('version' => 'auto', 'relative' => true));
+			JHtml::_('stylesheet', 'system/debug.css', array('version' => 'auto', 'relative' => true));
 
 			// The console as a panel opened from a button (without it, it stays at the end of the page)
-			JHtml::_('script', 'cms/debug.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
+			JHtml::_('script', 'system/debug.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
 		}
 
 		// Disable asset media version if needed.

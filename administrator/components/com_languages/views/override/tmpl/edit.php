@@ -17,11 +17,11 @@ JHtml::_('formbehavior.chosen', 'select');
 
 $expired = ($this->state->get('cache_expired') == 1 ) ? '1' : '';
 
-JHtml::_('stylesheet', 'overrider/overrider.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', 'administrator/components/com_languages/css/overrider.css', array('version' => 'auto'));
 
 JHtml::_('behavior.core');
 JHtml::_('jquery.framework');
-JHtml::_('script', 'overrider/overrider.min.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'administrator/components/com_languages/js/overrider.min.js', array('version' => 'auto'));
 
 JFactory::getDocument()->addScriptDeclaration('
 	jQuery(document).ready(function($) {

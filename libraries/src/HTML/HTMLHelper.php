@@ -78,6 +78,7 @@ abstract class HTMLHelper
 			'com_joomlaupdate/default'                   => 'administrator/components/com_joomlaupdate/js/default.min.js',
 			'com_joomlaupdate/encryption'                => 'administrator/components/com_joomlaupdate/js/encryption.min.js',
 			'com_joomlaupdate/update'                    => 'administrator/components/com_joomlaupdate/js/update.min.js',
+			'overrider/overrider'                        => 'administrator/components/com_languages/js/overrider.min.js',
 			'mod_housekeeping/housekeeping'              => 'administrator/modules/mod_housekeeping/js/housekeeping.js',
 			'mod_sampledata/sampledata-process'          => 'administrator/modules/mod_sampledata/js/sampledata-process.js',
 			'plg_installer_webinstaller/client'          => 'plugins/installer/webinstaller/js/client.min.js',
@@ -89,9 +90,19 @@ abstract class HTMLHelper
 		'css' => array(
 			'com_associations/sidebyside'       => 'administrator/components/com_associations/css/sidebyside.css',
 			'mod_housekeeping/housekeeping'     => 'administrator/modules/mod_housekeeping/css/housekeeping.css',
+			'overrider/overrider'               => 'administrator/components/com_languages/css/overrider.css',
 			'plg_installer_webinstaller/client' => 'plugins/installer/webinstaller/css/client.min.css',
 		),
 	);
+
+	/**
+	 * Folders of media/ renamed (since 3.18): a file asked for by its old name (relative, contacts/con_tel.png, or from the
+	 * site's root, media/contacts/images/con_tel.png) and not found there is looked for under the new one
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const MOVED_FOLDERS = array('cms' => 'system', 'contacts' => 'com_contact', 'mailto' => 'com_mailto', 'media' => 'com_media');
 
 	/**
 	 * Media files removed without a replacement, which browsers no longer need (polyfills, IE fallbacks): asking for one
@@ -401,6 +412,8 @@ abstract class HTMLHelper
 			return array($file);
 		}
 
+		$asked = $file;
+
 		// Extract extension and strip the file
 		$strip = \JFile::stripExt($file);
 		$ext   = \JFile::getExt($file);
@@ -622,6 +635,15 @@ abstract class HTMLHelper
 					}
 				}
 			}
+		}
+
+		// A renamed media folder (MOVED_FOLDERS): the old name is still tried first, so templates' overrides under it apply
+		if (!$includes && preg_match('#^(/?' . ($relative ? '' : 'media/') . ')([^/]+)/(.+)$#', $asked, $match)
+			&& isset(static::MOVED_FOLDERS[$match[2]]))
+		{
+			return static::includeRelativeFiles(
+				$folder, $match[1] . static::MOVED_FOLDERS[$match[2]] . '/' . $match[3], $relative, $detectBrowser, $detectDebug
+			);
 		}
 
 		return $includes;

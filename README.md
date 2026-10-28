@@ -125,6 +125,7 @@ Summary of changes:
 - Unused language strings removed (the old MySQL driver, FTP logins, Mcrypt and others)
 - The front-end article form no longer asks logged-in users to solve a CAPTCHA (an Articles option brings it back)
 - Administrator-only extensions keep their scripts and styles in their own folders instead of `media/`, so a password-protected `/administrator` never affects the site
+- `media/` folders are named after their extensions (`com_contact`, `com_media`, `com_mailto`), the debug console's files moved to `media/system`, and old names still load them
 
 **Security fixes:**
 - TinyMCE updated to 8.10.0, with 8.9.3's fix for a stored XSS in its media plugin

@@ -26,9 +26,9 @@ JFactory::getDocument()->addScriptDeclaration(
 
 JHtml::_('behavior.keepalive');
 JHtml::_('bootstrap.framework');
-JHtml::_('script', 'media/mediamanager.min.js', array('version' => 'auto', 'relative' => true));
-JHtml::_('script', 'media/mediaelement-and-player.js', array('version' => 'auto', 'relative' => true));
-JHtml::_('stylesheet', 'media/mediaelementplayer.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'com_media/mediamanager.min.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'com_media/mediaelement-and-player.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', 'com_media/mediaelementplayer.css', array('version' => 'auto', 'relative' => true));
 JHtml::_('behavior.styles');
 
 ?>

@@ -15,6 +15,9 @@
         <filename>mailto.php</filename>
         <folder>views</folder>
     </files>
+    <media folder="media">
+        <folder>com_mailto</folder>
+    </media>
     <languages folder="site">
         <language tag="en-GB">language/en-GB.com_mailto.ini</language>
     </languages>

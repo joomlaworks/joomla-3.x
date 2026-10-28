@@ -3,7 +3,7 @@
  * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  *
- * The debug console (plugins/system/debug). With media/cms/js/debug.js it's a panel docked to the bottom of the window, opened from
+ * The debug console (plugins/system/debug). With media/system/js/debug.js it's a panel docked to the bottom of the window, opened from
  * a button; without it, a block at the end of the page. Everything is scoped to the console, in its own colours (light or dark, as
  * the page's data-scheme (Prothero, Finch) or data-theme (Rookwood) or the device says), so the page's template doesn't change it and it doesn't change the page.
  */

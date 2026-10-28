@@ -212,7 +212,7 @@ class ContactViewContact extends JViewLegacy
 				else
 				{
 					$image1 = JHtml::_(
-						'image', 'contacts/' . $item->params->get('icon_address', 'con_address.png'), JText::_('COM_CONTACT_ADDRESS') . ': ', null, true
+						'image', 'com_contact/' . $item->params->get('icon_address', 'con_address.png'), JText::_('COM_CONTACT_ADDRESS') . ': ', null, true
 					);
 				}
 
@@ -222,7 +222,7 @@ class ContactViewContact extends JViewLegacy
 				}
 				else
 				{
-					$image2 = JHtml::_('image', 'contacts/' . $item->params->get('icon_email', 'emailButton.png'), JText::_('JGLOBAL_EMAIL') . ': ', null, true);
+					$image2 = JHtml::_('image', 'com_contact/' . $item->params->get('icon_email', 'emailButton.png'), JText::_('JGLOBAL_EMAIL') . ': ', null, true);
 				}
 
 				if ($item->params->get('icon_telephone'))
@@ -232,7 +232,7 @@ class ContactViewContact extends JViewLegacy
 				else
 				{
 					$image3 = JHtml::_(
-						'image', 'contacts/' . $item->params->get('icon_telephone', 'con_tel.png'), JText::_('COM_CONTACT_TELEPHONE') . ': ', null, true
+						'image', 'com_contact/' . $item->params->get('icon_telephone', 'con_tel.png'), JText::_('COM_CONTACT_TELEPHONE') . ': ', null, true
 					);
 				}
 
@@ -242,7 +242,7 @@ class ContactViewContact extends JViewLegacy
 				}
 				else
 				{
-					$image4 = JHtml::_('image', 'contacts/' . $item->params->get('icon_fax', 'con_fax.png'), JText::_('COM_CONTACT_FAX') . ': ', null, true);
+					$image4 = JHtml::_('image', 'com_contact/' . $item->params->get('icon_fax', 'con_fax.png'), JText::_('COM_CONTACT_FAX') . ': ', null, true);
 				}
 
 				if ($item->params->get('icon_misc'))
@@ -253,7 +253,7 @@ class ContactViewContact extends JViewLegacy
 				{
 					$image5 = JHtml::_(
 						'image',
-						'contacts/' . $item->params->get('icon_misc', 'con_info.png'),
+						'com_contact/' . $item->params->get('icon_misc', 'con_info.png'),
 						JText::_('COM_CONTACT_OTHER_INFORMATION') . ': ', null, true
 					);
 				}
@@ -265,7 +265,7 @@ class ContactViewContact extends JViewLegacy
 				else
 				{
 					$image6 = JHtml::_(
-						'image', 'contacts/' . $item->params->get('icon_mobile', 'con_mobile.png'), JText::_('COM_CONTACT_MOBILE') . ': ', null, true
+						'image', 'com_contact/' . $item->params->get('icon_mobile', 'con_mobile.png'), JText::_('COM_CONTACT_MOBILE') . ': ', null, true
 					);
 				}
 

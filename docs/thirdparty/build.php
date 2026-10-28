@@ -62,8 +62,8 @@ $groups = array(
 			'check' => array('media/system/js/jquery.Jcrop.js', '/Jcrop[^\n]*v([0-9.]+)/')),
 		array('name' => 'Punycode.js', 'use' => 'shared', 'upstream' => 'npm:punycode', 'version' => '1.4.1', 'date' => '2016-03-20', 'dateSource' => 'GitHub tag v1.4.1; npm agrees', 'license' => 'MIT', 'url' => 'https://github.com/mathiasbynens/punycode.js', 'path' => 'media/system/js/punycode.js',
 			'check' => array('media/system/js/punycode-uncompressed.js', '/mths.be\/punycode v([0-9.]+)/')),
-		array('name' => 'MediaElement.js', 'use' => 'core', 'upstream' => 'npm:mediaelement', 'version' => '2.23.0', 'date' => '2016-09-07', 'dateSource' => 'GitHub release 2.23.0 (npm: 2016-10-24)', 'license' => 'MIT', 'url' => 'https://www.mediaelementjs.com', 'path' => 'media/media/js/mediaelement-and-player.js',
-			'check' => array('media/media/js/mediaelement-and-player.js', '/([0-9]+\.[0-9]+\.[0-9]+)/')),
+		array('name' => 'MediaElement.js', 'use' => 'core', 'upstream' => 'npm:mediaelement', 'version' => '2.23.0', 'date' => '2016-09-07', 'dateSource' => 'GitHub release 2.23.0 (npm: 2016-10-24)', 'license' => 'MIT', 'url' => 'https://www.mediaelementjs.com', 'path' => 'media/com_media/js/mediaelement-and-player.js',
+			'check' => array('media/com_media/js/mediaelement-and-player.js', '/([0-9]+\.[0-9]+\.[0-9]+)/')),
 	),
 	'CSS and JavaScript Frameworks' => array(
 		array('name' => 'Bootstrap', 'use' => 'shared', 'upstream' => 'npm:bootstrap', 'version' => '2.3.2', 'date' => '2013-05-17', 'dateSource' => 'Bootstrap blog, "Bootstrap 2.3.2 released" (its GitHub release record is from July 2013)', 'license' => 'Apache-2.0', 'url' => 'https://getbootstrap.com/2.3.2/', 'path' => 'media/jui/js/bootstrap.js',

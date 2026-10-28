@@ -33,7 +33,6 @@
     </files>
     <media folder="media">
         <folder>com_contact</folder>
-        <folder>contacts</folder>
     </media>
     <languages folder="site">
         <language tag="en-GB">language/en-GB.com_contact.ini</language>

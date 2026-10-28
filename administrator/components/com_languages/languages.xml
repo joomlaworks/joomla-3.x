@@ -15,7 +15,10 @@
             <filename>controller.php</filename>
             <filename>languages.php</filename>
             <folder>controllers</folder>
+            <folder>css</folder>
             <folder>helpers</folder>
+            <folder>js</folder>
+            <folder>layouts</folder>
             <folder>models</folder>
             <folder>tables</folder>
             <folder>views</folder>

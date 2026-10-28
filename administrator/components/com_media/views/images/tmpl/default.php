@@ -27,12 +27,12 @@ JHtml::_('bootstrap.tooltip', '.noHtmlTip', array('html' => false));
 // Include jQuery
 JHtml::_('behavior.core');
 JHtml::_('jquery.framework');
-JHtml::_('script', 'media/popup-imagemanager.min.js', array('version' => 'auto', 'relative' => true));
-JHtml::_('stylesheet', 'media/popup-imagemanager.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'com_media/popup-imagemanager.min.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', 'com_media/popup-imagemanager.css', array('version' => 'auto', 'relative' => true));
 
 if ($lang->isRtl())
 {
-	JHtml::_('stylesheet', 'media/popup-imagemanager_rtl.css', array('version' => 'auto', 'relative' => true));
+	JHtml::_('stylesheet', 'com_media/popup-imagemanager_rtl.css', array('version' => 'auto', 'relative' => true));
 }
 
 JFactory::getDocument()->addScriptOptions(
@@ -68,7 +68,7 @@ else // XTD Image plugin
 	<form action="index.php?option=com_media&amp;asset=<?php echo $asset; ?>&amp;author=<?php echo $author; ?>" class="form-horizontal" id="imageForm" method="post" enctype="multipart/form-data">
 
 		<div id="messages" style="display: none;">
-			<span id="message"></span><?php echo JHtml::_('image', 'media/dots.gif', '...', array('width' => 22, 'height' => 12), true); ?>
+			<span id="message"></span><?php echo JHtml::_('image', 'com_media/dots.gif', '...', array('width' => 22, 'height' => 12), true); ?>
 		</div>
 
 		<div class="well">

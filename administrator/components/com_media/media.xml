@@ -14,6 +14,9 @@
         <filename>media.php</filename>
         <folder>helpers</folder>
     </files>
+    <media folder="media">
+        <folder>com_media</folder>
+    </media>
     <languages folder="site">
         <language tag="en-GB">language/en-GB.com_media.ini</language>
     </languages>

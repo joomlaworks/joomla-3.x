@@ -21,7 +21,7 @@ $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$this->_
 <tr>
 	<td>
 		<a  title="<?php echo $this->escape($this->_tmp_doc->name); ?>">
-			<?php  echo JHtml::_('image', $this->_tmp_doc->icon_16, $this->escape($this->_tmp_doc->title), null, true, true) ? JHtml::_('image', $this->_tmp_doc->icon_16, $this->_tmp_doc->title, array('width' => 16, 'height' => 16), true) : JHtml::_('image', 'media/con_info.png', $this->escape($this->_tmp_doc->title), array('width' => 16, 'height' => 16), true);?> </a>
+			<?php  echo JHtml::_('image', $this->_tmp_doc->icon_16, $this->escape($this->_tmp_doc->title), null, true, true) ? JHtml::_('image', $this->_tmp_doc->icon_16, $this->_tmp_doc->title, array('width' => 16, 'height' => 16), true) : JHtml::_('image', 'com_media/con_info.png', $this->escape($this->_tmp_doc->title), array('width' => 16, 'height' => 16), true);?> </a>
 	</td>
 	<td class="description"  title="<?php echo $this->escape($this->_tmp_doc->name); ?>">
 		<?php echo $this->escape($this->_tmp_doc->title); ?>

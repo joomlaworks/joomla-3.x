@@ -212,16 +212,16 @@ class MediaModelList extends JModelLegacy
 						case 'mov':
 						case 'ogv':
 							$icon = $this->getTypeIcon(strtolower(JFile::getExt($file)));
-							$tmp->icon_32 = 'media/mime-icon-32/' . $icon . '.png';
-							$tmp->icon_16 = 'media/mime-icon-16/' . $icon . '.png';
+							$tmp->icon_32 = 'com_media/mime-icon-32/' . $icon . '.png';
+							$tmp->icon_16 = 'com_media/mime-icon-16/' . $icon . '.png';
 							$videos[] = $tmp;
 							break;
 
 						// Non-image document
 						default:
 							$icon = $this->getTypeIcon(strtolower(JFile::getExt($file)));
-							$tmp->icon_32 = 'media/mime-icon-32/' . $icon . '.png';
-							$tmp->icon_16 = 'media/mime-icon-16/' . $icon . '.png';
+							$tmp->icon_32 = 'com_media/mime-icon-32/' . $icon . '.png';
+							$tmp->icon_16 = 'com_media/mime-icon-16/' . $icon . '.png';
 							$docs[] = $tmp;
 							break;
 					}
@@ -284,7 +284,7 @@ class MediaModelList extends JModelLegacy
 			'odg' => 'sxd', 'webm' => 'mp4', 'ogv' => 'mp4', 'm4a' => 'mp3', 'wav' => 'mp3', 'oga' => 'ogg', 'opus' => 'ogg', '7z' => 'zip',
 		);
 
-		if (preg_match('/^[a-z0-9]+$/', $ext) && is_file(JPATH_ROOT . '/media/media/images/mime-icon-32/' . $ext . '.png'))
+		if (preg_match('/^[a-z0-9]+$/', $ext) && is_file(JPATH_ROOT . '/media/com_media/images/mime-icon-32/' . $ext . '.png'))
 		{
 			return $ext;
 		}

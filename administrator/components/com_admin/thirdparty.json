@@ -367,7 +367,7 @@
             "dateSource": "GitHub release 2.23.0 (npm: 2016-10-24)",
             "license": "MIT",
             "url": "https://www.mediaelementjs.com",
-            "path": "media/media/js/mediaelement-and-player.js",
+            "path": "media/com_media/js/mediaelement-and-player.js",
             "note": "",
             "latest": "7.1.0",
             "isLatest": false,

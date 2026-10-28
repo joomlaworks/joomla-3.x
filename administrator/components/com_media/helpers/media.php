@@ -277,7 +277,7 @@ abstract class MediaHelper
 				'text'     => $strings,
 			)
 		);
-		JHtml::_('script', 'media/dropupload.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
-		JHtml::_('stylesheet', 'media/dropupload.min.css', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'com_media/dropupload.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
+		JHtml::_('stylesheet', 'com_media/dropupload.min.css', array('version' => 'auto', 'relative' => true));
 	}
 }

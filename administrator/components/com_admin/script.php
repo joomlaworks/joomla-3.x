@@ -892,7 +892,7 @@ class JoomlaInstallerScript
 	 * @since  3.16.0
 	 */
 	protected $removableCoreExtensionMedia = array(
-		'component:0::com_contact'               => array('/media/com_contact', '/media/contacts'),
+		'component:0::com_contact'               => '/media/com_contact',
 		'component:0::com_content'               => '/media/com_content',
 		'component:0::com_contenthistory'        => '/media/com_contenthistory',
 		'component:0::com_fields'                => '/media/com_fields',
@@ -4744,6 +4744,7 @@ class JoomlaInstallerScript
 			'/media/com_associations',
 			'/media/com_joomlaupdate',
 			'/media/mod_housekeeping',
+			'/media/overrider',
 			'/media/mod_sampledata',
 			'/media/plg_installer_webinstaller',
 			'/media/plg_quickicon_extensionupdate',
@@ -4751,6 +4752,11 @@ class JoomlaInstallerScript
 			'/media/plg_quickicon_privacycheck',
 			'/media/plg_system_highlight',
 			'/media/plg_system_stats',
+			// Media folders renamed after their extensions (debug's files to media/system)
+			'/media/cms',
+			'/media/contacts',
+			'/media/mailto',
+			'/media/media',
 			'/libraries/joomla/facebook',
 			'/libraries/joomla/github',
 			'/libraries/joomla/google',
