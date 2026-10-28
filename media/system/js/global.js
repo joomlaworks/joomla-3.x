@@ -2693,10 +2693,193 @@
 	// The buttons' tooltips: the module, its position, the menu item
 	CMS.tooltip.attach('.cms-frontedit', { fixed: true, className: 'cms-frontedit-tip' });
 
+	/* --- The open tab of Bootstrap tab sets, kept while browsing (behavior.tabstate) --- */
+
+	/*
+	 * Bootstrap's tabs (a[data-toggle="tab"]): each set's open tab is kept in sessionStorage for the page's address, as
+	 * tabs-state.js did, and opened again when the page comes back (after saving, or from a list). A #hash naming a tab
+	 * opens that tab instead (and the tab of the pane holding it). Tabs are opened by clicking them: the click reaches
+	 * Bootstrap's own handler, so this needs no jQuery itself.
+	 */
+	const tabState = {
+		started: false,
+
+		// The address without its return parameter and hash
+		key: () => (location.pathname + location.search).replace(/&return=[a-zA-Z0-9%]+/, ''),
+
+		read(key) {
+			try {
+				return JSON.parse(sessionStorage.getItem(key)) || null;
+			} catch (error) {
+				return null;
+			}
+		},
+
+		write(key, value) {
+			try {
+				if (value === null) {
+					sessionStorage.removeItem(key);
+				} else {
+					sessionStorage.setItem(key, JSON.stringify(value));
+				}
+			} catch (error) {
+				// Private windows may refuse storage: tabs just aren't remembered
+			}
+		},
+
+		// Where a tab set is, the way tabs-state.js wrote it (stored values stay readable)
+		path(element) {
+			if (!element || element.nodeType !== 1) {
+				return '';
+			}
+
+			if (element.id) {
+				return "//*[@id='" + element.id + "']";
+			}
+
+			const same = Array.prototype.filter.call(element.parentNode.children, (child) => child.tagName === element.tagName);
+
+			return tabState.path(element.parentNode) + '/' + element.tagName.toLowerCase()
+				+ (same.length > 1 ? '[' + (same.indexOf(element) + 1) + ']' : '');
+		},
+
+		find(path) {
+			try {
+				return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+			} catch (error) {
+				return null;
+			}
+		},
+
+		links: (container) => Array.prototype.slice.call((container || document).querySelectorAll('a[data-toggle="tab"]')),
+
+		save(link) {
+			const set = tabState.path(link.closest('.nav-tabs'));
+			const href = link.getAttribute('href');
+
+			if (!set || !href) {
+				return;
+			}
+
+			const key = tabState.key();
+			const saved = (tabState.read(key) || []).filter((entry) => entry.split('|')[0] !== set);
+
+			saved.push(set + '|' + href);
+			tabState.write(key, saved);
+		},
+
+		open(link) {
+			if (link) {
+				link.click();
+			}
+		},
+
+		restore() {
+			const links = tabState.links();
+			const sets = links.map((link) => link.closest('ul')).filter((set, index, all) => set && all.indexOf(set) === index);
+
+			links.forEach((link) => link.addEventListener('click', () => tabState.save(link)));
+
+			links.forEach((link) => {
+				if (link.parentNode.classList.contains('active')) {
+					link.parentNode.classList.remove('active');
+				}
+			});
+
+			// A new item's page was saved under the address without its id: the saved item's page takes it over
+			let saved = tabState.read(tabState.key());
+
+			if (!saved) {
+				const unsaved = tabState.key().replace(/&id=[0-9]*|[a-z]&_id=[0-9]*/, '');
+
+				saved = tabState.read(unsaved);
+				tabState.write(unsaved, null);
+			}
+
+			if (location.hash) {
+				const hash = location.hash;
+
+				links.filter((link) => link.getAttribute('href') === hash).forEach((link) => {
+					const pane = link.closest('.tab-pane');
+
+					// A tab inside another tab's pane: that tab first
+					if (pane && pane.id) {
+						tabState.open(links.find((outer) => outer.getAttribute('href') === '#' + pane.id));
+					}
+
+					tabState.open(link);
+				});
+
+				history.pushState('', document.title, location.pathname + location.search);
+			} else if (saved) {
+				saved.forEach((entry) => {
+					const parts = String(entry).split('|');
+					const set = tabState.find(parts[0]);
+
+					if (set) {
+						tabState.open(tabState.links(set).find((link) => link.getAttribute('href') === parts[1]));
+					}
+				});
+			}
+
+			// Every set ends with an open tab: its first when nothing was kept for it
+			sets.forEach((set) => {
+				const own = tabState.links(set).filter((link) => link.closest('ul') === set);
+
+				if (own.length && !own.some((link) => link.parentNode.classList.contains('active'))) {
+					tabState.open(own[0]);
+				}
+			});
+		},
+	};
+
+	CMS.tabState = {
+		/**
+		 * Remembers and restores the open tab of every Bootstrap tab set on the page (once per page)
+		 */
+		init() {
+			if (tabState.started) {
+				return;
+			}
+
+			tabState.started = true;
+
+			// What tabs-state.js added to jQuery
+			const $ = window.jQuery;
+
+			if ($) {
+				$.urlParam = $.urlParam || ((name) => {
+					const match = new RegExp('[\\?&](' + (/=$/.test(name) ? name : name + '=') + ')([^&#]*)').exec(location.href);
+
+					return match ? match[1] : null;
+				});
+				$.getXpath = $.getXpath || ((element) => (typeof element === 'string' ? document.evaluate(element, document, null, 0, null) : tabState.path(element)));
+				$.findXpath = $.findXpath || ((path, context) => {
+					const found = [];
+					const result = document.evaluate(path, context || document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+					let node;
+
+					while ((node = result.iterateNext())) {
+						found.push(node);
+					}
+
+					return $(found);
+				});
+			}
+
+			// After the page's own scripts have set their tabs up, as tabs-state.js waited
+			setTimeout(tabState.restore, 100);
+		},
+	};
+
 	/* --- Behaviours started from the page's script options --- */
 
 	CMS.ready(() => {
 		Object.keys(CMS.options.get('system.multiselect') || {}).forEach((id) => CMS.multiselect.attach(id));
+
+		if (CMS.options.get('system.tabstate')) {
+			CMS.tabState.init();
+		}
 
 		if (CMS.options.get('system.associations.edit')) {
 			CMS.associations.init(CMS.options.get('system.associations.edit'));
@@ -3164,6 +3347,7 @@
 		'new Form.PasswordStrength()': 'CMS.password.meter()',
 		'new MooTreeControl() (behavior.tree)': 'CMS.tree.create(), new CMS.tree.Tree()',
 		'Joomla.JMultiSelect()': 'CMS.multiselect.attach()',
+		'tabs-state.js (behavior.tabstate), jQuery.urlParam(), jQuery.getXpath(), jQuery.findXpath()': 'CMS.tabState.init()',
 		'new JCaption()': 'CMS.caption.attach()',
 		'Joomla.Highlighter()': 'CMS.highlighter.create()',
 		'jInsertFieldValue(), jMediaRefreshPreview()': 'CMS.mediaField.insert(), CMS.mediaField.refreshPreview()',

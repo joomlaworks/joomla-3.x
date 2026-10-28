@@ -4567,6 +4567,9 @@ class JoomlaInstallerScript
 			'/plugins/installer/webinstaller/js/client.min.js',
 			'/plugins/quickicon/extensionupdate/js/extensionupdatecheck.js',
 			'/plugins/quickicon/joomlaupdate/js/jupdatecheck.js',
+			// Merged into global.js (CMS.tabState)
+			'/media/system/js/tabs-state.js',
+			'/media/system/js/tabs-state-uncompressed.js',
 			// SqueezeBox's shadow images for old browsers (unused since 3.18's global.css)
 			'/media/system/images/modal/bg_e.png',
 			'/media/system/images/modal/bg_n.png',

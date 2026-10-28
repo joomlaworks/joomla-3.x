@@ -845,9 +845,9 @@ abstract class JHtmlBehavior
 		{
 			return;
 		}
-		// Include jQuery
-		JHtml::_('jquery.framework');
-		JHtml::_('script', 'system/tabs-state.js', array('version' => 'auto', 'relative' => true));
+		// global.js starts CMS.tabState when the page carries this option
+		static::cms();
+		JFactory::getDocument()->addScriptOptions('system.tabstate', true);
 		self::$loaded[__METHOD__] = true;
 	}
 
