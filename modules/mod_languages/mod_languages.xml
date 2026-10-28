@@ -14,9 +14,6 @@
         <folder>tmpl</folder>
         <filename>helper.php</filename>
     </files>
-    <media folder="media">
-        <folder>mod_languages</folder>
-    </media>
     <languages>
         <language tag="en-GB">en-GB.mod_languages.ini</language>
         <language tag="en-GB">en-GB.mod_languages.sys.ini</language>

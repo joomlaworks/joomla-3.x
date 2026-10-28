@@ -179,7 +179,7 @@ $currentDate = JFactory::getDate()->format('Y-m-d H:i:s');
 						<?php $associations = ContentHelperAssociation::displayAssociations($article->id); ?>
 						<?php foreach ($associations as $association) : ?>
 							<?php if ($this->params->get('flags', 1) && $association['language']->image) : ?>
-								<?php $flag = JHtml::_('image', 'mod_languages/' . $association['language']->image . '.webp', $association['language']->title_native, array('title' => $association['language']->title_native), true); ?>
+								<?php $flag = JHtml::_('image', 'system/flags/' . $association['language']->image . '.webp', $association['language']->title_native, array('title' => $association['language']->title_native), true); ?>
 								&nbsp;<a href="<?php echo JRoute::_($association['item']); ?>"><?php echo $flag; ?></a>&nbsp;
 							<?php else : ?>
 								<?php $class = 'label label-association label-' . $association['language']->sef; ?>
@@ -203,7 +203,7 @@ $currentDate = JFactory::getDate()->format('Y-m-d H:i:s');
 						<?php $associations = ContentHelperAssociation::displayAssociations($article->id); ?>
 						<?php foreach ($associations as $association) : ?>
 							<?php if ($this->params->get('flags', 1)) : ?>
-								<?php $flag = JHtml::_('image', 'mod_languages/' . $association['language']->image . '.webp', $association['language']->title_native, array('title' => $association['language']->title_native), true); ?>
+								<?php $flag = JHtml::_('image', 'system/flags/' . $association['language']->image . '.webp', $association['language']->title_native, array('title' => $association['language']->title_native), true); ?>
 								&nbsp;<a href="<?php echo JRoute::_($association['item']); ?>"><?php echo $flag; ?></a>&nbsp;
 							<?php else : ?>
 								<?php $class = 'label label-association label-' . $association['language']->sef; ?>

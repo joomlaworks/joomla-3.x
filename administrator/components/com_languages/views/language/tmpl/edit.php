@@ -28,9 +28,11 @@ JFactory::getDocument()->addScriptDeclaration(
 		jQuery("#jform_image").on("change", function() {
 			var flag = this.value.toLowerCase();
 			if (flag) {
-				// The flag (a language pack may bring its own as a GIF)
-				var base = "' . JUri::root(true) . '" + "/media/mod_languages/images/" + flag;
-				jQuery("#flag img").one("error", function () { this.src = base + ".gif"; }).attr("src", base + ".webp").attr("alt", flag);
+				// The flag (a language pack may bring its own as a GIF, also in the flags\' old folder)
+				var root = "' . JUri::root(true) . '";
+				var tries = [root + "/media/system/images/flags/" + flag + ".gif", root + "/media/mod_languages/images/" + flag + ".gif"];
+				jQuery("#flag img").off("error.flag").on("error.flag", function () { if (tries.length) { this.src = tries.shift(); } })
+					.attr("src", root + "/media/system/images/flags/" + flag + ".webp").attr("alt", flag);
 			}
 			else
 			{
@@ -60,7 +62,7 @@ JFactory::getDocument()->addScriptDeclaration(
 					<div class="controls">
 						<?php echo $this->form->getInput('image'); ?>
 						<span id="flag">
-							<?php echo JHtml::_('image', 'mod_languages/' . $this->form->getValue('image') . '.webp', $this->form->getValue('image'), null, true); ?>
+							<?php echo JHtml::_('image', 'system/flags/' . $this->form->getValue('image') . '.webp', $this->form->getValue('image'), null, true); ?>
 						</span>
 					</div>
 			</div>

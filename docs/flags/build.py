@@ -1,4 +1,4 @@
-"""Builds media/mod_languages/images from country-flags (PNG renders), flag-icons (regional flags it lacks), Wikimedia
+"""Builds media/system/images/flags from country-flags (PNG renders), flag-icons (regional flags it lacks), Wikimedia
 Commons (public domain flags neither has), a hand-drawn Brittany flag and three script names, at twice the old GIFs' size
 (36x24, each flag fitted with its own proportions and centred on transparency). Writes PNG and lossless WebP and reports
 both totals."""

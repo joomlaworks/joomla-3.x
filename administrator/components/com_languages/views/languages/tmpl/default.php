@@ -140,7 +140,7 @@ if ($saveOrder)
 						</td>
 						<td class="hidden-phone">
 							<?php if ($item->image) : ?>
-								<?php echo JHtml::_('image', 'mod_languages/' . $item->image . '.webp', $item->image, null, true); ?>&nbsp;<?php echo $this->escape($item->image); ?>
+								<?php echo JHtml::_('image', 'system/flags/' . $item->image . '.webp', $item->image, null, true); ?>&nbsp;<?php echo $this->escape($item->image); ?>
 							<?php else : ?>
 								<?php echo JText::_('JNONE'); ?>
 							<?php endif; ?>

@@ -60,12 +60,12 @@ abstract class HTMLHelper
 		),
 		'css' => array(
 			'system/editor-switch' => 'styles', 'system/frontediting' => 'styles', 'system/modal' => 'styles', 'system/mootree' => 'styles',
-			'system/mootree_rtl' => 'styles',
+			'system/mootree_rtl' => 'styles', 'mod_languages/languages' => 'styles',
 		),
 	);
 
 	/**
-	 * Media files of administrator-only extensions, moved from media/ into the extension (since 3.18): asking for one by its
+	 * Media files moved (since 3.18; mostly administrator-only extensions', from media/ into the extension): asking for one by its
 	 * old relative name (com_x/file.js is media/com_x/js/file.js) loads it from its new place
 	 *
 	 * @var    array
@@ -93,40 +93,57 @@ abstract class HTMLHelper
 			'mod_housekeeping/housekeeping'     => 'administrator/modules/mod_housekeeping/css/housekeeping.css',
 			'overrider/overrider'               => 'administrator/components/com_languages/css/languages.css',
 			'plg_installer_webinstaller/client' => 'plugins/installer/webinstaller/css/webinstaller.min.css',
+			'system/fields/calendar'            => 'media/system/css/calendar.css',
+			'system/fields/calendar-rtl'        => 'media/system/css/calendar-rtl.css',
 		),
 	);
 
 	/**
 	 * Folders of media/ renamed (since 3.18): a file asked for by its old name (relative, contacts/con_tel.png, or from the
 	 * site's root, media/contacts/images/con_tel.png) and not found there is looked for under the new one. Longer names
-	 * first: media/jui/img/ became media/system/images/, the rest of media/jui/ media/system/
+	 * first: media/jui/img/ became media/system/images/, the rest of media/jui/ media/system/; the language flags moved from
+	 * media/mod_languages/images/ to media/system/images/flags/ (relative names mod_languages/x, now system/flags/x)
 	 *
 	 * @var    array
 	 * @since  3.18.0
 	 */
 	const MOVED_FOLDERS = array(
 		'jui/img' => 'system/images', 'jui' => 'system', 'cms' => 'system', 'contacts' => 'com_contact', 'mailto' => 'system',
-		'media' => 'com_media',
+		'media' => 'com_media', 'mod_languages/images' => 'system/images/flags', 'mod_languages' => 'system/flags',
 	);
 
 	/**
-	 * Images of a media folder whose type changed (since 3.18: the language flags, GIF to WebP): a file asked for in one
-	 * type and not found is looked for in the other, so template overrides naming the GIFs and language packs bringing a
-	 * GIF of their own keep working
+	 * The folders the files of a moved folder were in, tried last for a file the new one lacks (language packs install a
+	 * flag of their own into media/mod_languages/images/)
 	 *
 	 * @var    array
 	 * @since  3.18.0
 	 */
-	const MOVED_IMAGE_TYPES = array('mod_languages' => array('gif' => 'webp', 'webp' => 'gif'));
+	const PREVIOUS_FOLDERS = array('system/flags' => 'mod_languages', 'system/images/flags' => 'mod_languages/images');
 
 	/**
-	 * The size images (WebP and GIF) of a media folder are shown at, unless the caller gives one (since 3.18 the flags are
-	 * drawn at twice their old 18x12 pixels, for sharp high density screens)
+	 * Images of a media folder whose type changed (since 3.18: the language flags, GIF to WebP), by relative name and by
+	 * path under media/: a file asked for in one type and not found is looked for in the other, so code naming the GIFs
+	 * and language packs bringing a GIF of their own keep working
 	 *
 	 * @var    array
 	 * @since  3.18.0
 	 */
-	const IMAGE_SIZES = array('mod_languages' => array('width' => 18, 'height' => 12));
+	const MOVED_IMAGE_TYPES = array(
+		'system/flags' => array('gif' => 'webp', 'webp' => 'gif'), 'system/images/flags' => array('gif' => 'webp', 'webp' => 'gif'),
+		'mod_languages' => array('gif' => 'webp', 'webp' => 'gif'), 'mod_languages/images' => array('gif' => 'webp', 'webp' => 'gif'),
+	);
+
+	/**
+	 * The size images (WebP and GIF) of a folder of media/ are shown at, unless the caller gives one (since 3.18 the flags
+	 * are drawn at twice their old 18x12 pixels, for sharp high density screens)
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const IMAGE_SIZES = array(
+		'system/images/flags' => array('width' => 18, 'height' => 12), 'mod_languages/images' => array('width' => 18, 'height' => 12),
+	);
 
 	/**
 	 * Media files removed without a replacement, which browsers no longer need (polyfills, IE fallbacks): asking for one
@@ -685,8 +702,11 @@ abstract class HTMLHelper
 			}
 		}
 
+		// Set while a file is looked for in a moved folder's previous place (PREVIOUS_FOLDERS), which mustn't lead back
+		static $previous = false;
+
 		// A renamed media folder (MOVED_FOLDERS): the old name is still tried first, so templates' overrides under it apply
-		if (!$includes && preg_match('#^(/?' . ($relative ? '' : 'media/') . ')(.+)$#', $asked, $match))
+		if (!$includes && !$previous && preg_match('#^(/?' . ($relative ? '' : 'media/') . ')(.+)$#', $asked, $match))
 		{
 			foreach (static::MOVED_FOLDERS as $old => $new)
 			{
@@ -703,22 +723,39 @@ abstract class HTMLHelper
 		// the other type is tried once (a file missing in both would go back and forth)
 		static $otherType = false;
 
-		if (!$includes && !$otherType && $folder === 'images'
-			&& preg_match('#^(/?(?:media/)?)([^/]+)(/.+)\.([a-z]+)$#', $asked, $match)
-			&& ($relative ? $match[1] === '' : strpos($match[1], 'media/') !== false)
-			&& isset(static::MOVED_IMAGE_TYPES[$match[2]][$match[4]]))
+		if (!$includes && $folder === 'images' && preg_match('#^(/?' . ($relative ? '' : 'media/') . ')(.+)/([^/]+)\.([a-z]+)$#', $asked, $match))
 		{
-			$otherType = true;
+			if (!$otherType && isset(static::MOVED_IMAGE_TYPES[$match[2]][$match[4]]))
+			{
+				$otherType = true;
 
-			try
-			{
-				return static::includeRelativeFiles(
-					$folder, $match[1] . $match[2] . $match[3] . '.' . static::MOVED_IMAGE_TYPES[$match[2]][$match[4]], $relative, false, false
-				);
+				try
+				{
+					$includes = static::includeRelativeFiles(
+						$folder, $match[1] . $match[2] . '/' . $match[3] . '.' . static::MOVED_IMAGE_TYPES[$match[2]][$match[4]], $relative, false, false
+					);
+				}
+				finally
+				{
+					$otherType = false;
+				}
 			}
-			finally
+
+			// Then the moved folder's previous place (PREVIOUS_FOLDERS), in both types
+			if (!$includes && !$previous && isset(static::PREVIOUS_FOLDERS[$match[2]]))
 			{
-				$otherType = false;
+				$previous = true;
+
+				try
+				{
+					$includes = static::includeRelativeFiles(
+						$folder, $match[1] . static::PREVIOUS_FOLDERS[$match[2]] . '/' . $match[3] . '.' . $match[4], $relative, false, false
+					);
+				}
+				finally
+				{
+					$previous = false;
+				}
 			}
 		}
 
@@ -746,7 +783,7 @@ abstract class HTMLHelper
 		$returnPath = (int) $returnPath;
 
 		// Flags' names are lower case (languages may store theirs as en_GB)
-		if ($relative && stripos((string) $file, 'mod_languages/') === 0)
+		if ($relative && (stripos((string) $file, 'system/flags/') === 0 || stripos((string) $file, 'mod_languages/') === 0))
 		{
 			$file = strtolower($file);
 		}
@@ -766,7 +803,7 @@ abstract class HTMLHelper
 		// The display size of a folder's images (IMAGE_SIZES), unless the caller gives one
 		$folder = $relative ? strstr((string) $file, '/media/') : false;
 
-		if ($folder !== false && preg_match('#^/media/([^/]+)/[^?]*\.(?:webp|gif)(?:\?|$)#', $folder, $match) && isset(static::IMAGE_SIZES[$match[1]]))
+		if ($folder !== false && preg_match('#^/media/(.+)/[^/?]+\.(?:webp|gif)(?:\?|$)#', $folder, $match) && isset(static::IMAGE_SIZES[$match[1]]))
 		{
 			// Only when neither is given: one alone keeps the image's proportions
 			$given = is_array($attribs) ? array_change_key_case($attribs) : (string) $attribs;

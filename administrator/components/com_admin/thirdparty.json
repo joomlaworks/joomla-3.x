@@ -256,7 +256,7 @@
             "license": "MIT",
             "url": "https://harvesthq.github.io/chosen/",
             "path": "media/system/js/chosen.jquery.js",
-            "note": "",
+            "note": "Stylesheet's image paths changed by Joomla 3.x UTD",
             "latest": "1.8.7",
             "isLatest": false,
             "checked": "2026.10.27",

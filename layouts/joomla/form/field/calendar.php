@@ -98,7 +98,7 @@ $cssFileExt = ($direction === 'rtl') ? '-rtl.css' : '.css';
 JHtml::_('script', $localesPath, false, true, false, false, true);
 JHtml::_('script', $helperPath, false, true, false, false, true);
 JHtml::_('script', 'system/fields/calendar.min.js', false, true, false, false, true);
-JHtml::_('stylesheet', 'system/fields/calendar' . $cssFileExt, array(), true);
+JHtml::_('stylesheet', 'system/calendar' . $cssFileExt, array(), true);
 ?>
 <div class="field-calendar">
 	<?php if (!$readonly && !$disabled) : ?>

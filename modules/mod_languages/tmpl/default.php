@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('stylesheet', 'mod_languages/languages.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('behavior.styles');
 
 if ($params->get('dropdown', 0) && !$params->get('dropdownimage', 1))
 {
@@ -38,7 +38,7 @@ if ($params->get('dropdown', 0) && !$params->get('dropdownimage', 1))
 				<a href="#" data-toggle="dropdown" class="btn dropdown-toggle">
 					<span class="caret"></span>
 					<?php if ($language->image) : ?>
-						&nbsp;<?php echo JHtml::_('image', 'mod_languages/' . $language->image . '.webp', '', null, true); ?>
+						&nbsp;<?php echo JHtml::_('image', 'system/flags/' . $language->image . '.webp', '', null, true); ?>
 					<?php endif; ?>
 					<?php echo $language->title_native; ?>
 				</a>
@@ -50,7 +50,7 @@ if ($params->get('dropdown', 0) && !$params->get('dropdownimage', 1))
 				<li>
 				<a href="<?php echo htmlspecialchars_decode(htmlspecialchars((string) $language->link, ENT_QUOTES, 'UTF-8'), ENT_NOQUOTES); ?>">
 					<?php if ($language->image) : ?>
-						<?php echo JHtml::_('image', 'mod_languages/' . $language->image . '.webp', '', null, true); ?>
+						<?php echo JHtml::_('image', 'system/flags/' . $language->image . '.webp', '', null, true); ?>
 					<?php endif; ?>
 				<?php echo $language->title_native; ?>
 				</a>
@@ -60,7 +60,7 @@ if ($params->get('dropdown', 0) && !$params->get('dropdownimage', 1))
 				<li class="lang-active">
 				<a href="<?php echo htmlspecialchars_decode(htmlspecialchars($base, ENT_QUOTES, 'UTF-8'), ENT_NOQUOTES); ?>">
 					<?php if ($language->image) : ?>
-						<?php echo JHtml::_('image', 'mod_languages/' . $language->image . '.webp', '', null, true); ?>
+						<?php echo JHtml::_('image', 'system/flags/' . $language->image . '.webp', '', null, true); ?>
 					<?php endif; ?>
 				<?php echo $language->title_native; ?>
 				</a>
@@ -77,7 +77,7 @@ if ($params->get('dropdown', 0) && !$params->get('dropdownimage', 1))
 			<a href="<?php echo htmlspecialchars_decode(htmlspecialchars((string) $language->link, ENT_QUOTES, 'UTF-8'), ENT_NOQUOTES); ?>">
 			<?php if ($params->get('image', 1)) : ?>
 				<?php if ($language->image) : ?>
-					<?php echo JHtml::_('image', 'mod_languages/' . $language->image . '.webp', $language->title_native, array('title' => $language->title_native), true); ?>
+					<?php echo JHtml::_('image', 'system/flags/' . $language->image . '.webp', $language->title_native, array('title' => $language->title_native), true); ?>
 				<?php else : ?>
 					<span class="label"><?php echo strtoupper((string) $language->sef); ?></span>
 				<?php endif; ?>
@@ -92,7 +92,7 @@ if ($params->get('dropdown', 0) && !$params->get('dropdownimage', 1))
 			<a href="<?php echo htmlspecialchars_decode(htmlspecialchars($base, ENT_QUOTES, 'UTF-8'), ENT_NOQUOTES); ?>">
 			<?php if ($params->get('image', 1)) : ?>
 				<?php if ($language->image) : ?>
-					<?php echo JHtml::_('image', 'mod_languages/' . $language->image . '.webp', $language->title_native, array('title' => $language->title_native), true); ?>
+					<?php echo JHtml::_('image', 'system/flags/' . $language->image . '.webp', $language->title_native, array('title' => $language->title_native), true); ?>
 				<?php else : ?>
 					<span class="label"><?php echo strtoupper((string) $language->sef); ?></span>
 				<?php endif; ?>
