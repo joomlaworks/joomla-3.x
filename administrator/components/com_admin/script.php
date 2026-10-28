@@ -4434,6 +4434,8 @@ class JoomlaInstallerScript
 			'/media/media/js/mediafield-mootools.min.js',
 			'/media/system/js/caption-uncompressed.js',
 			'/media/system/js/caption.js',
+			'/media/system/js/core.js',
+			'/media/system/js/core-uncompressed.js',
 			'/media/system/js/helpsite.js',
 			'/media/system/js/highlighter-uncompressed.js',
 			'/media/system/js/highlighter.js',

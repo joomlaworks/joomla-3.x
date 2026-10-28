@@ -8,8 +8,7 @@
  * The CMS's shared JavaScript, in one file: the namespace window.CMS (what core.js was, plus vanilla versions of what
  * needed MooTools). Older names stay as aliases of the new code (see LEGACY at the end): Joomla.submitform() is
  * CMS.form.submit(), SqueezeBox.open() is CMS.modal.open(), jModalClose() is CMS.modal.close(), and so on.
- * media/system/js/core.js and core-uncompressed.js are copies of this file's minified and full versions, for pages
- * which name core.js themselves; it runs once however often it's loaded. Its styles are in media/system/css/global.css.
+ * It runs once however often it's loaded. Its styles are in media/system/css/global.css.
  *
  * Parts are ports of MIT-licensed MooTools code: the modal of SqueezeBox 1.3 (Harald Kirschner, Rouven Weßling), the tree of
  * MooTree (Rasmus Schultz, mindplay.dk), the password meter of Form.PasswordStrength (Al Kent).
