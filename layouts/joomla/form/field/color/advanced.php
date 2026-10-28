@@ -69,9 +69,8 @@ $autocomplete = ! $autocomplete ? ' autocomplete="off"' : '';
 // Force LTR input value in RTL, due to display issues with rgba/hex colors
 $direction    = $lang->isRtl() ? ' dir="ltr" style="text-align:right"' : '';
 
-// Including fallback code for HTML5 non supported browsers.
+// The colour picker (a jQuery plugin)
 JHtml::_('jquery.framework');
-JHtml::_('script', 'system/html5fallback.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
 JHtml::_('script', 'jui/jquery.minicolors.min.js', array('version' => 'auto', 'relative' => true));
 JHtml::_('stylesheet', 'jui/jquery.minicolors.css', array('version' => 'auto', 'relative' => true));
 JHtml::_('script', 'system/color-field-adv-init.min.js', array('version' => 'auto', 'relative' => true));

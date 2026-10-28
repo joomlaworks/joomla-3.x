@@ -141,10 +141,6 @@ class JFormFieldCheckbox extends JFormField
 		$onclick  = !empty($this->onclick) ? ' onclick="' . $this->onclick . '"' : '';
 		$onchange = !empty($this->onchange) ? ' onchange="' . $this->onchange . '"' : '';
 
-		// Including fallback code for HTML5 non supported browsers.
-		JHtml::_('jquery.framework');
-		JHtml::_('script', 'system/html5fallback.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
-
 		return '<input type="checkbox" name="' . $this->name . '" id="' . $this->id . '" value="'
 			. htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8') . '"' . $class . $checked . $disabled . $onclick . $onchange
 			. $required . $autofocus . ' />';

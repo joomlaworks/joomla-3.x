@@ -140,17 +140,9 @@ abstract class JHtmlBehavior
 			return;
 		}
 
-		// Include jQuery
-		JHtml::_('jquery.framework');
-
-		JHtml::_('script', 'system/caption.js', array('version' => 'auto', 'relative' => true));
-
-		// Attach caption to document
-		JFactory::getDocument()->addScriptDeclaration(
-			"jQuery(window).on('load',  function() {
-				new JCaption('" . $selector . "');
-			});"
-		);
+		// CMS.caption (global.js), started from the page's script options once the images are loaded
+		static::core();
+		JFactory::getDocument()->addScriptOptions('system.caption', array($selector => 1));
 
 		// Set static array
 		static::$loaded[__METHOD__][$selector] = true;
@@ -440,20 +432,9 @@ abstract class JHtmlBehavior
 			return;
 		}
 
-		// Include core
+		// CMS.multiselect (global.js), started from the page's script options
 		static::core();
-
-		// Include jQuery
-		JHtml::_('jquery.framework');
-
-		JHtml::_('script', 'system/multiselect.js', array('version' => 'auto', 'relative' => true));
-
-		// Attach multiselect to document
-		JFactory::getDocument()->addScriptDeclaration(
-			"jQuery(document).ready(function() {
-				Joomla.JMultiSelect('" . $id . "');
-			});"
-		);
+		JFactory::getDocument()->addScriptOptions('system.multiselect', array($id => 1));
 
 		// Set static array
 		static::$loaded[__METHOD__][$id] = true;
@@ -717,38 +698,11 @@ abstract class JHtmlBehavior
 			return;
 		}
 
-		// Include core
+		// CMS.highlighter (global.js), started from the page's script options: the words between the two marker elements
 		static::core();
-
-		// Include jQuery
-		JHtml::_('jquery.framework');
-
-		JHtml::_('script', 'system/highlighter.js', array('version' => 'auto', 'relative' => true));
-
-		foreach ($terms as $i => $term)
-		{
-			$terms[$i] = JFilterOutput::stringJSSafe($term);
-		}
-
-		$document = JFactory::getDocument();
-		$document->addScriptDeclaration("
-			jQuery(function ($) {
-				var start = document.getElementById('" . $start . "');
-				var end = document.getElementById('" . $end . "');
-				if (!start || !end || !Joomla.Highlighter) {
-					return true;
-				}
-				highlighter = new Joomla.Highlighter({
-					startElement: start,
-					endElement: end,
-					className: '" . $className . "',
-					onlyWords: false,
-					tag: '" . $tag . "'
-				}).highlight([\"" . implode('","', $terms) . "\"]);
-				$(start).remove();
-				$(end).remove();
-			});
-		");
+		JFactory::getDocument()->addScriptOptions('system.highlighter', array(
+			$sig => array('terms' => array_values($terms), 'start' => $start, 'end' => $end, 'className' => $className, 'tag' => $tag),
+		));
 
 		static::$loaded[__METHOD__][$sig] = true;
 
@@ -846,7 +800,6 @@ abstract class JHtmlBehavior
 		}
 		// Include jQuery
 		JHtml::_('jquery.framework');
-		JHtml::_('behavior.polyfill', array('filter','xpath'));
 		JHtml::_('script', 'system/tabs-state.js', array('version' => 'auto', 'relative' => true));
 		self::$loaded[__METHOD__] = true;
 	}
@@ -863,30 +816,7 @@ abstract class JHtmlBehavior
 	 */
 	public static function polyfill($polyfillTypes = null, $conditionalBrowser = null)
 	{
-		if ($polyfillTypes === null)
-		{
-			return;
-		}
-
-		foreach ((array) $polyfillTypes as $polyfillType)
-		{
-			$sig = md5(serialize(array($polyfillType, $conditionalBrowser)));
-
-			// Only load once
-			if (isset(static::$loaded[__METHOD__][$sig]))
-			{
-				continue;
-			}
-
-			// If include according to browser.
-			$scriptOptions = array('version' => 'auto', 'relative' => true);
-			$scriptOptions = $conditionalBrowser !== null ? array_replace($scriptOptions, array('conditional' => $conditionalBrowser)) : $scriptOptions;
-
-			JHtml::_('script', 'system/polyfill.' . $polyfillType . '.js', $scriptOptions);
-
-			// Set static array
-			static::$loaded[__METHOD__][$sig] = true;
-		}
+		// The browsers supported since 3.18 have them all: nothing to load (the polyfill files were removed)
 	}
 
 	/**

@@ -45,10 +45,6 @@ extract($displayData);
  * @var   string   $accept          File types that are accepted.
  */
 
-// Including fallback code for HTML5 non supported browsers.
-JHtml::_('jquery.framework');
-JHtml::_('script', 'system/html5fallback.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
-
 $maxSize = JHtml::_('number.bytes', JUtility::getMaxUploadSize());
 ?>
 <input type="file"

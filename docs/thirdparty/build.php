@@ -62,8 +62,6 @@ $groups = array(
 			'check' => array('media/system/js/jquery.Jcrop.js', '/Jcrop[^\n]*v([0-9.]+)/')),
 		array('name' => 'Punycode.js', 'use' => 'shared', 'upstream' => 'npm:punycode', 'version' => '1.4.1', 'date' => '2016-03-20', 'dateSource' => 'GitHub tag v1.4.1; npm agrees', 'license' => 'MIT', 'url' => 'https://github.com/mathiasbynens/punycode.js', 'path' => 'media/system/js/punycode.js',
 			'check' => array('media/system/js/punycode-uncompressed.js', '/mths.be\/punycode v([0-9.]+)/')),
-		array('name' => 'Polyfill.io polyfills (classList, Event, Map, filter)', 'use' => 'shared', 'upstream' => 'npm:polyfill-service', 'version' => '3.14.0', 'date' => '2016-11-17', 'dateSource' => 'npm, polyfill-service 3.14.0 (GitHub release 2016-11-18)', 'license' => 'MIT', 'url' => 'https://github.com/Financial-Times/polyfill-service', 'path' => 'media/system/js/polyfill.map.js',
-			'check' => array('media/system/js/polyfill.map-uncompressed.js', '/v([0-9.]+)/')),
 		array('name' => 'MediaElement.js', 'use' => 'core', 'upstream' => 'npm:mediaelement', 'version' => '2.23.0', 'date' => '2016-09-07', 'dateSource' => 'GitHub release 2.23.0 (npm: 2016-10-24)', 'license' => 'MIT', 'url' => 'https://www.mediaelementjs.com', 'path' => 'media/media/js/mediaelement-and-player.js',
 			'check' => array('media/media/js/mediaelement-and-player.js', '/([0-9]+\.[0-9]+\.[0-9]+)/')),
 	),

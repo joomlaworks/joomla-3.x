@@ -9,10 +9,6 @@
 
 defined('_JEXEC') or die;
 
-// Including fallback code for the placeholder attribute in the search field.
-JHtml::_('jquery.framework');
-JHtml::_('script', 'system/html5fallback.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
-
 if ($width)
 {
 	$moduleclass_sfx .= ' ' . 'mod_search' . $module->id;

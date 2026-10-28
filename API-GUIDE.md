@@ -338,7 +338,9 @@ The menu is the layout `joomla.editors.switcher`, which templates can override. 
 
 The CMS's shared JavaScript is one file, `media/system/js/global.js` (minified `global.min.js`), with one global object, `window.CMS`. It holds what `core.js` was and vanilla versions of everything that used to need MooTools: the modal (SqueezeBox), tooltips, tabs, sliders, the tree and the password strength meter. It needs no other library. Its styles are `media/system/css/global.css` (`global.min.css`), always loaded with it. `JHtml::_('behavior.core')` loads both; so does every behaviour below. `media/system/js/core.js` (with `core-uncompressed.js`) is a copy of `global.js` for pages that name the file themselves. It runs once, however often it's included.
 
-Scripts and stylesheets merged into these files were removed: asking for one through `JHtml::_('script')` or `JHtml::_('stylesheet')` loads `global.js` or `global.css` instead (`HTMLHelper::GLOBAL_FILES`): `system/core.js`, `modal.js`, `tabs.js`, `mootree.js`, `passwordstrength.js`, `keepalive.js`, `editor-switch.js`, and `system/modal.css`, `mootree.css`, `mootree_rtl.css`, `editor-switch.css`. Behaviours that only needed a script are started from data the page already carries, not from more `<script>` tags: `behavior.keepalive` writes its script options (`system.keepalive`) and `global.js` starts `CMS.keepalive` from them; `CMS.keepalive.start({interval, uri})` and `stop()` are there for scripts.
+Scripts and stylesheets merged into these files were removed: asking for one through `JHtml::_('script')` or `JHtml::_('stylesheet')` loads `global.js` or `global.css` instead (`HTMLHelper::GLOBAL_FILES`): `system/core.js`, `modal.js`, `tabs.js`, `mootree.js`, `passwordstrength.js`, `keepalive.js`, `editor-switch.js`, `multiselect.js`, `caption.js`, `highlighter.js`, `helpsite.js`, `media/mediafield-mootools.js`, and `system/modal.css`, `mootree.css`, `mootree_rtl.css`, `editor-switch.css`. Polyfills and old-browser fallbacks were removed without a replacement (`HTMLHelper::DROPPED_FILES`; asking for one loads nothing): `system/polyfill.classlist.js`, `polyfill.event.js`, `polyfill.filter.js`, `polyfill.map.js`, `polyfill.xpath.js`, `html5fallback.js`, `progressbar.js`. `JHtml::_('behavior.polyfill')` does nothing.
+
+Behaviours are started from data the page already carries, not from more `<script>` tags: the PHP writes script options and `global.js` reads them when the page is ready. `behavior.keepalive` (`system.keepalive`: `CMS.keepalive`, with `start({interval, uri})` and `stop()` for scripts), `behavior.multiselect($id)` (`system.multiselect`: `CMS.multiselect.attach(id)`), `behavior.caption($selector)` (`system.caption`, once the images are loaded: `CMS.caption.attach(selector)`), `behavior.highlighter($terms)` (`system.highlighter`: `CMS.highlighter.create(options).highlight(words)`). The media field's functions are `CMS.mediaField.insert(value, id)`, `refreshPreview(id)`, `previewTip(tip)` and `imagePathTip(tip, input)`.
 
 MooTools and MooTools More are still bundled, and `JHtml::_('behavior.framework')` (or a script loaded with `array('framework' => true)`) still loads them, for extensions which ask for them. Nothing in the core does.
 
@@ -367,6 +369,10 @@ Every name `core.js` and the MooTools behaviours offered still works and calls t
 | `new Fx.Accordion()` (`sliders.start`) | `CMS.sliders.create()` |
 | `new Form.PasswordStrength()` | `CMS.password.meter()`, `CMS.password.strength()` |
 | `new MooTreeControl()` (`behavior.tree`) | `CMS.tree.create()`, `new CMS.tree.Tree()` |
+| `Joomla.JMultiSelect()` (`behavior.multiselect`) | `CMS.multiselect.attach()` |
+| `new JCaption()` (`behavior.caption`) | `CMS.caption.attach()` |
+| `Joomla.Highlighter()` (`behavior.highlighter`) | `CMS.highlighter.create()` |
+| `jInsertFieldValue()`, `jMediaRefreshPreview()`, `jMediaRefreshPreviewTip()`, `jMediaRefreshImgpathTip()` | `CMS.mediaField.insert()`, `refreshPreview()`, `previewTip()`, `imagePathTip()` |
 
 `SqueezeBox`, `JTabs`, `Form.PasswordStrength` and `MooTreeControl` are defined only when MooTools' own versions aren't there: an extension that loads MooTools and `media/system/js/modal.js` itself gets the real SqueezeBox, and `CMS.modal.close()` (so `jModalClose()`) closes whichever box is open.
 

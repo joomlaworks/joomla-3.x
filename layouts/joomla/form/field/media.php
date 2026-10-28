@@ -52,13 +52,9 @@ extract($displayData);
 // Load the modal behavior script.
 JHtml::_('behavior.modal');
 
-// Include jQuery
-JHtml::_('jquery.framework');
-JHtml::_('script', 'media/mediafield-mootools.min.js', array('version' => 'auto', 'relative' => true));
-
 // Tooltip for INPUT showing whole image path
 $options = array(
-	'onShow' => 'jMediaRefreshImgpathTip',
+	'onShow' => 'CMS.mediaField.imagePathTip',
 );
 
 JHtml::_('behavior.tooltip', '.hasTipImgpath', $options);
@@ -106,7 +102,7 @@ switch ($preview)
 	default:
 		$showAsTooltip = true;
 		$options = array(
-				'onShow' => 'jMediaRefreshPreviewTip',
+				'onShow' => 'CMS.mediaField.previewTip',
 		);
 		JHtml::_('behavior.tooltip', '.hasTipPreview', $options);
 		break;

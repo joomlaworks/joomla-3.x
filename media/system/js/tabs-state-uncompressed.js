@@ -11,11 +11,6 @@
 
 jQuery(function ($) {
 
-    // Ensure in IE8 we can use xpath
-    if (typeof wgxpath.install === "function") {
-        wgxpath.install();
-    }
-
     /**
      * Tiny jQuery extension to allow getting of url params
      * @use jQuery.urlParam('param') or $.urlParam('myRegex|anotherRegex')

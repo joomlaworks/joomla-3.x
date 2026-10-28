@@ -56,7 +56,8 @@ class HelpsiteField extends \JFormFieldList
 	 */
 	protected function getInput()
 	{
-		\JHtml::_('script', 'system/helpsite.js', array('version' => 'auto', 'relative' => true));
+		// Its refresh button is handled by global.js
+		\JHtml::_('behavior.core');
 
 		$showDefault = (string) $this->getAttribute('showDefault') === 'false' ? 'false' : 'true';
 

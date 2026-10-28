@@ -40,9 +40,8 @@ extract($displayData);
  * @var   array    $options         Options available for this field.
  */
 
-// Including fallback code for HTML5 non supported browsers.
+// The combo box (a jQuery plugin)
 JHtml::_('jquery.framework');
-JHtml::_('script', 'system/html5fallback.js', array('version' => 'auto', 'relative' => true, 'conditional' => 'lt IE 9'));
 JHtml::_('behavior.combobox');
 
 $attr  = !empty($class) ? ' class="combobox ' . $class . '"' : ' class="combobox"';

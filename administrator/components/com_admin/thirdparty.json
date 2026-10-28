@@ -409,22 +409,6 @@
             "seriesLatest": ""
         },
         {
-            "name": "Polyfill.io polyfills (classList, Event, Map, filter)",
-            "version": "3.14.0",
-            "date": "2016.11.17",
-            "dateSource": "npm, polyfill-service 3.14.0 (GitHub release 2016-11-18)",
-            "license": "MIT",
-            "url": "https://github.com/Financial-Times/polyfill-service",
-            "path": "media/system/js/polyfill.map.js",
-            "note": "",
-            "latest": "3.25.3",
-            "isLatest": false,
-            "checked": "2026.10.27",
-            "use": "shared",
-            "series": "",
-            "seriesLatest": ""
-        },
-        {
             "name": "Punycode.js",
             "version": "1.4.1",
             "date": "2016.03.20",

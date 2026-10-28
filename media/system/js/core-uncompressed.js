@@ -2033,6 +2033,314 @@
 		create: (config, root) => new Tree(config, root),
 	};
 
+	/* --- Shift-click ranges of list checkboxes (behavior.multiselect) --- */
+
+	const multiselect = { last: new WeakMap() };
+
+	CMS.multiselect = {
+		/**
+		 * In the element (a manager's form or table), a shift-click checks or unchecks every checkbox between it and the last
+		 * one clicked
+		 *
+		 * @param  {string|Element}  container  Its id
+		 */
+		attach(container) {
+			container = byId(container);
+
+			if (!container || multiselect.last.has(container)) {
+				return;
+			}
+
+			multiselect.last.set(container, null);
+
+			container.addEventListener('click', (event) => {
+				const current = event.target;
+
+				if (!current.matches || !current.matches('input[type=checkbox]')) {
+					return;
+				}
+
+				const last = multiselect.last.get(container);
+				const boxes = Array.prototype.slice.call(container.querySelectorAll('input[type=checkbox]'));
+
+				if (event.shiftKey && last && boxes.indexOf(last) !== -1) {
+					const from = Math.min(boxes.indexOf(last), boxes.indexOf(current));
+					const to = Math.max(boxes.indexOf(last), boxes.indexOf(current));
+
+					boxes.slice(from, to + 1).forEach((box) => {
+						box.checked = current.checked;
+					});
+
+					// The toolbar counts the checked rows
+					const form = current.form;
+
+					if (form && form.boxchecked) {
+						form.boxchecked.value = boxes.filter((box) => box.checked && /^cb\d+$/.test(box.id)).length;
+					}
+				}
+
+				multiselect.last.set(container, current);
+			});
+		},
+	};
+
+	/* --- Captions from the title of images (behavior.caption, deprecated: use <figure>) --- */
+
+	CMS.caption = {
+		// Wraps each image in a div of its width and float, with its title as a paragraph under it
+		attach(selector) {
+			const className = selector.replace('.', '_');
+
+			for (const image of document.querySelectorAll(selector)) {
+				const caption = image.getAttribute('title') || '';
+				const align = image.getAttribute('align') || window.getComputedStyle(image).cssFloat || 'none';
+				const container = document.createElement('div');
+
+				container.className = className + ' ' + align;
+				container.style.cssFloat = align;
+				container.style.width = (image.getAttribute('width') || image.width) + 'px';
+				image.parentNode.insertBefore(container, image);
+				container.appendChild(image);
+
+				if (caption !== '') {
+					const text = document.createElement('p');
+
+					text.className = className;
+					text.textContent = caption;
+					container.appendChild(text);
+				}
+			}
+		},
+	};
+
+	/* --- Highlighting search words in the content (behavior.highlighter) --- */
+
+	const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+	CMS.highlighter = {
+		/**
+		 * @param  {Object}  options  startElement, endElement (the content is between them), elements, className, tag, onlyWords,
+		 *                            caseSensitive, autoUnhighlight
+		 *
+		 * @return {Object}  highlight(words), unhighlight(words)
+		 */
+		create(options) {
+			options = Object.assign({
+				autoUnhighlight: true,
+				caseSensitive: false,
+				startElement: false,
+				endElement: false,
+				elements: [],
+				className: 'highlight',
+				onlyWords: true,
+				tag: 'span',
+			}, options || {});
+
+			const found = {};
+			const start = byId(options.startElement);
+			const end = byId(options.endElement);
+
+			options.elements = list(options.elements);
+
+			for (let next = start ? start.nextElementSibling : null; next && next !== end; next = next.nextElementSibling) {
+				options.elements.push(next);
+			}
+
+			const key = (word) => (options.caseSensitive ? word : word.toUpperCase());
+
+			const recurse = (node, regex) => {
+				if (node.nodeType === 3) {
+					const match = node.nodeValue.match(regex);
+
+					if (match) {
+						const mark = document.createElement(options.tag);
+						const word = node.splitText(match.index);
+
+						word.splitText(match[0].length);
+						mark.className = options.className;
+						mark.appendChild(word.cloneNode(true));
+						word.parentNode.replaceChild(mark, word);
+						mark.setAttribute('rel', mark.textContent);
+						(found[key(mark.textContent)] = found[key(mark.textContent)] || []).push(mark);
+
+						return 1;
+					}
+				} else if (node.nodeType === 1 && node.childNodes && !/^(script|style|textarea|iframe)$/i.test(node.tagName)
+					&& !(node.tagName === options.tag.toUpperCase() && node.className === options.className)) {
+					for (let i = 0; i < node.childNodes.length; i += 1) {
+						i += recurse(node.childNodes[i], regex);
+					}
+				}
+
+				return 0;
+			};
+
+			const highlighter = {
+				highlight(words) {
+					words = [].concat(words).filter((word) => word !== '');
+
+					if (!words.length) {
+						return highlighter;
+					}
+
+					if (options.autoUnhighlight) {
+						highlighter.unhighlight(words);
+					}
+
+					const pattern = words.map(escapeRegExp).join('|');
+					const regex = new RegExp(options.onlyWords ? '\\b(' + pattern + ')\\b' : '(' + pattern + ')', options.caseSensitive ? '' : 'i');
+
+					options.elements.forEach((element) => recurse(element, regex));
+
+					return highlighter;
+				},
+
+				unhighlight(words) {
+					[].concat(words).forEach((word) => {
+						(found[key(word)] || []).forEach((mark) => {
+							if (mark.parentNode) {
+								mark.parentNode.replaceChild(document.createTextNode(mark.textContent), mark);
+							}
+						});
+						delete found[key(word)];
+					});
+
+					return highlighter;
+				},
+			};
+
+			return highlighter;
+		},
+	};
+
+	/* --- The help site field's refresh button (index.php?option=com_users&task=profile.gethelpsites) --- */
+
+	document.addEventListener('click', (event) => {
+		const button = event.target.closest ? event.target.closest('#helpsite-refresh') : null;
+
+		if (!button) {
+			return;
+		}
+
+		const select = document.getElementById(button.getAttribute('rel'));
+		const showDefault = button.getAttribute('showDefault') === 'true';
+
+		fetch('index.php?option=com_users&task=profile.gethelpsites&format=json', { credentials: 'same-origin' })
+			.then((response) => response.json())
+			.then((sites) => {
+				while (select.firstChild) {
+					select.removeChild(select.firstChild);
+				}
+
+				sites.forEach((site) => {
+					if (site.value !== '' || showDefault) {
+						select.appendChild(new Option(site.text, site.value));
+					}
+				});
+
+				// Chosen redraws the list when told (a jQuery event)
+				if (window.jQuery) {
+					window.jQuery(select).trigger('liszt:updated').trigger('chosen:updated');
+				}
+			})
+			// No list (the core has no gethelpsites task since Joomla 3): the field keeps its options
+			.catch(() => {});
+	});
+
+	/* --- The media field (the image picker; layout joomla.form.field.media) --- */
+
+	CMS.mediaField = {
+		// Called by the Media Manager's picker in the modal
+		insert(value, id) {
+			const input = document.getElementById(id);
+
+			if (!input || input.value === value) {
+				return;
+			}
+
+			input.value = value;
+			input.dispatchEvent(new Event('change', { bubbles: true }));
+
+			if (window.jQuery) {
+				window.jQuery(input).trigger('change');
+			}
+
+			CMS.mediaField.refreshPreview(id);
+		},
+
+		refreshPreview(id) {
+			const input = document.getElementById(id);
+			const image = document.getElementById(id + '_preview');
+
+			if (!input || !image) {
+				return;
+			}
+
+			const empty = document.getElementById(id + '_preview_empty');
+			const box = document.getElementById(id + '_preview_img');
+
+			image.setAttribute('src', input.value ? (input.getAttribute('data-basepath') || '') + input.value : '');
+
+			if (empty) {
+				empty.style.display = input.value ? 'none' : '';
+			}
+
+			if (box) {
+				box.style.display = input.value ? '' : 'none';
+			}
+		},
+
+		// The preview tooltip (behavior.tooltip's onShow)
+		previewTip(tip) {
+			for (const image of tip.querySelectorAll('img.media-preview')) {
+				const wrap = tip.querySelector('div.tip');
+
+				if (wrap) {
+					wrap.style.maxWidth = 'none';
+				}
+
+				CMS.mediaField.refreshPreview(image.id.slice(0, -'_preview'.length));
+			}
+		},
+
+		// The tooltip with the whole image path (behavior.tooltip's onShow)
+		imagePathTip(tip, input) {
+			const path = document.getElementById('TipImgpath');
+
+			tip.style.maxWidth = 'none';
+
+			if (path) {
+				path.textContent = input.value;
+			}
+
+			tip.style.display = input.value ? '' : 'none';
+		},
+	};
+
+	/* --- Behaviours started from the page's script options --- */
+
+	CMS.ready(() => {
+		Object.keys(CMS.options.get('system.multiselect') || {}).forEach((id) => CMS.multiselect.attach(id));
+
+		Object.keys(CMS.options.get('system.highlighter') || {}).forEach((sig) => {
+			const options = CMS.options.get('system.highlighter')[sig];
+			const start = document.getElementById(options.start);
+			const end = document.getElementById(options.end);
+
+			if (start && end) {
+				CMS.highlighter.create({ startElement: start, endElement: end, className: options.className, onlyWords: false, tag: options.tag })
+					.highlight(options.terms);
+				start.remove();
+				end.remove();
+			}
+		});
+	});
+
+	// Captions need the images' sizes
+	window.addEventListener('load', () => {
+		Object.keys(CMS.options.get('system.caption') || {}).forEach((selector) => CMS.caption.attach(selector));
+	});
+
 	/* --- Keeping the session alive (behavior.keepalive) --- */
 
 	CMS.keepalive = {
@@ -2264,6 +2572,26 @@
 		window.MooTreeIcon = TREE_ICONS;
 	}
 
+	if (!Joomla.JMultiSelect) {
+		Joomla.JMultiSelect = (container) => CMS.multiselect.attach(container);
+	}
+
+	if (!Joomla.Highlighter) {
+		Joomla.Highlighter = (options) => CMS.highlighter.create(options);
+	}
+
+	if (!window.JCaption) {
+		window.JCaption = function JCaption(selector) {
+			CMS.caption.attach(selector);
+		};
+	}
+
+	// The media field's names (the administrator templates' mediafield.js declares its own after this file)
+	window.jInsertFieldValue = window.jInsertFieldValue || CMS.mediaField.insert;
+	window.jMediaRefreshPreview = window.jMediaRefreshPreview || CMS.mediaField.refreshPreview;
+	window.jMediaRefreshPreviewTip = window.jMediaRefreshPreviewTip || CMS.mediaField.previewTip;
+	window.jMediaRefreshImgpathTip = window.jMediaRefreshImgpathTip || CMS.mediaField.imagePathTip;
+
 	window.Form = window.Form || {};
 
 	if (!window.Form.PasswordStrength) {
@@ -2444,5 +2772,11 @@
 		'new Fx.Accordion() (sliders.start)': 'CMS.sliders.create()',
 		'new Form.PasswordStrength()': 'CMS.password.meter()',
 		'new MooTreeControl() (behavior.tree)': 'CMS.tree.create(), new CMS.tree.Tree()',
+		'Joomla.JMultiSelect()': 'CMS.multiselect.attach()',
+		'new JCaption()': 'CMS.caption.attach()',
+		'Joomla.Highlighter()': 'CMS.highlighter.create()',
+		'jInsertFieldValue(), jMediaRefreshPreview()': 'CMS.mediaField.insert(), CMS.mediaField.refreshPreview()',
+		'jMediaRefreshPreviewTip(), jMediaRefreshImgpathTip()': 'CMS.mediaField.previewTip(), CMS.mediaField.imagePathTip()',
+		'keepalive.js': 'CMS.keepalive.start(), CMS.keepalive.stop()',
 	};
 })(window, document);
