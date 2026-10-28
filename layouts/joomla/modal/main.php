@@ -11,8 +11,8 @@ defined('_JEXEC') or die;
 
 use Joomla\Utilities\ArrayHelper;
 
-// Load bootstrap-tooltip-extended plugin for additional tooltip positions in modal
-JHtml::_('bootstrap.tooltipExtended');
+// The modal's tooltips (.modalTooltip): the CMS's (CMS.tip), which keep inside the window and above the modal
+JHtml::_('bootstrap.tooltip', '.modalTooltip', array('placement' => 'top'));
 
 extract($displayData);
 
@@ -98,12 +98,8 @@ if (isset($params['url']))
 }
 else
 {
-	// Set modalTooltip container to modal ID (selector), and placement to top-left if no data attribute (bootstrap-tooltip-extended.js)
-	$script[] = "       $('.modalTooltip').each(function(){;";
-	$script[] = "           var attr = $(this).attr('data-placement');";
-	$script[] = "           if ( attr === undefined || attr === false ) $(this).attr('data-placement', 'auto-dir top-left')";
-	$script[] = "       });";
-	$script[] = "       $('.modalTooltip').tooltip({'html': true, 'container': '#" . $selector . "'});";
+	// Tooltips of .modalTooltip: CMS.tip (JHtml bootstrap.tooltip above), nothing to start here
+	$script[] = "       return;";
 }
 
 // Adapt modal body max-height to window viewport if needed, when the modal has been made visible to the user.
@@ -146,7 +142,7 @@ else
 $script[] = "   }).on('hide.bs.modal', function () {";
 $script[] = "       $('body').removeClass('modal-open');";
 $script[] = "       $('.modal-body').css({'max-height': 'initial', 'overflow-y': 'initial'});";
-$script[] = "       $('.modalTooltip').tooltip('destroy');";
+$script[] = "       window.CMS && CMS.tip && CMS.tip.hideAll();";
 $script[] = "   });";
 $script[] = "});";
 

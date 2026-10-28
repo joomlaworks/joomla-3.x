@@ -559,7 +559,7 @@ abstract class JHtmlBootstrap
 	/**
 	 * Loads js and css files needed by Bootstrap Tooltip Extended plugin
 	 *
-	 * @param   boolean  $extended  If true, bootstrap-tooltip-extended.js and .css files are loaded
+	 * @param   boolean  $extended  Ignored since 3.18 (the files were removed)
 	 *
 	 * @return  void
 	 *
@@ -569,11 +569,8 @@ abstract class JHtmlBootstrap
 	 */
 	public static function tooltipExtended($extended = true)
 	{
-		if ($extended)
-		{
-			JHtml::_('script', 'system/bootstrap-tooltip-extended.min.js', array('version' => 'auto', 'relative' => true));
-			JHtml::_('stylesheet', 'system/bootstrap-tooltip-extended.css', array('version' => 'auto', 'relative' => true));
-		}
+		// Nothing since 3.18: the CMS's tooltips (bootstrap.tooltip) keep inside the window by themselves, so the corner
+		// placements of Bootstrap Tooltip Extended (removed) aren't needed
 	}
 
 	/**

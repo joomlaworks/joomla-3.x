@@ -3729,6 +3729,13 @@
 				fill(tip.querySelector('.tooltip-inner'), title);
 			}
 
+			// Above the modal its element is in (Bootstrap's 1050, the CMS's own): tooltips' layer is below modals'
+			const modal = element.closest('.modal, #sbox-window');
+
+			if (modal) {
+				tip.style.zIndex = (parseInt(window.getComputedStyle(modal).zIndex, 10) || 1050) + 10;
+			}
+
 			tip.style.display = 'block';
 			tip.style.visibility = 'hidden';
 			document.body.appendChild(tip);

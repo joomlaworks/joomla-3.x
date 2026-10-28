@@ -4939,6 +4939,10 @@ class JoomlaInstallerScript
 			'/media/system/css/chosen-sprite@2x.png',
 			'/media/system/js/fields/calendar.js',
 			'/media/system/js/fields/calendar.min.js',
+			// Bootstrap Tooltip Extended (corner placements of Bootstrap's tooltip; the CMS's tooltips keep inside the window)
+			'/media/system/js/bootstrap-tooltip-extended.js',
+			'/media/system/js/bootstrap-tooltip-extended.min.js',
+			'/media/system/css/bootstrap-tooltip-extended.css',
 			// The user field's script (now global.js' CMS.userField, the list in the CMS's modal) and the templates' copies of
 			// its layout for the Bootstrap modal
 			'/media/system/js/fielduser.js',
