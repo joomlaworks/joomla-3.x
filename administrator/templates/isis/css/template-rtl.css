@@ -119,7 +119,7 @@ body {direction:rtl;}
 .navbar .brand {float:left;padding:6px 10px;}
 .navbar .nav {margin:0 0 0 10px;}
 .navbar .nav > li > a {padding:6px 10px;}
-.navbar .nav > li ul {overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;-moz-overflow-scrolling:touch;-ms-overflow-scrolling:touch;-o-overflow-scrolling:touch;height:auto;max-height:500px;margin:0;}
+.navbar .nav > li ul {overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;-moz-overflow-scrolling:touch;-o-overflow-scrolling:touch;height:auto;max-height:500px;margin:0;}
 .navbar .nav > li ul::-webkit-scrollbar {-webkit-appearance:none;width:7px;}
 .navbar .nav > li ul::-webkit-scrollbar-thumb {border-radius:4px;background-color:rgba(0,0,0,0.5);-webkit-box-shadow:0 0 1px rgba(255,255,255,0.5);}
 .navbar .nav-user .dropdown-menu li span {padding-left:0;padding-right:10px;}

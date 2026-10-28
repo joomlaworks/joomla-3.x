@@ -126,7 +126,7 @@ Summary of changes:
 - The front-end article form no longer asks logged-in users to solve a CAPTCHA (an Articles option brings it back)
 - Administrator-only extensions keep their scripts and styles in their own folders instead of `media/`, so a password-protected `/administrator` never affects the site
 - `media/` folders are named after their extensions (`com_contact`, `com_media`), shared files (the debug console's, the e-mail form's icon) are in `media/system`, and old names still load them
-- Every stylesheet of our own and Joomla's is written in one style (one rule per line); administrator-only scripts and styles named after their extension, Joomla Update's three scripts in one; the media player's Flash and Silverlight fallbacks removed
+- Every stylesheet of our own and Joomla's is written in one style (one rule per line), without Internet Explorer hacks; administrator-only scripts and styles named after their extension, Joomla Update's three scripts in one; the media player's Flash and Silverlight fallbacks removed
 - The editors, CAPTCHA plugins and two-factor authentication keep their files in their own plugin folders; each extension's folder in `media/` has one stylesheet and one script named after it (`com_x/css/x.css`, `com_x/js/x.js`), the Media Manager's included; unused files removed
 
 **Security fixes:**
