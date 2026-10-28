@@ -211,9 +211,7 @@ class ContactViewContact extends JViewLegacy
 				}
 				else
 				{
-					$image1 = JHtml::_(
-						'image', 'com_contact/' . $item->params->get('icon_address', 'con_address.png'), JText::_('COM_CONTACT_ADDRESS') . ': ', null, true
-					);
+					$image1 = $this->markerIcon('geo-alt', JText::_('COM_CONTACT_ADDRESS') . ': ');
 				}
 
 				if ($item->params->get('icon_email'))
@@ -222,7 +220,7 @@ class ContactViewContact extends JViewLegacy
 				}
 				else
 				{
-					$image2 = JHtml::_('image', 'com_contact/' . $item->params->get('icon_email', 'emailButton.png'), JText::_('JGLOBAL_EMAIL') . ': ', null, true);
+					$image2 = $this->markerIcon('envelope', JText::_('JGLOBAL_EMAIL') . ': ');
 				}
 
 				if ($item->params->get('icon_telephone'))
@@ -231,9 +229,7 @@ class ContactViewContact extends JViewLegacy
 				}
 				else
 				{
-					$image3 = JHtml::_(
-						'image', 'com_contact/' . $item->params->get('icon_telephone', 'con_tel.png'), JText::_('COM_CONTACT_TELEPHONE') . ': ', null, true
-					);
+					$image3 = $this->markerIcon('telephone', JText::_('COM_CONTACT_TELEPHONE') . ': ');
 				}
 
 				if ($item->params->get('icon_fax'))
@@ -242,7 +238,7 @@ class ContactViewContact extends JViewLegacy
 				}
 				else
 				{
-					$image4 = JHtml::_('image', 'com_contact/' . $item->params->get('icon_fax', 'con_fax.png'), JText::_('COM_CONTACT_FAX') . ': ', null, true);
+					$image4 = $this->markerIcon('printer', JText::_('COM_CONTACT_FAX') . ': ');
 				}
 
 				if ($item->params->get('icon_misc'))
@@ -251,11 +247,7 @@ class ContactViewContact extends JViewLegacy
 				}
 				else
 				{
-					$image5 = JHtml::_(
-						'image',
-						'com_contact/' . $item->params->get('icon_misc', 'con_info.png'),
-						JText::_('COM_CONTACT_OTHER_INFORMATION') . ': ', null, true
-					);
+					$image5 = $this->markerIcon('info-circle', JText::_('COM_CONTACT_OTHER_INFORMATION') . ': ');
 				}
 
 				if ($item->params->get('icon_mobile'))
@@ -264,9 +256,7 @@ class ContactViewContact extends JViewLegacy
 				}
 				else
 				{
-					$image6 = JHtml::_(
-						'image', 'com_contact/' . $item->params->get('icon_mobile', 'con_mobile.png'), JText::_('COM_CONTACT_MOBILE') . ': ', null, true
-					);
+					$image6 = $this->markerIcon('phone', JText::_('COM_CONTACT_MOBILE') . ': ');
 				}
 
 				$item->params->set('marker_address',   $image1);
@@ -496,5 +486,22 @@ class ContactViewContact extends JViewLegacy
 				$this->document->setMetadata($k, $v);
 			}
 		}
+	}
+
+	/**
+	 * A marker of the contact's details (address, email...): an icon of the component's sprite, drawn in the text colour
+	 *
+	 * @param   string  $icon   The icon's name (media/com_contact/images/icons.svg)
+	 * @param   string  $label  Its text for screen readers
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	protected function markerIcon($icon, $label)
+	{
+		return '<svg class="contact-icon" width="16" height="16" fill="currentColor" role="img" aria-label="'
+			. htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '"><use href="' . JUri::root(true) . '/media/com_contact/images/icons.svg#'
+			. $icon . '"></use></svg>';
 	}
 }

@@ -30,7 +30,7 @@ $dispatcher = JEventDispatcher::getInstance();
 			<?php if ($cover) : ?>
 				<img src="<?php echo $cover; ?>" alt="<?php echo $this->escape($audio->title); ?>" loading="lazy" style="max-width:60px;max-height:50px;" />
 			<?php else : ?>
-				<?php echo JHtml::_('image', $audio->icon_32, $this->escape($audio->title), null, true); ?>
+				<?php echo MediaHelper::typeIcon($audio->icon, 32, $audio->name); ?>
 			<?php endif; ?>
 		</div>
 

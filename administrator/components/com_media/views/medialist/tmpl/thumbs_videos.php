@@ -30,7 +30,7 @@ $dispatcher = JEventDispatcher::getInstance();
 			<?php if ($cover) : ?>
 				<img src="<?php echo $cover; ?>" alt="<?php echo $this->escape($video->title); ?>" loading="lazy" style="max-width:60px;max-height:50px;" />
 			<?php else : ?>
-				<?php echo JHtml::_('image', $video->icon_32, $this->escape($video->title), null, true); ?>
+				<?php echo MediaHelper::typeIcon($video->icon, 32, $video->name); ?>
 			<?php endif; ?>
 		</div>
 

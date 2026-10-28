@@ -29,7 +29,7 @@ $dispatcher = JEventDispatcher::getInstance();
 
 		<td>
 			<a class="video-preview"<?php echo $cover ? ' data-cover="' . $cover . '"' : ''; ?> href="<?php echo COM_MEDIA_BASEURL, '/', str_replace('%2F', '/', rawurlencode((string) $video->path_relative)); ?>" title="<?php echo $this->escape($video->title); ?>">
-				<?php echo JHtml::_('image', $video->icon_16, $this->escape($video->title), null, true); ?>
+				<?php echo MediaHelper::typeIcon($video->icon, 16, $video->name); ?>
 			</a>
 		</td>
 

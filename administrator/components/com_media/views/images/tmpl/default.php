@@ -62,7 +62,7 @@ else // XTD Image plugin
 	<form action="index.php?option=com_media&amp;asset=<?php echo $asset; ?>&amp;author=<?php echo $author; ?>" class="form-horizontal" id="imageForm" method="post" enctype="multipart/form-data">
 
 		<div id="messages" style="display: none;">
-			<span id="message"></span><?php echo JHtml::_('image', 'com_media/dots.gif', '...', array('width' => 22, 'height' => 12), true); ?>
+			<span id="message"></span><span class="media-loading-dots" aria-hidden="true"><span></span><span></span><span></span></span>
 		</div>
 
 		<div class="well">

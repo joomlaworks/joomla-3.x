@@ -27,7 +27,7 @@ $dispatcher = JEventDispatcher::getInstance();
 
 		<td>
 			<a title="<?php echo $this->escape($doc->name); ?>">
-				<?php echo JHtml::_('image', $doc->icon_16, $this->escape($doc->title), null, true, true) ? JHtml::_('image', $doc->icon_16, $this->escape($doc->title), array('width' => 16, 'height' => 16), true) : JHtml::_('image', 'com_media/con_info.png', $this->escape($doc->title), array('width' => 16, 'height' => 16), true); ?>
+				<?php echo MediaHelper::typeIcon($doc->icon, 16, $doc->name); ?>
 			</a>
 		</td>
 

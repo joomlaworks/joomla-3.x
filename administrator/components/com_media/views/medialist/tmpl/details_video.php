@@ -21,7 +21,7 @@ $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$this->_
 
 <tr>
 	<td>
-		<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $this->_tmp_video->path_relative)); ?>" title="<?php echo $this->escape($this->_tmp_video->title); ?>"><?php JHtml::_('image', $this->_tmp_video->icon_16, $this->escape($this->_tmp_video->title), null, true); ?></a>
+		<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $this->_tmp_video->path_relative)); ?>" title="<?php echo $this->escape($this->_tmp_video->title); ?>"><?php MediaHelper::typeIcon($this->_tmp_video->icon, 16, $this->_tmp_video->name); ?></a>
 	</td>
 	<td class="description">
 		<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $this->_tmp_video->path_relative)); ?>" title="<?php echo $this->escape($this->_tmp_video->name); ?>">

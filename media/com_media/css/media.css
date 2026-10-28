@@ -26,6 +26,11 @@
 :where(:root:has(#imageForm)) #message {font-size:15px;font-weight:bold;color:#69c;}
 #uploads .upload {padding:4px;}
 #upload-noflash {border:0;}
+/* Shown while the picker works (what dots.gif was) */
+#imageForm .media-loading-dots {display:inline-flex;gap:3px;margin-left:4px;vertical-align:middle;}
+#imageForm .media-loading-dots span {width:5px;height:5px;border-radius:50%;background:currentColor;animation:media-loading-dots 1s ease-in-out infinite;}
+#imageForm .media-loading-dots span:nth-child(2) {animation-delay:0.15s;}
+#imageForm .media-loading-dots span:nth-child(3) {animation-delay:0.3s;}
 /* The file field fits narrow windows (phones) instead of widening the page past them */
 #upload-file {max-width:100%;box-sizing:border-box;}
 
@@ -84,13 +89,18 @@
 /* After the rules above, which outrank [hidden] otherwise */
 #audioPlayer [hidden] {display:none;}
 
+@keyframes media-loading-dots {
+    0%,80%,100% {opacity:0.25;}
+    40% {opacity:1;}
+}
+
 @keyframes media-audio-wave {
     0%,100% {transform:scaleY(0.35);}
     50% {transform:scaleY(1);}
 }
 
 @media (prefers-reduced-motion: reduce) {
-    #audioPlayer .media-audio-wave rect {animation:none;}
+    #audioPlayer .media-audio-wave rect,#imageForm .media-loading-dots span {animation:none;}
 }
 
 /* --- Dropping files on the Media Manager's lists --- */

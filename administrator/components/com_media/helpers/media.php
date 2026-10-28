@@ -280,4 +280,22 @@ abstract class MediaHelper
 		JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
 		JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));
 	}
+
+	/**
+	 * A file type's icon from the Media Manager's sprite (media/com_media/images/icons.svg), drawn in the text colour
+	 *
+	 * @param   string   $icon   The icon's name (the list model's $file->icon)
+	 * @param   integer  $size   Its size in pixels
+	 * @param   string   $label  Its text for screen readers (the file's name)
+	 *
+	 * @return  string
+	 *
+	 * @since   3.18.0
+	 */
+	public static function typeIcon($icon, $size, $label)
+	{
+		return '<svg class="media-type-icon" width="' . (int) $size . '" height="' . (int) $size . '" fill="currentColor" role="img" aria-label="'
+			. htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8') . '"><use href="' . JUri::root(true) . '/media/com_media/images/icons.svg#'
+			. htmlspecialchars((string) ($icon ?: 'file-earmark'), ENT_QUOTES, 'UTF-8') . '"></use></svg>';
+	}
 }

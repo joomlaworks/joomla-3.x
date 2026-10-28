@@ -226,9 +226,9 @@ class MediaModelList extends JModelLegacy
 						case 'webm':
 						case 'mov':
 						case 'ogv':
-							$icon = $this->getTypeIcon(strtolower(JFile::getExt($file)));
-							$tmp->icon_32 = 'com_media/mime-icon-32/' . $icon . '.png';
-							$tmp->icon_16 = 'com_media/mime-icon-16/' . $icon . '.png';
+							$tmp->icon    = $this->getTypeIcon(strtolower(JFile::getExt($file)));
+							$tmp->icon_32 = '';
+							$tmp->icon_16 = '';
 							$tmp->cover   = $this->findCover($file, $tmp->path_relative, $covers);
 							$videos[] = $tmp;
 							break;
@@ -242,18 +242,18 @@ class MediaModelList extends JModelLegacy
 						case 'opus':
 						case 'wav':
 						case 'flac':
-							$icon = $this->getTypeIcon(strtolower(JFile::getExt($file)));
-							$tmp->icon_32 = 'com_media/mime-icon-32/' . $icon . '.png';
-							$tmp->icon_16 = 'com_media/mime-icon-16/' . $icon . '.png';
+							$tmp->icon    = $this->getTypeIcon(strtolower(JFile::getExt($file)));
+							$tmp->icon_32 = '';
+							$tmp->icon_16 = '';
 							$tmp->cover   = $this->findCover($file, $tmp->path_relative, $covers);
 							$audios[] = $tmp;
 							break;
 
 						// Non-image document
 						default:
-							$icon = $this->getTypeIcon(strtolower(JFile::getExt($file)));
-							$tmp->icon_32 = 'com_media/mime-icon-32/' . $icon . '.png';
-							$tmp->icon_16 = 'com_media/mime-icon-16/' . $icon . '.png';
+							$tmp->icon    = $this->getTypeIcon(strtolower(JFile::getExt($file)));
+							$tmp->icon_32 = '';
+							$tmp->icon_16 = '';
 							$docs[] = $tmp;
 							break;
 					}
@@ -339,27 +339,36 @@ class MediaModelList extends JModelLegacy
 	}
 
 	/**
-	 * The icon of a file type: its own when the Media Manager has one, else a related type's (docx: doc), else the document
-	 * icon (types with no icon showed a broken image).
+	 * The icon of a file type: a Bootstrap Icons name in the Media Manager's sprite (media/com_media/images/icons.svg), the
+	 * plain file's for types without one of their own
 	 *
 	 * @param   string  $ext  The file's extension, in lower case
 	 *
-	 * @return  string  The icon's name, without .png
+	 * @return  string
 	 *
 	 * @since   3.18.0
 	 */
 	protected function getTypeIcon($ext)
 	{
-		static $related = array(
-			'docx' => 'doc', 'rtf' => 'rtf', 'txt' => 'doc', 'csv' => 'xls', 'xlsx' => 'xls', 'ods' => 'xls', 'pptx' => 'ppt', 'odp' => 'ppt',
-			'odg' => 'sxd', 'webm' => 'mp4', 'ogv' => 'mp4', 'm4a' => 'mp3', 'wav' => 'mp3', 'oga' => 'ogg', 'opus' => 'ogg', '7z' => 'zip',
+		static $icons = array(
+			'pdf'  => 'file-earmark-pdf',
+			'doc'  => 'file-earmark-word', 'docx' => 'file-earmark-word', 'odt' => 'file-earmark-word',
+			'xls'  => 'file-earmark-excel', 'xlsx' => 'file-earmark-excel', 'ods' => 'file-earmark-excel',
+			'csv'  => 'file-earmark-spreadsheet',
+			'ppt'  => 'file-earmark-ppt', 'pptx' => 'file-earmark-ppt', 'odp' => 'file-earmark-ppt',
+			'txt'  => 'file-earmark-text', 'rtf' => 'file-earmark-richtext',
+			'zip'  => 'file-earmark-zip', 'rar' => 'file-earmark-zip', '7z' => 'file-earmark-zip', 'tar' => 'file-earmark-zip',
+			'tgz'  => 'file-earmark-zip', 'gz' => 'file-earmark-zip',
+			'mp4'  => 'file-earmark-play', 'webm' => 'file-earmark-play', 'ogv' => 'file-earmark-play', 'mov' => 'file-earmark-play',
+			'avi'  => 'file-earmark-play', 'wmv' => 'file-earmark-play',
+			'mp3'  => 'file-earmark-music', 'm4a' => 'file-earmark-music', 'aac' => 'file-earmark-music', 'ogg' => 'file-earmark-music',
+			'oga'  => 'file-earmark-music', 'opus' => 'file-earmark-music', 'wav' => 'file-earmark-music', 'flac' => 'file-earmark-music',
+			'wma'  => 'file-earmark-music',
+			'svg'  => 'file-earmark-image', 'odg' => 'file-earmark-image', 'sxd' => 'file-earmark-image', 'xcf' => 'file-earmark-image',
+			'html' => 'file-earmark-code', 'htm' => 'file-earmark-code', 'xml' => 'file-earmark-code', 'json' => 'file-earmark-code',
+			'css'  => 'file-earmark-code', 'js' => 'file-earmark-code',
 		);
 
-		if (preg_match('/^[a-z0-9]+$/', $ext) && is_file(JPATH_ROOT . '/media/com_media/images/mime-icon-32/' . $ext . '.png'))
-		{
-			return $ext;
-		}
-
-		return isset($related[$ext]) ? $related[$ext] : 'doc';
+		return isset($icons[$ext]) ? $icons[$ext] : 'file-earmark';
 	}
 }

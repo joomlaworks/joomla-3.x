@@ -29,7 +29,7 @@ $dispatcher = JEventDispatcher::getInstance();
 
 		<td>
 			<a class="audio-preview"<?php echo $cover ? ' data-cover="' . $cover . '"' : ''; ?> href="<?php echo COM_MEDIA_BASEURL, '/', str_replace('%2F', '/', rawurlencode((string) $audio->path_relative)); ?>" title="<?php echo $this->escape($audio->title); ?>">
-				<?php echo JHtml::_('image', $audio->icon_16, $this->escape($audio->title), null, true); ?>
+				<?php echo MediaHelper::typeIcon($audio->icon, 16, $audio->name); ?>
 			</a>
 		</td>
 
