@@ -2693,6 +2693,351 @@
 	// The buttons' tooltips: the module, its position, the menu item
 	CMS.tooltip.attach('.cms-frontedit', { fixed: true, className: 'cms-frontedit-tip' });
 
+	/* --- The switcher (behavior.switcher: togglers in #submenu, pages in #config-document; what JSwitcher was) --- */
+
+	CMS.switcher = {
+		/**
+		 * Shows one page at a time: the one of the clicked toggler (a page's id is the prefix plus its toggler's id), or the
+		 * address's #hash, else the first. The open one is written into the address's hash.
+		 *
+		 * @param  {string|Element}  toggler  The togglers' container
+		 * @param  {string|Element}  element  The pages' container
+		 * @param  {Object}          options  onShow(page), onHide(page), togglerSelector ('a'), elementSelector ('div.tab'),
+		 *                                    elementPrefix ('page-')
+		 *
+		 * @return  {Object}  display(id), hide(page), hideAll(), show(page)
+		 */
+		create(toggler, element, options) {
+			options = Object.assign({
+				onShow() {},
+				onHide() {},
+				togglerSelector: 'a',
+				elementSelector: 'div.tab',
+				elementPrefix: 'page-',
+			}, options);
+
+			toggler = byId(toggler);
+			element = byId(element);
+
+			const togglers = toggler ? Array.prototype.slice.call(toggler.querySelectorAll(options.togglerSelector)) : [];
+			const pages = element ? Array.prototype.slice.call(element.querySelectorAll(options.elementSelector)) : [];
+			let current = null;
+
+			const hide = (page) => {
+				options.onHide(page);
+				page.style.display = 'none';
+			};
+
+			const show = (page) => {
+				options.onShow(page);
+				page.style.display = '';
+
+				if (getComputedStyle(page).display === 'none') {
+					page.style.display = 'block';
+				}
+			};
+
+			const hideAll = () => {
+				pages.forEach((page) => {
+					page.style.display = 'none';
+				});
+				togglers.forEach((item) => item.classList.remove('active'));
+			};
+
+			const display = (id) => {
+				const item = id ? document.getElementById(id) : null;
+				const page = id ? document.getElementById(options.elementPrefix + id) : null;
+
+				if (!item || !page || id === current) {
+					return;
+				}
+
+				if (current) {
+					const open = document.getElementById(options.elementPrefix + current);
+
+					if (open) {
+						hide(open);
+					}
+
+					document.getElementById(current).classList.remove('active');
+				}
+
+				show(page);
+				item.classList.add('active');
+				current = id;
+				location.hash = current;
+				window.scrollTo(window.scrollX, 0);
+			};
+
+			if (togglers.length && togglers.length === pages.length) {
+				hideAll();
+				togglers.forEach((item) => item.addEventListener('click', () => display(item.id)));
+				display(location.hash.substring(1) || togglers[0].id);
+			}
+
+			return { display, hide, hideAll, show };
+		},
+	};
+
+	/* --- Combo boxes (behavior.combobox; layout joomla.form.field.combo: a text field with a list of suggestions) --- */
+
+	const combos = new WeakSet();
+
+	// What jQuery's width()/height() gave: the content box, measured shown when the element itself is hidden
+	const contentSize = (element, side) => {
+		const measure = () => {
+			const style = getComputedStyle(element);
+
+			return side === 'width'
+				? element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+				: element.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+		};
+
+		if (getComputedStyle(element).display !== 'none') {
+			return measure();
+		}
+
+		const saved = element.getAttribute('style');
+
+		element.style.position = 'absolute';
+		element.style.visibility = 'hidden';
+		element.style.display = 'block';
+
+		const size = measure();
+
+		if (saved === null) {
+			element.removeAttribute('style');
+		} else {
+			element.setAttribute('style', saved);
+		}
+
+		return size;
+	};
+
+	CMS.combobox = {
+		/**
+		 * Turns a div.combobox (a text field, a button and a ul.dropdown-menu of suggestions) into a combo box: the list
+		 * opens with the field, typing filters it (updateList), arrows and Enter choose
+		 *
+		 * @param  {Element}  container  The div.combobox
+		 * @param  {Object}   options    updateList (true)
+		 */
+		attach(container, options) {
+			if (!container || combos.has(container)) {
+				return;
+			}
+
+			options = Object.assign({ updateList: true }, options);
+
+			const input = container.querySelector('input[type="text"]');
+			const group = container.querySelector('div.btn-group');
+			const button = group ? group.querySelector('[type="button"]') : null;
+			const menu = container.querySelector('ul.dropdown-menu');
+
+			if (!input || !group || !menu) {
+				return;
+			}
+
+			combos.add(container);
+
+			const links = Array.prototype.slice.call(menu.querySelectorAll('li a'));
+			const visible = () => links.filter((link) => link.offsetWidth > 0 || link.offsetHeight > 0);
+			const state = { empty: false, clicked: false, hovered: null, pickOnBlur: true, blocking: false };
+
+			const inViewport = (element) => {
+				const rect = element.getBoundingClientRect();
+
+				return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+					&& rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+			};
+
+			const preventSubmit = (event) => {
+				if (event.keyCode === 13) {
+					event.preventDefault();
+				}
+			};
+
+			const blockSubmit = (on) => {
+				if (on !== state.blocking) {
+					['keypress', 'keydown', 'keyup'].forEach((type) => input[on ? 'addEventListener' : 'removeEventListener'](type, preventSubmit));
+					state.blocking = on;
+				}
+			};
+
+			const highlight = (where) => {
+				if (where === 'clear') {
+					if (state.hovered) {
+						state.hovered.classList.remove('hover');
+					}
+
+					state.hovered = null;
+
+					return;
+				}
+
+				const shown = visible();
+				const now = shown.filter((link) => link.classList.contains('hover'))[0];
+				let index = shown.indexOf(now);
+
+				if (where === 'prev') {
+					index = index === -1 ? shown.length - 1 : index - 1;
+				} else {
+					index = index === shown.length - 1 ? 0 : index + 1;
+				}
+
+				if (now) {
+					now.classList.remove('hover');
+				}
+
+				state.hovered = shown[index] || null;
+
+				if (state.hovered) {
+					state.hovered.classList.add('hover');
+
+					const box = menu.getBoundingClientRect();
+					const rect = state.hovered.getBoundingClientRect();
+
+					if (!(rect.top >= box.top && rect.left >= box.left && rect.top + rect.height <= box.top + box.height)) {
+						menu.scrollTop = rect.top - box.top + menu.scrollTop;
+					}
+				}
+			};
+
+			const drop = () => {
+				if (state.empty) {
+					return;
+				}
+
+				const top = -(contentSize(input, 'height') + contentSize(menu, 'height'));
+
+				// Opened in view: above the field when there's no room below
+				menu.style.top = '100%';
+				container.classList.add('nav-hover');
+				group.classList.add('open');
+
+				if (!inViewport(menu)) {
+					menu.style.top = top + 'px';
+				}
+
+				blockSubmit(true);
+			};
+
+			const pick = () => {
+				container.classList.remove('nav-hover');
+				group.classList.remove('open');
+
+				if (state.clicked) {
+					state.clicked = false;
+					state.empty = true;
+				}
+
+				highlight('clear');
+				blockSubmit(false);
+			};
+
+			const updateList = (event) => {
+				let key = event.keyCode || event.which;
+
+				key = event.ctrlKey || event.altKey ? -1 : key;
+
+				if ((key > 47 && key < 59) || (key > 62 && key < 127) || key === 32 || key === 8) {
+					const text = input.value.toLowerCase();
+					let hidden = 0;
+					let moveHighlight = false;
+
+					links.forEach((link) => {
+						if (link.innerHTML.toLowerCase().indexOf(text) === 0) {
+							link.style.display = '';
+						} else {
+							link.style.display = 'none';
+							moveHighlight = moveHighlight || link.classList.contains('hover');
+							hidden++;
+						}
+					});
+
+					if (hidden === links.length) {
+						state.empty = true;
+						pick();
+					} else {
+						state.empty = false;
+
+						if (moveHighlight) {
+							highlight('clear');
+						}
+
+						drop();
+					}
+				} else if (!state.empty) {
+					if (key === 38) {
+						highlight('prev');
+					} else if (key === 40) {
+						highlight('next');
+					} else if (key === 13 && state.hovered) {
+						input.value = state.hovered.textContent;
+						pick();
+					}
+				}
+			};
+
+			// The list as wide as the field and aligned with it, scrolling past 150px
+			const width = contentSize(container, 'width');
+			const total = width - 3;
+
+			if (contentSize(menu, 'width') < total) {
+				menu.style.width = total + 'px';
+			}
+
+			menu.style.left = (-width + contentSize(group, 'width')) + 'px';
+			menu.style.maxHeight = '150px';
+			menu.style.overflowY = 'scroll';
+
+			input.addEventListener('focus', drop);
+			input.addEventListener('blur', () => {
+				if (state.pickOnBlur) {
+					pick();
+				}
+			});
+
+			if (options.updateList) {
+				input.addEventListener('keyup', updateList);
+			}
+
+			menu.addEventListener('mouseenter', () => {
+				highlight('clear');
+				state.pickOnBlur = false;
+			});
+			menu.addEventListener('mouseleave', () => {
+				state.pickOnBlur = true;
+			});
+
+			if (button) {
+				button.addEventListener('click', () => {
+					links.forEach((link) => {
+						link.style.display = '';
+					});
+					state.clicked = state.empty;
+					state.empty = false;
+					input.focus();
+				});
+			}
+
+			Array.prototype.forEach.call(menu.querySelectorAll('li'), (item) => item.addEventListener('click', (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				input.value = event.target.textContent;
+				pick();
+			}));
+
+			links.forEach((link) => {
+				link.addEventListener('mouseenter', () => {
+					link.classList.add('hover');
+					state.hovered = link;
+				});
+				link.addEventListener('mouseleave', () => link.classList.remove('hover'));
+			});
+		},
+	};
+
 	/* --- The open tab of Bootstrap tab sets, kept while browsing (behavior.tabstate) --- */
 
 	/*
@@ -2879,6 +3224,28 @@
 
 		if (CMS.options.get('system.tabstate')) {
 			CMS.tabState.init();
+		}
+
+		if (CMS.options.get('system.switcher')) {
+			const pages = document.getElementById('config-document');
+
+			if (pages) {
+				document.switcher = CMS.switcher.create(document.getElementById('submenu'), pages);
+			}
+		}
+
+		if (CMS.options.get('system.combobox')) {
+			Array.prototype.forEach.call(document.querySelectorAll('div.combobox'), (box) => CMS.combobox.attach(box, { updateList: true }));
+		}
+
+		// What combobox.js added to jQuery
+		if (window.jQuery && !window.jQuery.fn.ComboTransform) {
+			window.jQuery.fn.ComboTransform = function ComboTransform(options) {
+				return this.each(function attach() {
+					CMS.combobox.attach(this, Object.assign({}, window.jQuery.fn.ComboTransform.options, options));
+				});
+			};
+			window.jQuery.fn.ComboTransform.options = { updateList: true };
 		}
 
 		if (CMS.options.get('system.associations.edit')) {
@@ -3135,6 +3502,12 @@
 		window.MooTreeIcon = TREE_ICONS;
 	}
 
+	if (!window.JSwitcher) {
+		window.JSwitcher = function JSwitcher(toggler, element, options) {
+			return CMS.switcher.create(toggler, element, options);
+		};
+	}
+
 	if (!Joomla.JMultiSelect) {
 		Joomla.JMultiSelect = (container) => CMS.multiselect.attach(container);
 	}
@@ -3347,6 +3720,8 @@
 		'new Form.PasswordStrength()': 'CMS.password.meter()',
 		'new MooTreeControl() (behavior.tree)': 'CMS.tree.create(), new CMS.tree.Tree()',
 		'Joomla.JMultiSelect()': 'CMS.multiselect.attach()',
+		'JSwitcher (behavior.switcher)': 'CMS.switcher.create()',
+		'jQuery.fn.ComboTransform() (behavior.combobox)': 'CMS.combobox.attach()',
 		'tabs-state.js (behavior.tabstate), jQuery.urlParam(), jQuery.getXpath(), jQuery.findXpath()': 'CMS.tabState.init()',
 		'new JCaption()': 'CMS.caption.attach()',
 		'Joomla.Highlighter()': 'CMS.highlighter.create()',

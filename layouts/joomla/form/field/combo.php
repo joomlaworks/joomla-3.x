@@ -40,8 +40,7 @@ extract($displayData);
  * @var   array    $options         Options available for this field.
  */
 
-// The combo box (a jQuery plugin)
-JHtml::_('jquery.framework');
+// The combo box (CMS.combobox in global.js)
 JHtml::_('behavior.combobox');
 
 $attr  = !empty($class) ? ' class="combobox ' . $class . '"' : ' class="combobox"';

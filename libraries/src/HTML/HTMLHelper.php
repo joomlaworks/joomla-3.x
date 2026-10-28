@@ -55,7 +55,8 @@ abstract class HTMLHelper
 			'system/core' => 'core', 'system/caption' => 'core', 'system/highlighter' => 'core', 'system/keepalive' => 'core',
 			'system/associations-edit' => 'cms', 'system/editor-switch' => 'cms', 'system/frontediting' => 'cms', 'system/helpsite' => 'cms',
 			'system/modal' => 'cms', 'system/mootree' => 'cms', 'system/permissions' => 'cms',
-			'system/multiselect' => 'cms', 'system/passwordstrength' => 'cms', 'system/tabs' => 'cms', 'system/tabs-state' => 'tabstate', 'media/mediafield-mootools' => 'cms',
+			'system/multiselect' => 'cms', 'system/passwordstrength' => 'cms', 'system/tabs' => 'cms', 'system/tabs-state' => 'tabstate', 'system/switcher' => 'switcher',
+			'system/combobox' => 'combobox', 'media/mediafield-mootools' => 'cms',
 		),
 		'css' => array(
 			'system/editor-switch' => 'styles', 'system/frontediting' => 'styles', 'system/modal' => 'styles', 'system/mootree' => 'styles',

@@ -276,22 +276,9 @@ abstract class JHtmlBehavior
 			return;
 		}
 
-		// Include jQuery
-		JHtml::_('jquery.framework');
-
-		JHtml::_('script', 'system/switcher.js', array('version' => 'auto', 'relative' => true));
-
-		$script = "
-			document.switcher = null;
-			jQuery(function($){
-				var toggler = document.getElementById('submenu');
-				var element = document.getElementById('config-document');
-				if (element) {
-					document.switcher = new JSwitcher(toggler, element);
-				}
-			});";
-
-		JFactory::getDocument()->addScriptDeclaration($script);
+		// global.js starts CMS.switcher (document.switcher) when the page carries this option
+		static::cms();
+		JFactory::getDocument()->addScriptOptions('system.switcher', true);
 		static::$loaded[__METHOD__] = true;
 	}
 
@@ -311,10 +298,9 @@ abstract class JHtmlBehavior
 		{
 			return;
 		}
-		// Include core
-		static::core();
-
-		JHtml::_('script', 'system/combobox.js', array('version' => 'auto', 'relative' => true));
+		// global.js starts CMS.combobox on every div.combobox when the page carries this option
+		static::cms();
+		JFactory::getDocument()->addScriptOptions('system.combobox', true);
 		static::$loaded[__METHOD__] = true;
 	}
 
