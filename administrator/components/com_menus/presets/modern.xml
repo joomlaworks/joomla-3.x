@@ -49,7 +49,7 @@
 		The values can be used like - "{sql:columnName}" in any attribute of repeated elements.
 		The repeated elements are place inside this xml node but they will be populated in the same level in the rendered menu
 		-->
-    <menuitem type="separator" title="JSITE" hidden="false" sql_select="a.title, a.menutype, CASE COALESCE(SUM(m.home), 0) WHEN 0 THEN '' WHEN 1 THEN CASE m.language WHEN '*' THEN 'class:icon-home' ELSE CONCAT('image:mod_languages/', l.image, '.gif') END ELSE 'image:mod_languages/icon-16-language.png' END AS icon" sql_from="#__menu_types AS a" sql_where="a.client_id = 0" sql_leftjoin="#__menu AS m ON m.menutype = a.menutype AND m.home = 1 LEFT JOIN #__languages AS l ON l.lang_code = m.language" sql_group="a.id, m.language, l.image" sql_order="a.title ASC">
+    <menuitem type="separator" title="JSITE" hidden="false" sql_select="a.title, a.menutype, CASE COALESCE(SUM(m.home), 0) WHEN 0 THEN '' WHEN 1 THEN CASE m.language WHEN '*' THEN 'class:icon-home' ELSE CONCAT('image:mod_languages/', l.image, '.webp') END ELSE 'svg:translate' END AS icon" sql_from="#__menu_types AS a" sql_where="a.client_id = 0" sql_leftjoin="#__menu AS m ON m.menutype = a.menutype AND m.home = 1 LEFT JOIN #__languages AS l ON l.lang_code = m.language" sql_group="a.id, m.language, l.image" sql_order="a.title ASC">
     <menuitem title="{sql:title} " type="component" element="com_menus" link="index.php?option=com_menus&amp;view=items&amp;menutype={sql:menutype}" icon="{sql:icon}" class="class:menu">
     <menuitem title="MOD_MENU_MENU_MANAGER_NEW_MENU_ITEM" type="component" element="com_menus" link="index.php?option=com_menus&amp;view=item&amp;layout=edit&amp;menutype={sql:menutype}" class="class:menu" scope="edit" />
     </menuitem>

@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 <div style="padding: 10px;">
 	<div style="text-align:right">
 		<a href="javascript: void window.close()">
-			<?php echo JText::_('COM_MAILTO_CLOSE_WINDOW'); ?> <?php echo JHtml::_('image', 'system/close-x.png', null, null, true); ?>
+			<?php echo JText::_('COM_MAILTO_CLOSE_WINDOW'); ?> <?php echo JHtml::_('icons.svg', 'x-lg', '', array('size' => 12, 'legacy' => 'system/close-x.png')); ?>
 		</a>
 	</div>
 	<h2>

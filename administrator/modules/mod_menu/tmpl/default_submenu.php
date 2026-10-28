@@ -94,6 +94,11 @@ if ($link = $current->get('link'))
 		{
 			$icon = '<span class="' . substr((string) $icon, 6) . '"></span>';
 		}
+		elseif (substr((string) $icon, 0, 4) == 'svg:')
+		{
+			// An icon of media/system/images/icons, in the text colour
+			$icon = JHtml::_('icons.svg', substr((string) $icon, 4));
+		}
 		elseif (substr((string) $icon, 0, 6) == 'image:')
 		{
 			$icon = JHtml::_('image', substr((string) $icon, 6), null, null, true);

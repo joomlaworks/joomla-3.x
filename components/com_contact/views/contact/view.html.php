@@ -489,9 +489,9 @@ class ContactViewContact extends JViewLegacy
 	}
 
 	/**
-	 * A marker of the contact's details (address, email...): an icon of the component's sprite, drawn in the text colour
+	 * A marker of the contact's details (address, email...): an icon of media/com_contact/images/icons, drawn in the text colour
 	 *
-	 * @param   string  $icon   The icon's name (media/com_contact/images/icons.svg)
+	 * @param   string  $icon   The icon's name
 	 * @param   string  $label  Its text for screen readers
 	 *
 	 * @return  string
@@ -500,8 +500,6 @@ class ContactViewContact extends JViewLegacy
 	 */
 	protected function markerIcon($icon, $label)
 	{
-		return '<svg class="contact-icon" width="16" height="16" fill="currentColor" role="img" aria-label="'
-			. htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '"><use href="' . JUri::root(true) . '/media/com_contact/images/icons.svg#'
-			. $icon . '"></use></svg>';
+		return JHtml::_('icons.svg', $icon, $label, array('path' => 'media/com_contact/images/icons', 'class' => 'contact-icon'));
 	}
 }

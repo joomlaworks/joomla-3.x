@@ -116,8 +116,8 @@ abstract class HTMLHelper
 	const MOVED_IMAGE_TYPES = array('mod_languages' => array('gif' => 'webp', 'webp' => 'gif'));
 
 	/**
-	 * The size images of a media folder are shown at, unless the caller gives one (since 3.18 the flags are drawn at twice
-	 * their old 18x12 pixels, for sharp high density screens)
+	 * The size images (WebP and GIF) of a media folder are shown at, unless the caller gives one (since 3.18 the flags are
+	 * drawn at twice their old 18x12 pixels, for sharp high density screens)
 	 *
 	 * @var    array
 	 * @since  3.18.0
@@ -733,7 +733,7 @@ abstract class HTMLHelper
 		// The display size of a folder's images (IMAGE_SIZES), unless the caller gives one
 		$folder = $relative ? strstr((string) $file, '/media/') : false;
 
-		if ($folder !== false && preg_match('#^/media/([^/]+)/#', $folder, $match) && isset(static::IMAGE_SIZES[$match[1]]))
+		if ($folder !== false && preg_match('#^/media/([^/]+)/[^?]*\.(?:webp|gif)(?:\?|$)#', $folder, $match) && isset(static::IMAGE_SIZES[$match[1]]))
 		{
 			// Only when neither is given: one alone keeps the image's proportions
 			$given = is_array($attribs) ? array_change_key_case($attribs) : (string) $attribs;
@@ -1073,7 +1073,11 @@ abstract class HTMLHelper
 		if (!$text)
 		{
 			$alt = htmlspecialchars($alt, ENT_COMPAT, 'UTF-8');
-			$text = static::image($image, $alt, null, true);
+
+			// The default image is an icon now (a template's own tooltip.png is still used)
+			$text = $image === 'tooltip.png'
+				? static::_('icons.svg', 'info-circle-fill', $alt, array('style' => 'color:#2a6fb5', 'legacy' => 'tooltip.png'))
+				: static::image($image, $alt, null, true);
 		}
 
 		if ($href)

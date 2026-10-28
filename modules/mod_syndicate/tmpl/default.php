@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 ?>
 <a href="<?php echo $link; ?>" class="syndicate-module<?php echo $moduleclass_sfx; ?>">
-	<?php echo JHtml::_('image', 'system/livemarks.png', 'feed-image', null, true); ?>
+	<?php echo JHtml::_('icons.svg', 'rss-fill', '', array('style' => 'color:#f26522', 'legacy' => 'system/livemarks.png')); ?>
 	<?php if ($params->get('display_text', 1)) : ?>
 		<span>
 		<?php if (str_replace(' ', '', $text) !== '') : ?>

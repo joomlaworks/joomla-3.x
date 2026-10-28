@@ -282,7 +282,7 @@ abstract class MediaHelper
 	}
 
 	/**
-	 * A file type's icon from the Media Manager's sprite (media/com_media/images/icons.svg), drawn in the text colour
+	 * A file type's icon (media/com_media/images/icons), drawn in the text colour
 	 *
 	 * @param   string   $icon   The icon's name (the list model's $file->icon)
 	 * @param   integer  $size   Its size in pixels
@@ -294,8 +294,6 @@ abstract class MediaHelper
 	 */
 	public static function typeIcon($icon, $size, $label)
 	{
-		return '<svg class="media-type-icon" width="' . (int) $size . '" height="' . (int) $size . '" fill="currentColor" role="img" aria-label="'
-			. htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8') . '"><use href="' . JUri::root(true) . '/media/com_media/images/icons.svg#'
-			. htmlspecialchars((string) ($icon ?: 'file-earmark'), ENT_QUOTES, 'UTF-8') . '"></use></svg>';
+		return JHtml::_('icons.svg', $icon ?: 'file-earmark', $label, array('path' => 'media/com_media/images/icons', 'size' => $size, 'class' => 'media-type-icon'));
 	}
 }

@@ -2511,7 +2511,7 @@
 			};
 
 			icon.removeAttribute('class');
-			icon.setAttribute('style', 'background:url(../media/system/images/modal/spinner.gif);display:inline-block;width:16px;height:16px');
+			icon.setAttribute('style', 'background:url(../media/system/images/modal/spinner.svg);display:inline-block;width:16px;height:16px');
 			Joomla.removeMessages();
 
 			CMS.request({

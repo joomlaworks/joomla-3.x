@@ -5,7 +5,7 @@
  * @license		GNU General Public License version 2 or later; see LICENSE.md
  */
 
-.overrider-spinner {background-image:url(../../../../media/system/images/modal/spinner.gif);background-repeat:no-repeat;background-position:center;}
+.overrider-spinner {background-image:url(../../../../media/system/images/modal/spinner.svg);background-repeat:no-repeat;background-position:center;}
 #refresh-status {display:none;height:16px;padding-left:25px;background-position:left;}
 #results-container {display:none;padding-bottom:10px;}
 #more-results {display:none;height:16px;padding:10px 0;}

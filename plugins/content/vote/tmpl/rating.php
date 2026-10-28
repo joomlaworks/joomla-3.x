@@ -28,9 +28,9 @@ if ($context == 'com_content.categories')
 $rating = (int) $row->rating;
 $rcount = (int) $row->rating_count;
 
-// Look for images in template if available
-$starImageOn  = JHtml::_('image', 'system/rating_star.png', JText::_('PLG_VOTE_STAR_ACTIVE'), null, true);
-$starImageOff = JHtml::_('image', 'system/rating_star_blank.png', JText::_('PLG_VOTE_STAR_INACTIVE'), null, true);
+// The template's own system/rating_star*.png when it has them
+$starImageOn  = JHtml::_('icons.svg', 'star-fill', JText::_('PLG_VOTE_STAR_ACTIVE'), array('style' => 'color:#f5b301', 'legacy' => 'system/rating_star.png'));
+$starImageOff = JHtml::_('icons.svg', 'star', JText::_('PLG_VOTE_STAR_INACTIVE'), array('style' => 'color:#999', 'legacy' => 'system/rating_star_blank.png'));
 
 $img = '';
 

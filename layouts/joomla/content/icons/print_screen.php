@@ -15,8 +15,8 @@ $legacy = $displayData['legacy'];
 ?>
 <?php if ($params->get('show_icons')) : ?>
 	<?php if ($legacy) : ?>
-		<?php // Checks template image directory for image, if none found default are loaded ?>
-		<?php echo JHtml::_('image', 'system/printButton.png', JText::_('JGLOBAL_PRINT'), null, true); ?>
+		<?php // A template's own system/printButton.png is used when it has one ?>
+		<?php echo JHtml::_('icons.svg', 'printer', JText::_('JGLOBAL_PRINT'), array('legacy' => 'system/printButton.png')); ?>
 	<?php else : ?>
 		<span class="icon-print" aria-hidden="true"></span>
 		<?php echo JText::_('JGLOBAL_PRINT'); ?>
