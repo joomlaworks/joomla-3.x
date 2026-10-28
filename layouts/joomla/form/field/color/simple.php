@@ -45,23 +45,28 @@ extract($displayData);
  * @var   array    $control         Is this field checked?
  */
 
-$class    = ' class="' . trim('simplecolors chzn-done ' . $class) . '"';
-$disabled = $disabled ? ' disabled' : '';
-$readonly = $readonly ? ' readonly' : '';
+// A row of swatches (since 3.18; a list Simple Colors turned into swatches before): radio buttons, each split starting a
+// new row, as the list's separators did; "none" is a crossed-out swatch
+JHtml::_('behavior.styles');
 
-// Include jQuery
-JHtml::_('jquery.framework');
-JHtml::_('script', 'system/jquery.simplecolors.min.js', array('version' => 'auto', 'relative' => true));
-JHtml::_('stylesheet', 'system/jquery.simplecolors.css', array('version' => 'auto', 'relative' => true));
-JHtml::_('script', 'system/color-field-init.min.js', array('version' => 'auto', 'relative' => true));
+$locked = $disabled || $readonly;
 ?>
-<select data-chosen="true" name="<?php echo $name; ?>" id="<?php echo $id; ?>"<?php
-echo $disabled; ?><?php echo $readonly; ?><?php echo $required; ?><?php echo $class; ?><?php echo $position; ?><?php
-echo $onchange; ?><?php echo $autofocus; ?> style="visibility:hidden;width:22px;height:1px">
+<div class="<?php echo $this->escape(trim('cms-color-simple ' . $class)); ?>" id="<?php echo $id; ?>" role="radiogroup"<?php
+	echo $autofocus ? ' autofocus' : ''; ?>>
 	<?php foreach ($colors as $i => $c) : ?>
-		<option<?php echo ($c == $color ? ' selected="selected"' : ''); ?>><?php echo $c; ?></option>
+		<?php $c = trim($c); ?>
+		<?php $fill = preg_match('/^(#[0-9a-f]{3}|#[0-9a-f]{6}|rgba?\([\d\s.,]+\))$/i', $c) ? $c : ''; ?>
+		<label class="cms-color-option" title="<?php echo $this->escape($c); ?>">
+			<input type="radio" name="<?php echo $name; ?>" id="<?php echo $id . '_' . $i; ?>" value="<?php echo $this->escape($c); ?>"<?php
+				echo $c == $color ? ' checked' : '',
+					$locked && $c != $color ? ' disabled' : '',
+					$required && $i === 0 ? ' required' : '',
+					$onchange ? ' onchange="' . $this->escape($onchange) . '"' : ''; ?> />
+			<span class="cms-color-chip<?php echo $fill ? '' : ' is-none'; ?>"<?php echo $fill ? ' style="background-color:' . $this->escape($fill) . '"' : ''; ?>></span>
+			<span class="element-invisible"><?php echo $this->escape($c); ?></span>
+		</label>
 		<?php if (($i + 1) % $split == 0) : ?>
-			<option>-</option>
+			<span class="cms-color-break"></span>
 		<?php endif; ?>
 	<?php endforeach; ?>
-</select>
+</div>

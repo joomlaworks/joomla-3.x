@@ -588,31 +588,13 @@ abstract class JHtmlBehavior
 			return;
 		}
 
-		// Include jQuery
+		// The browser's colour picker for text fields with class minicolors (MiniColors was removed in 3.18); jQuery as
+		// before, for extensions' scripts calling jQuery.fn.minicolors(), which global.js provides
 		JHtml::_('jquery.framework');
-
-		JHtml::_('script', 'system/jquery.minicolors.min.js', array('version' => 'auto', 'relative' => true));
-		JHtml::_('stylesheet', 'system/jquery.minicolors.css', array('version' => 'auto', 'relative' => true));
-		JFactory::getDocument()->addScriptDeclaration("
-				jQuery(document).ready(function (){
-					jQuery('.minicolors').each(function() {
-						jQuery(this).minicolors({
-							control: jQuery(this).attr('data-control') || 'hue',
-							format: jQuery(this).attr('data-validate') === 'color'
-								? 'hex'
-								: (jQuery(this).attr('data-format') === 'rgba'
-									? 'rgb'
-									: jQuery(this).attr('data-format'))
-								|| 'hex',
-							keywords: jQuery(this).attr('data-keywords') || '',
-							opacity: jQuery(this).attr('data-format') === 'rgba' ? true : false || false,
-							position: jQuery(this).attr('data-position') || 'default',
-							theme: 'bootstrap'
-						});
-					});
-				});
-			"
-		);
+		static::cms();
+		JText::script('JLIB_FORM_FIELD_COLOR_CHOOSE');
+		JText::script('JCLEAR');
+		JFactory::getDocument()->addScriptOptions('system.colorpicker', '.minicolors');
 
 		static::$loaded[__METHOD__] = true;
 	}
@@ -634,17 +616,9 @@ abstract class JHtmlBehavior
 			return;
 		}
 
-		// Include jQuery
+		// Simple Colors was removed in 3.18: lists of colours stay lists (the colour field's simple control writes swatches)
 		JHtml::_('jquery.framework');
-
-		JHtml::_('script', 'system/jquery.simplecolors.min.js', array('version' => 'auto', 'relative' => true));
-		JHtml::_('stylesheet', 'system/jquery.simplecolors.css', array('version' => 'auto', 'relative' => true));
-		JFactory::getDocument()->addScriptDeclaration("
-				jQuery(document).ready(function (){
-					jQuery('select.simplecolors').simplecolors();
-				});
-			"
-		);
+		static::cms();
 
 		static::$loaded[__METHOD__] = true;
 	}

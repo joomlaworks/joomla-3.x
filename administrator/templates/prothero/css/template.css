@@ -2521,7 +2521,6 @@ body .mce-notification *,body .mce-notification .mce-progress .mce-text {color:v
 /* --- Prothero: Core stylesheets --- */
 /* Stylesheets core code adds (media/jui, media/system, the editor's options) have fixed light colours: the template's instead, for dark too */
 #sbox-window {background-color:var(--c-popover);}
-.minicolors-panel {background:var(--c-popover);border-color:var(--c-border);}
 .tinymce-latest-builder {--tmb-border:var(--c-border);--tmb-bg:var(--c-card);--tmb-bar-bg:var(--c-subtle);--tmb-item-bg:var(--c-card);--tmb-accent:var(--c-ring);--tmb-target:var(--c-muted);}
 .tinymce-latest-builder .tmb-item {color:var(--c-fg);}
 .tinymce-latest-builder .tmb-tab {color:var(--c-muted-fg);}

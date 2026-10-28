@@ -2692,6 +2692,169 @@
 	// The buttons' tooltips: the module, its position, the menu item
 	CMS.tooltip.attach('.cms-frontedit', { fixed: true, className: 'cms-frontedit-tip' });
 
+	/* --- The colour field (layout joomla.form.field.color: the browser's colour picker, the value as text, a Clear button) --- */
+
+	CMS.colorField = {
+		/**
+		 * The colour as #rrggbb, for the picker: #rgb and #rrggbb, rgb() and rgba() (without their opacity); null for
+		 * anything else (empty, keywords such as transparent)
+		 *
+		 * @param  {string}  value  The field's value
+		 *
+		 * @return  {string|null}
+		 */
+		toHex(value) {
+			value = String(value || '').trim().toLowerCase();
+
+			let match = value.match(/^#([0-9a-f])([0-9a-f])([0-9a-f])$/);
+
+			if (match) {
+				return '#' + match[1] + match[1] + match[2] + match[2] + match[3] + match[3];
+			}
+
+			if (/^#[0-9a-f]{6}$/.test(value)) {
+				return value;
+			}
+
+			match = value.match(/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*[\d.]+\s*)?\)$/);
+
+			if (match && match.slice(1, 4).every((part) => part <= 255)) {
+				return '#' + match.slice(1, 4).map((part) => Number(part).toString(16).padStart(2, '0')).join('');
+			}
+
+			return null;
+		},
+
+		/**
+		 * The picker's colour written in the field's format (data-format: hex, rgb or rgba, whose opacity is kept)
+		 *
+		 * @param  {string}            hex    #rrggbb
+		 * @param  {HTMLInputElement}  input  The field
+		 *
+		 * @return  {string}
+		 */
+		fromHex(hex, input) {
+			const format = input.getAttribute('data-validate') === 'color' ? 'hex' : input.getAttribute('data-format') || 'hex';
+			const rgb = [1, 3, 5].map((start) => parseInt(hex.substr(start, 2), 16)).join(', ');
+
+			if (format === 'rgb') {
+				return 'rgb(' + rgb + ')';
+			}
+
+			if (format === 'rgba') {
+				const alpha = input.value.match(/^rgba\(.*,\s*([\d.]+)\s*\)$/);
+
+				return 'rgba(' + rgb + ', ' + (alpha ? alpha[1] : '1') + ')';
+			}
+
+			return hex;
+		},
+
+		/**
+		 * Shows the field's value in the picker (crossed out when it isn't a colour the picker can show)
+		 *
+		 * @param  {HTMLElement}  wrapper  .cms-color
+		 */
+		update(wrapper) {
+			const input = wrapper.querySelector('.cms-color-value');
+			const swatch = wrapper.querySelector('.cms-color-swatch');
+			const hex = input ? CMS.colorField.toHex(input.value) : null;
+
+			if (swatch && hex) {
+				swatch.value = hex;
+			}
+
+			wrapper.classList.toggle('is-empty', !hex);
+		},
+
+		/**
+		 * Gives a text field the picker and the Clear button (for fields an extension writes itself; the layout writes
+		 * them already)
+		 *
+		 * @param  {HTMLInputElement}  input
+		 */
+		attach(input) {
+			if (!input || input.closest('.cms-color') || input.type === 'hidden') {
+				return;
+			}
+
+			const wrapper = document.createElement('span');
+			const swatch = document.createElement('input');
+
+			wrapper.className = 'cms-color';
+			swatch.type = 'color';
+			swatch.className = 'cms-color-swatch';
+			swatch.disabled = input.disabled || input.readOnly;
+			swatch.setAttribute('aria-label', CMS.text._('JLIB_FORM_FIELD_COLOR_CHOOSE', 'Choose a colour'));
+			input.classList.add('cms-color-value');
+			input.parentNode.insertBefore(wrapper, input);
+			wrapper.appendChild(swatch);
+			wrapper.appendChild(input);
+
+			if (!swatch.disabled) {
+				const clear = document.createElement('button');
+
+				clear.type = 'button';
+				clear.className = 'btn cms-color-clear';
+				clear.textContent = '×';
+				clear.title = CMS.text._('JCLEAR', 'Clear');
+				clear.setAttribute('aria-label', clear.title);
+				wrapper.appendChild(clear);
+			}
+
+			CMS.colorField.update(wrapper);
+		},
+	};
+
+	// One set of listeners for every colour field, also those subforms add later
+	if (!CMS.colorField.listening) {
+		CMS.colorField.listening = true;
+
+		const fieldOf = (element) => {
+			const wrapper = element && element.closest ? element.closest('.cms-color') : null;
+
+			return wrapper ? { wrapper, input: wrapper.querySelector('.cms-color-value') } : null;
+		};
+
+		document.addEventListener('input', (event) => {
+			const field = fieldOf(event.target);
+
+			if (!field || !field.input) {
+				return;
+			}
+
+			if (event.target.classList.contains('cms-color-swatch')) {
+				field.input.value = CMS.colorField.fromHex(event.target.value, field.input);
+				field.wrapper.classList.remove('is-empty');
+				field.input.dispatchEvent(new Event('input', { bubbles: true }));
+			} else if (event.target === field.input) {
+				CMS.colorField.update(field.wrapper);
+			}
+		});
+
+		// The field's own change handlers (onchange) run when the colour is picked
+		document.addEventListener('change', (event) => {
+			const field = fieldOf(event.target);
+
+			if (field && field.input && event.target.classList.contains('cms-color-swatch')) {
+				field.input.dispatchEvent(new Event('change', { bubbles: true }));
+			}
+		});
+
+		document.addEventListener('click', (event) => {
+			const button = event.target.closest ? event.target.closest('.cms-color-clear') : null;
+			const field = fieldOf(button);
+
+			if (field && field.input) {
+				field.input.value = '';
+				CMS.colorField.update(field.wrapper);
+				field.input.dispatchEvent(new Event('input', { bubbles: true }));
+				field.input.dispatchEvent(new Event('change', { bubbles: true }));
+				field.input.focus();
+			}
+		});
+	}
+
 	/* --- Form validation (behavior.formvalidator: document.formvalidator, what validate.js was) --- */
 
 	/*
@@ -3504,6 +3667,36 @@
 			window.jQuery.fn.ComboTransform.options = { updateList: true };
 		}
 
+		// What MiniColors and Simple Colors added to jQuery (extensions' own colour fields): the browser's picker instead
+		if (window.jQuery && !window.jQuery.fn.minicolors) {
+			window.jQuery.fn.minicolors = function minicolors(method, value) {
+				if (method === 'value') {
+					if (value === undefined) {
+						return this.length ? this[0].value : undefined;
+					}
+
+					return this.each(function set() {
+						this.value = value && value.color !== undefined ? value.color : value;
+						CMS.colorField.update(this.closest('.cms-color') || document.createElement('span'));
+					});
+				}
+
+				return typeof method === 'string' ? this : this.each(function attach() {
+					CMS.colorField.attach(this);
+				});
+			};
+		}
+
+		if (window.jQuery && !window.jQuery.fn.simplecolors) {
+			window.jQuery.fn.simplecolors = function simplecolors() {
+				return this;
+			};
+		}
+
+		if (CMS.options.get('system.colorpicker')) {
+			document.querySelectorAll(CMS.options.get('system.colorpicker')).forEach(CMS.colorField.attach);
+		}
+
 		if (CMS.options.get('system.associations.edit')) {
 			CMS.associations.init(CMS.options.get('system.associations.edit'));
 		}
@@ -3979,6 +4172,8 @@
 		'validate.js (behavior.formvalidator), document.formvalidator, JFormValidator': 'CMS.formValidator',
 		'JSwitcher (behavior.switcher)': 'CMS.switcher.create()',
 		'jQuery.fn.ComboTransform() (behavior.combobox)': 'CMS.combobox.attach()',
+		'jQuery.fn.minicolors() (behavior.colorpicker, MiniColors)': 'CMS.colorField.attach(), the layout joomla.form.field.color',
+		'jQuery.fn.simplecolors() (behavior.simplecolorpicker)': 'the layout joomla.form.field.color.simple (swatches)',
 		'tabs-state.js (behavior.tabstate), jQuery.urlParam(), jQuery.getXpath(), jQuery.findXpath()': 'CMS.tabState.init()',
 		'new JCaption()': 'CMS.caption.attach()',
 		'Joomla.Highlighter()': 'CMS.highlighter.create()',

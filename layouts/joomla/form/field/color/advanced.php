@@ -45,49 +45,74 @@ extract($displayData);
  * @var   array    $control         Is this field checked?
  */
 
-if ($validate !== 'color' && in_array($format, array('rgb', 'rgba'), true))
+$rgb = $validate !== 'color' && in_array($format, array('rgb', 'rgba'), true);
+
+if ($rgb)
 {
-	$alpha = ($format === 'rgba');
-	$placeholder = $alpha ? 'rgba(0, 0, 0, 0.5)' : 'rgb(0, 0, 0)';
+	$placeholder = $format === 'rgba' ? 'rgba(0, 0, 0, 0.5)' : 'rgb(0, 0, 0)';
 }
 else
 {
 	$placeholder = '#rrggbb';
 }
 
-$inputclass   = ($keywords && ! in_array($format, array('rgb', 'rgba'), true)) ? ' keywords' : ' ' . $format;
-$class        = ' class="' . trim('minicolors ' . $class) . ($validate === 'color' ? '' : $inputclass) . '"';
-$control      = $control ? ' data-control="' . $control . '"' : '';
-$format       = $format ? ' data-format="' . $format . '"' : '';
-$keywords     = $keywords ? ' data-keywords="' . $keywords . '"' : '';
-$validate     = $validate ? ' data-validate="' . $validate . '"' : '';
-$disabled     = $disabled ? ' disabled' : '';
-$readonly     = $readonly ? ' readonly' : '';
-$hint         = strlen($hint) ? ' placeholder="' . $this->escape($hint) . '"' : ' placeholder="' . $placeholder . '"';
-$autocomplete = ! $autocomplete ? ' autocomplete="off"' : '';
+// The browser's picker (since 3.18; MiniColors before) shows #rrggbb: #rgb is spelled out, rgb()/rgba() converted, and
+// anything else (empty, keywords) shows a crossed-out swatch
+$value  = $color === 'none' && strpos((string) $keywords, 'none') === false ? '' : (string) $color;
+$swatch = '';
 
-// Force LTR input value in RTL, due to display issues with rgba/hex colors
-$direction    = $lang->isRtl() ? ' dir="ltr" style="text-align:right"' : '';
+if (preg_match('/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i', $value, $match))
+{
+	$swatch = strtolower('#' . $match[1] . $match[1] . $match[2] . $match[2] . $match[3] . $match[3]);
+}
+elseif (preg_match('/^#[0-9a-f]{6}$/i', $value))
+{
+	$swatch = strtolower($value);
+}
+elseif (preg_match('/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*[\d.]+\s*)?\)$/i', $value, $match)
+	&& max($match[1], $match[2], $match[3]) <= 255)
+{
+	$swatch = vsprintf('#%02x%02x%02x', array($match[1], $match[2], $match[3]));
+}
 
-// The colour picker (a jQuery plugin)
-JHtml::_('jquery.framework');
-JHtml::_('script', 'system/jquery.minicolors.min.js', array('version' => 'auto', 'relative' => true));
-JHtml::_('stylesheet', 'system/jquery.minicolors.css', array('version' => 'auto', 'relative' => true));
-JHtml::_('script', 'system/color-field-adv-init.min.js', array('version' => 'auto', 'relative' => true));
+$locked = $disabled || $readonly;
+
+JHtml::_('behavior.core');
+JHtml::_('behavior.styles');
+JText::script('JLIB_FORM_FIELD_COLOR_CHOOSE');
+JText::script('JCLEAR');
+
+$attributes = array(
+	'type'        => 'text',
+	'name'        => $name,
+	'id'          => $id,
+	'value'       => $value,
+	'class'       => trim('cms-color-value ' . $class),
+	'placeholder' => strlen($hint) ? $hint : $placeholder,
+	'data-format' => $format ?: null,
+	'data-keywords' => $keywords ?: null,
+	'data-validate' => $validate ?: null,
+	'onchange'    => $onchange ?: null,
+	'autocomplete' => $autocomplete ? null : 'off',
+	// Colour values read left to right, also in right to left languages
+	'dir'         => 'ltr',
+);
 ?>
-<input type="text" name="<?php echo $name; ?>" id="<?php echo $id; ?>" value="<?php echo $this->escape($color); ?>"<?php
-	echo $hint,
-		$class,
-		$position,
-		$control,
-		$readonly,
-		$disabled,
-		$required,
-		$onchange,
-		$autocomplete,
-		$autofocus,
-		$format,
-		$keywords,
-		$direction,
-		$validate;
-?>/>
+<span class="cms-color<?php echo $swatch ? '' : ' is-empty'; ?>">
+	<input type="color" class="cms-color-swatch" value="<?php echo $swatch ?: '#000000'; ?>" aria-label="<?php echo $this->escape(JText::_('JLIB_FORM_FIELD_COLOR_CHOOSE')); ?>"<?php
+		echo $locked ? ' disabled' : '', $format === 'rgba' && $rgb ? ' alpha' : ''; ?> />
+	<input<?php
+		foreach ($attributes as $attribute => $attributeValue)
+		{
+			if ($attributeValue !== null)
+			{
+				echo ' ' . $attribute . '="' . $this->escape($attributeValue) . '"';
+			}
+		}
+
+		echo $readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', $autofocus ? ' autofocus' : '';
+	?> />
+	<?php if (!$locked) : ?>
+		<button type="button" class="btn cms-color-clear" title="<?php echo $this->escape(JText::_('JCLEAR')); ?>" aria-label="<?php echo $this->escape(JText::_('JCLEAR')); ?>"><?php echo JHtml::_('icons.svg', 'x-lg', '', array('size' => 12)); ?></button>
+	<?php endif; ?>
+</span>

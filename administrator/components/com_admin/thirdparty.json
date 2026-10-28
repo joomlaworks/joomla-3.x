@@ -313,38 +313,6 @@
             "seriesLatest": "1.x: 1.4.1 (2016.05.20)"
         },
         {
-            "name": "jQuery MiniColors",
-            "version": "2.2.4",
-            "date": "2016.03.18",
-            "dateSource": "GitHub release 2.2.4, which the file matches exactly",
-            "license": "MIT",
-            "url": "https://github.com/claviska/jquery-minicolors",
-            "path": "media/system/js/jquery.minicolors.js",
-            "note": "Stylesheet's image path changed by Joomla 3.x UTD",
-            "latest": "2.3.6",
-            "isLatest": false,
-            "checked": "2026.10.27",
-            "use": "shared",
-            "series": "",
-            "seriesLatest": ""
-        },
-        {
-            "name": "jQuery Simple Colors",
-            "version": "",
-            "date": "2014.03.31",
-            "dateSource": "Joomla's last change to its code (joomla-cms 2c887d1; a 2019 commit only added the licence)",
-            "license": "MIT",
-            "url": "https://github.com/tkrotoff/jquery-simplecolorpicker",
-            "path": "media/system/js/jquery.simplecolors.js",
-            "note": "Adapted by Peter van Westen; stylesheet's image path changed by Joomla 3.x UTD",
-            "latest": "",
-            "isLatest": false,
-            "checked": "",
-            "use": "shared",
-            "series": "",
-            "seriesLatest": ""
-        },
-        {
             "name": "jQuery UI (Core, Sortable)",
             "version": "1.14.2",
             "date": "2026.01.28",

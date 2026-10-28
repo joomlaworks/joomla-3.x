@@ -57,10 +57,13 @@ abstract class HTMLHelper
 			'system/modal' => 'cms', 'system/mootree' => 'cms', 'system/permissions' => 'cms',
 			'system/multiselect' => 'cms', 'system/passwordstrength' => 'cms', 'system/tabs' => 'cms', 'system/tabs-state' => 'tabstate', 'system/switcher' => 'switcher',
 			'system/combobox' => 'combobox', 'system/validate' => 'formvalidator', 'media/mediafield-mootools' => 'cms',
+			'system/jquery.minicolors' => 'colorpicker', 'system/color-field-adv-init' => 'colorpicker',
+			'system/jquery.simplecolors' => 'simplecolorpicker', 'system/color-field-init' => 'simplecolorpicker',
 		),
 		'css' => array(
 			'system/editor-switch' => 'styles', 'system/frontediting' => 'styles', 'system/modal' => 'styles', 'system/mootree' => 'styles',
-			'system/mootree_rtl' => 'styles', 'mod_languages/languages' => 'styles',
+			'system/mootree_rtl' => 'styles', 'mod_languages/languages' => 'styles', 'system/jquery.minicolors' => 'styles',
+			'system/jquery.simplecolors' => 'styles',
 		),
 	);
 

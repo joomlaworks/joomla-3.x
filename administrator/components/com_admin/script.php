@@ -4949,6 +4949,18 @@ class JoomlaInstallerScript
 			'/media/system/images/hue.png',
 			'/media/system/images/saturation.png',
 			'/media/system/images/chosen-sprite@2x.png',
+			// MiniColors and Simple Colors, replaced by the browser's colour picker (layout joomla.form.field.color)
+			'/media/system/js/color-field-adv-init.js',
+			'/media/system/js/color-field-adv-init.min.js',
+			'/media/system/js/color-field-init.js',
+			'/media/system/js/color-field-init.min.js',
+			'/media/system/js/jquery.minicolors.js',
+			'/media/system/js/jquery.minicolors.min.js',
+			'/media/system/js/jquery.simplecolors.js',
+			'/media/system/js/jquery.simplecolors.min.js',
+			'/media/system/css/jquery.minicolors.css',
+			'/media/system/css/jquery.simplecolors.css',
+			'/media/system/images/jquery.minicolors.png',
 			// The Media Manager's and Contacts' images, drawn from SVG sprites since 3.18, and the Media Manager's unused ones
 			'/media/com_contact/images/con_address.png',
 			'/media/com_contact/images/con_fax.png',
