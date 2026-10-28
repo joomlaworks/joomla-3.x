@@ -88,7 +88,7 @@ abstract class JHtmlSliders
 			$loaded[$group] = true;
 
 			// CMS.sliders (global.js), what MooTools' Fx.Accordion was here
-			JHtml::_('behavior.core');
+			JHtml::_('behavior.cms');
 
 			$display = (isset($params['startOffset']) && isset($params['startTransition']) && $params['startTransition'])
 				? (int) $params['startOffset'] : null;

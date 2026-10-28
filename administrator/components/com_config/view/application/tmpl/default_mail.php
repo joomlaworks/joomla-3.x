@@ -9,8 +9,9 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('jquery.token');
-JHtml::_('script', 'system/sendtestmail.js', array('version' => 'auto', 'relative' => true));
+// The test mail button (vanilla, needs global.js)
+JHtml::_('behavior.core');
+JHtml::_('script', 'administrator/components/com_config/js/sendtestmail.js', array('version' => 'auto'));
 
 // Load JavaScript message titles
 JText::script('ERROR');

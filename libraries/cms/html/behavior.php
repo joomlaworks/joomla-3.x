@@ -87,21 +87,70 @@ abstract class JHtmlBehavior
 			return;
 		}
 
-		JHtml::_('form.csrf');
+		static::$loaded[__METHOD__] = true;
 
-		// global.js: what core.js was (the Joomla namespace, mapped to CMS) and the vanilla behaviours below, with its styles
-		JHtml::_('script', 'system/global.min.js', array('version' => 'auto', 'relative' => true));
-		static::styles();
+		JHtml::_('form.csrf');
 
 		// Add core and base uri paths so javascript scripts can use them.
 		JFactory::getDocument()->addScriptOptions('system.paths', array('root' => JUri::root(true), 'base' => JUri::base(true)));
 
+		// What core.js was (the Joomla namespace, mapped to CMS): on the site the slim frontend.js, unless a behaviour asked for
+		// global.js (cms(), which takes its place), in the administrator global.js
+		if (JFactory::getApplication()->isClient('site') && !isset(static::$loaded[__CLASS__ . '::cms']))
+		{
+			JHtml::_('script', 'system/frontend.min.js', array('version' => 'auto', 'relative' => true));
+		}
+		else
+		{
+			static::cms();
+		}
+	}
+
+	/**
+	 * Loads media/system/js/global.js and its styles (global.css): the CMS namespace with everything, for behaviours beyond what
+	 * the site's frontend.js has (modals, tooltips, tabs, sliders, trees, the password meter, the editor switcher...). It
+	 * takes frontend.js' place when the page has it already, so scripts between them still find the namespace.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.18.0
+	 */
+	public static function cms()
+	{
+		if (isset(static::$loaded[__METHOD__]))
+		{
+			return;
+		}
+
 		static::$loaded[__METHOD__] = true;
+
+		$document = JFactory::getDocument();
+		$frontend = JHtml::_('script', 'system/frontend.min.js', array('relative' => true, 'pathOnly' => true));
+		$global   = JHtml::_('script', 'system/global.min.js', array('relative' => true, 'pathOnly' => true));
+
+		if ($frontend && $global && isset($document->_scripts[$frontend]))
+		{
+			$scripts = array();
+
+			foreach ($document->_scripts as $url => $attributes)
+			{
+				$scripts[$url === $frontend ? $global : $url] = $attributes;
+			}
+
+			$document->_scripts = $scripts;
+		}
+		else
+		{
+			JHtml::_('script', 'system/global.min.js', array('version' => 'auto', 'relative' => true));
+		}
+
+		static::styles();
+		static::core();
 	}
 
 	/**
 	 * Loads media/system/css/global.css, the styles of what global.js draws (the modal, the tree, the editor switcher), always
-	 * with global.js (behavior.core).
+	 * with global.js (cms()).
 	 *
 	 * @return  void
 	 *
@@ -307,7 +356,7 @@ abstract class JHtmlBehavior
 		}
 
 		// CMS.tooltip (global.js), without MooTools or jQuery
-		static::core();
+		static::cms();
 
 		// Setup options object
 		$opt['maxTitleChars'] = isset($params['maxTitleChars']) && $params['maxTitleChars'] ? (int) $params['maxTitleChars'] : 50;
@@ -364,8 +413,7 @@ abstract class JHtmlBehavior
 		if (!isset(static::$loaded[__METHOD__]))
 		{
 			// CMS.modal (global.js), without MooTools or jQuery; the box keeps SqueezeBox's markup and styles (global.css)
-			static::core();
-			static::styles();
+			static::cms();
 			JText::script('JLIB_HTML_BEHAVIOR_CLOSE');
 		}
 
@@ -433,7 +481,7 @@ abstract class JHtmlBehavior
 		}
 
 		// CMS.multiselect (global.js), started from the page's script options
-		static::core();
+		static::cms();
 		JFactory::getDocument()->addScriptOptions('system.multiselect', array($id => 1));
 
 		// Set static array
@@ -458,8 +506,7 @@ abstract class JHtmlBehavior
 	public static function tree($id, $params = array(), $root = array())
 	{
 		// CMS.tree (global.js), what MooTree was, with its styles (global.css) and icons
-		static::core();
-		static::styles();
+		static::cms();
 
 		if (isset(static::$loaded[__METHOD__][$id]))
 		{

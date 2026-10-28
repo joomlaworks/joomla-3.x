@@ -15,12 +15,12 @@ $options  = array(
 	'hidden'      => (int) ($form->getValue('language', null, '*') === '*'),
 );
 
-JHtml::_('behavior.core');
-JHtml::_('jquery.framework');
+// CMS.associations (global.js), started from these options
+JHtml::_('behavior.cms');
 JText::script('JGLOBAL_ASSOC_NOT_POSSIBLE');
 JText::script('JGLOBAL_ASSOCIATIONS_RESET_WARNING');
+JText::script('JGLOBAL_ASSOCIATIONS_PROPAGATE_FAILED');
 JFactory::getDocument()->addScriptOptions('system.associations.edit', $options);
-JHtml::_('script', 'system/associations-edit.js', array('version' => 'auto', 'relative' => true));
 
 // JLayout for standard handling of associations fields in the administrator items edit screens.
 echo $form->renderFieldset('item_associations');

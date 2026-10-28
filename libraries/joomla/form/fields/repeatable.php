@@ -143,7 +143,7 @@ class JFormFieldRepeatable extends JFormField
 		JHtml::_('script', 'jui/sortablelist.js', array('version' => 'auto', 'relative' => true));
 		JHtml::_('stylesheet', 'jui/sortablelist.css', array('version' => 'auto', 'relative' => true));
 		// global.js gives its modals' links SqueezeBox's names
-		JHtml::_('behavior.core');
+		JHtml::_('behavior.cms');
 		JHtml::_('script', 'system/repeatable.js', array('version' => 'auto', 'relative' => true));
 
 		$javascript = 'jQuery(document).ready(function($) { $("#' . $this->id . '_table tbody").sortable(); });';

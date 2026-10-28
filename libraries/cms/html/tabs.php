@@ -82,7 +82,7 @@ abstract class JHtmlTabs
 		if (!array_key_exists((string) $group, $loaded))
 		{
 			// CMS.tabs (global.js), what MooTools' JTabs was
-			JHtml::_('behavior.core');
+			JHtml::_('behavior.cms');
 
 			$opt['onActive']            = isset($params['onActive']) ? '\\' . $params['onActive'] : null;
 			$opt['onBackground']        = isset($params['onBackground']) ? '\\' . $params['onBackground'] : null;

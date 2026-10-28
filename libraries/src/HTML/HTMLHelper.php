@@ -42,19 +42,25 @@ abstract class HTMLHelper
 	public static $formatOptions = array('format.depth' => 0, 'format.eol' => "\n", 'format.indent' => "\t");
 
 	/**
-	 * Media files merged into media/system/js/global.js and media/system/css/global.css, or replaced by them: asking for one
-	 * through script() or stylesheet() loads global.js or global.css, so extensions naming the old files keep working. Their
-	 * relative names (system/x is media/system/js/x.js), without -uncompressed or .min.
+	 * Media files merged into media/system/js/global.js (and the site's frontend.js) and media/system/css/global.css, or
+	 * replaced by them: asking for one through script() or stylesheet() runs the behaviour which loads them (behavior.core,
+	 * behavior.cms, behavior.styles), so extensions naming the old files keep working. Their relative names (system/x is
+	 * media/system/js/x.js), without -uncompressed or .min; the value is the behaviour.
 	 *
 	 * @var    array
 	 * @since  3.18.0
 	 */
 	const GLOBAL_FILES = array(
 		'js'  => array(
-			'system/caption', 'system/core', 'system/editor-switch', 'system/helpsite', 'system/highlighter', 'system/keepalive',
-			'system/modal', 'system/mootree', 'system/multiselect', 'system/passwordstrength', 'system/tabs', 'media/mediafield-mootools',
+			'system/core' => 'core', 'system/caption' => 'core', 'system/highlighter' => 'core', 'system/keepalive' => 'core',
+			'system/associations-edit' => 'cms', 'system/editor-switch' => 'cms', 'system/frontediting' => 'cms', 'system/helpsite' => 'cms',
+			'system/modal' => 'cms', 'system/mootree' => 'cms', 'system/permissions' => 'cms',
+			'system/multiselect' => 'cms', 'system/passwordstrength' => 'cms', 'system/tabs' => 'cms', 'media/mediafield-mootools' => 'cms',
 		),
-		'css' => array('system/editor-switch', 'system/modal', 'system/mootree', 'system/mootree_rtl'),
+		'css' => array(
+			'system/editor-switch' => 'styles', 'system/frontediting' => 'styles', 'system/modal' => 'styles', 'system/mootree' => 'styles',
+			'system/mootree_rtl' => 'styles',
+		),
 	);
 
 	/**
@@ -665,8 +671,15 @@ abstract class HTMLHelper
 			$options['detectDebug']   = isset($options['detectDebug']) ? $options['detectDebug'] : true;
 		}
 
-		if (!static::mapGlobalFile('css', $file, $options))
+		$behaviour = static::mapGlobalFile('css', $file, $options);
+
+		if ($behaviour !== null)
 		{
+			if ($behaviour)
+			{
+				static::_('behavior.' . $behaviour);
+			}
+
 			return null;
 		}
 
@@ -750,8 +763,15 @@ abstract class HTMLHelper
 			static::_('behavior.framework');
 		}
 
-		if (!static::mapGlobalFile('js', $file, $options))
+		$behaviour = static::mapGlobalFile('js', $file, $options);
+
+		if ($behaviour !== null)
 		{
+			if ($behaviour)
+			{
+				static::_('behavior.' . $behaviour);
+			}
+
 			return null;
 		}
 
@@ -1157,47 +1177,35 @@ abstract class HTMLHelper
 	}
 
 	/**
-	 * A request for a file merged into global.js or global.css becomes one for that (GLOBAL_FILES); one for a dropped file
-	 * becomes an empty name (DROPPED_FILES)
+	 * What a request for a merged or dropped file becomes (GLOBAL_FILES, DROPPED_FILES)
 	 *
-	 * @param   string  $type      js or css
-	 * @param   string  &$file     The file asked for
-	 * @param   array   &$options  The script() or stylesheet() options
+	 * @param   string  $type     js or css
+	 * @param   string  $file     The file asked for
+	 * @param   array   $options  The script() or stylesheet() options
 	 *
-	 * @return  boolean  False when the file was dropped
+	 * @return  string|boolean|null  The behaviour to run instead, false for a dropped file, null for any other file
 	 *
 	 * @since   3.18.0
 	 */
-	protected static function mapGlobalFile($type, &$file, array &$options)
+	protected static function mapGlobalFile($type, $file, array $options)
 	{
-		foreach (array(array(static::GLOBAL_FILES[$type], true), array(static::DROPPED_FILES[$type], false)) as $list)
+		$names = static::GLOBAL_FILES[$type] + array_fill_keys(static::DROPPED_FILES[$type], false);
+
+		foreach ($names as $name => $behaviour)
 		{
-			list($names, $kept) = $list;
+			list($extension, $base) = explode('/', $name, 2);
 
-			foreach ($names as $name)
+			// Relative (system/x.js) or from the site's root (media/system/js/x.js)
+			$pattern = '#^(?:' . preg_quote($name, '#') . '|/?media/' . preg_quote($extension, '#') . '/' . $type . '/' . preg_quote($base, '#')
+				. ')(?:-uncompressed|\.min)?\.' . $type . '(?:\?.*)?$#';
+
+			if (preg_match($pattern, $file) && ($options['relative'] || strpos($file, $name) !== 0))
 			{
-				list($extension, $base) = explode('/', $name, 2);
-
-				// Relative (system/x.js) or from the site's root (media/system/js/x.js)
-				$pattern = '#^(?:' . preg_quote($name, '#') . '|/?media/' . preg_quote($extension, '#') . '/' . $type . '/' . preg_quote($base, '#')
-					. ')(?:-uncompressed|\.min)?\.' . $type . '(?:\?.*)?$#';
-
-				if (preg_match($pattern, $file) && ($options['relative'] || strpos($file, $name) !== 0))
-				{
-					if (!$kept)
-					{
-						return false;
-					}
-
-					$file                = 'system/global.min.' . $type;
-					$options['relative'] = true;
-
-					return true;
-				}
+				return $behaviour;
 			}
 		}
 
-		return true;
+		return null;
 	}
 
 	/**

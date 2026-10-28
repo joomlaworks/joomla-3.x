@@ -57,3 +57,13 @@
 .editor-switch button[aria-current] {font-weight:600;cursor:default;opacity:1;}
 .editor-switch button[aria-current]::after {content:" \2713";}
 .editor-switch.is-switching summary {opacity:0.5;pointer-events:none;}
+
+/* --- Front-end editing --- */
+/* The edit buttons stand alone: the site's template may have no Bootstrap or icon font */
+.jmoddiv.jmodinside {position:relative;}
+.cms-frontedit {box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;padding:0;border:1px solid rgba(0, 0, 0, 0.25);border-radius:4px;background:#fff;color:#222;box-shadow:0 2px 6px rgba(0, 0, 0, 0.2);text-decoration:none;line-height:1;}
+.cms-frontedit:hover,.cms-frontedit:focus-visible {background:#222;color:#fff;}
+.jmodedit.cms-frontedit {position:absolute;z-index:1001;}
+.cms-frontedit-popup {position:absolute;z-index:1002;margin-top:4px;}
+.cms-frontedit-tip {z-index:1003;max-width:280px;padding:6px 10px;border-radius:4px;background:#222;color:#fff;font:13px/1.4 system-ui, sans-serif;}
+.cms-frontedit-tip .tip-title:empty {display:none;}

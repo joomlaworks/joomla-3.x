@@ -61,10 +61,6 @@ $moduleHtml = preg_replace(
 
 if ($count)
 {
-	// Load once booststrap tooltip and add stylesheet and javascript to head:
-	JHtml::_('bootstrap.tooltip');
-	JHtml::_('bootstrap.popover');
-
-	JHtml::_('stylesheet', 'system/frontediting.css', array('version' => 'auto', 'relative' => true));
-	JHtml::_('script', 'system/frontediting.js', array('version' => 'auto', 'relative' => true));
+	// CMS.frontEditing (global.js, its styles in global.css): no jQuery or Bootstrap
+	JHtml::_('behavior.cms');
 }

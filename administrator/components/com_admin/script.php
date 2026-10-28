@@ -4453,6 +4453,17 @@ class JoomlaInstallerScript
 			'/media/system/js/highlighter.js',
 			'/media/system/js/multiselect-uncompressed.js',
 			'/media/system/js/multiselect.js',
+			// Associations, the Permissions field and front-end editing, merged into global.js and global.css
+			'/media/system/css/frontediting.css',
+			'/media/system/js/associations-edit-uncompressed.js',
+			'/media/system/js/associations-edit.js',
+			'/media/system/js/frontediting-uncompressed.js',
+			'/media/system/js/frontediting.js',
+			'/media/system/js/permissions-uncompressed.js',
+			'/media/system/js/permissions.js',
+			// Global Configuration's test mail script (administrator/components/com_config/js/sendtestmail.js since 3.18)
+			'/media/system/js/sendtestmail-uncompressed.js',
+			'/media/system/js/sendtestmail.js',
 			// Polyfills and fallbacks for old browsers (Internet Explorer), and Fx.ProgressBar, which nothing used
 			'/media/system/js/html5fallback-uncompressed.js',
 			'/media/system/js/html5fallback.js',

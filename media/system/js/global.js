@@ -26,6 +26,9 @@
 
 	const CMS = window.CMS = window.CMS || {};
 
+	// frontend.js ran first (written into the page by hand): it already started captions, highlighting and keepalive
+	const started = !!CMS.frontend;
+
 	CMS.global = true;
 
 	/* --- Helpers --- */
@@ -2317,12 +2320,389 @@
 		},
 	};
 
+	/* --- The Associations tab of edit forms (layout joomla.edit.associations) --- */
+
+	// A change Chosen makes reaches jQuery's listeners only
+	const onChange = (element, listener) => {
+		if (window.jQuery) {
+			window.jQuery(element).on('change', listener);
+		} else {
+			element.addEventListener('change', listener);
+		}
+	};
+
+	const associationRows = () => document.querySelectorAll('#associations .control-group');
+
+	// The language a row is for, from its label's for="jform_associations_en_GB_id"
+	const associationCode = (row) => {
+		const label = row.querySelector('.control-label label');
+
+		return label ? label.getAttribute('for').replace(/_id$/, '') : '';
+	};
+
+	CMS.associations = {
+		// Hides the row of the item's own language
+		hide(formControl, languageCode) {
+			for (const row of associationRows()) {
+				if (associationCode(row) === formControl + '_associations_' + String(languageCode).replace('-', '_')) {
+					row.style.display = 'none';
+				}
+			}
+		},
+
+		// Items for all languages have no associations
+		showMessage() {
+			const tab = document.getElementById('associations');
+			const notice = document.createElement('div');
+
+			for (const row of associationRows()) {
+				row.style.display = 'none';
+			}
+
+			notice.id = 'associations-notice';
+			notice.className = 'alert alert-info';
+			notice.textContent = CMS.text.get('JGLOBAL_ASSOC_NOT_POSSIBLE');
+			tab.insertBefore(notice, tab.firstChild);
+		},
+
+		// The associated items' own associations, filled in through the pickers' callbacks (window[prefix + 'en_GB'])
+		inject(result, callbackPrefix) {
+			if (!result.success) {
+				Joomla.renderMessages({ warning: [CMS.text.get('JGLOBAL_ASSOCIATIONS_PROPAGATE_FAILED')] });
+
+				return;
+			}
+
+			Object.keys(result.data || {}).forEach((language) => {
+				const item = result.data[language];
+
+				window[callbackPrefix + language.replace('-', '_')](item.id, item.title, item.catid, null, null, language);
+			});
+
+			if (result.message) {
+				Joomla.renderMessages({ notice: [result.message] });
+			}
+		},
+
+		// The "Propagate" button: asks the site for the associations of the item chosen for one language
+		propagate(fieldPrefix, callbackPrefix) {
+			const form = document.querySelector('form[name="adminForm"]');
+			const language = document.getElementById('jform_language');
+			const query = new URLSearchParams({
+				task: 'ajax.fetchAssociations',
+				format: 'json',
+				assocId: document.getElementById(fieldPrefix + '_id').value,
+				excludeLang: language ? language.value : '',
+			});
+			const url = form.getAttribute('action') + '&' + CMS.options.get('csrf.token', '') + '=1&' + query.toString();
+
+			fetch(url, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+				.then((response) => response.json())
+				.then((result) => CMS.associations.inject(result, callbackPrefix))
+				.catch(() => Joomla.renderMessages({ warning: [CMS.text.get('JGLOBAL_ASSOCIATIONS_PROPAGATE_FAILED')] }));
+
+			return false;
+		},
+
+		init(options) {
+			const formControl = options.formControl || 'jform';
+			const language = document.getElementById(formControl + '_language');
+
+			if (String(options.hidden) === '1') {
+				CMS.associations.showMessage();
+			} else if (language) {
+				CMS.associations.hide(formControl, language.value);
+			}
+
+			if (!language) {
+				return;
+			}
+
+			// A new language empties the associations (they were for the old one)
+			onChange(language, () => {
+				let existed = false;
+				const notice = document.getElementById('associations-notice');
+
+				Joomla.removeMessages();
+
+				if (notice) {
+					notice.remove();
+				}
+
+				for (const row of associationRows()) {
+					const code = associationCode(row).replace(formControl + '_associations_', '');
+					const field = document.getElementById(formControl + '_associations_' + code + '_id');
+					const clear = document.getElementById(formControl + '_associations_' + code + '_clear');
+
+					row.style.display = '';
+					existed = existed || (field && field.value !== '');
+
+					if (clear) {
+						clear.click();
+					}
+				}
+
+				if (existed) {
+					Joomla.renderMessages({ warning: [CMS.text.get('JGLOBAL_ASSOCIATIONS_RESET_WARNING')] });
+				}
+
+				if (language.value === '*') {
+					CMS.associations.showMessage();
+				} else {
+					CMS.associations.hide(formControl, language.value);
+				}
+			});
+		},
+	};
+
+	/* --- The Permissions field (JFormFieldRules): each change is saved at once --- */
+
+	CMS.permissions = {
+		// A parameter of the page's address, false when absent
+		urlParam(name) {
+			const value = new URLSearchParams(window.location.search).get(name);
+
+			return value === null ? false : value;
+		},
+
+		/**
+		 * @param  {Element}  select  The permission's list (jform_rules_<action>_<group>)
+		 */
+		send(select) {
+			const icon = document.getElementById('icon_' + select.id);
+			const param = CMS.permissions.urlParam;
+			const component = param('component');
+			const extension = param('extension');
+			const option = param('option');
+			const view = param('view');
+			const contextField = document.getElementById('jform_context');
+			const context = contextField ? contextField.value.split('.')[0] : '';
+			const titleField = document.getElementById('jform_title');
+			let asset = 'not';
+			let title = component;
+
+			if (option === 'com_config' && component === false && extension === false) {
+				asset = 'root.1';
+			} else if (extension === false && view === 'component') {
+				asset = component;
+			} else if (context) {
+				asset = context + (view === 'group' ? '.fieldgroup.' : '.field.') + param('id');
+				title = titleField.value;
+			} else if (extension !== false && view !== false) {
+				asset = extension + '.' + view + '.' + param('id');
+				title = titleField.value;
+			} else if (extension === false && view !== false) {
+				asset = option + '.' + view + '.' + param('id');
+				title = titleField.value;
+			}
+
+			const id = select.id.replace('jform_rules_', '');
+			const split = id.lastIndexOf('_');
+			const data = new URLSearchParams({
+				comp: asset,
+				action: id.substring(0, split),
+				rule: id.substring(split + 1),
+				value: select.value,
+				title,
+			});
+			const setIcon = (className) => {
+				icon.removeAttribute('style');
+				icon.setAttribute('class', className);
+			};
+
+			icon.removeAttribute('class');
+			icon.setAttribute('style', 'background:url(../media/system/images/modal/spinner.gif);display:inline-block;width:16px;height:16px');
+			Joomla.removeMessages();
+
+			CMS.request({
+				url: document.getElementById('permissions-sliders').getAttribute('data-ajaxuri'),
+				method: 'POST',
+				data: data.toString(),
+				onSuccess(text) {
+					let response = {};
+
+					try {
+						response = JSON.parse(text);
+					} catch (error) {
+						setIcon('icon-cancel');
+						Joomla.renderMessages(Joomla.ajaxErrorsMessages({ responseText: text, status: 200 }, 'parsererror'));
+
+						return;
+					}
+
+					const saved = response.data && response.data.result === true;
+
+					setIcon(saved ? 'icon-save' : 'icon-cancel');
+
+					// The calculated setting, in the next column
+					const next = saved ? select.closest('td').nextElementSibling : null;
+
+					if (next) {
+						for (const span of next.querySelectorAll('span')) {
+							span.className = response.data.class;
+							span.innerHTML = response.data.text;
+						}
+					}
+
+					if (response.messages && typeof response.messages === 'object') {
+						Joomla.renderMessages(response.messages);
+						window.scrollTo(0, 0);
+					}
+				},
+				onError(xhr) {
+					setIcon('icon-cancel');
+					Joomla.renderMessages(Joomla.ajaxErrorsMessages(xhr, ''));
+					window.scrollTo(0, 0);
+				},
+			});
+		},
+	};
+
+	/* --- Front-end editing (modules with .jmoddiv: layout joomla.edit.frontediting_modules) --- */
+
+	/*
+	 * Hovering a module the user may edit shows an edit button at its corner (its address and tooltip in data-jmodediturl,
+	 * data-target and data-jmodtip); hovering a menu item in a menu module with data-jmenuedittip shows a link to edit the item.
+	 * Both stay a moment after the pointer leaves, so it can reach them.
+	 */
+	const PENCIL = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12.1 1.3a1.5 1.5 0 0 1 2.1 0l.5.5a1.5 1.5 0 0 1 0 2.1l-8.6 8.6-3.3.9.9-3.3 8.4-8.8zM2 14h12v1H2z"/></svg>';
+
+	const editing = { button: null, module: null, popup: null, item: null, timers: {} };
+
+	const later = (name, delay, callback) => {
+		window.clearTimeout(editing.timers[name]);
+		editing.timers[name] = delay === null ? null : window.setTimeout(callback, delay);
+	};
+
+	const removeEditButton = () => {
+		if (editing.button) {
+			editing.button.remove();
+			editing.button = editing.module = null;
+		}
+	};
+
+	const removeMenuEdit = () => {
+		if (editing.popup) {
+			editing.popup.remove();
+			editing.popup = editing.item = null;
+		}
+	};
+
+	CMS.frontEditing = {
+		showModule(module) {
+			later('module', null);
+
+			if (editing.module === module) {
+				return;
+			}
+
+			removeEditButton();
+
+			const button = document.createElement('a');
+			const rect = module.getBoundingClientRect();
+			const rtl = document.documentElement.getAttribute('dir') === 'rtl';
+
+			button.className = 'btn jmodedit cms-frontedit';
+			button.href = module.getAttribute('data-jmodediturl');
+			button.target = module.getAttribute('data-target') || '_self';
+			button.innerHTML = PENCIL;
+			button.setAttribute('data-tip-title', '');
+			button.setAttribute('data-tip-text', module.getAttribute('data-jmodtip') || '');
+			button.setAttribute('aria-label', (module.getAttribute('data-jmodtip') || '').replace(/<[^>]*>/g, ' ').trim());
+			button.style.top = (rect.top + window.pageYOffset) + 'px';
+			document.body.appendChild(button);
+			button.style.left = (rtl ? rect.left : rect.right - button.offsetWidth) + window.pageXOffset + 'px';
+			module.classList.add('jmodinside');
+			editing.button = button;
+			editing.module = module;
+		},
+
+		showMenuItem(item) {
+			later('menu', null);
+
+			if (editing.item === item) {
+				return;
+			}
+
+			removeMenuEdit();
+
+			const ids = /\bitem-(\d+)\b/.exec(item.className);
+			const module = item.closest('.jmoddiv');
+
+			if (!ids || !module) {
+				return;
+			}
+
+			const url = (module.getAttribute('data-jmodediturl') || '').replace(/\/index.php\?option=com_config&controller=config.display.modules([^\d]+).+$/,
+				'/administrator/index.php?option=com_menus&view=item&layout=edit$1' + ids[1]);
+			const popup = document.createElement('div');
+			const link = document.createElement('a');
+			const rect = item.getBoundingClientRect();
+
+			popup.className = 'cms-frontedit-popup';
+			link.className = 'btn jfedit-menu cms-frontedit';
+			link.href = url;
+			link.target = '_blank';
+			link.innerHTML = PENCIL;
+			link.setAttribute('data-tip-title', '');
+			link.setAttribute('data-tip-text', (module.getAttribute('data-jmenuedittip') || '').replace('%s', ids[1]));
+			link.setAttribute('aria-label', link.getAttribute('data-tip-text').replace(/<[^>]*>/g, ' ').trim());
+			popup.appendChild(link);
+			popup.style.top = (rect.bottom + window.pageYOffset) + 'px';
+			popup.style.left = (rect.left + window.pageXOffset) + 'px';
+			document.body.appendChild(popup);
+			editing.popup = popup;
+			editing.item = item;
+		},
+	};
+
+	const MENU_ITEMS = '.jmoddiv[data-jmenuedittip] .nav li, .jmoddiv[data-jmenuedittip].nav li';
+
+	document.addEventListener('mouseover', (event) => {
+		const target = event.target;
+
+		if (!target.closest) {
+			return;
+		}
+
+		if (target.closest('.jmodedit')) {
+			later('module', null);
+		} else {
+			const module = target.closest('.jmoddiv[data-jmodediturl]');
+
+			if (module) {
+				CMS.frontEditing.showModule(module);
+			} else if (editing.button) {
+				later('module', 500, removeEditButton);
+			}
+		}
+
+		if (target.closest('.cms-frontedit-popup')) {
+			later('menu', null);
+		} else {
+			const item = target.closest(MENU_ITEMS);
+
+			if (item) {
+				CMS.frontEditing.showMenuItem(item);
+			} else if (editing.popup) {
+				later('menu', 1500, removeMenuEdit);
+			}
+		}
+	});
+
+	// The buttons' tooltips: the module, its position, the menu item
+	CMS.tooltip.attach('.cms-frontedit', { fixed: true, className: 'cms-frontedit-tip' });
+
 	/* --- Behaviours started from the page's script options --- */
 
 	CMS.ready(() => {
 		Object.keys(CMS.options.get('system.multiselect') || {}).forEach((id) => CMS.multiselect.attach(id));
 
-		Object.keys(CMS.options.get('system.highlighter') || {}).forEach((sig) => {
+		if (CMS.options.get('system.associations.edit')) {
+			CMS.associations.init(CMS.options.get('system.associations.edit'));
+		}
+
+		Object.keys(started ? {} : CMS.options.get('system.highlighter') || {}).forEach((sig) => {
 			const options = CMS.options.get('system.highlighter')[sig];
 			const start = document.getElementById(options.start);
 			const end = document.getElementById(options.end);
@@ -2338,7 +2718,7 @@
 
 	// Captions need the images' sizes
 	window.addEventListener('load', () => {
-		Object.keys(CMS.options.get('system.caption') || {}).forEach((selector) => CMS.caption.attach(selector));
+		Object.keys(started ? {} : CMS.options.get('system.caption') || {}).forEach((selector) => CMS.caption.attach(selector));
 	});
 
 	/* --- Keeping the session alive (behavior.keepalive) --- */
@@ -2377,7 +2757,7 @@
 
 	// Pages which asked for it carry its options (JHtml behavior.keepalive)
 	CMS.ready(() => {
-		const options = CMS.options.get('system.keepalive');
+		const options = started ? null : CMS.options.get('system.keepalive');
 
 		if (options) {
 			CMS.keepalive.start(options);
@@ -2575,6 +2955,17 @@
 	if (!Joomla.JMultiSelect) {
 		Joomla.JMultiSelect = (container) => CMS.multiselect.attach(container);
 	}
+
+	Joomla.injectAssociations = CMS.associations.inject;
+	Joomla.propagateAssociation = CMS.associations.propagate;
+	window.hideAssociation = CMS.associations.hide;
+	window.showAssociationMessage = CMS.associations.showMessage;
+
+	// The Permissions field's lists call it: onchange="sendPermissions.call(this, event)"
+	window.sendPermissions = function sendPermissions() {
+		CMS.permissions.send(this);
+	};
+	window.getUrlParam = CMS.permissions.urlParam;
 
 	if (!Joomla.Highlighter) {
 		Joomla.Highlighter = (options) => CMS.highlighter.create(options);
@@ -2778,5 +3169,9 @@
 		'jInsertFieldValue(), jMediaRefreshPreview()': 'CMS.mediaField.insert(), CMS.mediaField.refreshPreview()',
 		'jMediaRefreshPreviewTip(), jMediaRefreshImgpathTip()': 'CMS.mediaField.previewTip(), CMS.mediaField.imagePathTip()',
 		'keepalive.js': 'CMS.keepalive.start(), CMS.keepalive.stop()',
+		'Joomla.propagateAssociation(), Joomla.injectAssociations()': 'CMS.associations.propagate(), CMS.associations.inject()',
+		'hideAssociation(), showAssociationMessage()': 'CMS.associations.hide(), CMS.associations.showMessage()',
+		'sendPermissions(), getUrlParam()': 'CMS.permissions.send(), CMS.permissions.urlParam()',
+		'frontediting.js': 'CMS.frontEditing.showModule(), CMS.frontEditing.showMenuItem()',
 	};
 })(window, document);

@@ -48,7 +48,7 @@ extract($displayData);
 if ($meter)
 {
 	// CMS.password (global.js): the bar under the field, and data-passwordstrength on it
-	JHtml::_('behavior.core');
+	JHtml::_('behavior.cms');
 	JFactory::getDocument()->addScriptDeclaration(
 		'CMS.ready(function () { CMS.password.meter(' . json_encode($id, JSON_HEX_TAG | JSON_HEX_AMP) . ', {threshold: ' . (int) $threshold . '}); });'
 	);

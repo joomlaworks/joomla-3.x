@@ -18,6 +18,7 @@
             <folder>controller</folder>
             <folder>model</folder>
             <folder>view</folder>
+            <folder>js</folder>
         </files>
         <languages folder="admin">
             <language tag="en-GB">language/en-GB.com_config.ini</language>
