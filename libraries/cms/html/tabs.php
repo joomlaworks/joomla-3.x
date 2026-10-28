@@ -81,8 +81,8 @@ abstract class JHtmlTabs
 
 		if (!array_key_exists((string) $group, $loaded))
 		{
-			// Include MooTools framework
-			JHtml::_('behavior.framework', true);
+			// CMS.tabs (global.js), what MooTools' JTabs was
+			JHtml::_('behavior.core');
 
 			$opt['onActive']            = isset($params['onActive']) ? '\\' . $params['onActive'] : null;
 			$opt['onBackground']        = isset($params['onBackground']) ? '\\' . $params['onBackground'] : null;
@@ -95,15 +95,10 @@ abstract class JHtmlTabs
 
 			$options = JHtml::getJSObject($opt);
 
-			$js = '	window.addEvent(\'domready\', function(){
-						$$(\'dl#' . $group . '.tabs\').each(function(tabs){
-							new JTabs(tabs, ' . $options . ');
-						});
-					});';
+			$js = 'CMS.ready(function () { var lists = document.querySelectorAll(' . json_encode('dl#' . $group . '.tabs', JSON_HEX_TAG | JSON_HEX_AMP)
+				. '); for (var i = 0; i < lists.length; i++) { CMS.tabs.create(lists[i], ' . $options . '); } });';
 
-			$document = JFactory::getDocument();
-			$document->addScriptDeclaration($js);
-			JHtml::_('script', 'system/tabs.js', array('version' => 'auto', 'relative' => true));
+			JFactory::getDocument()->addScriptDeclaration($js);
 
 			$loaded[(string) $group] = true;
 		}

@@ -87,37 +87,30 @@ abstract class JHtmlSliders
 
 			$loaded[$group] = true;
 
-			// Include mootools framework.
-			JHtml::_('behavior.framework', true);
-
-			$document = JFactory::getDocument();
+			// CMS.sliders (global.js), what MooTools' Fx.Accordion was here
+			JHtml::_('behavior.core');
 
 			$display = (isset($params['startOffset']) && isset($params['startTransition']) && $params['startTransition'])
 				? (int) $params['startOffset'] : null;
 			$show = (isset($params['startOffset']) && !(isset($params['startTransition']) && $params['startTransition']))
 				? (int) $params['startOffset'] : null;
 
-			$opt['onActive'] = "\\function(toggler, i) {toggler.addClass('pane-toggler-down');" .
-				"toggler.removeClass('pane-toggler');i.addClass('pane-down');i.removeClass('pane-hide');Cookie.write('jpanesliders_"
-				. $group . "',$$('div#" . $group . ".pane-sliders > .panel > h3').indexOf(toggler));}";
-			$opt['onBackground'] = "\\function(toggler, i) {toggler.addClass('pane-toggler');" .
-				"toggler.removeClass('pane-toggler-down');i.addClass('pane-hide');i.removeClass('pane-down');if($$('div#"
-				. $group . ".pane-sliders > .panel > h3').length==$$('div#" . $group
-				. ".pane-sliders > .panel > h3.pane-toggler').length) Cookie.write('jpanesliders_" . $group . "',-1);}";
+			// The open pane is remembered in a cookie (-1: all closed), read back when useCookie is set
+			$opt['cookie'] = 'jpanesliders_' . $group;
 			$opt['duration'] = isset($params['duration']) ? (int) $params['duration'] : 300;
 			$opt['display'] = (isset($params['useCookie']) && $params['useCookie']) ? $input->cookie->get('jpanesliders_' . $group, $display, 'integer')
 				: $display;
 			$opt['show'] = (isset($params['useCookie']) && $params['useCookie']) ? $input->cookie->get('jpanesliders_' . $group, $show, 'integer') : $show;
-			$opt['opacity'] = (isset($params['opacityTransition']) && $params['opacityTransition']) ? 'true' : 'false';
-			$opt['alwaysHide'] = (isset($params['allowAllClose']) && (!$params['allowAllClose'])) ? 'false' : 'true';
+			$opt['opacity'] = isset($params['opacityTransition']) && $params['opacityTransition'];
+			$opt['alwaysHide'] = !(isset($params['allowAllClose']) && !$params['allowAllClose']);
 
 			$options = JHtml::getJSObject($opt);
+			$panes   = 'div#' . $group . '.pane-sliders > .panel > ';
 
-			$js = "window.addEvent('domready', function(){ new Fx.Accordion($$('div#" . $group
-				. ".pane-sliders > .panel > h3.pane-toggler'), $$('div#" . $group . ".pane-sliders > .panel > div.pane-slider'), " . $options
-				. "); });";
+			$js = 'CMS.ready(function () { CMS.sliders.create(' . json_encode($panes . 'h3.pane-toggler', JSON_HEX_TAG | JSON_HEX_AMP) . ', '
+				. json_encode($panes . 'div.pane-slider', JSON_HEX_TAG | JSON_HEX_AMP) . ', ' . $options . '); });';
 
-			$document->addScriptDeclaration($js);
+			JFactory::getDocument()->addScriptDeclaration($js);
 		}
 	}
 }

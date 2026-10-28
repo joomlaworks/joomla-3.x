@@ -47,20 +47,10 @@ extract($displayData);
 
 if ($meter)
 {
-	JHtml::_('script', 'system/passwordstrength.js', array('version' => 'auto', 'relative' => true, 'framework' => true));
-
-	// Load script on document load.
+	// CMS.password (global.js): the bar under the field, and data-passwordstrength on it
+	JHtml::_('behavior.core');
 	JFactory::getDocument()->addScriptDeclaration(
-		"
-		jQuery(document).ready(function() {
-			new Form.PasswordStrength('" . $id . "',
-				{
-					threshold: " . $threshold . ",
-					onUpdate: function(element, strength, threshold) {
-						element.set('data-passwordstrength', strength);
-					}
-				});
-		});"
+		'CMS.ready(function () { CMS.password.meter(' . json_encode($id, JSON_HEX_TAG | JSON_HEX_AMP) . ', {threshold: ' . (int) $threshold . '}); });'
 	);
 }
 

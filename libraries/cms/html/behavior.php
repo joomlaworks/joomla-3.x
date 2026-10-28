@@ -88,7 +88,9 @@ abstract class JHtmlBehavior
 		}
 
 		JHtml::_('form.csrf');
-		JHtml::_('script', 'system/core.js', array('version' => 'auto', 'relative' => true));
+
+		// global.js: what core.js was (the Joomla namespace, mapped to CMS) and the vanilla behaviours below
+		JHtml::_('script', 'system/global.min.js', array('version' => 'auto', 'relative' => true));
 
 		// Add core and base uri paths so javascript scripts can use them.
 		JFactory::getDocument()->addScriptOptions('system.paths', array('root' => JUri::root(true), 'base' => JUri::base(true)));
@@ -157,10 +159,7 @@ abstract class JHtmlBehavior
 			return;
 		}
 
-		// Include MooTools framework
-		static::framework();
-
-		// Load the new jQuery code
+		// The jQuery validator (MooTools isn't needed any more)
 		static::formvalidator();
 	}
 
@@ -218,7 +217,7 @@ abstract class JHtmlBehavior
 		// Include jQuery
 		JHtml::_('jquery.framework');
 
-		JHtml::_('script', 'system/switcher.js', array('framework' => true, 'version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'system/switcher.js', array('version' => 'auto', 'relative' => true));
 
 		$script = "
 			document.switcher = null;
@@ -263,7 +262,7 @@ abstract class JHtmlBehavior
 	 * Add a title attribute to any element in the form
 	 * title="title::text"
 	 *
-	 * Uses the core Tips class in MooTools.
+	 * Uses CMS.tooltip (media/system/js/global.js), what MooTools' Tips class was.
 	 *
 	 * @param   string  $selector  The class selector for the tooltip.
 	 * @param   array   $params    An array of options for the tooltip.
@@ -294,8 +293,8 @@ abstract class JHtmlBehavior
 			return;
 		}
 
-		// Include MooTools framework
-		static::framework(true);
+		// CMS.tooltip (global.js), without MooTools or jQuery
+		static::core();
 
 		// Setup options object
 		$opt['maxTitleChars'] = isset($params['maxTitleChars']) && $params['maxTitleChars'] ? (int) $params['maxTitleChars'] : 50;
@@ -311,23 +310,9 @@ abstract class JHtmlBehavior
 
 		$options = JHtml::getJSObject($opt);
 
-		// Include jQuery
-		JHtml::_('jquery.framework');
-
-		// Attach tooltips to document
+		// Attach tooltips to document (once the page's scripts are there: onShow and onHide may name their functions)
 		JFactory::getDocument()->addScriptDeclaration(
-			"jQuery(function($) {
-			 $('$selector').each(function() {
-				var title = $(this).attr('title');
-				if (title) {
-					var parts = title.split('::', 2);
-					var mtelement = document.id(this);
-					mtelement.store('tip:title', parts[0]);
-					mtelement.store('tip:text', parts[1]);
-				}
-			});
-			var JTooltips = new Tips($('$selector').get(), $options);
-		});"
+			'CMS.ready(function () { CMS.tooltip.attach(' . json_encode($selector, JSON_HEX_TAG | JSON_HEX_AMP) . ', ' . $options . '); });'
 		);
 
 		// Set static array
@@ -365,12 +350,10 @@ abstract class JHtmlBehavior
 		// Load the necessary files if they haven't yet been loaded
 		if (!isset(static::$loaded[__METHOD__]))
 		{
-			// Include MooTools framework
-			static::framework(true);
-
-			// Load the JavaScript and css
-			JHtml::_('script', 'system/modal.js', array('framework' => true, 'version' => 'auto', 'relative' => true));
+			// CMS.modal (global.js), without MooTools or jQuery; the box keeps SqueezeBox's markup and stylesheet
+			static::core();
 			JHtml::_('stylesheet', 'system/modal.css', array('version' => 'auto', 'relative' => true));
+			JText::script('JLIB_HTML_BEHAVIOR_CLOSE');
 		}
 
 		$sig = md5(serialize(array($selector, $params)));
@@ -401,64 +384,16 @@ abstract class JHtmlBehavior
 		$opt['onShow']        = isset($params['onShow']) ? $params['onShow'] : null;
 		$opt['onHide']        = isset($params['onHide']) ? $params['onHide'] : null;
 
-		// Include jQuery
-		JHtml::_('jquery.framework');
-
 		if (isset($params['fullScreen']) && (bool) $params['fullScreen'])
 		{
-			$opt['size']      = array('x' => '\\jQuery(window).width() - 80', 'y' => '\\jQuery(window).height() - 80');
+			$opt['size']      = array('x' => '\\window.innerWidth - 80', 'y' => '\\window.innerHeight - 80');
 		}
 
 		$options = JHtml::getJSObject($opt);
 
-		// Attach modal behavior to document
-		$document
-			->addScriptDeclaration(
-			"
-		jQuery(function($) {
-			SqueezeBox.initialize(" . $options . ");
-			initSqueezeBox();
-			$(document).on('subform-row-add', initSqueezeBox);
-
-			function initSqueezeBox(event, container)
-			{
-				SqueezeBox.assign($(container || document).find('" . $selector . "').get(), {
-					parse: 'rel'
-				});
-			}
-		});
-
-		window.jModalClose = function () {
-			SqueezeBox.close();
-		};
-
-		// Add extra modal close functionality for tinyMCE-based editors
-		document.onreadystatechange = function () {
-			if (document.readyState == 'interactive' && typeof tinyMCE != 'undefined' && tinyMCE)
-			{
-				if (typeof window.jModalClose_no_tinyMCE === 'undefined')
-				{
-					window.jModalClose_no_tinyMCE = typeof(jModalClose) == 'function'  ?  jModalClose  :  false;
-
-					jModalClose = function () {
-						if (window.jModalClose_no_tinyMCE) window.jModalClose_no_tinyMCE.apply(this, arguments);
-						tinyMCE.activeEditor.windowManager.close();
-					};
-				}
-
-				if (typeof window.SqueezeBoxClose_no_tinyMCE === 'undefined')
-				{
-					if (typeof(SqueezeBox) == 'undefined')  SqueezeBox = {};
-					window.SqueezeBoxClose_no_tinyMCE = typeof(SqueezeBox.close) == 'function'  ?  SqueezeBox.close  :  false;
-
-					SqueezeBox.close = function () {
-						if (window.SqueezeBoxClose_no_tinyMCE)  window.SqueezeBoxClose_no_tinyMCE.apply(this, arguments);
-						tinyMCE.activeEditor.windowManager.close();
-					};
-				}
-			}
-		};
-		"
+		// Links matching the selector open in the box, also ones added later (subform rows); each link's rel adds its own options
+		$document->addScriptDeclaration(
+			'CMS.ready(function () { CMS.modal.assign(' . json_encode($selector, JSON_HEX_TAG | JSON_HEX_AMP) . ', ' . $options . '); });'
 		);
 
 		// Set static array
@@ -520,19 +455,14 @@ abstract class JHtmlBehavior
 	 */
 	public static function tree($id, $params = array(), $root = array())
 	{
-		// Include MooTools framework
-		static::framework();
-
-		JHtml::_('script', 'system/mootree.js', array('framework' => true, 'version' => 'auto', 'relative' => true));
+		// CMS.tree (global.js), what MooTree was, with its stylesheet and icons
+		static::core();
 		JHtml::_('stylesheet', 'system/mootree.css', array('version' => 'auto', 'relative' => true));
 
 		if (isset(static::$loaded[__METHOD__][$id]))
 		{
 			return;
 		}
-
-		// Include jQuery
-		JHtml::_('jquery.framework');
 
 		// Setup options object
 		$opt['div']   = array_key_exists('div', $params) ? $params['div'] : $id . '_tree';
@@ -560,9 +490,8 @@ abstract class JHtmlBehavior
 
 		$treeName = array_key_exists('treeName', $params) ? $params['treeName'] : '';
 
-		$js = '		jQuery(function(){
-			tree' . $treeName . ' = new MooTreeControl(' . $options . ',' . $rootNode . ');
-			tree' . $treeName . '.adopt(\'' . $id . '\');})';
+		$js = 'CMS.ready(function () { window.tree' . $treeName . ' = CMS.tree.create(' . $options . ', ' . $rootNode . '); window.tree'
+			. $treeName . '.adopt(' . json_encode($id, JSON_HEX_TAG | JSON_HEX_AMP) . '); });';
 
 		// Attach tooltips to document
 		$document = JFactory::getDocument();

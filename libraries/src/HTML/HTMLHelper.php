@@ -714,6 +714,12 @@ abstract class HTMLHelper
 			static::_('behavior.framework');
 		}
 
+		// core.js is part of global.js: asking for it loads that, so a page never has both
+		if ($options['relative'] && preg_match('#^system/core(?:-uncompressed|\.min)?\.js$#', $file))
+		{
+			$file = 'system/global.min.js';
+		}
+
 		$includes = static::includeRelativeFiles('js', $file, $options['relative'], $options['detectBrowser'], $options['detectDebug']);
 
 		// If only path is required

@@ -23,6 +23,10 @@ For commands of your own on the command line, see [CLI-GUIDE.md](CLI-GUIDE.md). 
 - [Editors: choosing one and switching](#editors-choosing-one-and-switching)
   - [Naming the editor yourself](#naming-the-editor-yourself)
   - [Switching without losing unsaved changes](#switching-without-losing-unsaved-changes)
+- [JavaScript: global.js and the CMS namespace](#javascript-globaljs-and-the-cms-namespace)
+  - [The old names](#the-old-names)
+  - [The modal](#the-modal)
+  - [Tooltips, tabs, sliders, tree, password meter](#tooltips-tabs-sliders-tree-password-meter)
 - [Other additions](#other-additions)
 - [Compatibility with stock Joomla 3, Joomla 4 and later](#compatibility-with-stock-joomla-3-joomla-4-and-later)
 
@@ -329,6 +333,68 @@ A component of your own gets this too once its form says which task to post:
 The task must keep the posted data and open the form again with it. A controller extending `JControllerForm` has `reload()` already (the edit view's model must read `$app->getUserState('com_x.edit.item.data')` in `loadFormData()`, as Joomla's models do). Without the attribute, or with `data-editor-reload=""`, switching asks the user to confirm ("changes you haven't saved will be lost") and loads the page again.
 
 The menu is the layout `joomla.editors.switcher`, which templates can override. `Joomla\CMS\Editor\Editor::getSwitchableEditors()` lists the editors it offers and `getSessionEditor()` returns the one chosen in this session, if any.
+
+## JAVASCRIPT: GLOBAL.JS AND THE CMS NAMESPACE
+
+The CMS's shared JavaScript is one file, `media/system/js/global.js` (minified `global.min.js`), with one global object, `window.CMS`. It holds what `core.js` was and vanilla versions of everything that used to need MooTools: the modal (SqueezeBox), tooltips, tabs, sliders, the tree and the password strength meter. It needs no other library. `JHtml::_('behavior.core')` loads it; so does every behaviour below. Asking for `system/core.js` through `JHtml` loads `global.js` instead, and `media/system/js/core.js` (with `core-uncompressed.js`) is a copy of it for pages that name the file themselves. It runs once, however often it's included.
+
+MooTools and MooTools More are still bundled, and `JHtml::_('behavior.framework')` (or a script loaded with `array('framework' => true)`) still loads them, for extensions which ask for them. Nothing in the core does.
+
+### The old names
+
+Every name `core.js` and the MooTools behaviours offered still works and calls the new code. New code should use the `CMS` names; the old ones stay for extensions. `CMS.legacy` holds this map too.
+
+| Old | New |
+|---|---|
+| `Joomla.submitform()` | `CMS.form.submit()` |
+| `Joomla.submitbutton()` (pages replace it) | `CMS.form.button()` |
+| `Joomla.replaceTokens()` | `CMS.form.replaceTokens()` |
+| `Joomla.getOptions()`, `Joomla.loadOptions()`, `Joomla.optionsStorage` | `CMS.options.get()`, `CMS.options.load()`, `CMS.options.storage` |
+| `Joomla.Text._()`, `Joomla.JText._()`, `Joomla.Text.load()` | `CMS.text.get()`, `CMS.text.load()` |
+| `Joomla.editors.instances` | `CMS.editors.instances` (the same object) |
+| `Joomla.checkAll()`, `Joomla.isChecked()`, `Joomla.listItemTask()`, `Joomla.tableOrdering()` | `CMS.list.checkAll()`, `CMS.list.isChecked()`, `CMS.list.itemTask()`, `CMS.list.order()` |
+| `Joomla.renderMessages()`, `Joomla.removeMessages()`, `Joomla.ajaxErrorsMessages()` | `CMS.messages.render()`, `CMS.messages.remove()`, `CMS.messages.fromAjaxError()` |
+| `Joomla.popupWindow()` | `CMS.window.open()` |
+| `Joomla.loadingLayer()` | `CMS.loading.layer()`, `CMS.loading.show()`, `CMS.loading.hide()` |
+| `Joomla.extend()`, `Joomla.request()` | `CMS.extend()`, `CMS.request()` |
+| `jModalClose()`, `SqueezeBox.close()` | `CMS.modal.close()` |
+| `SqueezeBox.open()`, `SqueezeBox.fromElement()`, `SqueezeBox.assign()`, `SqueezeBox.initialize()` | `CMS.modal.open()`, `CMS.modal.assign()`, `CMS.modal.setDefaults()` |
+| `SqueezeBox.addEvent()`, `SqueezeBox.removeEvent()` | `CMS.modal.on()`, `CMS.modal.off()` |
+| `new Tips()` (`behavior.tooltip`) | `CMS.tooltip.attach()` |
+| `new JTabs()` (`tabs.start`) | `CMS.tabs.create()` |
+| `new Fx.Accordion()` (`sliders.start`) | `CMS.sliders.create()` |
+| `new Form.PasswordStrength()` | `CMS.password.meter()`, `CMS.password.strength()` |
+| `new MooTreeControl()` (`behavior.tree`) | `CMS.tree.create()`, `new CMS.tree.Tree()` |
+
+`SqueezeBox`, `JTabs`, `Form.PasswordStrength` and `MooTreeControl` are defined only when MooTools' own versions aren't there: an extension that loads MooTools and `media/system/js/modal.js` itself gets the real SqueezeBox, and `CMS.modal.close()` (so `jModalClose()`) closes whichever box is open.
+
+### The modal
+
+`JHtml::_('behavior.modal', 'a.modal', $options)` makes matching links open in a box, also links added to the page later (subform rows). Links keep SqueezeBox's markup: the options in `rel`, evaluated when the link is clicked, so sizes may be expressions:
+
+```html
+<a class="modal" href="index.php?option=com_example&amp;view=pick&amp;tmpl=component"
+	rel="{handler: 'iframe', size: {x: Math.min(1000, window.innerWidth - 80), y: 600}}">Pick</a>
+```
+
+From script:
+
+```js
+CMS.modal.open('index.php?option=com_example&view=pick&tmpl=component', {handler: 'iframe', size: {x: 800, y: 500}});
+CMS.modal.on('close', () => { /* ... */ });
+CMS.modal.close();          // also from the page inside: window.parent.CMS.modal.close()
+```
+
+Handlers are `iframe`, `image`, `ajax` (the default for addresses: the page's HTML, its scripts run), `clone` and `adopt` (an element of the page, `#id`; adopt puts it back when the box closes) and `string`. Options and events are SqueezeBox's: `size`, `closable`, `closeBtn`, `overlay`, `iframeOptions`, `iframePreload`, `classWindow`, `onOpen`, `onClose`, `onUpdate`, `onShow`, `onHide`, `onResize`, `onMove`. Below 980px wide the box fills the screen. The box is `#sbox-window` over `#sbox-overlay`, styled by `media/system/css/modal.css`, so templates' SqueezeBox styles still apply. Escape and a click on the overlay close it. Events also go out as `cms:modal-open`, `cms:modal-close` and so on, on `document`.
+
+### Tooltips, tabs, sliders, tree, password meter
+
+- **`JHtml::_('behavior.tooltip', '.hasTip', $options)`:** `title="Title::Text"` (or plain text) shown on hover and on focus, in MooTools' markup (`div.tip-wrap > div.tip > div.tip-title + div.tip-text`). The options are as before (`maxTitleChars`, `offset`, `showDelay`, `hideDelay`, `className`, `fixed`, `onShow(tip, element)`, `onHide`).
+- **`JHtml::_('tabs.start')` / `JHtml::_('sliders.start')`:** the same markup and options. `onActive` and `onBackground` callbacks now get plain elements, not MooTools ones: use `element.style.display` and `element.classList`, not `setStyle()` or `addClass()`.
+- **`JHtml::_('behavior.tree')`:** the same nodes, markup, icons and API (`insert()`, `select()`, `expand()`, `collapse()`, `get()`, `adopt()`, `load()`).
+- **Password fields with `strengthmeter="true"`:** `CMS.password.meter(input, {threshold: 66})` draws the bar and sets `data-passwordstrength` on the field.
+
+`behavior.modal` and `behavior.tooltip` no longer load jQuery or MooTools. Code which relied on them for that must ask for `jquery.framework` or `behavior.framework` itself.
 
 ## OTHER ADDITIONS
 

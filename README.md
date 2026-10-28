@@ -69,6 +69,7 @@ Summary of changes:
 - "Custom Code", a new site and administrator module: code of your own (HTML, CSS, JavaScript, embeds, snippets) written in CodeMirror and output as it is
 - "Editor - Blocks (Editor.js)": write content as blocks (headings, lists, images, embeds, quotes, tables, code, notes, HTML, Read more), saved as HTML which the site template's block layouts decide (templates override any block in `html/layouts/joomla/blocks/`); templates add blocks of their own (a field definition and a layout each; Rookwood comes with Hero, Testimonials and Services); a preview with the site template (desktop, tablet, phone), full screen and a content width (800px by default); a "Custom Blocks" module (site and administrator) builds module content from blocks
 - Editor switcher in the administrator: switch between TinyMCE, TinyMCE (legacy), Markdown and Blocks for the session, without losing unsaved changes; and a Default Editor (Site) option for front-end editing
+- MooTools is gone from the core: one shared script, `global.js` (namespace `CMS`), replaces `core.js` and does what MooTools did (modals, tooltips, tabs, sliders, tree, password meter) in plain JavaScript; old names keep working, and MooTools stays available for extensions that ask for it
 
 **Improvements:**
 - Library updates: jQuery UI 1.14.2 (with the 1.9 helpers kept for extensions), SimplePie 1.9.0 (needs PHP 7.2; core doesn't use it), sodium_compat 1.24.2, Ajax Autocomplete 1.5.0
