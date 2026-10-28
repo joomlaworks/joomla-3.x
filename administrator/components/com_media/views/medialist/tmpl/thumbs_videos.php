@@ -17,7 +17,7 @@ $dispatcher = JEventDispatcher::getInstance();
 JFactory::getDocument()->addScriptDeclaration("
 jQuery(document).ready(function($){
 	window.parent.jQuery('#videoPreview').on('hidden', function () {
-		window.parent.jQuery('#mejsPlayer')[0].player.pause();
+		window.parent.MediaManager.pauseVideo();
 	});
 });
 ");

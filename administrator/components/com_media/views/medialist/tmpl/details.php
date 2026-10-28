@@ -63,16 +63,7 @@ $doc->addScriptDeclaration(
 				$(this).on('click', function(e) {
 					e.preventDefault();
 					window.parent.jQuery('#videoPreview').modal('show');
-
-					var elementInitialised = window.parent.jQuery('#mejsPlayer').attr('src');
-
-					if (!elementInitialised)
-					{
-						window.parent.jQuery('#mejsPlayer').attr('src', $(this).attr('href'));
-						window.parent.jQuery('#mejsPlayer').mediaelementplayer();
-					}
-
-					window.parent.jQuery('#mejsPlayer')[0].player.media.setSrc($(this).attr('href'));
+					window.parent.MediaManager.playVideo($(this).attr('href'));
 
 					return false;
 				});

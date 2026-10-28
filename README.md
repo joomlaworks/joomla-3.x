@@ -72,7 +72,7 @@ Summary of changes:
 - MooTools is gone from the core: one shared script, `global.js` (namespace `CMS`), replaces `core.js` and does what MooTools did (modals, tooltips, tabs, sliders, tree, password meter) in plain JavaScript; old names keep working, and MooTools stays available for extensions that ask for it. Polyfills for old browsers are gone too
 
 **Improvements:**
-- Library updates: jQuery UI 1.14.2 (with the 1.9 helpers kept for extensions), SimplePie 1.9.0 (needs PHP 7.2; core doesn't use it), sodium_compat 1.24.2, Ajax Autocomplete 1.5.0
+- Library updates: jQuery UI 1.14.2 (with the 1.9 helpers kept for extensions), MediaElement.js 7.1.0 (the Media Manager's video player, without jQuery), SimplePie 1.9.0 (needs PHP 7.2; core doesn't use it), sodium_compat 1.24.2, Ajax Autocomplete 1.5.0
 - SQLite driver: MySQL on SQLite 3.1.1 (temporary tables, transactions and date arithmetic fixed upstream), Joomla's patches kept
 - Three unused libraries removed: HTML5 Shiv (for Internet Explorer 8), Google's reCAPTCHA PHP client and a duplicate copy of PHP UTF-8
 - PHPMailer updated from 5.2.28 (2020) to 7.1.1 (May 2026), with Joomla's mailer and extensions using PHPMailer's old class names working as before
