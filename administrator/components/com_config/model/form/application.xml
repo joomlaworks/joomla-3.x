@@ -138,6 +138,12 @@
             <option value="0">JNO</option>
         </field>
     </fieldset>
+    <fieldset name="ui" label="COM_CONFIG_UI_SETTINGS">
+        <field name="date_fields" type="list" label="JGLOBAL_DATE_FIELDS_LABEL" description="JGLOBAL_DATE_FIELDS_DESC" default="browser" filter="word">
+            <option value="browser">JGLOBAL_DATE_FIELDS_BROWSER</option>
+            <option value="language">JGLOBAL_DATE_FIELDS_LANGUAGE</option>
+        </field>
+    </fieldset>
     <fieldset name="seo" label="CONFIG_SEO_SETTINGS_LABEL">
         <field name="sef" type="radio" label="COM_CONFIG_FIELD_SEF_URL_LABEL" description="COM_CONFIG_FIELD_SEF_URL_DESC" class="btn-group btn-group-yesno" default="1" filter="integer">
             <option value="1">JYES</option>

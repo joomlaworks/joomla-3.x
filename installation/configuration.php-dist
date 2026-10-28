@@ -130,6 +130,9 @@ class JConfig
 	public $robots = '';
 	public $sitename_pagetitles = '0';
 
+	/* UI Settings */
+	public $date_fields = 'browser';
+
 	/* SEO Settings */
 	public $sef = '1';
 	public $sef_rewrite = '0';

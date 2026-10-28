@@ -108,6 +108,12 @@ foreach (array('min' => isset($minYear) ? $minYear : '', 'max' => isset($maxYear
 
 $locked = $readonly || $disabled;
 
+// Global Configuration's Date and Time Fields, or the user's own: the browser's input as it is, or the date as text in
+// the language's format with the browser's picker behind a button
+$user = JFactory::getUser();
+$mode = $user->getParam('date_fields') ?: JFactory::getConfig()->get('date_fields', 'browser');
+$text = $mode === 'language';
+
 // The time zone the value is shown in (the field's filter), so Now is the user's now, not the browser's clock
 $timezone = null;
 
@@ -126,17 +132,48 @@ JHtml::_('behavior.styles');
 
 $attributes = array(
 	'type'      => $type,
-	'id'        => $id,
-	'class'     => trim('cms-date-input ' . $class),
+	'id'        => $text ? null : $id,
+	'class'     => trim('cms-date-input ' . ($text ? '' : $class)),
 	'value'     => $native,
 	'step'      => $seconds ? '1' : null,
 	'min'       => isset($limits['min']) ? $limits['min'] : null,
 	'max'       => isset($limits['max']) ? $limits['max'] : null,
-	'onchange'  => !empty($onchange) ? $onchange : null,
+	'onchange'  => !$text && !empty($onchange) ? $onchange : null,
+	'tabindex'  => $text ? '-1' : null,
+	'aria-hidden' => $text ? 'true' : null,
 	'data-utc-offset' => $timezone ? (string) ((new DateTime('now', $timezone))->getOffset() / 60) : null,
 );
+
+// In the language's format: the value as text, a placeholder spelling the format out and a pattern the form validator
+// checks (no escapes but for regular expression syntax: browsers compile patterns with the v flag)
+$placeholder = strtr($format, array(
+	'%Y' => 'YYYY', '%y' => 'YY', '%m' => 'MM', '%d' => 'DD', '%e' => 'D', '%H' => 'hh', '%k' => 'h', '%I' => 'hh', '%l' => 'h',
+	'%M' => 'mm', '%S' => 'ss', '%p' => 'AM', '%P' => 'am', '%F' => 'YYYY-MM-DD', '%T' => 'hh:mm:ss', '%R' => 'hh:mm', '%%' => '%',
+));
+$pattern = preg_replace_callback('/%([a-zA-Z%])|([\\^$.*+?()[\]{}|\/])/', function ($match)
+{
+	if (!empty($match[2]))
+	{
+		return '\\' . $match[2];
+	}
+
+	$codes = array(
+		'Y' => '\d{4}', 'y' => '\d{2}', 'C' => '\d{2}', 'm' => '\d{1,2}', 'd' => '\d{1,2}', 'H' => '\d{1,2}', 'I' => '\d{1,2}',
+		'M' => '\d{1,2}', 'S' => '\d{1,2}', 'e' => ' ?\d{1,2}', 'k' => ' ?\d{1,2}', 'l' => ' ?\d{1,2}', 'p' => '[AaPp][Mm]',
+		'P' => '[AaPp][Mm]', 'F' => '\d{4}-\d{1,2}-\d{1,2}', 'T' => '\d{1,2}:\d{1,2}:\d{1,2}', 'R' => '\d{1,2}:\d{1,2}', '%' => '%',
+	);
+
+	return isset($codes[$match[1]]) ? $codes[$match[1]] : '\\S+';
+}, $format);
 ?>
-<span class="cms-date field-calendar">
+<span class="cms-date field-calendar<?php echo $text ? ' is-text' : ''; ?>">
+	<?php if ($text) : ?>
+		<input type="text" id="<?php echo $id; ?>" class="<?php echo htmlspecialchars(trim('cms-date-value cms-date-text ' . $class), ENT_COMPAT, 'UTF-8'); ?>" name="<?php echo $name; ?>" value="<?php
+			echo htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8'); ?>" data-format="<?php echo htmlspecialchars((string) $format, ENT_COMPAT, 'UTF-8'); ?>" placeholder="<?php
+			echo htmlspecialchars($placeholder, ENT_COMPAT, 'UTF-8'); ?>" pattern="<?php echo htmlspecialchars($pattern, ENT_COMPAT, 'UTF-8'); ?>" size="<?php echo strlen($placeholder) + 1; ?>" autocomplete="off"<?php
+			echo !empty($onchange) ? ' onchange="' . htmlspecialchars($onchange, ENT_COMPAT, 'UTF-8') . '"' : '',
+				$readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', !empty($autofocus) ? ' autofocus' : ''; ?> />
+	<?php endif; ?>
 	<input<?php
 		foreach ($attributes as $attribute => $attributeValue)
 		{
@@ -146,10 +183,22 @@ $attributes = array(
 			}
 		}
 
-		echo $readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', !empty($autofocus) ? ' autofocus' : '';
+		if ($text)
+		{
+			echo $locked ? ' disabled' : '';
+		}
+		else
+		{
+			echo $readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', !empty($autofocus) ? ' autofocus' : '';
+		}
 	?> />
-	<input type="hidden" class="cms-date-value" name="<?php echo $name; ?>" value="<?php echo htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8'); ?>" data-format="<?php echo htmlspecialchars((string) $format, ENT_COMPAT, 'UTF-8'); ?>"<?php echo $disabled ? ' disabled' : ''; ?> />
+	<?php if (!$text) : ?>
+		<input type="hidden" class="cms-date-value" name="<?php echo $name; ?>" value="<?php echo htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8'); ?>" data-format="<?php echo htmlspecialchars((string) $format, ENT_COMPAT, 'UTF-8'); ?>"<?php echo $disabled ? ' disabled' : ''; ?> />
+	<?php endif; ?>
 	<?php if (!$locked) : ?>
+		<?php if ($text) : ?>
+			<button type="button" class="btn cms-date-pick" title="<?php echo JText::_('JLIB_HTML_BEHAVIOR_OPEN_CALENDAR'); ?>" aria-label="<?php echo JText::_('JLIB_HTML_BEHAVIOR_OPEN_CALENDAR'); ?>"><?php echo JHtml::_('icons.svg', 'calendar3', '', array('size' => 14)); ?></button>
+		<?php endif; ?>
 		<?php if ($todaybutton) : ?>
 			<button type="button" class="btn cms-date-now"><?php echo JText::_($type === 'date' || $type === 'month' ? 'JLIB_HTML_BEHAVIOR_TODAY' : 'JLIB_FORM_FIELD_CALENDAR_NOW'); ?></button>
 		<?php endif; ?>

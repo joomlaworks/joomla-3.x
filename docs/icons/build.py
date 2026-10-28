@@ -12,10 +12,10 @@ import subprocess
 import sys
 
 FOLDERS = {
-    # Shared icons (JHtml::_('icons.svg', ...)): breadcrumbs, content icons, vote, feeds, tooltips, mail, the
+    # Shared icons (JHtml::_('icons.svg', ...)): breadcrumbs, content icons, vote, feeds, tooltips, mail, date fields, the
     # administrator menu's language item
     'media/system/images/icons': [
-        'chevron-left', 'chevron-right', 'envelope', 'file-earmark-plus', 'info-circle-fill', 'lock-fill', 'pencil-square',
+        'calendar3', 'chevron-left', 'chevron-right', 'envelope', 'file-earmark-plus', 'info-circle-fill', 'lock-fill', 'pencil-square',
         'printer', 'rss-fill', 'star', 'star-fill', 'translate', 'x-lg',
     ],
     # The Media Manager's file types (administrator/components/com_media/models/list.php)

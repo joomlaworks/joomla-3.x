@@ -9,6 +9,11 @@
             <field name="timezone" type="timezone" label="COM_USERS_USER_FIELD_TIMEZONE_LABEL" description="COM_USERS_USER_FIELD_TIMEZONE_DESC">
                 <option value="">JOPTION_USE_DEFAULT</option>
             </field>
+            <field name="date_fields" type="list" label="JGLOBAL_DATE_FIELDS_LABEL" description="JGLOBAL_DATE_FIELDS_DESC" filter="word">
+                <option value="">JOPTION_USE_DEFAULT</option>
+                <option value="browser">JGLOBAL_DATE_FIELDS_BROWSER</option>
+                <option value="language">JGLOBAL_DATE_FIELDS_LANGUAGE</option>
+            </field>
             <field name="language" type="language" label="COM_USERS_USER_FIELD_FRONTEND_LANGUAGE_LABEL" description="COM_USERS_USER_FIELD_FRONTEND_LANGUAGE_DESC" client="site" filter="cmd">
                 <option value="">JOPTION_USE_DEFAULT</option>
             </field>

@@ -132,6 +132,9 @@ class InstallationModelConfiguration extends JModelBase
 		$registry->set('MetaVersion', 0);
 		$registry->set('robots', '');
 
+		// UI settings.
+		$registry->set('date_fields', 'browser');
+
 		// SEO settings.
 		$registry->set('sef', 1);
 		$registry->set('sef_rewrite', 0);

@@ -758,6 +758,22 @@
 
 	CMS.dateField = {
 		/**
+		 * Date parts as the value of a browser's input of that input's type
+		 *
+		 * @param  {Object}            parts  Y, m, d, H, M, S
+		 * @param  {HTMLInputElement}  input
+		 *
+		 * @return  {string}
+		 */
+		nativeValue(parts, input) {
+			const seconds = input.step === '1';
+
+			return CMS.dateField.format(parts, {
+				date: '%F', month: '%Y-%m', time: seconds ? '%T' : '%R', 'datetime-local': seconds ? '%FT%T' : '%FT%R',
+			}[input.type] || '%F');
+		},
+
+		/**
 		 * The browser's input type for a strftime format: datetime-local, date, time or month
 		 *
 		 * @param  {string}  format  e.g. %Y-%m-%d %H:%M:%S
@@ -898,7 +914,7 @@
 			wrapper.appendChild(input);
 
 			if (parts) {
-				input.value = CMS.dateField.format(parts, { date: '%F', month: '%Y-%m', time: input.step === '1' ? '%T' : '%R', 'datetime-local': input.step === '1' ? '%FT%T' : '%FT%R' }[type]);
+				input.value = CMS.dateField.nativeValue(parts, input);
 			}
 
 			if (field.id) {
@@ -976,10 +992,32 @@
 		CMS.dateField.listening = true;
 
 		const sync = (event) => {
-			const wrapper = event.target.classList && event.target.classList.contains('cms-date-input') ? event.target.closest('.cms-date') : null;
+			const target = event.target;
+			const wrapper = target.closest && target.classList ? target.closest('.cms-date') : null;
 
-			if (wrapper) {
+			if (!wrapper || !event.isTrusted && event.cmsDate) {
+				return;
+			}
+
+			if (target.classList.contains('cms-date-input')) {
 				CMS.dateField.update(wrapper);
+
+				// The picker of a field shown as text: the text and its own change handlers follow
+				const text = wrapper.querySelector('.cms-date-text');
+
+				if (text && event.type === 'change') {
+					text.removeAttribute('aria-invalid');
+					text.dispatchEvent(Object.assign(new Event('input', { bubbles: true }), { cmsDate: true }));
+					text.dispatchEvent(Object.assign(new Event('change', { bubbles: true }), { cmsDate: true }));
+				}
+			} else if (target.classList.contains('cms-date-text')) {
+				// Typed in the language's format: the picker opens on that date
+				const input = wrapper.querySelector('.cms-date-input');
+				const parts = CMS.dateField.parseFormatted(target.value, target.getAttribute('data-format') || '%Y-%m-%d');
+
+				if (input) {
+					input.value = parts ? CMS.dateField.nativeValue(parts, input) : '';
+				}
 			}
 		};
 
@@ -987,19 +1025,35 @@
 		document.addEventListener('change', sync, true);
 
 		document.addEventListener('click', (event) => {
-			const button = event.target.closest ? event.target.closest('.cms-date-now, .cms-date-clear') : null;
+			const button = event.target.closest ? event.target.closest('.cms-date-now, .cms-date-clear, .cms-date-pick') : null;
 			const wrapper = button ? button.closest('.cms-date') : null;
 			const input = wrapper ? wrapper.querySelector('.cms-date-input') : null;
+			const text = wrapper ? wrapper.querySelector('.cms-date-text') : null;
 
 			if (!input) {
 				return;
 			}
 
+			// The browser's picker for a field shown as text (the input under the text field, so it opens there)
+			if (button.classList.contains('cms-date-pick')) {
+				try {
+					input.showPicker();
+				} catch (error) {
+					input.focus();
+				}
+
+				return;
+			}
+
 			input.value = button.classList.contains('cms-date-now') ? CMS.dateField.now(input.type, input.step === '1', input.getAttribute('data-utc-offset')) : '';
 			CMS.dateField.update(wrapper);
-			input.dispatchEvent(new Event('input', { bubbles: true }));
-			input.dispatchEvent(new Event('change', { bubbles: true }));
-			input.focus();
+
+			const field = text || input;
+
+			field.removeAttribute('aria-invalid');
+			field.dispatchEvent(Object.assign(new Event('input', { bubbles: true }), { cmsDate: true }));
+			field.dispatchEvent(Object.assign(new Event('change', { bubbles: true }), { cmsDate: true }));
+			field.focus();
 		});
 	}
 

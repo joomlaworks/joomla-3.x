@@ -72,6 +72,7 @@ JFactory::getDocument()->addScriptDeclaration('
 						<div class="span6">
 							<?php echo $this->loadTemplate('site'); ?>
 							<?php echo $this->loadTemplate('metadata'); ?>
+							<?php echo $this->loadTemplate('ui'); ?>
 						</div>
 						<div class="span6">
 							<?php echo $this->loadTemplate('seo'); ?>
