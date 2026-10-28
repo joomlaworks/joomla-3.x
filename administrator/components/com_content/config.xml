@@ -124,6 +124,10 @@
         <field name="captcha" type="plugins" label="COM_CONTENT_FIELD_CAPTCHA_LABEL" description="COM_CONTENT_FIELD_CAPTCHA_DESC" folder="captcha" showdisabled="true" filter="cmd" useglobal="true">
             <option value="0">JOPTION_DO_NOT_USE</option>
         </field>
+        <field name="captcha_users" type="radio" label="COM_CONTENT_FIELD_CAPTCHA_USERS_LABEL" description="COM_CONTENT_FIELD_CAPTCHA_USERS_DESC" class="btn-group btn-group-yesno" default="0" filter="integer">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
         <field name="show_publishing_options" type="radio" label="COM_CONTENT_SHOW_PUBLISHING_OPTIONS_LABEL" description="COM_CONTENT_SHOW_PUBLISHING_OPTIONS_DESC" class="btn-group btn-group-yesno" default="1">
             <option value="1">JSHOW</option>
             <option value="0">JHIDE</option>

@@ -118,7 +118,8 @@ class ContentViewForm extends JViewLegacy
 			$this->form->setFieldAttribute('language', 'default', $lang);
 		}
 
-		$captchaSet = $params->get('captcha', JFactory::getApplication()->get('captcha', '0'));
+		// Logged-in users are asked only when the Articles options say so (the model leaves the field out too)
+		$captchaSet = $user->guest || $params->get('captcha_users', 0) ? $params->get('captcha', JFactory::getApplication()->get('captcha', '0')) : '0';
 
 		foreach (JPluginHelper::getPlugin('captcha') as $plugin)
 		{

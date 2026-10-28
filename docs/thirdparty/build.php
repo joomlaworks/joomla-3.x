@@ -46,7 +46,7 @@ $groups = array(
 			'check' => array('media/jui/js/jquery-migrate.js', '/jQuery Migrate - v([0-9.]+) - (?<date>\d{4}-\d{2}-\d{2})/')),
 		array('name' => 'jQuery UI (Core, Sortable)', 'use' => 'shared', 'upstream' => 'npm:jquery-ui', 'version' => '1.14.2', 'license' => 'MIT', 'url' => 'https://jqueryui.com', 'note' => 'Built by Joomla 3.x UTD from its official build, with the 1.9 helpers it removed', 'path' => 'media/jui/js/jquery.ui.core.js',
 			'check' => array('media/jui/js/jquery.ui.core.js', '/jQuery UI - v([0-9.]+) - (?<date>\d{4}-\d{2}-\d{2})/')),
-		array('name' => 'MooTools Core', 'use' => 'shared', 'upstream' => 'github:mootools/mootools-core', 'version' => '1.4.5', 'date' => '2012-02-27', 'dateSource' => 'GitHub tag 1.4.5 (annotated)', 'license' => 'MIT', 'url' => 'https://mootools.net', 'path' => 'media/system/js/mootools-core.js',
+		array('name' => 'MooTools Core', 'use' => 'shared', 'upstream' => 'github:mootools/mootools-core', 'version' => '1.4.5', 'date' => '2012-02-27', 'dateSource' => 'GitHub tag 1.4.5 (annotated)', 'license' => 'MIT', 'url' => 'https://mootools.net', 'path' => 'media/system/js/mootools-core.js', 'note' => 'Patched by Joomla 3.x UTD (Array.from)',
 			'check' => array('media/system/js/mootools-core-uncompressed.js', "/version: '([0-9.]+)'/")),
 		array('name' => 'MooTools More', 'use' => 'shared', 'upstream' => 'github:mootools/mootools-more', 'version' => '1.4.0.1', 'date' => '2011-09-10', 'dateSource' => 'GitHub tag 1.4.0.1 (annotated)', 'license' => 'MIT', 'url' => 'https://mootools.net/more', 'path' => 'media/system/js/mootools-more.js',
 			'check' => array('media/system/js/mootools-more.js', '/version:"([0-9.]+)"/')),

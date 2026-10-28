@@ -130,7 +130,13 @@ Function.from = function(item){
 	};
 };
 
-Array.from = function(item){
+// Joomla 3.x UTD patch: the browser's Array.from for what MooTools' never handled, iterables without a length (Set, Map,
+// iterators) and a mapping function, as scripts written for it expect (Google's reCAPTCHA never called back, Editor.js broke)
+var nativeArrayFrom = Array.from;
+
+Array.from = function(item, mapFn){
+	if (nativeArrayFrom && (typeof mapFn == 'function' || (item != null && typeof item != 'string' && typeof item.length != 'number'
+		&& typeof Symbol == 'function' && typeof item[Symbol.iterator] == 'function'))) return nativeArrayFrom.apply(Array, arguments);
 	if (item == null) return [];
 	return (Type.isEnumerable(item) && typeof item != 'string') ? (typeOf(item) == 'array') ? item : slice.call(item) : [item];
 };

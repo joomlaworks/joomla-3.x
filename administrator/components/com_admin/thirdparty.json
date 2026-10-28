@@ -384,7 +384,7 @@
             "license": "MIT",
             "url": "https://mootools.net",
             "path": "media/system/js/mootools-core.js",
-            "note": "",
+            "note": "Patched by Joomla 3.x UTD (Array.from)",
             "latest": "1.6.0",
             "isLatest": false,
             "checked": "2026.10.27",

@@ -221,6 +221,12 @@ class ContentModelForm extends ContentModelArticle
 			$form->setFieldAttribute('catid', 'readonly', 'true');
 		}
 
+		// The CAPTCHA keeps guests' submissions out: logged-in users are asked only when the Articles options say so
+		if (!JFactory::getUser()->guest && !($params && $params->get('captcha_users', 0)))
+		{
+			$form->removeField('captcha');
+		}
+
 		parent::preprocessForm($form, $data, $group);
 	}
 }

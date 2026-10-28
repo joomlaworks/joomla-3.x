@@ -122,6 +122,7 @@ Summary of changes:
 - CodeMirror gets a Height option and a dark theme in Visual Studio Code's colours, the default on new sites and on updated sites still using the stock theme
 - English language files sorted by key, with typos, stray spaces and inconsistent wording fixed
 - Unused language strings removed (the old MySQL driver, FTP logins, Mcrypt and others)
+- The front-end article form no longer asks logged-in users to solve a CAPTCHA (an Articles option brings it back)
 
 **Security fixes:**
 - TinyMCE updated to 8.10.0, with 8.9.3's fix for a stored XSS in its media plugin
@@ -160,6 +161,7 @@ Summary of changes:
 - Installer: a warning during installation (e.g. while installing sample data) no longer restarts the installation over and over
 - CodeMirror no longer asks for a missing stylesheet with its stock theme
 - Missing language strings added: messages and labels that showed their keys (Language Overrides, Privacy, the logout image, the extension installer, front-end Template and Module options)
+- Google reCAPTCHA works again on pages that load MooTools (the front-end article form never sent with the invisible type)
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:
