@@ -111,6 +111,9 @@
 .manager:not(.media-picker) > .imgOutline > :is(.small:not(.imgPreview), .imgTotal) a::after {content:"";position:absolute;inset:0;z-index:1;}
 .manager:not(.media-picker) > .imgOutline > .close {position:relative;z-index:2;}
 .manager:not(.media-picker) > .imgOutline input[type="checkbox"] {z-index:2;}
+/* Images show their checkbox too, where the other tiles have theirs (the picture, its label, still selects) */
+.manager:not(.media-picker) > .imgOutline .imgThumb input[type="checkbox"] {display:block;}
+.manager:not(.media-picker) > .imgOutline .imgThumb label::before {display:none;}
 /* Names in full on up to two lines (the link's title has the whole name) */
 .manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview) {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;line-height:1.3;padding:0 6px;}
 .manager:not(.media-picker) > .imgOutline .imgPreview a {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;height:auto;max-height:none;padding:3px 6px;white-space:normal;overflow:hidden;overflow-wrap:anywhere;line-height:1.3;}
