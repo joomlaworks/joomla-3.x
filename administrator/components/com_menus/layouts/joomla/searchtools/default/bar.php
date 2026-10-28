@@ -17,27 +17,10 @@ if ($data['view'] instanceof MenusViewItems)
 	// We will get the menutype filter & remove it from the form filters
 	$menuTypeField = $data['view']->filterForm->getField('menutype');
 
-	// Add the client selector before the form filters.
-	$clientIdField = $data['view']->filterForm->getField('client_id');
-
-	if ($clientIdField): ?>
-	<div class="js-stools-field-filter js-stools-client_id">
-		<?php echo $clientIdField->input; ?>
-	</div>
-	<?php endif; ?>
-
+	// The client selector is a row of tabs above the search tools (layout joomla.searchtools.default.client)
+	?>
 	<div class="js-stools-field-filter js-stools-menutype">
 		<?php echo $menuTypeField->input; ?>
-	</div>
-	<?php
-}
-elseif ($data['view'] instanceof MenusViewMenus)
-{
-	// Add the client selector before the form filters.
-	$clientIdField = $data['view']->filterForm->getField('client_id');
-	?>
-	<div class="js-stools-field-filter js-stools-client_id">
-		<?php echo $clientIdField->input; ?>
 	</div>
 	<?php
 }

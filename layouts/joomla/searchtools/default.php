@@ -79,9 +79,13 @@ $filtersActiveClass = $hideActiveFilters ? '' : ' js-stools-container-filters-vi
 // Load search tools
 JHtml::_('searchtools.form', $data['options']['formSelector'], $data['options']);
 ?>
+<?php // Site or Administrator: a row of tabs above the search tools (a choice easily missed as a list) ?>
+<?php if ($data['options']['showSelector'] && $data['options']['selectorFieldName'] === 'client_id') : ?>
+	<?php echo $this->sublayout('client', array('field' => $data['view']->filterForm->getField('client_id'))); ?>
+<?php endif; ?>
 <div class="js-stools clearfix">
 	<div class="clearfix">
-		<?php if ($data['options']['showSelector']) : ?>
+		<?php if ($data['options']['showSelector'] && $data['options']['selectorFieldName'] !== 'client_id') : ?>
 		<div class="js-stools-container-selector">
 			<?php echo $this->sublayout('selector', $data); ?>
 		</div>

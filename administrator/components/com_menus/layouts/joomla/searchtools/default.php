@@ -63,7 +63,13 @@ $formSelector = !empty($data['options']['formSelector']) ? $data['options']['for
 JHtml::_('searchtools.form', $formSelector, $data['options']);
 
 $filtersClass = isset($data['view']->activeFilters) && $data['view']->activeFilters ? ' js-stools-container-filters-visible' : '';
+
+// Site or Administrator: a row of tabs above the search tools
+$clientIdField = ($data['view'] instanceof MenusViewItems || $data['view'] instanceof MenusViewMenus) ? $data['view']->filterForm->getField('client_id') : false;
 ?>
+<?php if ($clientIdField) : ?>
+	<?php echo JLayoutHelper::render('joomla.searchtools.default.client', array('field' => $clientIdField)); ?>
+<?php endif; ?>
 <div class="js-stools clearfix">
 	<div class="clearfix">
 		<div class="js-stools-container-bar">

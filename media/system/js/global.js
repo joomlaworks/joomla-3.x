@@ -2692,6 +2692,34 @@
 	// The buttons' tooltips: the module, its position, the menu item
 	CMS.tooltip.attach('.cms-frontedit', { fixed: true, className: 'cms-frontedit-tip' });
 
+	/* --- Site or Administrator tabs of lists (layout joomla.searchtools.default.client) --- */
+
+	// A tab sets the list's hidden client_id field and fires its change: the field's own onchange clears the other
+	// filters where they differ per client, and submits
+	document.addEventListener('click', (event) => {
+		const tab = event.target.closest ? event.target.closest('.js-stools-client-tab') : null;
+
+		if (!tab) {
+			return;
+		}
+
+		event.preventDefault();
+
+		const field = document.getElementById(tab.getAttribute('data-target'));
+
+		if (!field || tab.hasAttribute('aria-current')) {
+			return;
+		}
+
+		field.value = tab.getAttribute('data-value');
+		field.dispatchEvent(new Event('change', { bubbles: true }));
+
+		// Fields without an onchange of their own
+		if (!field.getAttribute('onchange') && field.form) {
+			field.form.submit();
+		}
+	});
+
 	/* --- The colour field (layout joomla.form.field.color: the browser's colour picker, the value as text, a Clear button) --- */
 
 	CMS.colorField = {
