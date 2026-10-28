@@ -13,8 +13,8 @@ JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 JHtml::_('formbehavior.chosen', 'select');
 
-JHtml::_('script', 'administrator/components/com_associations/js/sidebyside.js', array('version' => 'auto'));
-JHtml::_('stylesheet', 'administrator/components/com_associations/css/sidebyside.css', array('version' => 'auto'));
+JHtml::_('script', 'administrator/components/com_associations/js/associations.min.js', array('version' => 'auto'));
+JHtml::_('stylesheet', 'administrator/components/com_associations/css/associations.css', array('version' => 'auto'));
 
 $options = array(
 			'layout'   => $this->app->input->get('layout', '', 'string'),

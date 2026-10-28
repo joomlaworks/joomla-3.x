@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Session\Session;
 
 JHtml::_('behavior.core');
-JHtml::_('script', 'administrator/modules/mod_sampledata/js/sampledata-process.js', array('version' => 'auto'), array('defer' => true));
+JHtml::_('script', 'administrator/modules/mod_sampledata/js/sampledata.js', array('version' => 'auto'), array('defer' => true));
 
 JText::script('MOD_SAMPLEDATA_CONFIRM_START');
 JText::script('MOD_SAMPLEDATA_CONFIRM_REPLACE');

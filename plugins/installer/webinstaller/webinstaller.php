@@ -123,8 +123,8 @@ class PlgInstallerWebinstaller extends CMSPlugin
 		Text::script('PLG_INSTALLER_WEBINSTALLER_REDIRECT_TO_EXTERNAL_SITE_TO_INSTALL');
 
 		HTMLHelper::_('behavior.core');
-		HTMLHelper::_('script', 'plugins/installer/webinstaller/js/client.min.js', array('version' => 'auto'));
-		HTMLHelper::_('stylesheet', 'plugins/installer/webinstaller/css/client.min.css', array('version' => 'auto'));
+		HTMLHelper::_('script', 'plugins/installer/webinstaller/js/webinstaller.min.js', array('version' => 'auto'));
+		HTMLHelper::_('stylesheet', 'plugins/installer/webinstaller/css/webinstaller.min.css', array('version' => 'auto'));
 
 		$devLevel = Version::PATCH_VERSION;
 		$extraVer = Version::EXTRA_VERSION;

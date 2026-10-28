@@ -128,8 +128,7 @@ button,.btn,input[type=submit] {cursor:pointer;}
 .mainNav ul.menu ul {display:none;}
 .mainNav ul.menu > li > a {display:block;padding:7px 12px;font-weight:700;font-size:.95rem;color:var(--c-ink);}
 .mainNav ul.menu > li > a:hover {background:var(--c-soft);}
-.mainNav ul.menu > li.current > a,
-.mainNav ul.menu > li.active > a {background:var(--t1);color:var(--c-on-tone);}
+.mainNav ul.menu > li.current > a,.mainNav ul.menu > li.active > a {background:var(--t1);color:var(--c-on-tone);}
 /* Joomla makes the home item active on tag and search pages too: highlight it on the home page only */
 body:not(.isHome) .mainNav ul.menu > li.default > a {background:none;color:var(--c-ink);}
 body:not(.isHome) .mainNav ul.menu > li.default > a:hover {background:var(--c-soft);}
@@ -138,8 +137,7 @@ body:not(.isHome) .mainNav ul.menu > li.default > a:hover {background:var(--c-so
 .iconButton {display:inline-grid;place-items:center;width:40px;height:40px;flex:none;padding:0;border:0;border-radius:0;background:transparent;color:var(--c-ink);}
 .iconButton:hover {background:var(--c-soft);}
 .iconButton .icon {width:20px;height:20px;}
-.searchToggle .icon-close,
-.searchToggle[aria-expanded=true] .icon-search {display:none;}
+.searchToggle .icon-close,.searchToggle[aria-expanded=true] .icon-search {display:none;}
 .searchToggle[aria-expanded=true] .icon-close {display:inline;}
 .searchToggle[aria-expanded=true] {background:var(--c-ink);color:var(--c-paper);}
 
@@ -644,9 +642,7 @@ dl.stats-module dd {margin:0;overflow-wrap:anywhere;}
     :root {--c-bg:#fff;--c-paper:#fff;--c-ink:#000;--c-text:#000;--c-muted:#444;--c-line:#ccc;--c-on-tone:#000;--tone:#fff;}
     html {font-size:10.5pt;}
     body {background:#fff;color:#000;}
-    .skipLink,.mainNav,.searchToggle,.searchPanel,#system-message-container,.masthead,.aboveContent,.belowContent,.sidebar,.postFooter,.shareLinks,
-    .postTags,.authorBox,.postNav,.moduleContainer,.pagination,.siteFooter,iframe,video,audio,
-    .embed.video,figure:has(> iframe:only-child) {display:none!important;}
+    .skipLink,.mainNav,.searchToggle,.searchPanel,#system-message-container,.masthead,.aboveContent,.belowContent,.sidebar,.postFooter,.shareLinks,.postTags,.authorBox,.postNav,.moduleContainer,.pagination,.siteFooter,iframe,video,audio,.embed.video,figure:has(> iframe:only-child) {display:none!important;}
     .siteHeader {position:static;margin-bottom:18pt;border-bottom:1.5pt solid #000;}
     .headerBar {min-height:0;padding:0 0 10pt;}
     .container,.containerPost {max-width:none;padding:0;}

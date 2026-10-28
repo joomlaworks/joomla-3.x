@@ -138,8 +138,7 @@ hr {border:0;border-top:1px solid var(--c-line);margin:2em 0;}
 .iconButton {display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:0;border-radius:999px;background:transparent;color:var(--c-ink);font-weight:700;font-size:.9rem;}
 .iconButton:hover {background:var(--c-paper);}
 .iconButton .icon {width:22px;height:22px;}
-.menuToggle .icon-close,.menuToggle .labelClose,
-.menuToggle[aria-expanded=true] .icon-menu-search,.menuToggle[aria-expanded=true] .labelOpen {display:none;}
+.menuToggle .icon-close,.menuToggle .labelClose,.menuToggle[aria-expanded=true] .icon-menu-search,.menuToggle[aria-expanded=true] .labelOpen {display:none;}
 .menuToggle[aria-expanded=true] .icon-close,.menuToggle[aria-expanded=true] .labelClose {display:inline;}
 /* Open: the button stays above the dimmed page, as the panel's close button */
 .menuToggle[aria-expanded=true] {position:relative;z-index:20;background:var(--c-ink);color:var(--c-white);}
@@ -152,8 +151,7 @@ hr {border:0;border-top:1px solid var(--c-line);margin:2em 0;}
 .mainNav > .container ul.menu {display:flex;flex-wrap:wrap;justify-content:center;flex:1;gap:2px;margin:0;padding:0;list-style:none;}
 .mainNav > .container ul.menu > li > a {display:block;padding:8px 12px;border-radius:999px;font-weight:700;font-size:.95rem;color:var(--c-ink);}
 .mainNav > .container ul.menu > li > a:hover {background:var(--c-paper);color:var(--c-ink);}
-.mainNav > .container ul.menu > li.current > a,
-.mainNav > .container ul.menu > li.active > a {background:var(--c-ink);color:var(--c-white);}
+.mainNav > .container ul.menu > li.current > a,.mainNav > .container ul.menu > li.active > a {background:var(--c-ink);color:var(--c-white);}
 /* Joomla makes the home item active on pages without a menu item of their own (tags, search): only highlight it on the frontpage */
 body:not(.isFrontpage) .mainNav > .container ul.menu > li.default:not(:hover) > a {background:transparent;color:var(--c-ink);}
 .mainNav > .container ul.menu ul {display:none;}
@@ -340,16 +338,11 @@ body.megaOpen {overflow:hidden;}
 .layout-section .subItems .itemTitle {font-size:1.15rem;margin-bottom:6px;}
 .layout-section .subItems .itemDate {font-size:.82rem;color:var(--c-muted);}
 /* Wide sections: the lead beside the list */
-.grid-col-span-9 .layout-section,
-.grid-col-span-12 .layout-section {grid-template-columns:3fr 2fr;align-items:start;}
-.grid-col-span-9 .layout-section .subItems,
-.grid-col-span-12 .layout-section .subItems {grid-template-columns:1fr;padding-top:0;border-top:0;}
-.grid-col-span-9 .layout-section .subItems .item,
-.grid-col-span-12 .layout-section .subItems .item {display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:start;}
-.grid-col-span-9 .layout-section .itemThumb img,
-.grid-col-span-12 .layout-section .itemThumb img {aspect-ratio:1/1;}
-.grid-col-span-9 .layout-section .subItems .itemTitle,
-.grid-col-span-12 .layout-section .subItems .itemTitle {font-size:1.05rem;}
+.grid-col-span-9 .layout-section,.grid-col-span-12 .layout-section {grid-template-columns:3fr 2fr;align-items:start;}
+.grid-col-span-9 .layout-section .subItems,.grid-col-span-12 .layout-section .subItems {grid-template-columns:1fr;padding-top:0;border-top:0;}
+.grid-col-span-9 .layout-section .subItems .item,.grid-col-span-12 .layout-section .subItems .item {display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:start;}
+.grid-col-span-9 .layout-section .itemThumb img,.grid-col-span-12 .layout-section .itemThumb img {aspect-ratio:1/1;}
+.grid-col-span-9 .layout-section .subItems .itemTitle,.grid-col-span-12 .layout-section .subItems .itemTitle {font-size:1.05rem;}
 
 /* Ranked (most read) */
 .layout-ranked {gap:0;margin:0;padding:0;list-style:none;}
@@ -711,8 +704,7 @@ dl.stats-module dd {margin:0;overflow-wrap:anywhere;}
 @media only screen and (max-width:1024px) {
     :root {--gutter:24px;}
     .grid.frontpage .moduleContainer[class*=grid-col-span-] {grid-column-end:span 12;}
-    .grid.frontpage .moduleContainer.grid-col-span-3.ad,
-    .grid.frontpage .moduleContainer.grid-col-span-4.ad {display:none;}
+    .grid.frontpage .moduleContainer.grid-col-span-3.ad,.grid.frontpage .moduleContainer.grid-col-span-4.ad {display:none;}
     .grid.frontpage .moduleContainer[class*=grid-row-span-] {grid-row-end:span 1;}
     .layout-opinion {grid-template-columns:repeat(2, 1fr);gap:28px 0;}
     .layout-opinion .item:nth-child(3) {padding-left:0;border-left:0;}
@@ -776,9 +768,7 @@ dl.stats-module dd {margin:0;overflow-wrap:anywhere;}
     @page {size:A4;margin:18mm 16mm 20mm;}
     html {font-size:10.5pt;}
     body {background:#fff;color:#000;}
-    .skipLink,.topBar,.mastheadToggles,.mastheadAside,.mainNav,.megaMenu,#system-message-container,.aboveContent,.belowContent,.contentSidebar,
-    .shareLinks,.articleTags,.moduleContainer,.pagination,.siteFooter,iframe,video,audio,
-    .embed.video,figure:has(> iframe:only-child) {display:none!important;}
+    .skipLink,.topBar,.mastheadToggles,.mastheadAside,.mainNav,.megaMenu,#system-message-container,.aboveContent,.belowContent,.contentSidebar,.shareLinks,.articleTags,.moduleContainer,.pagination,.siteFooter,iframe,video,audio,.embed.video,figure:has(> iframe:only-child) {display:none!important;}
     .siteHeader {position:static!important;top:auto!important;background:none;}
     .masthead {margin-bottom:18pt;border-bottom:1.5pt solid #000;}
     .masthead .container {display:flex;justify-content:center;min-height:0;padding:0 0 10pt;}

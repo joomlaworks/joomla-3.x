@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.core');
 JHtml::_('jquery.framework');
-JHtml::_('script', 'administrator/components/com_finder/js/indexer.js', array('version' => 'auto'));
+JHtml::_('script', 'administrator/components/com_finder/js/finder.js', array('version' => 'auto'));
 JFactory::getDocument()->addScriptDeclaration('var msg = "' . JText::_('COM_FINDER_INDEXER_MESSAGE_COMPLETE') . '";');
 ?>
 

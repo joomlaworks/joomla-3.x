@@ -1,10 +1,4 @@
 /* colors for pretty-text-diff*/
-ins {
-    background-color: #c6ffc6;
-    text-decoration: none;
-}
 
-del {
-    background-color: #ffc6c6;
-}
-
+ins {background-color:#c6ffc6;text-decoration:none;}
+del {background-color:#ffc6c6;}
