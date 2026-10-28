@@ -323,27 +323,27 @@ class JFormFieldCalendar extends JFormField
 		$direction = strtolower((string) JFactory::getDocument()->getDirection());
 
 		// Get the appropriate file for the current language date helper
-		$helperPath = 'system/fields/calendar-locales/date/gregorian/date-helper.min.js';
+		$helperPath = 'system/calendar-locales/date/gregorian/date-helper.min.js';
 
-		if (!empty($calendar) && is_dir(JPATH_ROOT . '/media/system/js/fields/calendar-locales/date/' . strtolower((string) $calendar)))
+		if (!empty($calendar) && is_dir(JPATH_ROOT . '/media/system/js/calendar-locales/date/' . strtolower((string) $calendar)))
 		{
-			$helperPath = 'system/fields/calendar-locales/date/' . strtolower((string) $calendar) . '/date-helper.min.js';
+			$helperPath = 'system/calendar-locales/date/' . strtolower((string) $calendar) . '/date-helper.min.js';
 		}
 
 		// Get the appropriate locale file for the current language
-		$localesPath = 'system/fields/calendar-locales/en.js';
+		$localesPath = 'system/calendar-locales/en.js';
 
-		if (is_file(JPATH_ROOT . '/media/system/js/fields/calendar-locales/' . strtolower((string) $tag) . '.js'))
+		if (is_file(JPATH_ROOT . '/media/system/js/calendar-locales/' . strtolower((string) $tag) . '.js'))
 		{
-			$localesPath = 'system/fields/calendar-locales/' . strtolower((string) $tag) . '.js';
+			$localesPath = 'system/calendar-locales/' . strtolower((string) $tag) . '.js';
 		}
-		elseif (is_file(JPATH_ROOT . '/media/system/js/fields/calendar-locales/' . $tag . '.js'))
+		elseif (is_file(JPATH_ROOT . '/media/system/js/calendar-locales/' . $tag . '.js'))
 		{
-			$localesPath = 'system/fields/calendar-locales/' . $tag . '.js';
+			$localesPath = 'system/calendar-locales/' . $tag . '.js';
 		}
-		elseif (is_file(JPATH_ROOT . '/media/system/js/fields/calendar-locales/' . strtolower(substr((string) $tag, 0, -3)) . '.js'))
+		elseif (is_file(JPATH_ROOT . '/media/system/js/calendar-locales/' . strtolower(substr((string) $tag, 0, -3)) . '.js'))
 		{
-			$localesPath = 'system/fields/calendar-locales/' . strtolower(substr((string) $tag, 0, -3)) . '.js';
+			$localesPath = 'system/calendar-locales/' . strtolower(substr((string) $tag, 0, -3)) . '.js';
 		}
 
 		$extraData = array(

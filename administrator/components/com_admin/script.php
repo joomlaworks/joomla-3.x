@@ -4933,8 +4933,22 @@ class JoomlaInstallerScript
 			// The calendar's stylesheets and Chosen's images, moved to media/system/css and media/system/images
 			'/media/system/css/fields/calendar.css',
 			'/media/system/css/fields/calendar-rtl.css',
+			'/media/system/css/calendar.css',
+			'/media/system/css/calendar-rtl.css',
 			'/media/system/css/chosen-sprite.png',
 			'/media/system/css/chosen-sprite@2x.png',
+			'/media/system/js/fields/calendar.js',
+			'/media/system/js/fields/calendar.min.js',
+			// Unused: IcoMoon's design sources, its Internet Explorer files and formats, old colour picker images, Chosen's
+			// high density sprite (its stylesheet never used it)
+			'/media/system/fonts/IcoMoon.dev.svg',
+			'/media/system/fonts/IcoMoon.dev.commented.svg',
+			'/media/system/fonts/IcoMoon.eot',
+			'/media/system/fonts/IcoMoon.svg',
+			'/media/system/js/icomoon-lte-ie7.js',
+			'/media/system/images/hue.png',
+			'/media/system/images/saturation.png',
+			'/media/system/images/chosen-sprite@2x.png',
 			// The Media Manager's and Contacts' images, drawn from SVG sprites since 3.18, and the Media Manager's unused ones
 			'/media/com_contact/images/con_address.png',
 			'/media/com_contact/images/con_fax.png',
@@ -5325,6 +5339,7 @@ class JoomlaInstallerScript
 			'/media/jui',
 			'/media/mod_languages/css',
 			'/media/system/css/fields',
+			'/media/system/js/fields',
 			'/media/mailto',
 			'/media/media',
 			'/media/com_mailto',

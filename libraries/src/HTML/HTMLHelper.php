@@ -73,6 +73,7 @@ abstract class HTMLHelper
 	 */
 	const MOVED_FILES = array(
 		'js'  => array(
+			'system/fields/calendar'                     => 'media/system/js/calendar-field.min.js',
 			'com_associations/sidebyside'                => 'administrator/components/com_associations/js/associations.min.js',
 			'com_contenthistory/admin-history-versions'  => 'administrator/components/com_contenthistory/js/contenthistory.js',
 			'com_finder/indexer'                         => 'administrator/components/com_finder/js/finder.js',
@@ -93,8 +94,8 @@ abstract class HTMLHelper
 			'mod_housekeeping/housekeeping'     => 'administrator/modules/mod_housekeeping/css/housekeeping.css',
 			'overrider/overrider'               => 'administrator/components/com_languages/css/languages.css',
 			'plg_installer_webinstaller/client' => 'plugins/installer/webinstaller/css/webinstaller.min.css',
-			'system/fields/calendar'            => 'media/system/css/calendar.css',
-			'system/fields/calendar-rtl'        => 'media/system/css/calendar-rtl.css',
+			'system/fields/calendar'            => 'media/system/css/calendar-field.css',
+			'system/fields/calendar-rtl'        => 'media/system/css/calendar-field-rtl.css',
 		),
 	);
 
@@ -102,7 +103,8 @@ abstract class HTMLHelper
 	 * Folders of media/ renamed (since 3.18): a file asked for by its old name (relative, contacts/con_tel.png, or from the
 	 * site's root, media/contacts/images/con_tel.png) and not found there is looked for under the new one. Longer names
 	 * first: media/jui/img/ became media/system/images/, the rest of media/jui/ media/system/; the language flags moved from
-	 * media/mod_languages/images/ to media/system/images/flags/ (relative names mod_languages/x, now system/flags/x)
+	 * media/mod_languages/images/ to media/system/images/flags/ (relative names mod_languages/x, now system/flags/x), the date
+	 * field's locales from media/system/js/fields/calendar-locales/ to media/system/js/calendar-locales/
 	 *
 	 * @var    array
 	 * @since  3.18.0
@@ -110,6 +112,7 @@ abstract class HTMLHelper
 	const MOVED_FOLDERS = array(
 		'jui/img' => 'system/images', 'jui' => 'system', 'cms' => 'system', 'contacts' => 'com_contact', 'mailto' => 'system',
 		'media' => 'com_media', 'mod_languages/images' => 'system/images/flags', 'mod_languages' => 'system/flags',
+		'system/js/fields/calendar-locales' => 'system/js/calendar-locales', 'system/fields/calendar-locales' => 'system/calendar-locales',
 	);
 
 	/**
@@ -1268,27 +1271,27 @@ abstract class HTMLHelper
 		$direction = strtolower((string) Factory::getDocument()->getDirection());
 
 		// Get the appropriate file for the current language date helper
-		$helperPath = 'system/fields/calendar-locales/date/gregorian/date-helper.min.js';
+		$helperPath = 'system/calendar-locales/date/gregorian/date-helper.min.js';
 
-		if (!empty($calendar) && is_dir(JPATH_ROOT . '/media/system/js/fields/calendar-locales/date/' . strtolower($calendar)))
+		if (!empty($calendar) && is_dir(JPATH_ROOT . '/media/system/js/calendar-locales/date/' . strtolower($calendar)))
 		{
-			$helperPath = 'system/fields/calendar-locales/date/' . strtolower($calendar) . '/date-helper.min.js';
+			$helperPath = 'system/calendar-locales/date/' . strtolower($calendar) . '/date-helper.min.js';
 		}
 
 		// Get the appropriate locale file for the current language
-		$localesPath = 'system/fields/calendar-locales/en.js';
+		$localesPath = 'system/calendar-locales/en.js';
 
-		if (is_file(JPATH_ROOT . '/media/system/js/fields/calendar-locales/' . strtolower($tag) . '.js'))
+		if (is_file(JPATH_ROOT . '/media/system/js/calendar-locales/' . strtolower($tag) . '.js'))
 		{
-			$localesPath = 'system/fields/calendar-locales/' . strtolower($tag) . '.js';
+			$localesPath = 'system/calendar-locales/' . strtolower($tag) . '.js';
 		}
-		elseif (is_file(JPATH_ROOT . '/media/system/js/fields/calendar-locales/' . $tag . '.js'))
+		elseif (is_file(JPATH_ROOT . '/media/system/js/calendar-locales/' . $tag . '.js'))
 		{
-			$localesPath = 'system/fields/calendar-locales/' . $tag . '.js';
+			$localesPath = 'system/calendar-locales/' . $tag . '.js';
 		}
-		elseif (is_file(JPATH_ROOT . '/media/system/js/fields/calendar-locales/' . strtolower(substr($tag, 0, -3)) . '.js'))
+		elseif (is_file(JPATH_ROOT . '/media/system/js/calendar-locales/' . strtolower(substr($tag, 0, -3)) . '.js'))
 		{
-			$localesPath = 'system/fields/calendar-locales/' . strtolower(substr($tag, 0, -3)) . '.js';
+			$localesPath = 'system/calendar-locales/' . strtolower(substr($tag, 0, -3)) . '.js';
 		}
 
 		$readonly     = isset($attribs['readonly']) && $attribs['readonly'] === 'readonly';

@@ -1,4 +1,4 @@
-@font-face {font-family:'IcoMoon';src:url('../fonts/IcoMoon.eot');src:url('../fonts/IcoMoon.eot?#iefix') format('embedded-opentype'), url('../fonts/IcoMoon.svg#IcoMoon') format('svg'), url('../fonts/IcoMoon.woff') format('woff'), url('../fonts/IcoMoon.ttf') format('truetype');font-weight:normal;font-style:normal;}
+@font-face {font-family:'IcoMoon';src:url('../fonts/IcoMoon.woff') format('woff'),url('../fonts/IcoMoon.ttf') format('truetype');font-weight:normal;font-style:normal;}
 [data-icon]:before {font-family:'IcoMoon';content:attr(data-icon);speak:none;}
 [class^="icon-"],[class*=" icon-"] {display:inline-block;width:14px;height:14px;line-height:14px;}
 [class^="icon-"]:before,[class*=" icon-"]:before {font-family:'IcoMoon';font-style:normal;speak:none;}

@@ -196,9 +196,9 @@ a.grid_true {display:inline-block;height:16px;width:16px;background-image:url(".
 .modal-footer button {float:left;}
 .modal-header {text-align:right;}
 #mediamanager-form .thumbnails-media .thumbnail {margin-left:18px !important;margin-right:0;direction:ltr;text-align:center;}
-.thumbnails-media .imgThumb label::before,.thumbnails-media .imgThumb .imgThumbInside::before {left:0;right:auto;border-radius:var(--radius) 0;}
+.thumbnails-media .imgThumb label::before,.thumbnails-media .imgThumb .imgThumbInside::before {left:auto;right:0;border-radius:0 var(--radius-lg) 0 var(--radius);}
 .thumbnails-media .thumbnail input[type="radio"],.thumbnails-media .thumbnail input[type="checkbox"] {left:auto;right:5px;}
-.thumbnails-media .imgDelete a.close {border-radius:0 var(--radius);}
+.thumbnails-media .imgDelete a.close {left:0;right:auto;border-radius:var(--radius-lg) 0 var(--radius) 0;}
 .thumbnails-media .imgPreview a,.thumbnails-media .imgDetails {border-radius:var(--radius) 0;border-width:1px;left:0;right:0;text-align:left;direction:ltr;}
 .thumbnails-media .imgPreview a {width:100%;}
 .subform-table-layout td {padding-left:10px;}
