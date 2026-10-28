@@ -141,7 +141,7 @@ if (!empty($editor))
 									<?php echo JHtml::_('jgrid.isdefault', $item->home, $i, 'items.', ($item->language != '*' || !$item->home) && 0); ?>
 								<?php else : ?>
 									<?php if ($item->language_image) : ?>
-										<?php echo JHtml::_('image', 'mod_languages/' . $item->language_image . '.gif', $item->language_title, array('title' => $item->language_title), true); ?>
+										<?php echo JHtml::_('image', 'mod_languages/' . $item->language_image . '.webp', $item->language_title, array('title' => $item->language_title), true); ?>
 									<?php else : ?>
 										<span class="label" title="<?php echo $item->language_title; ?>"><?php echo $item->language_sef; ?></span>
 									<?php endif; ?>

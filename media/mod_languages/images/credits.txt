@@ -1,0 +1,34 @@
+Language flags (36x24 pixels, shown at 18x12), made for Joomla 3.x UTD from:
+
+- Country flags: the PNG renders of svg-country-flags 1.2.10 by Hampus Nilsson
+  (https://github.com/hampusborgos/country-flags), public domain.
+- The Arab League (ar, ar_aa), Catalonia (ca, ca_es), the Basque Country (eu_es), Galicia (gl, gl_es) and the East
+  African Community (sw, sw_ke): flag-icons 7.6.0 (https://github.com/lipis/flag-icons), MIT licence below.
+- Esperanto (eo, eo_xx), Kurdistan (ku, cbk_iq), Quebec (fr_ca) and the Assyrian flag (sy, sy_iq): Wikimedia Commons
+  (Flag of Esperanto.svg, Flag of Kurdistan.svg, Flag of Quebec.svg, Flag of Assyria.svg), public domain.
+- Brittany (br, br_fr) and the script names (si, si_lk, ta, ta_in, ug_cn, in Noto Sans): drawn for Joomla 3.x UTD,
+  GNU General Public License version 2 or later.
+
+flag-icons licence:
+
+The MIT License (MIT)
+
+Copyright (c) 2013 Panayiotis Lipiridis
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

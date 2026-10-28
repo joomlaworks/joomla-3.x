@@ -126,6 +126,7 @@ Summary of changes:
 - The front-end article form no longer asks logged-in users to solve a CAPTCHA (an Articles option brings it back)
 - Administrator-only extensions keep their scripts and styles in their own folders instead of `media/`, so a password-protected `/administrator` never affects the site
 - `media/` folders are named after their extensions (`com_contact`, `com_media`), shared files (the debug console's, the e-mail form's icon) are in `media/system`, and old names still load them
+- Language flags redrawn: sharp WebP at twice the old size, current flags, the GIFs removed (old names still load them)
 - The Media Manager previews audio files too, with the file's cover when an image of the same name is next to it (videos take it as their poster), else an animated waveform
 - The Media Manager previews videos in the browser's own player (MediaElement.js removed); punycode.js removed (the browser converts international domains)
 - Form validation, edit forms' remembered tabs, the switcher and the combo box without jQuery (part of `global.js`; validation also of the site's `frontend.js`)

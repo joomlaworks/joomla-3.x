@@ -6,7 +6,7 @@
         <field name="title" type="text" label="JGLOBAL_TITLE" description="COM_LANGUAGES_FIELD_TITLE_DESC" maxlength="50" required="true" size="40" />
         <field name="title_native" type="text" label="COM_LANGUAGES_FIELD_TITLE_NATIVE_LABEL" description="COM_LANGUAGES_FIELD_TITLE_NATIVE_DESC" maxlength="50" required="true" size="40" />
         <field name="sef" type="text" label="COM_LANGUAGES_FIELD_LANG_CODE_LABEL" description="COM_LANGUAGES_FIELD_LANG_CODE_DESC" maxlength="50" required="true" size="10" />
-        <field name="image" type="filelist" label="COM_LANGUAGES_FIELD_IMAGE_LABEL" description="COM_LANGUAGES_FIELD_IMAGE_DESC" stripext="1" directory="media/mod_languages/images/" hide_none="1" hide_default="1" filter="\.gif$" size="10">
+        <field name="image" type="filelist" label="COM_LANGUAGES_FIELD_IMAGE_LABEL" description="COM_LANGUAGES_FIELD_IMAGE_DESC" stripext="1" directory="media/mod_languages/images/" hide_none="1" hide_default="1" filter="\.(webp|gif)$" size="10">
             <option value="">JNONE</option>
         </field>
         <field name="description" type="textarea" label="JGLOBAL_DESCRIPTION" description="COM_LANGUAGES_FIELD_DESCRIPTION_DESC" cols="80" rows="5" />

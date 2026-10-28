@@ -106,6 +106,25 @@ abstract class HTMLHelper
 	const MOVED_FOLDERS = array('cms' => 'system', 'contacts' => 'com_contact', 'mailto' => 'system', 'media' => 'com_media');
 
 	/**
+	 * Images of a media folder whose type changed (since 3.18: the language flags, GIF to WebP): a file asked for in one
+	 * type and not found is looked for in the other, so template overrides naming the GIFs and language packs bringing a
+	 * GIF of their own keep working
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const MOVED_IMAGE_TYPES = array('mod_languages' => array('gif' => 'webp', 'webp' => 'gif'));
+
+	/**
+	 * The size images of a media folder are shown at, unless the caller gives one (since 3.18 the flags are drawn at twice
+	 * their old 18x12 pixels, for sharp high density screens)
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const IMAGE_SIZES = array('mod_languages' => array('width' => 18, 'height' => 12));
+
+	/**
 	 * Media files removed without a replacement, which browsers no longer need (polyfills, IE fallbacks): asking for one
 	 * loads nothing
 	 *
@@ -647,6 +666,29 @@ abstract class HTMLHelper
 			);
 		}
 
+		// An image whose type changed (MOVED_IMAGE_TYPES), asked for by the other type (relative or from the site's root);
+		// the other type is tried once (a file missing in both would go back and forth)
+		static $otherType = false;
+
+		if (!$includes && !$otherType && $folder === 'images'
+			&& preg_match('#^(/?(?:media/)?)([^/]+)(/.+)\.([a-z]+)$#', $asked, $match)
+			&& ($relative ? $match[1] === '' : strpos($match[1], 'media/') !== false)
+			&& isset(static::MOVED_IMAGE_TYPES[$match[2]][$match[4]]))
+		{
+			$otherType = true;
+
+			try
+			{
+				return static::includeRelativeFiles(
+					$folder, $match[1] . $match[2] . $match[3] . '.' . static::MOVED_IMAGE_TYPES[$match[2]][$match[4]], $relative, false, false
+				);
+			}
+			finally
+			{
+				$otherType = false;
+			}
+		}
+
 		return $includes;
 	}
 
@@ -670,6 +712,12 @@ abstract class HTMLHelper
 	{
 		$returnPath = (int) $returnPath;
 
+		// Flags' names are lower case (languages may store theirs as en_GB)
+		if ($relative && stripos((string) $file, 'mod_languages/') === 0)
+		{
+			$file = strtolower($file);
+		}
+
 		if ($returnPath !== -1)
 		{
 			$includes = static::includeRelativeFiles('images', $file, $relative, false, false);
@@ -680,6 +728,24 @@ abstract class HTMLHelper
 		if ($returnPath === 1)
 		{
 			return $file;
+		}
+
+		// The display size of a folder's images (IMAGE_SIZES), unless the caller gives one
+		$folder = $relative ? strstr((string) $file, '/media/') : false;
+
+		if ($folder !== false && preg_match('#^/media/([^/]+)/#', $folder, $match) && isset(static::IMAGE_SIZES[$match[1]]))
+		{
+			// Only when neither is given: one alone keeps the image's proportions
+			$given = is_array($attribs) ? array_change_key_case($attribs) : (string) $attribs;
+			$sized = is_array($given) ? isset($given['width']) || isset($given['height']) : preg_match('#(^|\s)(width|height)\s*=#i', $given);
+
+			if (!$sized)
+			{
+				foreach (static::IMAGE_SIZES[$match[1]] as $name => $value)
+				{
+					$attribs = is_array($attribs) ? $attribs + array($name => $value) : trim($attribs . ' ' . $name . '="' . $value . '"');
+				}
+			}
 		}
 
 		return '<img src="' . $file . '" alt="' . $alt . '" ' . trim((is_array($attribs) ? ArrayHelper::toString($attribs) : $attribs) . ' /') . '>';

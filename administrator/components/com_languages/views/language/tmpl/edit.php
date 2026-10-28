@@ -26,9 +26,11 @@ JFactory::getDocument()->addScriptDeclaration(
 
 	jQuery(document).ready(function() {
 		jQuery("#jform_image").on("change", function() {
-			var flag = this.value;
+			var flag = this.value.toLowerCase();
 			if (flag) {
-				jQuery("#flag img").attr("src", "' . JUri::root(true) . '" + "/media/mod_languages/images/" + flag + ".gif").attr("alt", flag);
+				// The flag (a language pack may bring its own as a GIF)
+				var base = "' . JUri::root(true) . '" + "/media/mod_languages/images/" + flag;
+				jQuery("#flag img").one("error", function () { this.src = base + ".gif"; }).attr("src", base + ".webp").attr("alt", flag);
 			}
 			else
 			{
@@ -58,7 +60,7 @@ JFactory::getDocument()->addScriptDeclaration(
 					<div class="controls">
 						<?php echo $this->form->getInput('image'); ?>
 						<span id="flag">
-							<?php echo JHtml::_('image', 'mod_languages/' . $this->form->getValue('image') . '.gif', $this->form->getValue('image'), null, true); ?>
+							<?php echo JHtml::_('image', 'mod_languages/' . $this->form->getValue('image') . '.webp', $this->form->getValue('image'), null, true); ?>
 						</span>
 					</div>
 			</div>

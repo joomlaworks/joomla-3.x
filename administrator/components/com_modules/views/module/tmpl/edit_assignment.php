@@ -115,7 +115,7 @@ JFactory::getDocument()->addScriptDeclaration($script);
 										<?php echo $link->text; ?> <span class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($link->alias)); ?></span>
 										<?php if (JLanguageMultilang::isEnabled() && $link->language != '' && $link->language != '*') : ?>
 											<?php if ($link->language_image) : ?>
-												<?php echo JHtml::_('image', 'mod_languages/' . $link->language_image . '.gif', $link->language_title, array('title' => $link->language_title), true); ?>
+												<?php echo JHtml::_('image', 'mod_languages/' . $link->language_image . '.webp', $link->language_title, array('title' => $link->language_title), true); ?>
 											<?php else : ?>
 												<?php echo '<span class="label" title="' . $link->language_title . '">' . $link->language_sef . '</span>'; ?>
 											<?php endif; ?>
