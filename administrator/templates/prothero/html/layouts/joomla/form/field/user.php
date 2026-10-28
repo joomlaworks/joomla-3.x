@@ -47,7 +47,7 @@ extract($displayData);
 
 if (!$readonly)
 {
-	JHtml::_('script', 'jui/fielduser.min.js', array('version' => 'auto', 'relative' => true));
+	JHtml::_('script', 'system/fielduser.min.js', array('version' => 'auto', 'relative' => true));
 }
 
 $uri = new JUri('index.php?option=com_users&view=users&layout=modal&tmpl=component&required=0&field={field-user-id}&ismoo=0');

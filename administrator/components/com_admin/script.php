@@ -5149,6 +5149,7 @@ class JoomlaInstallerScript
 			// Media folders renamed after their extensions (debug's files to media/system)
 			'/media/cms',
 			'/media/contacts',
+			'/media/jui',
 			'/media/mailto',
 			'/media/media',
 			'/media/com_mailto',

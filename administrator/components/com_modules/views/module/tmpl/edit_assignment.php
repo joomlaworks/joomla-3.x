@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 JLoader::register('MenusHelper', JPATH_ADMINISTRATOR . '/components/com_menus/helpers/menus.php');
 $menuTypes = MenusHelper::getMenuLinks();
 
-JHtml::_('script', 'jui/treeselectmenu.jquery.min.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'system/treeselectmenu.jquery.min.js', array('version' => 'auto', 'relative' => true));
 
 $script = "
 	jQuery(document).ready(function()

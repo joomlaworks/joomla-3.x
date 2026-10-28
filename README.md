@@ -125,7 +125,7 @@ Summary of changes:
 - Unused language strings removed (the old MySQL driver, FTP logins, Mcrypt and others)
 - The front-end article form no longer asks logged-in users to solve a CAPTCHA (an Articles option brings it back)
 - Administrator-only extensions keep their scripts and styles in their own folders instead of `media/`, so a password-protected `/administrator` never affects the site
-- `media/` folders are named after their extensions (`com_contact`, `com_media`), shared files (the debug console's, the e-mail form's icon) are in `media/system`, and old names still load them
+- `media/` folders are named after their extensions (`com_contact`, `com_media`), shared files (the debug console's, the e-mail form's icon, and all of `media/jui`: Bootstrap, jQuery, Chosen, IcoMoon...) are in `media/system`, and old names still load them through `JHtml` (direct links to `media/jui` files need changing)
 - Core icons are SVG (Bootstrap Icons, one file each) in the text colour, sharp and dark-mode friendly: the Media Manager, Contacts, breadcrumbs, content icons, vote stars, feeds, tooltips, modals
 - Language flags redrawn: sharp WebP at twice the old size, current flags, the GIFs removed (old names still load them)
 - The Media Manager previews audio files too, with the file's cover when an image of the same name is next to it (videos take it as their poster), else an animated waveform

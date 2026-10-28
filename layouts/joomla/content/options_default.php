@@ -23,7 +23,7 @@ defined('_JEXEC') or die;
 			<?php $groupClass = $field->type === 'Spacer' ? ' field-spacer' : ''; ?>
 			<?php if ($field->showon) : ?>
 				<?php JHtml::_('jquery.framework'); ?>
-				<?php JHtml::_('script', 'jui/cms.js', array('version' => 'auto', 'relative' => true)); ?>
+				<?php JHtml::_('script', 'system/cms.js', array('version' => 'auto', 'relative' => true)); ?>
 				<?php $datashowon = ' data-showon=\'' . json_encode(JFormHelper::parseShowOnConditions($field->showon, $field->formControl, $field->group)) . '\''; ?>
 			<?php endif; ?>
 			<div class="control-group<?php echo $groupClass; ?>"<?php echo $datashowon; ?>>

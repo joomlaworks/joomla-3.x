@@ -71,8 +71,8 @@ $direction    = $lang->isRtl() ? ' dir="ltr" style="text-align:right"' : '';
 
 // The colour picker (a jQuery plugin)
 JHtml::_('jquery.framework');
-JHtml::_('script', 'jui/jquery.minicolors.min.js', array('version' => 'auto', 'relative' => true));
-JHtml::_('stylesheet', 'jui/jquery.minicolors.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'system/jquery.minicolors.min.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', 'system/jquery.minicolors.css', array('version' => 'auto', 'relative' => true));
 JHtml::_('script', 'system/color-field-adv-init.min.js', array('version' => 'auto', 'relative' => true));
 ?>
 <input type="text" name="<?php echo $name; ?>" id="<?php echo $id; ?>" value="<?php echo $this->escape($color); ?>"<?php

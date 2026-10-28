@@ -74,7 +74,7 @@ JS;
 
 JFactory::getDocument()->addScriptDeclaration($js);
 
-$ajaxLoaderImage = JHtml::_('image', 'jui/ajax-loader.gif', '', null, true, true);
+$ajaxLoaderImage = JHtml::_('image', 'system/ajax-loader.gif', '', null, true, true);
 $css             = <<< CSS
 	#loading {
 		background: rgba(255, 255, 255, .8) url('$ajaxLoaderImage') 50% 15% no-repeat;

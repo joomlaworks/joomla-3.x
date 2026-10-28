@@ -1307,7 +1307,7 @@ div.modal.jviewport-width100 {width:100vw;margin-left:-50vw;}
 }
 
 /* --- Joomla modals --- */
-@font-face {font-family:'IcoMoon';src:url('../../../media/jui/fonts/IcoMoon.eot');src:url('../../../media/jui/fonts/IcoMoon.eot?#iefix') format('embedded-opentype'), url('../../../media/jui/fonts/IcoMoon.woff') format('woff'), url('../../../media/jui/fonts/IcoMoon.ttf') format('truetype'), url('../../../media/jui/fonts/IcoMoon.svg#IcoMoon') format('svg');font-weight:normal;font-style:normal;}
+@font-face {font-family:'IcoMoon';src:url('../../../media/system/fonts/IcoMoon.eot');src:url('../../../media/system/fonts/IcoMoon.eot?#iefix') format('embedded-opentype'), url('../../../media/system/fonts/IcoMoon.woff') format('woff'), url('../../../media/system/fonts/IcoMoon.ttf') format('truetype'), url('../../../media/system/fonts/IcoMoon.svg#IcoMoon') format('svg');font-weight:normal;font-style:normal;}
 
 /* --- Icons (IcoMoon) --- */
 [data-icon]:before {font-family:'IcoMoon';content:attr(data-icon);speak:none;}

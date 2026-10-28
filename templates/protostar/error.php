@@ -68,7 +68,7 @@ else
 	<?php endif; ?>
 	<?php // If Right-to-Left ?>
 	<?php if ($this->direction === 'rtl') : ?>
-		<link href="<?php echo JUri::root(true); ?>/media/jui/css/bootstrap-rtl.css" rel="stylesheet" />
+		<link href="<?php echo JUri::root(true); ?>/media/system/css/bootstrap-rtl.css" rel="stylesheet" />
 	<?php endif; ?>
 	<?php if (file_exists('templates/' . $this->template . '/css/user.css')) : ?>
 		<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/user.css" rel="stylesheet" />

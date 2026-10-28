@@ -1541,7 +1541,7 @@ div.modal.jviewport-width100 {width:100vw;margin-left:-50vw;}
 }
 
 /* --- Joomla modals --- */
-@font-face {font-family:"IcoMoon";src:url("../../../../media/jui/fonts/IcoMoon.eot");src:url("../../../../media/jui/fonts/IcoMoon.eot?#iefix") format("embedded-opentype"), url("../../../../media/jui/fonts/IcoMoon.woff") format("woff"), url("../../../../media/jui/fonts/IcoMoon.ttf") format("truetype"), url("../../../../media/jui/fonts/IcoMoon.svg#IcoMoon") format("svg");font-weight:normal;font-style:normal;}
+@font-face {font-family:"IcoMoon";src:url("../../../../media/system/fonts/IcoMoon.eot");src:url("../../../../media/system/fonts/IcoMoon.eot?#iefix") format("embedded-opentype"), url("../../../../media/system/fonts/IcoMoon.woff") format("woff"), url("../../../../media/system/fonts/IcoMoon.ttf") format("truetype"), url("../../../../media/system/fonts/IcoMoon.svg#IcoMoon") format("svg");font-weight:normal;font-style:normal;}
 
 /* --- Icons (IcoMoon) --- */
 [data-icon]:before {font-family:"IcoMoon";content:attr(data-icon);}
@@ -2149,7 +2149,7 @@ body .navbar,body .navbar-fixed-top {margin-bottom:0;}
     .navbar .nav-collapse .nav-user .dropdown-menu > li > span {flex-basis:100%;color:var(--c-nav-fg);}
     .navbar .nav-collapse .nav-user .dropdown-menu > li.divider {display:none;}
     /* Lists: the Reorder button (js/template.js), and the drag handles while the list is sorted by ordering (touch works through
-       media/jui/js/sortablelist.js); a larger handle for a finger */
+       media/system/js/sortablelist.js); a larger handle for a finger */
     .js-stools-container-bar .btn-wrapper.prothero-reorder {display:block;margin:12px 0 0;}
     table:has(> tbody.ui-sortable) td.order.hidden-phone,table:has(> tbody.ui-sortable) th.hidden-phone:has(.js-stools-column-order .icon-menu-2) {display:table-cell !important;}
     table:has(> tbody.ui-sortable) td.order .sortable-handler {display:inline-block;padding:10px 8px;margin:-6px 0;}

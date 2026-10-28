@@ -72,7 +72,7 @@ $navbar = protheroNavbarColor($params);
 	<?php endif; ?>
 	<?php // If Right-to-Left ?>
 	<?php if ($this->direction == 'rtl') : ?>
-		<link href="<?php echo JUri::root(true); ?>/media/jui/css/bootstrap-rtl.css" rel="stylesheet" />
+		<link href="<?php echo JUri::root(true); ?>/media/system/css/bootstrap-rtl.css" rel="stylesheet" />
 	<?php endif; ?>
 	<?php // Load specific language related CSS ?>
 	<?php $file = '/administrator/language/' . $lang->getTag() . '/' . $lang->getTag() . '.css'; ?>
@@ -84,9 +84,9 @@ $navbar = protheroNavbarColor($params);
 		<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template-rtl.css" rel="stylesheet" />
 	<?php endif; ?>
 	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
-	<script src="<?php echo JUri::root(true); ?>/media/jui/js/jquery.js"></script>
-	<script src="<?php echo JUri::root(true); ?>/media/jui/js/jquery-noconflict.js"></script>
-	<script src="<?php echo JUri::root(true); ?>/media/jui/js/bootstrap.js"></script>
+	<script src="<?php echo JUri::root(true); ?>/media/system/js/jquery.js"></script>
+	<script src="<?php echo JUri::root(true); ?>/media/system/js/jquery-noconflict.js"></script>
+	<script src="<?php echo JUri::root(true); ?>/media/system/js/bootstrap.js"></script>
 	<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/template.js"></script>
 </head>
 <body class="admin <?php echo $option . ' view-' . $view . ' layout-' . $layout . ' task-' . $task; ?>" data-spy="scroll" data-target=".subhead" data-offset="87">

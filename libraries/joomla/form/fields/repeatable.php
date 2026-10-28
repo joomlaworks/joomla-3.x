@@ -140,8 +140,8 @@ class JFormFieldRepeatable extends JFormField
 		// Depends on jQuery UI
 		JHtml::_('jquery.ui', array('core', 'sortable'));
 
-		JHtml::_('script', 'jui/sortablelist.js', array('version' => 'auto', 'relative' => true));
-		JHtml::_('stylesheet', 'jui/sortablelist.css', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'system/sortablelist.js', array('version' => 'auto', 'relative' => true));
+		JHtml::_('stylesheet', 'system/sortablelist.css', array('version' => 'auto', 'relative' => true));
 		// global.js gives its modals' links SqueezeBox's names
 		JHtml::_('behavior.cms');
 		JHtml::_('script', 'system/repeatable.js', array('version' => 'auto', 'relative' => true));

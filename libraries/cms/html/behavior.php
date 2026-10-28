@@ -591,8 +591,8 @@ abstract class JHtmlBehavior
 		// Include jQuery
 		JHtml::_('jquery.framework');
 
-		JHtml::_('script', 'jui/jquery.minicolors.min.js', array('version' => 'auto', 'relative' => true));
-		JHtml::_('stylesheet', 'jui/jquery.minicolors.css', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'system/jquery.minicolors.min.js', array('version' => 'auto', 'relative' => true));
+		JHtml::_('stylesheet', 'system/jquery.minicolors.css', array('version' => 'auto', 'relative' => true));
 		JFactory::getDocument()->addScriptDeclaration("
 				jQuery(document).ready(function (){
 					jQuery('.minicolors').each(function() {
@@ -637,8 +637,8 @@ abstract class JHtmlBehavior
 		// Include jQuery
 		JHtml::_('jquery.framework');
 
-		JHtml::_('script', 'jui/jquery.simplecolors.min.js', array('version' => 'auto', 'relative' => true));
-		JHtml::_('stylesheet', 'jui/jquery.simplecolors.css', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'system/jquery.simplecolors.min.js', array('version' => 'auto', 'relative' => true));
+		JHtml::_('stylesheet', 'system/jquery.simplecolors.css', array('version' => 'auto', 'relative' => true));
 		JFactory::getDocument()->addScriptDeclaration("
 				jQuery(document).ready(function (){
 					jQuery('select.simplecolors').simplecolors();

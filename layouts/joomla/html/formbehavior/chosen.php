@@ -22,8 +22,8 @@ extract($displayData);
 
 // Include jQuery
 JHtml::_('jquery.framework');
-JHtml::_('script', 'jui/chosen.jquery.min.js', array('version' => 'auto', 'relative' => true, 'detectDebug' => $debug));
-JHtml::_('stylesheet', 'jui/chosen.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'system/chosen.jquery.min.js', array('version' => 'auto', 'relative' => true, 'detectDebug' => $debug));
+JHtml::_('stylesheet', 'system/chosen.css', array('version' => 'auto', 'relative' => true));
 
 // Options array to json options string
 $options_str = json_encode($options, ($debug && defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : false));

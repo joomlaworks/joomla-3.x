@@ -84,7 +84,7 @@ $optionColors = isisOptionColors(array(
 	<?php endif; ?>
 	<?php // If Right-to-Left ?>
 	<?php if ($this->direction == 'rtl') : ?>
-		<link href="<?php echo JUri::root(true); ?>/media/jui/css/bootstrap-rtl.css" rel="stylesheet" />
+		<link href="<?php echo JUri::root(true); ?>/media/system/css/bootstrap-rtl.css" rel="stylesheet" />
 	<?php endif; ?>
 	<?php // Load specific language related CSS ?>
 	<?php $file = '/administrator/language/' . $lang->getTag() . '/' . $lang->getTag() . '.css'; ?>
@@ -101,9 +101,9 @@ $optionColors = isisOptionColors(array(
 		<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template-options.css" rel="stylesheet" />
 		<style>:root {<?php echo $optionColors['properties']; ?>}</style>
 	<?php endif; ?>
-	<script src="<?php echo JUri::root(true); ?>/media/jui/js/jquery.js"></script>
-	<script src="<?php echo JUri::root(true); ?>/media/jui/js/jquery-noconflict.js"></script>
-	<script src="<?php echo JUri::root(true); ?>/media/jui/js/bootstrap.js"></script>
+	<script src="<?php echo JUri::root(true); ?>/media/system/js/jquery.js"></script>
+	<script src="<?php echo JUri::root(true); ?>/media/system/js/jquery-noconflict.js"></script>
+	<script src="<?php echo JUri::root(true); ?>/media/system/js/bootstrap.js"></script>
 	<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/template.js"></script>
 </head>
 <body class="admin <?php echo $option . ' view-' . $view . ' layout-' . $layout . ' task-' . $task . $optionColors['classes']; ?>" data-spy="scroll" data-target=".subhead" data-offset="87">

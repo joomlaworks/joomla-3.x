@@ -378,7 +378,7 @@
 
 				layer.id = 'loading-logo';
 				layer.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;opacity:0.8;overflow:hidden;z-index:10000;'
-					+ 'display:none;background:#fff url("' + root + '/media/jui/images/ajax-loader.gif") center no-repeat fixed;';
+					+ 'display:none;background:#fff url("' + root + '/media/system/images/ajax-loader.gif") center no-repeat fixed;';
 				parent.appendChild(layer);
 			} else {
 				if (!document.getElementById('loading-logo')) {

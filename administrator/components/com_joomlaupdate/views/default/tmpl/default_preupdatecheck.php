@@ -237,7 +237,7 @@ if (version_compare($this->updateInfo['latest'], '4', '>=') && $this->isBackendT
 										data-extension-id="<?php echo $extension->extension_id; ?>"
 										data-extension-current-version="<?php echo $extension->version; ?>"
 									>
-										<img src="../media/jui/images/ajax-loader.gif" />
+										<img src="../media/system/images/ajax-loader.gif" />
 									</td>
 								</tr>
 							<?php endforeach; ?>

@@ -43,8 +43,8 @@ abstract class JHtmlSearchtools
 			}
 
 			// Load the jQuery plugin && CSS
-			JHtml::_('script', 'jui/jquery.searchtools.min.js', array('version' => 'auto', 'relative' => true));
-			JHtml::_('stylesheet', 'jui/jquery.searchtools.css', array('version' => 'auto', 'relative' => true));
+			JHtml::_('script', 'system/jquery.searchtools.min.js', array('version' => 'auto', 'relative' => true));
+			JHtml::_('stylesheet', 'system/jquery.searchtools.css', array('version' => 'auto', 'relative' => true));
 
 			static::$loaded[__METHOD__] = true;
 		}

@@ -59,7 +59,7 @@ JFactory::getDocument()->addScriptDeclaration(
 JFactory::getDocument()->addStyleDeclaration(
 	'
 	#loading {
-		background: rgba(255, 255, 255, .8) url(\'' . JHtml::_('image', 'jui/ajax-loader.gif', '', null, true, true) . '\') 50% 15% no-repeat;
+		background: rgba(255, 255, 255, .8) url(\'' . JHtml::_('image', 'system/ajax-loader.gif', '', null, true, true) . '\') 50% 15% no-repeat;
 		position: fixed;
 		opacity: 0.8;
 		-ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity = 80);

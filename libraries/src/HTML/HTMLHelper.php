@@ -98,12 +98,16 @@ abstract class HTMLHelper
 
 	/**
 	 * Folders of media/ renamed (since 3.18): a file asked for by its old name (relative, contacts/con_tel.png, or from the
-	 * site's root, media/contacts/images/con_tel.png) and not found there is looked for under the new one
+	 * site's root, media/contacts/images/con_tel.png) and not found there is looked for under the new one. Longer names
+	 * first: media/jui/img/ became media/system/images/, the rest of media/jui/ media/system/
 	 *
 	 * @var    array
 	 * @since  3.18.0
 	 */
-	const MOVED_FOLDERS = array('cms' => 'system', 'contacts' => 'com_contact', 'mailto' => 'system', 'media' => 'com_media');
+	const MOVED_FOLDERS = array(
+		'jui/img' => 'system/images', 'jui' => 'system', 'cms' => 'system', 'contacts' => 'com_contact', 'mailto' => 'system',
+		'media' => 'com_media',
+	);
 
 	/**
 	 * Images of a media folder whose type changed (since 3.18: the language flags, GIF to WebP): a file asked for in one
@@ -469,6 +473,30 @@ abstract class HTMLHelper
 			// Get the template
 			$template = Factory::getApplication()->getTemplate();
 
+			// media/jui's files are media/system's since 3.18: a template's own copy under the old name (js/jui/bootstrap.min.js,
+			// how templates replace Bootstrap's script) still overrides them
+			if (strpos($file, 'system/') === 0)
+			{
+				$old   = 'jui/' . substr($file, 7);
+				$names = array($old);
+
+				if ($detectDebug && Factory::getConfig()->get('debug'))
+				{
+					$name = \JFile::stripExt($old);
+					array_unshift($names, preg_match('#\.min$#', $name) ? preg_replace('#\.min$#', '', $name) . '.' . $ext : $name . '-uncompressed.' . $ext);
+				}
+
+				foreach ($names as $name)
+				{
+					$path = JPATH_THEMES . "/$template/$folder/$name";
+
+					if (is_file($path))
+					{
+						return array(Uri::base(true) . "/templates/$template/$folder/$name" . static::getMd5Version($path));
+					}
+				}
+			}
+
 			// For each potential files
 			foreach ($potential as $strip)
 			{
@@ -658,12 +686,17 @@ abstract class HTMLHelper
 		}
 
 		// A renamed media folder (MOVED_FOLDERS): the old name is still tried first, so templates' overrides under it apply
-		if (!$includes && preg_match('#^(/?' . ($relative ? '' : 'media/') . ')([^/]+)/(.+)$#', $asked, $match)
-			&& isset(static::MOVED_FOLDERS[$match[2]]))
+		if (!$includes && preg_match('#^(/?' . ($relative ? '' : 'media/') . ')(.+)$#', $asked, $match))
 		{
-			return static::includeRelativeFiles(
-				$folder, $match[1] . static::MOVED_FOLDERS[$match[2]] . '/' . $match[3], $relative, $detectBrowser, $detectDebug
-			);
+			foreach (static::MOVED_FOLDERS as $old => $new)
+			{
+				if (strpos($match[2], $old . '/') === 0)
+				{
+					return static::includeRelativeFiles(
+						$folder, $match[1] . $new . substr($match[2], strlen($old)), $relative, $detectBrowser, $detectDebug
+					);
+				}
+			}
 		}
 
 		// An image whose type changed (MOVED_IMAGE_TYPES), asked for by the other type (relative or from the site's root);
