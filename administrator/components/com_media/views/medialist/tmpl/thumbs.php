@@ -13,6 +13,7 @@ $path   = 'file_path';
 
 JHtml::_('jquery.framework');
 JHtml::_('behavior.core');
+JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));
 
 $doc = JFactory::getDocument();
 

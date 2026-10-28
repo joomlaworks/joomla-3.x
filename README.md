@@ -117,6 +117,7 @@ Summary of changes:
 - CodeMirror 5.65.21 (was 5.60.0, from 2021), with fixes for scrolling and clicks in current browsers
 - Media Manager: WebP, AVIF, MP4, WebM, MOV, MP3, M4A, WAV, CSV, RTF and current Office files can be uploaded by default (SVG deliberately not), the type lists are easy-to-edit textareas, and every file type gets an icon
 - Media Manager: an upload with a name already taken is saved with the time added to its name instead of failing
+- Media Manager: the whole thumbnail opens a video, audio file or folder, with a hover tint, and names show in full on up to two lines on slightly larger tiles
 - Sites updating from TinyMCE 4, the old default editor, get TinyMCE 8 as their default editor (sites with another editor keep theirs)
 - Media Manager: uploads up to 128 MB by default, and a Memory Limit option to raise PHP's memory for resizing large photos where the server allows it
 - The "Custom" module is now "Custom HTML", with content plugins on by default for new modules ("Execute Content-type Plugins", formerly "Prepare Content")

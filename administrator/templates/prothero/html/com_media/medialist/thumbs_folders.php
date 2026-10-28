@@ -28,7 +28,7 @@ defined('_JEXEC') or die;
 
 		<div class="small">
 			<a href="index.php?option=com_media&amp;view=mediaList&amp;tmpl=component&amp;folder=<?php echo rawurlencode((string) $folder->path_relative); ?>" target="folderframe">
-				<?php echo JHtml::_('string.truncate', $this->escape($folder->name), 10, false); ?>
+				<?php echo $this->escape($folder->name); ?>
 			</a>
 		</div>
 	</li>

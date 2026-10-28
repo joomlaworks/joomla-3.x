@@ -36,7 +36,7 @@ $dispatcher = JEventDispatcher::getInstance();
 
 		<div class="small">
 			<a href="<?php echo COM_MEDIA_BASEURL, '/', rawurlencode((string) $img->path_relative); ?>" title="<?php echo $this->escape($img->name); ?>" class="preview">
-				<?php echo JHtml::_('string.truncate', $this->escape($img->name), 10, false); ?>
+				<?php echo $this->escape($img->name); ?>
 			</a>
 		</div>
 	</li>

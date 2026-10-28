@@ -36,7 +36,7 @@ $dispatcher = JEventDispatcher::getInstance();
 
 		<div class="small">
 			<a class="video-preview"<?php echo $cover ? ' data-cover="' . $cover . '"' : ''; ?> href="<?php echo COM_MEDIA_BASEURL, '/', str_replace('%2F', '/', rawurlencode((string) $video->path_relative)); ?>" title="<?php echo $this->escape($video->name); ?>">
-				<?php echo JHtml::_('string.truncate', $this->escape($video->name), 10, false); ?>
+				<?php echo $this->escape($video->name); ?>
 			</a>
 		</div>
 	</li>

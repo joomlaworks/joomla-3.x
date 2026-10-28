@@ -33,7 +33,7 @@ $dispatcher = JEventDispatcher::getInstance();
 		</div>
 
 		<div class="small" title="<?php echo $this->escape($doc->name); ?>" >
-			<?php echo JHtml::_('string.truncate', $this->escape($doc->name), 10, false); ?>
+			<?php echo $this->escape($doc->name); ?>
 		</div>
 	</li>
 	<?php $dispatcher->trigger('onContentAfterDisplay', array('com_media.file', &$doc, &$params, 0)); ?>

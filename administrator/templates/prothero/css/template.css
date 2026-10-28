@@ -2025,8 +2025,8 @@ ul.manager .height-50 .icon-folder-2 {height:35px;width:35px;line-height:35px;fo
 #mediamanager-form .checkbox {padding-left:30px;margin-bottom:15px;}
 #mediamanager-form .checkbox input {margin-top:3px;}
 #mediamanager-form .thumbnails {margin:0 -8px;overflow-x:hidden;}
-#mediamanager-form .thumbnails .thumbnail {height:120px;width:120px;margin:8px;}
-#mediamanager-form .thumbnails .imgThumb label,#mediamanager-form .thumbnails .imgTotal {line-height:120px;}
+#mediamanager-form .thumbnails .thumbnail {height:136px;width:136px;margin:8px;}
+#mediamanager-form .thumbnails .imgThumb label,#mediamanager-form .thumbnails .imgTotal {line-height:136px;}
 #mediamanager-form .icon-search::before {padding-right:5px;padding-left:1px;}
 #mediamanager-form .height-50 {background-color:var(--c-subtle);height:77px;position:relative;z-index:1;width:100%;display:inline-block;}
 #mediamanager-form .height-50 a,#mediamanager-form .height-50 .icon-folder-2 {display:inline-block;line-height:75px;margin-top:-1px;}
