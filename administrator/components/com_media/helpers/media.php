@@ -238,7 +238,7 @@ abstract class MediaHelper
 
 	/**
 	 * Lets files dropped on a list of the Media Manager (or the image picker) upload into the folder it shows, for users who
-	 * may upload: media/js/dropupload.js, through the JSON upload with the Media Manager's options (as its upload form).
+	 * may upload: com_media's media.js (its drop upload part), through the JSON upload with the Media Manager's options (as its upload form).
 	 *
 	 * @param   string   $folder  The folder shown, relative to the media folder
 	 * @param   boolean  $picker  The image picker (a single dropped image is selected after the list reloads)
@@ -277,7 +277,7 @@ abstract class MediaHelper
 				'text'     => $strings,
 			)
 		);
-		JHtml::_('script', 'com_media/dropupload.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
-		JHtml::_('stylesheet', 'com_media/dropupload.min.css', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
+		JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));
 	}
 }

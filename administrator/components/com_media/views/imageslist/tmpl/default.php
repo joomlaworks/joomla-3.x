@@ -11,12 +11,7 @@ defined('_JEXEC') or die;
 
 $lang = JFactory::getLanguage();
 
-JHtml::_('stylesheet', 'com_media/popup-imagelist.css', array('version' => 'auto', 'relative' => true));
-
-if ($lang->isRtl())
-{
-	JHtml::_('stylesheet', 'com_media/popup-imagelist_rtl.css', array('version' => 'auto', 'relative' => true));
-}
+JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));
 
 JFactory::getDocument()->addScriptDeclaration('var ImageManager = window.parent.ImageManager;');
 
@@ -46,7 +41,7 @@ else
 }
 ?>
 <?php if (count($this->images) > 0 || count($this->folders) > 0) : ?>
-	<ul class="manager thumbnails thumbnails-media">
+	<ul class="manager thumbnails thumbnails-media media-picker">
 		<?php for ($i = 0, $n = count($this->folders); $i < $n; $i++) :
 			$this->setFolder($i);
 			echo $this->loadTemplate('folder');

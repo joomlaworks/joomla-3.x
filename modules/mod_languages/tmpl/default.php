@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('stylesheet', 'mod_languages/template.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', 'mod_languages/languages.css', array('version' => 'auto', 'relative' => true));
 
 if ($params->get('dropdown', 0) && !$params->get('dropdownimage', 1))
 {

@@ -35,7 +35,7 @@ class PlgButtonReadmore extends JPlugin
 	 */
 	public function onDisplay($name)
 	{
-		JHtml::_('script', 'com_content/editor-buttons.min.js', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'com_content/content.min.js', array('version' => 'auto', 'relative' => true));
 
 		// Pass some data to javascript
 		JFactory::getDocument()->addScriptOptions(

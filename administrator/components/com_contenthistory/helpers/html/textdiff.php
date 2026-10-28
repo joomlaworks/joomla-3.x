@@ -10,7 +10,7 @@
 defined('JPATH_PLATFORM') or die;
 
 /**
- * HTML utility class for creating text diffs using jQuery, diff_patch_match.js and jquery.pretty-text-diff.js JavaScript libraries.
+ * HTML utility class for creating text diffs using jQuery and media/com_contenthistory/js/contenthistory.js (diff-match-patch and jQuery.PrettyTextDiff).
  *
  * @since       3.2
  *
@@ -43,8 +43,8 @@ abstract class JHtmlTextdiff
 
 		// Depends on jQuery UI
 		JHtml::_('bootstrap.framework');
-		JHtml::_('script', 'com_contenthistory/textdiff.min.js', array('version' => 'auto', 'relative' => true));
-		JHtml::_('stylesheet', 'com_contenthistory/jquery.pretty-text-diff.css', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'com_contenthistory/contenthistory.min.js', array('version' => 'auto', 'relative' => true));
+		JHtml::_('stylesheet', 'com_contenthistory/contenthistory.css', array('version' => 'auto', 'relative' => true));
 
 		// Attach diff to document
 		JFactory::getDocument()->addScriptDeclaration("

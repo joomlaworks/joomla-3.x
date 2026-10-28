@@ -22,7 +22,7 @@ JLoader::register('ContentHelperRoute', JPATH_ROOT . '/components/com_content/he
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
 JHtml::_('behavior.core');
-JHtml::_('script', 'com_content/editor-buttons.min.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'com_content/content.min.js', array('version' => 'auto', 'relative' => true));
 JHtml::_('bootstrap.tooltip', '.hasTooltip', array('placement' => 'bottom'));
 JHtml::_('bootstrap.popover', '.hasPopover', array('placement' => 'bottom'));
 JHtml::_('behavior.multiselect');

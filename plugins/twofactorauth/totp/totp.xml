@@ -11,12 +11,10 @@
     <description>PLG_TWOFACTORAUTH_TOTP_XML_DESCRIPTION</description>
     <files>
         <filename plugin="totp">totp.php</filename>
+        <folder>js</folder>
         <folder>postinstall</folder>
         <folder>tmpl</folder>
     </files>
-    <media folder="media">
-        <folder>plg_twofactorauth_totp</folder>
-    </media>
     <languages>
         <language tag="en-GB">en-GB.plg_twofactorauth_totp.ini</language>
         <language tag="en-GB">en-GB.plg_twofactorauth_totp.sys.ini</language>

@@ -361,6 +361,22 @@
             "seriesLatest": ""
         },
         {
+            "name": "jQuery.PrettyTextDiff",
+            "version": "1.0.2",
+            "date": "2013.01.24",
+            "dateSource": "GitHub tag 1.0.2 (commit date)",
+            "license": "MIT",
+            "url": "https://github.com/arnab/jQuery.PrettyTextDiff",
+            "path": "media/com_contenthistory/js/contenthistory.js",
+            "note": "Patched by Joomla (with and without HTML); with Google's diff-match-patch (Apache-2.0) in the same file",
+            "latest": "",
+            "isLatest": false,
+            "checked": "",
+            "use": "core",
+            "series": "",
+            "seriesLatest": ""
+        },
+        {
             "name": "MediaElement.js",
             "version": "2.23.0",
             "date": "2016.09.07",
@@ -368,7 +384,7 @@
             "license": "MIT",
             "url": "https://www.mediaelementjs.com",
             "path": "media/com_media/js/mediaelement-and-player.js",
-            "note": "",
+            "note": "Patched by Joomla 3.x UTD (its stylesheet's images are in media/com_media/images)",
             "latest": "7.1.0",
             "isLatest": false,
             "checked": "2026.10.27",

@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('script', 'com_wrapper/iframe-height.min.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'com_wrapper/wrapper.min.js', array('version' => 'auto', 'relative' => true));
 
 ?>
 <div class="contentpane<?php echo $this->pageclass_sfx; ?>">

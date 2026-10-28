@@ -12,7 +12,6 @@ defined('_JEXEC') or die;
 $user       = JFactory::getUser();
 $input      = JFactory::getApplication()->input;
 $params     = JComponentHelper::getParams('com_media');
-$lang       = JFactory::getLanguage();
 $onClick    = '';
 $fieldInput = $this->state->get('field.id');
 $isMoo      = $input->getInt('ismoo', 1);
@@ -27,13 +26,8 @@ JHtml::_('bootstrap.tooltip', '.noHtmlTip', array('html' => false));
 // Include jQuery
 JHtml::_('behavior.core');
 JHtml::_('jquery.framework');
-JHtml::_('script', 'com_media/popup-imagemanager.min.js', array('version' => 'auto', 'relative' => true));
-JHtml::_('stylesheet', 'com_media/popup-imagemanager.css', array('version' => 'auto', 'relative' => true));
-
-if ($lang->isRtl())
-{
-	JHtml::_('stylesheet', 'com_media/popup-imagemanager_rtl.css', array('version' => 'auto', 'relative' => true));
-}
+JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));
 
 JFactory::getDocument()->addScriptOptions(
 	'mediamanager', array(
