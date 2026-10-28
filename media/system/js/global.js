@@ -2720,6 +2720,74 @@
 		}
 	});
 
+	/* --- The user field (layout joomla.form.field.user: the list of users in the CMS's modal; what fielduser.js was) --- */
+
+	CMS.userField = {
+		/**
+		 * Opens the list of users for a field (its wrapper's data-url, completed with the field's id)
+		 *
+		 * @param  {HTMLElement}  wrapper  .field-user-wrapper
+		 */
+		open(wrapper) {
+			const name = wrapper.querySelector('.field-user-input-name');
+			const url = (wrapper.getAttribute('data-url') || '').replace('{field-user-id}', encodeURIComponent(name ? name.id : ''));
+
+			if (url) {
+				CMS.modal.open(url, {
+					handler: 'iframe',
+					size: { x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140) },
+				});
+			}
+		},
+
+		/**
+		 * Sets a field from a link of the list (data-user-value, data-user-name, data-user-field: the field's id)
+		 *
+		 * @param  {HTMLElement}  link
+		 */
+		select(link) {
+			const fieldId = link.getAttribute('data-user-field');
+			const value = document.getElementById(fieldId + '_id');
+			const name = document.getElementById(fieldId);
+
+			if (!value) {
+				return;
+			}
+
+			value.value = link.getAttribute('data-user-value');
+			value.dispatchEvent(new Event('change', { bubbles: true }));
+
+			if (name) {
+				name.value = link.getAttribute('data-user-name') || value.value;
+				name.dispatchEvent(new Event('change', { bubbles: true }));
+			}
+
+			// The field's own onchange (data-onchange: inputs that are hidden have no change events of their own)
+			const onchange = value.getAttribute('data-onchange');
+
+			if (onchange) {
+				new Function(onchange).call(value);
+			}
+
+			CMS.modal.close();
+		},
+	};
+
+	// The fields' buttons (also of fields written for fielduser.js, whose Bootstrap modal is no longer used)
+	document.addEventListener('click', (event) => {
+		const button = event.target.closest ? event.target.closest('.field-user-wrapper .button-select') : null;
+
+		if (button) {
+			event.preventDefault();
+			CMS.userField.open(button.closest('.field-user-wrapper'));
+		}
+	});
+
+	// The list's links call the page that opened it
+	if (!window.jSelectUser) {
+		window.jSelectUser = (link) => CMS.userField.select(link);
+	}
+
 	/* --- The colour field (layout joomla.form.field.color: the browser's colour picker, the value as text, a Clear button) --- */
 
 	CMS.colorField = {
@@ -4376,6 +4444,13 @@
 			};
 		}
 
+		// What fielduser.js added to jQuery: the fields need no start any more
+		if (window.jQuery && !window.jQuery.fn.fieldUser) {
+			window.jQuery.fn.fieldUser = function fieldUser() {
+				return this;
+			};
+		}
+
 		if (window.jQuery && !window.jQuery.fn.simplecolors) {
 			window.jQuery.fn.simplecolors = function simplecolors() {
 				return this;
@@ -4863,6 +4938,7 @@
 		'jQuery.fn.ComboTransform() (behavior.combobox)': 'CMS.combobox.attach()',
 		'jQuery.fn.minicolors() (behavior.colorpicker, MiniColors)': 'CMS.colorField.attach(), the layout joomla.form.field.color',
 		'jQuery.fn.simplecolors() (behavior.simplecolorpicker)': 'the layout joomla.form.field.color.simple (swatches)',
+		'jSelectUser(), jQuery.fn.fieldUser() (fielduser.js)': 'CMS.userField.select(), CMS.userField.open()',
 		'tabs-state.js (behavior.tabstate), jQuery.urlParam(), jQuery.getXpath(), jQuery.findXpath()': 'CMS.tabState.init()',
 		'new JCaption()': 'CMS.caption.attach()',
 		'Joomla.Highlighter()': 'CMS.highlighter.create()',

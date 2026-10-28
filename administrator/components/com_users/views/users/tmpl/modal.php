@@ -28,20 +28,10 @@ $enabledStates   = array(0 => 'icon-publish', 1 => 'icon-unpublish');
 $activatedStates = array(0 => 'icon-publish', 1 => 'icon-unpublish');
 $userRequired    = (int) $input->get('required', 0, 'int');
 
-/**
- * Mootools compatibility
- *
- * There is an extra option passed in the URL for the iframe &ismoo=0 for the bootstraped field.
- * By default the value will be 1 or defaults to mootools behaviour using function jSelectUser()
- *
- * This should be removed when mootools won't be shipped by Joomla.
- */
-$isMoo = $input->getInt('ismoo', 1);
-
-if ($isMoo)
-{
-	$onClick = "window.parent.jSelectUser(this);window.parent.jQuery('.modal.in').modal('hide');";
-}
+// Choosing calls the field's page (jSelectUser(), global.js), which fills the field and closes the modal; the old
+// ismoo=0 (the Bootstrap modal of fielduser.js, removed in 3.18) is passed on but no longer changes anything
+$isMoo   = $input->getInt('ismoo', 1);
+$onClick = 'window.parent.jSelectUser(this);';
 
 ?>
 <div class="container-popup">
@@ -49,7 +39,7 @@ if ($isMoo)
 		<?php if (!$userRequired) : ?>
 		<div class="pull-left">
 			<button type="button" class="btn button-select" data-user-value="0" data-user-name="<?php echo $this->escape(JText::_('JLIB_FORM_SELECT_USER')); ?>"
-				data-user-field="<?php echo $this->escape($field); ?>" <?php if ($isMoo) : ?>value="" onclick="window.parent.jSelectUser(this)"<?php endif; ?>><?php echo JText::_('JOPTION_NO_USER'); ?></button>&nbsp;
+				data-user-field="<?php echo $this->escape($field); ?>" value="" onclick="<?php echo $onClick; ?>"><?php echo JText::_('JOPTION_NO_USER'); ?></button>&nbsp;
 		</div>
 		<?php endif; ?>
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
@@ -94,7 +84,7 @@ if ($isMoo)
 					<tr class="row<?php echo $i % 2; ?>">
 						<td>
 							<a class="pointer button-select" href="#" data-user-value="<?php echo $item->id; ?>" data-user-name="<?php echo $this->escape($item->name); ?>"
-								data-user-field="<?php echo $this->escape($field); ?>" <?php if ($isMoo) : ?>onclick="<?php echo $onClick; ?>"<?php endif; ?>>
+								data-user-field="<?php echo $this->escape($field); ?>" onclick="<?php echo $onClick; ?> return false;">
 								<?php echo $this->escape($item->name); ?>
 							</a>
 						</td>

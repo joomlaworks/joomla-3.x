@@ -45,15 +45,15 @@ extract($displayData);
  * @var   mixed    $excluded        The users to exclude from the list of users
  */
 
+// The list of users opens in the CMS's modal (global.js: CMS.userField); its links call jSelectUser(). The address is
+// completed with the field's id when the button is clicked, so subform rows added later find their own field
 if (!$readonly)
 {
-	JHtml::_('behavior.modal', 'a.modal_' . $id);
-	JHtml::_('script', 'system/fielduser.min.js', array('version' => 'auto', 'relative' => true));
+	JHtml::_('behavior.cms');
+	JText::script('JLIB_FORM_CHANGE_USER');
 }
 
-$uri = new JUri('index.php?option=com_users&view=users&layout=modal&tmpl=component&required=0');
-
-$uri->setVar('field', $this->escape($id));
+$uri = new JUri('index.php?option=com_users&view=users&layout=modal&tmpl=component&required=0&field={field-user-id}');
 
 if ($required)
 {
@@ -77,7 +77,7 @@ if ($this->escape($userName) === JText::_('JLIB_FORM_SELECT_USER'))
 }
 
 $inputAttributes = array(
-	'type' => 'text', 'id' => $id, 'value' => $this->escape($userName)
+	'type' => 'text', 'id' => $id, 'class' => trim('field-user-input-name ' . $class), 'value' => $this->escape($userName)
 );
 
 if ($size)
@@ -94,18 +94,17 @@ if (!$readonly)
 {
 	$inputAttributes['placeholder'] = JText::_('JLIB_FORM_SELECT_USER');
 }
-
-$anchorAttributes = array(
-	'class' => 'btn btn-primary modal_' . $id, 'title' => JText::_('JLIB_FORM_CHANGE_USER'), 'rel' => '{handler: \'iframe\', size: {x: 800, y: 500}}'
-);
-
 ?>
-<div class="input-append">
-	<input <?php echo ArrayHelper::toString($inputAttributes); ?> readonly />
+<div class="field-user-wrapper" data-url="<?php echo $this->escape(str_replace('%7Bfield-user-id%7D', '{field-user-id}', (string) $uri)); ?>">
+	<div class="input-append">
+		<input <?php echo ArrayHelper::toString($inputAttributes); ?> readonly />
+		<?php if (!$readonly) : ?>
+			<button type="button" class="btn btn-primary button-select" title="<?php echo JText::_('JLIB_FORM_CHANGE_USER'); ?>" aria-label="<?php echo JText::_('JLIB_FORM_CHANGE_USER'); ?>">
+				<span class="icon-user" aria-hidden="true"></span>
+			</button>
+		<?php endif; ?>
+	</div>
 	<?php if (!$readonly) : ?>
-		<?php echo JHtml::_('link', (string) $uri, '<span class="icon-user"></span>', $anchorAttributes); ?>
+		<input type="hidden" id="<?php echo $id; ?>_id" name="<?php echo $name; ?>" value="<?php echo (int) $value; ?>" class="field-user-input<?php echo $class ? ' ' . $this->escape($class) : ''; ?>" data-onchange="<?php echo $this->escape($onchange); ?>" />
 	<?php endif; ?>
 </div>
-<?php if (!$readonly) : ?>
-	<input type="hidden" id="<?php echo $id; ?>_id" name="<?php echo $name; ?>" value="<?php echo (int) $value; ?>" data-onchange="<?php echo $this->escape($onchange); ?>" />
-<?php endif; ?>

@@ -60,7 +60,7 @@ abstract class HTMLHelper
 			'system/jquery.minicolors' => 'colorpicker', 'system/color-field-adv-init' => 'colorpicker',
 			'system/jquery.simplecolors' => 'simplecolorpicker', 'system/color-field-init' => 'simplecolorpicker',
 			'system/calendar' => 'calendar', 'system/calendar-setup' => 'calendar', 'system/calendar-field' => 'core',
-			'system/fields/calendar' => 'core', 'system/cms' => 'core',
+			'system/fields/calendar' => 'core', 'system/cms' => 'core', 'system/fielduser' => 'cms',
 		),
 		'css' => array(
 			'system/editor-switch' => 'styles', 'system/frontediting' => 'styles', 'system/modal' => 'styles', 'system/mootree' => 'styles',
