@@ -10,11 +10,9 @@
     <version>3.0.0</version>
     <description>PLG_QUICKICON_EXTENSIONUPDATE_XML_DESCRIPTION</description>
     <files>
+        <folder>js</folder>
         <filename plugin="extensionupdate">extensionupdate.php</filename>
     </files>
-    <media folder="media">
-        <folder>plg_quickicon_extensionupdate</folder>
-    </media>
     <languages>
         <language tag="en-GB">en-GB.plg_quickicon_extensionupdate.ini</language>
         <language tag="en-GB">en-GB.plg_quickicon_extensionupdate.sys.ini</language>

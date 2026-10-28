@@ -10,11 +10,9 @@
     <version>3.9.0</version>
     <description>PLG_QUICKICON_PRIVACYCHECK_XML_DESCRIPTION</description>
     <files>
+        <folder>js</folder>
         <filename plugin="privacycheck">privacycheck.php</filename>
     </files>
-    <media folder="media">
-        <folder>plg_quickicon_privacycheck</folder>
-    </media>
     <languages>
         <language tag="en-GB">en-GB.plg_quickicon_privacycheck.ini</language>
         <language tag="en-GB">en-GB.plg_quickicon_privacycheck.sys.ini</language>

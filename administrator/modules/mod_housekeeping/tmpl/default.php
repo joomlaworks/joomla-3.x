@@ -14,8 +14,8 @@ use Joomla\CMS\Session\Session;
 /** @var boolean $canClean */
 /** @var boolean $isAdmin */
 
-JHtml::_('stylesheet', 'mod_housekeeping/housekeeping.css', array('version' => 'auto', 'relative' => true));
-JHtml::_('script', 'mod_housekeeping/housekeeping.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
+JHtml::_('stylesheet', 'administrator/modules/mod_housekeeping/css/housekeeping.css', array('version' => 'auto'));
+JHtml::_('script', 'administrator/modules/mod_housekeeping/js/housekeeping.js', array('version' => 'auto'), array('defer' => true));
 
 $url = JUri::base(true) . '/index.php?option=com_ajax&module=housekeeping&method=clean&format=json';
 $e   = function ($text)

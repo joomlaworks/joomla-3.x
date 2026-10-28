@@ -15,7 +15,7 @@ JHtml::_('jquery.framework');
 JHtml::_('bootstrap.tooltip');
 JHtml::_('bootstrap.popover');
 JHtml::_('formbehavior.chosen', 'select');
-JHtml::_('script', 'com_joomlaupdate/default.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'administrator/components/com_joomlaupdate/js/default.min.js', array('version' => 'auto'));
 
 JText::script('JYES');
 JText::script('JNO');

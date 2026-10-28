@@ -892,15 +892,12 @@ class JoomlaInstallerScript
 	 * @since  3.16.0
 	 */
 	protected $removableCoreExtensionMedia = array(
-		'component:0::com_associations'          => '/media/com_associations',
 		'component:0::com_contact'               => array('/media/com_contact', '/media/contacts'),
 		'component:0::com_content'               => '/media/com_content',
 		'component:0::com_contenthistory'        => '/media/com_contenthistory',
 		'component:0::com_fields'                => '/media/com_fields',
 		'component:0::com_finder'                => '/media/com_finder',
 		'component:0::com_wrapper'               => '/media/com_wrapper',
-		'module:1::mod_housekeeping'             => '/media/mod_housekeeping',
-		'module:1::mod_sampledata'               => '/media/mod_sampledata',
 		'plugin:0:captcha:hcaptcha'              => '/media/plg_captcha_hcaptcha',
 		'plugin:0:captcha:iconcaptcha'           => '/media/plg_captcha_iconcaptcha',
 		'plugin:0:captcha:recaptcha'             => '/media/plg_captcha_recaptcha',
@@ -909,10 +906,6 @@ class JoomlaInstallerScript
 		'plugin:0:editors:tinymce_latest'        => '/media/editors/tinymce_latest',
 		'plugin:0:editors:easymde'               => '/media/editors/easymde',
 		'plugin:0:editors:editorjs'              => '/media/editors/editorjs',
-		'plugin:0:installer:webinstaller'        => '/media/plg_installer_webinstaller',
-		'plugin:0:quickicon:privacycheck'        => '/media/plg_quickicon_privacycheck',
-		'plugin:0:system:highlight'              => '/media/plg_system_highlight',
-		'plugin:0:system:stats'                  => '/media/plg_system_stats',
 		'plugin:0:twofactorauth:totp'            => '/media/plg_twofactorauth_totp',
 	);
 
@@ -4403,12 +4396,8 @@ class JoomlaInstallerScript
 			'/libraries/fof/database/query/mysql.php',
 
 			// Joomla 3.17.0: files of Install from Web plugin versions installed from the JED, which the bundled copy doesn't have
-			'/plugins/installer/webinstaller/css/client.css',
-			'/plugins/installer/webinstaller/css/client.min.css',
 			'/plugins/installer/webinstaller/css/index.html',
 			'/plugins/installer/webinstaller/index.html',
-			'/plugins/installer/webinstaller/js/client.js',
-			'/plugins/installer/webinstaller/js/client.min.js',
 			'/plugins/installer/webinstaller/tmpl/hathor.php',
 			'/plugins/installer/webinstaller/webinstaller.script.php',
 
@@ -4443,6 +4432,12 @@ class JoomlaInstallerScript
 			'/media/system/js/tabs.js',
 			// Smart Search's MooTools suggester (its jQuery one has replaced it since Joomla 3.3)
 			'/media/com_finder/js/autocompleter.js',
+			// Media of administrator-only extensions, moved into the extensions, or unused (their whole folders are on the list below)
+			'/media/com_contenthistory/js/admin-history-versions.js',
+			'/media/com_finder/css/indexer.css',
+			'/media/com_finder/js/indexer.js',
+			'/media/plg_twofactorauth_totp/js/qrcode_SJIS.js',
+			'/media/plg_twofactorauth_totp/js/qrcode_UTF8.js',
 			// More scripts merged into global.js (multiselect, caption, highlighter, help sites, the media field)
 			'/media/media/js/mediafield-mootools.js',
 			'/media/media/js/mediafield-mootools.min.js',
@@ -4743,11 +4738,19 @@ class JoomlaInstallerScript
 			'/plugins/quickicon/eos310',
 			'/plugins/quickicon/phpversioncheck',
 			'/templates/beez3',
-			// Joomla 3.17.0
-			'/plugins/installer/webinstaller/css',
-			'/plugins/installer/webinstaller/js',
 			// Joomla 3.18.0
 			'/bin',
+			// Media of administrator-only extensions, moved into the extensions (their css, js folders), or unused
+			'/media/com_associations',
+			'/media/com_joomlaupdate',
+			'/media/mod_housekeeping',
+			'/media/mod_sampledata',
+			'/media/plg_installer_webinstaller',
+			'/media/plg_quickicon_extensionupdate',
+			'/media/plg_quickicon_joomlaupdate',
+			'/media/plg_quickicon_privacycheck',
+			'/media/plg_system_highlight',
+			'/media/plg_system_stats',
 			'/libraries/joomla/facebook',
 			'/libraries/joomla/github',
 			'/libraries/joomla/google',

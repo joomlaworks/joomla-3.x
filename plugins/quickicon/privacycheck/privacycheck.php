@@ -64,7 +64,7 @@ class PlgQuickiconPrivacyCheck extends JPlugin
 
 		Factory::getDocument()->addScriptOptions('js-privacy-check', $options);
 
-		JHtml::_('script', 'plg_quickicon_privacycheck/privacycheck.js', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'plugins/quickicon/privacycheck/js/privacycheck.js', array('version' => 'auto'));
 
 		return array(
 			array(

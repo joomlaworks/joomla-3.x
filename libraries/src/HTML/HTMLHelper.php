@@ -64,6 +64,36 @@ abstract class HTMLHelper
 	);
 
 	/**
+	 * Media files of administrator-only extensions, moved from media/ into the extension (since 3.18): asking for one by its
+	 * old relative name (com_x/file.js is media/com_x/js/file.js) loads it from its new place
+	 *
+	 * @var    array
+	 * @since  3.18.0
+	 */
+	const MOVED_FILES = array(
+		'js'  => array(
+			'com_associations/sidebyside'                => 'administrator/components/com_associations/js/sidebyside.js',
+			'com_contenthistory/admin-history-versions'  => 'administrator/components/com_contenthistory/js/admin-history-versions.js',
+			'com_finder/indexer'                         => 'administrator/components/com_finder/js/indexer.js',
+			'com_joomlaupdate/default'                   => 'administrator/components/com_joomlaupdate/js/default.min.js',
+			'com_joomlaupdate/encryption'                => 'administrator/components/com_joomlaupdate/js/encryption.min.js',
+			'com_joomlaupdate/update'                    => 'administrator/components/com_joomlaupdate/js/update.min.js',
+			'mod_housekeeping/housekeeping'              => 'administrator/modules/mod_housekeeping/js/housekeeping.js',
+			'mod_sampledata/sampledata-process'          => 'administrator/modules/mod_sampledata/js/sampledata-process.js',
+			'plg_installer_webinstaller/client'          => 'plugins/installer/webinstaller/js/client.min.js',
+			'plg_quickicon_extensionupdate/extensionupdatecheck' => 'plugins/quickicon/extensionupdate/js/extensionupdatecheck.js',
+			'plg_quickicon_joomlaupdate/jupdatecheck'    => 'plugins/quickicon/joomlaupdate/js/jupdatecheck.js',
+			'plg_quickicon_privacycheck/privacycheck'    => 'plugins/quickicon/privacycheck/js/privacycheck.js',
+			'plg_system_stats/stats'                     => 'plugins/system/stats/js/stats.js',
+		),
+		'css' => array(
+			'com_associations/sidebyside'       => 'administrator/components/com_associations/css/sidebyside.css',
+			'mod_housekeeping/housekeeping'     => 'administrator/modules/mod_housekeeping/css/housekeeping.css',
+			'plg_installer_webinstaller/client' => 'plugins/installer/webinstaller/css/client.min.css',
+		),
+	);
+
+	/**
 	 * Media files removed without a replacement, which browsers no longer need (polyfills, IE fallbacks): asking for one
 	 * loads nothing
 	 *
@@ -73,9 +103,9 @@ abstract class HTMLHelper
 	const DROPPED_FILES = array(
 		'js'  => array(
 			'system/html5fallback', 'system/polyfill.classlist', 'system/polyfill.event', 'system/polyfill.filter', 'system/polyfill.map',
-			'system/polyfill.xpath', 'system/progressbar',
+			'system/polyfill.xpath', 'system/progressbar', 'com_joomlaupdate/json2',
 		),
-		'css' => array(),
+		'css' => array('com_finder/indexer'),
 	);
 
 	/**
@@ -673,6 +703,13 @@ abstract class HTMLHelper
 
 		$behaviour = static::mapGlobalFile('css', $file, $options);
 
+		if (is_array($behaviour))
+		{
+			list($file)          = $behaviour;
+			$options['relative'] = false;
+			$behaviour           = null;
+		}
+
 		if ($behaviour !== null)
 		{
 			if ($behaviour)
@@ -764,6 +801,13 @@ abstract class HTMLHelper
 		}
 
 		$behaviour = static::mapGlobalFile('js', $file, $options);
+
+		if (is_array($behaviour))
+		{
+			list($file)          = $behaviour;
+			$options['relative'] = false;
+			$behaviour           = null;
+		}
 
 		if ($behaviour !== null)
 		{
@@ -1183,13 +1227,19 @@ abstract class HTMLHelper
 	 * @param   string  $file     The file asked for
 	 * @param   array   $options  The script() or stylesheet() options
 	 *
-	 * @return  string|boolean|null  The behaviour to run instead, false for a dropped file, null for any other file
+	 * @return  string|array|boolean|null  The behaviour to run instead, array(new path) for a moved file, false for a dropped
+	 *                                     file, null for any other file
 	 *
 	 * @since   3.18.0
 	 */
 	protected static function mapGlobalFile($type, $file, array $options)
 	{
 		$names = static::GLOBAL_FILES[$type] + array_fill_keys(static::DROPPED_FILES[$type], false);
+
+		foreach (static::MOVED_FILES[$type] as $name => $path)
+		{
+			$names[$name] = array($path);
+		}
 
 		foreach ($names as $name => $behaviour)
 		{

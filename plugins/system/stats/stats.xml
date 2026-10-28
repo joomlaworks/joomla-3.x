@@ -10,13 +10,11 @@
     <version>3.5.0</version>
     <description>PLG_SYSTEM_STATS_XML_DESCRIPTION</description>
     <files>
+        <folder>js</folder>
         <folder>field</folder>
         <folder>layouts</folder>
         <filename plugin="stats">stats.php</filename>
     </files>
-    <media folder="media">
-        <folder>plg_system_stats</folder>
-    </media>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_system_stats.ini</language>
         <language tag="en-GB">en-GB/en-GB.plg_system_stats.sys.ini</language>

@@ -66,7 +66,7 @@ class PlgQuickiconJoomlaupdate extends JPlugin
 			. '"ERROR": "' . JUri::base(true) . '/templates/' . $currentTemplate . '/images/header/icon-48-deny.png",'
 			. '};';
 		JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
-		JHtml::_('script', 'plg_quickicon_joomlaupdate/jupdatecheck.js', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'plugins/quickicon/joomlaupdate/js/jupdatecheck.js', array('version' => 'auto'));
 
 		return array(
 			array(

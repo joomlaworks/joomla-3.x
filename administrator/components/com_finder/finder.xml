@@ -42,6 +42,7 @@
     </languages>
     <administration>
         <files folder="admin">
+            <folder>js</folder>
             <filename>access.xml</filename>
             <filename>config.xml</filename>
             <filename>controller.php</filename>

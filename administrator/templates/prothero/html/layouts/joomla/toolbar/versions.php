@@ -19,7 +19,7 @@ defined('_JEXEC') or die;
  * @var  string   $typeAlias The component type
  */
 extract($displayData);
-JHtml::_('script', 'com_contenthistory/admin-history-versions.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'administrator/components/com_contenthistory/js/admin-history-versions.js', array('version' => 'auto'));
 
 $link = 'index.php?option=com_contenthistory&amp;view=history&amp;layout=modal&amp;tmpl=component&amp;item_id='
 	. (int) $itemId . '&amp;type_id=' . $typeId . '&amp;type_alias='

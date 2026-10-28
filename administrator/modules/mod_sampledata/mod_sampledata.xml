@@ -10,13 +10,11 @@
     <version>3.8.0</version>
     <description>MOD_SAMPLEDATA_XML_DESCRIPTION</description>
     <files>
+        <folder>js</folder>
         <filename module="mod_sampledata">mod_sampledata.php</filename>
         <filename>helper.php</filename>
         <folder>tmpl</folder>
     </files>
-    <media destination="mod_sampledata" folder="media">
-        <folder>js</folder>
-    </media>
     <languages>
         <language tag="en-GB">en-GB.mod_sampledata.ini</language>
         <language tag="en-GB">en-GB.mod_sampledata.sys.ini</language>

@@ -32,6 +32,7 @@
     </media>
     <administration>
         <files folder="admin">
+            <folder>js</folder>
             <filename>controller.php</filename>
             <filename>contenthistory.php</filename>
             <folder>controllers</folder>
