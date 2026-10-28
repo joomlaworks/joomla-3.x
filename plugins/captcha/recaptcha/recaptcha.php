@@ -82,7 +82,7 @@ class PlgCaptchaRecaptcha extends JPlugin
 		}
 
 		// Not deferred: Google's script (async) calls it when it has loaded, which can be before deferred scripts run
-		JHtml::_('script', 'plg_captcha_recaptcha/recaptcha.min.js', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'plugins/captcha/recaptcha/js/recaptcha.min.js', array('version' => 'auto'));
 
 		$render = $this->getType() === 'score' ? rawurlencode($pubkey) : 'explicit';
 

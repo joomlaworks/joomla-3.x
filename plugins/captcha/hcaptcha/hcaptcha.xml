@@ -11,10 +11,8 @@
     <files>
         <filename plugin="hcaptcha">hcaptcha.php</filename>
         <folder>images</folder>
+        <folder>js</folder>
     </files>
-    <media folder="media">
-        <folder>plg_captcha_hcaptcha</folder>
-    </media>
     <languages>
         <language tag="en-GB">en-GB.plg_captcha_hcaptcha.ini</language>
         <language tag="en-GB">en-GB.plg_captcha_hcaptcha.sys.ini</language>

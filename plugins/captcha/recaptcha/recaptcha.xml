@@ -12,10 +12,8 @@
     <files>
         <filename plugin="recaptcha">recaptcha.php</filename>
         <folder>images</folder>
+        <folder>js</folder>
     </files>
-    <media folder="media">
-        <folder>plg_captcha_recaptcha</folder>
-    </media>
     <languages>
         <language tag="en-GB">en-GB.plg_captcha_recaptcha.ini</language>
         <language tag="en-GB">en-GB.plg_captcha_recaptcha.sys.ini</language>

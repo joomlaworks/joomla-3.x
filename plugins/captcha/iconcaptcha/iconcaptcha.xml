@@ -10,13 +10,13 @@
     <description>PLG_CAPTCHA_ICONCAPTCHA_XML_DESCRIPTION</description>
     <files>
         <filename plugin="iconcaptcha">iconcaptcha.php</filename>
+        <folder>css</folder>
         <folder>images</folder>
-        <filename>token.php</filename>
+        <folder>js</folder>
         <folder>lib</folder>
+        <filename>license.txt</filename>
+        <filename>token.php</filename>
     </files>
-    <media folder="media">
-        <folder>plg_captcha_iconcaptcha</folder>
-    </media>
     <languages>
         <language tag="en-GB">en-GB.plg_captcha_iconcaptcha.ini</language>
         <language tag="en-GB">en-GB.plg_captcha_iconcaptcha.sys.ini</language>

@@ -25,7 +25,7 @@ class PlgEditorTinymce_latest extends JPlugin
 	 * @var    string
 	 * @since  3.17.0
 	 */
-	const MEDIA = 'media/editors/tinymce_latest';
+	const MEDIA = 'plugins/editors/tinymce_latest';
 
 	/**
 	 * @var    boolean

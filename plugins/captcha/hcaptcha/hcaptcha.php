@@ -68,7 +68,7 @@ class PlgCaptchaHcaptcha extends JPlugin
 		}
 
 		// Not deferred: hCaptcha's script (async) calls it when it has loaded, which can be before deferred scripts run
-		JHtml::_('script', 'plg_captcha_hcaptcha/hcaptcha.min.js', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'plugins/captcha/hcaptcha/js/hcaptcha.min.js', array('version' => 'auto'));
 		JHtml::_(
 			'script',
 			'https://js.hcaptcha.com/1/api.js?onload=JoomlaInitHcaptcha&render=explicit&hl=' . rawurlencode(substr(JFactory::getLanguage()->getTag(), 0, 2)),

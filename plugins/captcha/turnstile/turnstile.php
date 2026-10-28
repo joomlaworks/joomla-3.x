@@ -67,7 +67,7 @@ class PlgCaptchaTurnstile extends JPlugin
 		}
 
 		// Not deferred: Cloudflare's script (async) calls it when it has loaded, which can be before deferred scripts run
-		JHtml::_('script', 'plg_captcha_turnstile/turnstile.min.js', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'plugins/captcha/turnstile/js/turnstile.min.js', array('version' => 'auto'));
 		JHtml::_(
 			'script',
 			'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=JoomlaInitTurnstile&render=explicit',

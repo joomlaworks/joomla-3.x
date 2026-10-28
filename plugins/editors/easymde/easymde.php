@@ -24,7 +24,7 @@ class PlgEditorEasymde extends JPlugin
 	 * @var    string
 	 * @since  3.18.0
 	 */
-	const MEDIA = 'media/editors/easymde';
+	const MEDIA = 'plugins/editors/easymde';
 
 	/**
 	 * @var    boolean

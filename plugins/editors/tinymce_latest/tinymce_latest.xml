@@ -11,12 +11,21 @@
     <description>PLG_TINYMCE_LATEST_XML_DESCRIPTION</description>
     <files>
         <filename plugin="tinymce_latest">tinymce_latest.php</filename>
+        <folder>css</folder>
         <folder>field</folder>
         <folder>form</folder>
+        <folder>icons</folder>
+        <folder>js</folder>
+        <folder>langs</folder>
+        <filename>license.txt</filename>
+        <folder>models</folder>
+        <filename>notices.txt</filename>
+        <folder>plugins</folder>
+        <folder>skins</folder>
+        <folder>templates</folder>
+        <folder>themes</folder>
+        <filename>tinymce.min.js</filename>
     </files>
-    <media destination="editors" folder="media">
-        <folder>tinymce_latest</folder>
-    </media>
     <languages>
         <language tag="en-GB">en-GB.plg_editors_tinymce_latest.ini</language>
         <language tag="en-GB">en-GB.plg_editors_tinymce_latest.sys.ini</language>

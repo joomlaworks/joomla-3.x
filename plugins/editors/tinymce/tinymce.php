@@ -23,7 +23,7 @@ class PlgEditorTinymce extends JPlugin
 	 *
 	 * @since  3.5
 	 */
-	protected $_basePath = 'media/editors/tinymce';
+	protected $_basePath = 'plugins/editors/tinymce';
 
 	/**
 	 * Load the language file on instantiation.
@@ -52,7 +52,7 @@ class PlgEditorTinymce extends JPlugin
 	{
 		JHtml::_('behavior.core');
 		JHtml::_('script', $this->_basePath . '/tinymce.min.js', array('version' => 'auto'));
-		JHtml::_('script', 'editors/tinymce/tinymce.min.js', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'plugins/editors/tinymce/js/tinymce.min.js', array('version' => 'auto'));
 	}
 
 	/**
@@ -207,7 +207,7 @@ class PlgEditorTinymce extends JPlugin
 
 			if (!empty($btns['names']))
 			{
-				JHtml::_('script', 'editors/tinymce/tiny-close.min.js', array('version' => 'auto', 'relative' => true), array('defer' => 'defer'));
+				JHtml::_('script', 'plugins/editors/tinymce/js/tiny-close.min.js', array('version' => 'auto'), array('defer' => 'defer'));
 			}
 
 			// Set editor to readonly mode
@@ -263,7 +263,7 @@ class PlgEditorTinymce extends JPlugin
 		$levelParams->loadObject($extraOptions);
 
 		// List the skins
-		$skindirs = glob(JPATH_ROOT . '/media/editors/tinymce/skins' . '/*', GLOB_ONLYDIR);
+		$skindirs = glob(JPATH_ROOT . '/plugins/editors/tinymce/skins' . '/*', GLOB_ONLYDIR);
 
 		// Set the selected skin
 		$skin = 'lightgray';
@@ -279,11 +279,11 @@ class PlgEditorTinymce extends JPlugin
 
 		if ($langMode)
 		{
-			if (file_exists(JPATH_ROOT . '/media/editors/tinymce/langs/' . $language->getTag() . '.js'))
+			if (file_exists(JPATH_ROOT . '/plugins/editors/tinymce/langs/' . $language->getTag() . '.js'))
 			{
 				$langPrefix = $language->getTag();
 			}
-			elseif (file_exists(JPATH_ROOT . '/media/editors/tinymce/langs/' . substr((string) $language->getTag(), 0, strpos((string) $language->getTag(), '-')) . '.js'))
+			elseif (file_exists(JPATH_ROOT . '/plugins/editors/tinymce/langs/' . substr((string) $language->getTag(), 0, strpos((string) $language->getTag(), '-')) . '.js'))
 			{
 				$langPrefix = substr((string) $language->getTag(), 0, strpos((string) $language->getTag(), '-'));
 			}
@@ -496,10 +496,10 @@ class PlgEditorTinymce extends JPlugin
 		if (!empty($allButtons['template']))
 		{
 			// Note this check for the template_list.js file will be removed in Joomla 4.0
-			if (is_file(JPATH_ROOT . '/media/editors/tinymce/templates/template_list.js'))
+			if (is_file(JPATH_ROOT . '/plugins/editors/tinymce/templates/template_list.js'))
 			{
 				// If using the legacy file we need to include and input the files the new way
-				$str = file_get_contents(JPATH_ROOT . '/media/editors/tinymce/templates/template_list.js');
+				$str = file_get_contents(JPATH_ROOT . '/plugins/editors/tinymce/templates/template_list.js');
 
 				// Find from one [ to the last ]
 				$matches = array();
@@ -523,7 +523,7 @@ class PlgEditorTinymce extends JPlugin
 			}
 			else
 			{
-				foreach (glob(JPATH_ROOT . '/media/editors/tinymce/templates/*.html') as $filename)
+				foreach (glob(JPATH_ROOT . '/plugins/editors/tinymce/templates/*.html') as $filename)
 				{
 					$filename = basename($filename, '.html');
 
@@ -546,7 +546,7 @@ class PlgEditorTinymce extends JPlugin
 						$templates[] = array(
 							'title' => $title,
 							'description' => $description,
-							'url' => JUri::root(true) . '/media/editors/tinymce/templates/' . $filename . '.html',
+							'url' => JUri::root(true) . '/plugins/editors/tinymce/templates/' . $filename . '.html',
 						);
 					}
 				}
@@ -586,8 +586,8 @@ class PlgEditorTinymce extends JPlugin
 		{
 			$externalPlugins['jdragdrop'] = HTMLHelper::_(
 					'script',
-					'editors/tinymce/plugins/dragdrop/plugin.min.js',
-					array('relative' => true, 'version' => 'auto', 'pathOnly' => true)
+					'plugins/editors/tinymce/js/plugins/dragdrop/plugin.min.js',
+					array('version' => 'auto', 'pathOnly' => true)
 				);
 			$allowImgPaste = true;
 			$isSubDir      = '';
@@ -620,7 +620,7 @@ class PlgEditorTinymce extends JPlugin
 			$scriptOptions,
 			array(
 			'suffix'  => '.min',
-			'baseURL' => JUri::root(true) . '/media/editors/tinymce',
+			'baseURL' => JUri::root(true) . '/plugins/editors/tinymce',
 			'directionality' => $text_direction,
 			'language' => $langPrefix,
 			'autosave_restore_when_empty' => false,
@@ -1278,7 +1278,7 @@ class PlgEditorTinymce extends JPlugin
 
 			if (!empty($btns['names']))
 			{
-				JHtml::_('script', 'editors/tinymce/tiny-close.min.js', array('version' => 'auto', 'relative' => true), array('defer' => 'defer'));
+				JHtml::_('script', 'plugins/editors/tinymce/js/tiny-close.min.js', array('version' => 'auto'), array('defer' => 'defer'));
 			}
 
 			// Set editor to readonly mode
@@ -1308,7 +1308,7 @@ class PlgEditorTinymce extends JPlugin
 		$theme    = 'modern';
 
 		// List the skins
-		$skindirs = glob(JPATH_ROOT . '/media/editors/tinymce/skins' . '/*', GLOB_ONLYDIR);
+		$skindirs = glob(JPATH_ROOT . '/plugins/editors/tinymce/skins' . '/*', GLOB_ONLYDIR);
 
 
 		// Set the selected skin
@@ -1325,11 +1325,11 @@ class PlgEditorTinymce extends JPlugin
 
 		if ($langMode)
 		{
-			if (file_exists(JPATH_ROOT . "/media/editors/tinymce/langs/" . $language->getTag() . ".js"))
+			if (file_exists(JPATH_ROOT . "/plugins/editors/tinymce/langs/" . $language->getTag() . ".js"))
 			{
 				$langPrefix = $language->getTag();
 			}
-			elseif (file_exists(JPATH_ROOT . "/media/editors/tinymce/langs/" . substr((string) $language->getTag(), 0, strpos((string) $language->getTag(), '-')) . ".js"))
+			elseif (file_exists(JPATH_ROOT . "/plugins/editors/tinymce/langs/" . substr((string) $language->getTag(), 0, strpos((string) $language->getTag(), '-')) . ".js"))
 			{
 				$langPrefix = substr((string) $language->getTag(), 0, strpos((string) $language->getTag(), '-'));
 			}
@@ -1732,10 +1732,10 @@ class PlgEditorTinymce extends JPlugin
 			$toolbar4_add[] = 'template';
 
 			// Note this check for the template_list.js file will be removed in Joomla 4.0
-			if (is_file(JPATH_ROOT . "/media/editors/tinymce/templates/template_list.js"))
+			if (is_file(JPATH_ROOT . "/plugins/editors/tinymce/templates/template_list.js"))
 			{
 				// If using the legacy file we need to include and input the files the new way
-				$str = file_get_contents(JPATH_ROOT . "/media/editors/tinymce/templates/template_list.js");
+				$str = file_get_contents(JPATH_ROOT . "/plugins/editors/tinymce/templates/template_list.js");
 
 				// Find from one [ to the last ]
 				$matches = array();
@@ -1759,7 +1759,7 @@ class PlgEditorTinymce extends JPlugin
 			}
 			else
 			{
-				foreach (glob(JPATH_ROOT . '/media/editors/tinymce/templates/*.html') as $filename)
+				foreach (glob(JPATH_ROOT . '/plugins/editors/tinymce/templates/*.html') as $filename)
 				{
 					$filename = basename($filename, '.html');
 
@@ -1782,7 +1782,7 @@ class PlgEditorTinymce extends JPlugin
 						$templates[] = array(
 							'title' => $title,
 							'description' => $description,
-							'url' => JUri::root(true) . '/media/editors/tinymce/templates/' . $filename . '.html',
+							'url' => JUri::root(true) . '/plugins/editors/tinymce/templates/' . $filename . '.html',
 						);
 					}
 				}
@@ -1901,8 +1901,8 @@ class PlgEditorTinymce extends JPlugin
 				array(
 					'jdragdrop' => HTMLHelper::_(
 						'script',
-						'editors/tinymce/plugins/dragdrop/plugin.min.js',
-						array('relative' => true, 'version' => 'auto', 'pathOnly' => true)
+						'plugins/editors/tinymce/js/plugins/dragdrop/plugin.min.js',
+						array('version' => 'auto', 'pathOnly' => true)
 					),
 				),
 			);
@@ -1925,7 +1925,7 @@ class PlgEditorTinymce extends JPlugin
 			$scriptOptions,
 			array(
 			'suffix'  => '.min',
-			'baseURL' => JUri::root(true) . '/media/editors/tinymce',
+			'baseURL' => JUri::root(true) . '/plugins/editors/tinymce',
 			'directionality' => $text_direction,
 			'language' => $langPrefix,
 			'autosave_restore_when_empty' => false,

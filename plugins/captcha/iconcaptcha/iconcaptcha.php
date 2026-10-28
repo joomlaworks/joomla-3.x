@@ -78,9 +78,9 @@ class PlgCaptchaIconcaptcha extends JPlugin
 		$locale = $this->translate(self::LOCALE);
 
 		JHtml::_('form.csrf');
-		JHtml::_('stylesheet', 'plg_captcha_iconcaptcha/iconcaptcha.min.css', array('version' => 'auto', 'relative' => true));
-		JHtml::_('script', 'plg_captcha_iconcaptcha/iconcaptcha.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
-		JHtml::_('script', 'plg_captcha_iconcaptcha/iconcaptcha-init.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
+		JHtml::_('stylesheet', 'plugins/captcha/iconcaptcha/css/iconcaptcha.min.css', array('version' => 'auto'));
+		JHtml::_('script', 'plugins/captcha/iconcaptcha/js/iconcaptcha.min.js', array('version' => 'auto'), array('defer' => true));
+		JHtml::_('script', 'plugins/captcha/iconcaptcha/js/iconcaptcha-init.min.js', array('version' => 'auto'), array('defer' => true));
 		JFactory::getDocument()->addScriptOptions('plg_captcha_iconcaptcha', array(
 			'endpoint'    => Uri::base(true) . '/index.php?option=com_ajax&group=captcha&plugin=iconcaptcha&format=raw',
 			'showCredits' => (bool) $this->params->get('credits', 1),

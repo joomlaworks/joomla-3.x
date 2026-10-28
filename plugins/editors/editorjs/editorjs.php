@@ -27,7 +27,7 @@ class PlgEditorEditorjs extends JPlugin
 	 * @var    string
 	 * @since  3.18.0
 	 */
-	const MEDIA = 'media/editors/editorjs';
+	const MEDIA = 'plugins/editors/editorjs';
 
 	/**
 	 * Editor.js and the tools, in the order they're loaded

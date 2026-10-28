@@ -39,7 +39,7 @@
         <option value="1">JON</option>
         <option value="0">JOFF</option>
     </field>
-    <field name="lang_code" type="filelist" label="PLG_TINYMCE_LATEST_FIELD_LANGCODE_LABEL" description="PLG_TINYMCE_LATEST_FIELD_LANGCODE_DESC" stripext="1" directory="media/editors/tinymce_latest/langs/" hide_none="1" hide_default="1" filter="\.js$" showon="lang_mode:0">
+    <field name="lang_code" type="filelist" label="PLG_TINYMCE_LATEST_FIELD_LANGCODE_LABEL" description="PLG_TINYMCE_LATEST_FIELD_LANGCODE_DESC" stripext="1" directory="plugins/editors/tinymce_latest/langs/" hide_none="1" hide_default="1" filter="\.js$" showon="lang_mode:0">
         <option value="en">English</option>
     </field>
     <field name="heading_images" type="note" class="tinymceHeading" label="PLG_TINYMCE_LATEST_FIELD_HEADING_IMAGES" description="PLG_TINYMCE_LATEST_FIELD_HEADING_IMAGES_DESC" />

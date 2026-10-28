@@ -38,7 +38,7 @@
         <option value="1">JON</option>
         <option value="0">JOFF</option>
     </field>
-    <field name="lang_code" type="filelist" label="PLG_TINY_FIELD_LANGCODE_LABEL" description="PLG_TINY_FIELD_LANGCODE_DESC" class="inputbox" stripext="1" directory="media/editors/tinymce/langs/" hide_none="1" default="en" hide_default="1" filter="\.js$" size="10" showon="lang_mode:0" />
+    <field name="lang_code" type="filelist" label="PLG_TINY_FIELD_LANGCODE_LABEL" description="PLG_TINY_FIELD_LANGCODE_DESC" class="inputbox" stripext="1" directory="plugins/editors/tinymce/langs/" hide_none="1" default="en" hide_default="1" filter="\.js$" size="10" showon="lang_mode:0" />
     <field name="text_direction" type="list" label="PLG_TINY_FIELD_DIRECTION_LABEL" description="PLG_TINY_FIELD_DIRECTION_DESC" default="ltr">
         <option value="ltr">PLG_TINY_FIELD_VALUE_LTR</option>
         <option value="rtl">PLG_TINY_FIELD_VALUE_RTL</option>

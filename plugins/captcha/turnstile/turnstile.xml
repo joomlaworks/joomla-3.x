@@ -11,10 +11,8 @@
     <files>
         <filename plugin="turnstile">turnstile.php</filename>
         <folder>images</folder>
+        <folder>js</folder>
     </files>
-    <media folder="media">
-        <folder>plg_captcha_turnstile</folder>
-    </media>
     <languages>
         <language tag="en-GB">en-GB.plg_captcha_turnstile.ini</language>
         <language tag="en-GB">en-GB.plg_captcha_turnstile.sys.ini</language>

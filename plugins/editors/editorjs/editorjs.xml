@@ -11,10 +11,10 @@
     <description>PLG_EDITORS_EDITORJS_XML_DESCRIPTION</description>
     <files>
         <filename plugin="editorjs">editorjs.php</filename>
+        <folder>css</folder>
+        <folder>js</folder>
+        <folder>vendor</folder>
     </files>
-    <media destination="editors" folder="media">
-        <folder>editorjs</folder>
-    </media>
     <languages>
         <language tag="en-GB">en-GB.plg_editors_editorjs.ini</language>
         <language tag="en-GB">en-GB.plg_editors_editorjs.sys.ini</language>

@@ -102,7 +102,7 @@ abstract class HTMLHelper
 	 * @var    array
 	 * @since  3.18.0
 	 */
-	const MOVED_FOLDERS = array('cms' => 'system', 'contacts' => 'com_contact', 'mailto' => 'com_mailto', 'media' => 'com_media');
+	const MOVED_FOLDERS = array('cms' => 'system', 'contacts' => 'com_contact', 'mailto' => 'system', 'media' => 'com_media');
 
 	/**
 	 * Media files removed without a replacement, which browsers no longer need (polyfills, IE fallbacks): asking for one

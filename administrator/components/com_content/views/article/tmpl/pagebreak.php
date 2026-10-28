@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 JHtml::_('behavior.core');
-JHtml::_('script', 'com_content/admin-article-pagebreak.min.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'com_content/editor-buttons.min.js', array('version' => 'auto', 'relative' => true));
 
 $document    = JFactory::getDocument();
 $this->eName = JFactory::getApplication()->input->getCmd('e_name', '');

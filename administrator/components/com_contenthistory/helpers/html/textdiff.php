@@ -43,8 +43,7 @@ abstract class JHtmlTextdiff
 
 		// Depends on jQuery UI
 		JHtml::_('bootstrap.framework');
-		JHtml::_('script', 'com_contenthistory/diff_match_patch.js', array('version' => 'auto', 'relative' => true));
-		JHtml::_('script', 'com_contenthistory/jquery.pretty-text-diff.min.js', array('version' => 'auto', 'relative' => true));
+		JHtml::_('script', 'com_contenthistory/textdiff.min.js', array('version' => 'auto', 'relative' => true));
 		JHtml::_('stylesheet', 'com_contenthistory/jquery.pretty-text-diff.css', array('version' => 'auto', 'relative' => true));
 
 		// Attach diff to document

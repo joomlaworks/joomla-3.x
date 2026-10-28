@@ -898,14 +898,6 @@ class JoomlaInstallerScript
 		'component:0::com_fields'                => '/media/com_fields',
 		'component:0::com_finder'                => '/media/com_finder',
 		'component:0::com_wrapper'               => '/media/com_wrapper',
-		'plugin:0:captcha:hcaptcha'              => '/media/plg_captcha_hcaptcha',
-		'plugin:0:captcha:iconcaptcha'           => '/media/plg_captcha_iconcaptcha',
-		'plugin:0:captcha:recaptcha'             => '/media/plg_captcha_recaptcha',
-		'plugin:0:captcha:turnstile'             => '/media/plg_captcha_turnstile',
-		'plugin:0:editors:codemirror'            => '/media/editors/codemirror',
-		'plugin:0:editors:tinymce_latest'        => '/media/editors/tinymce_latest',
-		'plugin:0:editors:easymde'               => '/media/editors/easymde',
-		'plugin:0:editors:editorjs'              => '/media/editors/editorjs',
 		'plugin:0:twofactorauth:totp'            => '/media/plg_twofactorauth_totp',
 	);
 
@@ -4488,6 +4480,26 @@ class JoomlaInstallerScript
 			'/libraries/vendor/phpmailer/phpmailer/class.smtp.php',
 			// CodeMirror's ASN.1 mode, minified under a wrong name (the editor loads mode/asn.1/asn.1.min.js)
 			'/media/editors/codemirror/mode/asn.1/asn.min.js',
+			// Small scripts and styles merged into one file per folder (3.18)
+			'/media/com_content/js/admin-article-pagebreak.js',
+			'/media/com_content/js/admin-article-pagebreak.min.js',
+			'/media/com_content/js/admin-article-readmore.js',
+			'/media/com_content/js/admin-article-readmore.min.js',
+			'/media/com_content/js/admin-articles-modal.js',
+			'/media/com_content/js/admin-articles-modal.min.js',
+			'/media/com_contenthistory/js/diff_match_patch.js',
+			'/media/com_contenthistory/js/jquery.pretty-text-diff.js',
+			'/media/com_contenthistory/js/jquery.pretty-text-diff.min.js',
+			'/media/com_finder/css/dates.css',
+			// SqueezeBox's shadow images for old browsers (unused since 3.18's global.css)
+			'/media/system/images/modal/bg_e.png',
+			'/media/system/images/modal/bg_n.png',
+			'/media/system/images/modal/bg_ne.png',
+			'/media/system/images/modal/bg_nw.png',
+			'/media/system/images/modal/bg_s.png',
+			'/media/system/images/modal/bg_se.png',
+			'/media/system/images/modal/bg_sw.png',
+			'/media/system/images/modal/bg_w.png',
 		);
 
 		// TODO There is an issue while deleting folders using the ftp mode
@@ -4757,6 +4769,20 @@ class JoomlaInstallerScript
 			'/media/contacts',
 			'/media/mailto',
 			'/media/media',
+			'/media/com_mailto',
+			// Editors' and CAPTCHA plugins' files, moved into the plugins (only core editors' folders: others may use media/editors)
+			'/media/editors/codemirror',
+			'/media/editors/easymde',
+			'/media/editors/editorjs',
+			'/media/editors/none',
+			'/media/editors/tinymce',
+			'/media/editors/tinymce_latest',
+			'/media/plg_captcha_hcaptcha',
+			'/media/plg_captcha_iconcaptcha',
+			'/media/plg_captcha_recaptcha',
+			'/media/plg_captcha_turnstile',
+			// MooTools' colour picker (never used by Joomla 3)
+			'/media/system/images/mooRainbow',
 			'/libraries/joomla/facebook',
 			'/libraries/joomla/github',
 			'/libraries/joomla/google',

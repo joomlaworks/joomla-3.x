@@ -33,7 +33,7 @@ class JFormFieldTinymcelatestskins extends JFormFieldList
 	{
 		$options = array();
 
-		foreach (glob(JPATH_ROOT . '/media/editors/tinymce_latest/skins/ui/*', GLOB_ONLYDIR) ?: array() as $folder)
+		foreach (glob(JPATH_ROOT . '/plugins/editors/tinymce_latest/skins/ui/*', GLOB_ONLYDIR) ?: array() as $folder)
 		{
 			$options[] = JHtml::_('select.option', basename($folder), basename($folder));
 		}

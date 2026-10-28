@@ -52,9 +52,9 @@ extract($displayData);
  */
 
 JHtml::_('behavior.core');
-JHtml::_('stylesheet', 'media/editors/tinymce/skins/lightgray/skin.min.css', array('version' => 'auto', 'relative' => false));
+JHtml::_('stylesheet', 'plugins/editors/tinymce/skins/lightgray/skin.min.css', array('version' => 'auto', 'relative' => false));
 JHtml::_('jquery.ui', array('core', 'sortable'));
-JHtml::_('script', 'editors/tinymce/tinymce-builder.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'plugins/editors/tinymce/js/tinymce-builder.js', array('version' => 'auto'));
 
 if ($languageFile)
 {

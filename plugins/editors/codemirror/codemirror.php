@@ -33,6 +33,30 @@ class PlgEditorCodemirror extends JPlugin
 	protected $modeAlias = array();
 
 	/**
+	 * Constructor
+	 *
+	 * @param   object  &$subject  The object to observe
+	 * @param   array   $config    An optional associative array of configuration settings
+	 *
+	 * @since   3.18.0
+	 */
+	public function __construct(&$subject, $config = array())
+	{
+		parent::__construct($subject, $config);
+
+		// CodeMirror's files moved from media/editors/codemirror in 3.18: options saved before name the old folder
+		foreach (array('basePath', 'modePath') as $name)
+		{
+			$value = (string) $this->params->get($name);
+
+			if (strpos($value, 'media/editors/codemirror/') === 0)
+			{
+				$this->params->set($name, 'plugins/editors/codemirror/' . substr($value, strlen('media/editors/codemirror/')));
+			}
+		}
+	}
+
+	/**
 	 * Initialises the Editor.
 	 *
 	 * @return  void
@@ -249,7 +273,7 @@ class PlgEditorCodemirror extends JPlugin
 		if (($theme = $this->params->get('theme')) && $theme !== 'default')
 		{
 			$options->theme = $theme;
-			JHtml::_('stylesheet', $this->params->get('basePath', 'media/editors/codemirror/') . 'theme/' . $theme . '.css', array('version' => 'auto'));
+			JHtml::_('stylesheet', $this->params->get('basePath', 'plugins/editors/codemirror/') . 'theme/' . $theme . '.css', array('version' => 'auto'));
 		}
 
 		// Special options for tagged modes (xml/html).
@@ -385,7 +409,7 @@ class PlgEditorCodemirror extends JPlugin
 	 */
 	protected function loadKeyMap($keyMap)
 	{
-		$basePath = $this->params->get('basePath', 'media/editors/codemirror/');
+		$basePath = $this->params->get('basePath', 'plugins/editors/codemirror/');
 		$ext = JDEBUG ? '.js' : '.min.js';
 		JHtml::_('script', $basePath . 'keymap/' . $keyMap . $ext, array('version' => 'auto'));
 	}

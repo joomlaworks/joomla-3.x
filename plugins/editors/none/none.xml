@@ -11,6 +11,7 @@
     <description>PLG_NONE_XML_DESCRIPTION</description>
     <files>
         <filename plugin="none">none.php</filename>
+        <folder>js</folder>
     </files>
     <languages>
         <language tag="en-GB">en-GB.plg_editors_none.ini</language>

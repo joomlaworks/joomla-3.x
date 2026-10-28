@@ -127,9 +127,9 @@ class JFormFieldTinymcelatestbuilder extends JFormField
 
 		foreach (array($language->getTag(), str_replace('-', '_', $language->getTag()), strtok($language->getTag(), '-')) as $candidate)
 		{
-			if (is_file(JPATH_ROOT . '/media/editors/tinymce_latest/langs/' . $candidate . '.js'))
+			if (is_file(JPATH_ROOT . '/plugins/editors/tinymce_latest/langs/' . $candidate . '.js'))
 			{
-				$data['languageFile'] = 'media/editors/tinymce_latest/langs/' . $candidate . '.js';
+				$data['languageFile'] = 'plugins/editors/tinymce_latest/langs/' . $candidate . '.js';
 				break;
 			}
 		}

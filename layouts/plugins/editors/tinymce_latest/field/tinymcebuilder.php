@@ -25,7 +25,7 @@ extract($displayData);
  * @var  string   $languageFile   TinyMCE's translation of the labels, if any
  */
 
-$media = 'media/editors/tinymce_latest';
+$media = 'plugins/editors/tinymce_latest';
 
 JHtml::_('behavior.core');
 JHtml::_('stylesheet', $media . '/css/tinymce-builder.min.css', array('version' => 'auto'));

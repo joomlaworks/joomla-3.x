@@ -11,10 +11,10 @@
     <description>PLG_EDITORS_EASYMDE_XML_DESCRIPTION</description>
     <files>
         <filename plugin="easymde">easymde.php</filename>
+        <folder>css</folder>
+        <folder>js</folder>
+        <folder>vendor</folder>
     </files>
-    <media destination="editors" folder="media">
-        <folder>easymde</folder>
-    </media>
     <languages>
         <language tag="en-GB">en-GB.plg_editors_easymde.ini</language>
         <language tag="en-GB">en-GB.plg_editors_easymde.sys.ini</language>

@@ -11,14 +11,16 @@
     <description>PLG_CODEMIRROR_XML_DESCRIPTION</description>
     <files>
         <filename plugin="codemirror">codemirror.php</filename>
-        <filename>styles.css</filename>
-        <filename>styles.min.css</filename>
+        <folder>addon</folder>
         <filename>fonts.json</filename>
         <filename>fonts.php</filename>
+        <folder>keymap</folder>
+        <folder>layouts</folder>
+        <folder>lib</folder>
+        <filename>LICENSE</filename>
+        <folder>mode</folder>
+        <folder>theme</folder>
     </files>
-    <media destination="editors" folder="media">
-        <folder>codemirror</folder>
-    </media>
     <languages>
         <language tag="en-GB">en-GB.plg_editors_codemirror.ini</language>
         <language tag="en-GB">en-GB.plg_editors_codemirror.sys.ini</language>
@@ -92,11 +94,11 @@
                     <option value="Ctrl">PLG_CODEMIRROR_FIELD_VALUE_FULLSCREEN_MOD_CTRL</option>
                     <option value="Alt">PLG_CODEMIRROR_FIELD_VALUE_FULLSCREEN_MOD_ALT</option>
                 </field>
-                <field name="basePath" type="hidden" default="media/editors/codemirror/" />
-                <field name="modePath" type="hidden" default="media/editors/codemirror/mode/%N/%N" />
+                <field name="basePath" type="hidden" default="plugins/editors/codemirror/" />
+                <field name="modePath" type="hidden" default="plugins/editors/codemirror/mode/%N/%N" />
             </fieldset>
             <fieldset name="appearance" label="PLG_CODEMIRROR_FIELDSET_APPEARANCE_OPTIONS_LABEL" addfieldpath="plugins/editors/codemirror">
-                <field name="theme" type="filelist" label="PLG_CODEMIRROR_FIELD_THEME_LABEL" description="PLG_CODEMIRROR_FIELD_THEME_DESC" default="vscode-dark" filter="\.css$" stripext="true" hide_none="true" hide_default="false" directory="media/editors/codemirror/theme" />
+                <field name="theme" type="filelist" label="PLG_CODEMIRROR_FIELD_THEME_LABEL" description="PLG_CODEMIRROR_FIELD_THEME_DESC" default="vscode-dark" filter="\.css$" stripext="true" hide_none="true" hide_default="false" directory="plugins/editors/codemirror/theme" />
                 <field name="height" type="text" label="PLG_CODEMIRROR_FIELD_HEIGHT_LABEL" description="PLG_CODEMIRROR_FIELD_HEIGHT_DESC" default="" hint="500px" class="input-small" filter="string" />
                 <field name="activeLineColor" type="color" label="PLG_CODEMIRROR_FIELD_ACTIVELINE_COLOR_LABEL" description="PLG_CODEMIRROR_FIELD_ACTIVELINE_COLOR_DESC" default="#a4c2eb" filter="color" />
                 <field name="highlightMatchColor" type="color" label="PLG_CODEMIRROR_FIELD_HIGHLIGHT_MATCH_COLOR_LABEL" description="PLG_CODEMIRROR_FIELD_HIGHLIGHT_MATCH_COLOR_DESC" default="#fa542f" filter="color" />

@@ -173,8 +173,8 @@ class JFormFieldTinymceBuilder extends JFormField
 
 		// Check for TinyMCE language file
 		$language      = JFactory::getLanguage();
-		$languageFile1 = 'media/editors/tinymce/langs/' . $language->getTag() . '.js';
-		$languageFile2 = 'media/editors/tinymce/langs/' . substr((string) $language->getTag(), 0, strpos((string) $language->getTag(), '-')) . '.js';
+		$languageFile1 = 'plugins/editors/tinymce/langs/' . $language->getTag() . '.js';
+		$languageFile2 = 'plugins/editors/tinymce/langs/' . substr((string) $language->getTag(), 0, strpos((string) $language->getTag(), '-')) . '.js';
 
 		$data['languageFile'] = '';
 
