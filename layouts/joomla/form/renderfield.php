@@ -22,7 +22,7 @@ extract($displayData);
 if (!empty($options['showonEnabled']))
 {
 	JHtml::_('jquery.framework');
-	JHtml::_('script', 'system/cms.js', array('version' => 'auto', 'relative' => true));
+	JHtml::_('behavior.core');
 }
 
 $class = empty($options['class']) ? '' : ' ' . $options['class'];

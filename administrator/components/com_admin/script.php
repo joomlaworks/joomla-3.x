@@ -4939,6 +4939,9 @@ class JoomlaInstallerScript
 			'/media/system/css/chosen-sprite@2x.png',
 			'/media/system/js/fields/calendar.js',
 			'/media/system/js/fields/calendar.min.js',
+			// Show-on (cms.js), part of global.js and frontend.js
+			'/media/system/js/cms.js',
+			'/media/system/js/cms-uncompressed.js',
 			// The calendars, replaced by the browser's date input (layout joomla.form.field.calendar)
 			'/media/system/js/calendar-field.js',
 			'/media/system/js/calendar-field.min.js',

@@ -1211,6 +1211,185 @@
 		};
 	}
 
+	/* --- Show-on: form fields shown only when other fields have given values (data-showon; what cms.js was) --- */
+
+	CMS.showon = {
+		/**
+		 * The fields a condition reads (a field and its [] form)
+		 *
+		 * @param  {string}  name
+		 *
+		 * @return  {Element[]}
+		 */
+		fields(name) {
+			return Array.prototype.slice.call(document.querySelectorAll('[name="' + CSS.escape(name) + '"], [name="' + CSS.escape(name + '[]') + '"]'));
+		},
+
+		/**
+		 * Shows or hides an element by its conditions: [{field, values, sign (= or !=), op ('', AND, OR)}]
+		 *
+		 * @param  {HTMLElement}  target
+		 */
+		update(target) {
+			let conditions;
+
+			try {
+				conditions = JSON.parse(target.getAttribute('data-showon') || '[]') || [];
+			} catch (error) {
+				return;
+			}
+
+			let show = true;
+
+			conditions.forEach((condition, j) => {
+				condition.valid = 0;
+
+				CMS.showon.fields(condition.field).forEach((field) => {
+					let values;
+
+					// Checkboxes and radio buttons count when checked; a multiple list without a choice is no value
+					if (field.type === 'checkbox' || field.type === 'radio') {
+						if (!field.checked) {
+							return;
+						}
+
+						values = [field.value];
+					} else if (field.tagName === 'SELECT' && field.multiple) {
+						values = Array.prototype.filter.call(field.options, (option) => option.selected).map((option) => option.value);
+					} else {
+						values = [field.value];
+					}
+
+					values.forEach((value) => {
+						const listed = (condition.values || []).indexOf(String(value)) !== -1;
+
+						if ((condition.sign === '=' && listed) || (condition.sign === '!=' && !listed)) {
+							condition.valid = 1;
+						}
+					});
+				});
+
+				// The first condition must be met; AND needs it and the one before, OR either of them
+				if (!condition.op) {
+					if (!condition.valid) {
+						show = false;
+					}
+				} else if (condition.op === 'AND' && condition.valid + conditions[j - 1].valid < 2) {
+					show = false;
+					condition.valid = 0;
+				} else if (condition.op === 'OR' && condition.valid + conditions[j - 1].valid > 0) {
+					show = true;
+					condition.valid = 1;
+				}
+			});
+
+			target.style.display = show ? '' : 'none';
+
+			// Options of a list are disabled too, and Chosen redraws the list
+			if (target.tagName === 'OPTION') {
+				target.disabled = !show;
+
+				const list = target.parentNode;
+
+				if (list && list.id && document.getElementById(list.id + '_chzn') && window.jQuery) {
+					window.jQuery(list).trigger('liszt:updated').trigger('chosen:updated');
+				}
+			}
+		},
+
+		/**
+		 * Starts the elements with conditions in a container (once each)
+		 *
+		 * @param  {Element|Document}  container
+		 */
+		initialise(container) {
+			Array.prototype.forEach.call((container || document).querySelectorAll('[data-showon]'), (target) => {
+				if (!target.hasAttribute('data-showon-initialised')) {
+					target.setAttribute('data-showon-initialised', '');
+					CMS.showon.update(target);
+				}
+			});
+		},
+
+		/**
+		 * A field changed: the elements whose conditions read it follow
+		 *
+		 * @param  {Element}  field
+		 */
+		changed(field) {
+			const name = field && field.name ? field.name.replace(/\[\]$/, '') : '';
+
+			if (!name) {
+				return;
+			}
+
+			Array.prototype.forEach.call(document.querySelectorAll('[data-showon-initialised]'), (target) => {
+				if (target.getAttribute('data-showon').indexOf(JSON.stringify(name).slice(1, -1)) !== -1) {
+					CMS.showon.update(target);
+				}
+			});
+		},
+	};
+
+	// Changes are heard through jQuery where it is loaded: Chosen and subforms send theirs only with jQuery's trigger(),
+	// which never reaches native listeners
+	CMS.ready(() => {
+		if (CMS.showon.started) {
+			return;
+		}
+
+		CMS.showon.started = true;
+		CMS.showon.initialise(document);
+
+		// A subform row added (jQuery's subform-row-add) or content replaced (joomla:updated): its conditions name the
+		// row's own fields
+		const added = (target) => {
+			if (target && target.classList && target.classList.contains('subform-repeatable-group')) {
+				const baseName = target.getAttribute('data-base-name');
+				const group = target.getAttribute('data-group');
+				const search = new RegExp('\\[' + baseName + '\\]\\[' + baseName + 'X\\]', 'g');
+
+				Array.prototype.forEach.call(target.querySelectorAll('[data-showon]'), (element) => {
+					element.setAttribute('data-showon', element.getAttribute('data-showon').replace(search, '[' + baseName + '][' + group + ']'));
+				});
+			}
+
+			CMS.showon.initialise(target && target.querySelectorAll ? target : document);
+		};
+
+		if (window.jQuery) {
+			window.jQuery(document).on('change keyup', (event) => CMS.showon.changed(event.target));
+			window.jQuery(document).on('subform-row-add joomla:updated', (event, row) => added(event.type === 'joomla:updated' ? event.target : (row && row.jquery ? row[0] : row)));
+		} else {
+			document.addEventListener('change', (event) => CMS.showon.changed(event.target));
+			document.addEventListener('keyup', (event) => CMS.showon.changed(event.target));
+			document.addEventListener('joomla:updated', (event) => added(event.target));
+		}
+	});
+
+	// The old names (cms.js)
+	if (!Joomla.Showon) {
+		Joomla.Showon = { initialise: (container) => CMS.showon.initialise(container && container.jquery ? container[0] : container) };
+	}
+
+	if (!Joomla.setcollapse) {
+		Joomla.setcollapse = (url, name, height) => {
+			if (!document.getElementById('collapse-' + name)) {
+				const frame = document.createElement('iframe');
+				const wrapper = document.createElement('div');
+
+				wrapper.className = 'collapse fade';
+				wrapper.id = 'collapse-' + name;
+				frame.className = 'iframe';
+				frame.src = url;
+				frame.height = height;
+				frame.width = '100%';
+				wrapper.appendChild(frame);
+				document.getElementById('container-collapse').replaceChildren(wrapper);
+			}
+		};
+	}
+
 	/* --- Form validation (behavior.formvalidator: document.formvalidator, what validate.js was) --- */
 
 	/*

@@ -131,6 +131,7 @@ Summary of changes:
 - Date fields use the browser's date input, with Now and Clear buttons; the calendar scripts (about 140 KB) removed, dates posted as before
 - Global Configuration's new UI Settings: date and time fields in the browser's format (default) or the site's language format (text with the browser's calendar); users can choose in their profile
 - Jalali dates again for languages using the Jalali calendar (Persian), with JalaliDatePicker; dates are still saved as Gregorian
+- Show-on (fields shown depending on other fields) is plain JavaScript in `global.js`; `cms.js` removed
 - Site or Administrator is a row of tabs above lists that show either (modules, languages, menus, templates, cache), no longer a small list easily missed
 - Colour fields use the browser's colour picker, with the value as text and a Clear button; MiniColors and Simple Colors (jQuery plugins) removed
 - Core icons are SVG (Bootstrap Icons, one file each) in the text colour, sharp and dark-mode friendly: the Media Manager, Contacts, breadcrumbs, content icons, vote stars, feeds, tooltips, modals

@@ -44,7 +44,7 @@ class SliderButton extends ToolbarButton
 	 */
 	public function fetchButton($type = 'Slider', $name = '', $text = '', $url = '', $width = 640, $height = 480, $onClose = '')
 	{
-		\JHtml::_('script', 'system/cms.js', array('version' => 'auto', 'relative' => true));
+		\JHtml::_('behavior.core');
 
 		// Store all data to the options array for use with JLayout
 		$options = array();
