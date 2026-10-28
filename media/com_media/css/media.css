@@ -6,7 +6,8 @@
 
 /*
  * The Media Manager's styles. Each part applies to its own window only: the image picker (the page with #imageForm), its
- * list (the iframe's ul.media-picker; the Media Manager's own list has the same classes) and the lists' drop upload.
+ * list (the iframe's ul.media-picker; the Media Manager's own list has the same classes), the Media Manager's video and
+ * audio previews and the lists' drop upload.
  */
 
 /* --- Image picker --- */
@@ -62,6 +63,35 @@
 .thumbnails-media:where(.media-picker) .imgDetails {padding:0 5px;line-height:20px;color:#555;}
 .thumbnails-media:where(.media-picker) .imgFolder span {line-height:90px;font-size:38px;margin:0;width:auto;}
 .thumbnails-media:where(.media-picker) .imgFolder + .imgDetails {color:inherit;}
+
+/* --- Media Manager: previews --- */
+#videoPreviewPlayer {display:block;width:100%;max-height:60vh;background:#000;}
+#audioPlayer {text-align:center;}
+#audioPreviewCover {display:block;max-width:100%;max-height:50vh;margin:0 auto 12px;border-radius:4px;}
+/* Without a cover: a waveform, moving while the audio plays */
+#audioPlayer .media-audio-wave {display:block;width:150px;height:88px;margin:4px auto 16px;opacity:0.7;}
+#audioPlayer .media-audio-wave rect {transform-box:fill-box;transform-origin:center;animation:media-audio-wave 1.2s ease-in-out infinite;animation-play-state:paused;}
+#audioPlayer .media-audio-wave rect:nth-child(2) {animation-delay:-1s;}
+#audioPlayer .media-audio-wave rect:nth-child(3) {animation-delay:-0.3s;}
+#audioPlayer .media-audio-wave rect:nth-child(4) {animation-delay:-0.8s;}
+#audioPlayer .media-audio-wave rect:nth-child(5) {animation-delay:-0.1s;}
+#audioPlayer .media-audio-wave rect:nth-child(6) {animation-delay:-0.6s;}
+#audioPlayer .media-audio-wave rect:nth-child(7) {animation-delay:-0.4s;}
+#audioPlayer .media-audio-wave rect:nth-child(8) {animation-delay:-0.9s;}
+#audioPlayer .media-audio-wave rect:nth-child(9) {animation-delay:-0.2s;}
+#audioPlayer.is-playing .media-audio-wave rect {animation-play-state:running;}
+#audioPreviewPlayer {display:block;width:100%;}
+/* After the rules above, which outrank [hidden] otherwise */
+#audioPlayer [hidden] {display:none;}
+
+@keyframes media-audio-wave {
+    0%,100% {transform:scaleY(0.35);}
+    50% {transform:scaleY(1);}
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #audioPlayer .media-audio-wave rect {animation:none;}
+}
 
 /* --- Dropping files on the Media Manager's lists --- */
 .media-drop-overlay {position:fixed;inset:8px;z-index:1050;display:flex;align-items:center;justify-content:center;padding:24px;border:3px dashed currentColor;border-radius:10px;background:rgba(128, 128, 128, 0.18);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:none;}

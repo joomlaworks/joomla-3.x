@@ -123,6 +123,7 @@ class MediaModelList extends JModelLegacy
 		$folders = array ();
 		$docs    = array ();
 		$videos  = array ();
+		$audios  = array ();
 
 		$fileList   = false;
 		$folderList = false;
@@ -132,6 +133,20 @@ class MediaModelList extends JModelLegacy
 			// Get the list of files and folders from the given folder
 			$fileList   = JFolder::files($basePath);
 			$folderList = JFolder::folders($basePath);
+		}
+
+		// Images with an audio file's name (song.mp3 and song.jpg) are its cover; the first type of this list wins
+		$covers = array();
+
+		foreach ($fileList ?: array() as $file)
+		{
+			$rank = array_search(strtolower(JFile::getExt($file)), array('webp', 'jpg', 'jpeg', 'png', 'avif', 'gif'), true);
+			$key  = strtolower(JFile::stripExt($file));
+
+			if ($rank !== false && (!isset($covers[$key]) || $rank < $covers[$key][0]))
+			{
+				$covers[$key] = array($rank, $file);
+			}
 		}
 
 		// Iterate over the files if they exist
@@ -217,6 +232,30 @@ class MediaModelList extends JModelLegacy
 							$videos[] = $tmp;
 							break;
 
+						// Audio
+						case 'mp3':
+						case 'm4a':
+						case 'aac':
+						case 'ogg':
+						case 'oga':
+						case 'opus':
+						case 'wav':
+						case 'flac':
+							$icon = $this->getTypeIcon(strtolower(JFile::getExt($file)));
+							$tmp->icon_32 = 'com_media/mime-icon-32/' . $icon . '.png';
+							$tmp->icon_16 = 'com_media/mime-icon-16/' . $icon . '.png';
+							$tmp->cover   = '';
+
+							if (isset($covers[strtolower(JFile::stripExt($file))]))
+							{
+								$folder     = dirname($tmp->path_relative);
+								$tmp->cover = ($folder === '.' || $folder === '/' || $folder === '\\' ? '' : rtrim($folder, '/') . '/')
+									. $covers[strtolower(JFile::stripExt($file))][1];
+							}
+
+							$audios[] = $tmp;
+							break;
+
 						// Non-image document
 						default:
 							$icon = $this->getTypeIcon(strtolower(JFile::getExt($file)));
@@ -248,7 +287,7 @@ class MediaModelList extends JModelLegacy
 			}
 		}
 
-		$list = array('folders' => $folders, 'docs' => $docs, 'images' => $images, 'videos' => $videos);
+		$list = array('folders' => $folders, 'docs' => $docs, 'images' => $images, 'videos' => $videos, 'audios' => $audios);
 
 		return $list;
 	}
@@ -265,6 +304,20 @@ class MediaModelList extends JModelLegacy
 		$list = $this->getList();
 
 		return $list['videos'];
+	}
+
+	/**
+	 * Get the audio files on the current folder
+	 *
+	 * @return  array
+	 *
+	 * @since   3.18.0
+	 */
+	public function getAudios()
+	{
+		$list = $this->getList();
+
+		return $list['audios'];
 	}
 
 	/**

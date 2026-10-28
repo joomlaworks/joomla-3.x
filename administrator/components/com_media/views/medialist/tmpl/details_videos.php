@@ -15,14 +15,6 @@ JHtml::_('bootstrap.tooltip');
 
 $params     = new Registry;
 $dispatcher = JEventDispatcher::getInstance();
-
-JFactory::getDocument()->addScriptDeclaration("
-jQuery(document).ready(function($){
-	window.parent.jQuery('#videoPreview').on('hidden', function () {
-		window.parent.MediaManager.pauseVideo();
-	});
-});
-");
 ?>
 
 <?php foreach ($this->videos as $i => $video) : ?>
@@ -35,13 +27,13 @@ jQuery(document).ready(function($){
 		<?php endif; ?>
 
 		<td>
-			<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL, '/', rawurlencode((string) $video->name); ?>" title="<?php echo $this->escape($video->title); ?>">
+			<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL, '/', str_replace('%2F', '/', rawurlencode((string) $video->path_relative)); ?>" title="<?php echo $this->escape($video->title); ?>">
 				<?php echo JHtml::_('image', $video->icon_16, $this->escape($video->title), null, true); ?>
 			</a>
 		</td>
 
 		<td class="description">
-			<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL, '/', rawurlencode((string) $video->name); ?>" title="<?php echo $this->escape($video->name); ?>">
+			<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL, '/', str_replace('%2F', '/', rawurlencode((string) $video->path_relative)); ?>" title="<?php echo $this->escape($video->name); ?>">
 				<?php echo $this->escape($video->name); ?>
 			</a>
 		</td>

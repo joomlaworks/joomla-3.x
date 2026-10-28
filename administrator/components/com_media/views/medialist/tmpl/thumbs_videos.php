@@ -13,14 +13,6 @@ use Joomla\Registry\Registry;
 
 $params     = new Registry;
 $dispatcher = JEventDispatcher::getInstance();
-
-JFactory::getDocument()->addScriptDeclaration("
-jQuery(document).ready(function($){
-	window.parent.jQuery('#videoPreview').on('hidden', function () {
-		window.parent.MediaManager.pauseVideo();
-	});
-});
-");
 ?>
 <?php foreach ($this->videos as $i => $video) : ?>
 	<?php $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$video, &$params, 0)); ?>
@@ -38,7 +30,7 @@ jQuery(document).ready(function($){
 		</div>
 
 		<div class="small">
-			<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL, '/', rawurlencode((string) $video->path_relative); ?>" title="<?php echo $this->escape($video->name); ?>">
+			<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL, '/', str_replace('%2F', '/', rawurlencode((string) $video->path_relative)); ?>" title="<?php echo $this->escape($video->name); ?>">
 				<?php echo JHtml::_('string.truncate', $this->escape($video->name), 10, false); ?>
 			</a>
 		</div>

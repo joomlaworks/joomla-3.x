@@ -58,6 +58,16 @@ $doc->addScriptDeclaration(
 					return false;
 				});
 			});
+			$('.audio-preview').each(function(index, value) {
+				$(this).unbind('click');
+				$(this).on('click', function(e) {
+					e.preventDefault();
+					window.parent.jQuery('#audioPreview').modal('show');
+					window.parent.MediaManager.playAudio($(this).attr('href'), $(this).attr('data-cover') || '');
+
+					return false;
+				});
+			});
 			$('.video-preview').each(function(index, value) {
 				$(this).unbind('click');
 				$(this).on('click', function(e) {
@@ -96,6 +106,7 @@ $doc->addScriptDeclaration(
 				$this->loadTemplate('folders'),
 				$this->loadTemplate('docs'),
 				$this->loadTemplate('videos'),
+				$this->loadTemplate('audios'),
 				$this->loadTemplate('imgs');
 		?>
 

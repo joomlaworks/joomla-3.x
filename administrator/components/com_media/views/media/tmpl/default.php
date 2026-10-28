@@ -27,6 +27,7 @@ JFactory::getDocument()->addScriptDeclaration(
 JHtml::_('behavior.keepalive');
 JHtml::_('bootstrap.framework');
 JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));
 JHtml::_('behavior.styles');
 
 ?>
@@ -130,7 +131,18 @@ echo JHtml::_(
 		'footer' => '<button type="button" class="btn" data-dismiss="modal">'
 			. JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>',
 	),
-	'<div id="videoPlayer"><video id="videoPreviewPlayer" controls="controls" preload="metadata" style="display:block;width:100%;max-height:60vh;background:#000;"></video></div>'
+	'<div id="videoPlayer"><video id="videoPreviewPlayer" controls="controls" preload="metadata"></video></div>'
+);
+
+echo JHtml::_(
+	'bootstrap.renderModal',
+	'audioPreview',
+	array(
+		'title'  => JText::_('COM_MEDIA_PREVIEW'),
+		'footer' => '<button type="button" class="btn" data-dismiss="modal">'
+			. JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>',
+	),
+	'<div id="audioPlayer"><img id="audioPreviewCover" src="" alt="" hidden="hidden" /><svg class="media-audio-wave" viewBox="0 0 102 60" fill="currentColor" aria-hidden="true" focusable="false"><rect x="0" y="19" width="6" height="22" rx="3"></rect><rect x="12" y="11" width="6" height="38" rx="3"></rect><rect x="24" y="3" width="6" height="54" rx="3"></rect><rect x="36" y="14" width="6" height="32" rx="3"></rect><rect x="48" y="7" width="6" height="46" rx="3"></rect><rect x="60" y="17" width="6" height="26" rx="3"></rect><rect x="72" y="5" width="6" height="50" rx="3"></rect><rect x="84" y="15" width="6" height="30" rx="3"></rect><rect x="96" y="21" width="6" height="18" rx="3"></rect></svg><audio id="audioPreviewPlayer" controls="controls" preload="metadata"></audio></div>'
 );
 ?>
 	<!-- End Content -->

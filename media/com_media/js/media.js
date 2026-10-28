@@ -582,6 +582,49 @@ function jMediaRefreshImgpathTip(tip, els)
 		},
 
 		/**
+		 * Plays an audio file in the preview window's player (the browser's own); the lists call it from their iframe
+		 *
+		 * @param   string  src  The file's address
+		 *
+		 * @return  void
+		 */
+		playAudio: function(src, cover) {
+			var audio = document.getElementById('audioPreviewPlayer');
+			var image = document.getElementById('audioPreviewCover');
+			var wave = document.querySelector('#audioPlayer .media-audio-wave');
+
+			if (!audio) {
+				return;
+			}
+
+			// The file's cover (an image of the same name), else the waveform (an SVG: no hidden property, the attribute)
+			if (image) {
+				image.toggleAttribute('hidden', !cover);
+				image.src = cover || '';
+			}
+
+			if (wave) {
+				wave.toggleAttribute('hidden', !!cover);
+			}
+
+			audio.src = src;
+			audio.load();
+		},
+
+		/**
+		 * Pauses the preview's audio (when its window closes)
+		 *
+		 * @return  void
+		 */
+		pauseAudio: function() {
+			var audio = document.getElementById('audioPreviewPlayer');
+
+			if (audio) {
+				audio.pause();
+			}
+		},
+
+		/**
 		 * Basic setup
 		 *
 		 * @return  void
@@ -594,6 +637,21 @@ function jMediaRefreshImgpathTip(tip, els)
 			this.frame = window.frames.folderframe;
 
 			var self = this;
+
+			// The previews stop when their window closes (Bootstrap's modal event)
+			$('#videoPreview').on('hidden', function () {
+				self.pauseVideo();
+			});
+			$('#audioPreview').on('hidden', function () {
+				self.pauseAudio();
+			});
+
+			// The waveform moves while the audio plays
+			$('#audioPreviewPlayer').on('play playing', function () {
+				$('#audioPlayer').addClass('is-playing');
+			}).on('pause ended emptied', function () {
+				$('#audioPlayer').removeClass('is-playing');
+			});
 
 			$(this.frame).one('load', function (e) {
 				self.frameurl = self.frame.location.href;

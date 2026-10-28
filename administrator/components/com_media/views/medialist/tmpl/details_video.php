@@ -17,22 +17,14 @@ $user       = JFactory::getUser();
 $params     = new Registry;
 $dispatcher = JEventDispatcher::getInstance();
 $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$this->_tmp_video, &$params, 0));
-
-JFactory::getDocument()->addScriptDeclaration("
-jQuery(document).ready(function($){
-	window.parent.jQuery('#videoPreview').on('hidden', function () {
-		window.parent.MediaManager.pauseVideo();
-	});
-});
-");
 ?>
 
 <tr>
 	<td>
-		<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . rawurlencode((string) $this->_tmp_video->name); ?>" title="<?php echo $this->escape($this->_tmp_video->title); ?>"><?php JHtml::_('image', $this->_tmp_video->icon_16, $this->escape($this->_tmp_video->title), null, true); ?></a>
+		<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $this->_tmp_video->path_relative)); ?>" title="<?php echo $this->escape($this->_tmp_video->title); ?>"><?php JHtml::_('image', $this->_tmp_video->icon_16, $this->escape($this->_tmp_video->title), null, true); ?></a>
 	</td>
 	<td class="description">
-		<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . rawurlencode((string) $this->_tmp_video->name); ?>" title="<?php echo $this->escape($this->_tmp_video->name); ?>">
+		<a class="video-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $this->_tmp_video->path_relative)); ?>" title="<?php echo $this->escape($this->_tmp_video->name); ?>">
 			<?php echo JHtml::_('string.truncate', $this->escape($this->_tmp_video->name), 10, false); ?>
 		</a>
 	</td>

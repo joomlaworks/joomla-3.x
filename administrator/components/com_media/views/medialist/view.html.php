@@ -41,6 +41,7 @@ class MediaViewMediaList extends JViewLegacy
 		$this->documents = $this->get('documents');
 		$this->folders   = $this->get('folders');
 		$this->videos    = $this->get('videos');
+		$this->audios    = $this->get('audios');
 		$this->state     = $this->get('state');
 
 		// Check for invalid folder name
