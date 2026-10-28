@@ -362,6 +362,16 @@ abstract class JHtmlBootstrap
 		$opt['delay']     = isset($params['delay']) ? $params['delay'] : null;
 		$opt['container'] = isset($params['container']) ? $params['container'] : 'body';
 
+		// The CMS's own popovers (CMS.tip), as for tooltips; Bootstrap's plugin for a delegated selector
+		if ($opt['selector'] === null)
+		{
+			JHtml::_('behavior.core');
+			JFactory::getDocument()->addScriptOptions('system.popover', array($selector => static::tipOptions($opt)));
+			static::$loaded[__METHOD__][$selector] = true;
+
+			return;
+		}
+
 		$options = JHtml::getJSObject($opt);
 
 		$initFunction = 'function initPopovers (event, container) { ' .
@@ -463,6 +473,18 @@ abstract class JHtmlBootstrap
 			$onHide           = isset($params['onHide']) ? (string) $params['onHide'] : null;
 			$onHidden         = isset($params['onHidden']) ? (string) $params['onHidden'] : null;
 
+			// The CMS's own tooltips (global.js, frontend.js: CMS.tip) in Bootstrap's markup and look, placed to stay
+			// inside the window; Bootstrap's plugin only for what script options can't carry (callbacks, a template, a
+			// delegated selector)
+			if (!$onShow && !$onShown && !$onHide && !$onHidden && $opt['template'] === null && $opt['selector'] === null)
+			{
+				JHtml::_('behavior.core');
+				JFactory::getDocument()->addScriptOptions('system.tooltip', array($selector => static::tipOptions($opt)));
+				static::$loaded[__METHOD__][$selector] = true;
+
+				return;
+			}
+
 			$options = JHtml::getJSObject($opt);
 
 			// Build the script.
@@ -502,6 +524,36 @@ abstract class JHtmlBootstrap
 		}
 
 		return;
+	}
+
+	/**
+	 * The options of a tooltip or popover the CMS's script (CMS.tip) reads: placement, html, title, content, trigger,
+	 * delay (Bootstrap's animation and container don't apply: bubbles always fade in the body)
+	 *
+	 * @param   array  $opt  The options as given
+	 *
+	 * @return  array
+	 *
+	 * @since   3.18.0
+	 */
+	protected static function tipOptions(array $opt)
+	{
+		$options = array();
+
+		foreach (array('placement', 'html', 'title', 'content', 'trigger', 'delay') as $name)
+		{
+			if (isset($opt[$name]) && $opt[$name] !== null)
+			{
+				$options[$name] = $opt[$name];
+			}
+		}
+
+		if (isset($options['html']))
+		{
+			$options['html'] = (bool) $options['html'];
+		}
+
+		return $options;
 	}
 
 	/**

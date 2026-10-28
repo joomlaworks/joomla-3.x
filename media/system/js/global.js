@@ -3612,6 +3612,332 @@
 		};
 	}
 
+	/* --- Tooltips and popovers (JHtml bootstrap.tooltip, bootstrap.popover: Bootstrap's markup, our placement) --- */
+
+	/*
+	 * Elements matching a registered selector show a tooltip (title, data-original-title) or a popover (title and
+	 * data-content) on hover and keyboard focus (or click, with trigger: 'click'), written as Bootstrap 2 wrote them, so
+	 * the templates' styles apply. Placement (data-placement or the option: top, bottom, left, right) flips to the other
+	 * side when the element is near an edge of the window, then the bubble slides to stay inside it, its arrow still
+	 * pointing at the element.
+	 */
+	const TIP_MARGIN = 6;
+
+	CMS.tip = {
+		selectors: { tooltip: {}, popover: {} },
+		shown: new Map(),
+		counter: 0,
+
+		/**
+		 * Elements of a selector get tooltips or popovers
+		 *
+		 * @param  {string}  selector
+		 * @param  {Object}  options  placement, html, title, content (popovers), trigger, delay
+		 * @param  {string}  type     tooltip or popover
+		 */
+		register(selector, options, type) {
+			CMS.tip.selectors[type === 'popover' ? 'popover' : 'tooltip'][selector] = options || {};
+		},
+
+		/**
+		 * The registered selector an element matches, and its type and options
+		 *
+		 * @param  {Element}  target
+		 *
+		 * @return  {Object|null}  element, type, options
+		 */
+		find(target) {
+			if (!target || !target.closest) {
+				return null;
+			}
+
+			for (const type of ['popover', 'tooltip']) {
+				for (const selector of Object.keys(CMS.tip.selectors[type])) {
+					let element = null;
+
+					try {
+						element = target.closest(selector);
+					} catch (error) {
+						element = null;
+					}
+
+					// Bootstrap's own plugin already drives it (an extension started it): left alone
+					if (element && !(window.jQuery && window.jQuery(element).data(type))) {
+						return { element, type, options: CMS.tip.selectors[type][selector] };
+					}
+				}
+			}
+
+			return null;
+		},
+
+		/**
+		 * The title, moved to data-original-title as Bootstrap did, so the browser's own tooltip doesn't show as well
+		 *
+		 * @param  {Element}  element
+		 * @param  {Object}   options
+		 *
+		 * @return  {string}
+		 */
+		title(element, options) {
+			if (element.hasAttribute('title')) {
+				if (element.getAttribute('title') || !element.hasAttribute('data-original-title')) {
+					element.setAttribute('data-original-title', element.getAttribute('title'));
+				}
+
+				element.removeAttribute('title');
+			}
+
+			return element.getAttribute('data-original-title') || options.title || '';
+		},
+
+		show(found) {
+			const { element, type, options } = found;
+
+			if (CMS.tip.shown.has(element)) {
+				return;
+			}
+
+			const title = CMS.tip.title(element, options);
+			const content = type === 'popover' ? element.getAttribute('data-content') || options.content || '' : '';
+
+			if (!title && !content) {
+				return;
+			}
+
+			const tip = document.createElement('div');
+			const html = options.html !== false;
+			const fill = (node, text) => {
+				if (html) {
+					node.innerHTML = text;
+				} else {
+					node.textContent = text;
+				}
+			};
+
+			tip.id = 'cms-' + type + '-' + (++CMS.tip.counter);
+			tip.setAttribute('role', 'tooltip');
+
+			if (type === 'popover') {
+				tip.className = 'popover fade';
+				tip.innerHTML = '<div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div>';
+				fill(tip.querySelector('.popover-title'), title);
+				fill(tip.querySelector('.popover-content'), content);
+			} else {
+				tip.className = 'tooltip fade';
+				tip.innerHTML = '<div class="tooltip-arrow"></div><div class="tooltip-inner"></div>';
+				fill(tip.querySelector('.tooltip-inner'), title);
+			}
+
+			tip.style.display = 'block';
+			tip.style.visibility = 'hidden';
+			document.body.appendChild(tip);
+			element.setAttribute('aria-describedby', tip.id);
+			CMS.tip.shown.set(element, { tip, type, options });
+			CMS.tip.place(element);
+			tip.style.visibility = '';
+			window.requestAnimationFrame(() => tip.classList.add('in'));
+		},
+
+		hide(element) {
+			const entry = CMS.tip.shown.get(element);
+
+			if (!entry) {
+				return;
+			}
+
+			CMS.tip.shown.delete(element);
+			element.removeAttribute('aria-describedby');
+			entry.tip.classList.remove('in');
+			window.setTimeout(() => entry.tip.remove(), 160);
+		},
+
+		hideAll() {
+			Array.from(CMS.tip.shown.keys()).forEach(CMS.tip.hide);
+		},
+
+		/**
+		 * Places a shown bubble: the asked side if it fits, else the opposite, else the side with the most room; then
+		 * kept inside the window along the other axis, the arrow moved to keep pointing at the element
+		 *
+		 * @param  {Element}  element
+		 */
+		place(element) {
+			const entry = CMS.tip.shown.get(element);
+
+			if (!entry) {
+				return;
+			}
+
+			const { tip, type, options } = entry;
+			const arrow = tip.querySelector(type === 'popover' ? '.arrow' : '.tooltip-arrow');
+			const box = element.getBoundingClientRect();
+			const view = { width: document.documentElement.clientWidth, height: document.documentElement.clientHeight };
+			const opposite = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' };
+			let asked = (element.getAttribute('data-placement') || options.placement || (type === 'popover' ? 'right' : 'top')).replace(/^auto\s*/, '') || 'top';
+
+			if (!opposite[asked]) {
+				asked = 'top';
+			}
+
+			// Where the bubble would sit on a side (its margins, from the templates' CSS, included)
+			const measure = (side) => {
+				tip.classList.remove('top', 'bottom', 'left', 'right');
+				tip.classList.add(side);
+				arrow.style.left = '';
+				arrow.style.top = '';
+
+				const style = window.getComputedStyle(tip);
+				const width = tip.offsetWidth;
+				const height = tip.offsetHeight;
+				const shiftX = parseFloat(style.marginLeft) || 0;
+				const shiftY = parseFloat(style.marginTop) || 0;
+				let left;
+				let top;
+
+				if (side === 'top' || side === 'bottom') {
+					left = box.left + box.width / 2 - width / 2;
+					top = side === 'top' ? box.top - height : box.bottom;
+				} else {
+					top = box.top + box.height / 2 - height / 2;
+					left = side === 'left' ? box.left - width : box.right;
+				}
+
+				const room = { top: box.top, bottom: view.height - box.bottom, left: box.left, right: view.width - box.right }[side];
+				const fits = side === 'top' || side === 'bottom' ? room >= height + Math.abs(shiftY) + TIP_MARGIN : room >= width + Math.abs(shiftX) + TIP_MARGIN;
+
+				return { side, left, top, width, height, room, fits };
+			};
+
+			const tries = [asked, opposite[asked]].concat(['top', 'bottom', 'right', 'left'].filter((side) => side !== asked && side !== opposite[asked]));
+			const measured = tries.map(measure);
+			const chosen = measured.find((option) => option.fits) || measured.reduce((best, option) => (option.room > best.room ? option : best));
+			const final = measure(chosen.side);
+			let { left, top } = final;
+
+			// Inside the window along the other axis, the arrow following the element
+			if (final.side === 'top' || final.side === 'bottom') {
+				const clamped = Math.max(TIP_MARGIN, Math.min(left, view.width - final.width - TIP_MARGIN));
+
+				if (clamped !== left) {
+					arrow.style.left = Math.max(12, Math.min(final.width - 12, box.left + box.width / 2 - clamped)) + 'px';
+				}
+
+				left = clamped;
+			} else {
+				const clamped = Math.max(TIP_MARGIN, Math.min(top, view.height - final.height - TIP_MARGIN));
+
+				if (clamped !== top) {
+					arrow.style.top = Math.max(12, Math.min(final.height - 12, box.top + box.height / 2 - clamped)) + 'px';
+				}
+
+				top = clamped;
+			}
+
+			tip.style.left = (left + window.pageXOffset) + 'px';
+			tip.style.top = (top + window.pageYOffset) + 'px';
+		},
+
+		/**
+		 * Starts the selectors pages registered (script options system.tooltip, system.popover: selector => options)
+		 */
+		start() {
+			['tooltip', 'popover'].forEach((type) => {
+				const registered = CMS.options.get('system.' + type) || {};
+
+				Object.keys(registered).forEach((selector) => CMS.tip.register(selector, registered[selector], type));
+			});
+		},
+	};
+
+	if (!CMS.tip.listening) {
+		CMS.tip.listening = true;
+
+		const triggers = (found) => String(found.options.trigger || 'hover focus');
+		const delayed = new WeakMap();
+		const later = (found, show) => {
+			const delay = found.options.delay;
+			const wait = typeof delay === 'object' && delay ? delay[show ? 'show' : 'hide'] : delay;
+
+			window.clearTimeout(delayed.get(found.element));
+
+			if (wait > 0) {
+				delayed.set(found.element, window.setTimeout(() => (show ? CMS.tip.show(found) : CMS.tip.hide(found.element)), wait));
+			} else if (show) {
+				CMS.tip.show(found);
+			} else {
+				CMS.tip.hide(found.element);
+			}
+		};
+
+		document.addEventListener('mouseover', (event) => {
+			const found = CMS.tip.find(event.target);
+
+			if (found && triggers(found).indexOf('hover') !== -1 && !found.element.contains(event.relatedTarget)) {
+				later(found, true);
+			}
+		});
+
+		document.addEventListener('mouseout', (event) => {
+			const found = CMS.tip.find(event.target);
+
+			if (found && triggers(found).indexOf('hover') !== -1 && !found.element.contains(event.relatedTarget)) {
+				later(found, false);
+			}
+		});
+
+		document.addEventListener('focusin', (event) => {
+			const found = CMS.tip.find(event.target);
+
+			if (found && triggers(found).indexOf('focus') !== -1) {
+				later(found, true);
+			}
+		});
+
+		document.addEventListener('focusout', (event) => {
+			const found = CMS.tip.find(event.target);
+
+			if (found && triggers(found).indexOf('focus') !== -1) {
+				later(found, false);
+			}
+		});
+
+		document.addEventListener('click', (event) => {
+			const found = CMS.tip.find(event.target);
+
+			if (found && triggers(found).indexOf('click') !== -1) {
+				if (CMS.tip.shown.has(found.element)) {
+					CMS.tip.hide(found.element);
+				} else {
+					CMS.tip.show(found);
+				}
+
+				return;
+			}
+
+			// A click elsewhere closes the bubbles opened by clicks
+			CMS.tip.shown.forEach((entry, element) => {
+				if (String(entry.options.trigger || '').indexOf('click') !== -1 && !entry.tip.contains(event.target)) {
+					CMS.tip.hide(element);
+				}
+			});
+		});
+
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape') {
+				CMS.tip.hideAll();
+			}
+		});
+
+		// Kept in place while the page scrolls or the window changes size; gone with their element
+		const replace = () => CMS.tip.shown.forEach((entry, element) => (element.isConnected ? CMS.tip.place(element) : CMS.tip.hide(element)));
+
+		window.addEventListener('scroll', replace, true);
+		window.addEventListener('resize', replace);
+
+		CMS.ready(CMS.tip.start);
+	}
+
 	/* --- Form validation (behavior.formvalidator: document.formvalidator, what validate.js was) --- */
 
 	/*

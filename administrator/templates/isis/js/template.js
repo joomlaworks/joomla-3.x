@@ -64,8 +64,12 @@ jQuery(function($)
 	{
 		var $container = $(container || document);
 
-		// Create tooltips
-		$container.find('*[rel=tooltip]').tooltip();
+		// Tooltips: the CMS's (global.js: CMS.tip, Bootstrap's look), else Bootstrap's plugin
+		if (window.CMS && window.CMS.tip) {
+			window.CMS.tip.register('[rel="tooltip"]', {}, 'tooltip');
+		} else {
+			$container.find('*[rel=tooltip]').tooltip();
+		}
 
 		// Turn radios into btn-group
 		$container.find('.radio.btn-group label').addClass('btn');

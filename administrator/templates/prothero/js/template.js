@@ -100,8 +100,10 @@
 	function initTemplate(container) {
 		container = container || document;
 
-		// Tooltips (Bootstrap's plugin)
-		if (jq() && jq().fn.tooltip) {
+		// Tooltips: the CMS's (global.js: CMS.tip, Bootstrap's look), else Bootstrap's plugin
+		if (window.CMS && window.CMS.tip) {
+			window.CMS.tip.register('[rel="tooltip"]', {}, 'tooltip');
+		} else if (jq() && jq().fn.tooltip) {
 			jq()($$('[rel="tooltip"]', container)).tooltip();
 		}
 
