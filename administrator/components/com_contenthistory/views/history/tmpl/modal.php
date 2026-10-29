@@ -13,15 +13,12 @@ JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('bootstrap.tooltip', '.hasTooltip', array('placement' => 'bottom'));
 JHtml::_('behavior.multiselect');
-JHtml::_('jquery.framework');
 
 $input = JFactory::getApplication()->input;
 $field = $input->getCmd('field');
 $function = 'jSelectContenthistory_' . $field;
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
-$message = JText::_('COM_CONTENTHISTORY_BUTTON_SELECT_ONE', true);
-$compareMessage = JText::_('COM_CONTENTHISTORY_BUTTON_SELECT_TWO', true);
 JText::script('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST');
 $deleteMessage = "alert(Joomla.JText._('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));";
 $aliasArray = explode('.', (string) $this->state->type_alias);
@@ -34,59 +31,13 @@ $hash = $this->state->get('sha1_hash');
 $formUrl = 'index.php?option=com_contenthistory&view=history&layout=modal&tmpl=component&item_id=' . $this->state->get('item_id') . '&type_id='
     . $this->state->get('type_id') . '&type_alias=' . $this->state->get('type_alias') . '&' . JSession::getFormToken() . '=1';
 
-JFactory::getDocument()->addScriptDeclaration(
-    "
-	(function ($){
-		$(document).ready(function (){
-			$('#toolbar-load').click(function() {
-				var ids = $('input[id*=\'cb\']:checked');
-				if (ids.length == 1) {
-					// Add version item id to URL
-					var url = $('#toolbar-load').attr('data-url') + '&version_id=' + ids[0].value;
-					$('#content-url').attr('data-url', url);
-					if (window.parent) {
-						window.parent.location = url;
-					}
-				} else {
-					alert('" . $message . "');
-				}
-			});
-
-		$('#toolbar-preview').click(function() {
-				var windowSizeArray = ['width=800, height=600, resizable=yes, scrollbars=yes'];
-				var ids = $('input[id*=\'cb\']:checked');
-				if (ids.length == 1) {
-					// Add version item id to URL
-					var url = $('#toolbar-preview').attr('data-url') + '&version_id=' + ids[0].value;
-					$('#content-url').attr('data-url', url);
-					if (window.parent) {
-						window.open(url, '', windowSizeArray);
-						return false;
-					}
-				} else {
-					alert('" . $message . "');
-				}
-			});
-
-			$('#toolbar-compare').click(function() {
-				var windowSizeArray = ['width=1000, height=600, resizable=yes, scrollbars=yes'];
-				var ids = $('input[id*=\'cb\']:checked');
-				if (ids.length == 2) {
-					// Add version item ids to URL
-					var url = $('#toolbar-compare').attr('data-url') + '&id1=' + ids[0].value + '&id2=' + ids[1].value;
-					$('#content-url').attr('data-url', url);
-					if (window.parent) {
-						window.open(url, '', windowSizeArray);
-						return false;
-					}
-				} else {
-					alert('" . $compareMessage . "');
-				}
-			});
-		});
-	})(jQuery);
-	"
-);
+// Load, Preview and Compare: media/com_contenthistory/js/contenthistory.js (also on the site, for front-end editing)
+JHtml::_('behavior.core');
+JHtml::_('script', 'com_contenthistory/contenthistory.min.js', array('version' => 'auto', 'relative' => true));
+JFactory::getDocument()->addScriptOptions('com_contenthistory.history', array(
+    'selectOne' => JText::_('COM_CONTENTHISTORY_BUTTON_SELECT_ONE'),
+    'selectTwo' => JText::_('COM_CONTENTHISTORY_BUTTON_SELECT_TWO'),
+));
 
 ?>
 <div class="container-popup">

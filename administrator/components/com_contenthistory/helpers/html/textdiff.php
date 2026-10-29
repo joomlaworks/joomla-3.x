@@ -11,7 +11,7 @@
 defined('JPATH_PLATFORM') or die;
 
 /**
- * HTML utility class for creating text diffs using jQuery and media/com_contenthistory/js/contenthistory.js (diff-match-patch and jQuery.PrettyTextDiff).
+ * HTML utility class for creating text diffs with media/com_contenthistory/js/contenthistory.js (diff-match-patch).
  *
  * @since       3.2
  *
@@ -41,21 +41,11 @@ abstract class JHtmlTextdiff
             return;
         }
 
-        // Depends on jQuery UI
-        JHtml::_('bootstrap.framework');
+        // The rows of the table are compared by media/com_contenthistory/js/contenthistory.js (diff-match-patch)
+        JHtml::_('behavior.core');
         JHtml::_('script', 'com_contenthistory/contenthistory.min.js', array('version' => 'auto', 'relative' => true));
         JHtml::_('stylesheet', 'com_contenthistory/contenthistory.css', array('version' => 'auto', 'relative' => true));
-
-        // Attach diff to document
-        JFactory::getDocument()->addScriptDeclaration(
-            "
-			(function ($){
-				$(document).ready(function (){
- 					$('#" . $containerId . " tr').prettyTextDiff();
- 				});
-			})(jQuery);
-			"
-        );
+        JFactory::getDocument()->addScriptOptions('com_contenthistory.diff', array('container' => $containerId));
 
         // Set static array
         static::$loaded[__METHOD__] = true;
