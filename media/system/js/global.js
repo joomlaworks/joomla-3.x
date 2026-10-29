@@ -407,60 +407,100 @@
 
 	/* --- AJAX (Joomla.request()) --- */
 
+	/*
+	 * Sends a request with fetch(). The callbacks get what they read of an XMLHttpRequest (status, statusText,
+	 * responseText, getResponseHeader()), as Joomla.request() gave them one: onBefore(request) may still call
+	 * setRequestHeader(), and with perform: false the caller sends it (request.send()).
+	 */
 	CMS.request = (options) => {
 		options = Object.assign({ url: '', method: 'GET', data: null, perform: true }, options);
 		options.method = options.data ? 'POST' : options.method.toUpperCase();
 
-		let xhr;
+		const headers = { 'X-Requested-With': 'XMLHttpRequest', 'X-Ajax-Engine': 'Joomla!' };
+		const controller = typeof AbortController === 'function' ? new AbortController() : null;
+		let received = null;
 
-		try {
-			xhr = new XMLHttpRequest();
-			xhr.open(options.method, options.url, true);
-			xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-			xhr.setRequestHeader('X-Ajax-Engine', 'Joomla!');
+		if (options.method === 'POST') {
+			const token = CMS.options.get('csrf.token', '');
 
-			if (options.method === 'POST') {
-				const token = CMS.options.get('csrf.token', '');
-
-				if (token) {
-					xhr.setRequestHeader('X-CSRF-Token', token);
-				}
-
-				if (typeof options.data === 'string' && (!options.headers || !options.headers['Content-Type'])) {
-					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-				}
+			if (token) {
+				headers['X-CSRF-Token'] = token;
 			}
 
-			Object.keys(options.headers || {}).forEach((name) => xhr.setRequestHeader(name, options.headers[name]));
-
-			xhr.onreadystatechange = () => {
-				if (xhr.readyState !== 4) {
-					return;
-				}
-
-				if (xhr.status === 200) {
-					if (options.onSuccess) {
-						options.onSuccess.call(window, xhr.responseText, xhr);
-					}
-				} else if (options.onError) {
-					options.onError.call(window, xhr);
-				}
-			};
-
-			if (options.perform) {
-				if (options.onBefore && options.onBefore.call(window, xhr) === false) {
-					return xhr;
-				}
-
-				xhr.send(options.data);
+			if (typeof options.data === 'string' && (!options.headers || !options.headers['Content-Type'])) {
+				headers['Content-Type'] = 'application/x-www-form-urlencoded';
 			}
-		} catch (error) {
-			window.console.log(error);
-
-			return false;
 		}
 
-		return xhr;
+		Object.assign(headers, options.headers || {});
+
+		const request = {
+			readyState: 1,
+			status: 0,
+			statusText: '',
+			responseText: '',
+			response: '',
+			responseURL: '',
+			setRequestHeader(name, value) {
+				headers[name] = value;
+			},
+			getResponseHeader: (name) => (received ? received.get(name) : null),
+			getAllResponseHeaders() {
+				let all = '';
+
+				if (received) {
+					received.forEach((value, name) => {
+						all += name + ': ' + value + '\r\n';
+					});
+				}
+
+				return all;
+			},
+			abort() {
+				if (controller) {
+					controller.abort();
+				}
+			},
+			send(data) {
+				const body = data === undefined ? options.data : data;
+				const finish = (status, statusText, text) => {
+					Object.assign(request, { readyState: 4, status, statusText, responseText: text, response: text });
+
+					if (status === 200) {
+						if (options.onSuccess) {
+							options.onSuccess.call(window, text, request);
+						}
+					} else if (options.onError) {
+						options.onError.call(window, request);
+					}
+				};
+
+				fetch(options.url, {
+					method: options.method,
+					headers,
+					body: options.method === 'GET' || options.method === 'HEAD' ? undefined : body,
+					credentials: 'same-origin',
+					signal: controller ? controller.signal : undefined,
+				})
+					.then((response) => response.text().then((text) => ({ response, text })))
+					// A network failure or abort(): status 0, as an XMLHttpRequest reported them
+					.then((result) => {
+						received = result.response.headers;
+						request.responseURL = result.response.url;
+						finish(result.response.status, result.response.statusText, result.text);
+					}, () => finish(0, '', ''));
+			},
+		};
+
+		if (options.perform) {
+			if (options.onBefore && options.onBefore.call(window, request) === false) {
+				return request;
+			}
+
+			request.send(options.data);
+		}
+
+		return request;
 	};
 
 	/* --- Modal (what SqueezeBox was) --- */
@@ -3098,6 +3138,112 @@
 			}
 		});
 	};
+
+	/* --- The module ordering field (layout joomla.form.field.moduleorder: the places in the chosen position; what moduleorder.js was) --- */
+
+	CMS.moduleOrder = {
+		// The field naming the position (data-linked-field, else data-position-element, else jform_position)
+		position(field) {
+			return byId(field.getAttribute('data-linked-field') || '')
+				|| byId(field.getAttribute('data-position-element') || '')
+				|| byId('jform_position');
+		},
+
+		/**
+		 * Asks for the modules of the position chosen and writes the list of places in it
+		 *
+		 * @param  {HTMLElement}  field  .module-ajax-ordering
+		 */
+		load(field) {
+			const position = CMS.moduleOrder.position(field);
+			const query = new URLSearchParams({
+				client_id: field.getAttribute('data-client-id') || '',
+				module_id: field.getAttribute('data-module-id') || '',
+				position: position ? position.value : '',
+			});
+			const failed = (messages) => {
+				CMS.messages.render(messages);
+				window.scrollTo(0, 0);
+			};
+
+			fetch(field.getAttribute('data-url') + '&' + query.toString(), { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+				.then((response) => response.text().then((text) => ({ response, text })))
+				.then(({ response, text }) => {
+					let result;
+
+					try {
+						result = JSON.parse(text);
+					} catch (error) {
+						failed(CMS.messages.fromAjaxError({ status: response.status, statusText: response.statusText, responseText: text }, response.ok ? 'parsererror' : ''));
+
+						return;
+					}
+
+					if (Array.isArray(result.data) && result.data.length) {
+						CMS.moduleOrder.write(field, result.data);
+					}
+
+					// Messages come only with errors
+					if (result.messages && typeof result.messages === 'object') {
+						failed(result.messages);
+					}
+				}, () => failed(CMS.messages.fromAjaxError({ status: 0, statusText: '' }, '')));
+		},
+
+		/**
+		 * Writes the list: lines "position,place,title" (the title escaped for HTML, and may hold commas)
+		 *
+		 * @param  {HTMLElement}  field
+		 * @param  {string[]}     lines
+		 */
+		write(field, lines) {
+			const id = field.id + '_1';
+			const ordering = String(field.getAttribute('data-ordering'));
+			const previous = document.getElementById(id);
+			const select = document.createElement('select');
+			const text = (html) => new DOMParser().parseFromString(html, 'text/html').documentElement.textContent;
+
+			if (previous) {
+				if (window.jQuery && window.jQuery(previous).data('chosen')) {
+					window.jQuery(previous).chosen('destroy');
+				}
+
+				previous.remove();
+			}
+
+			select.id = id;
+			select.name = field.getAttribute('data-name') || '';
+
+			lines.forEach((line) => {
+				const parts = String(line).split(',');
+				const option = document.createElement('option');
+
+				option.value = parts[1];
+				option.textContent = text(parts.slice(2).join(','));
+				option.selected = parts[1] === ordering;
+				select.appendChild(option);
+			});
+
+			field.appendChild(select);
+
+			if (window.jQuery && window.jQuery.fn.chosen) {
+				window.jQuery(select).chosen();
+			}
+		},
+	};
+
+	CMS.ready(() => {
+		document.querySelectorAll('.module-ajax-ordering').forEach((field) => {
+			const position = CMS.moduleOrder.position(field);
+
+			CMS.moduleOrder.load(field);
+
+			// The position list is Chosen's (with custom positions), whose changes reach jQuery's listeners only
+			if (position) {
+				onChange(position, () => CMS.moduleOrder.load(field));
+			}
+		});
+	});
 
 	/* --- Cropping: selecting an area of an image (CMS.cropper; the template editor's image tool, what Jcrop was) --- */
 
@@ -5808,6 +5954,7 @@
 		'jQuery.fn.minicolors() (behavior.colorpicker, MiniColors)': 'CMS.colorField.attach(), the layout joomla.form.field.color',
 		'jQuery.fn.simplecolors() (behavior.simplecolorpicker)': 'the layout joomla.form.field.color.simple (swatches)',
 		'jSelectUser(), jQuery.fn.fieldUser() (fielduser.js)': 'CMS.userField.select(), CMS.userField.open()',
+		'moduleorder.js': 'CMS.moduleOrder.load(), CMS.moduleOrder.write()',
 		'processModalParent(), processModalSelect(), processModalEdit() (modal-fields.js)': 'CMS.modalField.set(), CMS.modalField.select(), CMS.modalField.submit()',
 		'tabs-state.js (behavior.tabstate), jQuery.urlParam(), jQuery.getXpath(), jQuery.findXpath()': 'CMS.tabState.init()',
 		'new JCaption()': 'CMS.caption.attach()',

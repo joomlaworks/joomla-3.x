@@ -4739,6 +4739,8 @@ class JoomlaInstallerScript
             // The item pickers' script (now global.js' CMS.modalField, the lists and forms in the CMS's modal)
             '/media/system/js/modal-fields.js',
             '/media/system/js/modal-fields-uncompressed.js',
+            // The module ordering field's script (now global.js' CMS.moduleOrder)
+            '/media/system/js/moduleorder.js',
             // Show-on (cms.js), part of global.js and frontend.js
             '/media/system/js/cms.js',
             '/media/system/js/cms-uncompressed.js',

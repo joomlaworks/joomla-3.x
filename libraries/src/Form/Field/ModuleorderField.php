@@ -105,7 +105,7 @@ class ModuleorderField extends FormField
         $return = parent::setup($element, $value, $group);
 
         if ($return) {
-            $this->linked    = isset($this->element['linked']) ? (int) $this->element['linked'] : 'position';
+            $this->linked    = isset($this->element['linked']) ? (string) $this->element['linked'] : 'position';
         }
 
         return $return;
@@ -140,7 +140,8 @@ class ModuleorderField extends FormField
             'moduleId' => $this->form->getValue('id'),
             'name'     => $this->name,
             'token'    => Session::getFormToken() . '=1',
-            'element'  => $this->form->getName() . '_' . $this->linked
+            // The id of the position field (jform_position)
+            'element'  => ($this->formControl ? $this->formControl . '_' : '') . $this->linked,
         );
 
         return array_merge($data, $extraData);

@@ -383,7 +383,10 @@ Every name `core.js` and the MooTools behaviours offered still works and calls t
 | `Joomla.propagateAssociation()`, `Joomla.injectAssociations()`, `hideAssociation()`, `showAssociationMessage()` | `CMS.associations.propagate()`, `inject()`, `hide()`, `showMessage()` |
 | `sendPermissions()`, `getUrlParam()` (the Permissions field) | `CMS.permissions.send()`, `CMS.permissions.urlParam()` |
 | `frontediting.js` | `CMS.frontEditing.showModule()`, `CMS.frontEditing.showMenuItem()` |
+| `moduleorder.js` (the module ordering field) | `CMS.moduleOrder.load()`, `CMS.moduleOrder.write()` |
 | `processModalParent()`, `processModalSelect()`, `processModalEdit()` (`modal-fields.js`) | `CMS.modalField.set()`, `CMS.modalField.select()`, `CMS.modalField.submit()` |
+
+`Joomla.request()` (`CMS.request()`) sends with `fetch()` now. It takes the same options (`url`, `method`, `data`, `headers`, `perform`, `onBefore`, `onSuccess`, `onError`) and returns an object with what callers read of the XMLHttpRequest it used to return: `status`, `statusText`, `responseText`, `readyState`, `getResponseHeader()`, `getAllResponseHeaders()`, `setRequestHeader()` (in `onBefore`, or before `send()` with `perform: false`), `send()` and `abort()` (`onError` then gets status 0). An exception thrown in `onSuccess` is reported as an error of its own and doesn't call `onError`. Code that set `xhr.onreadystatechange` or `xhr.timeout` itself needs `fetch()` or its own XMLHttpRequest.
 
 `SqueezeBox`, `JTabs`, `Form.PasswordStrength` and `MooTreeControl` are defined only when MooTools' own versions aren't there: an extension that loads MooTools and `media/system/js/modal.js` itself gets the real SqueezeBox, and `CMS.modal.close()` (so `jModalClose()`) closes whichever box is open.
 

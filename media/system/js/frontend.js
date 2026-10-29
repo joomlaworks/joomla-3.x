@@ -402,60 +402,100 @@
 
 	/* --- AJAX (Joomla.request()) --- */
 
+	/*
+	 * Sends a request with fetch(). The callbacks get what they read of an XMLHttpRequest (status, statusText,
+	 * responseText, getResponseHeader()), as Joomla.request() gave them one: onBefore(request) may still call
+	 * setRequestHeader(), and with perform: false the caller sends it (request.send()).
+	 */
 	CMS.request = (options) => {
 		options = Object.assign({ url: '', method: 'GET', data: null, perform: true }, options);
 		options.method = options.data ? 'POST' : options.method.toUpperCase();
 
-		let xhr;
+		const headers = { 'X-Requested-With': 'XMLHttpRequest', 'X-Ajax-Engine': 'Joomla!' };
+		const controller = typeof AbortController === 'function' ? new AbortController() : null;
+		let received = null;
 
-		try {
-			xhr = new XMLHttpRequest();
-			xhr.open(options.method, options.url, true);
-			xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-			xhr.setRequestHeader('X-Ajax-Engine', 'Joomla!');
+		if (options.method === 'POST') {
+			const token = CMS.options.get('csrf.token', '');
 
-			if (options.method === 'POST') {
-				const token = CMS.options.get('csrf.token', '');
-
-				if (token) {
-					xhr.setRequestHeader('X-CSRF-Token', token);
-				}
-
-				if (typeof options.data === 'string' && (!options.headers || !options.headers['Content-Type'])) {
-					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-				}
+			if (token) {
+				headers['X-CSRF-Token'] = token;
 			}
 
-			Object.keys(options.headers || {}).forEach((name) => xhr.setRequestHeader(name, options.headers[name]));
-
-			xhr.onreadystatechange = () => {
-				if (xhr.readyState !== 4) {
-					return;
-				}
-
-				if (xhr.status === 200) {
-					if (options.onSuccess) {
-						options.onSuccess.call(window, xhr.responseText, xhr);
-					}
-				} else if (options.onError) {
-					options.onError.call(window, xhr);
-				}
-			};
-
-			if (options.perform) {
-				if (options.onBefore && options.onBefore.call(window, xhr) === false) {
-					return xhr;
-				}
-
-				xhr.send(options.data);
+			if (typeof options.data === 'string' && (!options.headers || !options.headers['Content-Type'])) {
+				headers['Content-Type'] = 'application/x-www-form-urlencoded';
 			}
-		} catch (error) {
-			window.console.log(error);
-
-			return false;
 		}
 
-		return xhr;
+		Object.assign(headers, options.headers || {});
+
+		const request = {
+			readyState: 1,
+			status: 0,
+			statusText: '',
+			responseText: '',
+			response: '',
+			responseURL: '',
+			setRequestHeader(name, value) {
+				headers[name] = value;
+			},
+			getResponseHeader: (name) => (received ? received.get(name) : null),
+			getAllResponseHeaders() {
+				let all = '';
+
+				if (received) {
+					received.forEach((value, name) => {
+						all += name + ': ' + value + '\r\n';
+					});
+				}
+
+				return all;
+			},
+			abort() {
+				if (controller) {
+					controller.abort();
+				}
+			},
+			send(data) {
+				const body = data === undefined ? options.data : data;
+				const finish = (status, statusText, text) => {
+					Object.assign(request, { readyState: 4, status, statusText, responseText: text, response: text });
+
+					if (status === 200) {
+						if (options.onSuccess) {
+							options.onSuccess.call(window, text, request);
+						}
+					} else if (options.onError) {
+						options.onError.call(window, request);
+					}
+				};
+
+				fetch(options.url, {
+					method: options.method,
+					headers,
+					body: options.method === 'GET' || options.method === 'HEAD' ? undefined : body,
+					credentials: 'same-origin',
+					signal: controller ? controller.signal : undefined,
+				})
+					.then((response) => response.text().then((text) => ({ response, text })))
+					// A network failure or abort(): status 0, as an XMLHttpRequest reported them
+					.then((result) => {
+						received = result.response.headers;
+						request.responseURL = result.response.url;
+						finish(result.response.status, result.response.statusText, result.text);
+					}, () => finish(0, '', ''));
+			},
+		};
+
+		if (options.perform) {
+			if (options.onBefore && options.onBefore.call(window, request) === false) {
+				return request;
+			}
+
+			request.send(options.data);
+		}
+
+		return request;
 	};
 
 	/* --- Captions from the title of images (behavior.caption, deprecated: use <figure>) --- */
