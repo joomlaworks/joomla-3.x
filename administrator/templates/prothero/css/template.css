@@ -2128,12 +2128,18 @@ body .navbar,body .navbar-fixed-top {margin-bottom:0;}
     .navbar .nav-collapse.collapse {display:none;height:auto !important;transition:none;}
     .navbar .nav-collapse.collapse.in {display:block;}
     .navbar .nav-collapse.in {max-height:calc(100vh - 48px - 34px);max-height:calc(100dvh - 48px - 34px);overflow-y:auto !important;overscroll-behavior:contain;}
-    /* The menu: every section open, in two columns, the section names as headings (no more opening each one) */
-    .navbar .nav-collapse #menu {display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:6px 20px;margin:0;padding:8px 16px 16px;border-top:1px solid var(--c-nav-border);}
-    .navbar .nav-collapse #menu > li {float:none;min-width:0;}
+    /* The menu: every section open, in two balanced columns (each section follows the one above it, whole), the section
+       names as headings (no more opening each one) */
+    .navbar .nav-collapse #menu {display:block;columns:2;column-gap:20px;margin:0;padding:8px 16px 16px;border-top:1px solid var(--c-nav-border);}
+    .navbar .nav-collapse #menu > li {display:block;float:none;min-width:0;break-inside:avoid;}
+    /* A column's first heading loses its top margin at a column break: the first column's too, so they line up */
+    .navbar .nav-collapse #menu > li:first-child > a:is(.dropdown-toggle, .no-dropdown) {margin-top:0;}
     /* No Help section on phones (help pages are made for large screens); it's the one linking to the help view */
     .navbar .nav-collapse #menu > li:has(a[href*="option=com_admin&view=help"]) {display:none;}
     .navbar .nav-collapse #menu > li > a.dropdown-toggle {margin:10px 0 2px;padding:0 0 6px;font-size:var(--fs-xs);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--c-nav-muted);background:none;border:0;border-bottom:1px solid var(--c-nav-border);border-radius:0;pointer-events:none;cursor:default;}
+    /* A top-level link without a menu (Media) reads as a section heading, but stays a link */
+    .navbar .nav-collapse #menu > li:not(.dropdown) > a.no-dropdown {margin:10px 0 2px;padding:0 0 6px;font-size:var(--fs-xs);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--c-nav-muted);background:none;border:0;border-bottom:1px solid var(--c-nav-border);border-radius:0;}
+    .navbar .nav-collapse #menu > li:not(.dropdown) > a.no-dropdown:hover,.navbar .nav-collapse #menu > li:not(.dropdown) > a.no-dropdown:focus {color:var(--c-nav-fg);background:none;}
     .navbar .nav-collapse #menu > li > .dropdown-menu {display:block !important;position:static;float:none;width:auto !important;max-height:none !important;margin:0;padding:2px 0 0;overflow:visible;background:none;border:0;box-shadow:none;}
     .navbar .nav-collapse #menu .dropdown-menu > li > a {margin:0;padding:6px 0;font-size:var(--fs-base);line-height:20px;white-space:normal;color:var(--c-nav-soft);background:none;border:0;border-radius:0;}
     .navbar .nav-collapse #menu .dropdown-menu > li > a:hover,.navbar .nav-collapse #menu .dropdown-menu > li > a:focus {color:var(--c-nav-fg);background:none;text-decoration:underline;}

@@ -71,9 +71,8 @@
     <menuitem type="separator" />
     <menuitem title="MOD_MENU_FIELDS" type="component" element="com_fields" link="index.php?option=com_fields&amp;context=com_content.article" class="class:fields" />
     <menuitem title="MOD_MENU_FIELDS_GROUP" type="component" element="com_fields" link="index.php?option=com_fields&amp;view=groups&amp;context=com_content.article" class="class:category" />
-    <menuitem type="separator" />
-    <menuitem title="MOD_MENU_MEDIA_MANAGER" type="component" element="com_media" link="index.php?option=com_media" class="class:media" />
     </menuitem>
+    <menuitem title="MOD_MENU_MEDIA_MANAGER" type="component" element="com_media" link="index.php?option=com_media" class="class:media" />
     <menuitem title="MOD_MENU_COMPONENTS" type="container" />
     <menuitem title="MOD_MENU_EXTENSIONS_EXTENSIONS" type="heading">
     <menuitem title="MOD_MENU_EXTENSIONS_EXTENSION_MANAGER" type="component" element="com_installer" link="index.php?option=com_installer&amp;view=manage" class="class:install">
@@ -98,23 +97,6 @@
     <menuitem title="MOD_MENU_COM_LANGUAGES_SUBMENU_CONTENT" type="component" element="com_languages" link="index.php?option=com_languages&amp;view=languages" class="class:language" />
     <menuitem title="MOD_MENU_COM_LANGUAGES_SUBMENU_OVERRIDES" type="component" element="com_languages" link="index.php?option=com_languages&amp;view=overrides" class="class:language" />
     </menuitem>
-    </menuitem>
-    <menuitem title="MOD_MENU_HELP" type="heading">
-    <menuitem type="component" title="MOD_MENU_HELP_JOOMLA" element="com_admin" link="index.php?option=com_admin&amp;view=help" class="class:help" scope="help" />
-    <menuitem type="separator" />
-    <menuitem type="url" target="_blank" title="MOD_MENU_HELP_SUPPORT_OFFICIAL_FORUM" link="https://forum.joomla.org" class="class:help-forum" scope="help" />
-    <menuitem type="url" target="_blank" title="MOD_MENU_HELP_SUPPORT_CUSTOM_FORUM" link="special:custom-forum" class="class:help-forum" scope="help" />
-    <menuitem type="url" target="_blank" title="MOD_MENU_HELP_SUPPORT_OFFICIAL_LANGUAGE_FORUM" link="special:language-forum" class="class:help-forum" scope="help" />
-    <menuitem type="url" target="_blank" title="MOD_MENU_HELP_DOCUMENTATION" link="https://docs.joomla.org" class="class:help-docs" scope="help" />
-    <menuitem type="separator" />
-    <menuitem type="url" target="_blank" title="MOD_MENU_HELP_EXTENSIONS" link="https://extensions.joomla.org" class="class:help-jed" scope="help" />
-    <menuitem type="url" target="_blank" title="MOD_MENU_HELP_TRANSLATIONS" link="https://community.joomla.org/translations.html" class="class:help-trans" scope="help" />
-    <menuitem type="url" target="_blank" title="MOD_MENU_HELP_RESOURCES" link="https://community.joomla.org/service-providers-directory/" class="class:help-jrd" scope="help" />
-    <menuitem type="url" target="_blank" title="MOD_MENU_HELP_COMMUNITY" link="https://community.joomla.org" class="class:help-community" scope="help" />
-    <menuitem type="url" target="_blank" title="MOD_MENU_HELP_SECURITY" link="https://developer.joomla.org/security-centre.html" class="class:help-security" scope="help" />
-    <menuitem type="url" target="_blank" title="MOD_MENU_HELP_DEVELOPER" link="https://developer.joomla.org" class="class:help-dev" scope="help" />
-    <menuitem type="url" target="_blank" title="MOD_MENU_HELP_XCHANGE" link="https://joomla.stackexchange.com" class="class:help-dev" scope="help" />
-    <menuitem type="url" target="_blank" title="MOD_MENU_HELP_SHOP" link="https://community.joomla.org/the-joomla-shop.html" class="class:help-shop" scope="help" />
     </menuitem>
 </menu>
 
