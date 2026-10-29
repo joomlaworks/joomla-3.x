@@ -313,7 +313,7 @@
             "seriesLatest": "1.x: 1.4.1 (2016.05.20)"
         },
         {
-            "name": "jQuery UI (Core, Sortable)",
+            "name": "jQuery UI (Core)",
             "version": "1.14.2",
             "date": "2026.01.28",
             "dateSource": "media/system/js/jquery.ui.core.js",

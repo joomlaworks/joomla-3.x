@@ -9,7 +9,22 @@
 
 defined('_JEXEC') or die;
 
+$expanded = (bool) $this->params->get('expand_advanced', 0);
+
 if ($this->params->get('show_advanced', 1)) {
+    // The Advanced Search button shows and hides its panel (it was Bootstrap's collapse, which not every template loads)
+    JFactory::getDocument()->addScriptDeclaration(
+        "document.addEventListener('click', function (event) {\n"
+        . "\tvar toggle = event.target.closest ? event.target.closest('[data-finder-toggle]') : null;\n"
+        . "\tvar panel = toggle ? document.getElementById(toggle.getAttribute('data-finder-toggle')) : null;\n\n"
+        . "\tif (panel) {\n"
+        . "\t\tpanel.hidden = !panel.hidden;\n"
+        . "\t\tpanel.classList.toggle('in', !panel.hidden);\n"
+        . "\t\ttoggle.setAttribute('aria-expanded', panel.hidden ? 'false' : 'true');\n"
+        . "\t}\n"
+        . "});"
+    );
+
     // Select boxes without a value are left out of the address (the same script as mod_finder's, written once)
     JFactory::getDocument()->addScriptDeclaration(
         "document.addEventListener('submit', function (event) {\n"
@@ -61,16 +76,14 @@ if ($this->params->get('show_autosuggest', 1)) {
 			</button>
 		<?php endif; ?>
 		<?php if ($this->params->get('show_advanced', 1)) : ?>
-			<a href="#advancedSearch" data-toggle="collapse" class="btn">
+			<button type="button" class="btn" data-finder-toggle="advancedSearch" aria-controls="advancedSearch" aria-expanded="<?php echo $expanded ? 'true' : 'false'; ?>">
 				<span class="icon-list" aria-hidden="true"></span>
 				<?php echo JText::_('COM_FINDER_ADVANCED_SEARCH_TOGGLE'); ?>
-			</a>
+			</button>
 		<?php endif; ?>
 	</fieldset>
 	<?php if ($this->params->get('show_advanced', 1)) : ?>
-		<div id="advancedSearch" class="collapse<?php if ($this->params->get('expand_advanced', 0)) {
-		    echo ' in';
-		} ?>">
+		<div id="advancedSearch" class="collapse<?php echo $expanded ? ' in' : ''; ?>"<?php echo $expanded ? '' : ' hidden="hidden"'; ?>>
 			<hr />
 			<?php if ($this->params->get('show_advanced_tips', 1)) : ?>
 				<div id="search-query-explained">

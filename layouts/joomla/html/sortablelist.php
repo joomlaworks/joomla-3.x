@@ -26,6 +26,7 @@ extract($displayData);
 
 // Started by global.js (CMS.sortableList) from these options; several lists on a page each get theirs
 JHtml::_('behavior.cms');
+JText::script('JLIB_APPLICATION_ERROR_REORDER_FAILED');
 
 $document = JFactory::getDocument();
 $lists    = (array) $document->getScriptOptions('system.sortablelist');

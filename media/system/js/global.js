@@ -3495,11 +3495,19 @@
 
 			focusableHandles(tbody, '.sortable-handler');
 
+			let saving = Promise.resolve();
+
 			// The group's order[] values, given out again in the rows' new order, then posted with their cid[]
 			const save = (row) => {
 				const group = sameGroup(row).filter((item) => item.querySelector('[name="order[]"]'));
+				const desc = options.sortDir === 'desc';
 				const values = group.map((item) => parseInt(item.querySelector('[name="order[]"]').value, 10) || 0)
-					.sort((a, b) => (options.sortDir === 'desc' ? b - a : a - b));
+					.sort((a, b) => (desc ? b - a : a - b));
+
+				// Values must differ: items sharing one (new modules all had 0) were posted unchanged, so nothing was saved
+				for (let i = 1; i < values.length; i += 1) {
+					values[i] = desc ? Math.min(values[i], values[i - 1] - 1) : Math.max(values[i], values[i - 1] + 1);
+				}
 
 				group.forEach((item, index) => {
 					const input = item.querySelector('[name="order[]"]');
@@ -3525,12 +3533,28 @@
 					}
 				});
 
-				fetch(options.url, {
+				// One save after another: a later drop's save must not be overtaken by an earlier one
+				const body = new URLSearchParams(data);
+
+				saving = saving.then(() => fetch(options.url, {
 					method: 'POST',
-					body: new URLSearchParams(data),
+					body,
 					credentials: 'same-origin',
 					headers: { 'X-Requested-With': 'XMLHttpRequest' },
-				}).catch((error) => window.console.warn(error));
+				}))
+					.then((response) => (response.ok ? response.text() : Promise.reject(new Error(response.status + ' ' + response.statusText))))
+					.then((text) => {
+						// saveOrderAjax answers 1 when it saved; a refusal (an expired form token) is a page with its message
+						if (text.trim() !== '1') {
+							const page = new DOMParser().parseFromString(text, 'text/html');
+							const notice = page.querySelector('#system-message-container .alert-message') || page.querySelector('#system-message-container .alert');
+
+							throw new Error((notice ? notice.textContent : page.body.textContent).replace(/\s+/g, ' ').trim().slice(0, 300));
+						}
+					})
+					.catch((error) => {
+						Joomla.renderMessages({ error: [CMS.text.get('JLIB_APPLICATION_ERROR_REORDER_FAILED', 'Reorder failed. Error: %s').replace('%s', error.message)] });
+					});
 			};
 
 			// Moves a row (and its sub-rows) before an element, or to the end

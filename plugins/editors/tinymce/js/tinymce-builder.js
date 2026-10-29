@@ -3,314 +3,395 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-;(function($) {
-    "use strict";
+/*
+ * The toolbar builder of the TinyMCE (legacy) options: menus and buttons are dragged from the source panel into a set's
+ * bars (copied), reordered within a bar, or dragged out of it to take them away. Each item in a set's bar carries a
+ * hidden input with its name. Plain JavaScript with the browser's drag and drop (it was jQuery UI's sortable).
+ */
+(() => {
+	'use strict';
 
-    /**
-     * Fake TinyMCE object to allow to use TinyMCE translation for the button labels
-     *
-     * @since  3.7.0
-     */
-    window.tinymce = {
-        langCode: 'en',
-        langStrings: {},
-        addI18n: function (code, strings){
-            this.langCode    = code;
-            this.langStrings = strings || {};
-        },
-        translate: function (string){
-            return this.langStrings[string] ? this.langStrings[string] : string;
-        }
-    };
+	/**
+	 * Fake TinyMCE object to allow to use TinyMCE translation for the button labels
+	 *
+	 * @since  3.7.0
+	 */
+	window.tinymce = {
+		langCode: 'en',
+		langStrings: {},
+		addI18n(code, strings) {
+			this.langCode    = code;
+			this.langStrings = strings || {};
+		},
+		translate(string) {
+			return this.langStrings[string] ? this.langStrings[string] : string;
+		},
+	};
 
-    /**
-     * Joomla TinyMCE Builder
-     *
-     * @param {HTMLElement} container
-     * @param {Object}      options
-     * @constructor
-     *
-     * @since  3.7.0
-     */
-    var JoomlaTinyMCEBuilder = function(container, options) {
-        this.$container = $(container);
-        this.options    = options;
+	class JoomlaTinyMCEBuilder {
+		/**
+		 * @param {HTMLElement} container
+		 * @param {Object}      options
+		 *
+		 * @since  3.7.0
+		 */
+		constructor(container, options) {
+			this.container = container;
+			this.options   = options;
+			this.dragged   = null;
 
-        // Find source containers
-        this.$sourceMenu    = this.$container.find('.tinymce-builder-menu.source');
-        this.$sourceToolbar = this.$container.find('.tinymce-builder-toolbar.source');
+			// The line where a dragged item will go (jQuery UI's placeholder class, which the layout styles)
+			this.placeholder = document.createElement('div');
+			this.placeholder.className = 'mce-btn ui-state-highlight';
 
-        // Find target containers
-        this.$targetMenu    = this.$container.find('.tinymce-builder-menu.target');
-        this.$targetToolbar = this.$container.find('.tinymce-builder-toolbar.target');
+			container.querySelectorAll('.tinymce-builder-menu.source').forEach((bar) => this.renderBar(bar, 'menu'));
+			container.querySelectorAll('.tinymce-builder-toolbar.source').forEach((bar) => this.renderBar(bar, 'toolbar'));
+			container.querySelectorAll('.tinymce-builder-menu.target').forEach((bar) => this.renderBar(bar, 'menu', null, true));
+			container.querySelectorAll('.tinymce-builder-toolbar.target').forEach((bar) => this.renderBar(bar, 'toolbar', null, true));
 
-        // Render Source elements
-        this.$sourceMenu.each(function(i, element){
-            this.renderBar(element, 'menu');
-        }.bind(this));
-        this.$sourceToolbar.each(function(i, element){
-            this.renderBar(element, 'toolbar');
-        }.bind(this));
+			container.addEventListener('dragstart', (event) => this.onDragStart(event));
+			document.addEventListener('dragover', (event) => this.onDragOver(event));
+			document.addEventListener('drop', (event) => this.onDrop(event));
+			container.addEventListener('dragend', () => this.onDragEnd());
 
-        // Render Target elements
-        this.$targetMenu.each(function(i, element){
-            this.renderBar(element, 'menu', null, true);
-        }.bind(this));
-        this.$targetToolbar.each(function(i, element){
-            this.renderBar(element, 'toolbar', null, true);
-        }.bind(this));
+			// Actions buttons
+			container.addEventListener('click', (event) => {
+				const button = event.target.closest('.button-action');
 
-        // Set up "drag&drop" stuff
-        var $copyHelper = null, removeIntent = false, self = this;
-        this.$sourceMenu.sortable({
-            connectWith: this.$targetMenu,
-            items: '.mce-btn',
-            cancel: '',
-            placeholder: 'mce-btn ui-state-highlight',
-            start: function(event, ui) {
-                self.$targetMenu.addClass('drop-area-highlight');
-            },
-            helper: function(event, el) {
-                $copyHelper = el.clone().insertAfter(el);
-                return el;
-            },
-            stop: function() {
-                $copyHelper && $copyHelper.remove();
-                self.$targetMenu.removeClass('drop-area-highlight');
-            }
-        });
+				if (!button) {
+					return;
+				}
 
-        this.$sourceToolbar.sortable({
-            connectWith: this.$targetToolbar,
-            items: '.mce-btn',
-            cancel: '',
-            placeholder: 'mce-btn ui-state-highlight',
-            start: function(event, ui) {
-                self.$targetToolbar.addClass('drop-area-highlight');
-            },
-            helper: function(event, el) {
-                $copyHelper = el.clone().insertAfter(el);
-                return el;
-            },
-            stop: function() {
-                $copyHelper && $copyHelper.remove();
-                self.$targetToolbar.removeClass('drop-area-highlight');
-            }
-        });
+				const action = button.getAttribute('data-action');
 
-        $().add(this.$targetMenu).add(this.$targetToolbar).sortable({
-            items: '.mce-btn',
-            cancel: '',
-            placeholder: 'mce-btn ui-state-highlight',
-            receive: function(event, ui) {
-                $copyHelper = null;
-                var $el = ui.item, $cont = $(this);
-                self.appendInput($el, $cont.data('group'), $cont.data('set'))
-            },
-            over: function (event, ui) {
-                removeIntent = false;
-            },
-            out: function (event, ui) {
-                removeIntent = true;
-            },
-            beforeStop: function (event, ui) {
-                if(removeIntent){
-                    ui.item.remove();
-                }
-            }
-        });
+				if (!this[action]) {
+					throw new Error('Unsupported action ' + action);
+				}
 
-        // Bind actions buttons
-        this.$container.on('click', '.button-action', function(event){
-            var $btn = $(event.target), action = $btn.data('action'), options = $btn.data();
+				this[action]({ set: button.getAttribute('data-set'), preset: button.getAttribute('data-preset') });
+			});
+		}
 
-            if (this[action]) {
-                this[action].call(this, options);
-            } else {
-                throw new Error('Unsupported action ' + action);
-            }
-        }.bind(this));
+		/**
+		 * Render the toolbar/menubar
+		 *
+		 * @param {HTMLElement} container  The toolbar container
+		 * @param {String}      type       The type toolbar or menu
+		 * @param {Array|null}  value      The value
+		 * @param {Boolean}     withInput  Whether append input
+		 *
+		 * @since  3.7.0
+		 */
+		renderBar(container, type, value, withInput) {
+			const items = type === 'menu' ? this.options.menus : this.options.buttons;
 
-    };
+			if (!value) {
+				try {
+					value = JSON.parse(container.getAttribute('data-value') || '[]');
+				} catch (error) {
+					value = [];
+				}
+			}
 
-    /**
-     * Render the toolbar/menubar
-     *
-     * @param {HTMLElement} container  The toolbar container
-     * @param {String}      type       The type toolbar or menu
-     * @param {Array|null}  value      The value
-     * @param {Boolean}     withInput  Whether append input
-     *
-     * @since  3.7.0
-     */
-    JoomlaTinyMCEBuilder.prototype.renderBar = function(container, type, value, withInput) {
-        var $container = $(container),
-            group = $container.data('group'),
-            set = $container.data('set'),
-            items = type === 'menu' ? this.options.menus : this.options.buttons,
-            value = value ? value : ($container.data('value') || []),
-            item, name, $btn;
+			[].concat(value || []).forEach((name) => {
+				if (!items[name]) {
+					return;
+				}
 
-        for ( var i = 0, l = value.length; i < l; i++ ) {
-            name = value[i];
-            item = items[name];
+				const button = this.createButton(name, items[name], type);
 
-            if (!item) {
-                continue;
-            }
+				container.appendChild(button);
 
-            $btn = this.createButton(name, item, type);
-            $container.append($btn);
+				if (withInput) {
+					this.appendInput(button, container.getAttribute('data-group'), container.getAttribute('data-set'));
+				}
+			});
+		}
 
-            // Enable tooltip
-            if ($btn.tooltip) {
-                $btn.tooltip({trigger: 'hover'});
-            }
+		/**
+		 * Create the element needed for renderBar()
+		 *
+		 * @param {String} name
+		 * @param {Object} info
+		 * @param {String} type
+		 *
+		 * @return {HTMLElement}
+		 *
+		 * @since  3.7.0
+		 */
+		createButton(name, info, type) {
+			const element = document.createElement('div');
+			const button = document.createElement('button');
 
-            // Add input
-            if (withInput) {
-                this.appendInput($btn, group, set);
-            }
-        }
-    };
+			element.className = 'mce-btn';
+			element.setAttribute('data-name', name);
+			element.setAttribute('data-toggle', 'tooltip');
+			element.title = tinymce.translate(info.label);
+			element.draggable = true;
+			button.type = 'button';
+			element.appendChild(button);
 
-    /**
-     * Create the element needed for renderBar()
-     * @param {String} name
-     * @param {Object} info
-     * @param {String} type
-     *
-     * @return {jQuery}
-     *
-     * @since  3.7.0
-     */
-    JoomlaTinyMCEBuilder.prototype.createButton = function(name, info, type){
-        var $element = $('<div />', {
-            'class': 'mce-btn',
-            'data-name': name,
-            'data-toggle': 'tooltip',
-            'title': tinymce.translate(info.label)
-        });
-        var $btn = $('<button/>', {
-            'type': 'button'
-        });
-        $element.append($btn);
+			if (type === 'menu') {
+				button.innerHTML = '<span class="mce-txt"></span> <i class="mce-caret"></i>';
+				button.firstChild.textContent = tinymce.translate(info.label);
+			} else {
+				element.classList.add('mce-btn-small');
 
-        if (type === 'menu') {
-            $btn.html('<span class="mce-txt">' + tinymce.translate(info.label) + '</span> <i class="mce-caret"></i>');
-        } else {
-            $element.addClass('mce-btn-small');
-            $btn.html(info.text ? tinymce.translate(info.text) : '<i class="mce-ico mce-i-' + name + '"></i>');
-        }
+				if (info.text) {
+					button.textContent = tinymce.translate(info.text);
+				} else {
+					button.innerHTML = '<i class="mce-ico"></i>';
+					button.firstChild.classList.add('mce-i-' + name);
+				}
+			}
 
-        return $element;
-    };
+			// Bootstrap's tooltip, where the administrator template has it
+			if (window.jQuery && window.jQuery.fn.tooltip) {
+				window.jQuery(element).tooltip({ trigger: 'hover' });
+			}
 
-    /**
-     * Append input to the button item
-     * @param {HTMLElement} element
-     * @param {String}      group
-     * @param {String}      set
-     *
-     * @since  3.7.0
-     */
-    JoomlaTinyMCEBuilder.prototype.appendInput = function (element, group, set) {
-        var $el    = $(element),
-            name   = this.options.formControl + '[' + set + '][' + group + '][]',
-            $input = $('<input/>', {
-                type: 'hidden',
-                name:  name,
-                value: $el.data('name')
-            });
+			return element;
+		}
 
-        $el.append($input);
-    };
+		/**
+		 * Append input to the button item
+		 *
+		 * @param {HTMLElement} element
+		 * @param {String}      group
+		 * @param {String}      set
+		 *
+		 * @since  3.7.0
+		 */
+		appendInput(element, group, set) {
+			const input = document.createElement('input');
 
-    /**
-     * Set Selected preset to specific  set
-     * @param {Object} options Options {set: 1, preset: 'presetName'}
-     */
-    JoomlaTinyMCEBuilder.prototype.setPreset = function (options) {
-        var set = options.set, preset = this.options.toolbarPreset[options.preset] || null;
+			input.type  = 'hidden';
+			input.name  = this.options.formControl + '[' + set + '][' + group + '][]';
+			input.value = element.getAttribute('data-name');
+			element.appendChild(input);
+		}
 
-        if (!preset) {
-            throw new Error('Unknown Preset "' + options.preset + '"');
-        }
+		// The bar a dragged item may go into: a set's bar of its type; items of a set's bar stay in their bar
+		accepts(bar) {
+			if (!bar || !this.dragged || !bar.classList.contains('target')) {
+				return false;
+			}
 
-        var $container, type;
-        for (var group in preset) {
-            if (!preset.hasOwnProperty(group)) {
-                continue;
-            }
+			return this.fromSource ? bar.classList.contains(this.type) : bar === this.origin;
+		}
 
-            // Find correct container for current set
-            if (group === 'menu') {
-                type = 'menu';
-                $container = this.$targetMenu.filter('[data-group="' + group + '"][data-set="' + set + '"]');
-            } else {
-                type = 'toolbar'
-                $container = this.$targetToolbar.filter('[data-group="' + group + '"][data-set="' + set + '"]');
-            }
+		onDragStart(event) {
+			const item = event.target.closest ? event.target.closest('.mce-btn') : null;
+			const bar = item ? item.parentNode : null;
 
-            // Reset existing values
-            $container.empty();
+			if (!item || !bar || !this.container.contains(bar)) {
+				return;
+			}
 
-            // Set new
-            this.renderBar($container, type, preset[group], true);
-        }
-    };
+			this.dragged    = item;
+			this.origin     = bar;
+			this.fromSource = bar.classList.contains('source');
+			this.type       = bar.classList.contains('tinymce-builder-menu') ? 'tinymce-builder-menu' : 'tinymce-builder-toolbar';
+			this.dropped    = false;
 
-    /**
-     * Clear the pane for specific set
-     * @param {Object} options Options {set: 1}
-     */
-    JoomlaTinyMCEBuilder.prototype.clearPane = function (options) {
-        var set = options.set;
+			if (window.jQuery && window.jQuery.fn.tooltip) {
+				window.jQuery(item).tooltip('hide');
+			}
 
-        this.$targetMenu.filter('[data-set="' + set + '"]').empty();
-        this.$targetToolbar.filter('[data-set="' + set + '"]').empty();
-    };
+			event.dataTransfer.effectAllowed = this.fromSource ? 'copy' : 'move';
+			event.dataTransfer.setData('text/plain', item.getAttribute('data-name'));
 
+			if (this.fromSource) {
+				this.container.querySelectorAll('.' + this.type + '.target').forEach((target) => target.classList.add('drop-area-highlight'));
+			}
+		}
 
-    // Init the builder
-    $(document).ready(function(){
-        var options = Joomla.getOptions ? Joomla.getOptions('plg_editors_tinymce_builder', {})
-        			:  (Joomla.optionsStorage.plg_editors_tinymce_builder || {});
+		onDragOver(event) {
+			if (!this.dragged) {
+				return;
+			}
 
-        new JoomlaTinyMCEBuilder($('#joomla-tinymce-builder'), options);
+			const bar = event.target.closest ? event.target.closest('.tinymce-builder-menu, .tinymce-builder-toolbar') : null;
 
-        $("#set-tabs a").on('click', function (event) {
-            event.preventDefault();
-            $(this).tab("show");
-        });
+			// Outside a bar that takes it, there's no place for it (an item of a set is then taken away)
+			if (!this.accepts(bar)) {
+				this.placeholder.remove();
 
-        // Allow to select the group only once per the set
-        var $accessSelects = $('#joomla-tinymce-builder').find('.access-select');
-        toggleAvailableOption();
-        $accessSelects.on('change', function () {
-            toggleAvailableOption();
-        });
+				return;
+			}
 
-        function toggleAvailableOption () {
-            $accessSelects.find('option[disabled]').removeAttr('disabled');
+			event.preventDefault();
+			event.dataTransfer.dropEffect = this.fromSource ? 'copy' : 'move';
 
-            // Disable already selected options
-            $accessSelects.each(function () {
-                var $select = $(this), val = $select.val() || [], query = [],
-                    $options = $accessSelects.not(this).find('option');
+			// Before the first item below the pointer's row, or right of the pointer in its row
+			const before = Array.prototype.find.call(bar.children, (item) => {
+				if (item === this.placeholder || item === this.dragged) {
+					return false;
+				}
 
-                for (var i = 0, l = val.length; i < l; i++ ) {
-                    if (!val[i]) continue;
-                    query.push('[value="' + val[i] + '"]');
-                }
+				const box = item.getBoundingClientRect();
 
-                if (query.length) {
-                    $options.filter(query.join(',')).attr('disabled', 'disabled');
-                }
-            });
+				return event.clientY < box.top || (event.clientY <= box.bottom && event.clientX < box.left + box.width / 2);
+			});
 
-            // Update Chosen
-            $accessSelects.trigger('liszt:updated');
-        }
-    });
-}(jQuery));
+			if (this.dragged.parentNode === bar) {
+				this.dragged.style.display = 'none';
+			}
+
+			bar.insertBefore(this.placeholder, before || null);
+		}
+
+		onDrop(event) {
+			if (!this.dragged || !this.placeholder.parentNode) {
+				return;
+			}
+
+			const bar = this.placeholder.parentNode;
+
+			event.preventDefault();
+			this.dropped = true;
+
+			if (this.fromSource) {
+				const name = this.dragged.getAttribute('data-name');
+				const menu = this.type === 'tinymce-builder-menu';
+				const item = this.createButton(name, (menu ? this.options.menus : this.options.buttons)[name], menu ? 'menu' : 'toolbar');
+
+				this.appendInput(item, bar.getAttribute('data-group'), bar.getAttribute('data-set'));
+				bar.insertBefore(item, this.placeholder);
+			} else {
+				this.dragged.style.display = '';
+				bar.insertBefore(this.dragged, this.placeholder);
+			}
+
+			this.placeholder.remove();
+		}
+
+		onDragEnd() {
+			if (!this.dragged) {
+				return;
+			}
+
+			if (!this.fromSource && !this.dropped) {
+				if (window.jQuery && window.jQuery.fn.tooltip) {
+					window.jQuery(this.dragged).tooltip('destroy');
+				}
+
+				this.dragged.remove();
+			}
+
+			this.dragged.style.display = '';
+			this.placeholder.remove();
+			this.container.querySelectorAll('.drop-area-highlight').forEach((bar) => bar.classList.remove('drop-area-highlight'));
+			this.dragged = null;
+		}
+
+		/**
+		 * Set Selected preset to specific set
+		 *
+		 * @param {Object} options Options {set: 1, preset: 'presetName'}
+		 */
+		setPreset(options) {
+			const preset = this.options.toolbarPreset[options.preset] || null;
+
+			if (!preset) {
+				throw new Error('Unknown Preset "' + options.preset + '"');
+			}
+
+			Object.keys(preset).forEach((group) => {
+				const type = group === 'menu' ? 'menu' : 'toolbar';
+				const bar = this.container.querySelector('.tinymce-builder-' + type + '.target[data-group="' + group + '"][data-set="' + options.set + '"]');
+
+				if (bar) {
+					bar.innerHTML = '';
+					this.renderBar(bar, type, preset[group], true);
+				}
+			});
+		}
+
+		/**
+		 * Clear the pane for specific set
+		 *
+		 * @param {Object} options Options {set: 1}
+		 */
+		clearPane(options) {
+			this.container.querySelectorAll('.target[data-set="' + options.set + '"]').forEach((bar) => {
+				bar.innerHTML = '';
+			});
+		}
+	}
+
+	window.JoomlaTinyMCEBuilder = JoomlaTinyMCEBuilder;
+
+	const start = () => {
+		const container = document.getElementById('joomla-tinymce-builder');
+
+		if (!container) {
+			return;
+		}
+
+		new JoomlaTinyMCEBuilder(container, Joomla.getOptions('plg_editors_tinymce_builder', {}));
+
+		// The sets' tabs
+		document.querySelectorAll('#set-tabs a').forEach((link) => {
+			link.addEventListener('click', (event) => {
+				const pane = document.querySelector(link.getAttribute('href'));
+
+				event.preventDefault();
+
+				if (!pane) {
+					return;
+				}
+
+				link.closest('ul').querySelectorAll('li').forEach((item) => item.classList.toggle('active', item.contains(link)));
+				Array.prototype.forEach.call(pane.parentNode.children, (item) => item.classList.toggle('active', item === pane));
+			});
+		});
+
+		// Allow to select the group only once per the set
+		const selects = container.querySelectorAll('.access-select');
+		const toggleAvailableOption = () => {
+			selects.forEach((select) => select.querySelectorAll('option[disabled]').forEach((option) => {
+				option.disabled = false;
+			}));
+
+			// Disable already selected options
+			selects.forEach((select) => {
+				const values = Array.prototype.filter.call(select.options, (option) => option.selected && option.value).map((option) => option.value);
+
+				selects.forEach((other) => {
+					if (other !== select) {
+						Array.prototype.forEach.call(other.options, (option) => {
+							if (values.indexOf(option.value) > -1) {
+								option.disabled = true;
+							}
+						});
+					}
+				});
+			});
+
+			// Update Chosen
+			selects.forEach((select) => {
+				if (window.jQuery) {
+					window.jQuery(select).trigger('liszt:updated');
+				} else {
+					select.dispatchEvent(new CustomEvent('liszt:updated'));
+				}
+			});
+		};
+
+		toggleAvailableOption();
+		selects.forEach((select) => {
+			if (window.jQuery) {
+				window.jQuery(select).on('change', toggleAvailableOption);
+			} else {
+				select.addEventListener('change', toggleAvailableOption);
+			}
+		});
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', start);
+	} else {
+		start();
+	}
+})();

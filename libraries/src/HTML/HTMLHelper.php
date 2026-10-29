@@ -163,6 +163,7 @@ abstract class HTMLHelper
         'js'  => array(
             'system/html5fallback', 'system/polyfill.classlist', 'system/polyfill.event', 'system/polyfill.filter', 'system/polyfill.map',
             'system/polyfill.xpath', 'system/progressbar', 'system/punycode', 'com_joomlaupdate/json2', 'system/bootstrap-tooltip-extended', 'system/jquery.Jcrop',
+            'system/jquery.ui.sortable',
         ),
         'css' => array('com_finder/indexer', 'system/bootstrap-tooltip-extended', 'system/jquery.Jcrop'),
     );

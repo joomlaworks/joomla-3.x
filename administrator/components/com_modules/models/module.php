@@ -744,6 +744,18 @@ class ModulesModelModule extends JModelAdmin
     {
         $table->title    = htmlspecialchars_decode((string) $table->title, ENT_QUOTES);
         $table->position = trim((string) $table->position);
+
+        // A new module without an ordering goes last in its position (they all got 0, which dragging couldn't change)
+        if (empty($table->id) && empty($table->ordering)) {
+            $db    = $this->getDbo();
+            $query = $db->getQuery(true)
+                ->select('MAX(' . $db->quoteName('ordering') . ')')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('client_id') . ' = ' . (int) $table->client_id)
+                ->where($db->quoteName('position') . ' = ' . $db->quote($table->position));
+
+            $table->ordering = (int) $db->setQuery($query)->loadResult() + 1;
+        }
     }
 
     /**

@@ -147,6 +147,7 @@ Summary of changes:
 - Keep-alive only while editing after logging in: login, registration, reset, contact and other one-off forms no longer ping the server
 - Searchable lists (Chosen, Ajax Chosen) rewritten in plain JavaScript in `global.js`: same look and markup, screen-reader roles added, no jQuery needed
 - Lists' search tools and Smart Search's suggestions rewritten in plain JavaScript (`global.js`, `frontend.js`): same look and behaviour, no jQuery needed; Smart Search's search page and module load no jQuery
+- TinyMCE (legacy)'s toolbar builder in plain JavaScript; jQuery UI's sortable plugin removed (nothing in core uses it)
 - Unused libraries removed (Symfony's PHP 7.3 polyfill, the Framework's DI container and PSR-11); FOF's LESS compiler updated to lessphp 0.5.0
 - Administrator menu: Media at the top level after Content, no Help menu; Prothero's phone menu in two columns without gaps
 - Inline Editing (front-end editing of modules and menus) is off by default
@@ -204,6 +205,8 @@ Summary of changes:
 - CodeMirror no longer asks for a missing stylesheet with its stock theme
 - Missing language strings added: messages and labels that showed their keys (Language Overrides, Privacy, the logout image, the extension installer, front-end Template and Module options)
 - Google reCAPTCHA works again on pages that load MooTools (the front-end article form never sent with the invisible type)
+- Modules dragged to a new place in their position no longer go back on the next page load; failed reordering is reported
+- Smart Search's Advanced Search button works in every template
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:
