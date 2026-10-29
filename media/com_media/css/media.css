@@ -174,6 +174,11 @@
 .imgOutline > .media-rename > .media-rename-pencil {width:28px;height:28px;}
 .imgOutline > .media-rename > .media-rename-pencil:hover,.imgOutline > .media-rename > .media-rename-pencil:focus-visible {background:rgba(0, 0, 0, 0.8);}
 .imgOutline .media-rename-actions button:hover {background:rgba(255, 255, 255, 0.25);}
+/* Shown over the tile under the pointer or with the focus, as the delete button is (always on touch screens) */
+@media (hover: hover) {
+    .imgOutline > .media-rename > .media-rename-pencil {opacity:0;transition:opacity 0.15s;}
+    .imgOutline:is(:hover, :focus-within) > .media-rename > .media-rename-pencil {opacity:1;}
+}
 td.media-rename .media-rename-pencil {margin-inline-start:4px;}
 
 /* --- Thumbnail sizes and tiles (--media-tile, set by the size buttons next to the views' buttons; tiles are square) --- */
@@ -200,10 +205,15 @@ td.media-rename .media-rename-pencil {margin-inline-start:4px;}
 #mediamanager-form .manager:not(.media-picker) > .imgOutline > .imgThumb:has(> a.img-preview) {position:absolute;inset:0;display:block;}
 #mediamanager-form .manager:not(.media-picker) > .imgOutline > .imgThumb > a.img-preview {position:absolute;inset:0;line-height:0;}
 #mediamanager-form .manager:not(.media-picker) > .imgOutline > .imgThumb > a.img-preview > img {width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;}
-/* Check All Items, the sizes and the views in one row at the right (the page's bar above the list) */
+/* The page's bar above the list: Check All Items at the left, the sizes and the views at the right */
 .media-bar {display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px;}
 .media-bar > .btn-group,.media-bar > .checkbox {margin:0;}
-.media-bar > .media-check-all {display:inline-flex;align-items:center;gap:6px;padding-inline-start:12px;}
+.media-bar > .media-check-all {display:inline-flex;align-items:center;gap:6px;margin-inline-end:auto;padding-inline-start:12px;}
+.media-tile-size {display:flex;align-items:center;gap:2px;}
+.media-tile-size > .btn-group {margin:0;}
+/* Reset Size: a link, smaller (greyed out at the default size) */
+.media-tile-size > .media-tile-reset {padding:2px 6px;border:0;background:none;box-shadow:none;font-size:0.85em;text-decoration:underline;}
+.media-tile-size > .media-tile-reset:disabled {text-decoration:none;opacity:0.5;}
 .media-bar > label.media-check-all > input[type="checkbox"] {position:static;float:none;margin:0;}
 .media-bar > [hidden] {display:none;}
 /* The folder above, a Back button over the thumbnails */
