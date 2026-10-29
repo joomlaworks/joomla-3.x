@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_modules
@@ -20,25 +21,25 @@ JFormHelper::loadFieldClass('list');
  */
 class JFormFieldModulesModule extends JFormFieldList
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  3.4.2
-	 */
-	protected $type = 'ModulesModule';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  3.4.2
+     */
+    protected $type = 'ModulesModule';
 
-	/**
-	 * Method to get the field options.
-	 *
-	 * @return  array  The field option objects.
-	 *
-	 * @since   3.4.2
-	 */
-	public function getOptions()
-	{
-		$options = ModulesHelper::getModules(JFactory::getApplication()->getUserState('com_modules.modules.client_id', 0));
+    /**
+     * Method to get the field options.
+     *
+     * @return  array  The field option objects.
+     *
+     * @since   3.4.2
+     */
+    public function getOptions()
+    {
+        $options = ModulesHelper::getModules(JFactory::getApplication()->getUserState('com_modules.modules.client_id', 0));
 
-		return array_merge(parent::getOptions(), $options);
-	}
+        return array_merge(parent::getOptions(), $options);
+    }
 }

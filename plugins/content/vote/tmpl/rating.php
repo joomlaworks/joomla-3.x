@@ -20,9 +20,8 @@ defined('_JEXEC') or die;
  * @var   string   $path     Path to this file
  */
 
-if ($context == 'com_content.categories')
-{
-	return;
+if ($context == 'com_content.categories') {
+    return;
 }
 
 $rating = (int) $row->rating;
@@ -34,14 +33,12 @@ $starImageOff = JHtml::_('icons.svg', 'star', JText::_('PLG_VOTE_STAR_INACTIVE')
 
 $img = '';
 
-for ($i = 0; $i < $rating; $i++)
-{
-	$img .= $starImageOn;
+for ($i = 0; $i < $rating; $i++) {
+    $img .= $starImageOn;
 }
 
-for ($i = $rating; $i < 5; $i++)
-{
-	$img .= $starImageOff;
+for ($i = $rating; $i < 5; $i++) {
+    $img .= $starImageOff;
 }
 
 ?>

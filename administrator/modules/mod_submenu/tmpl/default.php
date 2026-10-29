@@ -15,7 +15,7 @@ defined('_JEXEC') or die;
 		<?php if ($displayMenu) : ?>
 		<ul id="submenu" class="nav nav-list">
 			<?php foreach ($list as $item) : ?>
-			<?php if (isset ($item[2]) && $item[2] == 1) : ?>
+			<?php if (isset($item[2]) && $item[2] == 1) : ?>
 				<li class="active">
 			<?php else : ?>
 				<li>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_privacy
@@ -16,26 +17,26 @@ defined('_JEXEC') or die;
  */
 class PrivacyRouter extends JComponentRouterView
 {
-	/**
-	 * Privacy Component router constructor
-	 *
-	 * @param   JApplicationCms  $app   The application object
-	 * @param   JMenu            $menu  The menu object to work with
-	 *
-	 * @since   3.9.0
-	 */
-	public function __construct($app = null, $menu = null)
-	{
-		$this->registerView(new JComponentRouterViewconfiguration('confirm'));
-		$this->registerView(new JComponentRouterViewconfiguration('request'));
-		$this->registerView(new JComponentRouterViewconfiguration('remind'));
+    /**
+     * Privacy Component router constructor
+     *
+     * @param   JApplicationCms  $app   The application object
+     * @param   JMenu            $menu  The menu object to work with
+     *
+     * @since   3.9.0
+     */
+    public function __construct($app = null, $menu = null)
+    {
+        $this->registerView(new JComponentRouterViewconfiguration('confirm'));
+        $this->registerView(new JComponentRouterViewconfiguration('request'));
+        $this->registerView(new JComponentRouterViewconfiguration('remind'));
 
-		parent::__construct($app, $menu);
+        parent::__construct($app, $menu);
 
-		$this->attachRule(new JComponentRouterRulesMenu($this));
-		$this->attachRule(new JComponentRouterRulesStandard($this));
-		$this->attachRule(new JComponentRouterRulesNomenu($this));
-	}
+        $this->attachRule(new JComponentRouterRulesMenu($this));
+        $this->attachRule(new JComponentRouterRulesStandard($this));
+        $this->attachRule(new JComponentRouterRulesNomenu($this));
+    }
 }
 
 /**
@@ -53,10 +54,10 @@ class PrivacyRouter extends JComponentRouterView
  */
 function privacyBuildRoute(&$query)
 {
-	$app = JFactory::getApplication();
-	$router = new PrivacyRouter($app, $app->getMenu());
+    $app = JFactory::getApplication();
+    $router = new PrivacyRouter($app, $app->getMenu());
 
-	return $router->build($query);
+    return $router->build($query);
 }
 
 /**
@@ -71,8 +72,8 @@ function privacyBuildRoute(&$query)
  */
 function privacyParseRoute($segments)
 {
-	$app = JFactory::getApplication();
-	$router = new PrivacyRouter($app, $app->getMenu());
+    $app = JFactory::getApplication();
+    $router = new PrivacyRouter($app, $app->getMenu());
 
-	return $router->parse($segments);
+    return $router->parse($segments);
 }

@@ -52,7 +52,7 @@ $this->ignore_fieldsets = array('user_details');
 	<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'account', JText::_('COM_ADMIN_USER_ACCOUNT_DETAILS')); ?>
 	<?php foreach ($this->form->getFieldset('user_details') as $field) : ?>
 		<?php if ($field->fieldname === 'password2') : ?>
-			<?php // Disables autocomplete ?>
+			<?php // Disables autocomplete?>
 			<input type="password" style="display:none">
 		<?php endif; ?>
 		<?php echo $field->renderField(); ?>

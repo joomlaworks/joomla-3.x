@@ -85,7 +85,7 @@ $hasOptions = $this->params->get('search_phrases', 1) || $this->params->get('sea
 		<article class="item">
 			<div class="itemBody">
 				<?php if ($result->section) : ?><span class="itemCategory"><?php echo $this->escape($result->section); ?></span><?php endif; ?>
-				<?php // The title and text keep the highlight markup of the searched words ?>
+				<?php // The title and text keep the highlight markup of the searched words?>
 				<h2 class="itemTitle">
 					<?php if ($link) : ?><a href="<?php echo $link; ?>"<?php echo $result->browsernav == 1 ? ' target="_blank" rel="noopener"' : ''; ?>><?php echo $result->title; ?></a><?php else : ?><?php echo $result->title; ?><?php endif; ?>
 				</h2>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -21,243 +22,223 @@ use Joomla\CMS\Installer\InstallerHelper;
  */
 class ExtensionInstallCommand extends AbstractExtensionCommand
 {
-	/**
-	 * @var    string[]
-	 * @since  3.17.0
-	 */
-	protected $serverPathOptions = array('path');
+    /**
+     * @var    string[]
+     * @since  3.17.0
+     */
+    protected $serverPathOptions = array('path');
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'extension:install';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'extension:install';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Install an extension from a URL or from a path';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Install an extension from a URL or from a path';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Installs or updates an extension from a package file (--path, a .zip or .tar.gz file, or an already extracted folder) or from a download URL (--url).';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Installs or updates an extension from a package file (--path, a .zip or .tar.gz file, or an already extracted folder) or from a download URL (--url).';
 
-	/**
-	 * @var    boolean
-	 * @since  3.17.0
-	 */
-	protected $dryRun = true;
+    /**
+     * @var    boolean
+     * @since  3.17.0
+     */
+    protected $dryRun = true;
 
-	/**
-	 * It installs code it didn't make (a package's PHP files and install script).
-	 *
-	 * @param   array|null  $options    The options of a run
-	 * @param   array|null  $arguments  The arguments of a run
-	 *
-	 * @return  boolean
-	 *
-	 * @since   3.17.0
-	 */
-	public function writesCode(?array $options = null, ?array $arguments = null)
-	{
-		return true;
-	}
+    /**
+     * It installs code it didn't make (a package's PHP files and install script).
+     *
+     * @param   array|null  $options    The options of a run
+     * @param   array|null  $arguments  The arguments of a run
+     *
+     * @return  boolean
+     *
+     * @since   3.17.0
+     */
+    public function writesCode(?array $options = null, ?array $arguments = null)
+    {
+        return true;
+    }
 
-	/**
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	protected function configure()
-	{
-		$this->addOption('path', null, self::OPTION_REQUIRED, 'The path to the extension');
-		$this->addOption('url', null, self::OPTION_REQUIRED, 'The url to the extension');
-	}
+    /**
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    protected function configure()
+    {
+        $this->addOption('path', null, self::OPTION_REQUIRED, 'The path to the extension');
+        $this->addOption('url', null, self::OPTION_REQUIRED, 'The url to the extension');
+    }
 
-	/**
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	protected function doExecute(CommandIO $io)
-	{
-		$path = (string) $io->getOption('path');
-		$url  = (string) $io->getOption('url');
+    /**
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    protected function doExecute(CommandIO $io)
+    {
+        $path = (string) $io->getOption('path');
+        $url  = (string) $io->getOption('url');
 
-		if (($path === '') === ($url === ''))
-		{
-			$io->error('Give either --path or --url.');
+        if (($path === '') === ($url === '')) {
+            $io->error('Give either --path or --url.');
 
-			return self::INVALID;
-		}
+            return self::INVALID;
+        }
 
-		$io->title('Install Extension');
+        $io->title('Install Extension');
 
-		Factory::getLanguage()->load('com_installer', JPATH_ADMINISTRATOR);
+        Factory::getLanguage()->load('com_installer', JPATH_ADMINISTRATOR);
 
-		$tmpPath = Factory::getConfig()->get('tmp_path');
-		$copy    = null;
+        $tmpPath = Factory::getConfig()->get('tmp_path');
+        $copy    = null;
 
-		if ($url !== '')
-		{
-			// Through the MCP server a dry run may be all that's allowed: it mustn't make the server fetch an address the assistant chose
-			if ($io->isDryRun() && Factory::getApplication()->getInterface() === 'MCP')
-			{
-				$io->plan('Download the package from ' . $url . ' and install it (not downloaded in a dry run through MCP)',
-					array('action' => 'install', 'url' => $url));
+        if ($url !== '') {
+            // Through the MCP server a dry run may be all that's allowed: it mustn't make the server fetch an address the assistant chose
+            if ($io->isDryRun() && Factory::getApplication()->getInterface() === 'MCP') {
+                $io->plan(
+                    'Download the package from ' . $url . ' and install it (not downloaded in a dry run through MCP)',
+                    array('action' => 'install', 'url' => $url)
+                );
 
-				return self::SUCCESS;
-			}
+                return self::SUCCESS;
+            }
 
-			$download = InstallerHelper::downloadPackage($url);
+            $download = InstallerHelper::downloadPackage($url);
 
-			if (!$download)
-			{
-				$io->error('The package could not be downloaded from ' . $url . '.');
+            if (!$download) {
+                $io->error('The package could not be downloaded from ' . $url . '.');
 
-				return self::FAILURE;
-			}
+                return self::FAILURE;
+            }
 
-			$copy = $tmpPath . '/' . $download;
-		}
-		elseif (!file_exists($path))
-		{
-			$io->error('The file path specified does not exist.');
+            $copy = $tmpPath . '/' . $download;
+        } elseif (!file_exists($path)) {
+            $io->error('The file path specified does not exist.');
 
-			return self::NOT_FOUND;
-		}
-		elseif (is_file($path))
-		{
-			// Packages are extracted next to the package file, so work on a copy in the temporary folder, like an upload
-			$copy = $tmpPath . '/' . uniqid('install_') . '_' . basename($path);
+            return self::NOT_FOUND;
+        } elseif (is_file($path)) {
+            // Packages are extracted next to the package file, so work on a copy in the temporary folder, like an upload
+            $copy = $tmpPath . '/' . uniqid('install_') . '_' . basename($path);
 
-			if (!@copy($path, $copy))
-			{
-				$io->error('The package could not be copied to the temporary folder ' . $tmpPath . '.');
+            if (!@copy($path, $copy)) {
+                $io->error('The package could not be copied to the temporary folder ' . $tmpPath . '.');
 
-				return self::FAILURE;
-			}
-		}
+                return self::FAILURE;
+            }
+        }
 
-		if ($copy === null)
-		{
-			$package = array('dir' => $path, 'extractdir' => null, 'packagefile' => null, 'type' => InstallerHelper::detectType($path));
-		}
-		else
-		{
-			$package = InstallerHelper::unpack($copy, true);
-		}
+        if ($copy === null) {
+            $package = array('dir' => $path, 'extractdir' => null, 'packagefile' => null, 'type' => InstallerHelper::detectType($path));
+        } else {
+            $package = InstallerHelper::unpack($copy, true);
+        }
 
-		if (!is_array($package) || empty($package['type']))
-		{
-			$io->error('The path is not a valid extension package.');
-			$this->cleanup($copy, is_array($package) ? $package : array());
+        if (!is_array($package) || empty($package['type'])) {
+            $io->error('The path is not a valid extension package.');
+            $this->cleanup($copy, is_array($package) ? $package : array());
 
-			return self::FAILURE;
-		}
+            return self::FAILURE;
+        }
 
-		$installer = Installer::getInstance();
+        $installer = Installer::getInstance();
 
-		if ($io->isDryRun())
-		{
-			return $this->planInstall($io, $installer, $package, $copy);
-		}
+        if ($io->isDryRun()) {
+            return $this->planInstall($io, $installer, $package, $copy);
+        }
 
-		try
-		{
-			$result = $installer->install($package['dir']);
-		}
-		finally
-		{
-			$this->cleanup($copy, $package);
-		}
+        try {
+            $result = $installer->install($package['dir']);
+        } finally {
+            $this->cleanup($copy, $package);
+        }
 
-		if (!$result)
-		{
-			$io->error('Unable to install extension.');
+        if (!$result) {
+            $io->error('Unable to install extension.');
 
-			return self::FAILURE;
-		}
+            return self::FAILURE;
+        }
 
-		$manifest = $installer->getManifest();
+        $manifest = $installer->getManifest();
 
-		if ($manifest instanceof \SimpleXMLElement)
-		{
-			$io->setData('name', (string) $manifest->name);
-			$io->setData('type', (string) $manifest->attributes()->type);
-			$io->setData('version', (string) $manifest->version);
-		}
+        if ($manifest instanceof \SimpleXMLElement) {
+            $io->setData('name', (string) $manifest->name);
+            $io->setData('type', (string) $manifest->attributes()->type);
+            $io->setData('version', (string) $manifest->version);
+        }
 
-		$io->success('Extension installed successfully.');
+        $io->success('Extension installed successfully.');
 
-		return self::SUCCESS;
-	}
+        return self::SUCCESS;
+    }
 
-	/**
-	 * Report what installing the package would do, from its manifest.
-	 *
-	 * @param   CommandIO    $io         The input values and the output
-	 * @param   Installer    $installer  The installer
-	 * @param   array        $package    The unpacked package
-	 * @param   string|null  $copy       The temporary copy of the package
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	private function planInstall(CommandIO $io, Installer $installer, array $package, $copy)
-	{
-		try
-		{
-			$installer->setPath('source', $package['dir']);
-			$found    = $installer->findManifest();
-			$manifest = $found ? $installer->getManifest() : null;
-		}
-		finally
-		{
-			$this->cleanup($copy, $package);
-		}
+    /**
+     * Report what installing the package would do, from its manifest.
+     *
+     * @param   CommandIO    $io         The input values and the output
+     * @param   Installer    $installer  The installer
+     * @param   array        $package    The unpacked package
+     * @param   string|null  $copy       The temporary copy of the package
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    private function planInstall(CommandIO $io, Installer $installer, array $package, $copy)
+    {
+        try {
+            $installer->setPath('source', $package['dir']);
+            $found    = $installer->findManifest();
+            $manifest = $found ? $installer->getManifest() : null;
+        } finally {
+            $this->cleanup($copy, $package);
+        }
 
-		if (!$manifest instanceof \SimpleXMLElement)
-		{
-			$io->error('The package has no valid installation manifest.');
+        if (!$manifest instanceof \SimpleXMLElement) {
+            $io->error('The package has no valid installation manifest.');
 
-			return self::INVALID;
-		}
+            return self::INVALID;
+        }
 
-		$type    = (string) $manifest->attributes()->type;
-		$name    = (string) $manifest->name;
-		$version = (string) $manifest->version;
+        $type    = (string) $manifest->attributes()->type;
+        $name    = (string) $manifest->name;
+        $version = (string) $manifest->version;
 
-		$io->setData('name', $name);
-		$io->setData('type', $type);
-		$io->setData('version', $version);
-		$io->plan(sprintf('Install the %s "%s" %s (or update it, when it\'s installed)', $type, $name, $version),
-			array('action' => 'install', 'type' => $type, 'name' => $name, 'version' => $version));
+        $io->setData('name', $name);
+        $io->setData('type', $type);
+        $io->setData('version', $version);
+        $io->plan(
+            sprintf('Install the %s "%s" %s (or update it, when it\'s installed)', $type, $name, $version),
+            array('action' => 'install', 'type' => $type, 'name' => $name, 'version' => $version)
+        );
 
-		return self::SUCCESS;
-	}
+        return self::SUCCESS;
+    }
 
-	/**
-	 * Remove the package copy and the folder it was extracted to.
-	 *
-	 * @param   string|null  $copy      The package file in the temporary folder
-	 * @param   array        $package   The package details
-	 *
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	private function cleanup($copy, array $package)
-	{
-		if ($copy || !empty($package['extractdir']))
-		{
-			InstallerHelper::cleanupInstall($copy ?: '', isset($package['extractdir']) ? $package['extractdir'] : '');
-		}
-	}
+    /**
+     * Remove the package copy and the folder it was extracted to.
+     *
+     * @param   string|null  $copy      The package file in the temporary folder
+     * @param   array        $package   The package details
+     *
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    private function cleanup($copy, array $package)
+    {
+        if ($copy || !empty($package['extractdir'])) {
+            InstallerHelper::cleanupInstall($copy ?: '', isset($package['extractdir']) ? $package['extractdir'] : '');
+        }
+    }
 }

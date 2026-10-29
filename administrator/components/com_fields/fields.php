@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_fields
@@ -12,17 +13,16 @@ JLoader::register('FieldsHelper', JPATH_ADMINISTRATOR . '/components/com_fields/
 
 $app       = JFactory::getApplication();
 $context   = $app->getUserStateFromRequest(
-	'com_fields.groups.context',
-	'context',
-	$app->getUserStateFromRequest('com_fields.fields.context', 'context', 'com_content.article', 'CMD'),
-	'CMD'
+    'com_fields.groups.context',
+    'context',
+    $app->getUserStateFromRequest('com_fields.fields.context', 'context', 'com_content.article', 'CMD'),
+    'CMD'
 );
 
 $parts = FieldsHelper::extract($context);
 
-if (!$parts || !JFactory::getUser()->authorise('core.manage', $parts[0]))
-{
-	throw new JAccessExceptionNotallowed(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+if (!$parts || !JFactory::getUser()->authorise('core.manage', $parts[0])) {
+    throw new JAccessExceptionNotallowed(JText::_('JERROR_ALERTNOAUTHOR'), 403);
 }
 
 $controller = JControllerLegacy::getInstance('Fields');

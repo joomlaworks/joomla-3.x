@@ -11,9 +11,8 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.styles');
 
-if ($params->get('dropdown', 0) && !$params->get('dropdownimage', 1))
-{
-	JHtml::_('formbehavior.chosen');
+if ($params->get('dropdown', 0) && !$params->get('dropdownimage', 1)) {
+    JHtml::_('formbehavior.chosen');
 }
 
 ?>

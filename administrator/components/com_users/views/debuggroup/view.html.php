@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_users
@@ -16,91 +17,88 @@ defined('_JEXEC') or die;
  */
 class UsersViewDebuggroup extends JViewLegacy
 {
-	protected $actions;
+    protected $actions;
 
-	/**
-	 * The item data.
-	 *
-	 * @var   object
-	 * @since 1.6
-	 */
-	protected $items;
+    /**
+     * The item data.
+     *
+     * @var   object
+     * @since 1.6
+     */
+    protected $items;
 
-	/**
-	 * The pagination object.
-	 *
-	 * @var   JPagination
-	 * @since 1.6
-	 */
-	protected $pagination;
+    /**
+     * The pagination object.
+     *
+     * @var   JPagination
+     * @since 1.6
+     */
+    protected $pagination;
 
-	/**
-	 * The model state.
-	 *
-	 * @var   JObject
-	 * @since 1.6
-	 */
-	protected $state;
+    /**
+     * The model state.
+     *
+     * @var   JObject
+     * @since 1.6
+     */
+    protected $state;
 
-	/**
-	 * Display the view
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  void
-	 */
-	public function display($tpl = null)
-	{
-		// Access check.
-		if (!JFactory::getUser()->authorise('core.manage', 'com_users'))
-		{
-			throw new JAccessExceptionNotallowed(JText::_('JERROR_ALERTNOAUTHOR'), 403);
-		}
+    /**
+     * Display the view
+     *
+     * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+     *
+     * @return  void
+     */
+    public function display($tpl = null)
+    {
+        // Access check.
+        if (!JFactory::getUser()->authorise('core.manage', 'com_users')) {
+            throw new JAccessExceptionNotallowed(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+        }
 
-		$this->actions       = $this->get('DebugActions');
-		$this->items         = $this->get('Items');
-		$this->pagination    = $this->get('Pagination');
-		$this->state         = $this->get('State');
-		$this->group         = $this->get('Group');
-		$this->filterForm    = $this->get('FilterForm');
-		$this->activeFilters = $this->get('ActiveFilters');
+        $this->actions       = $this->get('DebugActions');
+        $this->items         = $this->get('Items');
+        $this->pagination    = $this->get('Pagination');
+        $this->state         = $this->get('State');
+        $this->group         = $this->get('Group');
+        $this->filterForm    = $this->get('FilterForm');
+        $this->activeFilters = $this->get('ActiveFilters');
 
-		// Vars only used in hathor.
-		// @deprecated  4.0 To be removed with Hathor
-		$this->levels        = UsersHelperDebug::getLevelsOptions();
-		$this->components    = UsersHelperDebug::getComponents();
+        // Vars only used in hathor.
+        // @deprecated  4.0 To be removed with Hathor
+        $this->levels        = UsersHelperDebug::getLevelsOptions();
+        $this->components    = UsersHelperDebug::getComponents();
 
-		// Check for errors.
-		if (count($errors = $this->get('Errors')))
-		{
-			throw new Exception(implode("\n", $errors), 500);
-		}
+        // Check for errors.
+        if (count($errors = $this->get('Errors'))) {
+            throw new Exception(implode("\n", $errors), 500);
+        }
 
-		$this->addToolbar();
+        $this->addToolbar();
 
-		parent::display($tpl);
-	}
+        parent::display($tpl);
+    }
 
-	/**
-	 * Add the page title and toolbar.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 */
-	protected function addToolbar()
-	{
-		$canDo = JHelperContent::getActions('com_users');
+    /**
+     * Add the page title and toolbar.
+     *
+     * @return  void
+     *
+     * @since   1.6
+     */
+    protected function addToolbar()
+    {
+        $canDo = JHelperContent::getActions('com_users');
 
-		JToolbarHelper::title(JText::sprintf('COM_USERS_VIEW_DEBUG_GROUP_TITLE', $this->group->id, $this->escape($this->group->title)), 'users groups');
-		JToolbarHelper::cancel('group.cancel', 'JTOOLBAR_CLOSE');
+        JToolbarHelper::title(JText::sprintf('COM_USERS_VIEW_DEBUG_GROUP_TITLE', $this->group->id, $this->escape($this->group->title)), 'users groups');
+        JToolbarHelper::cancel('group.cancel', 'JTOOLBAR_CLOSE');
 
-		if ($canDo->get('core.admin') || $canDo->get('core.options'))
-		{
-			JToolbarHelper::preferences('com_users');
-			JToolbarHelper::divider();
-		}
+        if ($canDo->get('core.admin') || $canDo->get('core.options')) {
+            JToolbarHelper::preferences('com_users');
+            JToolbarHelper::divider();
+        }
 
-		JToolbarHelper::help('JHELP_USERS_DEBUG_GROUPS');
-	}
+        JToolbarHelper::help('JHELP_USERS_DEBUG_GROUPS');
+    }
 }

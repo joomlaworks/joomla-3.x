@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_users
@@ -18,24 +19,24 @@ JFormHelper::loadFieldClass('list');
  */
 class JFormFieldLevels extends JFormFieldList
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var     string
-	 * @since   3.6.0
-	 */
-	protected $type = 'Levels';
+    /**
+     * The form field type.
+     *
+     * @var     string
+     * @since   3.6.0
+     */
+    protected $type = 'Levels';
 
-	/**
-	 * Method to get the field options.
-	 *
-	 * @return  array  The field option objects
-	 *
-	 * @since   3.6.0
-	 */
-	protected function getOptions()
-	{
-		// Merge any additional options in the XML definition.
-		return array_merge(parent::getOptions(), UsersHelperDebug::getLevelsOptions());
-	}
+    /**
+     * Method to get the field options.
+     *
+     * @return  array  The field option objects
+     *
+     * @since   3.6.0
+     */
+    protected function getOptions()
+    {
+        // Merge any additional options in the XML definition.
+        return array_merge(parent::getOptions(), UsersHelperDebug::getLevelsOptions());
+    }
 }

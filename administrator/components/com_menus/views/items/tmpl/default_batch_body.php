@@ -9,15 +9,15 @@
 defined('_JEXEC') or die;
 
 $options = array(
-	JHtml::_('select.option', 'c', JText::_('JLIB_HTML_BATCH_COPY')),
-	JHtml::_('select.option', 'm', JText::_('JLIB_HTML_BATCH_MOVE'))
+    JHtml::_('select.option', 'c', JText::_('JLIB_HTML_BATCH_COPY')),
+    JHtml::_('select.option', 'm', JText::_('JLIB_HTML_BATCH_MOVE'))
 );
 $published = (int) $this->state->get('filter.published');
 $clientId  = (int) $this->state->get('filter.client_id');
 $menuType  = JFactory::getApplication()->getUserState('com_menus.items.menutype');
 if ($clientId == 1) :
-	JFactory::getDocument()->addScriptDeclaration(
-		'
+    JFactory::getDocument()->addScriptDeclaration(
+        '
 			jQuery(document).ready(function($){
 				if ($("#batch-menu-id").length){var batchSelector = $("#batch-menu-id");}
 				if ($("#batch-copy-move").length) {
@@ -32,7 +32,7 @@ if ($clientId == 1) :
 				}
 			});
 		'
-	);
+    );
 endif;
 
 ?>
@@ -62,13 +62,13 @@ endif;
 					<select name="batch[menu_id]" id="batch-menu-id">
 						<option value=""><?php echo JText::_('JLIB_HTML_BATCH_NO_CATEGORY'); ?></option>
 						<?php
-						$opts     = array(
-							'published' => $this->state->get('filter.published'),
-							'checkacl'  => (int) $this->state->get('menutypeid'),
-							'clientid'  => (int) $clientId,
-						);
-						echo JHtml::_('select.options', JHtml::_('menu.menuitems', $opts));
-						?>
+                        $opts     = array(
+                            'published' => $this->state->get('filter.published'),
+                            'checkacl'  => (int) $this->state->get('menutypeid'),
+                            'clientid'  => (int) $clientId,
+                        );
+		    echo JHtml::_('select.options', JHtml::_('menu.menuitems', $opts));
+		    ?>
 					</select>
 				</div>
 			</div>

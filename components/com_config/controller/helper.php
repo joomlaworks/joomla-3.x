@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_config
@@ -16,105 +17,84 @@ defined('_JEXEC') or die;
  */
 class ConfigControllerHelper
 {
-	/**
-	 * Method to parse a controller from a url
-	 * Defaults to the base controllers and passes an array of options.
-	 * $options[0] is the location of the controller which defaults to the core libraries (referenced as 'j'
-	 * and then the named folder within the component entry point file.
-	 * $options[1] is the name of the controller file,
-	 * $options[2] is the name of the folder found in the component controller folder for controllers
-	 * not prefixed with Config.
-	 * Additional options maybe added to parameterize the controller.
-	 *
-	 * @param   JApplicationBase  $app  An application object
-	 *
-	 * @return  JController  A JController object
-	 *
-	 * @since   3.2
-	 */
-	public function parseController($app)
-	{
-		$tasks = array();
+    /**
+     * Method to parse a controller from a url
+     * Defaults to the base controllers and passes an array of options.
+     * $options[0] is the location of the controller which defaults to the core libraries (referenced as 'j'
+     * and then the named folder within the component entry point file.
+     * $options[1] is the name of the controller file,
+     * $options[2] is the name of the folder found in the component controller folder for controllers
+     * not prefixed with Config.
+     * Additional options maybe added to parameterize the controller.
+     *
+     * @param   JApplicationBase  $app  An application object
+     *
+     * @return  JController  A JController object
+     *
+     * @since   3.2
+     */
+    public function parseController($app)
+    {
+        $tasks = array();
 
-		if ($task = $app->input->get('task'))
-		{
-			// Toolbar expects old style but we are using new style
-			// Remove when toolbar can handle either directly
-			if (strpos((string) $task, '/') !== false)
-			{
-				$tasks = explode('/', (string) $task);
-			}
-			else
-			{
-				$tasks = explode('.', (string) $task);
-			}
-		}
-		elseif ($controllerTask = $app->input->get('controller'))
-		{
-			// Temporary solution
-			if (strpos((string) $controllerTask, '/') !== false)
-			{
-				$tasks = explode('/', (string) $controllerTask);
-			}
-			else
-			{
-				$tasks = explode('.', (string) $controllerTask);
-			}
-		}
+        if ($task = $app->input->get('task')) {
+            // Toolbar expects old style but we are using new style
+            // Remove when toolbar can handle either directly
+            if (strpos((string) $task, '/') !== false) {
+                $tasks = explode('/', (string) $task);
+            } else {
+                $tasks = explode('.', (string) $task);
+            }
+        } elseif ($controllerTask = $app->input->get('controller')) {
+            // Temporary solution
+            if (strpos((string) $controllerTask, '/') !== false) {
+                $tasks = explode('/', (string) $controllerTask);
+            } else {
+                $tasks = explode('.', (string) $controllerTask);
+            }
+        }
 
-		if (empty($tasks[0]) || $tasks[0] === 'Config')
-		{
-			$location = 'Config';
-		}
-		else
-		{
-			$location = ucfirst(strtolower($tasks[0]));
-		}
+        if (empty($tasks[0]) || $tasks[0] === 'Config') {
+            $location = 'Config';
+        } else {
+            $location = ucfirst(strtolower($tasks[0]));
+        }
 
-		if (empty($tasks[1]))
-		{
-			$activity = 'Display';
-		}
-		else
-		{
-			$activity = ucfirst(strtolower($tasks[1]));
-		}
+        if (empty($tasks[1])) {
+            $activity = 'Display';
+        } else {
+            $activity = ucfirst(strtolower($tasks[1]));
+        }
 
-		$view = '';
+        $view = '';
 
-		if (!empty($tasks[2]))
-		{
-			$view = ucfirst(strtolower($tasks[2]));
-		}
+        if (!empty($tasks[2])) {
+            $view = ucfirst(strtolower($tasks[2]));
+        }
 
-		// Some special handling for com_config administrator
-		$option = $app->input->get('option');
+        // Some special handling for com_config administrator
+        $option = $app->input->get('option');
 
-		if ($option === 'com_config' && $app->isClient('administrator'))
-		{
-			$component = $app->input->get('component');
+        if ($option === 'com_config' && $app->isClient('administrator')) {
+            $component = $app->input->get('component');
 
-			if (!empty($component))
-			{
-				$view = 'Component';
-			}
-			elseif ($option === 'com_config')
-			{
-				$view = 'Application';
-			}
-		}
+            if (!empty($component)) {
+                $view = 'Component';
+            } elseif ($option === 'com_config') {
+                $view = 'Application';
+            }
+        }
 
-		$controllerName = $location . 'Controller' . $view . $activity;
+        $controllerName = $location . 'Controller' . $view . $activity;
 
-		if (!class_exists($controllerName))
-		{
-			return false;
-		}
+        if (!class_exists($controllerName)) {
+            return false;
+        }
 
-		$controller = new $controllerName;
-		$controller->options = array();
-		$controller->options = $tasks;
+        $controller = new $controllerName();
+        $controller->options = array();
+        $controller->options = $tasks;
 
-		return $controller;
-	}
+        return $controller;
+    }
 }

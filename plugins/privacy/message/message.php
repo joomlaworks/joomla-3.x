@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Privacy.message
@@ -18,41 +19,39 @@ JLoader::register('PrivacyPlugin', JPATH_ADMINISTRATOR . '/components/com_privac
  */
 class PlgPrivacyMessage extends PrivacyPlugin
 {
-	/**
-	 * Processes an export request for Joomla core user message
-	 *
-	 * This event will collect data for the message table
-	 *
-	 * @param   PrivacyTableRequest  $request  The request record being processed
-	 * @param   JUser                $user     The user account associated with this request if available
-	 *
-	 * @return  PrivacyExportDomain[]
-	 *
-	 * @since   3.9.0
-	 */
-	public function onPrivacyExportRequest(PrivacyTableRequest $request, ?JUser $user = null)
-	{
-		if (!$user)
-		{
-			return array();
-		}
+    /**
+     * Processes an export request for Joomla core user message
+     *
+     * This event will collect data for the message table
+     *
+     * @param   PrivacyTableRequest  $request  The request record being processed
+     * @param   JUser                $user     The user account associated with this request if available
+     *
+     * @return  PrivacyExportDomain[]
+     *
+     * @since   3.9.0
+     */
+    public function onPrivacyExportRequest(PrivacyTableRequest $request, ?JUser $user = null)
+    {
+        if (!$user) {
+            return array();
+        }
 
-		$domain = $this->createDomain('user_messages', 'joomla_user_messages_data');
+        $domain = $this->createDomain('user_messages', 'joomla_user_messages_data');
 
-		$query = $this->db->getQuery(true)
-			->select('*')
-			->from($this->db->quoteName('#__messages'))
-			->where($this->db->quoteName('user_id_from') . ' = ' . (int) $user->id)
-			->orWhere($this->db->quoteName('user_id_to') . ' = ' . (int) $user->id)
-			->order($this->db->quoteName('date_time') . ' ASC');
+        $query = $this->db->getQuery(true)
+            ->select('*')
+            ->from($this->db->quoteName('#__messages'))
+            ->where($this->db->quoteName('user_id_from') . ' = ' . (int) $user->id)
+            ->orWhere($this->db->quoteName('user_id_to') . ' = ' . (int) $user->id)
+            ->order($this->db->quoteName('date_time') . ' ASC');
 
-		$items = $this->db->setQuery($query)->loadAssocList();
+        $items = $this->db->setQuery($query)->loadAssocList();
 
-		foreach ($items as $item)
-		{
-			$domain->addItem($this->createItemFromArray($item));
-		}
+        foreach ($items as $item) {
+            $domain->addItem($this->createItemFromArray($item));
+        }
 
-		return array($domain);
-	}
+        return array($domain);
+    }
 }

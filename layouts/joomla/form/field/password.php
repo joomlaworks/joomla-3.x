@@ -45,21 +45,19 @@ extract($displayData);
  * @var   boolean  $lock            Is this field locked.
  */
 
-if ($meter)
-{
-	// CMS.password (global.js): the bar under the field, and data-passwordstrength on it
-	JHtml::_('behavior.cms');
-	JFactory::getDocument()->addScriptDeclaration(
-		'CMS.ready(function () { CMS.password.meter(' . json_encode($id, JSON_HEX_TAG | JSON_HEX_AMP) . ', {threshold: ' . (int) $threshold . '}); });'
-	);
+if ($meter) {
+    // CMS.password (global.js): the bar under the field, and data-passwordstrength on it
+    JHtml::_('behavior.cms');
+    JFactory::getDocument()->addScriptDeclaration(
+        'CMS.ready(function () { CMS.password.meter(' . json_encode($id, JSON_HEX_TAG | JSON_HEX_AMP) . ', {threshold: ' . (int) $threshold . '}); });'
+    );
 }
 
-if ($lock)
-{
-	// The lock's button (jQuery)
-	JHtml::_('jquery.framework');
-	JFactory::getDocument()->addScriptDeclaration(
-			"
+if ($lock) {
+    // The lock's button (jQuery)
+    JHtml::_('jquery.framework');
+    JFactory::getDocument()->addScriptDeclaration(
+        "
 		jQuery(document).ready(function() {
 			jQuery('#" . $id ."_lock').on('click', function() {
 				var lockButton = jQuery(this);
@@ -78,23 +76,23 @@ if ($lock)
 				}
 			});
 		});"
-	);
+    );
 
-	$disabled = true;
-	$hint = str_repeat('*', strlen($value));
-	$value = '';
+    $disabled = true;
+    $hint = str_repeat('*', strlen($value));
+    $value = '';
 }
 
 $attributes = array(
-	strlen($hint) ? 'placeholder="' . htmlspecialchars($hint, ENT_COMPAT, 'UTF-8') . '"' : '',
-	!$autocomplete ? 'autocomplete="off"' : '',
-	!empty($class) ? 'class="' . $class . '"' : '',
-	$readonly ? 'readonly' : '',
-	$disabled ? 'disabled' : '',
-	!empty($size) ? 'size="' . $size . '"' : '',
-	!empty($maxLength) ? 'maxlength="' . $maxLength . '"' : '',
-	$required ? 'required aria-required="true"' : '',
-	$autofocus ? 'autofocus' : '',
+    strlen($hint) ? 'placeholder="' . htmlspecialchars($hint, ENT_COMPAT, 'UTF-8') . '"' : '',
+    !$autocomplete ? 'autocomplete="off"' : '',
+    !empty($class) ? 'class="' . $class . '"' : '',
+    $readonly ? 'readonly' : '',
+    $disabled ? 'disabled' : '',
+    !empty($size) ? 'size="' . $size . '"' : '',
+    !empty($maxLength) ? 'maxlength="' . $maxLength . '"' : '',
+    $required ? 'required aria-required="true"' : '',
+    $autofocus ? 'autofocus' : '',
 );
 
 ?>

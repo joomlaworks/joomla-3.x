@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_config
@@ -16,36 +17,33 @@ defined('_JEXEC') or die;
  */
 class ConfigController extends JControllerLegacy
 {
-	/**
-	 * @var    string  The default view.
-	 * @since  1.6
-	 */
-	protected $default_view = 'application';
+    /**
+     * @var    string  The default view.
+     * @since  1.6
+     */
+    protected $default_view = 'application';
 
-	/**
-	 * Method to display the view.
-	 *
-	 * @param   boolean  $cachable   If true, the view output will be cached
-	 * @param   array    $urlparams  An array of safe URL parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
-	 *
-	 * @return  ConfigController  This object to support chaining.
-	 *
-	 * @since   1.5
-	 */
-	public function display($cachable = false, $urlparams = array())
-	{
-		// Set the default view name and format from the Request.
-		$vName = $this->input->get('view', 'application');
+    /**
+     * Method to display the view.
+     *
+     * @param   boolean  $cachable   If true, the view output will be cached
+     * @param   array    $urlparams  An array of safe URL parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+     *
+     * @return  ConfigController  This object to support chaining.
+     *
+     * @since   1.5
+     */
+    public function display($cachable = false, $urlparams = array())
+    {
+        // Set the default view name and format from the Request.
+        $vName = $this->input->get('view', 'application');
 
-		if (ucfirst((string) $vName) == 'Application')
-		{
-			$controller = new ConfigControllerApplicationDisplay;
-		}
-		elseif (ucfirst((string) $vName) == 'Component')
-		{
-			$controller = new ConfigControllerComponentDisplay;
-		}
+        if (ucfirst((string) $vName) == 'Application') {
+            $controller = new ConfigControllerApplicationDisplay();
+        } elseif (ucfirst((string) $vName) == 'Component') {
+            $controller = new ConfigControllerComponentDisplay();
+        }
 
-		return $controller->execute();
-	}
+        return $controller->execute();
+    }
 }

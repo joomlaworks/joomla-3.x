@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_config
@@ -22,13 +23,12 @@ JLoader::registerPrefix('Config', JPATH_ROOT . '/components/com_config');
 // Application
 $app = JFactory::getApplication();
 
-$controllerHelper = new ConfigControllerHelper;
+$controllerHelper = new ConfigControllerHelper();
 $controller = $controllerHelper->parseController($app);
 
 // A task without a controller (e.g. mistyped) is a missing page, not a fatal error
-if (!$controller)
-{
-	throw new Exception(JText::sprintf('JLIB_APPLICATION_ERROR_TASK_NOT_FOUND', $app->input->get('task', $app->input->get('controller'))), 404);
+if (!$controller) {
+    throw new Exception(JText::sprintf('JLIB_APPLICATION_ERROR_TASK_NOT_FOUND', $app->input->get('task', $app->input->get('controller'))), 404);
 }
 
 $controller->prefix = 'Config';

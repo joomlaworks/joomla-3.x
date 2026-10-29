@@ -47,52 +47,44 @@ extract($displayData);
 
 // The list of users opens in the CMS's modal (global.js: CMS.userField); its links call jSelectUser(). The address is
 // completed with the field's id when the button is clicked, so subform rows added later find their own field
-if (!$readonly)
-{
-	JHtml::_('behavior.cms');
-	JText::script('JLIB_FORM_CHANGE_USER');
+if (!$readonly) {
+    JHtml::_('behavior.cms');
+    JText::script('JLIB_FORM_CHANGE_USER');
 }
 
 $uri = new JUri('index.php?option=com_users&view=users&layout=modal&tmpl=component&required=0&field={field-user-id}');
 
-if ($required)
-{
-	$uri->setVar('required', 1);
+if ($required) {
+    $uri->setVar('required', 1);
 }
 
-if (!empty($groups))
-{
-	$uri->setVar('groups', base64_encode(json_encode($groups)));
+if (!empty($groups)) {
+    $uri->setVar('groups', base64_encode(json_encode($groups)));
 }
 
-if (!empty($excluded))
-{
-	$uri->setVar('excluded', base64_encode(json_encode($excluded)));
+if (!empty($excluded)) {
+    $uri->setVar('excluded', base64_encode(json_encode($excluded)));
 }
 
 // Invalidate the input value if no user selected
-if ($this->escape($userName) === JText::_('JLIB_FORM_SELECT_USER'))
-{
-	$userName = '';
+if ($this->escape($userName) === JText::_('JLIB_FORM_SELECT_USER')) {
+    $userName = '';
 }
 
 $inputAttributes = array(
-	'type' => 'text', 'id' => $id, 'class' => trim('field-user-input-name ' . $class), 'value' => $this->escape($userName)
+    'type' => 'text', 'id' => $id, 'class' => trim('field-user-input-name ' . $class), 'value' => $this->escape($userName)
 );
 
-if ($size)
-{
-	$inputAttributes['size'] = (int) $size;
+if ($size) {
+    $inputAttributes['size'] = (int) $size;
 }
 
-if ($required)
-{
-	$inputAttributes['required'] = 'required';
+if ($required) {
+    $inputAttributes['required'] = 'required';
 }
 
-if (!$readonly)
-{
-	$inputAttributes['placeholder'] = JText::_('JLIB_FORM_SELECT_USER');
+if (!$readonly) {
+    $inputAttributes['placeholder'] = JText::_('JLIB_FORM_SELECT_USER');
 }
 ?>
 <div class="field-user-wrapper" data-url="<?php echo $this->escape(str_replace('%7Bfield-user-id%7D', '{field-user-id}', (string) $uri)); ?>">

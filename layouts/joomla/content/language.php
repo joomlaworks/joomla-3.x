@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  Layout
@@ -11,19 +12,12 @@ defined('_JEXEC') or die;
 
 $item = $displayData;
 
-if ($item->language === '*')
-{
-	echo JText::alt('JALL', 'language');
-}
-elseif ($item->language_image)
-{
-	echo JHtml::_('image', 'system/flags/' . $item->language_image . '.webp', '', null, true) . '&nbsp;' . htmlspecialchars((string) $item->language_title, ENT_COMPAT, 'UTF-8');
-}
-elseif ($item->language_title)
-{
-	echo htmlspecialchars((string) $item->language_title, ENT_COMPAT, 'UTF-8');
-}
-else
-{
-	echo JText::_('JUNDEFINED');
+if ($item->language === '*') {
+    echo JText::alt('JALL', 'language');
+} elseif ($item->language_image) {
+    echo JHtml::_('image', 'system/flags/' . $item->language_image . '.webp', '', null, true) . '&nbsp;' . htmlspecialchars((string) $item->language_title, ENT_COMPAT, 'UTF-8');
+} elseif ($item->language_title) {
+    echo htmlspecialchars((string) $item->language_title, ENT_COMPAT, 'UTF-8');
+} else {
+    echo JText::_('JUNDEFINED');
 }

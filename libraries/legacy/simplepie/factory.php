@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Legacy
  * @subpackage  Simplepie
@@ -21,51 +22,48 @@ jimport('simplepie.simplepie');
  */
 class JSimplepieFactory
 {
-	/**
-	 * Get a parsed XML Feed Source
-	 *
-	 * @param   string   $url        URL for feed source.
-	 * @param   integer  $cacheTime  Time to cache feed for (using internal cache mechanism).
-	 *
-	 * @return  SimplePie|boolean  SimplePie parsed object on success, false on failure.
-	 *
-	 * @since   3.0
-	 * @deprecated  3.0  Use JFeedFactory($url) instead.
-	 */
-	public static function getFeedParser($url, $cacheTime = 0)
-	{
-		JLog::add(__METHOD__ . ' is deprecated.   Use JFeedFactory() or supply Simple Pie instead.', JLog::WARNING, 'deprecated');
+    /**
+     * Get a parsed XML Feed Source
+     *
+     * @param   string   $url        URL for feed source.
+     * @param   integer  $cacheTime  Time to cache feed for (using internal cache mechanism).
+     *
+     * @return  SimplePie|boolean  SimplePie parsed object on success, false on failure.
+     *
+     * @since   3.0
+     * @deprecated  3.0  Use JFeedFactory($url) instead.
+     */
+    public static function getFeedParser($url, $cacheTime = 0)
+    {
+        JLog::add(__METHOD__ . ' is deprecated.   Use JFeedFactory() or supply Simple Pie instead.', JLog::WARNING, 'deprecated');
 
-		// SimplePie 1.9 needs PHP 7.2: its constructor ends the request on older PHP
-		if (PHP_VERSION_ID < 70200)
-		{
-			JLog::add(JText::_('JLIB_UTIL_ERROR_LOADING_FEED_DATA') . ' (SimplePie needs PHP 7.2 or newer)', JLog::WARNING, 'jerror');
+        // SimplePie 1.9 needs PHP 7.2: its constructor ends the request on older PHP
+        if (PHP_VERSION_ID < 70200) {
+            JLog::add(JText::_('JLIB_UTIL_ERROR_LOADING_FEED_DATA') . ' (SimplePie needs PHP 7.2 or newer)', JLog::WARNING, 'jerror');
 
-			return false;
-		}
+            return false;
+        }
 
-		$cache = JFactory::getCache('feed_parser', 'callback');
+        $cache = JFactory::getCache('feed_parser', 'callback');
 
-		if ($cacheTime > 0)
-		{
-			$cache->setLifeTime($cacheTime);
-		}
+        if ($cacheTime > 0) {
+            $cache->setLifeTime($cacheTime);
+        }
 
-		$simplepie = new SimplePie;
+        $simplepie = new SimplePie();
 
-		$simplepie->enable_cache(false);
-		$simplepie->set_feed_url($url);
-		$simplepie->force_feed(true);
+        $simplepie->enable_cache(false);
+        $simplepie->set_feed_url($url);
+        $simplepie->force_feed(true);
 
-		$contents = $cache->get(array($simplepie, 'init'), null, false, false);
+        $contents = $cache->get(array($simplepie, 'init'), null, false, false);
 
-		if ($contents)
-		{
-			return $simplepie;
-		}
+        if ($contents) {
+            return $simplepie;
+        }
 
-		JLog::add(JText::_('JLIB_UTIL_ERROR_LOADING_FEED_DATA'), JLog::WARNING, 'jerror');
+        JLog::add(JText::_('JLIB_UTIL_ERROR_LOADING_FEED_DATA'), JLog::WARNING, 'jerror');
 
-		return false;
-	}
+        return false;
+    }
 }

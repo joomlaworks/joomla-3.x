@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  mod_articles_categories
@@ -18,7 +19,7 @@ JLoader::register('JCategoryNode', JPATH_BASE . '/libraries/legacy/categories/ca
 
 $cacheid = md5((string) $module->id);
 
-$cacheparams               = new stdClass;
+$cacheparams               = new stdClass();
 $cacheparams->cachemode    = 'id';
 $cacheparams->class        = 'ModArticlesCategoriesHelper';
 $cacheparams->method       = 'getList';
@@ -27,10 +28,9 @@ $cacheparams->modeparams   = $cacheid;
 
 $list = JModuleHelper::moduleCache($module, $params, $cacheparams);
 
-if (!empty($list))
-{
-	$moduleclass_sfx = htmlspecialchars((string) $params->get('moduleclass_sfx', ''), ENT_COMPAT, 'UTF-8');
-	$startLevel      = reset($list)->getParent()->level;
+if (!empty($list)) {
+    $moduleclass_sfx = htmlspecialchars((string) $params->get('moduleclass_sfx', ''), ENT_COMPAT, 'UTF-8');
+    $startLevel      = reset($list)->getParent()->level;
 
-	require JModuleHelper::getLayoutPath('mod_articles_categories', $params->get('layout', 'default'));
+    require JModuleHelper::getLayoutPath('mod_articles_categories', $params->get('layout', 'default'));
 }

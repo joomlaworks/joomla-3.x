@@ -15,16 +15,15 @@ $user = JFactory::getUser();
 ?>
 <div class="row-fluid">
 	<?php $iconmodules = JModuleHelper::getModules('icon');
-	if ($iconmodules) : ?>
+if ($iconmodules) : ?>
 		<div class="span3">
 			<div class="cpanel-links">
 				<?php
-				// Display the submenu position modules
-				foreach ($iconmodules as $iconmodule)
-				{
-					echo JModuleHelper::renderModule($iconmodule);
-				}
-				?>
+            // Display the submenu position modules
+            foreach ($iconmodules as $iconmodule) {
+                echo JModuleHelper::renderModule($iconmodule);
+            }
+    ?>
 			</div>
 		</div>
 	<?php endif; ?>
@@ -51,26 +50,23 @@ $user = JFactory::getUser();
 		<?php endif; ?>
 		<div class="row-fluid">
 			<?php
-			$spans = 0;
+            $spans = 0;
 
-			foreach ($this->modules as $module)
-			{
-				// Get module parameters
-				$params = new Registry($module->params);
-				$bootstrapSize = $params->get('bootstrap_size');
-				if (!$bootstrapSize)
-				{
-					$bootstrapSize = 12;
-				}
-				$spans += $bootstrapSize;
-				if ($spans > 12)
-				{
-					echo '</div><div class="row-fluid">';
-					$spans = $bootstrapSize;
-				}
-				echo JModuleHelper::renderModule($module, array('style' => 'well'));
-			}
-			?>
+foreach ($this->modules as $module) {
+    // Get module parameters
+    $params = new Registry($module->params);
+    $bootstrapSize = $params->get('bootstrap_size');
+    if (!$bootstrapSize) {
+        $bootstrapSize = 12;
+    }
+    $spans += $bootstrapSize;
+    if ($spans > 12) {
+        echo '</div><div class="row-fluid">';
+        $spans = $bootstrapSize;
+    }
+    echo JModuleHelper::renderModule($module, array('style' => 'well'));
+}
+?>
 		</div>
 	</div>
 </div>

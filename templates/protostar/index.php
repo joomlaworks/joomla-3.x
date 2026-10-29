@@ -43,15 +43,14 @@ JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true)
 JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
 
 // Use of Google Font
-if ($this->params->get('googleFont'))
-{
-	$font = $this->params->get('googleFontName');
+if ($this->params->get('googleFont')) {
+    $font = $this->params->get('googleFontName');
 
-	// Handle fonts with selected weights and styles, e.g. Source+Sans+Condensed:400,400i
-	$fontStyle = str_replace('+', ' ', strstr((string) $font, ':', true) ?: $font);
+    // Handle fonts with selected weights and styles, e.g. Source+Sans+Condensed:400,400i
+    $fontStyle = str_replace('+', ' ', strstr((string) $font, ':', true) ?: $font);
 
-	JHtml::_('stylesheet', 'https://fonts.googleapis.com/css?family=' . $font);
-	$this->addStyleDeclaration("
+    JHtml::_('stylesheet', 'https://fonts.googleapis.com/css?family=' . $font);
+    $this->addStyleDeclaration("
 	h1, h2, h3, h4, h5, h6, .site-title {
 		font-family: '" . $fontStyle . "', sans-serif;
 	}");
@@ -65,10 +64,9 @@ require_once __DIR__ . '/helper.php';
 
 $optionColors = protostarOptionColors($this->params);
 
-if ($optionColors['properties'] !== '')
-{
-	JHtml::_('stylesheet', 'template-options.css', array('version' => 'auto', 'relative' => true));
-	$this->addStyleDeclaration(':root {' . $optionColors['properties'] . '}');
+if ($optionColors['properties'] !== '') {
+    JHtml::_('stylesheet', 'template-options.css', array('version' => 'auto', 'relative' => true));
+    $this->addStyleDeclaration(':root {' . $optionColors['properties'] . '}');
 }
 
 // Check for a custom js file
@@ -81,35 +79,23 @@ JHtml::_('bootstrap.loadCss', false, $this->direction);
 $position7ModuleCount = $this->countModules('position-7');
 $position8ModuleCount = $this->countModules('position-8');
 
-if ($position7ModuleCount && $position8ModuleCount)
-{
-	$span = 'span6';
-}
-elseif ($position7ModuleCount && !$position8ModuleCount)
-{
-	$span = 'span9';
-}
-elseif (!$position7ModuleCount && $position8ModuleCount)
-{
-	$span = 'span9';
-}
-else
-{
-	$span = 'span12';
+if ($position7ModuleCount && $position8ModuleCount) {
+    $span = 'span6';
+} elseif ($position7ModuleCount && !$position8ModuleCount) {
+    $span = 'span9';
+} elseif (!$position7ModuleCount && $position8ModuleCount) {
+    $span = 'span9';
+} else {
+    $span = 'span12';
 }
 
 // Logo file or site title param
-if ($this->params->get('logoFile'))
-{
-	$logo = '<img src="' . htmlspecialchars(JUri::root() . $this->params->get('logoFile'), ENT_QUOTES) . '" alt="' . $sitename . '" />';
-}
-elseif ($this->params->get('sitetitle'))
-{
-	$logo = '<span class="site-title" title="' . $sitename . '">' . htmlspecialchars((string) $this->params->get('sitetitle'), ENT_COMPAT, 'UTF-8') . '</span>';
-}
-else
-{
-	$logo = '<span class="site-title" title="' . $sitename . '">' . $sitename . '</span>';
+if ($this->params->get('logoFile')) {
+    $logo = '<img src="' . htmlspecialchars(JUri::root() . $this->params->get('logoFile'), ENT_QUOTES) . '" alt="' . $sitename . '" />';
+} elseif ($this->params->get('sitetitle')) {
+    $logo = '<span class="site-title" title="' . $sitename . '">' . htmlspecialchars((string) $this->params->get('sitetitle'), ENT_COMPAT, 'UTF-8') . '</span>';
+} else {
+    $logo = '<span class="site-title" title="' . $sitename . '">' . $sitename . '</span>';
 }
 ?>
 <!DOCTYPE html>
@@ -119,17 +105,17 @@ else
 	<jdoc:include type="head" />
 </head>
 <body class="site <?php echo $option
-	. ' view-' . $view
-	. ($layout ? ' layout-' . $layout : ' no-layout')
-	. ($task ? ' task-' . $task : ' no-task')
-	. ($itemid ? ' itemid-' . $itemid : '')
-	. ($params->get('fluidContainer') ? ' fluid' : '')
-	. ($this->direction === 'rtl' ? ' rtl' : '')
-	. $optionColors['classes'];
+    . ' view-' . $view
+    . ($layout ? ' layout-' . $layout : ' no-layout')
+    . ($task ? ' task-' . $task : ' no-task')
+    . ($itemid ? ' itemid-' . $itemid : '')
+    . ($params->get('fluidContainer') ? ' fluid' : '')
+    . ($this->direction === 'rtl' ? ' rtl' : '')
+    . $optionColors['classes'];
 ?>">
 	<!-- Body -->
 	<div class="body" id="top">
-		<div class="container<?php echo ($params->get('fluidContainer') ? '-fluid' : ''); ?>">
+		<div class="container<?php echo($params->get('fluidContainer') ? '-fluid' : ''); ?>">
 			<!-- Header -->
 			<header class="header" role="banner">
 				<div class="header-inner clearfix">
@@ -191,7 +177,7 @@ else
 	</div>
 	<!-- Footer -->
 	<footer class="footer" role="contentinfo">
-		<div class="container<?php echo ($params->get('fluidContainer') ? '-fluid' : ''); ?>">
+		<div class="container<?php echo($params->get('fluidContainer') ? '-fluid' : ''); ?>">
 			<hr />
 			<jdoc:include type="modules" name="footer" style="none" />
 			<p class="pull-right">

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,39 +18,39 @@ defined('JPATH_PLATFORM') or die;
  */
 abstract class AbstractArticleStateCommand extends AbstractStateCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.18.0
-	 */
-	protected $component = 'com_content';
+    /**
+     * @var    string
+     * @since  3.18.0
+     */
+    protected $component = 'com_content';
 
-	/**
-	 * @var    string[]
-	 * @since  3.17.0
-	 */
-	protected $model = array('com_content', 'Article', 'ContentModel');
+    /**
+     * @var    string[]
+     * @since  3.17.0
+     */
+    protected $model = array('com_content', 'Article', 'ContentModel');
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $item = 'article';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $item = 'article';
 
-	/**
-	 * @var    string[]
-	 * @since  3.17.0
-	 */
-	protected $table = array('#__content', 'title', 'state');
+    /**
+     * @var    string[]
+     * @since  3.17.0
+     */
+    protected $table = array('#__content', 'title', 'state');
 
-	/**
-	 * @param   object  $row  The item
-	 *
-	 * @return  string
-	 *
-	 * @since   3.17.0
-	 */
-	protected function getAssetName($row)
-	{
-		return 'com_content.article.' . (int) $row->id;
-	}
+    /**
+     * @param   object  $row  The item
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    protected function getAssetName($row)
+    {
+        return 'com_content.article.' . (int) $row->id;
+    }
 }

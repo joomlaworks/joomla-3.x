@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Fields.User
@@ -10,32 +11,28 @@ defined('_JEXEC') or die;
 
 $value = $field->value;
 
-if ($value == '')
-{
-	return;
+if ($value == '') {
+    return;
 }
 
 $value = (array) $value;
 $texts = array();
 
-foreach ($value as $userId)
-{
-	if (!$userId)
-	{
-		continue;
-	}
+foreach ($value as $userId) {
+    if (!$userId) {
+        continue;
+    }
 
-	$user = JFactory::getUser($userId);
+    $user = JFactory::getUser($userId);
 
-	if ($user)
-	{
-		// Use the Username
-		$texts[] = $user->name;
-		continue;
-	}
+    if ($user) {
+        // Use the Username
+        $texts[] = $user->name;
+        continue;
+    }
 
-	// Fallback and add the User ID if we get no JUser Object
-	$texts[] = $userId;
+    // Fallback and add the User ID if we get no JUser Object
+    $texts[] = $userId;
 }
 
 echo htmlentities(implode(', ', $texts));

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_privacy_dashboard
@@ -10,15 +11,14 @@
 defined('_JEXEC') or die;
 
 // Only super user can view this data
-if (!JFactory::getUser()->authorise('core.admin'))
-{
-	return;
+if (!JFactory::getUser()->authorise('core.admin')) {
+    return;
 }
 
 // Load the privacy component language file.
 $lang = JFactory::getLanguage();
 $lang->load('com_privacy', JPATH_ADMINISTRATOR, null, false, true)
-	|| $lang->load('com_privacy', JPATH_ADMINISTRATOR . '/components/com_privacy', null, false, true);
+    || $lang->load('com_privacy', JPATH_ADMINISTRATOR . '/components/com_privacy', null, false, true);
 
 JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_privacy/helpers/html');
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_quickicon
@@ -16,242 +17,227 @@ defined('_JEXEC') or die;
  */
 abstract class ModQuickIconHelper
 {
-	/**
-	 * Stack to hold buttons
-	 *
-	 * @since   1.6
-	 */
-	protected static $buttons = array();
+    /**
+     * Stack to hold buttons
+     *
+     * @since   1.6
+     */
+    protected static $buttons = array();
 
-	/**
-	 * Helper method to return button list.
-	 *
-	 * This method returns the array by reference so it can be
-	 * used to add custom buttons or remove default ones.
-	 *
-	 * @param   JObject  $params  The module parameters.
-	 *
-	 * @return  array  An array of buttons
-	 *
-	 * @since   1.6
-	 */
-	public static function &getButtons($params)
-	{
-		$key = (string) $params;
+    /**
+     * Helper method to return button list.
+     *
+     * This method returns the array by reference so it can be
+     * used to add custom buttons or remove default ones.
+     *
+     * @param   JObject  $params  The module parameters.
+     *
+     * @return  array  An array of buttons
+     *
+     * @since   1.6
+     */
+    public static function &getButtons($params)
+    {
+        $key = (string) $params;
 
-		if (!isset(self::$buttons[$key]))
-		{
-			$context = $params->get('context', 'mod_quickicon');
+        if (!isset(self::$buttons[$key])) {
+            $context = $params->get('context', 'mod_quickicon');
 
-			if ($context == 'mod_quickicon')
-			{
-				// Load mod_quickicon language file in case this method is called before rendering the module
-				JFactory::getLanguage()->load('mod_quickicon');
+            if ($context == 'mod_quickicon') {
+                // Load mod_quickicon language file in case this method is called before rendering the module
+                JFactory::getLanguage()->load('mod_quickicon');
 
-				self::$buttons[$key] = array(
-					array(
-						'link'   => JRoute::_('index.php?option=com_content&task=article.add'),
-						'image'  => 'pencil-2',
-						'icon'   => 'header/icon-48-article-add.png',
-						'text'   => JText::_('MOD_QUICKICON_ADD_NEW_ARTICLE'),
-						'access' => array('core.manage', 'com_content', 'core.create', 'com_content'),
-						'group'  => 'MOD_QUICKICON_CONTENT',
-					),
-					array(
-						'link'   => JRoute::_('index.php?option=com_content'),
-						'image'  => 'stack',
-						'icon'   => 'header/icon-48-article.png',
-						'text'   => JText::_('MOD_QUICKICON_ARTICLE_MANAGER'),
-						'access' => array('core.manage', 'com_content'),
-						'group'  => 'MOD_QUICKICON_CONTENT',
-					),
-					array(
-						'link'   => JRoute::_('index.php?option=com_categories&extension=com_content'),
-						'image'  => 'folder',
-						'icon'   => 'header/icon-48-category.png',
-						'text'   => JText::_('MOD_QUICKICON_CATEGORY_MANAGER'),
-						'access' => array('core.manage', 'com_content'),
-						'group'  => 'MOD_QUICKICON_CONTENT',
-					),
-					array(
-						'link'   => JRoute::_('index.php?option=com_media'),
-						'image'  => 'pictures',
-						'icon'   => 'header/icon-48-media.png',
-						'text'   => JText::_('MOD_QUICKICON_MEDIA_MANAGER'),
-						'access' => array('core.manage', 'com_media'),
-						'group'  => 'MOD_QUICKICON_CONTENT',
-					),
-					array(
-						'link'   => JRoute::_('index.php?option=com_menus'),
-						'image'  => 'list-view',
-						'icon'   => 'header/icon-48-menumgr.png',
-						'text'   => JText::_('MOD_QUICKICON_MENU_MANAGER'),
-						'access' => array('core.manage', 'com_menus'),
-						'group'  => 'MOD_QUICKICON_STRUCTURE',
-					),
-					array(
-						'link'   => JRoute::_('index.php?option=com_users'),
-						'image'  => 'users',
-						'icon'   => 'header/icon-48-user.png',
-						'text'   => JText::_('MOD_QUICKICON_USER_MANAGER'),
-						'access' => array('core.manage', 'com_users'),
-						'group'  => 'MOD_QUICKICON_USERS',
-					),
-					array(
-						'link'   => JRoute::_('index.php?option=com_modules'),
-						'image'  => 'cube',
-						'icon'   => 'header/icon-48-module.png',
-						'text'   => JText::_('MOD_QUICKICON_MODULE_MANAGER'),
-						'access' => array('core.manage', 'com_modules'),
-						'group'  => 'MOD_QUICKICON_STRUCTURE',
-					),
-					array(
-						'link'   => JRoute::_('index.php?option=com_config'),
-						'image'  => 'cog',
-						'icon'   => 'header/icon-48-config.png',
-						'text'   => JText::_('MOD_QUICKICON_GLOBAL_CONFIGURATION'),
-						'access' => array('core.manage', 'com_config', 'core.admin', 'com_config'),
-						'group'  => 'MOD_QUICKICON_CONFIGURATION',
-					),
-					array(
-						'link'   => JRoute::_('index.php?option=com_templates'),
-						'image'  => 'eye',
-						'icon'   => 'header/icon-48-themes.png',
-						'text'   => JText::_('MOD_QUICKICON_TEMPLATE_MANAGER'),
-						'access' => array('core.manage', 'com_templates'),
-						'group'  => 'MOD_QUICKICON_CONFIGURATION',
-					),
-					array(
-						'link'   => JRoute::_('index.php?option=com_languages'),
-						'image'  => 'comments-2',
-						'icon'   => 'header/icon-48-language.png',
-						'text'   => JText::_('MOD_QUICKICON_LANGUAGE_MANAGER'),
-						'access' => array('core.manage', 'com_languages'),
-						'group'  => 'MOD_QUICKICON_CONFIGURATION',
-					),
-					array(
-						'link'   => JRoute::_('index.php?option=com_installer'),
-						'image'  => 'download',
-						'icon'   => 'header/icon-48-extension.png',
-						'text'   => JText::_('MOD_QUICKICON_INSTALL_EXTENSIONS'),
-						'access' => array('core.manage', 'com_installer'),
-						'group'  => 'MOD_QUICKICON_EXTENSIONS',
-					),
-				);
-			}
-			else
-			{
-				self::$buttons[$key] = array();
-			}
+                self::$buttons[$key] = array(
+                    array(
+                        'link'   => JRoute::_('index.php?option=com_content&task=article.add'),
+                        'image'  => 'pencil-2',
+                        'icon'   => 'header/icon-48-article-add.png',
+                        'text'   => JText::_('MOD_QUICKICON_ADD_NEW_ARTICLE'),
+                        'access' => array('core.manage', 'com_content', 'core.create', 'com_content'),
+                        'group'  => 'MOD_QUICKICON_CONTENT',
+                    ),
+                    array(
+                        'link'   => JRoute::_('index.php?option=com_content'),
+                        'image'  => 'stack',
+                        'icon'   => 'header/icon-48-article.png',
+                        'text'   => JText::_('MOD_QUICKICON_ARTICLE_MANAGER'),
+                        'access' => array('core.manage', 'com_content'),
+                        'group'  => 'MOD_QUICKICON_CONTENT',
+                    ),
+                    array(
+                        'link'   => JRoute::_('index.php?option=com_categories&extension=com_content'),
+                        'image'  => 'folder',
+                        'icon'   => 'header/icon-48-category.png',
+                        'text'   => JText::_('MOD_QUICKICON_CATEGORY_MANAGER'),
+                        'access' => array('core.manage', 'com_content'),
+                        'group'  => 'MOD_QUICKICON_CONTENT',
+                    ),
+                    array(
+                        'link'   => JRoute::_('index.php?option=com_media'),
+                        'image'  => 'pictures',
+                        'icon'   => 'header/icon-48-media.png',
+                        'text'   => JText::_('MOD_QUICKICON_MEDIA_MANAGER'),
+                        'access' => array('core.manage', 'com_media'),
+                        'group'  => 'MOD_QUICKICON_CONTENT',
+                    ),
+                    array(
+                        'link'   => JRoute::_('index.php?option=com_menus'),
+                        'image'  => 'list-view',
+                        'icon'   => 'header/icon-48-menumgr.png',
+                        'text'   => JText::_('MOD_QUICKICON_MENU_MANAGER'),
+                        'access' => array('core.manage', 'com_menus'),
+                        'group'  => 'MOD_QUICKICON_STRUCTURE',
+                    ),
+                    array(
+                        'link'   => JRoute::_('index.php?option=com_users'),
+                        'image'  => 'users',
+                        'icon'   => 'header/icon-48-user.png',
+                        'text'   => JText::_('MOD_QUICKICON_USER_MANAGER'),
+                        'access' => array('core.manage', 'com_users'),
+                        'group'  => 'MOD_QUICKICON_USERS',
+                    ),
+                    array(
+                        'link'   => JRoute::_('index.php?option=com_modules'),
+                        'image'  => 'cube',
+                        'icon'   => 'header/icon-48-module.png',
+                        'text'   => JText::_('MOD_QUICKICON_MODULE_MANAGER'),
+                        'access' => array('core.manage', 'com_modules'),
+                        'group'  => 'MOD_QUICKICON_STRUCTURE',
+                    ),
+                    array(
+                        'link'   => JRoute::_('index.php?option=com_config'),
+                        'image'  => 'cog',
+                        'icon'   => 'header/icon-48-config.png',
+                        'text'   => JText::_('MOD_QUICKICON_GLOBAL_CONFIGURATION'),
+                        'access' => array('core.manage', 'com_config', 'core.admin', 'com_config'),
+                        'group'  => 'MOD_QUICKICON_CONFIGURATION',
+                    ),
+                    array(
+                        'link'   => JRoute::_('index.php?option=com_templates'),
+                        'image'  => 'eye',
+                        'icon'   => 'header/icon-48-themes.png',
+                        'text'   => JText::_('MOD_QUICKICON_TEMPLATE_MANAGER'),
+                        'access' => array('core.manage', 'com_templates'),
+                        'group'  => 'MOD_QUICKICON_CONFIGURATION',
+                    ),
+                    array(
+                        'link'   => JRoute::_('index.php?option=com_languages'),
+                        'image'  => 'comments-2',
+                        'icon'   => 'header/icon-48-language.png',
+                        'text'   => JText::_('MOD_QUICKICON_LANGUAGE_MANAGER'),
+                        'access' => array('core.manage', 'com_languages'),
+                        'group'  => 'MOD_QUICKICON_CONFIGURATION',
+                    ),
+                    array(
+                        'link'   => JRoute::_('index.php?option=com_installer'),
+                        'image'  => 'download',
+                        'icon'   => 'header/icon-48-extension.png',
+                        'text'   => JText::_('MOD_QUICKICON_INSTALL_EXTENSIONS'),
+                        'access' => array('core.manage', 'com_installer'),
+                        'group'  => 'MOD_QUICKICON_EXTENSIONS',
+                    ),
+                );
+            } else {
+                self::$buttons[$key] = array();
+            }
 
-			// Include buttons defined by published quickicon plugins
-			JPluginHelper::importPlugin('quickicon');
-			$app = JFactory::getApplication();
-			$arrays = (array) $app->triggerEvent('onGetIcons', array($context));
+            // Include buttons defined by published quickicon plugins
+            JPluginHelper::importPlugin('quickicon');
+            $app = JFactory::getApplication();
+            $arrays = (array) $app->triggerEvent('onGetIcons', array($context));
 
-			foreach ($arrays as $response)
-			{
-				foreach ($response as $icon)
-				{
-					$default = array(
-						'link'   => null,
-						'image'  => 'cog',
-						'text'   => null,
-						'access' => true,
-						'group'  => 'MOD_QUICKICON_EXTENSIONS',
-					);
-					$icon = array_merge($default, $icon);
+            foreach ($arrays as $response) {
+                foreach ($response as $icon) {
+                    $default = array(
+                        'link'   => null,
+                        'image'  => 'cog',
+                        'text'   => null,
+                        'access' => true,
+                        'group'  => 'MOD_QUICKICON_EXTENSIONS',
+                    );
+                    $icon = array_merge($default, $icon);
 
-					if (!is_null($icon['link']) && !is_null($icon['text']))
-					{
-						self::$buttons[$key][] = $icon;
-					}
-				}
-			}
-		}
+                    if (!is_null($icon['link']) && !is_null($icon['text'])) {
+                        self::$buttons[$key][] = $icon;
+                    }
+                }
+            }
+        }
 
-		// Only buttons whose components are there: a removable core component (e.g. Articles) may be uninstalled
-		self::$buttons[$key] = array_values(array_filter(self::$buttons[$key], array('ModQuickIconHelper', 'hasComponents')));
+        // Only buttons whose components are there: a removable core component (e.g. Articles) may be uninstalled
+        self::$buttons[$key] = array_values(array_filter(self::$buttons[$key], array('ModQuickIconHelper', 'hasComponents')));
 
-		return self::$buttons[$key];
-	}
+        return self::$buttons[$key];
+    }
 
-	/**
-	 * Whether the components a button links to or checks access on are installed and enabled.
-	 *
-	 * @param   array  $button  The button
-	 *
-	 * @return  boolean
-	 *
-	 * @since   3.18.0
-	 */
-	public static function hasComponents(array $button)
-	{
-		$components = array();
+    /**
+     * Whether the components a button links to or checks access on are installed and enabled.
+     *
+     * @param   array  $button  The button
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    public static function hasComponents(array $button)
+    {
+        $components = array();
 
-		if (preg_match_all('/[?&;](?:option|extension)=(com_[a-z0-9_]+)/', (string) $button['link'], $matches))
-		{
-			$components = $matches[1];
-		}
+        if (preg_match_all('/[?&;](?:option|extension)=(com_[a-z0-9_]+)/', (string) $button['link'], $matches)) {
+            $components = $matches[1];
+        }
 
-		if (is_array($button['access']))
-		{
-			$components = array_merge($components, preg_grep('/^com_[a-z0-9_]+$/', $button['access']));
-		}
+        if (is_array($button['access'])) {
+            $components = array_merge($components, preg_grep('/^com_[a-z0-9_]+$/', $button['access']));
+        }
 
-		foreach (array_unique($components) as $component)
-		{
-			if (!JComponentHelper::isEnabled($component))
-			{
-				return false;
-			}
-		}
+        foreach (array_unique($components) as $component) {
+            if (!JComponentHelper::isEnabled($component)) {
+                return false;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Classifies the $buttons by group
-	 *
-	 * @param   array  $buttons  The buttons
-	 *
-	 * @return  array  The buttons sorted by groups
-	 *
-	 * @since   3.2
-	 */
-	public static function groupButtons($buttons)
-	{
-		$groupedButtons = array();
+    /**
+     * Classifies the $buttons by group
+     *
+     * @param   array  $buttons  The buttons
+     *
+     * @return  array  The buttons sorted by groups
+     *
+     * @since   3.2
+     */
+    public static function groupButtons($buttons)
+    {
+        $groupedButtons = array();
 
-		foreach ($buttons as $button)
-		{
-			$groupedButtons[$button['group']][] = $button;
-		}
+        foreach ($buttons as $button) {
+            $groupedButtons[$button['group']][] = $button;
+        }
 
-		return $groupedButtons;
-	}
+        return $groupedButtons;
+    }
 
-	/**
-	 * Get the alternate title for the module
-	 *
-	 * @param   JObject  $params  The module parameters.
-	 * @param   JObject  $module  The module.
-	 *
-	 * @return  string	The alternate title for the module.
-	 *
-	 * @deprecated  4.0 Unused. Title can be adjusted in module itself if needed.
-	 */
-	public static function getTitle($params, $module)
-	{
-		$key = $params->get('context', 'mod_quickicon') . '_title';
+    /**
+     * Get the alternate title for the module
+     *
+     * @param   JObject  $params  The module parameters.
+     * @param   JObject  $module  The module.
+     *
+     * @return  string	The alternate title for the module.
+     *
+     * @deprecated  4.0 Unused. Title can be adjusted in module itself if needed.
+     */
+    public static function getTitle($params, $module)
+    {
+        $key = $params->get('context', 'mod_quickicon') . '_title';
 
-		if (JFactory::getLanguage()->hasKey($key))
-		{
-			return JText::_($key);
-		}
-		else
-		{
-			return $module->title;
-		}
-	}
+        if (JFactory::getLanguage()->hasKey($key)) {
+            return JText::_($key);
+        } else {
+            return $module->title;
+        }
+    }
 }

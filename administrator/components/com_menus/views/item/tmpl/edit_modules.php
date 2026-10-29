@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.core');
 
 foreach ($this->levels as $key => $value) {
-	$allLevels[$value->id] = $value->title;
+    $allLevels[$value->id] = $value->title;
 }
 
 JFactory::getDocument()->addScriptDeclaration('
@@ -62,22 +62,22 @@ ul.horizontal-buttons li {
 
 // Set up the bootstrap modal that will be used for all module editors
 echo JHtml::_(
-	'bootstrap.renderModal',
-	'moduleEditModal',
-	array(
-		'title'       => JText::_('COM_MENUS_EDIT_MODULE_SETTINGS'),
-		'backdrop'    => 'static',
-		'keyboard'    => false,
-		'closeButton' => false,
-		'bodyHeight'  => '70',
-		'modalWidth'  => '80',
-		'footer'      => '<button type="button" class="btn" data-dismiss="modal" data-target="#closeBtn">'
-				. JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>'
-				. '<button type="button" class="btn btn-primary" data-dismiss="modal" data-target="#saveBtn">'
-				. JText::_('JSAVE') . '</button>'
-				. '<button type="button" class="btn btn-success" data-target="#applyBtn">'
-				. JText::_('JAPPLY') . '</button>',
-	)
+    'bootstrap.renderModal',
+    'moduleEditModal',
+    array(
+        'title'       => JText::_('COM_MENUS_EDIT_MODULE_SETTINGS'),
+        'backdrop'    => 'static',
+        'keyboard'    => false,
+        'closeButton' => false,
+        'bodyHeight'  => '70',
+        'modalWidth'  => '80',
+        'footer'      => '<button type="button" class="btn" data-dismiss="modal" data-target="#closeBtn">'
+                . JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>'
+                . '<button type="button" class="btn btn-primary" data-dismiss="modal" data-target="#saveBtn">'
+                . JText::_('JSAVE') . '</button>'
+                . '<button type="button" class="btn btn-success" data-target="#applyBtn">'
+                . JText::_('JAPPLY') . '</button>',
+    )
 );
 
 ?>

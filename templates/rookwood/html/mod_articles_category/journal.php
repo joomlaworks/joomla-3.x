@@ -20,9 +20,8 @@ class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 2) . '/he
  */
 $items = array_values($list);
 
-if (!$items)
-{
-	return;
+if (!$items) {
+    return;
 }
 ?>
 <div class="cardGrid">

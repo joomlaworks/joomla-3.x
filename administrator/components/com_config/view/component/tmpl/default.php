@@ -26,7 +26,7 @@ JText::script('NOTICE');
 JText::script('MESSAGE');
 
 JFactory::getDocument()->addScriptDeclaration(
-	'
+    '
 	Joomla.submitbutton = function(task)
 	{
 		if (task === "config.cancel.component" || document.formvalidator.isValid(document.getElementById("component-form")))
@@ -79,9 +79,9 @@ JFactory::getDocument()->addScriptDeclaration(
 						<?php endif; ?>
 						<?php foreach ($this->form->getFieldset($name) as $field) : ?>
 							<?php
-								$dataShowOn = '';
-								$groupClass = $field->type === 'Spacer' ? ' field-spacer' : '';
-							?>
+                                $dataShowOn = '';
+						    $groupClass = $field->type === 'Spacer' ? ' field-spacer' : '';
+						    ?>
 							<?php if ($field->showon) : ?>
 								<?php JHtml::_('jquery.framework'); ?>
 								<?php JHtml::_('behavior.core'); ?>

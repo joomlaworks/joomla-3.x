@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_privacy
@@ -18,19 +19,19 @@ defined('_JEXEC') or die;
  */
 class PrivacyRemovalStatus
 {
-	/**
-	 * Flag indicating the status reported by the plugin on whether the information can be removed
-	 *
-	 * @var    boolean
-	 * @since  3.9.0
-	 */
-	public $canRemove = true;
+    /**
+     * Flag indicating the status reported by the plugin on whether the information can be removed
+     *
+     * @var    boolean
+     * @since  3.9.0
+     */
+    public $canRemove = true;
 
-	/**
-	 * A status message indicating the reason data can or cannot be removed
-	 *
-	 * @var    string
-	 * @since  3.9.0
-	 */
-	public $reason;
+    /**
+     * A status message indicating the reason data can or cannot be removed
+     *
+     * @var    string
+     * @since  3.9.0
+     */
+    public $reason;
 }

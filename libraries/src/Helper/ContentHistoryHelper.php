@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -22,170 +23,158 @@ use Joomla\CMS\Table\Table;
  */
 class ContentHistoryHelper extends CMSHelper
 {
-	/**
-	 * Alias for storing type in versions table
-	 *
-	 * @var    string
-	 * @since  3.2
-	 * @deprecated  4.0
-	 */
-	public $typeAlias = null;
+    /**
+     * Alias for storing type in versions table
+     *
+     * @var    string
+     * @since  3.2
+     * @deprecated  4.0
+     */
+    public $typeAlias = null;
 
-	/**
-	 * Constructor
-	 *
-	 * @param   string  $typeAlias  The type of content to be versioned (for example, 'com_content.article').
-	 *
-	 * @since   3.2
-	 * @deprecated  4.0
-	 */
-	public function __construct($typeAlias = null)
-	{
-		$this->typeAlias = $typeAlias;
-	}
+    /**
+     * Constructor
+     *
+     * @param   string  $typeAlias  The type of content to be versioned (for example, 'com_content.article').
+     *
+     * @since   3.2
+     * @deprecated  4.0
+     */
+    public function __construct($typeAlias = null)
+    {
+        $this->typeAlias = $typeAlias;
+    }
 
-	/**
-	 * Method to delete the history for an item.
-	 *
-	 * @param   Table  $table  Table object being versioned
-	 *
-	 * @return  boolean  true on success, otherwise false.
-	 *
-	 * @since   3.2
-	 * @deprecated  4.0  Use \Joomla\CMS\Versioning\Versioning::delete in Joomla 4
-	 */
-	public function deleteHistory($table)
-	{
-		// Content History isn't installed: its table is gone
-		if (!ComponentHelper::isEnabled('com_contenthistory'))
-		{
-			return true;
-		}
+    /**
+     * Method to delete the history for an item.
+     *
+     * @param   Table  $table  Table object being versioned
+     *
+     * @return  boolean  true on success, otherwise false.
+     *
+     * @since   3.2
+     * @deprecated  4.0  Use \Joomla\CMS\Versioning\Versioning::delete in Joomla 4
+     */
+    public function deleteHistory($table)
+    {
+        // Content History isn't installed: its table is gone
+        if (!ComponentHelper::isEnabled('com_contenthistory')) {
+            return true;
+        }
 
-		$key = $table->getKeyName();
-		$id = $table->$key;
-		$typeTable = Table::getInstance('Contenttype', 'JTable');
-		$typeId = $typeTable->getTypeId($this->typeAlias);
-		$db = \JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__ucm_history'))
-			->where($db->quoteName('ucm_item_id') . ' = ' . (int) $id)
-			->where($db->quoteName('ucm_type_id') . ' = ' . (int) $typeId);
-		$db->setQuery($query);
+        $key = $table->getKeyName();
+        $id = $table->$key;
+        $typeTable = Table::getInstance('Contenttype', 'JTable');
+        $typeId = $typeTable->getTypeId($this->typeAlias);
+        $db = \JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->delete($db->quoteName('#__ucm_history'))
+            ->where($db->quoteName('ucm_item_id') . ' = ' . (int) $id)
+            ->where($db->quoteName('ucm_type_id') . ' = ' . (int) $typeId);
+        $db->setQuery($query);
 
-		return $db->execute();
-	}
+        return $db->execute();
+    }
 
-	/**
-	 * Method to get a list of available versions of this item.
-	 *
-	 * @param   integer  $typeId  Type id for this component item.
-	 * @param   mixed    $id      Primary key of row to get history for.
-	 *
-	 * @return  mixed   The return value or null if the query failed.
-	 *
-	 * @since   3.2
-	 * @deprecated  4.0  Use \Joomla\CMS\Versioning\Versioning::get in Joomla 4
-	 */
-	public function getHistory($typeId, $id)
-	{
-		// Content History isn't installed: its table is gone
-		if (!ComponentHelper::isEnabled('com_contenthistory'))
-		{
-			return array();
-		}
+    /**
+     * Method to get a list of available versions of this item.
+     *
+     * @param   integer  $typeId  Type id for this component item.
+     * @param   mixed    $id      Primary key of row to get history for.
+     *
+     * @return  mixed   The return value or null if the query failed.
+     *
+     * @since   3.2
+     * @deprecated  4.0  Use \Joomla\CMS\Versioning\Versioning::get in Joomla 4
+     */
+    public function getHistory($typeId, $id)
+    {
+        // Content History isn't installed: its table is gone
+        if (!ComponentHelper::isEnabled('com_contenthistory')) {
+            return array();
+        }
 
-		$db = \JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query->select($db->quoteName('h.version_note') . ',' . $db->quoteName('h.save_date') . ',' . $db->quoteName('u.name'))
-			->from($db->quoteName('#__ucm_history') . ' AS h ')
-			->leftJoin($db->quoteName('#__users') . ' AS u ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('h.editor_user_id'))
-			->where($db->quoteName('ucm_item_id') . ' = ' . $db->quote($id))
-			->where($db->quoteName('ucm_type_id') . ' = ' . (int) $typeId)
-			->order($db->quoteName('save_date') . ' DESC ');
-		$db->setQuery($query);
+        $db = \JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select($db->quoteName('h.version_note') . ',' . $db->quoteName('h.save_date') . ',' . $db->quoteName('u.name'))
+            ->from($db->quoteName('#__ucm_history') . ' AS h ')
+            ->leftJoin($db->quoteName('#__users') . ' AS u ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('h.editor_user_id'))
+            ->where($db->quoteName('ucm_item_id') . ' = ' . $db->quote($id))
+            ->where($db->quoteName('ucm_type_id') . ' = ' . (int) $typeId)
+            ->order($db->quoteName('save_date') . ' DESC ');
+        $db->setQuery($query);
 
-		return $db->loadObjectList();
-	}
+        return $db->loadObjectList();
+    }
 
-	/**
-	 * Method to save a version snapshot to the content history table.
-	 *
-	 * @param   Table  $table  Table object being versioned
-	 *
-	 * @return  boolean  True on success, otherwise false.
-	 *
-	 * @since   3.2
-	 * @deprecated  4.0  Use \Joomla\CMS\Versioning\Versioning::store in Joomla 4
-	 */
-	public function store($table)
-	{
-		// Content History isn't installed: its table is gone
-		if (!ComponentHelper::isEnabled('com_contenthistory'))
-		{
-			return true;
-		}
+    /**
+     * Method to save a version snapshot to the content history table.
+     *
+     * @param   Table  $table  Table object being versioned
+     *
+     * @return  boolean  True on success, otherwise false.
+     *
+     * @since   3.2
+     * @deprecated  4.0  Use \Joomla\CMS\Versioning\Versioning::store in Joomla 4
+     */
+    public function store($table)
+    {
+        // Content History isn't installed: its table is gone
+        if (!ComponentHelper::isEnabled('com_contenthistory')) {
+            return true;
+        }
 
-		$dataObject = $this->getDataObject($table);
-		$historyTable = Table::getInstance('Contenthistory', 'JTable');
-		$typeTable = Table::getInstance('Contenttype', 'JTable');
-		$typeTable->load(array('type_alias' => $this->typeAlias));
-		$historyTable->set('ucm_type_id', $typeTable->type_id);
+        $dataObject = $this->getDataObject($table);
+        $historyTable = Table::getInstance('Contenthistory', 'JTable');
+        $typeTable = Table::getInstance('Contenttype', 'JTable');
+        $typeTable->load(array('type_alias' => $this->typeAlias));
+        $historyTable->set('ucm_type_id', $typeTable->type_id);
 
-		$key = $table->getKeyName();
-		$historyTable->set('ucm_item_id', $table->$key);
+        $key = $table->getKeyName();
+        $historyTable->set('ucm_item_id', $table->$key);
 
-		// Don't store unless we have a non-zero item id
-		if (!$historyTable->ucm_item_id)
-		{
-			return true;
-		}
+        // Don't store unless we have a non-zero item id
+        if (!$historyTable->ucm_item_id) {
+            return true;
+        }
 
-		$historyTable->set('version_data', json_encode($dataObject));
-		$input = \JFactory::getApplication()->input;
-		$data = $input->get('jform', array(), 'array');
-		$versionName = false;
+        $historyTable->set('version_data', json_encode($dataObject));
+        $input = \JFactory::getApplication()->input;
+        $data = $input->get('jform', array(), 'array');
+        $versionName = false;
 
-		if (isset($data['version_note']))
-		{
-			$versionName = \JFilterInput::getInstance()->clean($data['version_note'], 'string');
-			$historyTable->set('version_note', $versionName);
-		}
+        if (isset($data['version_note'])) {
+            $versionName = \JFilterInput::getInstance()->clean($data['version_note'], 'string');
+            $historyTable->set('version_note', $versionName);
+        }
 
-		// Don't save if hash already exists and same version note
-		$historyTable->set('sha1_hash', $historyTable->getSha1($dataObject, $typeTable));
+        // Don't save if hash already exists and same version note
+        $historyTable->set('sha1_hash', $historyTable->getSha1($dataObject, $typeTable));
 
-		if ($historyRow = $historyTable->getHashMatch())
-		{
-			if (!$versionName || ($historyRow->version_note === $versionName))
-			{
-				return true;
-			}
-			else
-			{
-				// Update existing row to set version note
-				$historyTable->set('version_id', $historyRow->version_id);
-			}
-		}
+        if ($historyRow = $historyTable->getHashMatch()) {
+            if (!$versionName || ($historyRow->version_note === $versionName)) {
+                return true;
+            } else {
+                // Update existing row to set version note
+                $historyTable->set('version_id', $historyRow->version_id);
+            }
+        }
 
-		$result = $historyTable->store();
+        $result = $historyTable->store();
 
-		// Load history_limit config from extension.
-		$aliasParts = explode('.', $this->typeAlias);
+        // Load history_limit config from extension.
+        $aliasParts = explode('.', $this->typeAlias);
 
-		$context = isset($aliasParts[1]) ? $aliasParts[1] : '';
+        $context = isset($aliasParts[1]) ? $aliasParts[1] : '';
 
-		$maxVersionsContext = ComponentHelper::getParams($aliasParts[0])->get('history_limit' . '_' . $context, 0);
+        $maxVersionsContext = ComponentHelper::getParams($aliasParts[0])->get('history_limit' . '_' . $context, 0);
 
-		if ($maxVersionsContext)
-		{
-			$historyTable->deleteOldVersions($maxVersionsContext);
-		}
-		elseif ($maxVersions = ComponentHelper::getParams($aliasParts[0])->get('history_limit', 0))
-		{
-			$historyTable->deleteOldVersions($maxVersions);
-		}
+        if ($maxVersionsContext) {
+            $historyTable->deleteOldVersions($maxVersionsContext);
+        } elseif ($maxVersions = ComponentHelper::getParams($aliasParts[0])->get('history_limit', 0)) {
+            $historyTable->deleteOldVersions($maxVersions);
+        }
 
-		return $result;
-	}
+        return $result;
+    }
 }

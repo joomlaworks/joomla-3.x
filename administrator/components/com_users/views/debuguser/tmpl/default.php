@@ -20,7 +20,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 $colSpan   = 4 + count($this->actions);
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_users&view=debuguser&user_id=' . (int) $this->state->get('user_id')); ?>" method="post" name="adminForm" id="adminForm">
-<?php if (!empty( $this->sidebar)) : ?>
+<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -70,22 +70,22 @@ $colSpan   = 4 + count($this->actions);
 						</td>
 						<?php foreach ($this->actions as $action) : ?>
 							<?php
-							$name  = $action[0];
-							$check = $item->checks[$name];
-							if ($check === true) :
-								$class  = 'icon-ok';
-								$button = 'btn-success';
-							elseif ($check === false) :
-								$class  = 'icon-remove';
-								$button = 'btn-danger';
-							elseif ($check === null) :
-								$class  = 'icon-ban-circle';
-								$button = 'btn-warning';
-							else :
-								$class  = '';
-								$button = '';
-							endif;
-							?>
+                            $name  = $action[0];
+						    $check = $item->checks[$name];
+						    if ($check === true) :
+						        $class  = 'icon-ok';
+						        $button = 'btn-success';
+						    elseif ($check === false) :
+						        $class  = 'icon-remove';
+						        $button = 'btn-danger';
+						    elseif ($check === null) :
+						        $class  = 'icon-ban-circle';
+						        $button = 'btn-warning';
+						    else :
+						        $class  = '';
+						        $button = '';
+						    endif;
+						    ?>
 						<td class="center">
 							<span class="icon-white <?php echo $class; ?>"></span>
 						</td>

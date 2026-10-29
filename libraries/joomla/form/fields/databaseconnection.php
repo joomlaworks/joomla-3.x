@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  Form
@@ -21,71 +22,63 @@ JFormHelper::loadFieldClass('list');
  */
 class JFormFieldDatabaseConnection extends JFormFieldList
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  1.7.3
-	 */
-	protected $type = 'DatabaseConnection';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  1.7.3
+     */
+    protected $type = 'DatabaseConnection';
 
-	/**
-	 * Method to get the list of database options.
-	 *
-	 * This method produces a drop down list of available databases supported
-	 * by JDatabaseDriver classes that are also supported by the application.
-	 *
-	 * @return  array  The field option objects.
-	 *
-	 * @since   1.7.3
-	 * @see     JDatabaseDriver::getConnectors()
-	 */
-	protected function getOptions()
-	{
-		// This gets the connectors available in the platform and supported by the server.
-		$available = JDatabaseDriver::getConnectors();
+    /**
+     * Method to get the list of database options.
+     *
+     * This method produces a drop down list of available databases supported
+     * by JDatabaseDriver classes that are also supported by the application.
+     *
+     * @return  array  The field option objects.
+     *
+     * @since   1.7.3
+     * @see     JDatabaseDriver::getConnectors()
+     */
+    protected function getOptions()
+    {
+        // This gets the connectors available in the platform and supported by the server.
+        $available = JDatabaseDriver::getConnectors();
 
-		/**
-		 * This gets the list of database types supported by the application.
-		 * This should be entered in the form definition as a comma separated list.
-		 * If no supported databases are listed, it is assumed all available databases
-		 * are supported.
-		 */
-		$supported = $this->element['supported'];
+        /**
+         * This gets the list of database types supported by the application.
+         * This should be entered in the form definition as a comma separated list.
+         * If no supported databases are listed, it is assumed all available databases
+         * are supported.
+         */
+        $supported = $this->element['supported'];
 
-		if (!empty($supported))
-		{
-			$supported = explode(',', (string) $supported);
+        if (!empty($supported)) {
+            $supported = explode(',', (string) $supported);
 
-			foreach ($supported as $support)
-			{
-				if (in_array($support, $available))
-				{
-					$options[$support] = JText::_(ucfirst($support));
-				}
-			}
-		}
-		else
-		{
-			foreach ($available as $support)
-			{
-				$options[$support] = JText::_(ucfirst((string) $support));
-			}
-		}
+            foreach ($supported as $support) {
+                if (in_array($support, $available)) {
+                    $options[$support] = JText::_(ucfirst($support));
+                }
+            }
+        } else {
+            foreach ($available as $support) {
+                $options[$support] = JText::_(ucfirst((string) $support));
+            }
+        }
 
-		// Alphabetical, by the name shown
-		if (!empty($options))
-		{
-			natcasesort($options);
-		}
+        // Alphabetical, by the name shown
+        if (!empty($options)) {
+            natcasesort($options);
+        }
 
-		// This will come into play if an application is installed that requires
-		// a database that is not available on the server.
-		if (empty($options))
-		{
-			$options[''] = JText::_('JNONE');
-		}
+        // This will come into play if an application is installed that requires
+        // a database that is not available on the server.
+        if (empty($options)) {
+            $options[''] = JText::_('JNONE');
+        }
 
-		return $options;
-	}
+        return $options;
+    }
 }

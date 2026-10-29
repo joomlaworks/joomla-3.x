@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_privacy
@@ -20,45 +21,45 @@ JLoader::register('PrivacyExportField', __DIR__ . '/field.php');
  */
 class PrivacyExportItem
 {
-	/**
-	 * The primary identifier of this item, typically the primary key for a database row.
-	 *
-	 * @var    integer
-	 * @since  3.9.0
-	 */
-	public $id;
+    /**
+     * The primary identifier of this item, typically the primary key for a database row.
+     *
+     * @var    integer
+     * @since  3.9.0
+     */
+    public $id;
 
-	/**
-	 * The fields belonging to this item
-	 *
-	 * @var    PrivacyExportField[]
-	 * @since  3.9.0
-	 */
-	protected $fields = array();
+    /**
+     * The fields belonging to this item
+     *
+     * @var    PrivacyExportField[]
+     * @since  3.9.0
+     */
+    protected $fields = array();
 
-	/**
-	 * Add a field to the item
-	 *
-	 * @param   PrivacyExportField  $field  The field to add
-	 *
-	 * @return  void
-	 *
-	 * @since  3.9.0
-	 */
-	public function addField(PrivacyExportField $field)
-	{
-		$this->fields[] = $field;
-	}
+    /**
+     * Add a field to the item
+     *
+     * @param   PrivacyExportField  $field  The field to add
+     *
+     * @return  void
+     *
+     * @since  3.9.0
+     */
+    public function addField(PrivacyExportField $field)
+    {
+        $this->fields[] = $field;
+    }
 
-	/**
-	 * Get the item's fields
-	 *
-	 * @return  PrivacyExportField[]
-	 *
-	 * @since  3.9.0
-	 */
-	public function getFields()
-	{
-		return $this->fields;
-	}
+    /**
+     * Get the item's fields
+     *
+     * @return  PrivacyExportField[]
+     *
+     * @since  3.9.0
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
 }

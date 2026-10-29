@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Fields.Usergrouplist
@@ -10,9 +11,8 @@ defined('_JEXEC') or die;
 
 $value = $field->value;
 
-if ($value == '')
-{
-	return;
+if ($value == '') {
+    return;
 }
 
 JLoader::register('UsersHelper', JPATH_ADMINISTRATOR . '/components/com_users/helpers/users.php');
@@ -21,12 +21,10 @@ $value  = (array) $value;
 $texts  = array();
 $groups = UsersHelper::getGroups();
 
-foreach ($groups as $group)
-{
-	if (in_array($group->value, $value))
-	{
-		$texts[] = htmlentities(trim((string) $group->text, '- '));
-	}
+foreach ($groups as $group) {
+    if (in_array($group->value, $value)) {
+        $texts[] = htmlentities(trim((string) $group->text, '- '));
+    }
 }
 
 echo htmlentities(implode(', ', $texts));

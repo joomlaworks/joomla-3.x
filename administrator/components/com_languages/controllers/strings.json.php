@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_languages
@@ -16,27 +17,27 @@ defined('_JEXEC') or die;
  */
 class LanguagesControllerStrings extends JControllerAdmin
 {
-	/**
-	 * Method for refreshing the cache in the database with the known language strings
-	 *
-	 * @return  void
-	 *
-	 * @since   2.5
-	 */
-	public function refresh()
-	{
-		echo new JResponseJson($this->getModel('strings')->refresh());
-	}
+    /**
+     * Method for refreshing the cache in the database with the known language strings
+     *
+     * @return  void
+     *
+     * @since   2.5
+     */
+    public function refresh()
+    {
+        echo new JResponseJson($this->getModel('strings')->refresh());
+    }
 
-	/**
-	 * Method for searching language strings
-	 *
-	 * @return  void
-	 *
-	 * @since   2.5
-	 */
-	public function search()
-	{
-		echo new JResponseJson($this->getModel('strings')->search());
-	}
+    /**
+     * Method for searching language strings
+     *
+     * @return  void
+     *
+     * @since   2.5
+     */
+    public function search()
+    {
+        echo new JResponseJson($this->getModel('strings')->search());
+    }
 }

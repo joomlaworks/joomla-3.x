@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Fields.List
@@ -10,21 +11,18 @@ defined('_JEXEC') or die;
 
 $fieldValue = $field->value;
 
-if ($fieldValue == '')
-{
-	return;
+if ($fieldValue == '') {
+    return;
 }
 
 $fieldValue = (array) $fieldValue;
 $texts      = array();
 $options    = $this->getOptionsFromField($field);
 
-foreach ($options as $value => $name)
-{
-	if (in_array((string) $value, $fieldValue))
-	{
-		$texts[] = JText::_($name);
-	}
+foreach ($options as $value => $name) {
+    if (in_array((string) $value, $fieldValue)) {
+        $texts[] = JText::_($name);
+    }
 }
 
 

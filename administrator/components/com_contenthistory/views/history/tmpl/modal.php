@@ -32,9 +32,10 @@ $loadUrl = JRoute::_('index.php?option=' . $filter->clean($option) . '&amp;task=
 $deleteUrl = JRoute::_('index.php?option=com_contenthistory&task=history.delete');
 $hash = $this->state->get('sha1_hash');
 $formUrl = 'index.php?option=com_contenthistory&view=history&layout=modal&tmpl=component&item_id=' . $this->state->get('item_id') . '&type_id='
-	. $this->state->get('type_id') . '&type_alias=' . $this->state->get('type_alias') . '&' . JSession::getFormToken() . '=1';
+    . $this->state->get('type_id') . '&type_alias=' . $this->state->get('type_alias') . '&' . JSession::getFormToken() . '=1';
 
-JFactory::getDocument()->addScriptDeclaration("
+JFactory::getDocument()->addScriptDeclaration(
+    "
 	(function ($){
 		$(document).ready(function (){
 			$('#toolbar-load').click(function() {

@@ -32,7 +32,7 @@ JHtml::_('bootstrap.tooltip');
 
 				<small class="small hasTooltip" title="<?php echo JHtml::_('tooltipText', 'JCLIENT'); ?>">
 					<?php if ($user->client_id === null) : ?>
-						<?php // Don't display a client ?>
+						<?php // Don't display a client?>
 					<?php elseif ($user->client_id) : ?>
 						<?php echo JText::_('JADMINISTRATION'); ?>
 					<?php else : ?>

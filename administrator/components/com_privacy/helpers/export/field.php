@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_privacy
@@ -16,19 +17,19 @@ defined('_JEXEC') or die;
  */
 class PrivacyExportField
 {
-	/**
-	 * The name of this field
-	 *
-	 * @var    string
-	 * @since  3.9.0
-	 */
-	public $name;
+    /**
+     * The name of this field
+     *
+     * @var    string
+     * @since  3.9.0
+     */
+    public $name;
 
-	/**
-	 * The field's value
-	 *
-	 * @var    mixed
-	 * @since  3.9.0
-	 */
-	public $value;
+    /**
+     * The field's value
+     *
+     * @var    mixed
+     * @since  3.9.0
+     */
+    public $value;
 }

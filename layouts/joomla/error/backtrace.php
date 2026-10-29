@@ -12,9 +12,8 @@ defined('_JEXEC') or die;
 /** @var $displayData array */
 $backtraceList = $displayData['backtrace'];
 
-if (!$backtraceList)
-{
-	return;
+if (!$backtraceList) {
+    return;
 }
 
 $class = isset($displayData['class']) ? $displayData['class'] : 'table table-striped table-bordered';

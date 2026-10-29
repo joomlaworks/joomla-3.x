@@ -24,7 +24,7 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $now       = JFactory::getDate();
 
-$urgentRequestDate= clone $now;
+$urgentRequestDate = clone $now;
 $urgentRequestDate->sub(new DateInterval('P' . $this->urgentRequestAge . 'D'));
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_privacy&view=requests'); ?>" method="post" name="adminForm" id="adminForm">
@@ -76,8 +76,8 @@ $urgentRequestDate->sub(new DateInterval('P' . $this->urgentRequestAge . 'D'));
 				<tbody>
 					<?php foreach ($this->items as $i => $item) : ?>
 						<?php
-						$itemRequestedAt = new JDate($item->requested_at);
-						?>
+                        $itemRequestedAt = new JDate($item->requested_at);
+					    ?>
 						<tr class="row<?php echo $i % 2; ?>">
 							<td class="center">
 								<div class="btn-group">

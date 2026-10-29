@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_privacy
@@ -24,45 +25,42 @@ defined('_JEXEC') or die;
  */
 class PrivacyTableRequest extends JTable
 {
-	/**
-	 * The class constructor.
-	 *
-	 * @param   JDatabaseDriver  $db  JDatabaseDriver connector object.
-	 *
-	 * @since   3.9.0
-	 */
-	public function __construct(JDatabaseDriver $db)
-	{
-		parent::__construct('#__privacy_requests', 'id', $db);
-	}
+    /**
+     * The class constructor.
+     *
+     * @param   JDatabaseDriver  $db  JDatabaseDriver connector object.
+     *
+     * @since   3.9.0
+     */
+    public function __construct(JDatabaseDriver $db)
+    {
+        parent::__construct('#__privacy_requests', 'id', $db);
+    }
 
-	/**
-	 * Method to store a row in the database from the Table instance properties.
-	 *
-	 * @param   boolean  $updateNulls  True to update fields even if they are null.
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @since   3.9.0
-	 */
-	public function store($updateNulls = false)
-	{
-		$date = JFactory::getDate();
+    /**
+     * Method to store a row in the database from the Table instance properties.
+     *
+     * @param   boolean  $updateNulls  True to update fields even if they are null.
+     *
+     * @return  boolean  True on success.
+     *
+     * @since   3.9.0
+     */
+    public function store($updateNulls = false)
+    {
+        $date = JFactory::getDate();
 
-		// Set default values for new records
-		if (!$this->id)
-		{
-			if (!$this->status)
-			{
-				$this->status = '0';
-			}
+        // Set default values for new records
+        if (!$this->id) {
+            if (!$this->status) {
+                $this->status = '0';
+            }
 
-			if (!$this->requested_at)
-			{
-				$this->requested_at = $date->toSql();
-			}
-		}
+            if (!$this->requested_at) {
+                $this->requested_at = $date->toSql();
+            }
+        }
 
-		return parent::store($updateNulls);
-	}
+        return parent::store($updateNulls);
+    }
 }

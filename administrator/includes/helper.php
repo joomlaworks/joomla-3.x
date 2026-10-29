@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    Joomla.Administrator
  *
@@ -18,33 +19,31 @@ defined('_JEXEC') or die;
  */
 class JAdministratorHelper
 {
-	/**
-	 * Return the application option string [main component].
-	 *
-	 * @return  string  The component to access.
-	 *
-	 * @since   1.5
-	 */
-	public static function findOption()
-	{
-		$app = JFactory::getApplication();
-		$option = strtolower((string) $app->input->get('option', ''));
+    /**
+     * Return the application option string [main component].
+     *
+     * @return  string  The component to access.
+     *
+     * @since   1.5
+     */
+    public static function findOption()
+    {
+        $app = JFactory::getApplication();
+        $option = strtolower((string) $app->input->get('option', ''));
 
-		$app->loadIdentity();
-		$user = $app->getIdentity();
+        $app->loadIdentity();
+        $user = $app->getIdentity();
 
-		if ($user->get('guest') || !$user->authorise('core.login.admin'))
-		{
-			$option = 'com_login';
-		}
+        if ($user->get('guest') || !$user->authorise('core.login.admin')) {
+            $option = 'com_login';
+        }
 
-		if (empty($option))
-		{
-			$option = 'com_cpanel';
-		}
+        if (empty($option)) {
+            $option = 'com_cpanel';
+        }
 
-		$app->input->set('option', $option);
+        $app->input->set('option', $option);
 
-		return $option;
-	}
+        return $option;
+    }
 }

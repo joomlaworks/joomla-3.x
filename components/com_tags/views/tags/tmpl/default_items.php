@@ -25,16 +25,14 @@ $canEditState = $user->authorise('core.edit.state', 'com_tags');
 $columns = $this->params->get('tag_columns', 1);
 
 // Avoid division by 0 and negative columns.
-if ($columns < 1)
-{
-	$columns = 1;
+if ($columns < 1) {
+    $columns = 1;
 }
 
 $bsspans = floor(12 / $columns);
 
-if ($bsspans < 1)
-{
-	$bsspans = 1;
+if ($bsspans < 1) {
+    $bsspans = 1;
 }
 
 $bscolumns = min($columns, floor(12 / $bsspans));
@@ -130,7 +128,7 @@ JFactory::getDocument()->addScriptDeclaration("
 			<?php endif; ?>
 		<?php endforeach; ?>
 	<?php endif; ?>
-	<?php // Add pagination links ?>
+	<?php // Add pagination links?>
 	<?php if (!empty($this->items)) : ?>
 		<?php if (($this->params->def('show_pagination', 2) == 1 || ($this->params->get('show_pagination') == 2)) && ($this->pagination->pagesTotal > 1)) : ?>
 			<div class="pagination">

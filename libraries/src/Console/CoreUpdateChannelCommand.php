@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -20,173 +21,165 @@ use Joomla\CMS\Table\Table;
  */
 class CoreUpdateChannelCommand extends AbstractCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'core:update:channel';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'core:update:channel';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Manage the update channel for Joomla core updates';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Manage the update channel for Joomla core updates';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Without an argument, shows the update channel of Joomla Update. With one, sets it: default, next, testing or custom '
-		. '(with --url, the URL of the custom update feed).';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Without an argument, shows the update channel of Joomla Update. With one, sets it: default, next, testing or custom '
+        . '(with --url, the URL of the custom update feed).';
 
-	/**
-	 * @var    boolean
-	 * @since  3.17.0
-	 */
-	protected $dryRun = true;
+    /**
+     * @var    boolean
+     * @since  3.17.0
+     */
+    protected $dryRun = true;
 
-	/**
-	 * @var    boolean
-	 * @since  3.17.0
-	 */
-	protected $superUser = true;
+    /**
+     * @var    boolean
+     * @since  3.17.0
+     */
+    protected $superUser = true;
 
-	/**
-	 * The channels in Joomla Update's options
-	 *
-	 * @var    array
-	 * @since  3.17.0
-	 */
-	const CHANNELS = array('default', 'next', 'testing', 'custom');
+    /**
+     * The channels in Joomla Update's options
+     *
+     * @var    array
+     * @since  3.17.0
+     */
+    public const CHANNELS = array('default', 'next', 'testing', 'custom');
 
-	/**
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	protected function configure()
-	{
-		$this->addArgument('channel', self::ARGUMENT_OPTIONAL, 'Name of the update channel [' . implode(', ', self::CHANNELS) . ']');
-		$this->addOption('url', null, self::OPTION_REQUIRED, 'URL to update source. Only for custom update channel');
-	}
+    /**
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    protected function configure()
+    {
+        $this->addArgument('channel', self::ARGUMENT_OPTIONAL, 'Name of the update channel [' . implode(', ', self::CHANNELS) . ']');
+        $this->addOption('url', null, self::OPTION_REQUIRED, 'URL to update source. Only for custom update channel');
+    }
 
-	/**
-	 * Read-only when only showing the current channel.
-	 *
-	 * @param   array|null  $options    The options of a run, or null for the command in general
-	 * @param   array|null  $arguments  The arguments of a run
-	 *
-	 * @return  boolean
-	 *
-	 * @since   3.17.0
-	 */
-	public function isReadOnly(?array $options = null, ?array $arguments = null)
-	{
-		return $arguments !== null && (string) (isset($arguments['channel']) ? $arguments['channel'] : '') === '';
-	}
+    /**
+     * Read-only when only showing the current channel.
+     *
+     * @param   array|null  $options    The options of a run, or null for the command in general
+     * @param   array|null  $arguments  The arguments of a run
+     *
+     * @return  boolean
+     *
+     * @since   3.17.0
+     */
+    public function isReadOnly(?array $options = null, ?array $arguments = null)
+    {
+        return $arguments !== null && (string) (isset($arguments['channel']) ? $arguments['channel'] : '') === '';
+    }
 
-	/**
-	 * @return  boolean
-	 *
-	 * @since   3.17.0
-	 */
-	public function hasReadOnlyRuns()
-	{
-		return true;
-	}
+    /**
+     * @return  boolean
+     *
+     * @since   3.17.0
+     */
+    public function hasReadOnlyRuns()
+    {
+        return true;
+    }
 
-	/**
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	protected function doExecute(CommandIO $io)
-	{
-		$params  = ComponentHelper::getParams('com_joomlaupdate');
-		$channel = (string) $io->getArgument('channel');
+    /**
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    protected function doExecute(CommandIO $io)
+    {
+        $params  = ComponentHelper::getParams('com_joomlaupdate');
+        $channel = (string) $io->getArgument('channel');
 
-		if ($channel === '')
-		{
-			$current = $params->get('updatesource', 'default');
+        if ($channel === '') {
+            $current = $params->get('updatesource', 'default');
 
-			$io->setData('channel', $current);
-			$io->setData('url', $current === 'custom' ? $params->get('customurl') : null);
+            $io->setData('channel', $current);
+            $io->setData('url', $current === 'custom' ? $params->get('customurl') : null);
 
-			if ($current === 'custom')
-			{
-				$io->text('You are on a "custom" update channel with the URL ' . $params->get('customurl') . '.');
-			}
-			else
-			{
-				$io->text('You are on the "' . $current . '" update channel.');
-			}
+            if ($current === 'custom') {
+                $io->text('You are on a "custom" update channel with the URL ' . $params->get('customurl') . '.');
+            } else {
+                $io->text('You are on the "' . $current . '" update channel.');
+            }
 
-			return self::SUCCESS;
-		}
+            return self::SUCCESS;
+        }
 
-		if (!in_array($channel, self::CHANNELS, true))
-		{
-			$io->error('The given update channel is invalid. Please only choose from [' . implode(', ', self::CHANNELS) . '].');
+        if (!in_array($channel, self::CHANNELS, true)) {
+            $io->error('The given update channel is invalid. Please only choose from [' . implode(', ', self::CHANNELS) . '].');
 
-			return self::INVALID;
-		}
+            return self::INVALID;
+        }
 
-		if ($channel === 'custom')
-		{
-			$url = (string) $io->getOption('url');
+        if ($channel === 'custom') {
+            $url = (string) $io->getOption('url');
 
-			if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('#^(https?|ftps?)://#i', $url))
-			{
-				$io->error('When using the custom update channel, you have to provide a valid URL with --url.');
+            if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('#^(https?|ftps?)://#i', $url)) {
+                $io->error('When using the custom update channel, you have to provide a valid URL with --url.');
 
-				return self::INVALID;
-			}
+                return self::INVALID;
+            }
 
-			$params->set('customurl', $url);
-		}
+            $params->set('customurl', $url);
+        }
 
-		if ($io->isDryRun())
-		{
-			$io->plan(sprintf('Set the update channel to "%s"%s (now "%s")', $channel, $channel === 'custom' ? ' with the URL ' . $params->get('customurl') : '',
-				$params->get('updatesource', 'default')), array('action' => 'set-channel', 'channel' => $channel));
+        if ($io->isDryRun()) {
+            $io->plan(sprintf(
+                'Set the update channel to "%s"%s (now "%s")',
+                $channel,
+                $channel === 'custom' ? ' with the URL ' . $params->get('customurl') : '',
+                $params->get('updatesource', 'default')
+            ), array('action' => 'set-channel', 'channel' => $channel));
 
-			return self::SUCCESS;
-		}
+            return self::SUCCESS;
+        }
 
-		$params->set('updatesource', $channel);
+        $params->set('updatesource', $channel);
 
-		$table = Table::getInstance('Extension');
-		$table->load(array('type' => 'component', 'element' => 'com_joomlaupdate'));
-		$table->params = $params->toString();
+        $table = Table::getInstance('Extension');
+        $table->load(array('type' => 'component', 'element' => 'com_joomlaupdate'));
+        $table->params = $params->toString();
 
-		if (!$table->store())
-		{
-			$io->error($table->getError());
+        if (!$table->store()) {
+            $io->error($table->getError());
 
-			return self::FAILURE;
-		}
+            return self::FAILURE;
+        }
 
-		// The component settings are cached
-		$this->cleanCacheGroup('_system');
+        // The component settings are cached
+        $this->cleanCacheGroup('_system');
 
-		/** @var \JoomlaupdateModelDefault $model */
-		$model = $this->getAdministratorModel('com_joomlaupdate', 'Default', 'JoomlaupdateModel');
-		$model->applyUpdateSite();
+        /** @var \JoomlaupdateModelDefault $model */
+        $model = $this->getAdministratorModel('com_joomlaupdate', 'Default', 'JoomlaupdateModel');
+        $model->applyUpdateSite();
 
-		$io->setData('channel', $channel);
-		$io->setData('url', $channel === 'custom' ? $params->get('customurl') : null);
+        $io->setData('channel', $channel);
+        $io->setData('url', $channel === 'custom' ? $params->get('customurl') : null);
 
-		if ($channel === 'custom')
-		{
-			$io->success('The update channel for this site has been set to the custom url "' . $params->get('customurl') . '".');
-		}
-		else
-		{
-			$io->success('The update channel for this site has been set to "' . $channel . '".');
-		}
+        if ($channel === 'custom') {
+            $io->success('The update channel for this site has been set to the custom url "' . $params->get('customurl') . '".');
+        } else {
+            $io->success('The update channel for this site has been set to "' . $channel . '".');
+        }
 
-		return self::SUCCESS;
-	}
+        return self::SUCCESS;
+    }
 }

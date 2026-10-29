@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  Form
@@ -20,55 +21,53 @@ JFormHelper::loadFieldClass('list');
  */
 class JFormFieldComponents extends JFormFieldList
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var     string
-	 * @since   3.7.0
-	 */
-	protected $type = 'Components';
+    /**
+     * The form field type.
+     *
+     * @var     string
+     * @since   3.7.0
+     */
+    protected $type = 'Components';
 
-	/**
-	 * Method to get a list of options for a list input.
-	 *
-	 * @return	array  An array of JHtml options.
-	 *
-	 * @since   2.5.0
-	 */
-	protected function getOptions()
-	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true)
-			->select('name AS text, element AS value')
-			->from('#__extensions')
-			->where('enabled >= 1')
-			->where('type =' . $db->quote('component'));
+    /**
+     * Method to get a list of options for a list input.
+     *
+     * @return	array  An array of JHtml options.
+     *
+     * @since   2.5.0
+     */
+    protected function getOptions()
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true)
+            ->select('name AS text, element AS value')
+            ->from('#__extensions')
+            ->where('enabled >= 1')
+            ->where('type =' . $db->quote('component'));
 
-		$items = $db->setQuery($query)->loadObjectList();
+        $items = $db->setQuery($query)->loadObjectList();
 
-		if ($items)
-		{
-			$lang = JFactory::getLanguage();
+        if ($items) {
+            $lang = JFactory::getLanguage();
 
-			foreach ($items as &$item)
-			{
-				// Load language
-				$extension = $item->value;
+            foreach ($items as &$item) {
+                // Load language
+                $extension = $item->value;
 
-				$lang->load("$extension.sys", JPATH_ADMINISTRATOR, null, false, true)
-					|| $lang->load("$extension.sys", JPATH_ADMINISTRATOR . '/components/' . $extension, null, false, true);
+                $lang->load("$extension.sys", JPATH_ADMINISTRATOR, null, false, true)
+                    || $lang->load("$extension.sys", JPATH_ADMINISTRATOR . '/components/' . $extension, null, false, true);
 
-				// Translate component name
-				$item->text = JText::_($item->text);
-			}
+                // Translate component name
+                $item->text = JText::_($item->text);
+            }
 
-			// Sort by component name
-			$items = ArrayHelper::sortObjects($items, 'text', 1, true, true);
-		}
+            // Sort by component name
+            $items = ArrayHelper::sortObjects($items, 'text', 1, true, true);
+        }
 
-		// Merge any additional options in the XML definition.
-		$options = array_merge(parent::getOptions(), $items);
+        // Merge any additional options in the XML definition.
+        $options = array_merge(parent::getOptions(), $items);
 
-		return $options;
-	}
+        return $options;
+    }
 }

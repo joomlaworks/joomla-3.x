@@ -15,15 +15,13 @@ class_exists('FinchHelper', false) || require_once dirname(__DIR__, 2) . '/helpe
 // Three posts as cards (e.g. "Read next" under a post, the module set to four), without the post being read
 /** @var array $list */
 $current = JFactory::getApplication()->input->get('view') === 'article' ? JFactory::getApplication()->input->getInt('id') : 0;
-$items   = array_values(array_filter($list, function ($item) use ($current)
-{
-	return (int) $item->id !== $current;
+$items   = array_values(array_filter($list, function ($item) use ($current) {
+    return (int) $item->id !== $current;
 }));
 $items   = array_slice($items, 0, 3);
 
-if (!$items)
-{
-	return;
+if (!$items) {
+    return;
 }
 ?>
 <div class="postGrid postGridThree">

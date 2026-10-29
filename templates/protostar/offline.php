@@ -33,10 +33,9 @@ JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => 
 JHtml::_('stylesheet', 'offline.css', array('version' => 'auto', 'relative' => true));
 
 // Use of Google Font
-if ($this->params->get('googleFont'))
-{
-	JHtml::_('stylesheet', 'https://fonts.googleapis.com/css?family=' . $this->params->get('googleFontName'));
-	$this->addStyleDeclaration("
+if ($this->params->get('googleFont')) {
+    JHtml::_('stylesheet', 'https://fonts.googleapis.com/css?family=' . $this->params->get('googleFontName'));
+    $this->addStyleDeclaration("
 	h1, h2, h3, h4, h5, h6, .site-title {
 		font-family: '" . str_replace('+', ' ', $this->params->get('googleFontName')) . "', sans-serif;
 	}");
@@ -50,10 +49,9 @@ require_once __DIR__ . '/helper.php';
 
 $optionColors = protostarOptionColors($this->params);
 
-if ($optionColors['properties'] !== '')
-{
-	JHtml::_('stylesheet', 'template-options.css', array('version' => 'auto', 'relative' => true));
-	$this->addStyleDeclaration(':root {' . $optionColors['properties'] . '}');
+if ($optionColors['properties'] !== '') {
+    JHtml::_('stylesheet', 'template-options.css', array('version' => 'auto', 'relative' => true));
+    $this->addStyleDeclaration(':root {' . $optionColors['properties'] . '}');
 }
 
 // Check for a custom js file
@@ -65,17 +63,12 @@ JHtml::_('bootstrap.loadCss', false, $this->direction);
 // Logo file or site title param
 $sitename = htmlspecialchars((string) $app->get('sitename'), ENT_QUOTES, 'UTF-8');
 
-if ($this->params->get('logoFile'))
-{
-	$logo = '<img src="' . htmlspecialchars(JUri::root() . $this->params->get('logoFile'), ENT_QUOTES, 'UTF-8') . '" alt="' . $sitename . '" />';
-}
-elseif ($this->params->get('sitetitle'))
-{
-	$logo = '<span class="site-title" title="' . $sitename . '">' . htmlspecialchars((string) $this->params->get('sitetitle')) . '</span>';
-}
-else
-{
-	$logo = '<span class="site-title" title="' . $sitename . '">' . $sitename . '</span>';
+if ($this->params->get('logoFile')) {
+    $logo = '<img src="' . htmlspecialchars(JUri::root() . $this->params->get('logoFile'), ENT_QUOTES, 'UTF-8') . '" alt="' . $sitename . '" />';
+} elseif ($this->params->get('sitetitle')) {
+    $logo = '<span class="site-title" title="' . $sitename . '">' . htmlspecialchars((string) $this->params->get('sitetitle')) . '</span>';
+} else {
+    $logo = '<span class="site-title" title="' . $sitename . '">' . $sitename . '</span>';
 }
 ?>
 <!DOCTYPE html>

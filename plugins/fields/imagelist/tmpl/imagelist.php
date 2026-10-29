@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Fields.Imagelist
@@ -8,44 +9,39 @@
  */
 defined('_JEXEC') or die;
 
-if ($field->value == '')
-{
-	return;
+if ($field->value == '') {
+    return;
 }
 
 $class = $fieldParams->get('image_class');
 
-if ($class)
-{
-	// space before, so if no class sprintf below works
-	$class = ' class="' . htmlentities($class, ENT_COMPAT, 'UTF-8', true) . '"';
+if ($class) {
+    // space before, so if no class sprintf below works
+    $class = ' class="' . htmlentities($class, ENT_COMPAT, 'UTF-8', true) . '"';
 }
 
 $value  = (array) $field->value;
 $buffer = '';
 
-foreach ($value as $path)
-{
-	if (!$path || $path == '-1')
-	{
-		continue;
-	}
+foreach ($value as $path) {
+    if (!$path || $path == '-1') {
+        continue;
+    }
 
-	if ($fieldParams->get('directory', '/') !== '/')
-	{
-		$buffer .= sprintf('<img src="images/%s/%s"%s>',
-			$fieldParams->get('directory'),
-			htmlentities((string) $path, ENT_COMPAT, 'UTF-8', true),
-			$class
-		);
-	}
-	else
-	{
-		$buffer .= sprintf('<img src="images/%s"%s>',
-			htmlentities((string) $path, ENT_COMPAT, 'UTF-8', true),
-			$class
-		);
-	}
+    if ($fieldParams->get('directory', '/') !== '/') {
+        $buffer .= sprintf(
+            '<img src="images/%s/%s"%s>',
+            $fieldParams->get('directory'),
+            htmlentities((string) $path, ENT_COMPAT, 'UTF-8', true),
+            $class
+        );
+    } else {
+        $buffer .= sprintf(
+            '<img src="images/%s"%s>',
+            htmlentities((string) $path, ENT_COMPAT, 'UTF-8', true),
+            $class
+        );
+    }
 }
 
 echo $buffer;

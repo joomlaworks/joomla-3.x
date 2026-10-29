@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  Application
@@ -19,20 +20,20 @@ defined('JPATH_PLATFORM') or die;
  */
 class JRouteWrapperRoute
 {
-	/**
-	 * Helper wrapper method for _
-	 *
-	 * @param   string   $url    Absolute or Relative URI to Joomla resource.
-	 * @param   boolean  $xhtml  Replace & by &amp; for XML compliance.
-	 * @param   integer  $ssl    Secure state for the resolved URI.
-	 *
-	 * @return  string The translated humanly readable URL.
-	 *
-	 * @see     JRoute::_()
-	 * @since   3.4
-	 */
-	public function _($url, $xhtml = true, $ssl = null)
-	{
-		return JRoute::_($url, $xhtml, $ssl);
-	}
+    /**
+     * Helper wrapper method for _
+     *
+     * @param   string   $url    Absolute or Relative URI to Joomla resource.
+     * @param   boolean  $xhtml  Replace & by &amp; for XML compliance.
+     * @param   integer  $ssl    Secure state for the resolved URI.
+     *
+     * @return  string The translated humanly readable URL.
+     *
+     * @see     JRoute::_()
+     * @since   3.4
+     */
+    public function _($url, $xhtml = true, $ssl = null)
+    {
+        return JRoute::_($url, $xhtml, $ssl);
+    }
 }

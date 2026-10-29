@@ -37,21 +37,18 @@ defined('_JEXEC') or die;
 							<?php endif; ?>
 						</td>
 						<?php
-						// Versions in bold, green when current (the latest release, or the latest of a series still maintained)
-						$current = !empty($entry['isLatest']) || !empty($entry['series']);
-						$version = '<strong' . ($current ? ' class="text-success"' : '') . '>' . ($entry['version'] !== '' ? $this->escape($entry['version']) : '&#8212;') . '</strong>';
-						$title   = '';
+                        // Versions in bold, green when current (the latest release, or the latest of a series still maintained)
+                        $current = !empty($entry['isLatest']) || !empty($entry['series']);
+				    $version = '<strong' . ($current ? ' class="text-success"' : '') . '>' . ($entry['version'] !== '' ? $this->escape($entry['version']) : '&#8212;') . '</strong>';
+				    $title   = '';
 
-						if (!empty($entry['series']))
-						{
-							$title = JText::sprintf('COM_ADMIN_THIRD_PARTY_SERIES', $entry['series'], $entry['latest'], $entry['checked']);
-						}
-						elseif (empty($entry['isLatest']) && !empty($entry['latest']))
-						{
-							$title = JText::sprintf('COM_ADMIN_THIRD_PARTY_LATEST', $entry['latest'], $entry['checked'])
-								. (!empty($entry['seriesLatest']) ? ' ' . JText::sprintf('COM_ADMIN_THIRD_PARTY_SERIES_LATEST', $entry['seriesLatest']) : '');
-						}
-						?>
+				    if (!empty($entry['series'])) {
+				        $title = JText::sprintf('COM_ADMIN_THIRD_PARTY_SERIES', $entry['series'], $entry['latest'], $entry['checked']);
+				    } elseif (empty($entry['isLatest']) && !empty($entry['latest'])) {
+				        $title = JText::sprintf('COM_ADMIN_THIRD_PARTY_LATEST', $entry['latest'], $entry['checked'])
+				            . (!empty($entry['seriesLatest']) ? ' ' . JText::sprintf('COM_ADMIN_THIRD_PARTY_SERIES_LATEST', $entry['seriesLatest']) : '');
+				    }
+				    ?>
 						<td><?php echo $title !== '' ? '<span class="hasTooltip" title="' . $this->escape($title) . '">' . $version . '</span>' : $version; ?></td>
 						<?php if ($entry['date'] !== '' && !empty($entry['dateSource'])) : ?>
 							<td><span class="hasTooltip" title="<?php echo $this->escape(JText::sprintf('COM_ADMIN_THIRD_PARTY_DATE_SOURCE', $entry['dateSource'])); ?>"><?php echo $this->escape($entry['date']); ?></span></td>

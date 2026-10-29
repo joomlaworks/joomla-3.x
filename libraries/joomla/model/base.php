@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  Model
@@ -19,62 +20,62 @@ use Joomla\Registry\Registry;
  */
 abstract class JModelBase implements JModel
 {
-	/**
-	 * The model state.
-	 *
-	 * @var    Registry
-	 * @since  3.0.0
-	 */
-	protected $state;
+    /**
+     * The model state.
+     *
+     * @var    Registry
+     * @since  3.0.0
+     */
+    protected $state;
 
-	/**
-	 * Instantiate the model.
-	 *
-	 * @param   Registry  $state  The model state.
-	 *
-	 * @since   3.0.0
-	 */
-	public function __construct(?Registry $state = null)
-	{
-		// Setup the model.
-		$this->state = isset($state) ? $state : $this->loadState();
-	}
+    /**
+     * Instantiate the model.
+     *
+     * @param   Registry  $state  The model state.
+     *
+     * @since   3.0.0
+     */
+    public function __construct(?Registry $state = null)
+    {
+        // Setup the model.
+        $this->state = isset($state) ? $state : $this->loadState();
+    }
 
-	/**
-	 * Get the model state.
-	 *
-	 * @return  Registry  The state object.
-	 *
-	 * @since   3.0.0
-	 */
-	public function getState()
-	{
-		return $this->state;
-	}
+    /**
+     * Get the model state.
+     *
+     * @return  Registry  The state object.
+     *
+     * @since   3.0.0
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
 
-	/**
-	 * Set the model state.
-	 *
-	 * @param   Registry  $state  The state object.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0.0
-	 */
-	public function setState(Registry $state)
-	{
-		$this->state = $state;
-	}
+    /**
+     * Set the model state.
+     *
+     * @param   Registry  $state  The state object.
+     *
+     * @return  void
+     *
+     * @since   3.0.0
+     */
+    public function setState(Registry $state)
+    {
+        $this->state = $state;
+    }
 
-	/**
-	 * Load the model state.
-	 *
-	 * @return  Registry  The state object.
-	 *
-	 * @since   3.0.0
-	 */
-	protected function loadState()
-	{
-		return new Registry;
-	}
+    /**
+     * Load the model state.
+     *
+     * @return  Registry  The state object.
+     *
+     * @since   3.0.0
+     */
+    protected function loadState()
+    {
+        return new Registry();
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  User.profile
@@ -18,116 +19,105 @@ JFormHelper::loadFieldClass('radio');
  */
 class JFormFieldTos extends JFormFieldRadio
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  2.5.5
-	 */
-	protected $type = 'Tos';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  2.5.5
+     */
+    protected $type = 'Tos';
 
-	/**
-	 * Method to get the field label markup.
-	 *
-	 * @return  string  The field label markup.
-	 *
-	 * @since   2.5.5
-	 */
-	protected function getLabel()
-	{
-		$label = '';
+    /**
+     * Method to get the field label markup.
+     *
+     * @return  string  The field label markup.
+     *
+     * @since   2.5.5
+     */
+    protected function getLabel()
+    {
+        $label = '';
 
-		if ($this->hidden)
-		{
-			return $label;
-		}
+        if ($this->hidden) {
+            return $label;
+        }
 
-		// Get the label text from the XML element, defaulting to the element name.
-		$text = $this->element['label'] ? (string) $this->element['label'] : (string) $this->element['name'];
-		$text = $this->translateLabel ? JText::_($text) : $text;
+        // Get the label text from the XML element, defaulting to the element name.
+        $text = $this->element['label'] ? (string) $this->element['label'] : (string) $this->element['name'];
+        $text = $this->translateLabel ? JText::_($text) : $text;
 
-		// Set required to true as this field is not displayed at all if not required.
-		$this->required = true;
+        // Set required to true as this field is not displayed at all if not required.
+        $this->required = true;
 
-		// Build the class for the label.
-		$class = !empty($this->description) ? 'hasPopover' : '';
-		$class = $class . ' required';
-		$class = !empty($this->labelClass) ? $class . ' ' . $this->labelClass : $class;
+        // Build the class for the label.
+        $class = !empty($this->description) ? 'hasPopover' : '';
+        $class = $class . ' required';
+        $class = !empty($this->labelClass) ? $class . ' ' . $this->labelClass : $class;
 
-		// Add the opening label tag and main attributes attributes.
-		$label .= '<label id="' . $this->id . '-lbl" for="' . $this->id . '" class="' . $class . '"';
+        // Add the opening label tag and main attributes attributes.
+        $label .= '<label id="' . $this->id . '-lbl" for="' . $this->id . '" class="' . $class . '"';
 
-		// If a description is specified, use it to build a tooltip.
-		if (!empty($this->description))
-		{
-			$label .= ' title="' . htmlspecialchars(trim($text, ':'), ENT_COMPAT, 'UTF-8') . '"';
-			$label .= ' data-content="' . htmlspecialchars(
-				$this->translateDescription ? JText::_($this->description) : $this->description,
-				ENT_COMPAT,
-				'UTF-8'
-			) . '"';
+        // If a description is specified, use it to build a tooltip.
+        if (!empty($this->description)) {
+            $label .= ' title="' . htmlspecialchars(trim($text, ':'), ENT_COMPAT, 'UTF-8') . '"';
+            $label .= ' data-content="' . htmlspecialchars(
+                $this->translateDescription ? JText::_($this->description) : $this->description,
+                ENT_COMPAT,
+                'UTF-8'
+            ) . '"';
 
-			if (JFactory::getLanguage()->isRtl())
-			{
-				$label .= ' data-placement="left"';
-			}
-		}
+            if (JFactory::getLanguage()->isRtl()) {
+                $label .= ' data-placement="left"';
+            }
+        }
 
-		$tosArticle = $this->element['article'] > 0 ? (int) $this->element['article'] : 0;
-		$article    = null;
+        $tosArticle = $this->element['article'] > 0 ? (int) $this->element['article'] : 0;
+        $article    = null;
 
-		if ($tosArticle && JComponentHelper::isEnabled('com_content'))
-		{
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
-			$query->select('id, alias, catid, language')
-				->from('#__content')
-				->where('id = ' . $tosArticle);
-			$db->setQuery($query);
-			$article = $db->loadObject();
-		}
+        if ($tosArticle && JComponentHelper::isEnabled('com_content')) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('id, alias, catid, language')
+                ->from('#__content')
+                ->where('id = ' . $tosArticle);
+            $db->setQuery($query);
+            $article = $db->loadObject();
+        }
 
-		if ($article)
-		{
-			JHtml::_('behavior.modal');
-			JLoader::register('ContentHelperRoute', JPATH_BASE . '/components/com_content/helpers/route.php');
+        if ($article) {
+            JHtml::_('behavior.modal');
+            JLoader::register('ContentHelperRoute', JPATH_BASE . '/components/com_content/helpers/route.php');
 
-			$attribs          = array();
-			$attribs['class'] = 'modal';
-			$attribs['rel']   = '{handler: \'iframe\', size: {x:800, y:500}}';
+            $attribs          = array();
+            $attribs['class'] = 'modal';
+            $attribs['rel']   = '{handler: \'iframe\', size: {x:800, y:500}}';
 
-			if (JLanguageAssociations::isEnabled())
-			{
-				$tosAssociated = JLanguageAssociations::getAssociations('com_content', '#__content', 'com_content.item', $tosArticle);
-			}
+            if (JLanguageAssociations::isEnabled()) {
+                $tosAssociated = JLanguageAssociations::getAssociations('com_content', '#__content', 'com_content.item', $tosArticle);
+            }
 
-			$currentLang = JFactory::getLanguage()->getTag();
+            $currentLang = JFactory::getLanguage()->getTag();
 
-			if (isset($tosAssociated) && $currentLang !== $article->language && array_key_exists((string) $currentLang, $tosAssociated))
-			{
-				$url = ContentHelperRoute::getArticleRoute(
-					$tosAssociated[$currentLang]->id,
-					$tosAssociated[$currentLang]->catid,
-					$tosAssociated[$currentLang]->language
-				);
+            if (isset($tosAssociated) && $currentLang !== $article->language && array_key_exists((string) $currentLang, $tosAssociated)) {
+                $url = ContentHelperRoute::getArticleRoute(
+                    $tosAssociated[$currentLang]->id,
+                    $tosAssociated[$currentLang]->catid,
+                    $tosAssociated[$currentLang]->language
+                );
 
-				$link = JHtml::_('link', JRoute::_($url . '&tmpl=component'), $text, $attribs);
-			}
-			else
-			{
-				$slug = $article->alias ? ($article->id . ':' . $article->alias) : $article->id;
-				$url  = ContentHelperRoute::getArticleRoute($slug, $article->catid, $article->language);
-				$link = JHtml::_('link', JRoute::_($url . '&tmpl=component'), $text, $attribs);
-			}
-		}
-		else
-		{
-			$link = $text;
-		}
+                $link = JHtml::_('link', JRoute::_($url . '&tmpl=component'), $text, $attribs);
+            } else {
+                $slug = $article->alias ? ($article->id . ':' . $article->alias) : $article->id;
+                $url  = ContentHelperRoute::getArticleRoute($slug, $article->catid, $article->language);
+                $link = JHtml::_('link', JRoute::_($url . '&tmpl=component'), $text, $attribs);
+            }
+        } else {
+            $link = $text;
+        }
 
-		// Add the label text and closing tag.
-		$label .= '>' . $link . '<span class="star">&#160;*</span></label>';
+        // Add the label text and closing tag.
+        $label .= '>' . $link . '<span class="star">&#160;*</span></label>';
 
-		return $label;
-	}
+        return $label;
+    }
 }

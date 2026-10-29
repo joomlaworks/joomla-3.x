@@ -66,15 +66,15 @@ $data .= ' data-step="' . $step . '"';
 $data .= ' data-value="' . $value . '"';
 
 $attributes = array(
-	$class,
-	!empty($width) ? ' style="width:' . $width . ';"' : '',
-	$data
+    $class,
+    !empty($width) ? ' style="width:' . $width . ';"' : '',
+    $data
 );
 
 $value = ((float) ($value - $min) * 100) / ($max - $min);
 ?>
 <div <?php echo implode(' ', $attributes); ?> >
 	<div class="bar" style="width: <?php
-	echo (string) $value; ?>%;<?php
-	echo !empty($color) ? ' background-color:' . $color . ';' : ''; ?>"></div>
+    echo (string) $value; ?>%;<?php
+    echo !empty($color) ? ' background-color:' . $color . ';' : ''; ?>"></div>
 </div>

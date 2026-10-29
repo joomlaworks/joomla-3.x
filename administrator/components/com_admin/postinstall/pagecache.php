@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_admin
@@ -20,7 +21,7 @@ defined('_JEXEC') or die;
  */
 function admin_postinstall_pagecache_condition()
 {
-	return JPluginHelper::isEnabled('system', 'cache');
+    return JPluginHelper::isEnabled('system', 'cache');
 }
 
 /**
@@ -32,17 +33,17 @@ function admin_postinstall_pagecache_condition()
  */
 function admin_postinstall_pagecache_action()
 {
-	$db = JFactory::getDbo();
-	$id = (int) $db->setQuery(
-		$db->getQuery(true)
-			->select($db->quoteName('extension_id'))
-			->from($db->quoteName('#__extensions'))
-			->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
-			->where($db->quoteName('folder') . ' = ' . $db->quote('system'))
-			->where($db->quoteName('element') . ' = ' . $db->quote('cache'))
-	)->loadResult();
+    $db = JFactory::getDbo();
+    $id = (int) $db->setQuery(
+        $db->getQuery(true)
+            ->select($db->quoteName('extension_id'))
+            ->from($db->quoteName('#__extensions'))
+            ->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+            ->where($db->quoteName('folder') . ' = ' . $db->quote('system'))
+            ->where($db->quoteName('element') . ' = ' . $db->quote('cache'))
+    )->loadResult();
 
-	JFactory::getApplication()->redirect(
-		JRoute::_($id ? 'index.php?option=com_plugins&task=plugin.edit&extension_id=' . $id : 'index.php?option=com_plugins&view=plugins', false)
-	);
+    JFactory::getApplication()->redirect(
+        JRoute::_($id ? 'index.php?option=com_plugins&task=plugin.edit&extension_id=' . $id : 'index.php?option=com_plugins&view=plugins', false)
+    );
 }

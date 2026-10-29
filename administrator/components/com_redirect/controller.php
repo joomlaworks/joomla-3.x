@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_redirect
@@ -16,44 +17,43 @@ defined('_JEXEC') or die;
  */
 class RedirectController extends JControllerLegacy
 {
-	/**
-	 * @var		string	The default view.
-	 * @since   1.6
-	 */
-	protected $default_view = 'links';
+    /**
+     * @var		string	The default view.
+     * @since   1.6
+     */
+    protected $default_view = 'links';
 
-	/**
-	 * Method to display a view.
-	 *
-	 * @param   boolean  $cachable   If true, the view output will be cached.
-	 * @param   mixed    $urlparams  An array of safe URL parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
-	 *
-	 * @return  JController		This object to support chaining.
-	 *
-	 * @since   1.5
-	 */
-	public function display($cachable = false, $urlparams = false)
-	{
-		JLoader::register('RedirectHelper', JPATH_ADMINISTRATOR . '/components/com_redirect/helpers/redirect.php');
+    /**
+     * Method to display a view.
+     *
+     * @param   boolean  $cachable   If true, the view output will be cached.
+     * @param   mixed    $urlparams  An array of safe URL parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+     *
+     * @return  JController		This object to support chaining.
+     *
+     * @since   1.5
+     */
+    public function display($cachable = false, $urlparams = false)
+    {
+        JLoader::register('RedirectHelper', JPATH_ADMINISTRATOR . '/components/com_redirect/helpers/redirect.php');
 
-		// Load the submenu.
-		RedirectHelper::addSubmenu($this->input->get('view', 'links'));
+        // Load the submenu.
+        RedirectHelper::addSubmenu($this->input->get('view', 'links'));
 
-		$view   = $this->input->get('view', 'links');
-		$layout = $this->input->get('layout', 'default');
-		$id     = $this->input->getInt('id');
+        $view   = $this->input->get('view', 'links');
+        $layout = $this->input->get('layout', 'default');
+        $id     = $this->input->getInt('id');
 
-		// Check for edit form.
-		if ($view == 'link' && $layout == 'edit' && !$this->checkEditId('com_redirect.edit.link', $id))
-		{
-			// Somehow the person just went to the form - we don't allow that.
-			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
-			$this->setMessage($this->getError(), 'error');
-			$this->setRedirect(JRoute::_('index.php?option=com_redirect&view=links', false));
+        // Check for edit form.
+        if ($view == 'link' && $layout == 'edit' && !$this->checkEditId('com_redirect.edit.link', $id)) {
+            // Somehow the person just went to the form - we don't allow that.
+            $this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
+            $this->setMessage($this->getError(), 'error');
+            $this->setRedirect(JRoute::_('index.php?option=com_redirect&view=links', false));
 
-			return false;
-		}
+            return false;
+        }
 
-		parent::display();
-	}
+        parent::display();
+    }
 }

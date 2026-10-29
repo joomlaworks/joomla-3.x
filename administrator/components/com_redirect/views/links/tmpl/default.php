@@ -26,26 +26,26 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 		<?php if ($this->redirectPluginId) : ?>
 			<?php $link = JRoute::_('index.php?option=com_plugins&client_id=0&task=plugin.edit&extension_id=' . $this->redirectPluginId . '&tmpl=component&layout=modal'); ?>
 			<?php echo JHtml::_(
-				'bootstrap.renderModal',
-				'plugin' . $this->redirectPluginId . 'Modal',
-				array(
-					'url'         => $link,
-					'title'       => JText::_('COM_REDIRECT_EDIT_PLUGIN_SETTINGS'),
-					'height'      => '400px',
-					'width'       => '800px',
-					'bodyHeight'  => '70',
-					'modalWidth'  => '80',
-					'closeButton' => false,
-					'backdrop'    => 'static',
-					'keyboard'    => false,
-					'footer'      => '<button type="button" class="btn" data-dismiss="modal"'
-						. ' onclick="jQuery(\'#plugin' . $this->redirectPluginId . 'Modal iframe\').contents().find(\'#closeBtn\').click();">'
-						. JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>'
-						. '<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="jQuery(\'#plugin' . $this->redirectPluginId . 'Modal iframe\').contents().find(\'#saveBtn\').click();">'
-						. JText::_("JSAVE") . '</button>'
-						. '<button type="button" class="btn btn-success" onclick="jQuery(\'#plugin' . $this->redirectPluginId . 'Modal iframe\').contents().find(\'#applyBtn\').click(); return false;">'
-						. JText::_("JAPPLY") . '</button>'
-				)
+			    'bootstrap.renderModal',
+			    'plugin' . $this->redirectPluginId . 'Modal',
+			    array(
+			        'url'         => $link,
+			        'title'       => JText::_('COM_REDIRECT_EDIT_PLUGIN_SETTINGS'),
+			        'height'      => '400px',
+			        'width'       => '800px',
+			        'bodyHeight'  => '70',
+			        'modalWidth'  => '80',
+			        'closeButton' => false,
+			        'backdrop'    => 'static',
+			        'keyboard'    => false,
+			        'footer'      => '<button type="button" class="btn" data-dismiss="modal"'
+			            . ' onclick="jQuery(\'#plugin' . $this->redirectPluginId . 'Modal iframe\').contents().find(\'#closeBtn\').click();">'
+			            . JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>'
+			            . '<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="jQuery(\'#plugin' . $this->redirectPluginId . 'Modal iframe\').contents().find(\'#saveBtn\').click();">'
+			            . JText::_("JSAVE") . '</button>'
+			            . '<button type="button" class="btn btn-success" onclick="jQuery(\'#plugin' . $this->redirectPluginId . 'Modal iframe\').contents().find(\'#applyBtn\').click(); return false;">'
+			            . JText::_("JAPPLY") . '</button>'
+			    )
 			); ?>
 		<?php endif; ?>
 
@@ -95,9 +95,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 				</tfoot>
 				<tbody>
 				<?php foreach ($this->items as $i => $item) :
-					$canEdit   = $user->authorise('core.edit',       'com_redirect');
-					$canChange = $user->authorise('core.edit.state', 'com_redirect');
-					?>
+				    $canEdit   = $user->authorise('core.edit', 'com_redirect');
+				    $canChange = $user->authorise('core.edit.state', 'com_redirect');
+				    ?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="center">
 							<?php echo JHtml::_('grid.id', $i, $item->id); ?>
@@ -106,13 +106,12 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 							<div class="btn-group">
 								<?php echo JHtml::_('redirect.published', $item->published, $i); ?>
 								<?php // Create dropdown items and render the dropdown list.
-								if ($canChange)
-								{
-									JHtml::_('actionsdropdown.' . ((int) $item->published === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'links');
-									JHtml::_('actionsdropdown.' . ((int) $item->published === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'links');
-									echo JHtml::_('actionsdropdown.render', $this->escape($item->old_url));
-								}
-								?>
+				                if ($canChange) {
+				                    JHtml::_('actionsdropdown.' . ((int) $item->published === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'links');
+				                    JHtml::_('actionsdropdown.' . ((int) $item->published === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'links');
+				                    echo JHtml::_('actionsdropdown.render', $this->escape($item->old_url));
+				                }
+				    ?>
 							</div>
 						</td>
 						<td class="break-word">
@@ -150,18 +149,18 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 		<?php if (!empty($this->items)) : ?>
 			<?php echo $this->loadTemplate('addform'); ?>
 		<?php endif; ?>
-		<?php // Load the batch processing form if user is allowed ?>
+		<?php // Load the batch processing form if user is allowed?>
 			<?php if ($user->authorise('core.create', 'com_redirect')
-				&& $user->authorise('core.edit', 'com_redirect')
-				&& $user->authorise('core.edit.state', 'com_redirect')) : ?>
+                && $user->authorise('core.edit', 'com_redirect')
+                && $user->authorise('core.edit.state', 'com_redirect')) : ?>
 				<?php echo JHtml::_(
-					'bootstrap.renderModal',
-					'collapseModal',
-					array(
-						'title'  => JText::_('COM_REDIRECT_BATCH_OPTIONS'),
-						'footer' => $this->loadTemplate('batch_footer'),
-					),
-					$this->loadTemplate('batch_body')
+				    'bootstrap.renderModal',
+				    'collapseModal',
+				    array(
+				        'title'  => JText::_('COM_REDIRECT_BATCH_OPTIONS'),
+				        'footer' => $this->loadTemplate('batch_footer'),
+				    ),
+				    $this->loadTemplate('batch_body')
 				); ?>
 			<?php endif; ?>
 

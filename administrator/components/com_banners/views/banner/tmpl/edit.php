@@ -67,9 +67,9 @@ JFactory::getDocument()->addScriptDeclaration('
 					<?php echo $this->form->renderField('custombannercode'); ?>
 				</div>
 				<?php
-				echo $this->form->renderField('clickurl');
-				echo $this->form->renderField('description');
-				?>
+                echo $this->form->renderField('clickurl');
+echo $this->form->renderField('description');
+?>
 			</div>
 			<div class="span3">
 				<?php echo JLayoutHelper::render('joomla.edit.global', $this); ?>

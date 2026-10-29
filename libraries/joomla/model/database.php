@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  Model
@@ -19,65 +20,65 @@ use Joomla\Registry\Registry;
  */
 abstract class JModelDatabase extends JModelBase
 {
-	/**
-	 * The database driver.
-	 *
-	 * @var    JDatabaseDriver
-	 * @since  3.0.0
-	 */
-	protected $db;
+    /**
+     * The database driver.
+     *
+     * @var    JDatabaseDriver
+     * @since  3.0.0
+     */
+    protected $db;
 
-	/**
-	 * Instantiate the model.
-	 *
-	 * @param   Registry         $state  The model state.
-	 * @param   JDatabaseDriver  $db     The database adapter.
-	 *
-	 * @since   3.0.0
-	 */
-	public function __construct(?Registry $state = null, ?JDatabaseDriver $db = null)
-	{
-		parent::__construct($state);
+    /**
+     * Instantiate the model.
+     *
+     * @param   Registry         $state  The model state.
+     * @param   JDatabaseDriver  $db     The database adapter.
+     *
+     * @since   3.0.0
+     */
+    public function __construct(?Registry $state = null, ?JDatabaseDriver $db = null)
+    {
+        parent::__construct($state);
 
-		// Setup the model.
-		$this->db = isset($db) ? $db : $this->loadDb();
-	}
+        // Setup the model.
+        $this->db = isset($db) ? $db : $this->loadDb();
+    }
 
-	/**
-	 * Get the database driver.
-	 *
-	 * @return  JDatabaseDriver  The database driver.
-	 *
-	 * @since   3.0.0
-	 */
-	public function getDb()
-	{
-		return $this->db;
-	}
+    /**
+     * Get the database driver.
+     *
+     * @return  JDatabaseDriver  The database driver.
+     *
+     * @since   3.0.0
+     */
+    public function getDb()
+    {
+        return $this->db;
+    }
 
-	/**
-	 * Set the database driver.
-	 *
-	 * @param   JDatabaseDriver  $db  The database driver.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0.0
-	 */
-	public function setDb(JDatabaseDriver $db)
-	{
-		$this->db = $db;
-	}
+    /**
+     * Set the database driver.
+     *
+     * @param   JDatabaseDriver  $db  The database driver.
+     *
+     * @return  void
+     *
+     * @since   3.0.0
+     */
+    public function setDb(JDatabaseDriver $db)
+    {
+        $this->db = $db;
+    }
 
-	/**
-	 * Load the database driver.
-	 *
-	 * @return  JDatabaseDriver  The database driver.
-	 *
-	 * @since   3.0.0
-	 */
-	protected function loadDb()
-	{
-		return JFactory::getDbo();
-	}
+    /**
+     * Load the database driver.
+     *
+     * @return  JDatabaseDriver  The database driver.
+     *
+     * @since   3.0.0
+     */
+    protected function loadDb()
+    {
+        return JFactory::getDbo();
+    }
 }

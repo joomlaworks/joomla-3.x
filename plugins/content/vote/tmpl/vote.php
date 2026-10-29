@@ -26,9 +26,8 @@ $uri->setVar('hitcount', '0');
 // Create option list for voting select box
 $options = array();
 
-for ($i = 1; $i < 6; $i++)
-{
-	$options[] = JHtml::_('select.option', $i, JText::sprintf('PLG_VOTE_VOTE', $i));
+for ($i = 1; $i < 6; $i++) {
+    $options[] = JHtml::_('select.option', $i, JText::sprintf('PLG_VOTE_VOTE', $i));
 }
 
 ?>

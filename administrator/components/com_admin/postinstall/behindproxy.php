@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_admin
@@ -22,24 +23,21 @@ use Joomla\Utilities\ArrayHelper;
  */
 function admin_postinstall_behindproxy_condition()
 {
-	$app = JFactory::getApplication();
+    $app = JFactory::getApplication();
 
-	if ($app->get('behind_loadbalancer', '0'))
-	{
-		return false;
-	}
+    if ($app->get('behind_loadbalancer', '0')) {
+        return false;
+    }
 
-	if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) && !empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-	{
-		return true;
-	}
+    if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return true;
+    }
 
-	if (array_key_exists('HTTP_CLIENT_IP', $_SERVER) && !empty($_SERVER['HTTP_CLIENT_IP']))
-	{
-		return true;
-	}
+    if (array_key_exists('HTTP_CLIENT_IP', $_SERVER) && !empty($_SERVER['HTTP_CLIENT_IP'])) {
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 
@@ -52,39 +50,36 @@ function admin_postinstall_behindproxy_condition()
  */
 function behindproxy_postinstall_action()
 {
-	$prev = ArrayHelper::fromObject(new JConfig);
-	$data = array_merge($prev, array('behind_loadbalancer' => '1'));
+    $prev = ArrayHelper::fromObject(new JConfig());
+    $data = array_merge($prev, array('behind_loadbalancer' => '1'));
 
-	$config = new Registry($data);
+    $config = new Registry($data);
 
-	jimport('joomla.filesystem.path');
-	jimport('joomla.filesystem.file');
+    jimport('joomla.filesystem.path');
+    jimport('joomla.filesystem.file');
 
-	// Set the configuration file path.
-	$file = JPATH_CONFIGURATION . '/configuration.php';
+    // Set the configuration file path.
+    $file = JPATH_CONFIGURATION . '/configuration.php';
 
-	// Get the new FTP credentials.
-	$ftp = JClientHelper::getCredentials('ftp', true);
+    // Get the new FTP credentials.
+    $ftp = JClientHelper::getCredentials('ftp', true);
 
-	// Attempt to make the file writeable if using FTP.
-	if (!$ftp['enabled'] && JPath::isOwner($file) && !JPath::setPermissions($file, '0644'))
-	{
-		JError::raiseNotice(500, JText::_('COM_CONFIG_ERROR_CONFIGURATION_PHP_NOTWRITABLE'));
-	}
+    // Attempt to make the file writeable if using FTP.
+    if (!$ftp['enabled'] && JPath::isOwner($file) && !JPath::setPermissions($file, '0644')) {
+        JError::raiseNotice(500, JText::_('COM_CONFIG_ERROR_CONFIGURATION_PHP_NOTWRITABLE'));
+    }
 
-	// Attempt to write the configuration file as a PHP class named JConfig.
-	$configuration = $config->toString('PHP', array('class' => 'JConfig', 'closingtag' => false, 'sort' => true));
+    // Attempt to write the configuration file as a PHP class named JConfig.
+    $configuration = $config->toString('PHP', array('class' => 'JConfig', 'closingtag' => false, 'sort' => true));
 
-	if (!File::write($file, $configuration))
-	{
-		JFactory::getApplication()->enqueueMessage(JText::_('COM_CONFIG_ERROR_WRITE_FAILED'), 'error');
+    if (!File::write($file, $configuration)) {
+        JFactory::getApplication()->enqueueMessage(JText::_('COM_CONFIG_ERROR_WRITE_FAILED'), 'error');
 
-		return;
-	}
+        return;
+    }
 
-	// Attempt to make the file unwriteable if NOT using FTP.
-	if (!$ftp['enabled'] && JPath::isOwner($file) && !JPath::setPermissions($file, '0444'))
-	{
-		JError::raiseNotice(500, JText::_('COM_CONFIG_ERROR_CONFIGURATION_PHP_NOTUNWRITABLE'));
-	}
+    // Attempt to make the file unwriteable if NOT using FTP.
+    if (!$ftp['enabled'] && JPath::isOwner($file) && !JPath::setPermissions($file, '0444')) {
+        JError::raiseNotice(500, JText::_('COM_CONFIG_ERROR_CONFIGURATION_PHP_NOTUNWRITABLE'));
+    }
 }

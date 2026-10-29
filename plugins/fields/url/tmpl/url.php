@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Fields.URL
@@ -10,20 +11,19 @@ defined('_JEXEC') or die;
 
 $value = $field->value;
 
-if ($value == '')
-{
-	return;
+if ($value == '') {
+    return;
 }
 
 $attributes = '';
 
-if (!JUri::isInternal($value))
-{
-	$attributes = ' rel="nofollow noopener noreferrer" target="_blank"';
+if (!JUri::isInternal($value)) {
+    $attributes = ' rel="nofollow noopener noreferrer" target="_blank"';
 }
 
-echo sprintf('<a href="%s"%s>%s</a>',
-	htmlspecialchars((string) $value),
-	$attributes,
-	htmlspecialchars((string) $value)
+echo sprintf(
+    '<a href="%s"%s>%s</a>',
+    htmlspecialchars((string) $value),
+    $attributes,
+    htmlspecialchars((string) $value)
 );

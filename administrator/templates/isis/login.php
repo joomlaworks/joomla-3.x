@@ -21,13 +21,10 @@ $this->setHtml5(true);
 $frontEndUri = JUri::getInstance(JUri::root());
 $forceSsl    = (int) $app->get('force_ssl', 0);
 
-if ($forceSsl === 2)
-{
-	$frontEndUri->setScheme('https');
-}
-elseif ($forceSsl === 1)
-{
-	$frontEndUri->setScheme('http');
+if ($forceSsl === 2) {
+    $frontEndUri->setScheme('https');
+} elseif ($forceSsl === 1) {
+    $frontEndUri->setScheme('http');
 }
 
 $siteUrl  = $frontEndUri->toString();
@@ -58,9 +55,8 @@ isisDropConditionalAssets($this);
 $logo = (string) @file_get_contents(__DIR__ . '/images/joomla-logo.svg');
 $logo = str_replace(array('fill="#3b3a40"', '<svg '), array('fill="currentColor"', '<svg role="img" aria-label="Joomla!" focusable="false" '), $logo);
 
-$escape = function ($text)
-{
-	return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
+$escape = function ($text) {
+    return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
 };
 ?>
 <!DOCTYPE html>

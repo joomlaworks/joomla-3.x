@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_menu
@@ -17,19 +18,17 @@ $class     = $enabled ? 'nav ' . $direction : 'nav disabled ' . $direction;
 $menuTree = $menu->getTree();
 $root     = $menuTree->reset();
 
-if ($root->hasChildren())
-{
-	echo '<ul id="menu" class="' . $class . '">' . "\n";
+if ($root->hasChildren()) {
+    echo '<ul id="menu" class="' . $class . '">' . "\n";
 
-	// WARNING: Do not use direct 'include' or 'require' as it is important to isolate the scope for each call
-	$menu->renderSubmenu(JModuleHelper::getLayoutPath('mod_menu', 'default_submenu'));
+    // WARNING: Do not use direct 'include' or 'require' as it is important to isolate the scope for each call
+    $menu->renderSubmenu(JModuleHelper::getLayoutPath('mod_menu', 'default_submenu'));
 
-	echo "</ul>\n";
+    echo "</ul>\n";
 
-	echo '<ul id="nav-empty" class="dropdown-menu nav-empty hidden-phone"></ul>';
+    echo '<ul id="nav-empty" class="dropdown-menu nav-empty hidden-phone"></ul>';
 
-	if ($css = $menuTree->getCss())
-	{
-		$doc->addStyleDeclaration(implode("\n", $css));
-	}
+    if ($css = $menuTree->getCss()) {
+        $doc->addStyleDeclaration(implode("\n", $css));
+    }
 }

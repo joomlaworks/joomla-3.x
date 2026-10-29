@@ -18,23 +18,21 @@ JHtml::_('stylesheet', 'administrator/modules/mod_housekeeping/css/housekeeping.
 JHtml::_('script', 'administrator/modules/mod_housekeeping/js/housekeeping.js', array('version' => 'auto'), array('defer' => true));
 
 $url = JUri::base(true) . '/index.php?option=com_ajax&module=housekeeping&method=clean&format=json';
-$e   = function ($text)
-{
-	return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
+$e   = function ($text) {
+    return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
 };
 
 // Icons of the module's own (no icon font)
-$icon = function ($name)
-{
-	$paths = array(
-		'clean'   => '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 10v7M14 10v7"/>',
-		'all'     => '<path d="M14 4l6 6M4 20l7.5-7.5M12 6l6 6-6.5 6.5a3 3 0 0 1-4 0l-2-2a3 3 0 0 1 0-4z"/>',
-		'checkin' => '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/>',
-		'more'    => '<path d="M6 15l6-6 6 6"/>',
-	);
+$icon = function ($name) {
+    $paths = array(
+        'clean'   => '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 10v7M14 10v7"/>',
+        'all'     => '<path d="M14 4l6 6M4 20l7.5-7.5M12 6l6 6-6.5 6.5a3 3 0 0 1-4 0l-2-2a3 3 0 0 1 0-4z"/>',
+        'checkin' => '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/>',
+        'more'    => '<path d="M6 15l6-6 6 6"/>',
+    );
 
-	return '<svg class="hkIcon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" '
-		. 'stroke-linecap="round" stroke-linejoin="round">' . $paths[$name] . '</svg>';
+    return '<svg class="hkIcon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" '
+        . 'stroke-linecap="round" stroke-linejoin="round">' . $paths[$name] . '</svg>';
 };
 ?>
 <div class="btn-group housekeeping" data-housekeeping-url="<?php echo $e($url); ?>" data-token="<?php echo $e(Session::getFormToken()); ?>"

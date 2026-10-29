@@ -21,7 +21,7 @@ $upperLimit = JFactory::getLanguage()->getUpperLimitSearchWord();
 $hasOptions = $this->params->get('search_phrases', 1) || $this->params->get('search_areas', 1) || $this->total > 0;
 $searched   = $this->searchword !== '' && $this->searchword !== null;
 $title      = $searched ? JText::sprintf('TPL_ROOKWOOD_SEARCH_RESULTS_FOR', $this->origkeyword)
-	: ($this->params->get('page_heading') ?: ($this->params->get('page_title') ?: JText::_('TPL_ROOKWOOD_SEARCH')));
+    : ($this->params->get('page_heading') ?: ($this->params->get('page_title') ?: JText::_('TPL_ROOKWOOD_SEARCH')));
 ?>
 <div class="listView searchView<?php echo $this->pageclass_sfx; ?>">
 	<?php echo RookwoodHelper::listHeader($title, $searched ? JText::plural('COM_SEARCH_SEARCH_KEYWORD_N_RESULTS', (int) $this->total) : ''); ?>
@@ -80,7 +80,7 @@ $title      = $searched ? JText::sprintf('TPL_ROOKWOOD_SEARCH_RESULTS_FOR', $thi
 			<li class="searchResult">
 				<span class="searchResultNumber" aria-hidden="true"><?php echo sprintf('%02d', (int) $this->pagination->limitstart + $i + 1); ?></span>
 				<?php if ($result->section) : ?><span class="itemCategory"><?php echo $this->escape($result->section); ?></span><?php endif; ?>
-				<?php // The title and text keep the highlight markup of the searched words ?>
+				<?php // The title and text keep the highlight markup of the searched words?>
 				<h2 class="searchResultTitle">
 					<?php if ($link) : ?><a href="<?php echo $link; ?>"<?php echo $result->browsernav == 1 ? ' target="_blank" rel="noopener"' : ''; ?>><?php echo $result->title; ?></a><?php else : ?><?php echo $result->title; ?><?php endif; ?>
 				</h2>

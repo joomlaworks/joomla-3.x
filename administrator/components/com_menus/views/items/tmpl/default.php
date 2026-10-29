@@ -25,23 +25,21 @@ $ordering   = ($listOrder == 'a.lft');
 $saveOrder  = ($listOrder == 'a.lft' && strtolower((string) $listDirn) == 'asc');
 $menuType   = (string) $app->getUserState('com_menus.items.menutype', '', 'string');
 
-if ($saveOrder && $menuType)
-{
-	$saveOrderingUrl = 'index.php?option=com_menus&task=items.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'itemList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl, false, true);
+if ($saveOrder && $menuType) {
+    $saveOrderingUrl = 'index.php?option=com_menus&task=items.saveOrderAjax&tmpl=component';
+    JHtml::_('sortablelist.sortable', 'itemList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl, false, true);
 }
 
 $assoc   = JLanguageAssociations::isEnabled() && $this->state->get('filter.client_id') == 0;
 $colSpan = $assoc ? 10 : 9;
 
-if ($menuType == '')
-{
-	$colSpan--;
+if ($menuType == '') {
+    $colSpan--;
 }
 ?>
-<?php // Set up the filter bar. ?>
+<?php // Set up the filter bar.?>
 <form action="<?php echo JRoute::_('index.php?option=com_menus&view=items'); ?>" method="post" name="adminForm" id="adminForm">
-<?php if (!empty( $this->sidebar)) : ?>
+<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -82,7 +80,7 @@ if ($menuType == '')
 						<?php endif; ?>
 						<?php if ($this->state->get('filter.client_id') == 0) : ?>
 						<th width="10%" class="nowrap hidden-phone">
-							<?php echo JHtml::_('searchtools.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
+							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 						</th>
 						<?php endif; ?>
 						<?php if ($assoc) : ?>
@@ -111,56 +109,47 @@ if ($menuType == '')
 				<tbody>
 				<?php
 
-				foreach ($this->items as $i => $item) :
-					$orderkey   = array_search($item->id, $this->ordering[$item->parent_id]);
-					$canCreate  = $user->authorise('core.create',     'com_menus.menu.' . $item->menutype_id);
-					$canEdit    = $user->authorise('core.edit',       'com_menus.menu.' . $item->menutype_id);
-					$canCheckin = $user->authorise('core.manage',     'com_checkin') || $item->checked_out == $user->get('id')|| $item->checked_out == 0;
-					$canChange  = $user->authorise('core.edit.state', 'com_menus.menu.' . $item->menutype_id) && $canCheckin;
+                foreach ($this->items as $i => $item) :
+                    $orderkey   = array_search($item->id, $this->ordering[$item->parent_id]);
+                    $canCreate  = $user->authorise('core.create', 'com_menus.menu.' . $item->menutype_id);
+                    $canEdit    = $user->authorise('core.edit', 'com_menus.menu.' . $item->menutype_id);
+                    $canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
+                    $canChange  = $user->authorise('core.edit.state', 'com_menus.menu.' . $item->menutype_id) && $canCheckin;
 
-					// Get the parents of item for sorting
-					if ($item->level > 1)
-					{
-						$parentsStr = '';
-						$_currentParentId = $item->parent_id;
-						$parentsStr = ' ' . $_currentParentId;
+                    // Get the parents of item for sorting
+                    if ($item->level > 1) {
+                        $parentsStr = '';
+                        $_currentParentId = $item->parent_id;
+                        $parentsStr = ' ' . $_currentParentId;
 
-						for ($j = 0; $j < $item->level; $j++)
-						{
-							foreach ($this->ordering as $k => $v)
-							{
-								$v = implode('-', $v);
-								$v = '-' . $v . '-';
+                        for ($j = 0; $j < $item->level; $j++) {
+                            foreach ($this->ordering as $k => $v) {
+                                $v = implode('-', $v);
+                                $v = '-' . $v . '-';
 
-								if (strpos($v, '-' . $_currentParentId . '-') !== false)
-								{
-									$parentsStr .= ' ' . $k;
-									$_currentParentId = $k;
-									break;
-								}
-							}
-						}
-					}
-					else
-					{
-						$parentsStr = '';
-					}
-					?>
+                                if (strpos($v, '-' . $_currentParentId . '-') !== false) {
+                                    $parentsStr .= ' ' . $k;
+                                    $_currentParentId = $k;
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        $parentsStr = '';
+                    }
+                    ?>
 					<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->parent_id; ?>" item-id="<?php echo $item->id; ?>" parents="<?php echo $parentsStr; ?>" level="<?php echo $item->level; ?>">
 						<?php if ($menuType) : ?>
 							<td class="order nowrap center hidden-phone">
 								<?php
-								$iconClass = '';
+                                $iconClass = '';
 
-								if (!$canChange)
-								{
-									$iconClass = ' inactive';
-								}
-								elseif (!$saveOrder)
-								{
-									$iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
-								}
-								?>
+						    if (!$canChange) {
+						        $iconClass = ' inactive';
+						    } elseif (!$saveOrder) {
+						        $iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
+						    }
+                    ?>
 								<span class="sortable-handler<?php echo $iconClass ?>">
 									<span class="icon-menu" aria-hidden="true"></span>
 								</span>
@@ -174,9 +163,9 @@ if ($menuType == '')
 						</td>
 						<td class="center">
 							<?php
-							// Show protected items as published always. We don't allow state change for them. Show/Hide is the module's job.
-							$published = $item->protected ? 3 : $item->published;
-							echo JHtml::_('MenusHtml.Menus.state', $published, $i, $canChange && !$item->protected, 'cb'); ?>
+                            // Show protected items as published always. We don't allow state change for them. Show/Hide is the module's job.
+                            $published = $item->protected ? 3 : $item->published;
+                    echo JHtml::_('MenusHtml.Menus.state', $published, $i, $canChange && !$item->protected, 'cb'); ?>
 						</td>
 						<td>
 							<?php $prefix = JLayoutHelper::render('joomla.html.treeprefix', array('level' => $item->level)); ?>
@@ -260,16 +249,16 @@ if ($menuType == '')
 					<?php endforeach; ?>
 				</tbody>
 			</table>
-			<?php // Load the batch processing form if user is allowed ?>
+			<?php // Load the batch processing form if user is allowed?>
 			<?php if ($user->authorise('core.create', 'com_menus') || $user->authorise('core.edit', 'com_menus')) : ?>
 				<?php echo JHtml::_(
-					'bootstrap.renderModal',
-					'collapseModal',
-					array(
-						'title' => JText::_('COM_MENUS_BATCH_OPTIONS'),
-						'footer' => $this->loadTemplate('batch_footer')
-					),
-					$this->loadTemplate('batch_body')
+				    'bootstrap.renderModal',
+				    'collapseModal',
+				    array(
+				        'title' => JText::_('COM_MENUS_BATCH_OPTIONS'),
+				        'footer' => $this->loadTemplate('batch_footer')
+				    ),
+				    $this->loadTemplate('batch_body')
 				); ?>
 			<?php endif; ?>
 		<?php endif; ?>

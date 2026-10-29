@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_joomlaupdate
@@ -16,24 +17,24 @@ defined('_JEXEC') or die;
  */
 class JoomlaupdateViewUpdate extends JViewLegacy
 {
-	/**
-	 * Renders the view.
-	 *
-	 * @param   string  $tpl  Template name.
-	 *
-	 * @return  void
-	 */
-	public function display($tpl = null)
-	{
-		JFactory::getApplication()->input->set('hidemainmenu', true);
+    /**
+     * Renders the view.
+     *
+     * @param   string  $tpl  Template name.
+     *
+     * @return  void
+     */
+    public function display($tpl = null)
+    {
+        JFactory::getApplication()->input->set('hidemainmenu', true);
 
-		// Set the toolbar information.
-		JToolbarHelper::title(JText::_('COM_JOOMLAUPDATE_OVERVIEW'), 'loop install');
+        // Set the toolbar information.
+        JToolbarHelper::title(JText::_('COM_JOOMLAUPDATE_OVERVIEW'), 'loop install');
 
-		// Import com_login's model
-		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_login/models', 'LoginModel');
+        // Import com_login's model
+        JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_login/models', 'LoginModel');
 
-		// Render the view.
-		parent::display($tpl);
-	}
+        // Render the view.
+        parent::display($tpl);
+    }
 }

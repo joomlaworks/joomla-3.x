@@ -42,15 +42,14 @@ JFactory::getDocument()->addScriptDeclaration('
 			<div class="sidebar-nav">
 				<?php echo $this->loadTemplate('navigation'); ?>
 				<?php
-				// Display the submenu position modules
-				$this->submenumodules = JModuleHelper::getModules('submenu');
-				foreach ($this->submenumodules as $submenumodule)
-				{
-					$output = JModuleHelper::renderModule($submenumodule);
-					$params = new Registry($submenumodule->params);
-					echo $output;
-				}
-				?>
+                // Display the submenu position modules
+                $this->submenumodules = JModuleHelper::getModules('submenu');
+foreach ($this->submenumodules as $submenumodule) {
+    $output = JModuleHelper::renderModule($submenumodule);
+    $params = new Registry($submenumodule->params);
+    echo $output;
+}
+?>
 			</div>
 		</div>
 		<!-- End Sidebar -->

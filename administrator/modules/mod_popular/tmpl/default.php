@@ -14,7 +14,7 @@ JHtml::_('bootstrap.tooltip');
 <div class="row-striped">
 	<?php if (count($list)) : ?>
 		<?php foreach ($list as $i => $item) : ?>
-			<?php // Calculate popular items ?>
+			<?php // Calculate popular items?>
 			<?php $hits = (int) $item->hits; ?>
 			<?php $hits_class = ($hits >= 10000 ? 'important' : ($hits >= 1000 ? 'warning' : ($hits >= 100 ? 'info' : ''))); ?>
 			<div class="row-fluid">

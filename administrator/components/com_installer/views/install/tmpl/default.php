@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 JHtml::_('bootstrap.tooltip');
 
 JFactory::getDocument()->addScriptDeclaration(
-	'
+    '
 	Joomla.submitbutton4 = function() {
 		var form = document.getElementById("adminForm");
 
@@ -57,7 +57,7 @@ JFactory::getDocument()->addScriptDeclaration(
 );
 
 JFactory::getDocument()->addStyleDeclaration(
-	'
+    '
 	#loading {
 		background: rgba(255, 255, 255, .8) url(\'' . JHtml::_('image', 'system/ajax-loader.gif', '', null, true, true) . '\') 50% 15% no-repeat;
 		position: fixed;
@@ -104,12 +104,12 @@ JFactory::getDocument()->addStyleDeclaration(
 					<div class="alert alert-info j-jed-message"
 						style="margin-bottom: 40px; line-height: 2em; color:#333333;">
 						<?php echo JHtml::_(
-							'link',
-							JRoute::_('index.php?option=com_config&view=component&component=com_installer&path=&return=' . urlencode(base64_encode(JUri::getInstance()))),
-							'<span class="element-invisible">' . str_replace('"', '&quot;', JText::_('COM_INSTALLER_SHOW_JED_INFORMATION_TOOLTIP')) . '</span>',
-							'class="alert-options hasTooltip icon-options" data-dismiss="alert" title="' . str_replace('"', '&quot;', JText::_('COM_INSTALLER_SHOW_JED_INFORMATION_TOOLTIP')) . '"'
+						    'link',
+						    JRoute::_('index.php?option=com_config&view=component&component=com_installer&path=&return=' . urlencode(base64_encode(JUri::getInstance()))),
+						    '<span class="element-invisible">' . str_replace('"', '&quot;', JText::_('COM_INSTALLER_SHOW_JED_INFORMATION_TOOLTIP')) . '</span>',
+						    'class="alert-options hasTooltip icon-options" data-dismiss="alert" title="' . str_replace('"', '&quot;', JText::_('COM_INSTALLER_SHOW_JED_INFORMATION_TOOLTIP')) . '"'
 						);
-						?>
+				    ?>
 						<p><?php echo JText::_('COM_INSTALLER_INSTALL_FROM_WEB_INFO'); ?>
 							<?php echo JText::_('COM_INSTALLER_INSTALL_FROM_WEB_TOS'); ?></p>
 						<a class="btn" href="<?php echo JRoute::_('index.php?option=com_plugins&view=plugins&filter_folder=installer&filter_element=webinstaller&filter_enabled=&filter_search='); ?>">
@@ -117,9 +117,9 @@ JFactory::getDocument()->addStyleDeclaration(
 					</div>
 				<?php endif; ?>
 				<?php echo JHtml::_('bootstrap.startTabSet', 'myTab'); ?>
-				<?php // Show installation tabs at the start ?>
+				<?php // Show installation tabs at the start?>
 				<?php $firstTab = JEventDispatcher::getInstance()->trigger('onInstallerViewBeforeFirstTab', array()); ?>
-				<?php // Show installation tabs ?>
+				<?php // Show installation tabs?>
 				<?php $tabs = JEventDispatcher::getInstance()->trigger('onInstallerAddInstallationTab', array()); ?>
 				<?php foreach ($tabs as $tab) : ?>
 					<?php echo JHtml::_('bootstrap.addTab', 'myTab', $tab['name'], $tab['label']); ?>
@@ -128,7 +128,7 @@ JFactory::getDocument()->addStyleDeclaration(
 					</fieldset>
 					<?php echo JHtml::_('bootstrap.endTab'); ?>
 				<?php endforeach; ?>
-				<?php // Show installation tabs at the end ?>
+				<?php // Show installation tabs at the end?>
 				<?php $lastTab = JEventDispatcher::getInstance()->trigger('onInstallerViewAfterLastTab', array()); ?>
 				<?php $tabs = array_merge($firstTab, $tabs, $lastTab); ?>
 				<?php if (!$tabs) : ?>

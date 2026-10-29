@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Legacy
  * @subpackage  Utilities
@@ -19,86 +20,78 @@ JLog::add('JXMLElement is deprecated. Use SimpleXMLElement.', JLog::WARNING, 'de
  */
 class JXMLElement extends SimpleXMLElement
 {
-	/**
-	 * Get the name of the element.
-	 *
-	 * @return  string
-	 *
-	 * @since   1.6
-	 * @deprecated  3.0  Use SimpleXMLElement::getName() instead.
-	 */
-	public function name()
-	{
-		JLog::add('JXMLElement::name() is deprecated, use SimpleXMLElement::getName() instead.', JLog::WARNING, 'deprecated');
+    /**
+     * Get the name of the element.
+     *
+     * @return  string
+     *
+     * @since   1.6
+     * @deprecated  3.0  Use SimpleXMLElement::getName() instead.
+     */
+    public function name()
+    {
+        JLog::add('JXMLElement::name() is deprecated, use SimpleXMLElement::getName() instead.', JLog::WARNING, 'deprecated');
 
-		return (string) $this->getName();
-	}
+        return (string) $this->getName();
+    }
 
-	/**
-	 * Return a well-formed XML string based on SimpleXML element
-	 *
-	 * @param   boolean  $compressed  Should we use indentation and newlines ?
-	 * @param   string   $indent      Indention character.
-	 * @param   integer  $level       The level within the document which informs the indentation.
-	 *
-	 * @return  string
-	 *
-	 * @since   1.6
-	 * @deprecated  3.0  Use SimpleXMLElement::asXml() instead.
-	 */
-	public function asFormattedXml($compressed = false, $indent = "\t", $level = 0)
-	{
-		JLog::add('JXMLElement::asFormattedXml() is deprecated, use SimpleXMLElement::asXml() instead.', JLog::WARNING, 'deprecated');
-		$out = '';
+    /**
+     * Return a well-formed XML string based on SimpleXML element
+     *
+     * @param   boolean  $compressed  Should we use indentation and newlines ?
+     * @param   string   $indent      Indention character.
+     * @param   integer  $level       The level within the document which informs the indentation.
+     *
+     * @return  string
+     *
+     * @since   1.6
+     * @deprecated  3.0  Use SimpleXMLElement::asXml() instead.
+     */
+    public function asFormattedXml($compressed = false, $indent = "\t", $level = 0)
+    {
+        JLog::add('JXMLElement::asFormattedXml() is deprecated, use SimpleXMLElement::asXml() instead.', JLog::WARNING, 'deprecated');
+        $out = '';
 
-		// Start a new line, indent by the number indicated in $level
-		$out .= $compressed ? '' : "\n" . str_repeat($indent, $level);
+        // Start a new line, indent by the number indicated in $level
+        $out .= $compressed ? '' : "\n" . str_repeat($indent, $level);
 
-		// Add a <, and add the name of the tag
-		$out .= '<' . $this->getName();
+        // Add a <, and add the name of the tag
+        $out .= '<' . $this->getName();
 
-		// For each attribute, add attr="value"
-		foreach ($this->attributes() as $attr)
-		{
-			$out .= ' ' . $attr->getName() . '="' . htmlspecialchars((string) $attr, ENT_COMPAT, 'UTF-8') . '"';
-		}
+        // For each attribute, add attr="value"
+        foreach ($this->attributes() as $attr) {
+            $out .= ' ' . $attr->getName() . '="' . htmlspecialchars((string) $attr, ENT_COMPAT, 'UTF-8') . '"';
+        }
 
-		// If there are no children and it contains no data, end it off with a />
-		if (!(string) $this && !count($this->children()))
-		{
-			$out .= ' />';
-		}
-		else
-		{
-			// If there are children
-			if (count($this->children()))
-			{
-				// Close off the start tag
-				$out .= '>';
+        // If there are no children and it contains no data, end it off with a />
+        if (!(string) $this && !count($this->children())) {
+            $out .= ' />';
+        } else {
+            // If there are children
+            if (count($this->children())) {
+                // Close off the start tag
+                $out .= '>';
 
-				$level++;
+                $level++;
 
-				// For each child, call the asFormattedXML function (this will ensure that all children are added recursively)
-				foreach ($this->children() as $child)
-				{
-					$out .= $child->asFormattedXml($compressed, $indent, $level);
-				}
+                // For each child, call the asFormattedXML function (this will ensure that all children are added recursively)
+                foreach ($this->children() as $child) {
+                    $out .= $child->asFormattedXml($compressed, $indent, $level);
+                }
 
-				$level--;
+                $level--;
 
-				// Add the newline and indentation to go along with the close tag
-				$out .= $compressed ? '' : "\n" . str_repeat($indent, $level);
-			}
-			elseif ((string) $this)
-			{
-				// If there is data, close off the start tag and add the data
-				$out .= '>' . htmlspecialchars((string) $this, ENT_COMPAT, 'UTF-8');
-			}
+                // Add the newline and indentation to go along with the close tag
+                $out .= $compressed ? '' : "\n" . str_repeat($indent, $level);
+            } elseif ((string) $this) {
+                // If there is data, close off the start tag and add the data
+                $out .= '>' . htmlspecialchars((string) $this, ENT_COMPAT, 'UTF-8');
+            }
 
-			// Add the end tag
-			$out .= '</' . $this->getName() . '>';
-		}
+            // Add the end tag
+            $out .= '</' . $this->getName() . '>';
+        }
 
-		return $out;
-	}
+        return $out;
+    }
 }

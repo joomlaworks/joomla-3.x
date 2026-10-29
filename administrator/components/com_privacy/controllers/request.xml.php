@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_privacy
@@ -16,17 +17,17 @@ defined('_JEXEC') or die;
  */
 class PrivacyControllerRequest extends JControllerLegacy
 {
-	/**
-	 * Method to export the data for a request.
-	 *
-	 * @return  $this
-	 *
-	 * @since   3.9.0
-	 */
-	public function export()
-	{
-		$this->input->set('view', 'export');
+    /**
+     * Method to export the data for a request.
+     *
+     * @return  $this
+     *
+     * @since   3.9.0
+     */
+    public function export()
+    {
+        $this->input->set('view', 'export');
 
-		return $this->display();
-	}
+        return $this->display();
+    }
 }

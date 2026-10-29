@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Installation
  * @subpackage  Controller
@@ -16,70 +17,67 @@ defined('_JEXEC') or die;
  */
 class InstallationControllerSetlanguage extends JControllerBase
 {
-	/**
-	 * Execute the controller.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.1
-	 */
-	public function execute()
-	{
-		// Get the application
-		/** @var InstallationApplicationWeb $app */
-		$app = $this->getApplication();
+    /**
+     * Execute the controller.
+     *
+     * @return  void
+     *
+     * @since   3.1
+     */
+    public function execute()
+    {
+        // Get the application
+        /** @var InstallationApplicationWeb $app */
+        $app = $this->getApplication();
 
-		// Check for request forgeries.
-		JSession::checkToken() or $app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
+        // Check for request forgeries.
+        JSession::checkToken() or $app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
 
-		// Very crude workaround to give an error message when JSON is disabled
-		if (!function_exists('json_encode') || !function_exists('json_decode'))
-		{
-			$app->setHeader('status', 500);
-			$app->setHeader('Content-Type', 'application/json; charset=utf-8');
-			$app->sendHeaders();
-			echo '{"token":"' . JSession::getFormToken(true) . '","lang":"' . JFactory::getLanguage()->getTag()
-				. '","error":true,"header":"' . JText::_('INSTL_HEADER_ERROR') . '","message":"' . JText::_('INSTL_WARNJSON') . '"}';
-			$app->close();
-		}
+        // Very crude workaround to give an error message when JSON is disabled
+        if (!function_exists('json_encode') || !function_exists('json_decode')) {
+            $app->setHeader('status', 500);
+            $app->setHeader('Content-Type', 'application/json; charset=utf-8');
+            $app->sendHeaders();
+            echo '{"token":"' . JSession::getFormToken(true) . '","lang":"' . JFactory::getLanguage()->getTag()
+                . '","error":true,"header":"' . JText::_('INSTL_HEADER_ERROR') . '","message":"' . JText::_('INSTL_WARNJSON') . '"}';
+            $app->close();
+        }
 
-		// Check for potentially unwritable session
-		$session = JFactory::getSession();
+        // Check for potentially unwritable session
+        $session = JFactory::getSession();
 
-		if ($session->isNew())
-		{
-			$this->sendResponse(new Exception(JText::_('INSTL_COOKIES_NOT_ENABLED'), 500));
-		}
+        if ($session->isNew()) {
+            $this->sendResponse(new Exception(JText::_('INSTL_COOKIES_NOT_ENABLED'), 500));
+        }
 
-		// Get the setup model.
-		$model = new InstallationModelSetup;
+        // Get the setup model.
+        $model = new InstallationModelSetup();
 
-		// Get the posted values from the request and validate them.
-		$data   = $this->input->post->get('jform', array(), 'array');
-		$return = $model->validate($data, 'preinstall');
+        // Get the posted values from the request and validate them.
+        $data   = $this->input->post->get('jform', array(), 'array');
+        $return = $model->validate($data, 'preinstall');
 
-		$r = new stdClass;
+        $r = new stdClass();
 
-		// Check for validation errors.
-		if ($return === false)
-		{
-			/*
-			 * The validate method enqueued all messages for us, so we just need to
-			 * redirect back to the site setup screen.
-			 */
-			$r->view = $this->input->getWord('view', 'site');
-			$app->sendJsonResponse($r);
-		}
+        // Check for validation errors.
+        if ($return === false) {
+            /*
+             * The validate method enqueued all messages for us, so we just need to
+             * redirect back to the site setup screen.
+             */
+            $r->view = $this->input->getWord('view', 'site');
+            $app->sendJsonResponse($r);
+        }
 
-		// Store the options in the session.
-		$model->storeOptions($return);
+        // Store the options in the session.
+        $model->storeOptions($return);
 
-		// Setup language
-		$language = JFactory::getLanguage();
-		$language->setLanguage($return['language']);
+        // Setup language
+        $language = JFactory::getLanguage();
+        $language->setLanguage($return['language']);
 
-		// Redirect to the page.
-		$r->view = $this->input->getWord('view', 'site');
-		$app->sendJsonResponse($r);
-	}
+        // Redirect to the page.
+        $r->view = $this->input->getWord('view', 'site');
+        $app->sendJsonResponse($r);
+    }
 }

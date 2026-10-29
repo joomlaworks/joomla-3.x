@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Legacy
  * @subpackage  Log

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Libraries
  * @subpackage  Class
@@ -21,42 +22,41 @@ use Composer\Autoload\ClassLoader;
  */
 class JClassLoader
 {
-	/**
-	 * The composer class loader
-	 *
-	 * @var    ClassLoader
-	 * @since  3.4
-	 */
-	private $loader;
+    /**
+     * The composer class loader
+     *
+     * @var    ClassLoader
+     * @since  3.4
+     */
+    private $loader;
 
-	/**
-	 * Constructor
-	 *
-	 * @param   ClassLoader  $loader  Composer autoloader
-	 *
-	 * @since   3.4
-	 */
-	public function __construct(ClassLoader $loader)
-	{
-		$this->loader = $loader;
-	}
+    /**
+     * Constructor
+     *
+     * @param   ClassLoader  $loader  Composer autoloader
+     *
+     * @since   3.4
+     */
+    public function __construct(ClassLoader $loader)
+    {
+        $this->loader = $loader;
+    }
 
-	/**
-	 * Loads the given class or interface.
-	 *
-	 * @param   string  $class  The name of the class
-	 *
-	 * @return  boolean|null  True if loaded, null otherwise
-	 *
-	 * @since   3.4
-	 */
-	public function loadClass($class)
-	{
-		if ($result = $this->loader->loadClass($class))
-		{
-			JLoader::applyAliasFor($class);
-		}
+    /**
+     * Loads the given class or interface.
+     *
+     * @param   string  $class  The name of the class
+     *
+     * @return  boolean|null  True if loaded, null otherwise
+     *
+     * @since   3.4
+     */
+    public function loadClass($class)
+    {
+        if ($result = $this->loader->loadClass($class)) {
+            JLoader::applyAliasFor($class);
+        }
 
-		return $result;
-	}
+        return $result;
+    }
 }

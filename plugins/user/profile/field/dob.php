@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  User.profile
@@ -20,44 +21,42 @@ JFormHelper::loadFieldClass('calendar');
  */
 class JFormFieldDob extends JFormFieldCalendar
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  3.3.7
-	 */
-	protected $type = 'Dob';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  3.3.7
+     */
+    protected $type = 'Dob';
 
-	/**
-	 * Method to get the field label markup.
-	 *
-	 * @return  string  The field label markup.
-	 *
-	 * @since   3.3.7
-	 */
-	protected function getLabel()
-	{
-		$label = parent::getLabel();
+    /**
+     * Method to get the field label markup.
+     *
+     * @return  string  The field label markup.
+     *
+     * @since   3.3.7
+     */
+    protected function getLabel()
+    {
+        $label = parent::getLabel();
 
-		// Get the info text from the XML element, defaulting to empty.
-		$text  = $this->element['info'] ? (string) $this->element['info'] : '';
-		$text  = $this->translateLabel ? JText::_($text) : $text;
+        // Get the info text from the XML element, defaulting to empty.
+        $text  = $this->element['info'] ? (string) $this->element['info'] : '';
+        $text  = $this->translateLabel ? JText::_($text) : $text;
 
-		if ($text)
-		{
-			$app    = JFactory::getApplication();
-			$layout = new JLayoutFile('plugins.user.profile.fields.dob');
-			$view   = $app->input->getString('view', '');
+        if ($text) {
+            $app    = JFactory::getApplication();
+            $layout = new JLayoutFile('plugins.user.profile.fields.dob');
+            $view   = $app->input->getString('view', '');
 
-			// Only display the tip when editing profile
-			if ($view === 'registration' || $view === 'profile' || $app->isClient('administrator'))
-			{
-				$layout = new JLayoutFile('plugins.user.profile.fields.dob');
-				$info   = $layout->render(array('text' => $text));
-				$label  = $info . $label;
-			}
-		}
+            // Only display the tip when editing profile
+            if ($view === 'registration' || $view === 'profile' || $app->isClient('administrator')) {
+                $layout = new JLayoutFile('plugins.user.profile.fields.dob');
+                $info   = $layout->render(array('text' => $text));
+                $label  = $info . $label;
+            }
+        }
 
-		return $label;
-	}
+        return $label;
+    }
 }

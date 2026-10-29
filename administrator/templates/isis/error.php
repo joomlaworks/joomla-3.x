@@ -38,24 +38,19 @@ $cpanel = ($option === 'com_cpanel');
 
 $showSubmenu = false;
 $submenumodules = JModuleHelper::getModules('submenu');
-foreach ($submenumodules as $submenumodule)
-{
-	$output = JModuleHelper::renderModule($submenumodule);
-	if ($output !== '')
-	{
-		$showSubmenu = true;
-		break;
-	}
+foreach ($submenumodules as $submenumodule) {
+    $output = JModuleHelper::renderModule($submenumodule);
+    if ($output !== '') {
+        $showSubmenu = true;
+        break;
+    }
 }
 
 // Logo file
-if ($params->get('logoFile'))
-{
-	$logo = htmlspecialchars(JUri::root() . $params->get('logoFile'), ENT_QUOTES, 'UTF-8');
-}
-else
-{
-	$logo = $this->baseurl . '/templates/' . $this->template . '/images/logo.png';
+if ($params->get('logoFile')) {
+    $logo = htmlspecialchars(JUri::root() . $params->get('logoFile'), ENT_QUOTES, 'UTF-8');
+} else {
+    $logo = $this->baseurl . '/templates/' . $this->template . '/images/logo.png';
 }
 
 // Template Parameters
@@ -66,10 +61,10 @@ $stickyToolbar = $params->get('stickyToolbar', '1');
 require_once __DIR__ . '/helper.php';
 
 $optionColors = isisOptionColors(array(
-	'navbar'  => $params->get('templateColor'),
-	'header'  => $displayHeader ? $params->get('headerColor') : '',
-	'sidebar' => $params->get('sidebarColor'),
-	'link'    => $params->get('linkColor'),
+    'navbar'  => $params->get('templateColor'),
+    'header'  => $displayHeader ? $params->get('headerColor') : '',
+    'sidebar' => $params->get('sidebarColor'),
+    'link'    => $params->get('linkColor'),
 ));
 ?>
 <!DOCTYPE html>
@@ -82,11 +77,11 @@ $optionColors = isisOptionColors(array(
 		<!-- Load additional CSS styles for debug mode-->
 		<link href="<?php echo JUri::root(true); ?>/media/system/css/debug.css" rel="stylesheet" />
 	<?php endif; ?>
-	<?php // If Right-to-Left ?>
+	<?php // If Right-to-Left?>
 	<?php if ($this->direction == 'rtl') : ?>
 		<link href="<?php echo JUri::root(true); ?>/media/system/css/bootstrap-rtl.css" rel="stylesheet" />
 	<?php endif; ?>
-	<?php // Load specific language related CSS ?>
+	<?php // Load specific language related CSS?>
 	<?php $file = '/administrator/language/' . $lang->getTag() . '/' . $lang->getTag() . '.css'; ?>
 	<?php if (is_file(JPATH_ROOT . $file)) : ?>
 		<link href="<?php echo JUri::root(true) . $file; ?>" rel="stylesheet" />
@@ -96,7 +91,7 @@ $optionColors = isisOptionColors(array(
 		<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template-rtl.css" rel="stylesheet" />
 	<?php endif; ?>
 	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
-	<?php // The template options' colours, as on other pages ?>
+	<?php // The template options' colours, as on other pages?>
 	<?php if ($optionColors['properties'] !== '') : ?>
 		<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template-options.css" rel="stylesheet" />
 		<style>:root {<?php echo $optionColors['properties']; ?>}</style>
@@ -129,7 +124,7 @@ $optionColors = isisOptionColors(array(
 				<?php else : ?>
 				<div>
 				<?php endif; ?>
-					<?php // Display menu modules ?>
+					<?php // Display menu modules?>
 					<?php $menumodules = JModuleHelper::getModules('menu'); ?>
 					<?php foreach ($menumodules as $menumodule) : ?>
 						<?php $output = JModuleHelper::renderModule($menumodule, array('style' => 'none')); ?>
@@ -185,7 +180,7 @@ $optionColors = isisOptionColors(array(
 						&copy; <?php echo date('Y'); ?> <?php echo $sitename; ?>
 					</p>
 				</div>
-				<?php // Display status modules ?>
+				<?php // Display status modules?>
 				<?php $this->statusmodules = JModuleHelper::getModules('status'); ?>
 				<?php foreach ($this->statusmodules as $statusmodule) : ?>
 					<?php $output = JModuleHelper::renderModule($statusmodule, array('style' => 'no')); ?>
@@ -215,11 +210,11 @@ $optionColors = isisOptionColors(array(
 					<?php if ($this->debug) : ?>
 						<div>
 							<?php echo $this->renderBacktrace(); ?>
-							<?php // Check if there are more Exceptions and render their data as well ?>
+							<?php // Check if there are more Exceptions and render their data as well?>
 							<?php if ($this->error->getPrevious()) : ?>
 								<?php $loop = true; ?>
-								<?php // Reference $this->_error here and in the loop as setError() assigns errors to this property and we need this for the backtrace to work correctly ?>
-								<?php // Make the first assignment to setError() outside the loop so the loop does not skip Exceptions ?>
+								<?php // Reference $this->_error here and in the loop as setError() assigns errors to this property and we need this for the backtrace to work correctly?>
+								<?php // Make the first assignment to setError() outside the loop so the loop does not skip Exceptions?>
 								<?php $this->setError($this->_error->getPrevious()); ?>
 								<?php while ($loop === true) : ?>
 									<p><strong><?php echo JText::_('JERROR_LAYOUT_PREVIOUS_ERROR'); ?></strong></p>
@@ -230,7 +225,7 @@ $optionColors = isisOptionColors(array(
 									<?php echo $this->renderBacktrace(); ?>
 									<?php $loop = $this->setError($this->_error->getPrevious()); ?>
 								<?php endwhile; ?>
-								<?php // Reset the main error object to the base error ?>
+								<?php // Reset the main error object to the base error?>
 								<?php $this->setError($this->error); ?>
 							<?php endif; ?>
 						</div>

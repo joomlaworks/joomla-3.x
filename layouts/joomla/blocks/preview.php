@@ -23,14 +23,12 @@ $r        = $displayData['renderer'];
 $template = $displayData['template'];
 $links    = '';
 
-foreach (array('template.css', 'custom.css') as $file)
-{
-	$path = JPATH_ROOT . '/templates/' . $template . '/css/' . $file;
+foreach (array('template.css', 'custom.css') as $file) {
+    $path = JPATH_ROOT . '/templates/' . $template . '/css/' . $file;
 
-	if ($template !== '' && is_file($path))
-	{
-		$links .= '<link rel="stylesheet" href="templates/' . $r->e($template) . '/css/' . $file . '?t=' . filemtime($path) . '" />';
-	}
+    if ($template !== '' && is_file($path)) {
+        $links .= '<link rel="stylesheet" href="templates/' . $r->e($template) . '/css/' . $file . '?t=' . filemtime($path) . '" />';
+    }
 }
 ?>
 <!DOCTYPE html>

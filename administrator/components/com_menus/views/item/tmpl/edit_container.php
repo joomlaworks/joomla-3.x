@@ -87,31 +87,26 @@ JFactory::getDocument()->addStyleDeclaration($style);
 					<div class="alert alert-info"><?php echo JText::_('COM_MENUS_ITEM_FIELD_COMPONENTS_CONTAINER_HIDE_ITEMS_DESC')?></div>
 					<li>
 					<?php
-					$params      = new Registry($this->item->params);
-					$hiddenLinks = (array) $params->get('hideitems');
+                    $params      = new Registry($this->item->params);
+				    $hiddenLinks = (array) $params->get('hideitems');
 
-					foreach ($menuLinks as $i => $link) : ?>
+				    foreach ($menuLinks as $i => $link) : ?>
 						<?php
-						if ($extension = $link->element):
-							$lang->load("$extension.sys", JPATH_ADMINISTRATOR, null, false, true)
-							|| $lang->load("$extension.sys", JPATH_ADMINISTRATOR . '/components/' . $extension, null, false, true);
-						endif;
+				        if ($extension = $link->element):
+				            $lang->load("$extension.sys", JPATH_ADMINISTRATOR, null, false, true)
+				            || $lang->load("$extension.sys", JPATH_ADMINISTRATOR . '/components/' . $extension, null, false, true);
+				        endif;
 
-						if ($prevlevel < $link->level)
-						{
-							echo '<ul class="treeselect-sub">';
-						}
-						elseif ($prevlevel > $link->level)
-						{
-							echo str_repeat('</li></ul>', $prevlevel - $link->level);
-						}
-						else
-						{
-							echo '</li>';
-						}
+				        if ($prevlevel < $link->level) {
+				            echo '<ul class="treeselect-sub">';
+				        } elseif ($prevlevel > $link->level) {
+				            echo str_repeat('</li></ul>', $prevlevel - $link->level);
+				        } else {
+				            echo '</li>';
+				        }
 
-						$selected = in_array($link->value, $hiddenLinks) ? 1 : 0;
-						?>
+				        $selected = in_array($link->value, $hiddenLinks) ? 1 : 0;
+				        ?>
 							<li>
 								<div class="treeselect-item pull-left">
 									<input type="checkbox" <?php echo $link->value > 1 ? ' name="jform[params][hideitems][]" ' : ''; ?>
@@ -128,12 +123,11 @@ JFactory::getDocument()->addStyleDeclaration($style);
 								</div>
 						<?php
 
-						if (!isset($menuLinks[$i + 1]))
-						{
-							echo str_repeat('</li></ul>', $link->level);
-						}
-						$prevlevel = $link->level;
-						?>
+				        if (!isset($menuLinks[$i + 1])) {
+				            echo str_repeat('</li></ul>', $link->level);
+				        }
+				        $prevlevel = $link->level;
+				        ?>
 						<?php endforeach; ?>
 					</li>
 					<?php endif; ?>

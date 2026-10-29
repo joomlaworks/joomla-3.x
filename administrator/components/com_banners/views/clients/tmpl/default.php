@@ -16,18 +16,18 @@ JHtml::_('behavior.multiselect');
 JHtml::_('formbehavior.chosen', 'select');
 
 $purchaseTypes = array(
-		'1' => 'UNLIMITED',
-		'2' => 'YEARLY',
-		'3' => 'MONTHLY',
-		'4' => 'WEEKLY',
-		'5' => 'DAILY',
+        '1' => 'UNLIMITED',
+        '2' => 'YEARLY',
+        '3' => 'MONTHLY',
+        '4' => 'WEEKLY',
+        '5' => 'DAILY',
 );
 
 $user       = JFactory::getUser();
 $userId     = $user->get('id');
 $listOrder  = $this->escape($this->state->get('list.ordering'));
 $listDirn   = $this->escape($this->state->get('list.direction'));
-$params     = isset($this->state->params) ? $this->state->params : new JObject;
+$params     = isset($this->state->params) ? $this->state->params : new JObject();
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_banners&view=clients'); ?>" method="post" name="adminForm" id="adminForm">
 	<div id="j-sidebar-container" class="span2">
@@ -35,9 +35,9 @@ $params     = isset($this->state->params) ? $this->state->params : new JObject;
 	</div>
 	<div id="j-main-container" class="span10">
 		<?php
-		// Search tools bar
-		echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
-		?>
+        // Search tools bar
+        echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
+?>
 		<?php if (empty($this->items)) : ?>
 			<div class="alert alert-no-items">
 				<?php echo JText::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
@@ -87,11 +87,11 @@ $params     = isset($this->state->params) ? $this->state->params : new JObject;
 				</tfoot>
 				<tbody>
 					<?php foreach ($this->items as $i => $item) :
-						$canCreate  = $user->authorise('core.create',     'com_banners');
-						$canEdit    = $user->authorise('core.edit',       'com_banners');
-						$canCheckin = $user->authorise('core.manage',     'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
-						$canChange  = $user->authorise('core.edit.state', 'com_banners') && $canCheckin;
-						?>
+					    $canCreate  = $user->authorise('core.create', 'com_banners');
+					    $canEdit    = $user->authorise('core.edit', 'com_banners');
+					    $canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
+					    $canChange  = $user->authorise('core.edit.state', 'com_banners') && $canCheckin;
+					    ?>
 						<tr class="row<?php echo $i % 2; ?>">
 							<td class="center">
 								<?php echo JHtml::_('grid.id', $i, $item->id); ?>
@@ -101,13 +101,12 @@ $params     = isset($this->state->params) ? $this->state->params : new JObject;
 									<?php echo JHtml::_('jgrid.published', $item->state, $i, 'clients.', $canChange); ?>
 									<?php // Create dropdown items and render the dropdown list.
 
-									if ($canChange)
-									{
-										JHtml::_('actionsdropdown.' . ((int) $item->state === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'clients');
-										JHtml::_('actionsdropdown.' . ((int) $item->state === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'clients');
-										echo JHtml::_('actionsdropdown.render', $this->escape($item->name));
-									}
-									?>
+					                if ($canChange) {
+					                    JHtml::_('actionsdropdown.' . ((int) $item->state === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'clients');
+					                    JHtml::_('actionsdropdown.' . ((int) $item->state === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'clients');
+					                    echo JHtml::_('actionsdropdown.render', $this->escape($item->name));
+					                }
+					    ?>
 								</div>
 							</td>
 							<td class="nowrap has-context">
@@ -127,19 +126,27 @@ $params     = isset($this->state->params) ? $this->state->params : new JObject;
 								<?php echo $item->contact; ?>
 							</td>
 							<td class="center btns hidden-phone hidden-tablet">
-								<a class="badge <?php if ($item->count_published > 0) echo 'badge-success'; ?>" href="<?php echo JRoute::_('index.php?option=com_banners&view=banners&filter[client_id]=' . (int) $item->id . '&filter[published]=1'); ?>">
+								<a class="badge <?php if ($item->count_published > 0) {
+								    echo 'badge-success';
+								} ?>" href="<?php echo JRoute::_('index.php?option=com_banners&view=banners&filter[client_id]=' . (int) $item->id . '&filter[published]=1'); ?>">
 									<?php echo $item->count_published; ?></a>
 							</td>
 							<td class="center btns hidden-phone hidden-tablet">
-								<a class="badge <?php if ($item->count_unpublished > 0) echo 'badge-important'; ?>" href="<?php echo JRoute::_('index.php?option=com_banners&view=banners&filter[client_id]=' . (int) $item->id . '&filter[published]=0'); ?>">
+								<a class="badge <?php if ($item->count_unpublished > 0) {
+								    echo 'badge-important';
+								} ?>" href="<?php echo JRoute::_('index.php?option=com_banners&view=banners&filter[client_id]=' . (int) $item->id . '&filter[published]=0'); ?>">
 									<?php echo $item->count_unpublished; ?></a>
 							</td>
 							<td class="center btns hidden-phone hidden-tablet">
-								<a class="badge <?php if ($item->count_archived > 0) echo 'badge-info'; ?>" href="<?php echo JRoute::_('index.php?option=com_banners&view=banners&filter[client_id]=' . (int) $item->id . '&filter[published]=2'); ?>">
+								<a class="badge <?php if ($item->count_archived > 0) {
+								    echo 'badge-info';
+								} ?>" href="<?php echo JRoute::_('index.php?option=com_banners&view=banners&filter[client_id]=' . (int) $item->id . '&filter[published]=2'); ?>">
 									<?php echo $item->count_archived; ?></a>
 							</td>
 							<td class="center btns hidden-phone hidden-tablet">
-								<a class="badge <?php if ($item->count_trashed > 0) echo 'badge-inverse'; ?>" href="<?php echo JRoute::_('index.php?option=com_banners&view=banners&filter[client_id]=' . (int) $item->id . '&filter[published]=-2'); ?>">
+								<a class="badge <?php if ($item->count_trashed > 0) {
+								    echo 'badge-inverse';
+								} ?>" href="<?php echo JRoute::_('index.php?option=com_banners&view=banners&filter[client_id]=' . (int) $item->id . '&filter[published]=-2'); ?>">
 									<?php echo $item->count_trashed; ?></a>
 							</td>
 							<td class="small hidden-phone">

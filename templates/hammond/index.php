@@ -66,7 +66,7 @@ $page = HammondHelper::prepare($this);
 			</div>
 		</nav>
 
-		<?php // Menu and search share one panel over the page, opened from the navigation bar's line: it never moves the content (no layout shift) ?>
+		<?php // Menu and search share one panel over the page, opened from the navigation bar's line: it never moves the content (no layout shift)?>
 		<?php if ($page->hasMenu) : ?>
 		<div class="megaMenu" id="megaMenu" hidden>
 			<div class="container">

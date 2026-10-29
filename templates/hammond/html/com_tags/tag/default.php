@@ -15,9 +15,8 @@ class_exists('HammondHelper', false) || require_once dirname(__DIR__, 3) . '/hel
 /** @var TagsViewTag $this */
 $titles = array();
 
-foreach ((array) $this->item as $tag)
-{
-	$titles[] = $tag->title;
+foreach ((array) $this->item as $tag) {
+    $titles[] = $tag->title;
 }
 ?>
 <div class="listView tagView">

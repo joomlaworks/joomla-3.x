@@ -14,22 +14,19 @@ JHtml::register('users.spacer', array('JHtmlUsers', 'spacer'));
 
 $fieldsets = $this->form->getFieldsets();
 
-if (isset($fieldsets['core']))
-{
-	unset($fieldsets['core']);
+if (isset($fieldsets['core'])) {
+    unset($fieldsets['core']);
 }
 
-if (isset($fieldsets['params']))
-{
-	unset($fieldsets['params']);
+if (isset($fieldsets['params'])) {
+    unset($fieldsets['params']);
 }
 
 $tmp          = isset($this->data->jcfields) ? $this->data->jcfields : array();
 $customFields = array();
 
-foreach ($tmp as $customField)
-{
-	$customFields[$customField->name] = $customField;
+foreach ($tmp as $customField) {
+    $customFields[$customField->name] = $customField;
 }
 
 ?>

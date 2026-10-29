@@ -12,90 +12,77 @@ defined('_JEXEC') or die;
 /** @var JPaginationObject $item */
 $item = $displayData['data'];
 
-if (!empty($displayData['pagOptions']))
-{
-	$options = new Joomla\Registry\Registry($displayData['pagOptions']);
-	$liClass = $options->get('liClass', '');
-	$addText = $options->get('addText', '');
-}
-else
-{
-	$liClass = $addText = '';
+if (!empty($displayData['pagOptions'])) {
+    $options = new Joomla\Registry\Registry($displayData['pagOptions']);
+    $liClass = $options->get('liClass', '');
+    $addText = $options->get('addText', '');
+} else {
+    $liClass = $addText = '';
 }
 
 $display = $item->text;
 
-switch ((string) $item->text)
-{
-	// Check for "Start" item
-	case JText::_('JLIB_HTML_START') :
-		$icon = 'icon-backward icon-first';
-		$aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower((string) $item->text));
-		break;
+switch ((string) $item->text) {
+    // Check for "Start" item
+    case JText::_('JLIB_HTML_START') :
+        $icon = 'icon-backward icon-first';
+        $aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower((string) $item->text));
+        break;
 
-	// Check for "Prev" item
-	case JText::_('JPREV') :
-		$item->text = JText::_('JPREVIOUS');
-		$icon = 'icon-step-backward icon-previous';
-		$aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower($item->text));
-		break;
+        // Check for "Prev" item
+    case JText::_('JPREV') :
+        $item->text = JText::_('JPREVIOUS');
+        $icon = 'icon-step-backward icon-previous';
+        $aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower($item->text));
+        break;
 
-	// Check for "Next" item
-	case JText::_('JNEXT') :
-		$icon = 'icon-step-forward icon-next';
-		$aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower((string) $item->text));
-		break;
+        // Check for "Next" item
+    case JText::_('JNEXT') :
+        $icon = 'icon-step-forward icon-next';
+        $aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower((string) $item->text));
+        break;
 
-	// Check for "End" item
-	case JText::_('JLIB_HTML_END') :
-		$icon = 'icon-forward icon-last';
-		$aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower((string) $item->text));
-		break;
+        // Check for "End" item
+    case JText::_('JLIB_HTML_END') :
+        $icon = 'icon-forward icon-last';
+        $aria = JText::sprintf('JLIB_HTML_GOTO_POSITION', strtolower((string) $item->text));
+        break;
 
-	default:
-		$icon = null;
-		$aria = JText::sprintf('JLIB_HTML_GOTO_PAGE', $item->text);
-		break;
+    default:
+        $icon = null;
+        $aria = JText::sprintf('JLIB_HTML_GOTO_PAGE', $item->text);
+        break;
 }
 
 $item->text .= $addText ?: '';
 
-if ($icon !== null)
-{
-	$display = '<span class="' . $icon . '" aria-hidden="true"></span>';
+if ($icon !== null) {
+    $display = '<span class="' . $icon . '" aria-hidden="true"></span>';
 }
 
-if ($displayData['active'])
-{
-	if ($item->base > 0)
-	{
-		$limit = 'limitstart.value=' . $item->base;
-	}
-	else
-	{
-		$limit = 'limitstart.value=0';
-	}
+if ($displayData['active']) {
+    if ($item->base > 0) {
+        $limit = 'limitstart.value=' . $item->base;
+    } else {
+        $limit = 'limitstart.value=0';
+    }
 
-	$cssClasses = array();
+    $cssClasses = array();
 
-	$title = '';
+    $title = '';
 
-	if (!is_numeric($item->text))
-	{
-		JHtml::_('bootstrap.tooltip');
-		$cssClasses[] = 'hasTooltip';
-		$title = ' title="' . $item->text . '" ';
-	}
+    if (!is_numeric($item->text)) {
+        JHtml::_('bootstrap.tooltip');
+        $cssClasses[] = 'hasTooltip';
+        $title = ' title="' . $item->text . '" ';
+    }
 
-	$onClick = 'document.adminForm.' . $item->prefix . 'limitstart.value=' . ($item->base > 0 ? $item->base : '0') . '; Joomla.submitform();return false;';
-}
-else
-{
-	$class = (property_exists($item, 'active') && $item->active) ? 'active' : 'disabled';
-	if ($class != 'active')
-	{
-		$class .= $liClass ? ($class ? ' ' : '') . $liClass : '';
-	}
+    $onClick = 'document.adminForm.' . $item->prefix . 'limitstart.value=' . ($item->base > 0 ? $item->base : '0') . '; Joomla.submitform();return false;';
+} else {
+    $class = (property_exists($item, 'active') && $item->active) ? 'active' : 'disabled';
+    if ($class != 'active') {
+        $class .= $liClass ? ($class ? ' ' : '') . $liClass : '';
+    }
 }
 ?>
 <?php if ($displayData['active']) : ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_contact
@@ -16,17 +17,17 @@ defined('_JEXEC') or die;
  */
 class ContactViewCategories extends JViewCategories
 {
-	/**
-	 * Language key for default page heading
-	 *
-	 * @var    string
-	 * @since  3.2
-	 */
-	protected $pageHeading = 'COM_CONTACT_DEFAULT_PAGE_TITLE';
+    /**
+     * Language key for default page heading
+     *
+     * @var    string
+     * @since  3.2
+     */
+    protected $pageHeading = 'COM_CONTACT_DEFAULT_PAGE_TITLE';
 
-	/**
-	 * @var    string  The name of the extension for the category
-	 * @since  3.2
-	 */
-	protected $extension = 'com_contact';
+    /**
+     * @var    string  The name of the extension for the category
+     * @since  3.2
+     */
+    protected $extension = 'com_contact';
 }

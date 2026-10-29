@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -20,20 +21,20 @@ use Joomla\CMS\Language\Transliterate;
  */
 class TransliterateWrapper
 {
-	/**
-	 * Helper wrapper method for utf8_latin_to_ascii
-	 *
-	 * @param   string   $string  String to transliterate.
-	 * @param   integer  $case    Optionally specify upper or lower case. Default to null.
-	 *
-	 * @return  string  Transliterated string.
-	 *
-	 * @see     Transliterate::utf8_latin_to_ascii()
-	 * @since   3.4
-	 * @deprecated  4.0  Use `Joomla\CMS\Language\Transliterate` directly
-	 */
-	public function utf8_latin_to_ascii($string, $case = 0)
-	{
-		return Transliterate::utf8_latin_to_ascii($string, $case);
-	}
+    /**
+     * Helper wrapper method for utf8_latin_to_ascii
+     *
+     * @param   string   $string  String to transliterate.
+     * @param   integer  $case    Optionally specify upper or lower case. Default to null.
+     *
+     * @return  string  Transliterated string.
+     *
+     * @see     Transliterate::utf8_latin_to_ascii()
+     * @since   3.4
+     * @deprecated  4.0  Use `Joomla\CMS\Language\Transliterate` directly
+     */
+    public function utf8_latin_to_ascii($string, $case = 0)
+    {
+        return Transliterate::utf8_latin_to_ascii($string, $case);
+    }
 }

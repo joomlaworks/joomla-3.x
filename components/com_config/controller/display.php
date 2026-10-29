@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_config
@@ -16,113 +17,103 @@ defined('_JEXEC') or die;
  */
 class ConfigControllerDisplay extends JControllerBase
 {
-	/**
-	 * Application object - Redeclared for proper typehinting
-	 *
-	 * @var    JApplicationCms
-	 * @since  3.2
-	 */
-	protected $app;
+    /**
+     * Application object - Redeclared for proper typehinting
+     *
+     * @var    JApplicationCms
+     * @since  3.2
+     */
+    protected $app;
 
-	/**
-	 * Prefix for the view and model classes
-	 *
-	 * @var    string
-	 * @since  3.2
-	 */
-	public $prefix = 'Config';
+    /**
+     * Prefix for the view and model classes
+     *
+     * @var    string
+     * @since  3.2
+     */
+    public $prefix = 'Config';
 
-	/**
-	 * Task options, set externally by ConfigControllerHelper::parseController(). Declared here
-	 * (rather than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
-	 *
-	 * @var    array
-	 * @since  3.16.0
-	 */
-	public $options;
+    /**
+     * Task options, set externally by ConfigControllerHelper::parseController(). Declared here
+     * (rather than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
+     *
+     * @var    array
+     * @since  3.16.0
+     */
+    public $options;
 
-	/**
-	 * Execute the controller.
-	 *
-	 * @return  mixed  A rendered view or true
-	 *
-	 * @since   3.2
-	 */
-	public function execute()
-	{
-		// Get the document object.
-		$document = JFactory::getDocument();
+    /**
+     * Execute the controller.
+     *
+     * @return  mixed  A rendered view or true
+     *
+     * @since   3.2
+     */
+    public function execute()
+    {
+        // Get the document object.
+        $document = JFactory::getDocument();
 
-		$componentFolder = $this->input->getWord('option', 'com_config');
+        $componentFolder = $this->input->getWord('option', 'com_config');
 
-		if ($this->app->isClient('administrator'))
-		{
-			$viewName = $this->input->getWord('view', 'application');
-		}
-		else
-		{
-			$viewName = $this->input->getWord('view', 'config');
-		}
+        if ($this->app->isClient('administrator')) {
+            $viewName = $this->input->getWord('view', 'application');
+        } else {
+            $viewName = $this->input->getWord('view', 'config');
+        }
 
-		$viewFormat = $document->getType();
-		$layoutName = $this->input->getWord('layout', 'default');
+        $viewFormat = $document->getType();
+        $layoutName = $this->input->getWord('layout', 'default');
 
-		// Register the layout paths for the view
-		$paths = new SplPriorityQueue;
+        // Register the layout paths for the view
+        $paths = new SplPriorityQueue();
 
-		if ($this->app->isClient('administrator'))
-		{
-			$paths->insert(JPATH_ADMINISTRATOR . '/components/' . $componentFolder . '/view/' . $viewName . '/tmpl', 1);
-		}
-		else
-		{
-			$paths->insert(JPATH_BASE . '/components/' . $componentFolder . '/view/' . $viewName . '/tmpl', 1);
-		}
+        if ($this->app->isClient('administrator')) {
+            $paths->insert(JPATH_ADMINISTRATOR . '/components/' . $componentFolder . '/view/' . $viewName . '/tmpl', 1);
+        } else {
+            $paths->insert(JPATH_BASE . '/components/' . $componentFolder . '/view/' . $viewName . '/tmpl', 1);
+        }
 
-		$viewClass  = $this->prefix . 'View' . ucfirst($viewName) . ucfirst((string) $viewFormat);
-		$modelClass = $this->prefix . 'Model' . ucfirst($viewName);
+        $viewClass  = $this->prefix . 'View' . ucfirst($viewName) . ucfirst((string) $viewFormat);
+        $modelClass = $this->prefix . 'Model' . ucfirst($viewName);
 
-		if (class_exists($viewClass))
-		{
-			$model     = new $modelClass;
-			$component = $model->getState()->get('component.option');
+        if (class_exists($viewClass)) {
+            $model     = new $modelClass();
+            $component = $model->getState()->get('component.option');
 
-			// Make sure com_joomlaupdate and com_privacy can only be accessed by SuperUser
-			if (in_array(strtolower($component ?? ''), array('com_joomlaupdate', 'com_privacy'))
-				&& !JFactory::getUser()->authorise('core.admin'))
-			{
-				$this->app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            // Make sure com_joomlaupdate and com_privacy can only be accessed by SuperUser
+            if (in_array(strtolower($component ?? ''), array('com_joomlaupdate', 'com_privacy'))
+                && !JFactory::getUser()->authorise('core.admin')) {
+                $this->app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
 
-				return;
-			}
+                return;
+            }
 
-			// Access check.
-			if (!JFactory::getUser()->authorise('core.admin', $component)
-				&& !JFactory::getUser()->authorise('core.options', $component))
-			{
-				$this->app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            // Access check.
+            if (!JFactory::getUser()->authorise('core.admin', $component)
+                && !JFactory::getUser()->authorise('core.options', $component)) {
+                $this->app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
 
-				return;
-			}
+                return;
+            }
 
-			$view = new $viewClass($model, $paths);
+            $view = new $viewClass($model, $paths);
 
-			$view->setLayout($layoutName);
+            $view->setLayout($layoutName);
 
-			// Push document object into the view.
-			$view->document = $document;
+            // Push document object into the view.
+            $view->document = $document;
 
-			// Reply for service requests
-			if ($viewFormat === 'json')
-			{
-				$this->app->allowCache(false);
-				return $view->render();
-			}
+            // Reply for service requests
+            if ($viewFormat === 'json') {
+                $this->app->allowCache(false);
+                return $view->render();
+            }
 
-			// Render view.
-			echo $view->render();
-		}
+            // Render view.
+            echo $view->render();
+        }
 
-		return true;
-	}
+        return true;
+    }
 }

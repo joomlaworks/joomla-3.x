@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  Observer
@@ -18,35 +19,35 @@ defined('JPATH_PLATFORM') or die;
  */
 class JObserverWrapperMapper
 {
-	/**
-	 * Helper wrapper method for addObserverClassToClass
-	 *
-	 * @param   string         $observerClass    The name of the observer class (implementing JObserverInterface).
-	 * @param   string         $observableClass  The name of the observable class (implementing JObservableInterface).
-	 * @param   array|boolean  $params           The params to give to the JObserverInterface::createObserver() function, or false to remove mapping.
-	 *
-	 * @return void
-	 *
-	 * @see     JObserverMapper::addObserverClassToClass
-	 * @since   3.4
-	 */
-	public function addObserverClassToClass($observerClass, $observableClass, $params = array())
-	{
-		return JObserverMapper::addObserverClassToClass($observerClass, $observableClass, $params);
-	}
+    /**
+     * Helper wrapper method for addObserverClassToClass
+     *
+     * @param   string         $observerClass    The name of the observer class (implementing JObserverInterface).
+     * @param   string         $observableClass  The name of the observable class (implementing JObservableInterface).
+     * @param   array|boolean  $params           The params to give to the JObserverInterface::createObserver() function, or false to remove mapping.
+     *
+     * @return void
+     *
+     * @see     JObserverMapper::addObserverClassToClass
+     * @since   3.4
+     */
+    public function addObserverClassToClass($observerClass, $observableClass, $params = array())
+    {
+        return JObserverMapper::addObserverClassToClass($observerClass, $observableClass, $params);
+    }
 
-	/**
-	 * Helper wrapper method for attachAllObservers
-	 *
-	 * @param   JObservableInterface  $observableObject  The observable subject object.
-	 *
-	 * @return void
-	 *
-	 * @see     JObserverMapper::attachAllObservers
-	 * @since   3.4
-	 */
-	public function attachAllObservers(JObservableInterface $observableObject)
-	{
-		return JObserverMapper::attachAllObservers($observableObject);
-	}
+    /**
+     * Helper wrapper method for attachAllObservers
+     *
+     * @param   JObservableInterface  $observableObject  The observable subject object.
+     *
+     * @return void
+     *
+     * @see     JObserverMapper::attachAllObservers
+     * @since   3.4
+     */
+    public function attachAllObservers(JObservableInterface $observableObject)
+    {
+        return JObserverMapper::attachAllObservers($observableObject);
+    }
 }

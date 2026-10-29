@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_config
@@ -16,83 +17,79 @@ defined('_JEXEC') or die;
  */
 class ConfigControllerConfigDisplay extends ConfigControllerDisplay
 {
-	/**
-	 * Method to display global configuration.
-	 *
-	 * @return  boolean	True on success, false on failure.
-	 *
-	 * @since   3.2
-	 */
-	public function execute()
-	{
-		// Get the application
-		$app = $this->getApplication();
+    /**
+     * Method to display global configuration.
+     *
+     * @return  boolean	True on success, false on failure.
+     *
+     * @since   3.2
+     */
+    public function execute()
+    {
+        // Get the application
+        $app = $this->getApplication();
 
-		// Get the document object.
-		$document     = JFactory::getDocument();
+        // Get the document object.
+        $document     = JFactory::getDocument();
 
-		$viewName     = $this->input->getWord('view', 'config');
-		$viewFormat   = $document->getType();
-		$layoutName   = $this->input->getWord('layout', 'default');
+        $viewName     = $this->input->getWord('view', 'config');
+        $viewFormat   = $document->getType();
+        $layoutName   = $this->input->getWord('layout', 'default');
 
-		// Access backend com_config
-		JLoader::registerPrefix(ucfirst($viewName), JPATH_ADMINISTRATOR . '/components/com_config');
-		$displayClass = new ConfigControllerApplicationDisplay;
+        // Access backend com_config
+        JLoader::registerPrefix(ucfirst($viewName), JPATH_ADMINISTRATOR . '/components/com_config');
+        $displayClass = new ConfigControllerApplicationDisplay();
 
-		// Set backend required params
-		$document->setType('json');
-		$app->input->set('view', 'application');
+        // Set backend required params
+        $document->setType('json');
+        $app->input->set('view', 'application');
 
-		// Execute backend controller
-		$serviceData = json_decode((string) $displayClass->execute(), true);
+        // Execute backend controller
+        $serviceData = json_decode((string) $displayClass->execute(), true);
 
-		// Reset params back after requesting from service
-		$document->setType('html');
-		$app->input->set('view', $viewName);
+        // Reset params back after requesting from service
+        $document->setType('html');
+        $app->input->set('view', $viewName);
 
-		// Register the layout paths for the view
-		$paths = new SplPriorityQueue;
-		$paths->insert(JPATH_COMPONENT . '/view/' . $viewName . '/tmpl', 'normal');
+        // Register the layout paths for the view
+        $paths = new SplPriorityQueue();
+        $paths->insert(JPATH_COMPONENT . '/view/' . $viewName . '/tmpl', 'normal');
 
-		$viewClass  = 'ConfigView' . ucfirst($viewName) . ucfirst((string) $viewFormat);
-		$modelClass = 'ConfigModel' . ucfirst($viewName);
+        $viewClass  = 'ConfigView' . ucfirst($viewName) . ucfirst((string) $viewFormat);
+        $modelClass = 'ConfigModel' . ucfirst($viewName);
 
-		if (class_exists($viewClass))
-		{
-			if ($viewName !== 'close')
-			{
-				$model = new $modelClass;
+        if (class_exists($viewClass)) {
+            if ($viewName !== 'close') {
+                $model = new $modelClass();
 
-				// Access check.
-				if (!JFactory::getUser()->authorise('core.admin', $model->getState('component.option')))
-				{
-					return;
-				}
-			}
+                // Access check.
+                if (!JFactory::getUser()->authorise('core.admin', $model->getState('component.option'))) {
+                    return;
+                }
+            }
 
-			$view = new $viewClass($model, $paths);
+            $view = new $viewClass($model, $paths);
 
-			$view->setLayout($layoutName);
+            $view->setLayout($layoutName);
 
-			// Push document object into the view.
-			$view->document = $document;
+            // Push document object into the view.
+            $view->document = $document;
 
-			// Load form and bind data
-			$form = $model->getForm();
+            // Load form and bind data
+            $form = $model->getForm();
 
-			if ($form)
-			{
-				$form->bind($serviceData);
-			}
+            if ($form) {
+                $form->bind($serviceData);
+            }
 
-			// Set form and data to the view
-			$view->form = &$form;
-			$view->data = &$serviceData;
+            // Set form and data to the view
+            $view->form = &$form;
+            $view->data = &$serviceData;
 
-			// Render view.
-			echo $view->render();
-		}
+            // Render view.
+            echo $view->render();
+        }
 
-		return true;
-	}
+        return true;
+    }
 }

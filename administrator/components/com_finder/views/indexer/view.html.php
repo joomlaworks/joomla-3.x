@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_finder
@@ -16,5 +17,4 @@ defined('_JEXEC') or die;
  */
 class FinderViewIndexer extends JViewLegacy
 {
-
 }

@@ -21,19 +21,16 @@ $fieldSets = $form->getFieldsets('metadata');
 	<?php endif; ?>
 
 	<?php
-	// Include the real fields in this panel.
-	if ($name === 'jmetadata')
-	{
-		echo $form->renderField('metadesc');
-		echo $form->renderField('metakey');
-		echo $form->renderField('xreference');
-	}
+    // Include the real fields in this panel.
+    if ($name === 'jmetadata') {
+        echo $form->renderField('metadesc');
+        echo $form->renderField('metakey');
+        echo $form->renderField('xreference');
+    }
 
-	foreach ($form->getFieldset($name) as $field)
-	{
-		if ($field->name !== 'jform[metadata][tags][]')
-		{
-			echo $field->renderField();
-		}
-	} ?>
+    foreach ($form->getFieldset($name) as $field) {
+        if ($field->name !== 'jform[metadata][tags][]') {
+            echo $field->renderField();
+        }
+    } ?>
 <?php endforeach; ?>

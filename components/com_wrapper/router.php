@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_wrapper
@@ -16,38 +17,37 @@ defined('_JEXEC') or die;
  */
 class WrapperRouter extends JComponentRouterBase
 {
-	/**
-	 * Build the route for the com_wrapper component
-	 *
-	 * @param   array  &$query  An array of URL arguments
-	 *
-	 * @return  array  The URL arguments to use to assemble the subsequent URL.
-	 *
-	 * @since   3.3
-	 */
-	public function build(&$query)
-	{
-		if (isset($query['view']))
-		{
-			unset($query['view']);
-		}
+    /**
+     * Build the route for the com_wrapper component
+     *
+     * @param   array  &$query  An array of URL arguments
+     *
+     * @return  array  The URL arguments to use to assemble the subsequent URL.
+     *
+     * @since   3.3
+     */
+    public function build(&$query)
+    {
+        if (isset($query['view'])) {
+            unset($query['view']);
+        }
 
-		return array();
-	}
+        return array();
+    }
 
-	/**
-	 * Parse the segments of a URL.
-	 *
-	 * @param   array  &$segments  The segments of the URL to parse.
-	 *
-	 * @return  array  The URL attributes to be used by the application.
-	 *
-	 * @since   3.3
-	 */
-	public function parse(&$segments)
-	{
-		return array('view' => 'wrapper');
-	}
+    /**
+     * Parse the segments of a URL.
+     *
+     * @param   array  &$segments  The segments of the URL to parse.
+     *
+     * @return  array  The URL attributes to be used by the application.
+     *
+     * @since   3.3
+     */
+    public function parse(&$segments)
+    {
+        return array('view' => 'wrapper');
+    }
 }
 
 /**
@@ -64,9 +64,9 @@ class WrapperRouter extends JComponentRouterBase
  */
 function wrapperBuildRoute(&$query)
 {
-	$router = new WrapperRouter;
+    $router = new WrapperRouter();
 
-	return $router->build($query);
+    return $router->build($query);
 }
 
 /**
@@ -83,7 +83,7 @@ function wrapperBuildRoute(&$query)
  */
 function wrapperParseRoute($segments)
 {
-	$router = new WrapperRouter;
+    $router = new WrapperRouter();
 
-	return $router->parse($segments);
+    return $router->parse($segments);
 }

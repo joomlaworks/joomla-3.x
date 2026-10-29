@@ -9,9 +9,8 @@
 
 defined('_JEXEC') or die;
 
-if (JFactory::getApplication()->isClient('site'))
-{
-	JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
+if (JFactory::getApplication()->isClient('site')) {
+    JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
 }
 
 JHtml::_('behavior.core');
@@ -73,14 +72,14 @@ $editor    = JFactory::getApplication()->input->get('editor', '', 'cmd');
 				</tfoot>
 				<tbody>
 					<?php
-					$iconStates = array(
-						-2 => 'icon-trash',
-						0  => 'icon-unpublish',
-						1  => 'icon-publish',
-						2  => 'icon-archive',
-					);
-					foreach ($this->items as $i => $item) :
-					?>
+                    $iconStates = array(
+                        -2 => 'icon-trash',
+                        0  => 'icon-unpublish',
+                        1  => 'icon-publish',
+                        2  => 'icon-archive',
+                    );
+		    foreach ($this->items as $i => $item) :
+		        ?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="center">
 							<span class="<?php echo $iconStates[$this->escape($item->state)]; ?>" aria-hidden="true"></span>

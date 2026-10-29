@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Installation
  * @subpackage  Controller
@@ -16,107 +17,98 @@ defined('_JEXEC') or die;
  */
 class InstallationControllerDefault extends JControllerBase
 {
-	/**
-	 * Execute the controller.
-	 *
-	 * @return  string  The rendered view.
-	 *
-	 * @since   3.1
-	 */
-	public function execute()
-	{
-		// Get the application
-		/** @var InstallationApplicationWeb $app */
-		$app = $this->getApplication();
+    /**
+     * Execute the controller.
+     *
+     * @return  string  The rendered view.
+     *
+     * @since   3.1
+     */
+    public function execute()
+    {
+        // Get the application
+        /** @var InstallationApplicationWeb $app */
+        $app = $this->getApplication();
 
-		// Get the document object.
-		$document = $app->getDocument();
+        // Get the document object.
+        $document = $app->getDocument();
 
-		// Set the default view name and format from the request.
-		if (file_exists(JPATH_CONFIGURATION . '/configuration.php') && (filesize(JPATH_CONFIGURATION . '/configuration.php') > 10)
-			&& file_exists(JPATH_INSTALLATION . '/index.php'))
-		{
-			$defaultView = 'remove';
-		}
-		else
-		{
-			$defaultView = 'site';
-		}
+        // Set the default view name and format from the request.
+        if (file_exists(JPATH_CONFIGURATION . '/configuration.php') && (filesize(JPATH_CONFIGURATION . '/configuration.php') > 10)
+            && file_exists(JPATH_INSTALLATION . '/index.php')) {
+            $defaultView = 'remove';
+        } else {
+            $defaultView = 'site';
+        }
 
-		$vName   = $this->input->getWord('view', $defaultView);
-		$vFormat = $document->getType();
-		$lName   = $this->input->getWord('layout', 'default');
+        $vName   = $this->input->getWord('view', $defaultView);
+        $vFormat = $document->getType();
+        $lName   = $this->input->getWord('layout', 'default');
 
-		if (strcmp($vName, $defaultView) === 0)
-		{
-			$this->input->set('view', $defaultView);
-		}
+        if (strcmp($vName, $defaultView) === 0) {
+            $this->input->set('view', $defaultView);
+        }
 
-		switch ($vName)
-		{
-			case 'preinstall':
-				$model        = new InstallationModelSetup;
-				$sufficient   = $model->getPhpOptionsSufficient();
-				$checkOptions = false;
-				$options      = $model->getOptions();
+        switch ($vName) {
+            case 'preinstall':
+                $model        = new InstallationModelSetup();
+                $sufficient   = $model->getPhpOptionsSufficient();
+                $checkOptions = false;
+                $options      = $model->getOptions();
 
-				if ($sufficient)
-				{
-					$app->redirect('index.php');
-				}
+                if ($sufficient) {
+                    $app->redirect('index.php');
+                }
 
-				break;
+                break;
 
-			case 'locked':
-				$model        = new InstallationModelSetup;
-				$checkOptions = false;
-				$options      = array();
+            case 'locked':
+                $model        = new InstallationModelSetup();
+                $checkOptions = false;
+                $options      = array();
 
-				break;
+                break;
 
-			case 'languages':
-			case 'defaultlanguage':
-				$model        = new InstallationModelLanguages;
-				$checkOptions = false;
-				$options      = array();
+            case 'languages':
+            case 'defaultlanguage':
+                $model        = new InstallationModelLanguages();
+                $checkOptions = false;
+                $options      = array();
 
-				break;
+                break;
 
-			default:
-				$model        = new InstallationModelSetup;
-				$sufficient   = $model->getPhpOptionsSufficient();
-				$checkOptions = true;
-				$options      = $model->getOptions();
+            default:
+                $model        = new InstallationModelSetup();
+                $sufficient   = $model->getPhpOptionsSufficient();
+                $checkOptions = true;
+                $options      = $model->getOptions();
 
-				if (!$sufficient)
-				{
-					$app->redirect('index.php?view=preinstall');
-				}
+                if (!$sufficient) {
+                    $app->redirect('index.php?view=preinstall');
+                }
 
-				break;
-		}
+                break;
+        }
 
-		if ($vName !== $defaultView && $checkOptions && empty($options))
-		{
-			$app->redirect('index.php');
-		}
+        if ($vName !== $defaultView && $checkOptions && empty($options)) {
+            $app->redirect('index.php');
+        }
 
-		// Register the layout paths for the view
-		$paths = new SplPriorityQueue;
-		$paths->insert(JPATH_INSTALLATION . '/view/' . $vName . '/tmpl', 'normal');
+        // Register the layout paths for the view
+        $paths = new SplPriorityQueue();
+        $paths->insert(JPATH_INSTALLATION . '/view/' . $vName . '/tmpl', 'normal');
 
-		$vClass = 'InstallationView' . ucfirst($vName) . ucfirst((string) $vFormat);
+        $vClass = 'InstallationView' . ucfirst($vName) . ucfirst((string) $vFormat);
 
-		if (!class_exists($vClass))
-		{
-			$vClass = 'InstallationViewDefault';
-		}
+        if (!class_exists($vClass)) {
+            $vClass = 'InstallationViewDefault';
+        }
 
-		/** @var JViewHtml $view */
-		$view = new $vClass($model, $paths);
-		$view->setLayout($lName);
+        /** @var JViewHtml $view */
+        $view = new $vClass($model, $paths);
+        $view->setLayout($lName);
 
-		// Render our view and return it to the application.
-		return $view->render();
-	}
+        // Render our view and return it to the application.
+        return $view->render();
+    }
 }

@@ -38,7 +38,7 @@ JFactory::getDocument()->addScriptDeclaration('
 ');
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_finder&view=maps'); ?>" method="post" name="adminForm" id="adminForm">
-<?php if (!empty( $this->sidebar)) : ?>
+<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -99,16 +99,13 @@ JFactory::getDocument()->addScriptDeclaration('
 					</td>
 					<td>
 					<?php
-					if (trim((string) $item->parent_title, '**') === 'Language')
-					{
-						$title = FinderHelperLanguage::branchLanguageTitle($item->title);
-					}
-					else
-					{
-						$key = FinderHelperLanguage::branchSingular($item->title);
-						$title = $lang->hasKey($key) ? JText::_($key) : $item->title;
-					}
-					?>
+                    if (trim((string) $item->parent_title, '**') === 'Language') {
+                        $title = FinderHelperLanguage::branchLanguageTitle($item->title);
+                    } else {
+                        $key = FinderHelperLanguage::branchSingular($item->title);
+                        $title = $lang->hasKey($key) ? JText::_($key) : $item->title;
+                    }
+				    ?>
 					<?php if ((int) $item->num_children === 0) : ?>
 						<span class="gi">&mdash;</span>
 					<?php endif; ?>
@@ -123,7 +120,9 @@ JFactory::getDocument()->addScriptDeclaration('
 					<td class="center btns">
 					<?php if ((int) $item->num_children !== 0) : ?>
 						<a href="<?php echo JRoute::_('index.php?option=com_finder&view=maps&filter[branch]=' . $item->id); ?>">
-							<span class="badge <?php if ($item->num_children > 0) echo 'badge-info'; ?>"><?php echo $item->num_children; ?></span></a>
+							<span class="badge <?php if ($item->num_children > 0) {
+							    echo 'badge-info';
+							} ?>"><?php echo $item->num_children; ?></span></a>
 					<?php else : ?>
 						-
 					<?php endif; ?>
@@ -131,7 +130,9 @@ JFactory::getDocument()->addScriptDeclaration('
 					<?php endif; ?>
 					<td class="center btns">
 					<?php if ((int) $item->num_children === 0) : ?>
-						<a class="badge <?php if ((int) $item->count_published > 0) echo 'badge-success'; ?>" title="<?php echo JText::_('COM_FINDER_MAPS_COUNT_PUBLISHED_ITEMS'); ?>" href="<?php echo JRoute::_('index.php?option=com_finder&view=index&filter[state]=1&filter[content_map]=' . $item->id); ?>">
+						<a class="badge <?php if ((int) $item->count_published > 0) {
+						    echo 'badge-success';
+						} ?>" title="<?php echo JText::_('COM_FINDER_MAPS_COUNT_PUBLISHED_ITEMS'); ?>" href="<?php echo JRoute::_('index.php?option=com_finder&view=index&filter[state]=1&filter[content_map]=' . $item->id); ?>">
 						<?php echo (int) $item->count_published; ?></a>
 					<?php else : ?>
 						-
@@ -139,7 +140,9 @@ JFactory::getDocument()->addScriptDeclaration('
 					</td>
 					<td class="center btns">
 					<?php if ((int) $item->num_children === 0) : ?>
-						<a class="badge <?php if ((int) $item->count_unpublished > 0) echo 'badge-important'; ?>" title="<?php echo JText::_('COM_FINDER_MAPS_COUNT_UNPUBLISHED_ITEMS'); ?>" href="<?php echo JRoute::_('index.php?option=com_finder&view=index&filter[state]=0&filter[content_map]=' . $item->id); ?>">
+						<a class="badge <?php if ((int) $item->count_unpublished > 0) {
+						    echo 'badge-important';
+						} ?>" title="<?php echo JText::_('COM_FINDER_MAPS_COUNT_UNPUBLISHED_ITEMS'); ?>" href="<?php echo JRoute::_('index.php?option=com_finder&view=index&filter[state]=0&filter[content_map]=' . $item->id); ?>">
 						<?php echo (int) $item->count_unpublished; ?></a>
 					<?php else : ?>
 						-

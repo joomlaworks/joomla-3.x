@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  Layout
@@ -13,9 +14,8 @@ use Joomla\CMS\Layout\FileLayout;
 
 // The layout is needed for transition from "btn-group" in Joomla! 3.10 to the "switcher" field in Joomla! 4
 
-if (!$displayData['class'] || strpos($displayData['class'], 'btn-group') === false)
-{
-	$displayData['class'] .= ' btn-group';
+if (!$displayData['class'] || strpos($displayData['class'], 'btn-group') === false) {
+    $displayData['class'] .= ' btn-group';
 }
 
 $renderer = new FileLayout('joomla.form.field.radio', null, $this->options);

@@ -20,14 +20,13 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $saveOrder = $listOrder == 'a.ordering';
 
-if ($saveOrder)
-{
-	$saveOrderingUrl = 'index.php?option=com_languages&task=languages.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'contentList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
+if ($saveOrder) {
+    $saveOrderingUrl = 'index.php?option=com_languages&task=languages.saveOrderAjax&tmpl=component';
+    JHtml::_('sortablelist.sortable', 'contentList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 }
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_languages&view=languages'); ?>" method="post" name="adminForm" id="adminForm">
-<?php if (!empty( $this->sidebar)) : ?>
+<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -89,21 +88,21 @@ if ($saveOrder)
 				</tfoot>
 				<tbody>
 				<?php
-				foreach ($this->items as $i => $item) :
-					$canCreate = $user->authorise('core.create',     'com_languages');
-					$canEdit   = $user->authorise('core.edit',       'com_languages');
-					$canChange = $user->authorise('core.edit.state', 'com_languages');
-				?>
+                foreach ($this->items as $i => $item) :
+                    $canCreate = $user->authorise('core.create', 'com_languages');
+                    $canEdit   = $user->authorise('core.edit', 'com_languages');
+                    $canChange = $user->authorise('core.edit.state', 'com_languages');
+                    ?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="order nowrap center hidden-phone">
 							<?php if ($canChange) :
-								$disableClassName = '';
-								$disabledLabel	  = '';
+							    $disableClassName = '';
+							    $disabledLabel	  = '';
 
-								if (!$saveOrder) :
-									$disabledLabel    = JText::_('JORDERINGDISABLED');
-									$disableClassName = 'inactive tip-top';
-								endif; ?>
+							    if (!$saveOrder) :
+							        $disabledLabel    = JText::_('JORDERINGDISABLED');
+							        $disableClassName = 'inactive tip-top';
+							    endif; ?>
 								<span class="sortable-handler hasTooltip <?php echo $disableClassName; ?>" title="<?php echo $disabledLabel; ?>">
 									<span class="icon-menu" aria-hidden="true"></span>
 								</span>

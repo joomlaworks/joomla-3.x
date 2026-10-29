@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -18,36 +19,35 @@ defined('JPATH_PLATFORM') or die;
  */
 class UpdateSite extends Table
 {
-	/**
-	 * Constructor
-	 *
-	 * @param   \JDatabaseDriver  $db  Database driver object.
-	 *
-	 * @since   3.4
-	 */
-	public function __construct($db)
-	{
-		parent::__construct('#__update_sites', 'update_site_id', $db);
-	}
+    /**
+     * Constructor
+     *
+     * @param   \JDatabaseDriver  $db  Database driver object.
+     *
+     * @since   3.4
+     */
+    public function __construct($db)
+    {
+        parent::__construct('#__update_sites', 'update_site_id', $db);
+    }
 
-	/**
-	 * Overloaded check function
-	 *
-	 * @return  boolean  True if the object is ok
-	 *
-	 * @see     Table::check()
-	 * @since   3.4
-	 */
-	public function check()
-	{
-		// Check for valid name
-		if (trim($this->name) == '' || trim($this->location) == '')
-		{
-			$this->setError(\JText::_('JLIB_DATABASE_ERROR_MUSTCONTAIN_A_TITLE_EXTENSION'));
+    /**
+     * Overloaded check function
+     *
+     * @return  boolean  True if the object is ok
+     *
+     * @see     Table::check()
+     * @since   3.4
+     */
+    public function check()
+    {
+        // Check for valid name
+        if (trim($this->name) == '' || trim($this->location) == '') {
+            $this->setError(\JText::_('JLIB_DATABASE_ERROR_MUSTCONTAIN_A_TITLE_EXTENSION'));
 
-			return false;
-		}
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 }

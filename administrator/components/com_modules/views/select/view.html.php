@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_modules
@@ -16,62 +17,58 @@ defined('_JEXEC') or die;
  */
 class ModulesViewSelect extends JViewLegacy
 {
-	protected $state;
+    protected $state;
 
-	protected $items;
+    protected $items;
 
-	/**
-	 * Display the view
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  void
-	 */
-	public function display($tpl = null)
-	{
-		$state = $this->get('State');
-		$items = $this->get('Items');
+    /**
+     * Display the view
+     *
+     * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+     *
+     * @return  void
+     */
+    public function display($tpl = null)
+    {
+        $state = $this->get('State');
+        $items = $this->get('Items');
 
-		// Check for errors.
-		if (count($errors = $this->get('Errors')))
-		{
-			throw new Exception(implode("\n", $errors), 500);
-		}
+        // Check for errors.
+        if (count($errors = $this->get('Errors'))) {
+            throw new Exception(implode("\n", $errors), 500);
+        }
 
-		$this->state = &$state;
-		$this->items = &$items;
+        $this->state = &$state;
+        $this->items = &$items;
 
-		$this->addToolbar();
-		parent::display($tpl);
-	}
+        $this->addToolbar();
+        parent::display($tpl);
+    }
 
-	/**
-	 * Add the page title and toolbar.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 */
-	protected function addToolbar()
-	{
-		$state = $this->get('State');
+    /**
+     * Add the page title and toolbar.
+     *
+     * @return  void
+     *
+     * @since   1.6
+     */
+    protected function addToolbar()
+    {
+        $state = $this->get('State');
 
-		// Add page title
-		if ($state->get('client_id') == 1)
-		{
-			JToolbarHelper::title(JText::_('COM_MODULES_MANAGER_MODULES_ADMIN'), 'cube module');
-		}
-		else
-		{
-			JToolbarHelper::title(JText::_('COM_MODULES_MANAGER_MODULES_SITE'), 'cube module');
-		}
+        // Add page title
+        if ($state->get('client_id') == 1) {
+            JToolbarHelper::title(JText::_('COM_MODULES_MANAGER_MODULES_ADMIN'), 'cube module');
+        } else {
+            JToolbarHelper::title(JText::_('COM_MODULES_MANAGER_MODULES_SITE'), 'cube module');
+        }
 
-		// Get the toolbar object instance
-		$bar = JToolbar::getInstance('toolbar');
+        // Get the toolbar object instance
+        $bar = JToolbar::getInstance('toolbar');
 
-		// Instantiate a new JLayoutFile instance and render the layout
-		$layout = new JLayoutFile('toolbar.cancelselect');
+        // Instantiate a new JLayoutFile instance and render the layout
+        $layout = new JLayoutFile('toolbar.cancelselect');
 
-		$bar->appendButton('Custom', $layout->render(array()), 'new');
-	}
+        $bar->appendButton('Custom', $layout->render(array()), 'new');
+    }
 }

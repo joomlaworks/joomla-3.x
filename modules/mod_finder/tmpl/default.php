@@ -21,56 +21,53 @@ $lang->load('com_finder', JPATH_SITE);
 
 $suffix = $params->get('moduleclass_sfx');
 $output = '<input type="text" name="q" id="mod-finder-searchword' . $module->id . '" class="search-query input-medium" size="'
-	. $params->get('field_size', 20) . '" value="' . htmlspecialchars((string) JFactory::getApplication()->input->get('q', '', 'string'), ENT_COMPAT, 'UTF-8') . '"'
-	. ' placeholder="' . JText::_('MOD_FINDER_SEARCH_VALUE') . '"/>';
+    . $params->get('field_size', 20) . '" value="' . htmlspecialchars((string) JFactory::getApplication()->input->get('q', '', 'string'), ENT_COMPAT, 'UTF-8') . '"'
+    . ' placeholder="' . JText::_('MOD_FINDER_SEARCH_VALUE') . '"/>';
 
 $showLabel  = $params->get('show_label', 1);
 $labelClass = (!$showLabel ? 'element-invisible ' : '') . 'finder' . $suffix;
 $label      = '<label for="mod-finder-searchword' . $module->id . '" class="' . $labelClass . '">' . $params->get('alt_label', JText::_('JSEARCH_FILTER_SUBMIT')) . '</label>';
 
-switch ($params->get('label_pos', 'left'))
-{
-	case 'top' :
-		$output = $label . '<br />' . $output;
-		break;
+switch ($params->get('label_pos', 'left')) {
+    case 'top':
+        $output = $label . '<br />' . $output;
+        break;
 
-	case 'bottom' :
-		$output .= '<br />' . $label;
-		break;
+    case 'bottom':
+        $output .= '<br />' . $label;
+        break;
 
-	case 'right' :
-		$output .= $label;
-		break;
+    case 'right':
+        $output .= $label;
+        break;
 
-	case 'left' :
-	default :
-		$output = $label . $output;
-		break;
+    case 'left':
+    default:
+        $output = $label . $output;
+        break;
 }
 
-if ($params->get('show_button', 0))
-{
-	$button = '<button class="btn btn-primary hasTooltip ' . $suffix . ' finder' . $suffix . '" type="submit" title="' . JText::_('MOD_FINDER_SEARCH_BUTTON') . '"><span class="icon-search icon-white"></span>' . JText::_('JSEARCH_FILTER_SUBMIT') . '</button>';
+if ($params->get('show_button', 0)) {
+    $button = '<button class="btn btn-primary hasTooltip ' . $suffix . ' finder' . $suffix . '" type="submit" title="' . JText::_('MOD_FINDER_SEARCH_BUTTON') . '"><span class="icon-search icon-white"></span>' . JText::_('JSEARCH_FILTER_SUBMIT') . '</button>';
 
-	switch ($params->get('button_pos', 'left'))
-	{
-		case 'top' :
-			$output = $button . '<br />' . $output;
-			break;
+    switch ($params->get('button_pos', 'left')) {
+        case 'top':
+            $output = $button . '<br />' . $output;
+            break;
 
-		case 'bottom' :
-			$output .= '<br />' . $button;
-			break;
+        case 'bottom':
+            $output .= '<br />' . $button;
+            break;
 
-		case 'right' :
-			$output .= $button;
-			break;
+        case 'right':
+            $output .= $button;
+            break;
 
-		case 'left' :
-		default :
-			$output = $button . $output;
-			break;
-	}
+        case 'left':
+        default:
+            $output = $button . $output;
+            break;
+    }
 }
 
 JHtml::_('stylesheet', 'com_finder/finder.css', array('version' => 'auto', 'relative' => true));
@@ -126,11 +123,10 @@ jQuery(document).ready(function() {
 /*
  * This segment of code sets up the autocompleter.
  */
-if ($params->get('show_autosuggest', 1))
-{
-	JHtml::_('script', 'system/jquery.autocomplete.min.js', array('version' => 'auto', 'relative' => true));
+if ($params->get('show_autosuggest', 1)) {
+    JHtml::_('script', 'system/jquery.autocomplete.min.js', array('version' => 'auto', 'relative' => true));
 
-	$script .= "
+    $script .= "
 	var suggest = jQuery('#mod-finder-searchword" . $module->id . "').autocomplete({
 		serviceUrl: '" . JRoute::_('index.php?option=com_finder&task=suggestions.suggest&format=json&tmpl=component') . "',
 		paramName: 'q',
@@ -150,9 +146,9 @@ JFactory::getDocument()->addScriptDeclaration($script);
 <div class="finder<?php echo $suffix; ?>">
 	<form id="mod-finder-searchform<?php echo $module->id; ?>" action="<?php echo JRoute::_($route); ?>" method="get" class="form-search" role="search">
 		<?php
-		// Show the form fields.
-		echo $output;
-		?>
+        // Show the form fields.
+        echo $output;
+?>
 
 		<?php $show_advanced = $params->get('show_advanced', 0); ?>
 		<?php if ($show_advanced == 2) : ?>

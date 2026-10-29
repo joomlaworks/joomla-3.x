@@ -25,9 +25,8 @@ $params = $this->state->get('params');
 // (A Registry: isset() and assigning a property never reached its values, and the assignment is deprecated since PHP 8.2)
 $editoroptions = $params->exists('show_publishing_options');
 
-if (!$editoroptions)
-{
-	$params->set('show_urls_images_frontend', '0');
+if (!$editoroptions) {
+    $params->set('show_urls_images_frontend', '0');
 }
 
 JFactory::getDocument()->addScriptDeclaration("

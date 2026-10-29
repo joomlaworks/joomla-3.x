@@ -30,7 +30,7 @@ JHtml::_('stylesheet', 'com_finder/finder.css', array('version' => 'auto', 'rela
 			<?php echo $this->loadTemplate('form'); ?>
 		</div>
 	<?php endif; ?>
-	<?php // Load the search results layout if we are performing a search. ?>
+	<?php // Load the search results layout if we are performing a search.?>
 	<?php if ($this->query->search === true) : ?>
 		<div id="search-results">
 			<?php echo $this->loadTemplate('results'); ?>

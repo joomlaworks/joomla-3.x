@@ -42,16 +42,16 @@ JFactory::getDocument()->addScriptDeclaration('
 			</div>
 			<div class="span3">
 				<?php $this->set('fields',
-						array(
-							array(
-								'published',
-								'state',
-								'enabled',
-							),
-							'access',
-							'language',
-							'note',
-						)
+				    array(
+				        array(
+				            'published',
+				            'state',
+				            'enabled',
+				        ),
+				        'access',
+				        'language',
+				        'note',
+				    )
 				); ?>
 				<?php echo JLayoutHelper::render('joomla.edit.global', $this); ?>
 				<?php $this->set('fields', null); ?>

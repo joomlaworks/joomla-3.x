@@ -20,20 +20,17 @@ jimport('joomla.filesystem.file');
 $editorText  = false;
 $moduleXml   = JPATH_SITE . '/modules/' . $this->item['module'] . '/' . $this->item['module'] . '.xml';
 
-if (JFile::exists($moduleXml))
-{
-	$xml = simplexml_load_file($moduleXml);
+if (JFile::exists($moduleXml)) {
+    $xml = simplexml_load_file($moduleXml);
 
-	if (isset($xml->customContent))
-	{
-		$editorText = true;
-	}
+    if (isset($xml->customContent)) {
+        $editorText = true;
+    }
 }
 
 // If multi-language site, make language read-only
-if (JLanguageMultilang::isEnabled())
-{
-	$this->form->setFieldAttribute('language', 'readonly', 'true');
+if (JLanguageMultilang::isEnabled()) {
+    $this->form->setFieldAttribute('language', 'readonly', 'true');
 }
 
 JFactory::getDocument()->addScriptDeclaration("

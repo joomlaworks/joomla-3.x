@@ -22,9 +22,8 @@ $data = $displayData['data'];
 
 $text = $r->inline(isset($data['text']) ? $data['text'] : '');
 
-if (trim(strip_tags($text, '<br>')) === '')
-{
-	return;
+if (trim(strip_tags($text, '<br>')) === '') {
+    return;
 }
 ?>
 <p><?php echo $text; ?></p>

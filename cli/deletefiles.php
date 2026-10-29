@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    Joomla.Cli
  *
@@ -14,15 +15,13 @@
 const _JEXEC = 1;
 
 // Load system defines
-if (file_exists(dirname(__DIR__) . '/defines.php'))
-{
-	require_once dirname(__DIR__) . '/defines.php';
+if (file_exists(dirname(__DIR__) . '/defines.php')) {
+    require_once dirname(__DIR__) . '/defines.php';
 }
 
-if (!defined('_JDEFINES'))
-{
-	define('JPATH_BASE', dirname(__DIR__));
-	require_once JPATH_BASE . '/includes/defines.php';
+if (!defined('_JDEFINES')) {
+    define('JPATH_BASE', dirname(__DIR__));
+    require_once JPATH_BASE . '/includes/defines.php';
 }
 
 // Get the framework.
@@ -50,18 +49,18 @@ $lang->load('files_joomla.sys', JPATH_SITE, null, false, false)
  */
 class DeletefilesCli extends JApplicationCli
 {
-	/**
-	 * Entry point for CLI script
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
-	public function doExecute()
-	{
-		// Same as: php cli/joomla.php update:joomla:remove-old-files
-		$this->close((new \Joomla\CMS\Application\ConsoleApplication)->runCommand('update:joomla:remove-old-files', array(), array('quiet' => true)));
-	}
+    /**
+     * Entry point for CLI script
+     *
+     * @return  void
+     *
+     * @since   3.0
+     */
+    public function doExecute()
+    {
+        // Same as: php cli/joomla.php update:joomla:remove-old-files
+        $this->close((new \Joomla\CMS\Application\ConsoleApplication())->runCommand('update:joomla:remove-old-files', array(), array('quiet' => true)));
+    }
 }
 
 // Instantiate the application object, passing the class name to JCli::getInstance

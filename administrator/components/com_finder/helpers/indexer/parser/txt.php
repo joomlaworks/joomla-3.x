@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_finder
@@ -18,17 +19,17 @@ JLoader::register('FinderIndexerParser', dirname(__DIR__) . '/parser.php');
  */
 class FinderIndexerParserTxt extends FinderIndexerParser
 {
-	/**
-	 * Method to process Text input and extract the plain text.
-	 *
-	 * @param   string  $input  The input to process.
-	 *
-	 * @return  string  The plain text input.
-	 *
-	 * @since   2.5
-	 */
-	protected function process($input)
-	{
-		return $input;
-	}
+    /**
+     * Method to process Text input and extract the plain text.
+     *
+     * @param   string  $input  The input to process.
+     *
+     * @return  string  The plain text input.
+     *
+     * @since   2.5
+     */
+    protected function process($input)
+    {
+        return $input;
+    }
 }

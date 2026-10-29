@@ -20,12 +20,12 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 
 $oppositeClient   = $this->state->get('filter.client') == 'administrator' ? JText::_('JSITE') : JText::_('JADMINISTRATOR');
 $oppositeFileName = constant('JPATH_' . strtoupper($this->state->get('filter.client') === 'site' ? 'administrator' : 'site'))
-	. '/language/overrides/' . $this->state->get('filter.language', 'en-GB') . '.override.ini';
+    . '/language/overrides/' . $this->state->get('filter.language', 'en-GB') . '.override.ini';
 $oppositeStrings  = JLanguageHelper::parseIniFile($oppositeFileName);
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_languages&view=overrides'); ?>" method="post" name="adminForm" id="adminForm">
-<?php if (!empty( $this->sidebar)) : ?>
+<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -90,11 +90,10 @@ $oppositeStrings  = JLanguageHelper::parseIniFile($oppositeFileName);
 						</td>
 						<td class="hidden-phone">
 							<?php echo $client; ?><?php
-							if (isset($oppositeStrings[$key]) && $oppositeStrings[$key] === $text)
-							{
-								echo '/' . $oppositeClient;
-							}
-							?>
+				    if (isset($oppositeStrings[$key]) && $oppositeStrings[$key] === $text) {
+				        echo '/' . $oppositeClient;
+				    }
+				    ?>
 						</td>
 					</tr>
 				<?php $i++; ?>

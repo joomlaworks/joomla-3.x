@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Fields.Radio
@@ -10,21 +11,18 @@ defined('_JEXEC') or die;
 
 $value = $field->value;
 
-if ($value == '')
-{
-	return;
+if ($value == '') {
+    return;
 }
 
 $value   = (array) $value;
 $texts   = array();
 $options = $this->getOptionsFromField($field);
 
-foreach ($options as $optionValue => $optionText)
-{
-	if (in_array((string) $optionValue, $value))
-	{
-		$texts[] = JText::_($optionText);
-	}
+foreach ($options as $optionValue => $optionText) {
+    if (in_array((string) $optionValue, $value)) {
+        $texts[] = JText::_($optionText);
+    }
 }
 
 

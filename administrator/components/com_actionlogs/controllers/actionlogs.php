@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_actionlogs
@@ -25,135 +26,124 @@ JLoader::register('ActionlogsHelper', JPATH_ADMINISTRATOR . '/components/com_act
  */
 class ActionlogsControllerActionlogs extends JControllerAdmin
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @since   3.9.0
-	 */
-	public function __construct(array $config = array())
-	{
-		parent::__construct($config);
+    /**
+     * Constructor.
+     *
+     * @param   array  $config  An optional associative array of configuration settings.
+     *
+     * @since   3.9.0
+     */
+    public function __construct(array $config = array())
+    {
+        parent::__construct($config);
 
-		$this->registerTask('exportSelectedLogs', 'exportLogs');
-	}
+        $this->registerTask('exportSelectedLogs', 'exportLogs');
+    }
 
-	/**
-	 * Method to get a model object, loading it if required.
-	 *
-	 * @param   string  $name    The model name. Optional.
-	 * @param   string  $prefix  The class prefix. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  object  The model.
-	 *
-	 * @since   3.9.0
-	 */
-	public function getModel($name = 'Actionlogs', $prefix = 'ActionlogsModel', $config = array('ignore_request' => true))
-	{
-		// Return the model
-		return parent::getModel($name, $prefix, $config);
-	}
+    /**
+     * Method to get a model object, loading it if required.
+     *
+     * @param   string  $name    The model name. Optional.
+     * @param   string  $prefix  The class prefix. Optional.
+     * @param   array   $config  Configuration array for model. Optional.
+     *
+     * @return  object  The model.
+     *
+     * @since   3.9.0
+     */
+    public function getModel($name = 'Actionlogs', $prefix = 'ActionlogsModel', $config = array('ignore_request' => true))
+    {
+        // Return the model
+        return parent::getModel($name, $prefix, $config);
+    }
 
-	/**
-	 * Method to export logs
-	 *
-	 * @return  void
-	 *
-	 * @since   3.9.0
-	 */
-	public function exportLogs()
-	{
-		// Check for request forgeries.
-		$this->checkToken();
+    /**
+     * Method to export logs
+     *
+     * @return  void
+     *
+     * @since   3.9.0
+     */
+    public function exportLogs()
+    {
+        // Check for request forgeries.
+        $this->checkToken();
 
-		$task = $this->getTask();
+        $task = $this->getTask();
 
-		$pks = array();
+        $pks = array();
 
-		if ($task == 'exportSelectedLogs')
-		{
-			// Get selected logs
-			$pks = ArrayHelper::toInteger(explode(',', (string) $this->input->post->getString('cids')));
-		}
+        if ($task == 'exportSelectedLogs') {
+            // Get selected logs
+            $pks = ArrayHelper::toInteger(explode(',', (string) $this->input->post->getString('cids')));
+        }
 
-		/** @var ActionlogsModelActionlogs $model */
-		$model = $this->getModel();
+        /** @var ActionlogsModelActionlogs $model */
+        $model = $this->getModel();
 
-		// Get the logs data
-		$data = $model->getLogDataAsIterator($pks);
+        // Get the logs data
+        $data = $model->getLogDataAsIterator($pks);
 
-		if (count($data))
-		{
+        if (count($data)) {
 
-			try
-			{
-				$rows = ActionlogsHelper::getCsvData($data);
-			}
-			catch (InvalidArgumentException $exception)
-			{
-				$this->setMessage(Text::_('COM_ACTIONLOGS_ERROR_COULD_NOT_EXPORT_DATA'), 'error');
-				$this->setRedirect(Route::_('index.php?option=com_actionlogs&view=actionlogs', false));
+            try {
+                $rows = ActionlogsHelper::getCsvData($data);
+            } catch (InvalidArgumentException $exception) {
+                $this->setMessage(Text::_('COM_ACTIONLOGS_ERROR_COULD_NOT_EXPORT_DATA'), 'error');
+                $this->setRedirect(Route::_('index.php?option=com_actionlogs&view=actionlogs', false));
 
-				return;
-			}
+                return;
+            }
 
-			// Destroy the iterator now
-			unset($data);
+            // Destroy the iterator now
+            unset($data);
 
-			$date     = new Date('now', new DateTimeZone('UTC'));
-			$filename = 'logs_' . $date->format('Y-m-d_His_T');
+            $date     = new Date('now', new DateTimeZone('UTC'));
+            $filename = 'logs_' . $date->format('Y-m-d_His_T');
 
-			$csvDelimiter = ComponentHelper::getComponent('com_actionlogs')->getParams()->get('csv_delimiter', ',');
+            $csvDelimiter = ComponentHelper::getComponent('com_actionlogs')->getParams()->get('csv_delimiter', ',');
 
-			$app = Factory::getApplication();
-			$app->setHeader('Content-Type', 'application/csv', true)
-				->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '.csv"', true)
-				->setHeader('Cache-Control', 'must-revalidate', true)
-				->sendHeaders();
+            $app = Factory::getApplication();
+            $app->setHeader('Content-Type', 'application/csv', true)
+                ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '.csv"', true)
+                ->setHeader('Cache-Control', 'must-revalidate', true)
+                ->sendHeaders();
 
-			$output = fopen("php://output", "w");
+            $output = fopen("php://output", "w");
 
-			foreach ($rows as $row)
-			{
-				fputcsv($output, $row, $csvDelimiter, escape: '\\');
-			}
+            foreach ($rows as $row) {
+                fputcsv($output, $row, $csvDelimiter, escape: '\\');
+            }
 
-			fclose($output);
-			$app->triggerEvent('onAfterLogExport', array());
-			$app->close();
-		}
-		else
-		{
-			$this->setMessage(Text::_('COM_ACTIONLOGS_NO_LOGS_TO_EXPORT'));
-			$this->setRedirect(Route::_('index.php?option=com_actionlogs&view=actionlogs', false));
-		}
-	}
+            fclose($output);
+            $app->triggerEvent('onAfterLogExport', array());
+            $app->close();
+        } else {
+            $this->setMessage(Text::_('COM_ACTIONLOGS_NO_LOGS_TO_EXPORT'));
+            $this->setRedirect(Route::_('index.php?option=com_actionlogs&view=actionlogs', false));
+        }
+    }
 
-	/**
-	 * Clean out the logs
-	 *
-	 * @return  void
-	 *
-	 * @since   3.9.0
-	 */
-	public function purge()
-	{
-		// Check for request forgeries.
-		$this->checkToken();
+    /**
+     * Clean out the logs
+     *
+     * @return  void
+     *
+     * @since   3.9.0
+     */
+    public function purge()
+    {
+        // Check for request forgeries.
+        $this->checkToken();
 
-		$model = $this->getModel();
+        $model = $this->getModel();
 
-		if ($model->purge())
-		{
-			$message = Text::_('COM_ACTIONLOGS_PURGE_SUCCESS');
-		}
-		else
-		{
-			$message = Text::_('COM_ACTIONLOGS_PURGE_FAIL');
-		}
+        if ($model->purge()) {
+            $message = Text::_('COM_ACTIONLOGS_PURGE_SUCCESS');
+        } else {
+            $message = Text::_('COM_ACTIONLOGS_PURGE_FAIL');
+        }
 
-		$this->setRedirect(Route::_('index.php?option=com_actionlogs&view=actionlogs', false), $message);
-	}
+        $this->setRedirect(Route::_('index.php?option=com_actionlogs&view=actionlogs', false), $message);
+    }
 }

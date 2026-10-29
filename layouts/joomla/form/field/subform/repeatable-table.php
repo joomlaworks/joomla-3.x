@@ -27,49 +27,43 @@ defined('_JEXEC') or die;
 extract($displayData);
 
 // Add script
-if ($multiple)
-{
-	JHtml::_('jquery.ui', array('core', 'sortable'));
-	JHtml::_('script', 'system/subform-repeatable.js', array('version' => 'auto', 'relative' => true));
+if ($multiple) {
+    JHtml::_('jquery.ui', array('core', 'sortable'));
+    JHtml::_('script', 'system/subform-repeatable.js', array('version' => 'auto', 'relative' => true));
 }
 
 // Build heading
 $table_head = '';
 
-if (!empty($groupByFieldset))
-{
-	foreach ($tmpl->getFieldsets() as $fieldset) {
-		$table_head .= '<th>' . JText::_($fieldset->label);
+if (!empty($groupByFieldset)) {
+    foreach ($tmpl->getFieldsets() as $fieldset) {
+        $table_head .= '<th>' . JText::_($fieldset->label);
 
-		if ($fieldset->description)
-		{
-			$table_head .= '<br /><small style="font-weight:normal">' . JText::_($fieldset->description) . '</small>';
-		}
+        if ($fieldset->description) {
+            $table_head .= '<br /><small style="font-weight:normal">' . JText::_($fieldset->description) . '</small>';
+        }
 
-		$table_head .= '</th>';
-	}
+        $table_head .= '</th>';
+    }
 
-	$sublayout = 'section-byfieldsets';
-}
-else
-{
-	foreach ($tmpl->getGroup('') as $field) {
-		$table_head .= '<th>' . strip_tags((string) $field->label);
+    $sublayout = 'section-byfieldsets';
+} else {
+    foreach ($tmpl->getGroup('') as $field) {
+        $table_head .= '<th>' . strip_tags((string) $field->label);
 
-		if ($field->description)
-		{
-			$table_head .= '<br /><small style="font-weight:normal">' . JText::_($field->description) . '</small>';
-		}
+        if ($field->description) {
+            $table_head .= '<br /><small style="font-weight:normal">' . JText::_($field->description) . '</small>';
+        }
 
-		$table_head .= '</th>';
-	}
+        $table_head .= '</th>';
+    }
 
-	$sublayout = 'section';
+    $sublayout = 'section';
 
-	// Label will not be shown for sections layout, so reset the margin left
-	JFactory::getDocument()->addStyleDeclaration(
-		'.subform-table-sublayout-section .controls { margin-left: 0px }'
-	);
+    // Label will not be shown for sections layout, so reset the margin left
+    JFactory::getDocument()->addStyleDeclaration(
+        '.subform-table-sublayout-section .controls { margin-left: 0px }'
+    );
 }
 ?>
 <div class="row-fluid">
@@ -105,16 +99,16 @@ else
 				</thead>
 				<tbody class="rows-container-<?php echo $unique_subform_id; ?>">
 					<?php foreach ($forms as $k => $form):
-						echo $this->sublayout(
-							$sublayout,
-							array(
-								'form' => $form,
-								'basegroup' => $fieldname,
-								'group' => $fieldname . $k,
-								'buttons' => $buttons,
-								'unique_subform_id' => $unique_subform_id,
-							)
-						);
+					    echo $this->sublayout(
+					        $sublayout,
+					        array(
+					            'form' => $form,
+					            'basegroup' => $fieldname,
+					            'group' => $fieldname . $k,
+					            'buttons' => $buttons,
+					            'unique_subform_id' => $unique_subform_id,
+					        )
+					    );
 					endforeach; ?>
 				</tbody>
 			</table>
@@ -123,22 +117,22 @@ else
 				<template class="subform-repeatable-template-section" style="display: none;"><?php
 					// Use str_replace to escape HTML in a simple way, it need for IE compatibility, and should be removed later
 					echo str_replace(
-							array('<', '>'),
-							array('SUBFORMLT', 'SUBFORMGT'),
-							trim(
-								(string) $this->sublayout(
-									$sublayout,
-									array(
-										'form' => $tmpl,
-										'basegroup' => $fieldname,
-										'group' => $fieldname . 'X',
-										'buttons' => $buttons,
-										'unique_subform_id' => $unique_subform_id,
-									)
-								)
-							)
+					    array('<', '>'),
+					    array('SUBFORMLT', 'SUBFORMGT'),
+					    trim(
+					        (string) $this->sublayout(
+					            $sublayout,
+					            array(
+					                    'form' => $tmpl,
+					                    'basegroup' => $fieldname,
+					                    'group' => $fieldname . 'X',
+					                    'buttons' => $buttons,
+					                    'unique_subform_id' => $unique_subform_id,
+					                )
+					        )
+					    )
 					);
-					?></template>
+			    ?></template>
 			<?php endif; ?>
 		</div>
 	</div>

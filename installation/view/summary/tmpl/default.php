@@ -14,10 +14,10 @@ defined('_JEXEC') or die;
 $prev   = 'database';
 $o      = $this->options;
 $e      = function ($key) use ($o) {
-	return JHtml::_('InstallationHtml.helper.escape', isset($o[$key]) ? $o[$key] : '');
+    return JHtml::_('InstallationHtml.helper.escape', isset($o[$key]) ? $o[$key] : '');
 };
 $yesNo  = function ($value, $good = true) {
-	return JHtml::_('InstallationHtml.helper.badge', JText::_($value ? 'JYES' : 'JNO'), (bool) $value === $good ? 'success' : 'warning');
+    return JHtml::_('InstallationHtml.helper.badge', JText::_($value ? 'JYES' : 'JNO'), (bool) $value === $good ? 'success' : 'warning');
 };
 $sqlite = isset($o['db_type']) && $o['db_type'] === 'mysqlonsqlite';
 $remove = isset($o['db_old']) && $o['db_old'] === 'remove';

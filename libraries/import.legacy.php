@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Bootstrap file for the Joomla Platform [with legacy libraries].  Including this file into your application
  * will make Joomla Platform libraries [including legacy libraries] available for use.
@@ -10,42 +11,36 @@
  */
 
 // Set the platform root path as a constant if necessary.
-if (!defined('JPATH_PLATFORM'))
-{
-	define('JPATH_PLATFORM', __DIR__);
+if (!defined('JPATH_PLATFORM')) {
+    define('JPATH_PLATFORM', __DIR__);
 }
 
 // Detect the native operating system type.
 $os = strtoupper(substr(PHP_OS, 0, 3));
 
-if (!defined('IS_WIN'))
-{
-	define('IS_WIN', $os === 'WIN');
+if (!defined('IS_WIN')) {
+    define('IS_WIN', $os === 'WIN');
 }
 
-if (!defined('IS_UNIX'))
-{
-	define('IS_UNIX', $os !== 'MAC' && $os !== 'WIN');
+if (!defined('IS_UNIX')) {
+    define('IS_UNIX', $os !== 'MAC' && $os !== 'WIN');
 }
 
 /**
  * @deprecated 4.0	Use IS_UNIX instead
  */
-if (!defined('IS_MAC'))
-{
-	define('IS_MAC', IS_UNIX === true && ($os === 'DAR' || $os === 'MAC'));
+if (!defined('IS_MAC')) {
+    define('IS_MAC', IS_UNIX === true && ($os === 'DAR' || $os === 'MAC'));
 }
 
 // Import the library loader if necessary.
-if (!class_exists('JLoader'))
-{
-	require_once JPATH_PLATFORM . '/loader.php';
+if (!class_exists('JLoader')) {
+    require_once JPATH_PLATFORM . '/loader.php';
 }
 
 // Make sure that the Joomla Loader has been successfully loaded.
-if (!class_exists('JLoader'))
-{
-	throw new RuntimeException('Joomla Loader not loaded.');
+if (!class_exists('JLoader')) {
+    throw new RuntimeException('Joomla Loader not loaded.');
 }
 
 // Setup the autoloaders.
@@ -54,9 +49,8 @@ JLoader::setup();
 JLoader::registerPrefix('J', JPATH_PLATFORM . '/legacy');
 
 // Check if the JsonSerializable interface exists already
-if (!interface_exists('JsonSerializable'))
-{
-	JLoader::register('JsonSerializable', JPATH_PLATFORM . '/vendor/joomla/compat/src/JsonSerializable.php');
+if (!interface_exists('JsonSerializable')) {
+    JLoader::register('JsonSerializable', JPATH_PLATFORM . '/vendor/joomla/compat/src/JsonSerializable.php');
 }
 
 // Add deprecated constants

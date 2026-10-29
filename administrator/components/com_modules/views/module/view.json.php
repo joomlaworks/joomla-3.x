@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_modules
@@ -18,41 +19,38 @@ defined('_JEXEC') or die;
  */
 class ModulesViewModule extends JViewLegacy
 {
-	protected $item;
+    protected $item;
 
-	protected $form;
+    protected $form;
 
-	protected $state;
+    protected $state;
 
-	/**
-	 * Display the view
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  void
-	 */
-	public function display($tpl = null)
-	{
-		$app = JFactory::getApplication();
+    /**
+     * Display the view
+     *
+     * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+     *
+     * @return  void
+     */
+    public function display($tpl = null)
+    {
+        $app = JFactory::getApplication();
 
-		try
-		{
-			$this->item = $this->get('Item');
-		}
-		catch (Exception $e)
-		{
-			$app->enqueueMessage($e->getMessage(), 'error');
+        try {
+            $this->item = $this->get('Item');
+        } catch (Exception $e) {
+            $app->enqueueMessage($e->getMessage(), 'error');
 
-			return false;
-		}
+            return false;
+        }
 
-		$paramsList = $this->item->getProperties();
+        $paramsList = $this->item->getProperties();
 
-		unset($paramsList['xml']);
+        unset($paramsList['xml']);
 
-		$paramsList = json_encode($paramsList);
+        $paramsList = json_encode($paramsList);
 
-		return $paramsList;
+        return $paramsList;
 
-	}
+    }
 }

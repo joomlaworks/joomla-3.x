@@ -10,16 +10,16 @@ defined('_JEXEC') or die;
 
 // Create the copy/move options.
 $options = array(
-	JHtml::_('select.option', 'add', JText::_('COM_USERS_BATCH_ADD')),
-	JHtml::_('select.option', 'del', JText::_('COM_USERS_BATCH_DELETE')),
-	JHtml::_('select.option', 'set', JText::_('COM_USERS_BATCH_SET'))
+    JHtml::_('select.option', 'add', JText::_('COM_USERS_BATCH_ADD')),
+    JHtml::_('select.option', 'del', JText::_('COM_USERS_BATCH_DELETE')),
+    JHtml::_('select.option', 'set', JText::_('COM_USERS_BATCH_SET'))
 );
 
 // Create the reset password options.
 $resetOptions = array(
-	JHtml::_('select.option', '', JText::_('COM_USERS_NO_ACTION')),
-	JHtml::_('select.option', 'yes', JText::_('JYES')),
-	JHtml::_('select.option', 'no', JText::_('JNO'))
+    JHtml::_('select.option', '', JText::_('COM_USERS_NO_ACTION')),
+    JHtml::_('select.option', 'yes', JText::_('JYES')),
+    JHtml::_('select.option', 'no', JText::_('JNO'))
 );
 JHtml::_('formbehavior.chosen', 'select');
 ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  Database
@@ -16,229 +17,223 @@ defined('JPATH_PLATFORM') or die;
  */
 abstract class JDatabaseExporter
 {
-	/**
-	 * The type of output format (xml).
-	 *
-	 * @var    string
-	 * @since  3.2.0
-	 */
-	protected $asFormat = 'xml';
+    /**
+     * The type of output format (xml).
+     *
+     * @var    string
+     * @since  3.2.0
+     */
+    protected $asFormat = 'xml';
 
-	/**
-	 * An array of cached data.
-	 *
-	 * @var    array
-	 * @since  3.2.0
-	 */
-	protected $cache = array();
+    /**
+     * An array of cached data.
+     *
+     * @var    array
+     * @since  3.2.0
+     */
+    protected $cache = array();
 
-	/**
-	 * The database connector to use for exporting structure and/or data.
-	 *
-	 * @var    JDatabaseDriver
-	 * @since  3.2.0
-	 */
-	protected $db = null;
+    /**
+     * The database connector to use for exporting structure and/or data.
+     *
+     * @var    JDatabaseDriver
+     * @since  3.2.0
+     */
+    protected $db = null;
 
-	/**
-	 * An array input sources (table names).
-	 *
-	 * @var    array
-	 * @since  3.2.0
-	 */
-	protected $from = array();
+    /**
+     * An array input sources (table names).
+     *
+     * @var    array
+     * @since  3.2.0
+     */
+    protected $from = array();
 
-	/**
-	 * An array of options for the exporter.
-	 *
-	 * @var    object
-	 * @since  3.2.0
-	 */
-	protected $options = null;
+    /**
+     * An array of options for the exporter.
+     *
+     * @var    object
+     * @since  3.2.0
+     */
+    protected $options = null;
 
-	/**
-	 * Constructor.
-	 *
-	 * Sets up the default options for the exporter.
-	 *
-	 * @since   3.2.0
-	 */
-	public function __construct()
-	{
-		$this->options = new stdClass;
+    /**
+     * Constructor.
+     *
+     * Sets up the default options for the exporter.
+     *
+     * @since   3.2.0
+     */
+    public function __construct()
+    {
+        $this->options = new stdClass();
 
-		$this->cache = array('columns' => array(), 'keys' => array());
+        $this->cache = array('columns' => array(), 'keys' => array());
 
-		// Set up the class defaults:
+        // Set up the class defaults:
 
-		// Export with only structure
-		$this->withStructure();
+        // Export with only structure
+        $this->withStructure();
 
-		// Export as xml.
-		$this->asXml();
+        // Export as xml.
+        $this->asXml();
 
-		// Default destination is a string using $output = (string) $exporter;
-	}
+        // Default destination is a string using $output = (string) $exporter;
+    }
 
-	/**
-	 * Magic function to exports the data to a string.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.2.0
-	 * @throws  Exception if an error is encountered.
-	 */
-	public function __toString()
-	{
-		// Check everything is ok to run first.
-		$this->check();
+    /**
+     * Magic function to exports the data to a string.
+     *
+     * @return  string
+     *
+     * @since   3.2.0
+     * @throws  Exception if an error is encountered.
+     */
+    public function __toString()
+    {
+        // Check everything is ok to run first.
+        $this->check();
 
-		// Get the format.
-		switch ($this->asFormat)
-		{
-			case 'xml':
-			default:
-				$buffer = $this->buildXml();
-				break;
-		}
+        // Get the format.
+        switch ($this->asFormat) {
+            case 'xml':
+            default:
+                $buffer = $this->buildXml();
+                break;
+        }
 
-		return $buffer;
-	}
+        return $buffer;
+    }
 
-	/**
-	 * Set the output option for the exporter to XML format.
-	 *
-	 * @return  JDatabaseExporter  Method supports chaining.
-	 *
-	 * @since   3.2.0
-	 */
-	public function asXml()
-	{
-		$this->asFormat = 'xml';
+    /**
+     * Set the output option for the exporter to XML format.
+     *
+     * @return  JDatabaseExporter  Method supports chaining.
+     *
+     * @since   3.2.0
+     */
+    public function asXml()
+    {
+        $this->asFormat = 'xml';
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Builds the XML data for the tables to export.
-	 *
-	 * @return  string  An XML string
-	 *
-	 * @since   3.2.0
-	 * @throws  Exception if an error occurs.
-	 */
-	abstract protected function buildXml();
+    /**
+     * Builds the XML data for the tables to export.
+     *
+     * @return  string  An XML string
+     *
+     * @since   3.2.0
+     * @throws  Exception if an error occurs.
+     */
+    abstract protected function buildXml();
 
-	/**
-	 * Builds the XML structure to export.
-	 *
-	 * @return  array  An array of XML lines (strings).
-	 *
-	 * @since   3.2.0
-	 * @throws  Exception if an error occurs.
-	 */
-	abstract protected function buildXmlStructure();
+    /**
+     * Builds the XML structure to export.
+     *
+     * @return  array  An array of XML lines (strings).
+     *
+     * @since   3.2.0
+     * @throws  Exception if an error occurs.
+     */
+    abstract protected function buildXmlStructure();
 
-	/**
-	 * Checks if all data and options are in order prior to exporting.
-	 *
-	 * @return  JDatabaseDriver  Method supports chaining.
-	 *
-	 * @since   3.2.0
-	 * @throws  Exception if an error is encountered.
-	 */
-	abstract public function check();
+    /**
+     * Checks if all data and options are in order prior to exporting.
+     *
+     * @return  JDatabaseDriver  Method supports chaining.
+     *
+     * @since   3.2.0
+     * @throws  Exception if an error is encountered.
+     */
+    abstract public function check();
 
-	/**
-	 * Specifies a list of table names to export.
-	 *
-	 * @param   mixed  $from  The name of a single table, or an array of the table names to export.
-	 *
-	 * @return  JDatabaseExporter  Method supports chaining.
-	 *
-	 * @since   3.2.0
-	 * @throws  Exception if input is not a string or array.
-	 */
-	public function from($from)
-	{
-		if (is_string($from))
-		{
-			$this->from = array($from);
-		}
-		elseif (is_array($from))
-		{
-			$this->from = $from;
-		}
-		else
-		{
-			throw new Exception('JPLATFORM_ERROR_INPUT_REQUIRES_STRING_OR_ARRAY');
-		}
+    /**
+     * Specifies a list of table names to export.
+     *
+     * @param   mixed  $from  The name of a single table, or an array of the table names to export.
+     *
+     * @return  JDatabaseExporter  Method supports chaining.
+     *
+     * @since   3.2.0
+     * @throws  Exception if input is not a string or array.
+     */
+    public function from($from)
+    {
+        if (is_string($from)) {
+            $this->from = array($from);
+        } elseif (is_array($from)) {
+            $this->from = $from;
+        } else {
+            throw new Exception('JPLATFORM_ERROR_INPUT_REQUIRES_STRING_OR_ARRAY');
+        }
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Escape a value for an XML attribute; column defaults, for example, can contain quotes.
-	 *
-	 * @param   string  $value  The value
-	 *
-	 * @return  string
-	 *
-	 * @since   3.17.0
-	 */
-	protected function escapeXml($value)
-	{
-		return htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8');
-	}
+    /**
+     * Escape a value for an XML attribute; column defaults, for example, can contain quotes.
+     *
+     * @param   string  $value  The value
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    protected function escapeXml($value)
+    {
+        return htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8');
+    }
 
-	/**
-	 * Get the generic name of the table, converting the database prefix to the wildcard string.
-	 *
-	 * @param   string  $table  The name of the table.
-	 *
-	 * @return  string  The name of the table with the database prefix replaced with #__.
-	 *
-	 * @since   3.2.0
-	 */
-	protected function getGenericTableName($table)
-	{
-		$prefix = $this->db->getPrefix();
+    /**
+     * Get the generic name of the table, converting the database prefix to the wildcard string.
+     *
+     * @param   string  $table  The name of the table.
+     *
+     * @return  string  The name of the table with the database prefix replaced with #__.
+     *
+     * @since   3.2.0
+     */
+    protected function getGenericTableName($table)
+    {
+        $prefix = $this->db->getPrefix();
 
-		// Replace the magic prefix if found.
-		$table = preg_replace("|^$prefix|", '#__', $table);
+        // Replace the magic prefix if found.
+        $table = preg_replace("|^$prefix|", '#__', $table);
 
-		return $table;
-	}
+        return $table;
+    }
 
-	/**
-	 * Sets the database connector to use for exporting structure and/or data from MySQL.
-	 *
-	 * @param   JDatabaseDriver  $db  The database connector.
-	 *
-	 * @return  JDatabaseExporter  Method supports chaining.
-	 *
-	 * @since   3.2.0
-	 */
-	public function setDbo(JDatabaseDriver $db)
-	{
-		$this->db = $db;
+    /**
+     * Sets the database connector to use for exporting structure and/or data from MySQL.
+     *
+     * @param   JDatabaseDriver  $db  The database connector.
+     *
+     * @return  JDatabaseExporter  Method supports chaining.
+     *
+     * @since   3.2.0
+     */
+    public function setDbo(JDatabaseDriver $db)
+    {
+        $this->db = $db;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Sets an internal option to export the structure of the input table(s).
-	 *
-	 * @param   boolean  $setting  True to export the structure, false to not.
-	 *
-	 * @return  JDatabaseExporter  Method supports chaining.
-	 *
-	 * @since   3.2.0
-	 */
-	public function withStructure($setting = true)
-	{
-		$this->options->withStructure = (bool) $setting;
+    /**
+     * Sets an internal option to export the structure of the input table(s).
+     *
+     * @param   boolean  $setting  True to export the structure, false to not.
+     *
+     * @return  JDatabaseExporter  Method supports chaining.
+     *
+     * @since   3.2.0
+     */
+    public function withStructure($setting = true)
+    {
+        $this->options->withStructure = (bool) $setting;
 
-		return $this;
-	}
+        return $this;
+    }
 }

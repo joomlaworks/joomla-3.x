@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Privacy.contact
@@ -18,55 +19,50 @@ JLoader::register('PrivacyPlugin', JPATH_ADMINISTRATOR . '/components/com_privac
  */
 class PlgPrivacyContact extends PrivacyPlugin
 {
-	/**
-	 * Processes an export request for Joomla core user contact data
-	 *
-	 * This event will collect data for the contact core tables:
-	 *
-	 * - Contact custom fields
-	 *
-	 * @param   PrivacyTableRequest  $request  The request record being processed
-	 * @param   JUser                $user     The user account associated with this request if available
-	 *
-	 * @return  PrivacyExportDomain[]
-	 *
-	 * @since   3.9.0
-	 */
-	public function onPrivacyExportRequest(PrivacyTableRequest $request, ?JUser $user = null)
-	{
-		// Without Contacts (uninstalled or disabled) there's no contact data to export, and its table may be gone
-		if ((!$user && !$request->email) || !JComponentHelper::isEnabled('com_contact'))
-		{
-			return array();
-		}
+    /**
+     * Processes an export request for Joomla core user contact data
+     *
+     * This event will collect data for the contact core tables:
+     *
+     * - Contact custom fields
+     *
+     * @param   PrivacyTableRequest  $request  The request record being processed
+     * @param   JUser                $user     The user account associated with this request if available
+     *
+     * @return  PrivacyExportDomain[]
+     *
+     * @since   3.9.0
+     */
+    public function onPrivacyExportRequest(PrivacyTableRequest $request, ?JUser $user = null)
+    {
+        // Without Contacts (uninstalled or disabled) there's no contact data to export, and its table may be gone
+        if ((!$user && !$request->email) || !JComponentHelper::isEnabled('com_contact')) {
+            return array();
+        }
 
-		$domains   = array();
-		$domain    = $this->createDomain('user_contact', 'joomla_user_contact_data');
-		$domains[] = $domain;
+        $domains   = array();
+        $domain    = $this->createDomain('user_contact', 'joomla_user_contact_data');
+        $domains[] = $domain;
 
-		$query = $this->db->getQuery(true)
-			->select('*')
-			->from($this->db->quoteName('#__contact_details'))
-			->order($this->db->quoteName('ordering') . ' ASC');
+        $query = $this->db->getQuery(true)
+            ->select('*')
+            ->from($this->db->quoteName('#__contact_details'))
+            ->order($this->db->quoteName('ordering') . ' ASC');
 
-		if ($user)
-		{
-			$query->where($this->db->quoteName('user_id') . ' = ' . (int) $user->id);
-		}
-		else
-		{
-			$query->where($this->db->quoteName('email_to') . ' = ' . $this->db->quote($request->email));
-		}
+        if ($user) {
+            $query->where($this->db->quoteName('user_id') . ' = ' . (int) $user->id);
+        } else {
+            $query->where($this->db->quoteName('email_to') . ' = ' . $this->db->quote($request->email));
+        }
 
-		$items = $this->db->setQuery($query)->loadObjectList();
+        $items = $this->db->setQuery($query)->loadObjectList();
 
-		foreach ($items as $item)
-		{
-			$domain->addItem($this->createItemFromArray((array) $item));
-		}
+        foreach ($items as $item) {
+            $domain->addItem($this->createItemFromArray((array) $item));
+        }
 
-		$domains[] = $this->createCustomFieldsDomain('com_contact.contact', $items);
+        $domains[] = $this->createCustomFieldsDomain('com_contact.contact', $items);
 
-		return $domains;
-	}
+        return $domains;
+    }
 }

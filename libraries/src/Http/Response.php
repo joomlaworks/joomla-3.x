@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,21 +18,21 @@ defined('JPATH_PLATFORM') or die;
  */
 class Response
 {
-	/**
-	 * @var    integer  The server response code.
-	 * @since  1.7.3
-	 */
-	public $code;
+    /**
+     * @var    integer  The server response code.
+     * @since  1.7.3
+     */
+    public $code;
 
-	/**
-	 * @var    array  Response headers.
-	 * @since  1.7.3
-	 */
-	public $headers = array();
+    /**
+     * @var    array  Response headers.
+     * @since  1.7.3
+     */
+    public $headers = array();
 
-	/**
-	 * @var    string  Server response body.
-	 * @since  1.7.3
-	 */
-	public $body;
+    /**
+     * @var    string  Server response body.
+     * @since  1.7.3
+     */
+    public $body;
 }

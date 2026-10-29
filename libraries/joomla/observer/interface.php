@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  Observer
@@ -45,15 +46,15 @@ defined('JPATH_PLATFORM') or die;
  */
 interface JObserverInterface
 {
-	/**
-	 * Creates the associated observer instance and attaches it to the $observableObject
-	 *
-	 * @param   JObservableInterface  $observableObject  The observable subject object
-	 * @param   array                 $params            Params for this observer
-	 *
-	 * @return  JObserverInterface
-	 *
-	 * @since   3.1.2
-	 */
-	public static function createObserver(JObservableInterface $observableObject, $params = array());
+    /**
+     * Creates the associated observer instance and attaches it to the $observableObject
+     *
+     * @param   JObservableInterface  $observableObject  The observable subject object
+     * @param   array                 $params            Params for this observer
+     *
+     * @return  JObserverInterface
+     *
+     * @since   3.1.2
+     */
+    public static function createObserver(JObservableInterface $observableObject, $params = array());
 }

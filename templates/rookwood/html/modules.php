@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  Templates.rookwood
@@ -28,37 +29,33 @@ class_exists('RookwoodHelper', false) || require_once dirname(__DIR__) . '/helpe
  */
 function modChrome_rookwood($module, &$params, &$attribs)
 {
-	if ((string) $module->content === '')
-	{
-		return;
-	}
+    if ((string) $module->content === '') {
+        return;
+    }
 
-	$suffix = trim((string) $params->get('moduleclass_sfx'));
-	$full   = preg_match('/(^|\s)section-full(\s|$)/', $suffix);
-	$link   = '';
-	$catids = array_filter((array) $params->get('catid', array()));
+    $suffix = trim((string) $params->get('moduleclass_sfx'));
+    $full   = preg_match('/(^|\s)section-full(\s|$)/', $suffix);
+    $link   = '';
+    $catids = array_filter((array) $params->get('catid', array()));
 
-	if ($module->module === 'mod_articles_category' && count($catids) === 1)
-	{
-		$link = JRoute::_(ContentHelperRoute::getCategoryRoute((int) reset($catids)));
-	}
+    if ($module->module === 'mod_articles_category' && count($catids) === 1) {
+        $link = JRoute::_(ContentHelperRoute::getCategoryRoute((int) reset($catids)));
+    }
 
-	echo '<section class="section ' . RookwoodHelper::e($suffix) . ' ' . str_replace('_', '-', $module->module) . '" id="module-' . (int) $module->id . '">';
+    echo '<section class="section ' . RookwoodHelper::e($suffix) . ' ' . str_replace('_', '-', $module->module) . '" id="module-' . (int) $module->id . '">';
 
-	if (strpos($suffix, 'divider-wave') !== false)
-	{
-		echo '<svg class="sectionWave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0 80V30C240 70 480 70 720 40S1200 0 1440 30v50Z" fill="currentColor"/></svg>';
-	}
+    if (strpos($suffix, 'divider-wave') !== false) {
+        echo '<svg class="sectionWave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0 80V30C240 70 480 70 720 40S1200 0 1440 30v50Z" fill="currentColor"/></svg>';
+    }
 
-	echo $full ? '' : '<div class="container">';
+    echo $full ? '' : '<div class="container">';
 
-	if ($module->showtitle)
-	{
-		echo '<header class="sectionHeader"><h2 class="sectionTitle">' . RookwoodHelper::e($module->title) . '</h2>'
-			. ($link ? '<a class="sectionMore" href="' . $link . '">' . JText::_('TPL_ROOKWOOD_VIEW_ALL') . RookwoodHelper::icon('arrow-right') . '</a>' : '') . '</header>';
-	}
+    if ($module->showtitle) {
+        echo '<header class="sectionHeader"><h2 class="sectionTitle">' . RookwoodHelper::e($module->title) . '</h2>'
+            . ($link ? '<a class="sectionMore" href="' . $link . '">' . JText::_('TPL_ROOKWOOD_VIEW_ALL') . RookwoodHelper::icon('arrow-right') . '</a>' : '') . '</header>';
+    }
 
-	echo '<div class="sectionContent">' . RookwoodHelper::lazyImages($module->content) . '</div>' . ($full ? '' : '</div>') . '</section>';
+    echo '<div class="sectionContent">' . RookwoodHelper::lazyImages($module->content) . '</div>' . ($full ? '' : '</div>') . '</section>';
 }
 
 /**
@@ -74,12 +71,11 @@ function modChrome_rookwood($module, &$params, &$attribs)
  */
 function modChrome_rookwoodfooter($module, &$params, &$attribs)
 {
-	if ((string) $module->content === '')
-	{
-		return;
-	}
+    if ((string) $module->content === '') {
+        return;
+    }
 
-	echo '<div class="footerColumn ' . RookwoodHelper::e(trim((string) $params->get('moduleclass_sfx'))) . '">'
-		. ($module->showtitle ? '<h2 class="footerTitle">' . RookwoodHelper::e($module->title) . '</h2>' : '')
-		. RookwoodHelper::lazyImages($module->content) . '</div>';
+    echo '<div class="footerColumn ' . RookwoodHelper::e(trim((string) $params->get('moduleclass_sfx'))) . '">'
+        . ($module->showtitle ? '<h2 class="footerTitle">' . RookwoodHelper::e($module->title) . '</h2>' : '')
+        . RookwoodHelper::lazyImages($module->content) . '</div>';
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Editors-xtd.article
@@ -16,54 +17,53 @@ defined('_JEXEC') or die;
  */
 class PlgButtonArticle extends JPlugin
 {
-	/**
-	 * Load the language file on instantiation.
-	 *
-	 * @var    boolean
-	 * @since  3.1
-	 */
-	protected $autoloadLanguage = true;
+    /**
+     * Load the language file on instantiation.
+     *
+     * @var    boolean
+     * @since  3.1
+     */
+    protected $autoloadLanguage = true;
 
-	/**
-	 * Display the button
-	 *
-	 * @param   string  $name  The name of the button to add
-	 *
-	 * @return  JObject  The button options as JObject
-	 *
-	 * @since   1.5
-	 */
-	public function onDisplay($name)
-	{
-		$input = JFactory::getApplication()->input;
-		$user  = JFactory::getUser();
+    /**
+     * Display the button
+     *
+     * @param   string  $name  The name of the button to add
+     *
+     * @return  JObject  The button options as JObject
+     *
+     * @since   1.5
+     */
+    public function onDisplay($name)
+    {
+        $input = JFactory::getApplication()->input;
+        $user  = JFactory::getUser();
 
-		// Can create in any category (component permission) or at least in one category
-		$canCreateRecords = $user->authorise('core.create', 'com_content')
-			|| count($user->getAuthorisedCategories('com_content', 'core.create')) > 0;
+        // Can create in any category (component permission) or at least in one category
+        $canCreateRecords = $user->authorise('core.create', 'com_content')
+            || count($user->getAuthorisedCategories('com_content', 'core.create')) > 0;
 
-		// Instead of checking edit on all records, we can use **same** check as the form editing view
-		$values = (array) JFactory::getApplication()->getUserState('com_content.edit.article.id');
-		$isEditingRecords = count($values);
+        // Instead of checking edit on all records, we can use **same** check as the form editing view
+        $values = (array) JFactory::getApplication()->getUserState('com_content.edit.article.id');
+        $isEditingRecords = count($values);
 
-		// This ACL check is probably a double-check (form view already performed checks)
-		$hasAccess = $canCreateRecords || $isEditingRecords;
-		if (!$hasAccess)
-		{
-			return;
-		}
+        // This ACL check is probably a double-check (form view already performed checks)
+        $hasAccess = $canCreateRecords || $isEditingRecords;
+        if (!$hasAccess) {
+            return;
+        }
 
-		$link = 'index.php?option=com_content&amp;view=articles&amp;layout=modal&amp;tmpl=component&amp;'
-			. JSession::getFormToken() . '=1&amp;editor=' . $name;
+        $link = 'index.php?option=com_content&amp;view=articles&amp;layout=modal&amp;tmpl=component&amp;'
+            . JSession::getFormToken() . '=1&amp;editor=' . $name;
 
-		$button = new JObject;
-		$button->modal   = true;
-		$button->class   = 'btn';
-		$button->link    = $link;
-		$button->text    = JText::_('PLG_ARTICLE_BUTTON_ARTICLE');
-		$button->name    = 'file-add';
-		$button->options = "{handler: 'iframe', size: {x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140)}}";
+        $button = new JObject();
+        $button->modal   = true;
+        $button->class   = 'btn';
+        $button->link    = $link;
+        $button->text    = JText::_('PLG_ARTICLE_BUTTON_ARTICLE');
+        $button->name    = 'file-add';
+        $button->options = "{handler: 'iframe', size: {x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140)}}";
 
-		return $button;
-	}
+        return $button;
+    }
 }

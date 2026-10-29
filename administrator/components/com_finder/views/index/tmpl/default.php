@@ -51,7 +51,7 @@ JFactory::getDocument()->addScriptDeclaration('
 ');
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_finder&view=index'); ?>" method="post" name="adminForm" id="adminForm">
-<?php if (!empty( $this->sidebar)) : ?>
+<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -110,9 +110,9 @@ JFactory::getDocument()->addScriptDeclaration('
 					</td>
 					<td class="small nowrap hidden-phone">
 						<?php
-						$key = FinderHelperLanguage::branchSingular($item->t_title);
-						echo $lang->hasKey($key) ? JText::_($key) : $item->t_title;
-						?>
+                        $key = FinderHelperLanguage::branchSingular($item->t_title);
+				    echo $lang->hasKey($key) ? JText::_($key) : $item->t_title;
+				    ?>
 					</td>
 					<td class="small nowrap hidden-phone">
 						<?php echo JHtml::_('date', $item->indexdate, JText::_('DATE_FORMAT_LC4')); ?>

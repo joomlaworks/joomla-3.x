@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_tags
@@ -16,41 +17,39 @@ defined('_JEXEC') or die;
  */
 class TagsControllerTags extends JControllerLegacy
 {
-	/**
-	 * Method to search tags with AJAX
-	 *
-	 * @return  void
-	 */
-	public function searchAjax()
-	{
-		// Required objects
-		$app = JFactory::getApplication();
-		$user = JFactory::getUser();
+    /**
+     * Method to search tags with AJAX
+     *
+     * @return  void
+     */
+    public function searchAjax()
+    {
+        // Required objects
+        $app = JFactory::getApplication();
+        $user = JFactory::getUser();
 
-		// Receive request data
-		$filters = array(
-			'like'      => trim((string) $app->input->get('like', null, 'string')),
-			'title'     => trim((string) $app->input->get('title', null, 'string')),
-			'flanguage' => $app->input->get('flanguage', null, 'word'),
-			'published' => $app->input->get('published', 1, 'int'),
-			'parent_id' => $app->input->get('parent_id', 0, 'int'),
-			'access'    => $user->getAuthorisedViewLevels(),
-		);
+        // Receive request data
+        $filters = array(
+            'like'      => trim((string) $app->input->get('like', null, 'string')),
+            'title'     => trim((string) $app->input->get('title', null, 'string')),
+            'flanguage' => $app->input->get('flanguage', null, 'word'),
+            'published' => $app->input->get('published', 1, 'int'),
+            'parent_id' => $app->input->get('parent_id', 0, 'int'),
+            'access'    => $user->getAuthorisedViewLevels(),
+        );
 
-		if ((!$user->authorise('core.edit.state', 'com_tags')) && (!$user->authorise('core.edit', 'com_tags')))
-		{
-			// Filter on published for those who do not have edit or edit.state rights.
-			$filters['published'] = 1;
-		}
+        if ((!$user->authorise('core.edit.state', 'com_tags')) && (!$user->authorise('core.edit', 'com_tags'))) {
+            // Filter on published for those who do not have edit or edit.state rights.
+            $filters['published'] = 1;
+        }
 
-		$results = JHelperTags::searchTags($filters);
+        $results = JHelperTags::searchTags($filters);
 
-		if ($results)
-		{
-			// Output a JSON object
-			echo json_encode($results);
-		}
+        if ($results) {
+            // Output a JSON object
+            echo json_encode($results);
+        }
 
-		$app->close();
-	}
+        $app->close();
+    }
 }

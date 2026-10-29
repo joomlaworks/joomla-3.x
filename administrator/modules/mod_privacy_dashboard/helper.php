@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_privacy_dashboard
@@ -16,27 +17,24 @@ defined('_JEXEC') or die;
  */
 class ModPrivacyDashboardHelper
 {
-	/**
-	 * Method to retrieve information about the site privacy requests
-	 *
-	 * @return  array  Array containing site privacy requests
-	 *
-	 * @since   3.9.0
-	 */
-	public static function getData()
-	{
-		JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_privacy/models', 'PrivacyModel');
+    /**
+     * Method to retrieve information about the site privacy requests
+     *
+     * @return  array  Array containing site privacy requests
+     *
+     * @since   3.9.0
+     */
+    public static function getData()
+    {
+        JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_privacy/models', 'PrivacyModel');
 
-		/** @var PrivacyModelDashboard $model */
-		$model = JModelLegacy::getInstance('Dashboard', 'PrivacyModel');
+        /** @var PrivacyModelDashboard $model */
+        $model = JModelLegacy::getInstance('Dashboard', 'PrivacyModel');
 
-		try
-		{
-			return $model->getRequestCounts();
-		}
-		catch (JDatabaseException $e)
-		{
-			return array();
-		}
-	}
+        try {
+            return $model->getRequestCounts();
+        } catch (JDatabaseException $e) {
+            return array();
+        }
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  mod_login
@@ -16,60 +17,58 @@ defined('_JEXEC') or die;
  */
 class ModLoginHelper
 {
-	/**
-	 * Retrieve the URL where the user should be returned after logging in
-	 *
-	 * @param   \Joomla\Registry\Registry  $params  module parameters
-	 * @param   string                     $type    return type
-	 *
-	 * @return string
-	 */
-	public static function getReturnUrl($params, $type)
-	{
-		$app  = JFactory::getApplication();
-		$item = $app->getMenu()->getItem($params->get($type));
+    /**
+     * Retrieve the URL where the user should be returned after logging in
+     *
+     * @param   \Joomla\Registry\Registry  $params  module parameters
+     * @param   string                     $type    return type
+     *
+     * @return string
+     */
+    public static function getReturnUrl($params, $type)
+    {
+        $app  = JFactory::getApplication();
+        $item = $app->getMenu()->getItem($params->get($type));
 
-		// Stay on the same page
-		$url = JUri::getInstance()->toString();
+        // Stay on the same page
+        $url = JUri::getInstance()->toString();
 
-		if ($item)
-		{
-			$lang = '';
+        if ($item) {
+            $lang = '';
 
-			if ($item->language !== '*' && JLanguageMultilang::isEnabled())
-			{
-				$lang = '&lang=' . $item->language;
-			}
+            if ($item->language !== '*' && JLanguageMultilang::isEnabled()) {
+                $lang = '&lang=' . $item->language;
+            }
 
-			$url = 'index.php?Itemid=' . $item->id . $lang;
-		}
+            $url = 'index.php?Itemid=' . $item->id . $lang;
+        }
 
-		return base64_encode((string) $url);
-	}
+        return base64_encode((string) $url);
+    }
 
-	/**
-	 * Returns the current users type
-	 *
-	 * @return string
-	 */
-	public static function getType()
-	{
-		$user = JFactory::getUser();
+    /**
+     * Returns the current users type
+     *
+     * @return string
+     */
+    public static function getType()
+    {
+        $user = JFactory::getUser();
 
-		return (!$user->get('guest')) ? 'logout' : 'login';
-	}
+        return (!$user->get('guest')) ? 'logout' : 'login';
+    }
 
-	/**
-	 * Get list of available two factor methods
-	 *
-	 * @return array
-	 *
-	 * @deprecated  4.0  Use JAuthenticationHelper::getTwoFactorMethods() instead.
-	 */
-	public static function getTwoFactorMethods()
-	{
-		JLog::add(__METHOD__ . ' is deprecated, use JAuthenticationHelper::getTwoFactorMethods() instead.', JLog::WARNING, 'deprecated');
+    /**
+     * Get list of available two factor methods
+     *
+     * @return array
+     *
+     * @deprecated  4.0  Use JAuthenticationHelper::getTwoFactorMethods() instead.
+     */
+    public static function getTwoFactorMethods()
+    {
+        JLog::add(__METHOD__ . ' is deprecated, use JAuthenticationHelper::getTwoFactorMethods() instead.', JLog::WARNING, 'deprecated');
 
-		return JAuthenticationHelper::getTwoFactorMethods();
-	}
+        return JAuthenticationHelper::getTwoFactorMethods();
+    }
 }

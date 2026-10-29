@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -19,102 +20,101 @@ use Joomla\CMS\Factory;
  */
 class CategoryDeleteCommand extends AbstractDeleteCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'category:delete';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'category:delete';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Delete trashed categories for good';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Delete trashed categories for good';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Deletes the given categories for good, as Empty Trash in the Categories manager does. Only trashed categories without items or subcategories are deleted.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Deletes the given categories for good, as Empty Trash in the Categories manager does. Only trashed categories without items or subcategories are deleted.';
 
-	/**
-	 * @var    string[]
-	 * @since  3.17.0
-	 */
-	protected $model = array('com_categories', 'Category', 'CategoriesModel');
+    /**
+     * @var    string[]
+     * @since  3.17.0
+     */
+    protected $model = array('com_categories', 'Category', 'CategoriesModel');
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $item = 'category';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $item = 'category';
 
-	/**
-	 * @var    string[]
-	 * @since  3.17.0
-	 */
-	protected $table = array('#__categories', 'title', 'published');
+    /**
+     * @var    string[]
+     * @since  3.17.0
+     */
+    protected $table = array('#__categories', 'title', 'published');
 
-	/**
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	protected function configure()
-	{
-		parent::configure();
-		$this->addOption('extension', null, self::OPTION_REQUIRED, 'The component the categories belong to (e.g. com_contact)', 'com_content');
-	}
+    /**
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    protected function configure()
+    {
+        parent::configure();
+        $this->addOption('extension', null, self::OPTION_REQUIRED, 'The component the categories belong to (e.g. com_contact)', 'com_content');
+    }
 
-	/**
-	 * Run with the component in the request, where the category model reads it.
-	 *
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	public function run(CommandIO $io)
-	{
-		$extension = (string) $io->getOption('extension');
+    /**
+     * Run with the component in the request, where the category model reads it.
+     *
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    public function run(CommandIO $io)
+    {
+        $extension = (string) $io->getOption('extension');
 
-		if (!preg_match('/^com_[a-z0-9_]+$/', $extension))
-		{
-			$io->error('--extension must be a component, e.g. com_content.');
+        if (!preg_match('/^com_[a-z0-9_]+$/', $extension)) {
+            $io->error('--extension must be a component, e.g. com_content.');
 
-			return self::INVALID;
-		}
+            return self::INVALID;
+        }
 
-		Factory::getApplication()->input->set('extension', $extension);
-		$this->component = $extension;
+        Factory::getApplication()->input->set('extension', $extension);
+        $this->component = $extension;
 
-		return parent::run($io);
-	}
+        return parent::run($io);
+    }
 
-	/**
-	 * The category model, set to the component of the categories.
-	 *
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  \CategoriesModelCategory
-	 *
-	 * @since   3.17.0
-	 */
-	protected function getItemModel(CommandIO $io)
-	{
-		return $this->primeCategoryModel(parent::getItemModel($io), (string) $io->getOption('extension'));
-	}
+    /**
+     * The category model, set to the component of the categories.
+     *
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  \CategoriesModelCategory
+     *
+     * @since   3.17.0
+     */
+    protected function getItemModel(CommandIO $io)
+    {
+        return $this->primeCategoryModel(parent::getItemModel($io), (string) $io->getOption('extension'));
+    }
 
-	/**
-	 * @param   object  $row  The item
-	 *
-	 * @return  string
-	 *
-	 * @since   3.17.0
-	 */
-	protected function getAssetName($row)
-	{
-		return $row->extension . '.category.' . (int) $row->id;
-	}
+    /**
+     * @param   object  $row  The item
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    protected function getAssetName($row)
+    {
+        return $row->extension . '.category.' . (int) $row->id;
+    }
 }

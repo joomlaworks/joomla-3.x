@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Installation
  * @subpackage  Controller
@@ -16,43 +17,42 @@ defined('_JEXEC') or die;
  */
 class InstallationControllerInstallDatabase extends JControllerBase
 {
-	/**
-	 * Execute the controller.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.1
-	 */
-	public function execute()
-	{
-		// Get the application
-		/** @var InstallationApplicationWeb $app */
-		$app = $this->getApplication();
+    /**
+     * Execute the controller.
+     *
+     * @return  void
+     *
+     * @since   3.1
+     */
+    public function execute()
+    {
+        // Get the application
+        /** @var InstallationApplicationWeb $app */
+        $app = $this->getApplication();
 
-		// Check for request forgeries.
-		JSession::checkToken() or $app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
+        // Check for request forgeries.
+        JSession::checkToken() or $app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
 
-		// Get the setup model.
-		$model = new InstallationModelSetup;
+        // Get the setup model.
+        $model = new InstallationModelSetup();
 
-		// Get the options from the session
-		$options = $model->getOptions();
+        // Get the options from the session
+        $options = $model->getOptions();
 
-		// Get the database model.
-		$db = new InstallationModelDatabase;
+        // Get the database model.
+        $db = new InstallationModelDatabase();
 
-		// Attempt to create the database tables.
-		$return = $db->installCmsData($options);
+        // Attempt to create the database tables.
+        $return = $db->installCmsData($options);
 
-		$r = new stdClass;
-		$r->view = 'install';
+        $r = new stdClass();
+        $r->view = 'install';
 
-		// Check if the database was initialised
-		if (!$return)
-		{
-			$r->view = 'database';
-		}
+        // Check if the database was initialised
+        if (!$return) {
+            $r->view = 'database';
+        }
 
-		$app->sendJsonResponse($r);
-	}
+        $app->sendJsonResponse($r);
+    }
 }

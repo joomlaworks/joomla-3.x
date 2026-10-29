@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_categories
@@ -16,9 +17,8 @@ $input = JFactory::getApplication()->input;
 $parts = explode('.', (string) $input->get('extension'));
 $component = $parts[0];
 
-if (!JFactory::getUser()->authorise('core.manage', $component))
-{
-	throw new JAccessExceptionNotallowed(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+if (!JFactory::getUser()->authorise('core.manage', $component)) {
+    throw new JAccessExceptionNotallowed(JText::_('JERROR_ALERTNOAUTHOR'), 403);
 }
 
 JLoader::register('JHtmlCategoriesAdministrator', JPATH_ADMINISTRATOR . '/components/com_categories/helpers/html/categoriesadministrator.php');

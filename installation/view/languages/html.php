@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Installation
  * @subpackage  View
@@ -16,33 +17,33 @@ defined('_JEXEC') or die;
  */
 class InstallationViewLanguagesHtml extends JViewHtml
 {
-	/**
-	 * Container with all available languages
-	 *
-	 * @var    array
-	 * @since  3.1
-	 */
-	protected $items;
+    /**
+     * Container with all available languages
+     *
+     * @var    array
+     * @since  3.1
+     */
+    protected $items;
 
-	/**
-	 * Redefine the model so the correct type hinting is available.
-	 *
-	 * @var     InstallationModelLanguages
-	 * @since   3.1
-	 */
-	protected $model;
+    /**
+     * Redefine the model so the correct type hinting is available.
+     *
+     * @var     InstallationModelLanguages
+     * @since   3.1
+     */
+    protected $model;
 
-	/**
-	 * Method to render the view.
-	 *
-	 * @return  string  The rendered view.
-	 *
-	 * @since   3.1
-	 */
-	public function render()
-	{
-		$this->items = $this->model->getItems();
+    /**
+     * Method to render the view.
+     *
+     * @return  string  The rendered view.
+     *
+     * @since   3.1
+     */
+    public function render()
+    {
+        $this->items = $this->model->getItems();
 
-		return parent::render();
-	}
+        return parent::render();
+    }
 }

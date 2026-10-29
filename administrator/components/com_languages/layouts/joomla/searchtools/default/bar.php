@@ -11,10 +11,9 @@ defined('_JEXEC') or die;
 
 $data = $displayData;
 
-if ($data['view'] instanceof LanguagesViewOverrides)
-{
-	// We will get the language_client filter & remove it from the form filters
-	$langClient = $data['view']->filterForm->getField('language_client'); ?>
+if ($data['view'] instanceof LanguagesViewOverrides) {
+    // We will get the language_client filter & remove it from the form filters
+    $langClient = $data['view']->filterForm->getField('language_client'); ?>
 	<div class="js-stools-field-filter js-stools-selector">
 		<?php echo $langClient->input; ?>
 	</div>

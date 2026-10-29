@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  System.stats
@@ -18,40 +19,40 @@ JLoader::register('PlgSystemStatsFormFieldBase', __DIR__ . '/base.php');
  */
 class PlgSystemStatsFormFieldData extends PlgSystemStatsFormFieldBase
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  3.5
-	 */
-	protected $type = 'Data';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  3.5
+     */
+    protected $type = 'Data';
 
-	/**
-	 * Name of the layout being used to render the field
-	 *
-	 * @var    string
-	 * @since  3.5
-	 */
-	protected $layout = 'field.data';
+    /**
+     * Name of the layout being used to render the field
+     *
+     * @var    string
+     * @since  3.5
+     */
+    protected $layout = 'field.data';
 
-	/**
-	 * Method to get the data to be passed to the layout for rendering.
-	 *
-	 * @return  array
-	 *
-	 * @since   3.5
-	 */
-	protected function getLayoutData()
-	{
-		$data       = parent::getLayoutData();
+    /**
+     * Method to get the data to be passed to the layout for rendering.
+     *
+     * @return  array
+     *
+     * @since   3.5
+     */
+    protected function getLayoutData()
+    {
+        $data       = parent::getLayoutData();
 
-		$dispatcher = JEventDispatcher::getInstance();
-		JPluginHelper::importPlugin('system', 'stats');
+        $dispatcher = JEventDispatcher::getInstance();
+        JPluginHelper::importPlugin('system', 'stats');
 
-		$result = $dispatcher->trigger('onGetStatsData', array('stats.field.data'));
+        $result = $dispatcher->trigger('onGetStatsData', array('stats.field.data'));
 
-		$data['statsData'] = $result ? reset($result) : array();
+        $data['statsData'] = $result ? reset($result) : array();
 
-		return $data;
-	}
+        return $data;
+    }
 }

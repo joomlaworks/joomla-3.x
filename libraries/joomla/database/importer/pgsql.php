@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  Database
@@ -16,28 +17,26 @@ defined('JPATH_PLATFORM') or die;
  */
 class JDatabaseImporterPgsql extends JDatabaseImporterPostgresql
 {
-	/**
-	 * Checks if all data and options are in order prior to exporting.
-	 *
-	 * @return  JDatabaseImporterPgsql  Method supports chaining.
-	 *
-	 * @since   3.9.0
-	 * @throws  \Exception if an error is encountered.
-	 */
-	public function check()
-	{
-		// Check if the db connector has been set.
-		if (!($this->db instanceof JDatabaseDriverPgsql))
-		{
-			throw new Exception('JPLATFORM_ERROR_DATABASE_CONNECTOR_WRONG_TYPE');
-		}
+    /**
+     * Checks if all data and options are in order prior to exporting.
+     *
+     * @return  JDatabaseImporterPgsql  Method supports chaining.
+     *
+     * @since   3.9.0
+     * @throws  \Exception if an error is encountered.
+     */
+    public function check()
+    {
+        // Check if the db connector has been set.
+        if (!($this->db instanceof JDatabaseDriverPgsql)) {
+            throw new Exception('JPLATFORM_ERROR_DATABASE_CONNECTOR_WRONG_TYPE');
+        }
 
-		// Check if the tables have been specified.
-		if (empty($this->from))
-		{
-			throw new Exception('JPLATFORM_ERROR_NO_TABLES_SPECIFIED');
-		}
+        // Check if the tables have been specified.
+        if (empty($this->from)) {
+            throw new Exception('JPLATFORM_ERROR_NO_TABLES_SPECIFIED');
+        }
 
-		return $this;
-	}
+        return $this;
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Privacy.actionlogs
@@ -19,55 +20,51 @@ JLoader::register('PrivacyPlugin', JPATH_ADMINISTRATOR . '/components/com_privac
  */
 class PlgPrivacyActionlogs extends PrivacyPlugin
 {
-	/**
-	 * Processes an export request for Joomla core actionlog data
-	 *
-	 * @param   PrivacyTableRequest  $request  The request record being processed
-	 * @param   JUser                $user     The user account associated with this request if available
-	 *
-	 * @return  PrivacyExportDomain[]
-	 *
-	 * @since   3.9.0
-	 */
-	public function onPrivacyExportRequest(PrivacyTableRequest $request, ?JUser $user = null)
-	{
-		if (!$user)
-		{
-			return array();
-		}
+    /**
+     * Processes an export request for Joomla core actionlog data
+     *
+     * @param   PrivacyTableRequest  $request  The request record being processed
+     * @param   JUser                $user     The user account associated with this request if available
+     *
+     * @return  PrivacyExportDomain[]
+     *
+     * @since   3.9.0
+     */
+    public function onPrivacyExportRequest(PrivacyTableRequest $request, ?JUser $user = null)
+    {
+        if (!$user) {
+            return array();
+        }
 
-		$domain = $this->createDomain('user_action_logs', 'joomla_user_action_logs_data');
+        $domain = $this->createDomain('user_action_logs', 'joomla_user_action_logs_data');
 
-		$query = $this->db->getQuery(true)
-			->select('a.*, u.name')
-			->from('#__action_logs AS a')
-			->innerJoin('#__users AS u ON a.user_id = u.id')
-			->where($this->db->quoteName('a.user_id') . ' = ' . (int) $user->id);
+        $query = $this->db->getQuery(true)
+            ->select('a.*, u.name')
+            ->from('#__action_logs AS a')
+            ->innerJoin('#__users AS u ON a.user_id = u.id')
+            ->where($this->db->quoteName('a.user_id') . ' = ' . (int) $user->id);
 
-		$this->db->setQuery($query);
+        $this->db->setQuery($query);
 
-		$data = $this->db->loadObjectList();
+        $data = $this->db->loadObjectList();
 
-		if (!count($data))
-		{
-			return array();
-		}
+        if (!count($data)) {
+            return array();
+        }
 
-		$data    = ActionlogsHelper::getCsvData($data);
-		$isFirst = true;
+        $data    = ActionlogsHelper::getCsvData($data);
+        $isFirst = true;
 
-		foreach ($data as $item)
-		{
-			if ($isFirst)
-			{
-				$isFirst = false;
+        foreach ($data as $item) {
+            if ($isFirst) {
+                $isFirst = false;
 
-				continue;
-			}
+                continue;
+            }
 
-			$domain->addItem($this->createItemFromArray($item));
-		}
+            $domain->addItem($this->createItemFromArray($item));
+        }
 
-		return array($domain);
-	}
+        return array($domain);
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    Joomla.Cli
  *
@@ -42,15 +43,13 @@
 const _JEXEC = 1;
 
 // Load system defines
-if (file_exists(dirname(__DIR__) . '/defines.php'))
-{
-	require_once dirname(__DIR__) . '/defines.php';
+if (file_exists(dirname(__DIR__) . '/defines.php')) {
+    require_once dirname(__DIR__) . '/defines.php';
 }
 
-if (!defined('_JDEFINES'))
-{
-	define('JPATH_BASE', dirname(__DIR__));
-	require_once JPATH_BASE . '/includes/defines.php';
+if (!defined('_JDEFINES')) {
+    define('JPATH_BASE', dirname(__DIR__));
+    require_once JPATH_BASE . '/includes/defines.php';
 }
 
 define('JPATH_COMPONENT_ADMINISTRATOR', JPATH_ADMINISTRATOR . '/components/com_finder');
@@ -65,7 +64,7 @@ require_once JPATH_LIBRARIES . '/cms.php';
 require_once JPATH_CONFIGURATION . '/configuration.php';
 
 // System configuration.
-$config = new JConfig;
+$config = new JConfig();
 define('JDEBUG', $config->debug);
 
 // Configure error reporting to maximum for CLI output.
@@ -87,36 +86,35 @@ $lang->load('finder_cli', JPATH_SITE, null, false, false)
  */
 class FinderCli extends JApplicationCli
 {
-	/**
-	 * Entry point for Smart Search CLI script
-	 *
-	 * @return  void
-	 *
-	 * @since   2.5
-	 */
-	public function doExecute()
-	{
-		// Same as: php cli/joomla.php finder:index [purge] [--pause=...] [--divisor=...] [--minproctime=...]
-		$pause = $this->input->get('pause', 'division', 'raw');
+    /**
+     * Entry point for Smart Search CLI script
+     *
+     * @return  void
+     *
+     * @since   2.5
+     */
+    public function doExecute()
+    {
+        // Same as: php cli/joomla.php finder:index [purge] [--pause=...] [--divisor=...] [--minproctime=...]
+        $pause = $this->input->get('pause', 'division', 'raw');
 
-		// A bare --pause means the default dynamic pausing
-		if ($pause === true || $pause === '')
-		{
-			$pause = 'division';
-		}
+        // A bare --pause means the default dynamic pausing
+        if ($pause === true || $pause === '') {
+            $pause = 'division';
+        }
 
-		$this->close(
-			(new \Joomla\CMS\Application\ConsoleApplication)->runCommand(
-				'finder:index',
-				array('purge' => $this->input->getString('purge', false) ? 'purge' : null),
-				array(
-					'minproctime' => $this->input->getInt('minproctime', 1),
-					'pause'       => $pause,
-					'divisor'     => $this->input->getInt('divisor', 5),
-				)
-			)
-		);
-	}
+        $this->close(
+            (new \Joomla\CMS\Application\ConsoleApplication())->runCommand(
+                'finder:index',
+                array('purge' => $this->input->getString('purge', false) ? 'purge' : null),
+                array(
+                    'minproctime' => $this->input->getInt('minproctime', 1),
+                    'pause'       => $pause,
+                    'divisor'     => $this->input->getInt('divisor', 5),
+                )
+            )
+        );
+    }
 }
 
 // Instantiate the application object, passing the class name to JCli::getInstance

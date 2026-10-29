@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -19,39 +20,39 @@ use Joomla\CMS\Factory;
  */
 abstract class AbstractMenuItemStateCommand extends AbstractStateCommand
 {
-	/**
-	 * @var    string[]
-	 * @since  3.17.0
-	 */
-	protected $model = array('com_menus', 'Item', 'MenusModel');
+    /**
+     * @var    string[]
+     * @since  3.17.0
+     */
+    protected $model = array('com_menus', 'Item', 'MenusModel');
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $item = 'menu item';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $item = 'menu item';
 
-	/**
-	 * @var    string[]
-	 * @since  3.17.0
-	 */
-	protected $table = array('#__menu', 'title', 'published');
+    /**
+     * @var    string[]
+     * @since  3.17.0
+     */
+    protected $table = array('#__menu', 'title', 'published');
 
-	/**
-	 * @param   object  $row  The item
-	 *
-	 * @return  string
-	 *
-	 * @since   3.17.0
-	 */
-	protected function getAssetName($row)
-	{
-		$db    = Factory::getDbo();
-		$query = $db->getQuery(true)
-			->select($db->quoteName('id'))
-			->from($db->quoteName('#__menu_types'))
-			->where($db->quoteName('menutype') . ' = ' . $db->quote($row->menutype));
+    /**
+     * @param   object  $row  The item
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    protected function getAssetName($row)
+    {
+        $db    = Factory::getDbo();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('id'))
+            ->from($db->quoteName('#__menu_types'))
+            ->where($db->quoteName('menutype') . ' = ' . $db->quote($row->menutype));
 
-		return 'com_menus.menu.' . (int) $db->setQuery($query)->loadResult();
-	}
+        return 'com_menus.menu.' . (int) $db->setQuery($query)->loadResult();
+    }
 }

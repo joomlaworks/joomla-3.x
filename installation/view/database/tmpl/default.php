@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 /* @var InstallationViewDefault $this */
 
 $sqlite = 'data-sqlite-label="' . htmlspecialchars(JText::_('INSTL_DATABASE_SQLITE_FILE_LABEL'), ENT_COMPAT, 'UTF-8') . '"'
-	. ' data-sqlite-desc="' . htmlspecialchars(JText::_('INSTL_DATABASE_SQLITE_FILE_DESC'), ENT_COMPAT, 'UTF-8') . '"';
+    . ' data-sqlite-desc="' . htmlspecialchars(JText::_('INSTL_DATABASE_SQLITE_FILE_DESC'), ENT_COMPAT, 'UTF-8') . '"';
 ?>
 <?php echo JHtml::_('InstallationHtml.helper.stepbar'); ?>
 

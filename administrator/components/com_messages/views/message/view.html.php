@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_messages
@@ -16,66 +17,61 @@ defined('_JEXEC') or die;
  */
 class MessagesViewMessage extends JViewLegacy
 {
-	protected $form;
+    protected $form;
 
-	protected $item;
+    protected $item;
 
-	protected $state;
+    protected $state;
 
-	/**
-	 * Execute and display a template script.
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  mixed  A string if successful, otherwise an Error object.
-	 *
-	 * @since   1.6
-	 */
-	public function display($tpl = null)
-	{
-		$this->form  = $this->get('Form');
-		$this->item  = $this->get('Item');
-		$this->state = $this->get('State');
+    /**
+     * Execute and display a template script.
+     *
+     * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+     *
+     * @return  mixed  A string if successful, otherwise an Error object.
+     *
+     * @since   1.6
+     */
+    public function display($tpl = null)
+    {
+        $this->form  = $this->get('Form');
+        $this->item  = $this->get('Item');
+        $this->state = $this->get('State');
 
-		// Check for errors.
-		if (count($errors = $this->get('Errors')))
-		{
-			throw new Exception(implode("\n", $errors), 500);
-		}
+        // Check for errors.
+        if (count($errors = $this->get('Errors'))) {
+            throw new Exception(implode("\n", $errors), 500);
+        }
 
-		parent::display($tpl);
-		$this->addToolbar();
-	}
+        parent::display($tpl);
+        $this->addToolbar();
+    }
 
-	/**
-	 * Add the page title and toolbar.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 */
-	protected function addToolbar()
-	{
-		if ($this->getLayout() == 'edit')
-		{
-			JFactory::getApplication()->input->set('hidemainmenu', true);
-			JToolbarHelper::title(JText::_('COM_MESSAGES_WRITE_PRIVATE_MESSAGE'), 'envelope-opened new-privatemessage');
-			JToolbarHelper::save('message.save', 'COM_MESSAGES_TOOLBAR_SEND');
-			JToolbarHelper::cancel('message.cancel');
-			JToolbarHelper::help('JHELP_COMPONENTS_MESSAGING_WRITE');
-		}
-		else
-		{
-			JToolbarHelper::title(JText::_('COM_MESSAGES_VIEW_PRIVATE_MESSAGE'), 'envelope inbox');
-			$sender = JUser::getInstance($this->item->user_id_from);
+    /**
+     * Add the page title and toolbar.
+     *
+     * @return  void
+     *
+     * @since   1.6
+     */
+    protected function addToolbar()
+    {
+        if ($this->getLayout() == 'edit') {
+            JFactory::getApplication()->input->set('hidemainmenu', true);
+            JToolbarHelper::title(JText::_('COM_MESSAGES_WRITE_PRIVATE_MESSAGE'), 'envelope-opened new-privatemessage');
+            JToolbarHelper::save('message.save', 'COM_MESSAGES_TOOLBAR_SEND');
+            JToolbarHelper::cancel('message.cancel');
+            JToolbarHelper::help('JHELP_COMPONENTS_MESSAGING_WRITE');
+        } else {
+            JToolbarHelper::title(JText::_('COM_MESSAGES_VIEW_PRIVATE_MESSAGE'), 'envelope inbox');
+            $sender = JUser::getInstance($this->item->user_id_from);
 
-			if ($sender->authorise('core.admin') || $sender->authorise('core.manage', 'com_messages') && $sender->authorise('core.login.admin'))
-			{
-				JToolbarHelper::custom('message.reply', 'redo', null, 'COM_MESSAGES_TOOLBAR_REPLY', false);
-			}
+            if ($sender->authorise('core.admin') || $sender->authorise('core.manage', 'com_messages') && $sender->authorise('core.login.admin')) {
+                JToolbarHelper::custom('message.reply', 'redo', null, 'COM_MESSAGES_TOOLBAR_REPLY', false);
+            }
 
-			JToolbarHelper::cancel('message.cancel');
-			JToolbarHelper::help('JHELP_COMPONENTS_MESSAGING_READ');
-		}
-	}
+            JToolbarHelper::cancel('message.cancel');
+            JToolbarHelper::help('JHELP_COMPONENTS_MESSAGING_READ');
+        }
+    }
 }

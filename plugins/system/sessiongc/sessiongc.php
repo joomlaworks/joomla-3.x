@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  System.sessiongc
@@ -21,54 +22,50 @@ use Joomla\CMS\Session\MetadataManager;
  */
 class PlgSystemSessionGc extends CMSPlugin
 {
-	/**
-	 * Application object
-	 *
-	 * @var    CMSApplication
-	 * @since  3.8.6
-	 */
-	protected $app;
+    /**
+     * Application object
+     *
+     * @var    CMSApplication
+     * @since  3.8.6
+     */
+    protected $app;
 
-	/**
-	 * Database driver
-	 *
-	 * @var    JDatabaseDriver
-	 * @since  3.8.6
-	 */
-	protected $db;
+    /**
+     * Database driver
+     *
+     * @var    JDatabaseDriver
+     * @since  3.8.6
+     */
+    protected $db;
 
-	/**
-	 * Runs after the HTTP response has been sent to the client and performs garbage collection tasks
-	 *
-	 * @return  void
-	 *
-	 * @since   3.8.6
-	 */
-	public function onAfterRespond()
-	{
-		$session = Factory::getSession();
+    /**
+     * Runs after the HTTP response has been sent to the client and performs garbage collection tasks
+     *
+     * @return  void
+     *
+     * @since   3.8.6
+     */
+    public function onAfterRespond()
+    {
+        $session = Factory::getSession();
 
-		if ($this->params->get('enable_session_gc', 1))
-		{
-			$probability = $this->params->get('gc_probability', 1);
-			$divisor     = $this->params->get('gc_divisor', 100);
+        if ($this->params->get('enable_session_gc', 1)) {
+            $probability = $this->params->get('gc_probability', 1);
+            $divisor     = $this->params->get('gc_divisor', 100);
 
-			if ($probability > 0 && $divisor > 0 && random_int(1, $divisor) <= $probability)
-			{
-				$session->gc();
-			}
-		}
+            if ($probability > 0 && $divisor > 0 && random_int(1, $divisor) <= $probability) {
+                $session->gc();
+            }
+        }
 
-		if ($this->app->get('session_handler', 'none') !== 'database' && $this->params->get('enable_session_metadata_gc', 1))
-		{
-			$probability = $this->params->get('gc_probability', 1);
-			$divisor     = $this->params->get('gc_divisor', 100);
+        if ($this->app->get('session_handler', 'none') !== 'database' && $this->params->get('enable_session_metadata_gc', 1)) {
+            $probability = $this->params->get('gc_probability', 1);
+            $divisor     = $this->params->get('gc_divisor', 100);
 
-			if ($probability > 0 && $divisor > 0 && random_int(1, $divisor) <= $probability)
-			{
-				$metadataManager = new MetadataManager($this->app, $this->db);
-				$metadataManager->deletePriorTo(time() - $session->getExpire());
-			}
-		}
-	}
+            if ($probability > 0 && $divisor > 0 && random_int(1, $divisor) <= $probability) {
+                $metadataManager = new MetadataManager($this->app, $this->db);
+                $metadataManager->deletePriorTo(time() - $session->getExpire());
+            }
+        }
+    }
 }

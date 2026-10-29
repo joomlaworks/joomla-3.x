@@ -26,28 +26,22 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 $saveOrder = $listOrder == 'fp.ordering';
 $columns   = 10;
 
-if (strpos((string) $listOrder, 'publish_up') !== false)
-{
-	$orderingColumn = 'publish_up';
-}
-elseif (strpos((string) $listOrder, 'publish_down') !== false)
-{
-	$orderingColumn = 'publish_down';
-}
-else
-{
-	$orderingColumn = 'created';
+if (strpos((string) $listOrder, 'publish_up') !== false) {
+    $orderingColumn = 'publish_up';
+} elseif (strpos((string) $listOrder, 'publish_down') !== false) {
+    $orderingColumn = 'publish_down';
+} else {
+    $orderingColumn = 'created';
 }
 
-if ($saveOrder)
-{
-	$saveOrderingUrl = 'index.php?option=com_content&task=featured.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'articleList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
+if ($saveOrder) {
+    $saveOrderingUrl = 'index.php?option=com_content&task=featured.saveOrderAjax&tmpl=component';
+    JHtml::_('sortablelist.sortable', 'articleList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 }
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_content&view=featured'); ?>" method="post" name="adminForm" id="adminForm">
-	<?php if (!empty( $this->sidebar)) : ?>
+	<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -56,9 +50,9 @@ if ($saveOrder)
 		<div id="j-main-container">
 			<?php endif; ?>
 			<?php
-			// Search tools bar
-			echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
-			?>
+            // Search tools bar
+            echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
+?>
 			<?php if (empty($this->items)) : ?>
 				<div class="alert alert-no-items">
 					<?php echo JText::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
@@ -119,32 +113,29 @@ if ($saveOrder)
 					<tbody>
 					<?php $count = count($this->items); ?>
 					<?php foreach ($this->items as $i => $item) :
-						$item->max_ordering = 0;
-						$ordering         = ($listOrder == 'fp.ordering');
-						$assetId          = 'com_content.article.' . $item->id;
-						$canCreate        = $user->authorise('core.create', 'com_content.category.' . $item->catid);
-						$canEdit          = $user->authorise('core.edit', 'com_content.article.' . $item->id);
-						$canCheckin       = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
-						$canChange        = $user->authorise('core.edit.state', 'com_content.article.' . $item->id) && $canCheckin;
-						$canEditCat       = $user->authorise('core.edit',       'com_content.category.' . $item->catid);
-						$canEditOwnCat    = $user->authorise('core.edit.own',   'com_content.category.' . $item->catid) && $item->category_uid == $userId;
-						$canEditParCat    = $user->authorise('core.edit',       'com_content.category.' . $item->parent_category_id);
-						$canEditOwnParCat = $user->authorise('core.edit.own',   'com_content.category.' . $item->parent_category_id) && $item->parent_category_uid == $userId;
-						?>
+					    $item->max_ordering = 0;
+					    $ordering         = ($listOrder == 'fp.ordering');
+					    $assetId          = 'com_content.article.' . $item->id;
+					    $canCreate        = $user->authorise('core.create', 'com_content.category.' . $item->catid);
+					    $canEdit          = $user->authorise('core.edit', 'com_content.article.' . $item->id);
+					    $canCheckin       = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
+					    $canChange        = $user->authorise('core.edit.state', 'com_content.article.' . $item->id) && $canCheckin;
+					    $canEditCat       = $user->authorise('core.edit', 'com_content.category.' . $item->catid);
+					    $canEditOwnCat    = $user->authorise('core.edit.own', 'com_content.category.' . $item->catid) && $item->category_uid == $userId;
+					    $canEditParCat    = $user->authorise('core.edit', 'com_content.category.' . $item->parent_category_id);
+					    $canEditOwnParCat = $user->authorise('core.edit.own', 'com_content.category.' . $item->parent_category_id) && $item->parent_category_uid == $userId;
+					    ?>
 						<tr class="row<?php echo $i % 2; ?>">
 							<td class="order nowrap center hidden-phone">
 								<?php
-								$iconClass = '';
+					            $iconClass = '';
 
-								if (!$canChange)
-								{
-									$iconClass = ' inactive';
-								}
-								elseif (!$saveOrder)
-								{
-									$iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
-								}
-								?>
+					    if (!$canChange) {
+					        $iconClass = ' inactive';
+					    } elseif (!$saveOrder) {
+					        $iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
+					    }
+					    ?>
 								<span class="sortable-handler<?php echo $iconClass ?>">
 								<span class="icon-menu" aria-hidden="true"></span>
 							</span>
@@ -160,13 +151,12 @@ if ($saveOrder)
 									<?php echo JHtml::_('jgrid.published', $item->state, $i, 'articles.', $canChange, 'cb', $item->publish_up, $item->publish_down); ?>
 									<?php echo JHtml::_('contentadministrator.featured', $item->featured, $i, $canChange); ?>
 									<?php // Create dropdown items and render the dropdown list.
-									if ($canChange)
-									{
-										JHtml::_('actionsdropdown.' . ((int) $item->state === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'articles');
-										JHtml::_('actionsdropdown.' . ((int) $item->state === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'articles');
-										echo JHtml::_('actionsdropdown.render', $this->escape($item->title));
-									}
-									?>
+					        if ($canChange) {
+					            JHtml::_('actionsdropdown.' . ((int) $item->state === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'articles');
+					            JHtml::_('actionsdropdown.' . ((int) $item->state === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'articles');
+					            echo JHtml::_('actionsdropdown.render', $this->escape($item->title));
+					        }
+					    ?>
 								</div>
 							</td>
 							<td class="has-context">
@@ -189,60 +179,57 @@ if ($saveOrder)
 									</span>
 									<div class="small">
 										<?php
-										$ParentCatUrl = JRoute::_('index.php?option=com_categories&task=category.edit&id=' . $item->parent_category_id . '&extension=com_content');
-										$CurrentCatUrl = JRoute::_('index.php?option=com_categories&task=category.edit&id=' . $item->catid . '&extension=com_content');
-										$EditCatTxt = JText::_('COM_CONTENT_EDIT_CATEGORY');
+					        $ParentCatUrl = JRoute::_('index.php?option=com_categories&task=category.edit&id=' . $item->parent_category_id . '&extension=com_content');
+					    $CurrentCatUrl = JRoute::_('index.php?option=com_categories&task=category.edit&id=' . $item->catid . '&extension=com_content');
+					    $EditCatTxt = JText::_('COM_CONTENT_EDIT_CATEGORY');
 
-										echo JText::_('JCATEGORY') . ': ';
+					    echo JText::_('JCATEGORY') . ': ';
 
-										if ($item->category_level != '1') :
-											if ($item->parent_category_level != '1') :
-												echo ' &#187; ';
-											endif;
-										endif;
+					    if ($item->category_level != '1') :
+					        if ($item->parent_category_level != '1') :
+					            echo ' &#187; ';
+					        endif;
+					    endif;
 
-										if (JFactory::getLanguage()->isRtl())
-										{
-											if ($canEditCat || $canEditOwnCat) :
-												echo '<a class="hasTooltip" href="' . $CurrentCatUrl . '" title="' . $EditCatTxt . '">';
-											endif;
-											echo $this->escape($item->category_title);
-											if ($canEditCat || $canEditOwnCat) :
-												echo '</a>';
-											endif;
+					    if (JFactory::getLanguage()->isRtl()) {
+					        if ($canEditCat || $canEditOwnCat) :
+					            echo '<a class="hasTooltip" href="' . $CurrentCatUrl . '" title="' . $EditCatTxt . '">';
+					        endif;
+					        echo $this->escape($item->category_title);
+					        if ($canEditCat || $canEditOwnCat) :
+					            echo '</a>';
+					        endif;
 
-											if ($item->category_level != '1') :
-												echo ' &#171; ';
-												if ($canEditParCat || $canEditOwnParCat) :
-													echo '<a class="hasTooltip" href="' . $ParentCatUrl . '" title="' . $EditCatTxt . '">';
-												endif;
-												echo $this->escape($item->parent_category_title);
-												if ($canEditParCat || $canEditOwnParCat) :
-													echo '</a>';
-												endif;
-											endif;
-										}
-										else
-										{
-											if ($item->category_level != '1') :
-												if ($canEditParCat || $canEditOwnParCat) :
-													echo '<a class="hasTooltip" href="' . $ParentCatUrl . '" title="' . $EditCatTxt . '">';
-												endif;
-												echo $this->escape($item->parent_category_title);
-												if ($canEditParCat || $canEditOwnParCat) :
-													echo '</a>';
-												endif;
-												echo ' &#187; ';
-											endif;
-											if ($canEditCat || $canEditOwnCat) :
-												echo '<a class="hasTooltip" href="' . $CurrentCatUrl . '" title="' . $EditCatTxt . '">';
-											endif;
-											echo $this->escape($item->category_title);
-											if ($canEditCat || $canEditOwnCat) :
-												echo '</a>';
-											endif;
-										}
-										?>
+					        if ($item->category_level != '1') :
+					            echo ' &#171; ';
+					            if ($canEditParCat || $canEditOwnParCat) :
+					                echo '<a class="hasTooltip" href="' . $ParentCatUrl . '" title="' . $EditCatTxt . '">';
+					            endif;
+					            echo $this->escape($item->parent_category_title);
+					            if ($canEditParCat || $canEditOwnParCat) :
+					                echo '</a>';
+					            endif;
+					        endif;
+					    } else {
+					        if ($item->category_level != '1') :
+					            if ($canEditParCat || $canEditOwnParCat) :
+					                echo '<a class="hasTooltip" href="' . $ParentCatUrl . '" title="' . $EditCatTxt . '">';
+					            endif;
+					            echo $this->escape($item->parent_category_title);
+					            if ($canEditParCat || $canEditOwnParCat) :
+					                echo '</a>';
+					            endif;
+					            echo ' &#187; ';
+					        endif;
+					        if ($canEditCat || $canEditOwnCat) :
+					            echo '<a class="hasTooltip" href="' . $CurrentCatUrl . '" title="' . $EditCatTxt . '">';
+					        endif;
+					        echo $this->escape($item->category_title);
+					        if ($canEditCat || $canEditOwnCat) :
+					            echo '</a>';
+					        endif;
+					    }
+					    ?>
 									</div>
 								</div>
 							</td>
@@ -273,9 +260,9 @@ if ($saveOrder)
 							</td>
 							<td class="nowrap small hidden-phone">
 								<?php
-								$date = $item->{$orderingColumn};
-								echo $date > 0 ? JHtml::_('date', $date, JText::_('DATE_FORMAT_LC4')) : '-';
-								?>
+                                $date = $item->{$orderingColumn};
+					    echo $date > 0 ? JHtml::_('date', $date, JText::_('DATE_FORMAT_LC4')) : '-';
+					    ?>
 							</td>
 							<td class="center hidden-phone">
 								<span class="badge badge-info">

@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 $fieldSets = $this->form->getFieldsets('params');
 foreach ($fieldSets as $name => $fieldSet) :
-	?>
+    ?>
 	<div class="tab-pane" id="params-<?php echo $name; ?>">
 	<?php if (isset($fieldSet->description) && trim($fieldSet->description)) : ?>
 		<p class="alert alert-info"><?php echo $this->escape(JText::_($fieldSet->description)); ?></p>

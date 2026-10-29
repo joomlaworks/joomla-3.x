@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_config
@@ -18,49 +19,45 @@ defined('_JEXEC') or die;
  */
 class ConfigControllerModulesCancel extends ConfigControllerCanceladmin
 {
-	/**
-	 * Method to cancel module editing.
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @since   3.2
-	 */
-	public function execute()
-	{
-		// Check if the user is authorized to do this.
-		$user = JFactory::getUser();
+    /**
+     * Method to cancel module editing.
+     *
+     * @return  boolean  True on success.
+     *
+     * @since   3.2
+     */
+    public function execute()
+    {
+        // Check if the user is authorized to do this.
+        $user = JFactory::getUser();
 
-		if (!$user->authorise('module.edit.frontend', 'com_modules.module.' . $this->input->get('id')))
-		{
-			$this->app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'));
-			$this->app->redirect('index.php');
-		}
+        if (!$user->authorise('module.edit.frontend', 'com_modules.module.' . $this->input->get('id'))) {
+            $this->app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'));
+            $this->app->redirect('index.php');
+        }
 
-		$this->context = 'com_config.config.global';
+        $this->context = 'com_config.config.global';
 
-		// Get returnUri
-		$returnUri = $this->input->post->get('return', null, 'base64');
+        // Get returnUri
+        $returnUri = $this->input->post->get('return', null, 'base64');
 
-		if (!empty($returnUri))
-		{
-			$this->redirect = base64_decode(urldecode((string) $returnUri));
-		}
-		else
-		{
-			$this->redirect = JUri::base();
-		}
+        if (!empty($returnUri)) {
+            $this->redirect = base64_decode(urldecode((string) $returnUri));
+        } else {
+            $this->redirect = JUri::base();
+        }
 
-		$id = $this->input->getInt('id');
+        $id = $this->input->getInt('id');
 
-		// Access backend com_module
-		JLoader::register('ModulesControllerModule', JPATH_ADMINISTRATOR . '/components/com_modules/controllers/module.php');
-		JLoader::register('ModulesViewModule', JPATH_ADMINISTRATOR . '/components/com_modules/views/module/view.json.php');
-		JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
+        // Access backend com_module
+        JLoader::register('ModulesControllerModule', JPATH_ADMINISTRATOR . '/components/com_modules/controllers/module.php');
+        JLoader::register('ModulesViewModule', JPATH_ADMINISTRATOR . '/components/com_modules/views/module/view.json.php');
+        JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
 
-		$cancelClass = new ModulesControllerModule;
+        $cancelClass = new ModulesControllerModule();
 
-		$cancelClass->cancel($id);
+        $cancelClass->cancel($id);
 
-		parent::execute();
-	}
+        parent::execute();
+    }
 }

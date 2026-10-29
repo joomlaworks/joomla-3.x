@@ -15,7 +15,7 @@ JHtml::_('behavior.formvalidator');
 JHtml::_('formbehavior.chosen', 'select');
 
 JFactory::getDocument()->addScriptDeclaration(
-	'
+    '
 	Joomla.submitbutton = function(task)
 	{
 		if (task == "language.cancel" || document.formvalidator.isValid(document.getElementById("language-form")))

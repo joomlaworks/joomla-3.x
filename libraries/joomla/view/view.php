@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  View
@@ -17,24 +18,24 @@ defined('JPATH_PLATFORM') or die;
  */
 interface JView
 {
-	/**
-	 * Method to escape output.
-	 *
-	 * @param   string  $output  The output to escape.
-	 *
-	 * @return  string  The escaped output.
-	 *
-	 * @since   3.0.0
-	 */
-	public function escape($output);
+    /**
+     * Method to escape output.
+     *
+     * @param   string  $output  The output to escape.
+     *
+     * @return  string  The escaped output.
+     *
+     * @since   3.0.0
+     */
+    public function escape($output);
 
-	/**
-	 * Method to render the view.
-	 *
-	 * @return  string  The rendered view.
-	 *
-	 * @since   3.0.0
-	 * @throws  RuntimeException
-	 */
-	public function render();
+    /**
+     * Method to render the view.
+     *
+     * @return  string  The rendered view.
+     *
+     * @since   3.0.0
+     * @throws  RuntimeException
+     */
+    public function render();
 }

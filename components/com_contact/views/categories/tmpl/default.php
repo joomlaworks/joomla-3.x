@@ -36,7 +36,7 @@ jQuery(function($) {
 ?>
 <div class="categories-list<?php echo $this->pageclass_sfx; ?>">
 	<?php
-		echo JLayoutHelper::render('joomla.content.categories_default', $this);
-		echo $this->loadTemplate('items');
-	?>
+        echo JLayoutHelper::render('joomla.content.categories_default', $this);
+echo $this->loadTemplate('items');
+?>
 </div>

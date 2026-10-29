@@ -14,7 +14,7 @@ $data = $displayData;
 ?>
 <?php if ($data['view'] instanceof AssociationsViewAssociations) : ?>
 	<?php $app = JFactory::getApplication(); ?>
-	<?php // We will get the component item type and language filters & remove it from the form filters. ?>
+	<?php // We will get the component item type and language filters & remove it from the form filters.?>
 	<?php if ($app->input->get('forcedItemType', '', 'string') == '') : ?>
 		<?php $itemTypeField = $data['view']->filterForm->getField('itemtype'); ?>
 		<div class="js-stools-field-filter js-stools-selector">
@@ -28,5 +28,5 @@ $data = $displayData;
 		</div>
 	<?php endif; ?>
 <?php endif; ?>
-<?php // Display the main joomla layout ?>
+<?php // Display the main joomla layout?>
 <?php echo JLayoutHelper::render('joomla.searchtools.default.bar', $data, null, array('component' => 'none')); ?>

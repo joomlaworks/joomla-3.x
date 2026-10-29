@@ -21,9 +21,8 @@ class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/he
  */
 $params = $this->params;
 $levels = $this->user->getAuthorisedViewLevels();
-$items  = array_filter((array) $this->items, function ($item) use ($levels)
-{
-	return !empty($item->access) && in_array($item->access, $levels);
+$items  = array_filter((array) $this->items, function ($item) use ($levels) {
+    return !empty($item->access) && in_array($item->access, $levels);
 });
 ?>
 <div class="listView tagsView<?php echo $this->pageclass_sfx; ?>">

@@ -27,10 +27,9 @@ defined('_JEXEC') or die;
 extract($displayData);
 
 // Add script
-if ($multiple)
-{
-	JHtml::_('jquery.ui', array('core', 'sortable'));
-	JHtml::_('script', 'system/subform-repeatable.js', array('version' => 'auto', 'relative' => true));
+if ($multiple) {
+    JHtml::_('jquery.ui', array('core', 'sortable'));
+    JHtml::_('script', 'system/subform-repeatable.js', array('version' => 'auto', 'relative' => true));
 }
 
 $sublayout = empty($groupByFieldset) ? 'section' : 'section-byfieldsets';
@@ -56,39 +55,39 @@ $sublayout = empty($groupByFieldset) ? 'section' : 'section-byfieldsets';
 			</div>
 			<?php endif; ?>
 		<?php
-		foreach ($forms as $k => $form) :
-			echo $this->sublayout(
-				$sublayout,
-				array(
-					'form' => $form,
-					'basegroup' => $fieldname,
-					'group' => $fieldname . $k,
-					'buttons' => $buttons,
-					'unique_subform_id' => $unique_subform_id,
-				)
-			);
-		endforeach;
-		?>
+        foreach ($forms as $k => $form) :
+            echo $this->sublayout(
+                $sublayout,
+                array(
+                    'form' => $form,
+                    'basegroup' => $fieldname,
+                    'group' => $fieldname . $k,
+                    'buttons' => $buttons,
+                    'unique_subform_id' => $unique_subform_id,
+                )
+            );
+        endforeach;
+?>
 		<?php if ($multiple) : ?>
 			<template class="subform-repeatable-template-section" style="display: none;"><?php
-				// Use str_replace to escape HTML in a simple way, it need for IE compatibility, and should be removed later
-				echo str_replace(
-						array('<', '>'),
-						array('SUBFORMLT', 'SUBFORMGT'),
-						trim(
-							(string) $this->sublayout(
-								$sublayout,
-								array(
-									'form' => $tmpl,
-									'basegroup' => $fieldname,
-									'group' => $fieldname . 'X',
-									'buttons' => $buttons,
-									'unique_subform_id' => $unique_subform_id,
-								)
-							)
-						)
-				);
-				?></template>
+        // Use str_replace to escape HTML in a simple way, it need for IE compatibility, and should be removed later
+        echo str_replace(
+            array('<', '>'),
+            array('SUBFORMLT', 'SUBFORMGT'),
+            trim(
+                (string) $this->sublayout(
+                    $sublayout,
+                    array(
+                            'form' => $tmpl,
+                            'basegroup' => $fieldname,
+                            'group' => $fieldname . 'X',
+                            'buttons' => $buttons,
+                            'unique_subform_id' => $unique_subform_id,
+                        )
+                )
+            )
+        );
+		    ?></template>
 		<?php endif; ?>
 		</div>
 	</div>

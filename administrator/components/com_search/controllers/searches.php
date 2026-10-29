@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_search
@@ -16,43 +17,39 @@ defined('_JEXEC') or die;
  */
 class SearchControllerSearches extends JControllerLegacy
 {
-	/**
-	 * Method to reset the search log table.
-	 *
-	 * @return  boolean
-	 */
-	public function reset()
-	{
-		// Check for request forgeries.
-		$this->checkToken();
+    /**
+     * Method to reset the search log table.
+     *
+     * @return  boolean
+     */
+    public function reset()
+    {
+        // Check for request forgeries.
+        $this->checkToken();
 
-		$model = $this->getModel('Searches');
+        $model = $this->getModel('Searches');
 
-		if (!$model->reset())
-		{
-			JError::raiseWarning(500, $model->getError());
-		}
+        if (!$model->reset()) {
+            JError::raiseWarning(500, $model->getError());
+        }
 
-		$this->setRedirect('index.php?option=com_search&view=searches');
-	}
+        $this->setRedirect('index.php?option=com_search&view=searches');
+    }
 
-	/**
-	 * Method to toggle the view of results.
-	 *
-	 * @return  boolean
-	 */
-	public function toggleResults()
-	{
-		// Check for request forgeries.
-		$this->checkToken();
+    /**
+     * Method to toggle the view of results.
+     *
+     * @return  boolean
+     */
+    public function toggleResults()
+    {
+        // Check for request forgeries.
+        $this->checkToken();
 
-		if ($this->getModel('Searches')->getState('show_results', 1, 'int') === 0)
-		{
-			$this->setRedirect('index.php?option=com_search&view=searches&show_results=1');
-		}
-		else
-		{
-			$this->setRedirect('index.php?option=com_search&view=searches&show_results=0');
-		}
-	}
+        if ($this->getModel('Searches')->getState('show_results', 1, 'int') === 0) {
+            $this->setRedirect('index.php?option=com_search&view=searches&show_results=1');
+        } else {
+            $this->setRedirect('index.php?option=com_search&view=searches&show_results=0');
+        }
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_users
@@ -16,54 +17,50 @@ defined('_JEXEC') or die;
  */
 class UsersControllerMail extends JControllerLegacy
 {
-	/**
-	 * Send the mail
-	 *
-	 * @return void
-	 *
-	 * @since 1.6
-	 */
-	public function send()
-	{
-		// Redirect to admin index if mass mailer disabled in conf
-		if (JFactory::getApplication()->get('massmailoff', 0) == 1)
-		{
-			JFactory::getApplication()->redirect(JRoute::_('index.php', false));
-		}
+    /**
+     * Send the mail
+     *
+     * @return void
+     *
+     * @since 1.6
+     */
+    public function send()
+    {
+        // Redirect to admin index if mass mailer disabled in conf
+        if (JFactory::getApplication()->get('massmailoff', 0) == 1) {
+            JFactory::getApplication()->redirect(JRoute::_('index.php', false));
+        }
 
-		// Check for request forgeries.
-		$this->checkToken('request');
+        // Check for request forgeries.
+        $this->checkToken('request');
 
-		$model = $this->getModel('Mail');
+        $model = $this->getModel('Mail');
 
-		if ($model->send())
-		{
-			$type = 'message';
-		}
-		else
-		{
-			$type = 'error';
-		}
+        if ($model->send()) {
+            $type = 'message';
+        } else {
+            $type = 'error';
+        }
 
-		$msg = $model->getError();
-		$this->setRedirect('index.php?option=com_users&view=mail', $msg, $type);
-	}
+        $msg = $model->getError();
+        $this->setRedirect('index.php?option=com_users&view=mail', $msg, $type);
+    }
 
-	/**
-	 * Cancel the mail
-	 *
-	 * @return void
-	 *
-	 * @since 1.6
-	 */
-	public function cancel()
-	{
-		// Check for request forgeries.
-		$this->checkToken('request');
+    /**
+     * Cancel the mail
+     *
+     * @return void
+     *
+     * @since 1.6
+     */
+    public function cancel()
+    {
+        // Check for request forgeries.
+        $this->checkToken('request');
 
-		// Clear data from session.
-		\JFactory::getApplication()->setUserState('com_users.display.mail.data', null);
+        // Clear data from session.
+        \JFactory::getApplication()->setUserState('com_users.display.mail.data', null);
 
-		$this->setRedirect('index.php');
-	}
+        $this->setRedirect('index.php');
+    }
 }

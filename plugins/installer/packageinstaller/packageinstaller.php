@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Installer.packageInstaller
@@ -16,32 +17,32 @@ defined('_JEXEC') or die;
  */
 class PlgInstallerPackageInstaller extends JPlugin
 {
-	/**
-	 * Load the language file on instantiation.
-	 *
-	 * @var    boolean
-	 * @since  3.6.0
-	 */
-	protected $autoloadLanguage = true;
+    /**
+     * Load the language file on instantiation.
+     *
+     * @var    boolean
+     * @since  3.6.0
+     */
+    protected $autoloadLanguage = true;
 
-	/**
-	 * Textfield or Form of the Plugin.
-	 *
-	 * @return  array  Returns an array with the tab information
-	 *
-	 * @since   3.6.0
-	 */
-	public function onInstallerAddInstallationTab()
-	{
-		$tab            = array();
-		$tab['name']    = 'package';
-		$tab['label']   = JText::_('PLG_INSTALLER_PACKAGEINSTALLER_UPLOAD_PACKAGE_FILE');
+    /**
+     * Textfield or Form of the Plugin.
+     *
+     * @return  array  Returns an array with the tab information
+     *
+     * @since   3.6.0
+     */
+    public function onInstallerAddInstallationTab()
+    {
+        $tab            = array();
+        $tab['name']    = 'package';
+        $tab['label']   = JText::_('PLG_INSTALLER_PACKAGEINSTALLER_UPLOAD_PACKAGE_FILE');
 
-		// Render the input
-		ob_start();
-		include JPluginHelper::getLayoutPath('installer', 'packageinstaller');
-		$tab['content'] = ob_get_clean();
+        // Render the input
+        ob_start();
+        include JPluginHelper::getLayoutPath('installer', 'packageinstaller');
+        $tab['content'] = ob_get_clean();
 
-		return $tab;
-	}
+        return $tab;
+    }
 }

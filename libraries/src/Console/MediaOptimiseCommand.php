@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,15 +18,15 @@ defined('JPATH_PLATFORM') or die;
  */
 class MediaOptimiseCommand extends MediaOptimizeCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.18.0
-	 */
-	protected $name = 'media:optimise';
+    /**
+     * @var    string
+     * @since  3.18.0
+     */
+    protected $name = 'media:optimise';
 
-	/**
-	 * @var    boolean
-	 * @since  3.18.0
-	 */
-	protected $hidden = true;
+    /**
+     * @var    boolean
+     * @since  3.18.0
+     */
+    protected $hidden = true;
 }

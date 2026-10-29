@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  Database
@@ -16,12 +17,12 @@ defined('JPATH_PLATFORM') or die;
 */
 interface JDatabaseInterface
 {
-	/**
-	 * Test to see if the connector is available.
-	 *
-	 * @return  boolean  True on success, false otherwise.
-	 *
-	 * @since   1.7.0
-	 */
-	public static function isSupported();
+    /**
+     * Test to see if the connector is available.
+     *
+     * @return  boolean  True on success, false otherwise.
+     *
+     * @since   1.7.0
+     */
+    public static function isSupported();
 }

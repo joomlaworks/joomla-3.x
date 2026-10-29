@@ -9,59 +9,44 @@
 
 defined('_JEXEC') or die;
 
-if (!empty($feed) && is_string($feed))
-{
-	echo $feed;
-}
-else
-{
-	$lang      = JFactory::getLanguage();
-	$myrtl     = $params->get('rssrtl', 0);
-	$direction = ' ';
+if (!empty($feed) && is_string($feed)) {
+    echo $feed;
+} else {
+    $lang      = JFactory::getLanguage();
+    $myrtl     = $params->get('rssrtl', 0);
+    $direction = ' ';
 
-	if ($lang->isRtl() && $myrtl == 0)
-	{
-		$direction = ' redirect-rtl';
-	}
+    if ($lang->isRtl() && $myrtl == 0) {
+        $direction = ' redirect-rtl';
+    }
 
-	// Feed description
-	elseif ($lang->isRtl() && $myrtl == 1)
-	{
-		$direction = ' redirect-ltr';
-	}
+    // Feed description
+    elseif ($lang->isRtl() && $myrtl == 1) {
+        $direction = ' redirect-ltr';
+    } elseif ($lang->isRtl() && $myrtl == 2) {
+        $direction = ' redirect-rtl';
+    } elseif ($myrtl == 0) {
+        $direction = ' redirect-ltr';
+    } elseif ($myrtl == 1) {
+        $direction = ' redirect-ltr';
+    } elseif ($myrtl == 2) {
+        $direction = ' redirect-rtl';
+    }
 
-	elseif ($lang->isRtl() && $myrtl == 2)
-	{
-		$direction = ' redirect-rtl';
-	}
-
-	elseif ($myrtl == 0)
-	{
-		$direction = ' redirect-ltr';
-	}
-	elseif ($myrtl == 1)
-	{
-		$direction = ' redirect-ltr';
-	}
-	elseif ($myrtl == 2)
-	{
-		$direction = ' redirect-rtl';
-	}
-
-	if ($feed != false) :
-		?>
-		<div style="direction: <?php echo $rssrtl ? 'rtl' :'ltr'; ?>; text-align: <?php echo $rssrtl ? 'right' :'left'; ?> !important"  class="feed<?php echo $moduleclass_sfx; ?>">
+    if ($feed != false) :
+        ?>
+		<div style="direction: <?php echo $rssrtl ? 'rtl' : 'ltr'; ?>; text-align: <?php echo $rssrtl ? 'right' : 'left'; ?> !important"  class="feed<?php echo $moduleclass_sfx; ?>">
 		<?php
 
-		// Feed title
-		if (!is_null($feed->title) && $params->get('rsstitle', 1)) : ?>
+        // Feed title
+        if (!is_null($feed->title) && $params->get('rsstitle', 1)) : ?>
 			<h2 class="<?php echo $direction; ?>">
 				<a href="<?php echo htmlspecialchars((string) $rssurl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank">
 				<?php echo htmlspecialchars($feed->title, ENT_QUOTES, 'UTF-8'); ?></a>
 			</h2>
 		<?php endif;
-		// Feed date
-		if ($params->get('rssdate', 1)) : ?>
+        // Feed date
+        if ($params->get('rssdate', 1)) : ?>
 			<h3>
 			<?php echo JHtml::_('date', $feed->publishedDate, JText::_('DATE_FORMAT_LC3')); ?>
 			</h3>
@@ -80,7 +65,7 @@ else
 
 	<!-- Show items -->
 	<?php if (!empty($feed)) : ?>
-		<?php // postinstall override ?>
+		<?php // postinstall override?>
 		<?php if ($rssurl === 'https://www.joomla.org/announcements/release-news.feed?type=rss') : ?>
 			<?php $style = 'style="direction: ltr; text-align: left !important;"'; ?>
 			<ul class="newsfeed" <?php echo $style; ?>>
@@ -89,13 +74,13 @@ else
 		<?php endif; ?>
 		<?php for ($i = 0; $i < $params->get('rssitems', 3); $i++) :
 
-			if (!$feed->offsetExists($i)) :
-				break;
-			endif;
-			$uri  = $feed[$i]->uri || !$feed[$i]->isPermaLink ? trim((string) $feed[$i]->uri) : trim((string) $feed[$i]->guid);
-			$uri  = !$uri || stripos($uri, 'http') !== 0 ? $rssurl : $uri;
-			$text = $feed[$i]->content !== '' ? trim((string) $feed[$i]->content) : '';
-			?>
+		    if (!$feed->offsetExists($i)) :
+		        break;
+		    endif;
+		    $uri  = $feed[$i]->uri || !$feed[$i]->isPermaLink ? trim((string) $feed[$i]->uri) : trim((string) $feed[$i]->guid);
+		    $uri  = !$uri || stripos($uri, 'http') !== 0 ? $rssurl : $uri;
+		    $text = $feed[$i]->content !== '' ? trim((string) $feed[$i]->content) : '';
+		    ?>
 				<li>
 					<?php if (!empty($uri)) : ?>
 						<h5 class="feed-link">
@@ -112,11 +97,11 @@ else
 					<?php if ($params->get('rssitemdesc', 1) && $text !== '') : ?>
 						<div class="feed-item-description">
 						<?php
-							// Strip the images.
-							$text = JFilterOutput::stripImages($text);
-							$text = JHtml::_('string.truncate', $text, $params->get('word_count', 0), true, false);
-							echo str_replace('&apos;', "'", $text);
-						?>
+		                    // Strip the images.
+		                    $text = JFilterOutput::stripImages($text);
+					    $text = JHtml::_('string.truncate', $text, $params->get('word_count', 0), true, false);
+					    echo str_replace('&apos;', "'", $text);
+					    ?>
 						</div>
 					<?php endif; ?>
 				</li>

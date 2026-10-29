@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Editors.tinymce_latest
@@ -18,26 +19,25 @@ JFormHelper::loadFieldClass('list');
  */
 class JFormFieldTinymcelatestskins extends JFormFieldList
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $type = 'tinymcelatestskins';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $type = 'tinymcelatestskins';
 
-	/**
-	 * @return  array
-	 *
-	 * @since   3.17.0
-	 */
-	protected function getOptions()
-	{
-		$options = array();
+    /**
+     * @return  array
+     *
+     * @since   3.17.0
+     */
+    protected function getOptions()
+    {
+        $options = array();
 
-		foreach (glob(JPATH_ROOT . '/plugins/editors/tinymce_latest/skins/ui/*', GLOB_ONLYDIR) ?: array() as $folder)
-		{
-			$options[] = JHtml::_('select.option', basename($folder), basename($folder));
-		}
+        foreach (glob(JPATH_ROOT . '/plugins/editors/tinymce_latest/skins/ui/*', GLOB_ONLYDIR) ?: array() as $folder) {
+            $options[] = JHtml::_('select.option', basename($folder), basename($folder));
+        }
 
-		return array_merge(parent::getOptions(), $options);
-	}
+        return array_merge(parent::getOptions(), $options);
+    }
 }

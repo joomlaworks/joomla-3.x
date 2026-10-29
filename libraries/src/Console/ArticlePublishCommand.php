@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,27 +18,27 @@ defined('JPATH_PLATFORM') or die;
  */
 class ArticlePublishCommand extends AbstractArticleStateCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'article:publish';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'article:publish';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Publish articles';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Publish articles';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Publishes the given articles, as the toolbar button of Content: Articles does, after checking that the acting user (--as) may.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Publishes the given articles, as the toolbar button of Content: Articles does, after checking that the acting user (--as) may.';
 
-	/**
-	 * @var    integer
-	 * @since  3.17.0
-	 */
-	protected $state = 1;
+    /**
+     * @var    integer
+     * @since  3.17.0
+     */
+    protected $state = 1;
 }

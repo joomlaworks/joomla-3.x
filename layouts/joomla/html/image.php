@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  Layout
@@ -16,25 +17,21 @@ defined('_JEXEC') or die;
  *                             All attribute values are escaped before output (CVE-2026-48953).
  */
 
-if (isset($displayData['alt']) && $displayData['alt'] === false)
-{
-	unset($displayData['alt']);
+if (isset($displayData['alt']) && $displayData['alt'] === false) {
+    unset($displayData['alt']);
 }
 
-foreach ($displayData as $attribute => $value)
-{
-	// Drop invalid attribute names, they could otherwise break out of the tag
-	if (!preg_match('/^[a-zA-Z][a-zA-Z0-9_:.-]*$/', (string) $attribute))
-	{
-		unset($displayData[$attribute]);
+foreach ($displayData as $attribute => $value) {
+    // Drop invalid attribute names, they could otherwise break out of the tag
+    if (!preg_match('/^[a-zA-Z][a-zA-Z0-9_:.-]*$/', (string) $attribute)) {
+        unset($displayData[$attribute]);
 
-		continue;
-	}
+        continue;
+    }
 
-	if (!is_array($value))
-	{
-		$displayData[$attribute] = $this->escape($value);
-	}
+    if (!is_array($value)) {
+        $displayData[$attribute] = $this->escape($value);
+    }
 }
 
 echo '<img ' . JArrayHelper::toString($displayData) . '>';

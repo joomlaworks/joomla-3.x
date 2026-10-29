@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -20,164 +21,146 @@ use Joomla\CMS\Cache\CacheController;
  */
 class ViewController extends CacheController
 {
-	/**
-	 * Get the cached view data
-	 *
-	 * @param   object   $view        The view object to cache output for
-	 * @param   string   $method      The method name of the view method to cache output for
-	 * @param   mixed    $id          The cache data ID
-	 * @param   boolean  $wrkarounds  True to enable workarounds.
-	 *
-	 * @return  boolean  True if the cache is hit (false else)
-	 *
-	 * @since   1.7.0
-	 */
-	public function get($view, $method = 'display', $id = false, $wrkarounds = true)
-	{
-		// If an id is not given generate it from the request
-		if (!$id)
-		{
-			$id = $this->_makeId($view, $method);
-		}
+    /**
+     * Get the cached view data
+     *
+     * @param   object   $view        The view object to cache output for
+     * @param   string   $method      The method name of the view method to cache output for
+     * @param   mixed    $id          The cache data ID
+     * @param   boolean  $wrkarounds  True to enable workarounds.
+     *
+     * @return  boolean  True if the cache is hit (false else)
+     *
+     * @since   1.7.0
+     */
+    public function get($view, $method = 'display', $id = false, $wrkarounds = true)
+    {
+        // If an id is not given generate it from the request
+        if (!$id) {
+            $id = $this->_makeId($view, $method);
+        }
 
-		$data = $this->getStored($id);
+        $data = $this->getStored($id);
 
-		$locktest = (object) array('locked' => null, 'locklooped' => null);
+        $locktest = (object) array('locked' => null, 'locklooped' => null);
 
-		if ($data === false)
-		{
-			$locktest = $this->cache->lock($id);
+        if ($data === false) {
+            $locktest = $this->cache->lock($id);
 
-			/*
-			 * If the loop is completed and returned true it means the lock has been set.
-			 * If looped is true try to get the cached data again; it could exist now.
-			 */
-			if ($locktest->locked === true && $locktest->locklooped === true)
-			{
-				$data = $this->getStored($id);
-			}
+            /*
+             * If the loop is completed and returned true it means the lock has been set.
+             * If looped is true try to get the cached data again; it could exist now.
+             */
+            if ($locktest->locked === true && $locktest->locklooped === true) {
+                $data = $this->getStored($id);
+            }
 
-			// False means that locking is either turned off or maxtime has been exceeded. Execute the view.
-		}
+            // False means that locking is either turned off or maxtime has been exceeded. Execute the view.
+        }
 
-		if ($data !== false)
-		{
-			if ($locktest->locked === true)
-			{
-				$this->cache->unlock($id);
-			}
+        if ($data !== false) {
+            if ($locktest->locked === true) {
+                $this->cache->unlock($id);
+            }
 
-			$data = $data[0];
+            $data = $data[0];
 
-			if ($wrkarounds)
-			{
-				echo Cache::getWorkarounds($data);
+            if ($wrkarounds) {
+                echo Cache::getWorkarounds($data);
 
-				// What the view told the browser when it ran (see below), its time counted from when the view was stored
-				if (!empty($data['viewcachable']))
-				{
-					$app = \JFactory::getApplication();
-					$app->allowCache(true);
+                // What the view told the browser when it ran (see below), its time counted from when the view was stored
+                if (!empty($data['viewcachable'])) {
+                    $app = \JFactory::getApplication();
+                    $app->allowCache(true);
 
-					if (isset($data['stored']) && method_exists($app, 'getBrowserCacheTime'))
-					{
-						$app->setHeader('Expires', gmdate('D, d M Y H:i:s', (int) $data['stored'] + $app->getBrowserCacheTime()) . ' GMT', true);
-					}
-				}
-			}
-			else
-			{
-				// No workarounds, so all data is stored in one piece
-				echo $data;
-			}
+                    if (isset($data['stored']) && method_exists($app, 'getBrowserCacheTime')) {
+                        $app->setHeader('Expires', gmdate('D, d M Y H:i:s', (int) $data['stored'] + $app->getBrowserCacheTime()) . ' GMT', true);
+                    }
+                }
+            } else {
+                // No workarounds, so all data is stored in one piece
+                echo $data;
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		// No hit so we have to execute the view
-		if (!method_exists($view, $method))
-		{
-			return false;
-		}
+        // No hit so we have to execute the view
+        if (!method_exists($view, $method)) {
+            return false;
+        }
 
-		if ($locktest->locked === false && $locktest->locklooped === true)
-		{
-			// We can not store data because another process is in the middle of saving
-			$view->$method();
+        if ($locktest->locked === false && $locktest->locklooped === true) {
+            // We can not store data because another process is in the middle of saving
+            $view->$method();
 
-			return false;
-		}
+            return false;
+        }
 
-		$app            = \JFactory::getApplication();
-		$headersBefore  = $app->getHeaders();
-		$cachableBefore = $app->allowCache();
+        $app            = \JFactory::getApplication();
+        $headersBefore  = $app->getHeaders();
+        $cachableBefore = $app->allowCache();
 
-		// Capture and echo output
-		ob_start();
-		ob_implicit_flush(false);
-		$view->$method();
-		$data = ob_get_clean();
-		echo $data;
+        // Capture and echo output
+        ob_start();
+        ob_implicit_flush(false);
+        $view->$method();
+        $data = ob_get_clean();
+        echo $data;
 
-		/*
-		 * For a view we have a special case.  We need to cache not only the output from the view, but the state
-		 * of the document head after the view has been rendered.  This will allow us to properly cache any attached
-		 * scripts or stylesheets or links or any other modifications that the view has made to the document object
-		 */
-		if ($wrkarounds)
-		{
-			$data = Cache::setWorkarounds($data);
+        /*
+         * For a view we have a special case.  We need to cache not only the output from the view, but the state
+         * of the document head after the view has been rendered.  This will allow us to properly cache any attached
+         * scripts or stylesheets or links or any other modifications that the view has made to the document object
+         */
+        if ($wrkarounds) {
+            $data = Cache::setWorkarounds($data);
 
-			/*
-			 * The response headers the view set (e.g. Last-Modified, ETag) and whether it allowed browsers to cache the page:
-			 * a cache hit doesn't run the view, so without them its pages lost those headers and were sent as "no-cache".
-			 * Only what the view added, not the headers set before it by the rest of the request.
-			 */
-			$added = array();
+            /*
+             * The response headers the view set (e.g. Last-Modified, ETag) and whether it allowed browsers to cache the page:
+             * a cache hit doesn't run the view, so without them its pages lost those headers and were sent as "no-cache".
+             * Only what the view added, not the headers set before it by the rest of the request.
+             */
+            $added = array();
 
-			foreach ($app->getHeaders() as $header)
-			{
-				if (!in_array($header, $headersBefore, true))
-				{
-					$added[] = $header;
-				}
-			}
+            foreach ($app->getHeaders() as $header) {
+                if (!in_array($header, $headersBefore, true)) {
+                    $added[] = $header;
+                }
+            }
 
-			if ($added)
-			{
-				$data['headers'] = $added;
-			}
+            if ($added) {
+                $data['headers'] = $added;
+            }
 
-			if (!$cachableBefore && $app->allowCache())
-			{
-				$data['viewcachable'] = true;
-				$data['stored']       = time();
-			}
-		}
+            if (!$cachableBefore && $app->allowCache()) {
+                $data['viewcachable'] = true;
+                $data['stored']       = time();
+            }
+        }
 
-		// Store the cache data
-		$this->cache->store(serialize($data), $id);
+        // Store the cache data
+        $this->cache->store(serialize($data), $id);
 
-		if ($locktest->locked === true)
-		{
-			$this->cache->unlock($id);
-		}
+        if ($locktest->locked === true) {
+            $this->cache->unlock($id);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Generate a view cache ID.
-	 *
-	 * @param   object  $view    The view object to cache output for
-	 * @param   string  $method  The method name to cache for the view object
-	 *
-	 * @return  string  MD5 Hash
-	 *
-	 * @since   1.7.0
-	 */
-	protected function _makeId($view, $method)
-	{
-		return md5(serialize(array(Cache::makeId(), get_class($view), $method)));
-	}
+    /**
+     * Generate a view cache ID.
+     *
+     * @param   object  $view    The view object to cache output for
+     * @param   string  $method  The method name to cache for the view object
+     *
+     * @return  string  MD5 Hash
+     *
+     * @since   1.7.0
+     */
+    protected function _makeId($view, $method)
+    {
+        return md5(serialize(array(Cache::makeId(), get_class($view), $method)));
+    }
 }

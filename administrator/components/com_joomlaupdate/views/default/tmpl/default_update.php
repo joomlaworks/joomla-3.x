@@ -50,7 +50,7 @@ defined('_JEXEC') or die;
 			</td>
 		</tr>
 		<?php if (isset($this->updateInfo['object']->get('infourl')->_data)
-			&& isset($this->updateInfo['object']->get('infourl')->title)) : ?>
+            && isset($this->updateInfo['object']->get('infourl')->title)) : ?>
 			<tr>
 				<td>
 					<?php echo JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_INFOURL'); ?>
@@ -64,7 +64,7 @@ defined('_JEXEC') or die;
 				</td>
 			</tr>
 		<?php endif; ?>
-		<?php // Hide FTP settings when updating to Joomla 4 given that the supporting code has been dropped there ?>
+		<?php // Hide FTP settings when updating to Joomla 4 given that the supporting code has been dropped there?>
 		<?php if (version_compare($this->updateInfo['latest'], '4', '<')) : ?>
 			<tr>
 				<td>

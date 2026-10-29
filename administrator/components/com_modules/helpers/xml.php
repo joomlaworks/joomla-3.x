@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_modules
@@ -9,13 +10,10 @@
 
 defined('_JEXEC') or die;
 
-try
-{
-	JLog::add('ModulesHelperXML is deprecated. Do not use.', JLog::WARNING, 'deprecated');
-}
-catch (RuntimeException $exception)
-{
-	// Informational log only
+try {
+    JLog::add('ModulesHelperXML is deprecated. Do not use.', JLog::WARNING, 'deprecated');
+} catch (RuntimeException $exception) {
+    // Informational log only
 }
 
 /**
@@ -26,37 +24,32 @@ catch (RuntimeException $exception)
  */
 class ModulesHelperXML
 {
-	/**
-	 * Parse the module XML file
-	 *
-	 * @param   array  &$rows  XML rows
-	 *
-	 * @return  void
-	 *
-	 * @since       1.5
-	 *
-	 * @deprecated  3.2  Do not use.
-	 */
-	public function parseXMLModuleFile(&$rows)
-	{
-		foreach ($rows as $i => $row)
-		{
-			if ($row->module == '')
-			{
-				$rows[$i]->name    = 'custom';
-				$rows[$i]->module  = 'custom';
-				$rows[$i]->descrip = 'Custom created module, using Module Manager New function';
-			}
-			else
-			{
-				$data = JInstaller::parseXMLInstallFile($row->path . '/' . $row->file);
+    /**
+     * Parse the module XML file
+     *
+     * @param   array  &$rows  XML rows
+     *
+     * @return  void
+     *
+     * @since       1.5
+     *
+     * @deprecated  3.2  Do not use.
+     */
+    public function parseXMLModuleFile(&$rows)
+    {
+        foreach ($rows as $i => $row) {
+            if ($row->module == '') {
+                $rows[$i]->name    = 'custom';
+                $rows[$i]->module  = 'custom';
+                $rows[$i]->descrip = 'Custom created module, using Module Manager New function';
+            } else {
+                $data = JInstaller::parseXMLInstallFile($row->path . '/' . $row->file);
 
-				if ($data['type'] == 'module')
-				{
-					$rows[$i]->name    = $data['name'];
-					$rows[$i]->descrip = $data['description'];
-				}
-			}
-		}
-	}
+                if ($data['type'] == 'module') {
+                    $rows[$i]->name    = $data['name'];
+                    $rows[$i]->descrip = $data['description'];
+                }
+            }
+        }
+    }
 }

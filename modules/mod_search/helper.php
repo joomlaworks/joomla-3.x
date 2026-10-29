@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  mod_search
@@ -16,15 +17,15 @@ defined('_JEXEC') or die;
  */
 class ModSearchHelper
 {
-	/**
-	 * Display the search button as an image.
-	 *
-	 * @return  string  The HTML for the image.
-	 *
-	 * @since   1.5
-	 */
-	public static function getSearchImage()
-	{
-		return JHtml::_('image', 'searchButton.gif', '', null, true, true);
-	}
+    /**
+     * Display the search button as an image.
+     *
+     * @return  string  The HTML for the image.
+     *
+     * @since   1.5
+     */
+    public static function getSearchImage()
+    {
+        return JHtml::_('image', 'searchButton.gif', '', null, true, true);
+    }
 }

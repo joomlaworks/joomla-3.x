@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_cpanel
@@ -16,52 +17,49 @@ defined('_JEXEC') or die;
  */
 class CpanelViewCpanel extends JViewLegacy
 {
-	/**
-	 * Array of cpanel modules
-	 *
-	 * @var  array
-	 */
-	protected $modules = null;
+    /**
+     * Array of cpanel modules
+     *
+     * @var  array
+     */
+    protected $modules = null;
 
-	/**
-	 * Execute and display a template script.
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  mixed  A string if successful, otherwise an Error object.
-	 */
-	public function display($tpl = null)
-	{
-		// Set toolbar items for the page
-		JToolbarHelper::title(JText::_('COM_CPANEL'), 'home-2 cpanel');
-		JToolbarHelper::help('screen.cpanel');
+    /**
+     * Execute and display a template script.
+     *
+     * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+     *
+     * @return  mixed  A string if successful, otherwise an Error object.
+     */
+    public function display($tpl = null)
+    {
+        // Set toolbar items for the page
+        JToolbarHelper::title(JText::_('COM_CPANEL'), 'home-2 cpanel');
+        JToolbarHelper::help('screen.cpanel');
 
-		$input = JFactory::getApplication()->input;
+        $input = JFactory::getApplication()->input;
 
-		/*
-		 * Set the template - this will display cpanel.php
-		 * from the selected admin template.
-		 */
-		$input->set('tmpl', 'cpanel');
+        /*
+         * Set the template - this will display cpanel.php
+         * from the selected admin template.
+         */
+        $input->set('tmpl', 'cpanel');
 
-		// Display the cpanel modules
-		$this->modules = JModuleHelper::getModules('cpanel');
+        // Display the cpanel modules
+        $this->modules = JModuleHelper::getModules('cpanel');
 
-		try
-		{
-			$messages_model = FOFModel::getTmpInstance('Messages', 'PostinstallModel')->eid(700);
-			$messages       = $messages_model->getItemList();
-		}
-		catch (RuntimeException $e)
-		{
-			$messages = array();
+        try {
+            $messages_model = FOFModel::getTmpInstance('Messages', 'PostinstallModel')->eid(700);
+            $messages       = $messages_model->getItemList();
+        } catch (RuntimeException $e) {
+            $messages = array();
 
-			// Still render the error message from the Exception object
-			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
-		}
+            // Still render the error message from the Exception object
+            JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+        }
 
-		$this->postinstall_message_count = count($messages);
+        $this->postinstall_message_count = count($messages);
 
-		parent::display($tpl);
-	}
+        parent::display($tpl);
+    }
 }

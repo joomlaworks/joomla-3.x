@@ -20,7 +20,7 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_search&view=searches'); ?>" method="post" name="adminForm" id="adminForm">
-	<?php if (!empty( $this->sidebar)) : ?>
+	<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -68,7 +68,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 					<?php if ($this->state->get('show_results')) : ?>
 
 					<td class="center btns">
-						<a class="badge <?php if ($item->returns > 0) echo 'badge-success'; ?>" target="_blank" href="<?php echo JUri::root(); ?>index.php?option=com_search&amp;view=search&amp;searchword=<?php echo JFilterOutput::stringURLSafe($item->search_term); ?>">
+						<a class="badge <?php if ($item->returns > 0) {
+						    echo 'badge-success';
+						} ?>" target="_blank" href="<?php echo JUri::root(); ?>index.php?option=com_search&amp;view=search&amp;searchword=<?php echo JFilterOutput::stringURLSafe($item->search_term); ?>">
 							<?php echo $item->returns; ?><span class="icon-out-2" aria-hidden="true"></span><span class="element-invisible"><?php echo JText::_('JBROWSERTARGET_NEW'); ?></span></a>
 					</td>
 					<?php else : ?>

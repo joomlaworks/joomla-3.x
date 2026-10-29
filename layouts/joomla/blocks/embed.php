@@ -21,18 +21,17 @@ $r    = $displayData['renderer'];
 $data = $displayData['data'];
 
 $players = array(
-	'youtube'   => '#^https://www\.youtube\.com/embed/[A-Za-z0-9_-]+(\?[A-Za-z0-9_=&;%-]*)?$#',
-	'vimeo'     => '#^https://player\.vimeo\.com/video/[0-9]+(\?[A-Za-z0-9_=&;%-]*)?$#',
-	'twitter'   => '#^https://platform\.twitter\.com/embed/Tweet\.html\?id=[0-9]+$#',
-	'instagram' => '#^https://www\.instagram\.com/p/[A-Za-z0-9_-]+/embed/?$#',
-	'codepen'   => '#^https://codepen\.io/[A-Za-z0-9_-]+/embed/[A-Za-z0-9_-]+(\?[A-Za-z0-9_=&;%-]*)?$#',
+    'youtube'   => '#^https://www\.youtube\.com/embed/[A-Za-z0-9_-]+(\?[A-Za-z0-9_=&;%-]*)?$#',
+    'vimeo'     => '#^https://player\.vimeo\.com/video/[0-9]+(\?[A-Za-z0-9_=&;%-]*)?$#',
+    'twitter'   => '#^https://platform\.twitter\.com/embed/Tweet\.html\?id=[0-9]+$#',
+    'instagram' => '#^https://www\.instagram\.com/p/[A-Za-z0-9_-]+/embed/?$#',
+    'codepen'   => '#^https://codepen\.io/[A-Za-z0-9_-]+/embed/[A-Za-z0-9_-]+(\?[A-Za-z0-9_=&;%-]*)?$#',
 );
 $service = isset($data['service']) ? (string) $data['service'] : '';
 $embed   = isset($data['embed']) ? (string) $data['embed'] : '';
 
-if (!isset($players[$service]) || !preg_match($players[$service], $embed))
-{
-	return;
+if (!isset($players[$service]) || !preg_match($players[$service], $embed)) {
+    return;
 }
 
 $width   = !empty($data['width']) ? max(100, min(2000, (int) $data['width'])) : 580;

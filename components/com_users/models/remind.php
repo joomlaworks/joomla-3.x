@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_users
@@ -18,187 +19,176 @@ use Joomla\Utilities\ArrayHelper;
  */
 class UsersModelRemind extends JModelForm
 {
-	/**
-	 * Method to get the username remind request form.
-	 *
-	 * @param   array    $data      An optional array of data for the form to interrogate.
-	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
-	 *
-	 * @return  JFor     A JForm object on success, false on failure
-	 *
-	 * @since   1.6
-	 */
-	public function getForm($data = array(), $loadData = true)
-	{
-		// Get the form.
-		$form = $this->loadForm('com_users.remind', 'remind', array('control' => 'jform', 'load_data' => $loadData));
+    /**
+     * Method to get the username remind request form.
+     *
+     * @param   array    $data      An optional array of data for the form to interrogate.
+     * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
+     *
+     * @return  JFor     A JForm object on success, false on failure
+     *
+     * @since   1.6
+     */
+    public function getForm($data = array(), $loadData = true)
+    {
+        // Get the form.
+        $form = $this->loadForm('com_users.remind', 'remind', array('control' => 'jform', 'load_data' => $loadData));
 
-		if (empty($form))
-		{
-			return false;
-		}
+        if (empty($form)) {
+            return false;
+        }
 
-		return $form;
-	}
+        return $form;
+    }
 
-	/**
-	 * Override preprocessForm to load the user plugin group instead of content.
-	 *
-	 * @param   JForm   $form   A JForm object.
-	 * @param   mixed   $data   The data expected for the form.
-	 * @param   string  $group  The name of the plugin group to import (defaults to "content").
-	 *
-	 * @return  void
-	 *
-	 * @throws	Exception if there is an error in the form event.
-	 *
-	 * @since   1.6
-	 */
-	protected function preprocessForm(JForm $form, $data, $group = 'user')
-	{
-		parent::preprocessForm($form, $data, 'user');
-	}
+    /**
+     * Override preprocessForm to load the user plugin group instead of content.
+     *
+     * @param   JForm   $form   A JForm object.
+     * @param   mixed   $data   The data expected for the form.
+     * @param   string  $group  The name of the plugin group to import (defaults to "content").
+     *
+     * @return  void
+     *
+     * @throws	Exception if there is an error in the form event.
+     *
+     * @since   1.6
+     */
+    protected function preprocessForm(JForm $form, $data, $group = 'user')
+    {
+        parent::preprocessForm($form, $data, 'user');
+    }
 
-	/**
-	 * Method to auto-populate the model state.
-	 *
-	 * Note. Calling getState in this method will result in recursion.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 */
-	protected function populateState()
-	{
-		// Get the application object.
-		$app = JFactory::getApplication();
-		$params = $app->getParams('com_users');
+    /**
+     * Method to auto-populate the model state.
+     *
+     * Note. Calling getState in this method will result in recursion.
+     *
+     * @return  void
+     *
+     * @since   1.6
+     */
+    protected function populateState()
+    {
+        // Get the application object.
+        $app = JFactory::getApplication();
+        $params = $app->getParams('com_users');
 
-		// Load the parameters.
-		$this->setState('params', $params);
-	}
+        // Load the parameters.
+        $this->setState('params', $params);
+    }
 
-	/**
-	 * Send the remind username email
-	 *
-	 * @param   array  $data  Array with the data received from the form
-	 *
-	 * @return  boolean
-	 *
-	 * @since   1.6
-	 */
-	public function processRemindRequest($data)
-	{
-		// Get the form.
-		$form = $this->getForm();
-		$data['email'] = JStringPunycode::emailToPunycode($data['email']);
+    /**
+     * Send the remind username email
+     *
+     * @param   array  $data  Array with the data received from the form
+     *
+     * @return  boolean
+     *
+     * @since   1.6
+     */
+    public function processRemindRequest($data)
+    {
+        // Get the form.
+        $form = $this->getForm();
+        $data['email'] = JStringPunycode::emailToPunycode($data['email']);
 
-		// Check for an error.
-		if (empty($form))
-		{
-			return false;
-		}
+        // Check for an error.
+        if (empty($form)) {
+            return false;
+        }
 
-		// Validate the data.
-		$data = $this->validate($form, $data);
+        // Validate the data.
+        $data = $this->validate($form, $data);
 
-		// Check for an error.
-		if ($data instanceof Exception)
-		{
-			return false;
-		}
+        // Check for an error.
+        if ($data instanceof Exception) {
+            return false;
+        }
 
-		// Check the validation results.
-		if ($data === false)
-		{
-			// Get the validation messages from the form.
-			foreach ($form->getErrors() as $formError)
-			{
-				$this->setError($formError->getMessage());
-			}
+        // Check the validation results.
+        if ($data === false) {
+            // Get the validation messages from the form.
+            foreach ($form->getErrors() as $formError) {
+                $this->setError($formError->getMessage());
+            }
 
-			return false;
-		}
+            return false;
+        }
 
-		// Find the user id for the given email address.
-		$db = $this->getDbo();
-		$query = $db->getQuery(true)
-			->select('*')
-			->from($db->quoteName('#__users'))
-			->where('LOWER(' . $db->quoteName('email') . ') = LOWER(' . $db->quote($data['email']) . ')');
+        // Find the user id for the given email address.
+        $db = $this->getDbo();
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->quoteName('#__users'))
+            ->where('LOWER(' . $db->quoteName('email') . ') = LOWER(' . $db->quote($data['email']) . ')');
 
-		// Get the user id.
-		$db->setQuery($query);
+        // Get the user id.
+        $db->setQuery($query);
 
-		try
-		{
-			$user = $db->loadObject();
-		}
-		catch (RuntimeException $e)
-		{
-			$this->setError(JText::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
+        try {
+            $user = $db->loadObject();
+        } catch (RuntimeException $e) {
+            $this->setError(JText::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage()), 500);
 
-			return false;
-		}
+            return false;
+        }
 
-		// Check for a user.
-		if (empty($user))
-		{
-			$this->setError(JText::_('COM_USERS_USER_NOT_FOUND'));
+        // Check for a user.
+        if (empty($user)) {
+            $this->setError(JText::_('COM_USERS_USER_NOT_FOUND'));
 
-			return false;
-		}
+            return false;
+        }
 
-		// Make sure the user isn't blocked.
-		if ($user->block)
-		{
-			$this->setError(JText::_('COM_USERS_USER_BLOCKED'));
+        // Make sure the user isn't blocked.
+        if ($user->block) {
+            $this->setError(JText::_('COM_USERS_USER_BLOCKED'));
 
-			return false;
-		}
+            return false;
+        }
 
-		$config = JFactory::getConfig();
+        $config = JFactory::getConfig();
 
-		// Assemble the login link.
-		$link = 'index.php?option=com_users&view=login';
+        // Assemble the login link.
+        $link = 'index.php?option=com_users&view=login';
 
-		// Use the current request's scheme unless "Force SSL: Entire Site" is on (CVE-2026-48902) —
-		// previously this unconditionally downgraded to plain http even on HTTPS-only sites.
-		$mode = $config->get('force_ssl', 0) == 2 ? 1 : 0;
+        // Use the current request's scheme unless "Force SSL: Entire Site" is on (CVE-2026-48902) —
+        // previously this unconditionally downgraded to plain http even on HTTPS-only sites.
+        $mode = $config->get('force_ssl', 0) == 2 ? 1 : 0;
 
-		// Put together the email template data.
-		$data = ArrayHelper::fromObject($user);
-		$data['fromname'] = $config->get('fromname');
-		$data['mailfrom'] = $config->get('mailfrom');
-		$data['sitename'] = $config->get('sitename');
-		$data['link_text'] = JRoute::_($link, false, $mode);
-		$data['link_html'] = JRoute::_($link, true, $mode);
+        // Put together the email template data.
+        $data = ArrayHelper::fromObject($user);
+        $data['fromname'] = $config->get('fromname');
+        $data['mailfrom'] = $config->get('mailfrom');
+        $data['sitename'] = $config->get('sitename');
+        $data['link_text'] = JRoute::_($link, false, $mode);
+        $data['link_html'] = JRoute::_($link, true, $mode);
 
-		$subject = JText::sprintf(
-			'COM_USERS_EMAIL_USERNAME_REMINDER_SUBJECT',
-			$data['sitename']
-		);
-		$body = JText::sprintf(
-			'COM_USERS_EMAIL_USERNAME_REMINDER_BODY',
-			$data['sitename'],
-			$data['username'],
-			$data['link_text']
-		);
+        $subject = JText::sprintf(
+            'COM_USERS_EMAIL_USERNAME_REMINDER_SUBJECT',
+            $data['sitename']
+        );
+        $body = JText::sprintf(
+            'COM_USERS_EMAIL_USERNAME_REMINDER_BODY',
+            $data['sitename'],
+            $data['username'],
+            $data['link_text']
+        );
 
-		// Send the password reset request email.
-		$return = JFactory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $user->email, $subject, $body);
+        // Send the password reset request email.
+        $return = JFactory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $user->email, $subject, $body);
 
-		// Check for an error.
-		if ($return !== true)
-		{
-			$this->setError(JText::_('COM_USERS_MAIL_FAILED'), 500);
+        // Check for an error.
+        if ($return !== true) {
+            $this->setError(JText::_('COM_USERS_MAIL_FAILED'), 500);
 
-			return false;
-		}
+            return false;
+        }
 
-		$dispatcher = \JEventDispatcher::getInstance();
-		$dispatcher->trigger('onUserAfterRemind', array($user));
+        $dispatcher = \JEventDispatcher::getInstance();
+        $dispatcher->trigger('onUserAfterRemind', array($user));
 
-		return true;
-	}
+        return true;
+    }
 }

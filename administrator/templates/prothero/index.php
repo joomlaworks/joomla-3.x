@@ -42,9 +42,8 @@ JText::script('TPL_PROTHERO_REORDER_DONE');
 // Add Stylesheets
 JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
 
-if ($this->direction === 'rtl')
-{
-	JHtml::_('stylesheet', 'template-rtl.css', array('version' => 'auto', 'relative' => true));
+if ($this->direction === 'rtl') {
+    JHtml::_('stylesheet', 'template-rtl.css', array('version' => 'auto', 'relative' => true));
 }
 
 // Load specific language related CSS
@@ -70,15 +69,13 @@ $hidden = $app->input->get('hidemainmenu');
 $showSubmenu          = false;
 $this->submenumodules = JModuleHelper::getModules('submenu');
 
-foreach ($this->submenumodules as $submenumodule)
-{
-	$output = JModuleHelper::renderModule($submenumodule);
+foreach ($this->submenumodules as $submenumodule) {
+    $output = JModuleHelper::renderModule($submenumodule);
 
-	if ($output !== '')
-	{
-		$showSubmenu = true;
-		break;
-	}
+    if ($output !== '') {
+        $showSubmenu = true;
+        break;
+    }
 }
 
 // Template Parameters
@@ -91,16 +88,14 @@ $logo = $displayHeader && $this->params->get('logoFile') ? JUri::root() . htmlsp
 // Pass some values to javascript
 $offset = 34;
 
-if ($displayHeader)
-{
-	$offset = 44;
+if ($displayHeader) {
+    $offset = 44;
 }
 
 $stickyBar = 0;
 
-if ($stickyToolbar)
-{
-	$stickyBar = 'true';
+if ($stickyToolbar) {
+    $stickyBar = 'true';
 }
 ?>
 <!DOCTYPE html>
@@ -126,7 +121,7 @@ if ($stickyToolbar)
 			<!-- skip to content -->
 			<a class="element-invisible" href="#skiptarget"><?php echo JText::_('TPL_PROTHERO_SKIP_TO_MAIN_CONTENT'); ?></a>
 
-			<a class="admin-logo <?php echo ($hidden ? 'disabled' : ''); ?>" <?php echo ($hidden ? '' : 'href="' . $this->baseurl . '/index.php"'); ?>>
+			<a class="admin-logo <?php echo($hidden ? 'disabled' : ''); ?>" <?php echo($hidden ? '' : 'href="' . $this->baseurl . '/index.php"'); ?>>
 				<span class="icon-joomla"></span>
 				<div class="element-invisible">
 					<?php echo JText::_('TPL_PROTHERO_CONTROL_PANEL'); ?>
@@ -140,7 +135,7 @@ if ($stickyToolbar)
 				<jdoc:include type="modules" name="menu" style="none" />
 				<ul class="nav nav-user<?php echo ($this->direction == 'rtl') ? ' pull-left' : ' pull-right'; ?>">
 					<li class="dropdown">
-						<a class="<?php echo ($hidden ? ' disabled' : 'dropdown-toggle'); ?>" data-toggle="<?php echo ($hidden ? '' : 'dropdown'); ?>" <?php echo ($hidden ? '' : 'href="#"'); ?>><span class="icon-user"></span>
+						<a class="<?php echo($hidden ? ' disabled' : 'dropdown-toggle'); ?>" data-toggle="<?php echo($hidden ? '' : 'dropdown'); ?>" <?php echo($hidden ? '' : 'href="#"'); ?>><span class="icon-user"></span>
 							<span class="caret"></span>
 							<div class="element-invisible">
 								<?php echo JText::_('TPL_PROTHERO_USERMENU'); ?>

@@ -11,92 +11,73 @@ defined('_JEXEC') or die;
 ?>
 
 <?php
-if (!empty($feed) && is_string($feed))
-{
-	echo $feed;
-}
-else
-{
-	$lang      = JFactory::getLanguage();
-	$myrtl     = $params->get('rssrtl', 0);
-	$direction = ' ';
+if (!empty($feed) && is_string($feed)) {
+    echo $feed;
+} else {
+    $lang      = JFactory::getLanguage();
+    $myrtl     = $params->get('rssrtl', 0);
+    $direction = ' ';
 
-	$isRtl = $lang->isRtl();
+    $isRtl = $lang->isRtl();
 
-	if ($isRtl && $myrtl == 0)
-	{
-		$direction = ' redirect-rtl';
-	}
+    if ($isRtl && $myrtl == 0) {
+        $direction = ' redirect-rtl';
+    }
 
-	// Feed description
-	elseif ($isRtl && $myrtl == 1)
-	{
-		$direction = ' redirect-ltr';
-	}
+    // Feed description
+    elseif ($isRtl && $myrtl == 1) {
+        $direction = ' redirect-ltr';
+    } elseif ($isRtl && $myrtl == 2) {
+        $direction = ' redirect-rtl';
+    } elseif ($myrtl == 0) {
+        $direction = ' redirect-ltr';
+    } elseif ($myrtl == 1) {
+        $direction = ' redirect-ltr';
+    } elseif ($myrtl == 2) {
+        $direction = ' redirect-rtl';
+    }
 
-	elseif ($isRtl && $myrtl == 2)
-	{
-		$direction = ' redirect-rtl';
-	}
-
-	elseif ($myrtl == 0)
-	{
-		$direction = ' redirect-ltr';
-	}
-	elseif ($myrtl == 1)
-	{
-		$direction = ' redirect-ltr';
-	}
-	elseif ($myrtl == 2)
-	{
-		$direction = ' redirect-rtl';
-	}
-
-	if ($feed !== false)
-	{
-		?>
-		<div style="direction: <?php echo $rssrtl ? 'rtl' :'ltr'; ?>; text-align: <?php echo $rssrtl ? 'right' :'left'; ?> !important" class="feed<?php echo $moduleclass_sfx; ?>">
+    if ($feed !== false) {
+        ?>
+		<div style="direction: <?php echo $rssrtl ? 'rtl' : 'ltr'; ?>; text-align: <?php echo $rssrtl ? 'right' : 'left'; ?> !important" class="feed<?php echo $moduleclass_sfx; ?>">
 		<?php
-		// Feed description
-		if ($feed->title !== null && $params->get('rsstitle', 1))
-		{
-			?>
+        // Feed description
+        if ($feed->title !== null && $params->get('rsstitle', 1)) {
+            ?>
 					<h2 class="<?php echo $direction; ?>">
 						<a href="<?php echo htmlspecialchars((string) $rssurl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank">
 						<?php echo htmlspecialchars($feed->title, ENT_QUOTES, 'UTF-8'); ?></a>
 					</h2>
 			<?php
-		}
-		// Feed date
-		if ($params->get('rssdate', 1)) : ?>
+        }
+        // Feed date
+        if ($params->get('rssdate', 1)) : ?>
 			<h3>
 			<?php echo JHtml::_('date', $feed->publishedDate, JText::_('DATE_FORMAT_LC3')); ?>
 			</h3>
 		<?php endif;
-		// Feed description
-		if ($params->get('rssdesc', 1))
-		{
-		?>
+        // Feed description
+        if ($params->get('rssdesc', 1)) {
+            ?>
 			<?php echo $feed->description; ?>
 			<?php
-		}
-		// Feed image
-		if ($feed->image && $params->get('rssimage', 1)) :
-		?>
+        }
+        // Feed image
+        if ($feed->image && $params->get('rssimage', 1)) :
+            ?>
 			<img src="<?php echo htmlspecialchars((string) $feed->image->uri, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) $feed->image->title, ENT_QUOTES, 'UTF-8'); ?>"/>
 		<?php endif; ?>
 
 
 	<!-- Show items -->
-	<?php if (!empty($feed))
-	{ ?>
+	<?php if (!empty($feed)) { ?>
 		<ul class="newsfeed<?php echo $params->get('moduleclass_sfx'); ?>">
 		<?php for ($i = 0, $max = min(count($feed), $params->get('rssitems', 3)); $i < $max; $i++) { ?>
 			<?php
-				$uri  = $feed[$i]->uri || !$feed[$i]->isPermaLink ? trim((string) $feed[$i]->uri) : trim((string) $feed[$i]->guid);
-				$uri  = !$uri || stripos($uri, 'http') !== 0 ? $rssurl : $uri;
-				$text = $feed[$i]->content !== '' ? trim((string) $feed[$i]->content) : '';
-			?>
+                    $uri  = $feed[$i]->uri || !$feed[$i]->isPermaLink ? trim((string) $feed[$i]->uri) : trim((string) $feed[$i]->guid);
+		    $uri  = !$uri || stripos($uri, 'http') !== 0 ? $rssurl : $uri;
+		    $text = $feed[$i]->content !== '' ? trim((string) $feed[$i]->content) : '';
+		    ?>
 				<li>
 					<?php if (!empty($uri)) : ?>
 						<span class="feed-link">
@@ -113,11 +94,11 @@ else
 					<?php if ($params->get('rssitemdesc', 1) && $text !== '') : ?>
 						<div class="feed-item-description">
 						<?php
-							// Strip the images.
-							$text = JFilterOutput::stripImages($text);
-							$text = JHtml::_('string.truncate', $text, $params->get('word_count', 0));
-							echo str_replace('&apos;', "'", $text);
-						?>
+		                    // Strip the images.
+		                    $text = JFilterOutput::stripImages($text);
+					    $text = JHtml::_('string.truncate', $text, $params->get('word_count', 0));
+					    echo str_replace('&apos;', "'", $text);
+					    ?>
 						</div>
 					<?php endif; ?>
 				</li>
@@ -126,4 +107,4 @@ else
 	<?php } ?>
 	</div>
 	<?php }
-}
+    }

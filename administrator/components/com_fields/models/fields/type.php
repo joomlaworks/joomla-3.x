@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_fields
@@ -17,58 +18,57 @@ JFormHelper::loadFieldClass('list');
  */
 class JFormFieldType extends JFormFieldList
 {
-	public $type = 'Type';
+    public $type = 'Type';
 
-	/**
-	 * Method to attach a JForm object to the field.
-	 *
-	 * @param   SimpleXMLElement  $element  The SimpleXMLElement object representing the `<field>` tag for the form field object.
-	 * @param   mixed             $value    The form field value to validate.
-	 * @param   string            $group    The field name group control value. This acts as an array container for the field.
-	 *                                      For example if the field has name="foo" and the group value is set to "bar" then the
-	 *                                      full field name would end up being "bar[foo]".
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @since   3.7.0
-	 */
-	public function setup(SimpleXMLElement $element, $value, $group = null)
-	{
-		$return = parent::setup($element, $value, $group);
+    /**
+     * Method to attach a JForm object to the field.
+     *
+     * @param   SimpleXMLElement  $element  The SimpleXMLElement object representing the `<field>` tag for the form field object.
+     * @param   mixed             $value    The form field value to validate.
+     * @param   string            $group    The field name group control value. This acts as an array container for the field.
+     *                                      For example if the field has name="foo" and the group value is set to "bar" then the
+     *                                      full field name would end up being "bar[foo]".
+     *
+     * @return  boolean  True on success.
+     *
+     * @since   3.7.0
+     */
+    public function setup(SimpleXMLElement $element, $value, $group = null)
+    {
+        $return = parent::setup($element, $value, $group);
 
-		$this->onchange = 'typeHasChanged(this);';
+        $this->onchange = 'typeHasChanged(this);';
 
-		return $return;
-	}
+        return $return;
+    }
 
-	/**
-	 * Method to get the field options.
-	 *
-	 * @return  array  The field option objects.
-	 *
-	 * @since   3.7.0
-	 */
-	protected function getOptions()
-	{
-		$options = parent::getOptions();
+    /**
+     * Method to get the field options.
+     *
+     * @return  array  The field option objects.
+     *
+     * @since   3.7.0
+     */
+    protected function getOptions()
+    {
+        $options = parent::getOptions();
 
-		$fieldTypes = FieldsHelper::getFieldTypes();
+        $fieldTypes = FieldsHelper::getFieldTypes();
 
-		foreach ($fieldTypes as $fieldType)
-		{
-			$options[] = JHtml::_('select.option', $fieldType['type'], $fieldType['label']);
-		}
+        foreach ($fieldTypes as $fieldType) {
+            $options[] = JHtml::_('select.option', $fieldType['type'], $fieldType['label']);
+        }
 
-		// Sorting the fields based on the text which is displayed
-		usort(
-			$options,
-			function ($a, $b)
-			{
-				return strcmp((string) $a->text, (string) $b->text);
-			}
-		);
+        // Sorting the fields based on the text which is displayed
+        usort(
+            $options,
+            function ($a, $b) {
+                return strcmp((string) $a->text, (string) $b->text);
+            }
+        );
 
-		JFactory::getDocument()->addScriptDeclaration("
+        JFactory::getDocument()->addScriptDeclaration(
+            "
 			jQuery( document ).ready(function() {
 				Joomla.loadingLayer('load');
 			});
@@ -79,8 +79,8 @@ class JFormFieldType extends JFormFieldList
 				element.form.submit();
 			}
 		"
-		);
+        );
 
-		return $options;
-	}
+        return $options;
+    }
 }

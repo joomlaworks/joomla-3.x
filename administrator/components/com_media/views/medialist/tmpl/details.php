@@ -18,7 +18,7 @@ $doc = JFactory::getDocument();
 
 // Need to override this core function because we use a different form id
 $doc->addScriptDeclaration(
-	"
+    "
 		Joomla.isChecked = function( isitchecked, form ) {
 			if ( typeof form  === 'undefined' ) {
 				form = document.getElementById( 'mediamanager-form' );
@@ -48,7 +48,7 @@ $doc->addScriptDeclaration(
 );
 
 $doc->addScriptDeclaration(
-	"
+    "
 		jQuery(document).ready(function($){
 			window.parent.document.updateUploader();
 			$('.img-preview, .preview').each(function(index, value) {
@@ -87,9 +87,9 @@ $doc->addScriptDeclaration(
 		<p>
 			<span class="icon-folder"></span>
 			<?php
-				echo $params->get($path, 'images'),
-					($this->escape($this->state->folder) != '') ? '/' . $this->escape($this->state->folder) : '';
-			?>
+                echo $params->get($path, 'images'),
+($this->escape($this->state->folder) != '') ? '/' . $this->escape($this->state->folder) : '';
+?>
 		</p>
 	</div>
 
@@ -116,13 +116,13 @@ $doc->addScriptDeclaration(
 		</thead>
 		<tbody>
 			<?php
-				echo $this->loadTemplate('up'),
-					$this->loadTemplate('folders'),
-					$this->loadTemplate('docs'),
-					$this->loadTemplate('videos'),
-					$this->loadTemplate('audios'),
-					$this->loadTemplate('imgs');
-			?>
+    echo $this->loadTemplate('up'),
+$this->loadTemplate('folders'),
+$this->loadTemplate('docs'),
+$this->loadTemplate('videos'),
+$this->loadTemplate('audios'),
+$this->loadTemplate('imgs');
+?>
 		</tbody>
 		</table>
 	</div>

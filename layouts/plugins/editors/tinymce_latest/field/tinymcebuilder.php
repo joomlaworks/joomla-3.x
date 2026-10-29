@@ -32,23 +32,21 @@ JHtml::_('stylesheet', $media . '/css/tinymce-builder.min.css', array('version' 
 JHtml::_('script', $media . '/js/tinymce-builder.min.js', array('version' => 'auto'));
 JHtml::_('script', $media . '/icons/default/icons.min.js', array('version' => 'auto'));
 
-if ($languageFile)
-{
-	JHtml::_('script', $languageFile, array('version' => 'auto'));
+if ($languageFile) {
+    JHtml::_('script', $languageFile, array('version' => 'auto'));
 }
 
 JFactory::getDocument()->addScriptOptions('plg_editors_tinymce_latest_builder', array(
-	'menus'         => $menus,
-	'buttons'       => $buttons,
-	'toolbarPreset' => $toolbarPreset,
-	'formControl'   => $name . '[toolbars]',
+    'menus'         => $menus,
+    'buttons'       => $buttons,
+    'toolbarPreset' => $toolbarPreset,
+    'formControl'   => $name . '[toolbars]',
 ));
 
 JText::script('PLG_TINYMCE_LATEST_SET_REMOVE_ITEM');
 
-$escape = function ($value)
-{
-	return htmlspecialchars(json_encode($value), ENT_QUOTES, 'UTF-8');
+$escape = function ($value) {
+    return htmlspecialchars(json_encode($value), ENT_QUOTES, 'UTF-8');
 };
 
 $presetClasses = array('simple' => 'btn-success', 'medium' => 'btn-info', 'advanced' => 'btn-warning');
@@ -72,13 +70,12 @@ $presetClasses = array('simple' => 'btn-success', 'medium' => 'btn-info', 'advan
 	</div>
 
 	<?php foreach ($setsNames as $num => $title) :
-		if (empty($value['toolbars'][$num]['menu']) && empty($value['toolbars'][$num]['toolbar1']) && empty($value['toolbars'][$num]['toolbar2']))
-		{
-			$value['toolbars'][$num] = $toolbarPreset[$num === 0 ? 'advanced' : ($num === 1 ? 'medium' : 'simple')];
-		}
+	    if (empty($value['toolbars'][$num]['menu']) && empty($value['toolbars'][$num]['toolbar1']) && empty($value['toolbars'][$num]['toolbar2'])) {
+	        $value['toolbars'][$num] = $toolbarPreset[$num === 0 ? 'advanced' : ($num === 1 ? 'medium' : 'simple')];
+	    }
 
-		$bars = $value['toolbars'][$num];
-		?>
+	    $bars = $value['toolbars'][$num];
+	    ?>
 	<div class="tmb-set" role="tabpanel" id="tmb-set-<?php echo $num; ?>" aria-labelledby="tmb-tab-<?php echo $num; ?>"<?php echo $num === 0 ? '' : ' hidden'; ?>>
 		<div class="tmb-actions">
 			<?php foreach (array_keys($toolbarPreset) as $preset) : ?>

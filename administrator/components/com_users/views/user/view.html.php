@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_users
@@ -16,99 +17,92 @@ defined('_JEXEC') or die;
  */
 class UsersViewUser extends JViewLegacy
 {
-	protected $form;
+    protected $form;
 
-	protected $item;
+    protected $item;
 
-	protected $grouplist;
+    protected $grouplist;
 
-	protected $groups;
+    protected $groups;
 
-	protected $state;
+    protected $state;
 
-	/**
-	 * Display the view
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.5
-	 */
-	public function display($tpl = null)
-	{
-		$this->form      = $this->get('Form');
-		$this->item      = $this->get('Item');
-		$this->state     = $this->get('State');
-		$this->tfaform   = $this->get('Twofactorform');
-		$this->otpConfig = $this->get('otpConfig');
+    /**
+     * Display the view
+     *
+     * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+     *
+     * @return  void
+     *
+     * @since   1.5
+     */
+    public function display($tpl = null)
+    {
+        $this->form      = $this->get('Form');
+        $this->item      = $this->get('Item');
+        $this->state     = $this->get('State');
+        $this->tfaform   = $this->get('Twofactorform');
+        $this->otpConfig = $this->get('otpConfig');
 
-		// Check for errors.
-		if (count($errors = $this->get('Errors')))
-		{
-			throw new Exception(implode("\n", $errors), 500);
-		}
+        // Check for errors.
+        if (count($errors = $this->get('Errors'))) {
+            throw new Exception(implode("\n", $errors), 500);
+        }
 
-		// Prevent user from modifying own group(s)
-		$user = JFactory::getUser();
+        // Prevent user from modifying own group(s)
+        $user = JFactory::getUser();
 
-		if ((int) $user->id != (int) $this->item->id || $user->authorise('core.admin'))
-		{
-			$this->grouplist = $this->get('Groups');
-			$this->groups    = $this->get('AssignedGroups');
-		}
+        if ((int) $user->id != (int) $this->item->id || $user->authorise('core.admin')) {
+            $this->grouplist = $this->get('Groups');
+            $this->groups    = $this->get('AssignedGroups');
+        }
 
-		$this->form->setValue('password', null);
-		$this->form->setValue('password2', null);
+        $this->form->setValue('password', null);
+        $this->form->setValue('password2', null);
 
-		parent::display($tpl);
-		$this->addToolbar();
-	}
+        parent::display($tpl);
+        $this->addToolbar();
+    }
 
-	/**
-	 * Add the page title and toolbar.
-	 *
-	 * @return void
-	 *
-	 * @since   1.6
-	 */
-	protected function addToolbar()
-	{
-		JFactory::getApplication()->input->set('hidemainmenu', true);
+    /**
+     * Add the page title and toolbar.
+     *
+     * @return void
+     *
+     * @since   1.6
+     */
+    protected function addToolbar()
+    {
+        JFactory::getApplication()->input->set('hidemainmenu', true);
 
-		$user      = JFactory::getUser();
-		$canDo     = JHelperContent::getActions('com_users');
-		$isNew     = ($this->item->id == 0);
-		$isProfile = $this->item->id == $user->id;
+        $user      = JFactory::getUser();
+        $canDo     = JHelperContent::getActions('com_users');
+        $isNew     = ($this->item->id == 0);
+        $isProfile = $this->item->id == $user->id;
 
-		JToolbarHelper::title(
-			JText::_(
-				$isNew ? 'COM_USERS_VIEW_NEW_USER_TITLE' : ($isProfile ? 'COM_USERS_VIEW_EDIT_PROFILE_TITLE' : 'COM_USERS_VIEW_EDIT_USER_TITLE')
-			),
-			'user ' . ($isNew ? 'user-add' : ($isProfile ? 'user-profile' : 'user-edit'))
-		);
+        JToolbarHelper::title(
+            JText::_(
+                $isNew ? 'COM_USERS_VIEW_NEW_USER_TITLE' : ($isProfile ? 'COM_USERS_VIEW_EDIT_PROFILE_TITLE' : 'COM_USERS_VIEW_EDIT_USER_TITLE')
+            ),
+            'user ' . ($isNew ? 'user-add' : ($isProfile ? 'user-profile' : 'user-edit'))
+        );
 
-		if ($canDo->get('core.edit') || $canDo->get('core.create'))
-		{
-			JToolbarHelper::apply('user.apply');
-			JToolbarHelper::save('user.save');
-		}
+        if ($canDo->get('core.edit') || $canDo->get('core.create')) {
+            JToolbarHelper::apply('user.apply');
+            JToolbarHelper::save('user.save');
+        }
 
-		if ($canDo->get('core.create') && $canDo->get('core.manage'))
-		{
-			JToolbarHelper::save2new('user.save2new');
-		}
+        if ($canDo->get('core.create') && $canDo->get('core.manage')) {
+            JToolbarHelper::save2new('user.save2new');
+        }
 
-		if (empty($this->item->id))
-		{
-			JToolbarHelper::cancel('user.cancel');
-		}
-		else
-		{
-			JToolbarHelper::cancel('user.cancel', 'JTOOLBAR_CLOSE');
-		}
+        if (empty($this->item->id)) {
+            JToolbarHelper::cancel('user.cancel');
+        } else {
+            JToolbarHelper::cancel('user.cancel', 'JTOOLBAR_CLOSE');
+        }
 
-		JToolbarHelper::divider();
-		JToolbarHelper::help('JHELP_USERS_USER_MANAGER_EDIT');
-	}
+        JToolbarHelper::divider();
+        JToolbarHelper::help('JHELP_USERS_USER_MANAGER_EDIT');
+    }
 }

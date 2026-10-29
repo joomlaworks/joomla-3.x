@@ -46,14 +46,14 @@ extract($displayData);
 
 // Initialize some field attributes.
 $attributes = array(
-	$class ? 'class="' . $class . '"' : '',
-	$disabled ? 'disabled' : '',
-	$readonly ? 'readonly' : '',
-	!empty($onchange) ? 'onchange="' . $onchange . '"' : '',
-	!empty($max) ? 'max="' . $max . '"' : '',
-	!empty($step) ? 'step="' . $step . '"' : '',
-	!empty($min) ? 'min="' . $min . '"' : '',
-	$autofocus ? 'autofocus' : '',
+    $class ? 'class="' . $class . '"' : '',
+    $disabled ? 'disabled' : '',
+    $readonly ? 'readonly' : '',
+    !empty($onchange) ? 'onchange="' . $onchange . '"' : '',
+    !empty($max) ? 'max="' . $max . '"' : '',
+    !empty($step) ? 'step="' . $step . '"' : '',
+    !empty($min) ? 'min="' . $min . '"' : '',
+    $autofocus ? 'autofocus' : '',
 );
 
 $value = is_numeric($value) ? (float) $value : $min;

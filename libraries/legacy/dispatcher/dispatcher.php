@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Legacy
  * @subpackage  Dispatcher
@@ -17,14 +18,14 @@ defined('JPATH_PLATFORM') or die;
  */
 class JDispatcher extends JEventDispatcher
 {
-	/**
-	 * Constructor.
-	 *
-	 * @since   1.5
-	 */
-	public function __construct()
-	{
-		JLog::add('JDispatcher is deprecated. Use JEventDispatcher instead.', JLog::WARNING, 'deprecated');
-		parent::__construct();
-	}
+    /**
+     * Constructor.
+     *
+     * @since   1.5
+     */
+    public function __construct()
+    {
+        JLog::add('JDispatcher is deprecated. Use JEventDispatcher instead.', JLog::WARNING, 'deprecated');
+        parent::__construct();
+    }
 }

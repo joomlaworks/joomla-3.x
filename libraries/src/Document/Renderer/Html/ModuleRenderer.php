@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -23,84 +24,78 @@ use Joomla\Registry\Registry;
  */
 class ModuleRenderer extends DocumentRenderer
 {
-	/**
-	 * Renders a module script and returns the results as a string
-	 *
-	 * @param   string  $module   The name of the module to render
-	 * @param   array   $attribs  Associative array of values
-	 * @param   string  $content  If present, module information from the buffer will be used
-	 *
-	 * @return  string  The output of the script
-	 *
-	 * @since   3.5
-	 */
-	public function render($module, $attribs = array(), $content = null)
-	{
-		if (!is_object($module))
-		{
-			$title = isset($attribs['title']) ? $attribs['title'] : null;
+    /**
+     * Renders a module script and returns the results as a string
+     *
+     * @param   string  $module   The name of the module to render
+     * @param   array   $attribs  Associative array of values
+     * @param   string  $content  If present, module information from the buffer will be used
+     *
+     * @return  string  The output of the script
+     *
+     * @since   3.5
+     */
+    public function render($module, $attribs = array(), $content = null)
+    {
+        if (!is_object($module)) {
+            $title = isset($attribs['title']) ? $attribs['title'] : null;
 
-			$module = ModuleHelper::getModule($module, $title);
+            $module = ModuleHelper::getModule($module, $title);
 
-			if (!is_object($module))
-			{
-				if (is_null($content))
-				{
-					return '';
-				}
+            if (!is_object($module)) {
+                if (is_null($content)) {
+                    return '';
+                }
 
-				/**
-				 * If module isn't found in the database but data has been pushed in the buffer
-				 * we want to render it
-				 */
-				$tmp = $module;
-				$module = new \stdClass;
-				$module->params = null;
-				$module->module = $tmp;
-				$module->id = 0;
-				$module->user = 0;
-			}
-		}
+                /**
+                 * If module isn't found in the database but data has been pushed in the buffer
+                 * we want to render it
+                 */
+                $tmp = $module;
+                $module = new \stdClass();
+                $module->params = null;
+                $module->module = $tmp;
+                $module->id = 0;
+                $module->user = 0;
+            }
+        }
 
-		// Set the module content
-		if (!is_null($content))
-		{
-			$module->content = $content;
-		}
+        // Set the module content
+        if (!is_null($content)) {
+            $module->content = $content;
+        }
 
-		// Get module parameters
-		$params = new Registry($module->params);
+        // Get module parameters
+        $params = new Registry($module->params);
 
-		// Use parameters from template
-		if (isset($attribs['params']))
-		{
-			$template_params = new Registry(html_entity_decode($attribs['params'], ENT_COMPAT, 'UTF-8'));
-			$params->merge($template_params);
-			$module = clone $module;
-			$module->params = (string) $params;
-		}
+        // Use parameters from template
+        if (isset($attribs['params'])) {
+            $template_params = new Registry(html_entity_decode($attribs['params'], ENT_COMPAT, 'UTF-8'));
+            $params->merge($template_params);
+            $module = clone $module;
+            $module->params = (string) $params;
+        }
 
-		// Default for compatibility purposes. Set cachemode parameter or use JModuleHelper::moduleCache from within the module instead
-		$cachemode = $params->get('cachemode', 'oldstatic');
+        // Default for compatibility purposes. Set cachemode parameter or use JModuleHelper::moduleCache from within the module instead
+        $cachemode = $params->get('cachemode', 'oldstatic');
 
-		// Any explicit caching mode (1 = Use Global, 2 = Use custom cache time, ...) should enable
-		// caching here - only a literal 0/'0' (No caching) opts out. Kept as a strict equality check,
-		// matching the same idiom ModuleHelper::moduleCache() uses for its own $cacheDisabled flag.
-		$cacheState = $params->get('cache', 0);
-		$cacheEnabled = !($cacheState === 0 || $cacheState === '0');
+        // Any explicit caching mode (1 = Use Global, 2 = Use custom cache time, ...) should enable
+        // caching here - only a literal 0/'0' (No caching) opts out. Kept as a strict equality check,
+        // matching the same idiom ModuleHelper::moduleCache() uses for its own $cacheDisabled flag.
+        $cacheState = $params->get('cache', 0);
+        $cacheEnabled = !($cacheState === 0 || $cacheState === '0');
 
-		if ($cacheEnabled && \JFactory::getConfig()->get('caching') >= 1 && $cachemode != 'id' && $cachemode != 'safeuri')
-		{
-			// Default to itemid creating method and workarounds on
-			$cacheparams = new \stdClass;
-			$cacheparams->cachemode = $cachemode;
-			$cacheparams->class = 'JModuleHelper';
-			$cacheparams->method = 'renderModule';
-			$cacheparams->methodparams = array($module, $attribs);
+        if ($cacheEnabled && \JFactory::getConfig()->get('caching') >= 1 && $cachemode != 'id' && $cachemode != 'safeuri') {
+            // Default to itemid creating method and workarounds on
+            $cacheparams = new \stdClass();
+            $cacheparams->cachemode = $cachemode;
+            $cacheparams->class = 'JModuleHelper';
+            $cacheparams->method = 'renderModule';
+            $cacheparams->methodparams = array($module, $attribs);
 
-			return ModuleHelper::ModuleCache($module, $params, $cacheparams);
-		}
+            return ModuleHelper::ModuleCache($module, $params, $cacheparams);
+        }
 
-		return ModuleHelper::renderModule($module, $attribs);
-	}
+        return ModuleHelper::renderModule($module, $attribs);
+    }
 }

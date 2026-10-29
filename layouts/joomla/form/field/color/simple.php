@@ -52,16 +52,16 @@ JHtml::_('behavior.styles');
 $locked = $disabled || $readonly;
 ?>
 <div class="<?php echo $this->escape(trim('cms-color-simple ' . $class)); ?>" id="<?php echo $id; ?>" role="radiogroup"<?php
-	echo $autofocus ? ' autofocus' : ''; ?>>
+    echo $autofocus ? ' autofocus' : ''; ?>>
 	<?php foreach ($colors as $i => $c) : ?>
 		<?php $c = trim($c); ?>
 		<?php $fill = preg_match('/^(#[0-9a-f]{3}|#[0-9a-f]{6}|rgba?\([\d\s.,]+\))$/i', $c) ? $c : ''; ?>
 		<label class="cms-color-option" title="<?php echo $this->escape($c); ?>">
 			<input type="radio" name="<?php echo $name; ?>" id="<?php echo $id . '_' . $i; ?>" value="<?php echo $this->escape($c); ?>"<?php
-				echo $c == $color ? ' checked' : '',
-					$locked && $c != $color ? ' disabled' : '',
-					$required && $i === 0 ? ' required' : '',
-					$onchange ? ' onchange="' . $this->escape($onchange) . '"' : ''; ?> />
+                echo $c == $color ? ' checked' : '',
+	    $locked && $c != $color ? ' disabled' : '',
+	    $required && $i === 0 ? ' required' : '',
+	    $onchange ? ' onchange="' . $this->escape($onchange) . '"' : ''; ?> />
 			<span class="cms-color-chip<?php echo $fill ? '' : ' is-none'; ?>"<?php echo $fill ? ' style="background-color:' . $this->escape($fill) . '"' : ''; ?>></span>
 			<span class="element-invisible"><?php echo $this->escape($c); ?></span>
 		</label>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,27 +18,27 @@ defined('JPATH_PLATFORM') or die;
  */
 class TagUnpublishCommand extends AbstractTagStateCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'tag:unpublish';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'tag:unpublish';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Unpublish tags';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Unpublish tags';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Unpublishes the given tags, as the toolbar button of the Tags manager does, after checking that the acting user (--as) may.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Unpublishes the given tags, as the toolbar button of the Tags manager does, after checking that the acting user (--as) may.';
 
-	/**
-	 * @var    integer
-	 * @since  3.17.0
-	 */
-	protected $state = 0;
+    /**
+     * @var    integer
+     * @since  3.17.0
+     */
+    protected $state = 0;
 }

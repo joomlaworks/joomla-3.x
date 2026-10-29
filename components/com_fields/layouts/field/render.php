@@ -8,9 +8,8 @@
  */
 defined('_JEXEC') or die;
 
-if (!key_exists('field', $displayData))
-{
-	return;
+if (!key_exists('field', $displayData)) {
+    return;
 }
 
 $field = $displayData['field'];
@@ -20,9 +19,8 @@ $showLabel = $field->params->get('showlabel');
 $labelClass = $field->params->get('label_render_class');
 $valueClass = $field->params->get('value_render_class');
 
-if ($value == '')
-{
-	return;
+if ($value == '') {
+    return;
 }
 
 ?>

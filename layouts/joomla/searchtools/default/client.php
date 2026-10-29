@@ -27,9 +27,10 @@ preg_match_all('#<option value="([^"]*)"([^>]*)>(.*?)</option>#s', $field->input
 
 $value = (string) $field->value;
 
-if ($matches && !in_array($value, array_map(function ($match) { return html_entity_decode($match[1], ENT_QUOTES, 'UTF-8'); }, $matches), true))
-{
-	$value = html_entity_decode($matches[0][1], ENT_QUOTES, 'UTF-8');
+if ($matches && !in_array($value, array_map(function ($match) {
+    return html_entity_decode($match[1], ENT_QUOTES, 'UTF-8');
+}, $matches), true)) {
+    $value = html_entity_decode($matches[0][1], ENT_QUOTES, 'UTF-8');
 }
 ?>
 <ul class="nav nav-tabs js-stools-client">
@@ -37,9 +38,9 @@ if ($matches && !in_array($value, array_map(function ($match) { return html_enti
 		<?php $optionValue = html_entity_decode($match[1], ENT_QUOTES, 'UTF-8'); ?>
 		<li<?php echo $optionValue === $value ? ' class="active"' : ''; ?>>
 			<a href="#" class="js-stools-client-tab" role="button" data-target="<?php echo $field->id; ?>" data-value="<?php echo htmlspecialchars($optionValue, ENT_COMPAT, 'UTF-8'); ?>"<?php
-				echo $optionValue === $value ? ' aria-current="true"' : ''; ?>><?php echo trim($match[3]); ?></a>
+                echo $optionValue === $value ? ' aria-current="true"' : ''; ?>><?php echo trim($match[3]); ?></a>
 		</li>
 	<?php endforeach; ?>
 </ul>
 <input type="hidden" name="<?php echo $field->name; ?>" id="<?php echo $field->id; ?>" value="<?php echo htmlspecialchars($value, ENT_COMPAT, 'UTF-8'); ?>"<?php
-	echo $onchange !== '' ? ' onchange="' . htmlspecialchars($onchange, ENT_COMPAT, 'UTF-8') . '"' : ''; ?> />
+    echo $onchange !== '' ? ' onchange="' . htmlspecialchars($onchange, ENT_COMPAT, 'UTF-8') . '"' : ''; ?> />

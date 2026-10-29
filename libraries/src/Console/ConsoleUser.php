@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -19,35 +20,35 @@ use Joomla\CMS\User\User;
  */
 class ConsoleUser extends User
 {
-	/**
-	 * @var    boolean
-	 * @since  3.17.0
-	 */
-	protected $isRoot = true;
+    /**
+     * @var    boolean
+     * @since  3.17.0
+     */
+    protected $isRoot = true;
 
-	/**
-	 * @since   3.17.0
-	 */
-	public function __construct()
-	{
-		parent::__construct();
+    /**
+     * @since   3.17.0
+     */
+    public function __construct()
+    {
+        parent::__construct();
 
-		$this->guest    = 0;
-		$this->name     = 'Command line';
-		$this->username = 'cli';
-	}
+        $this->guest    = 0;
+        $this->name     = 'Command line';
+        $this->username = 'cli';
+    }
 
-	/**
-	 * Authorisation is computed per user ID, which this user doesn't have, so keep the Super User flag.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	public function clearAccessRights()
-	{
-		parent::clearAccessRights();
+    /**
+     * Authorisation is computed per user ID, which this user doesn't have, so keep the Super User flag.
+     *
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    public function clearAccessRights()
+    {
+        parent::clearAccessRights();
 
-		$this->isRoot = true;
-	}
+        $this->isRoot = true;
+    }
 }

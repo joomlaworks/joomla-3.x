@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_config
@@ -16,21 +17,21 @@ defined('_JEXEC') or die;
  */
 abstract class ConfigViewCmsJson extends ConfigViewCmsHtml
 {
-	public $state;
+    public $state;
 
-	public $data;
+    public $data;
 
-	/**
-	 * Method to render the view.
-	 *
-	 * @return  string  The rendered view.
-	 *
-	 * @since   3.2
-	 */
-	public function render()
-	{
-		$this->data = $this->model->getData();
+    /**
+     * Method to render the view.
+     *
+     * @return  string  The rendered view.
+     *
+     * @since   3.2
+     */
+    public function render()
+    {
+        $this->data = $this->model->getData();
 
-		return json_encode($this->data);
-	}
+        return json_encode($this->data);
+    }
 }

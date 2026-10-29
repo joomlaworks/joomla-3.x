@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -19,95 +20,90 @@ use Joomla\CMS\User\User;
  */
 class UserResetPasswordCommand extends AbstractUserCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'user:reset-password';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'user:reset-password';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Change a user\'s password';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Change a user\'s password';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Sets a new password for a user. Missing values are asked for, unless the command runs without interaction; '
-		. 'then --username and --password are required. Give the password at the prompt to keep it out of the shell history.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Sets a new password for a user. Missing values are asked for, unless the command runs without interaction; '
+        . 'then --username and --password are required. Give the password at the prompt to keep it out of the shell history.';
 
-	/**
-	 * @var    boolean
-	 * @since  3.17.0
-	 */
-	protected $dryRun = true;
+    /**
+     * @var    boolean
+     * @since  3.17.0
+     */
+    protected $dryRun = true;
 
-	/**
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	protected function configure()
-	{
-		$this->addOption('username', null, self::OPTION_REQUIRED, 'username');
-		$this->addOption('password', null, self::OPTION_REQUIRED, 'password');
-	}
+    /**
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    protected function configure()
+    {
+        $this->addOption('username', null, self::OPTION_REQUIRED, 'username');
+        $this->addOption('password', null, self::OPTION_REQUIRED, 'password');
+    }
 
-	/**
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	protected function doExecute(CommandIO $io)
-	{
-		$io->title('Change Password');
+    /**
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    protected function doExecute(CommandIO $io)
+    {
+        $io->title('Change Password');
 
-		$username = $this->getRequiredOption($io, 'username', 'Please enter a username');
+        $username = $this->getRequiredOption($io, 'username', 'Please enter a username');
 
-		if ($username === '')
-		{
-			return self::INVALID;
-		}
+        if ($username === '') {
+            return self::INVALID;
+        }
 
-		$userId = $this->getUserId($username);
+        $userId = $this->getUserId($username);
 
-		if (!$userId)
-		{
-			$io->error(sprintf('The user "%s" does not exist.', $username));
+        if (!$userId) {
+            $io->error(sprintf('The user "%s" does not exist.', $username));
 
-			return self::NOT_FOUND;
-		}
+            return self::NOT_FOUND;
+        }
 
-		$password = $this->getRequiredOption($io, 'password', 'Please enter a new password', true);
+        $password = $this->getRequiredOption($io, 'password', 'Please enter a new password', true);
 
-		if ($password === '')
-		{
-			return self::INVALID;
-		}
+        if ($password === '') {
+            return self::INVALID;
+        }
 
-		$user = User::getInstance($userId);
-		$data = array('password' => $password, 'password2' => $password);
+        $user = User::getInstance($userId);
+        $data = array('password' => $password, 'password2' => $password);
 
-		if ($io->isDryRun())
-		{
-			$io->plan(sprintf('Change the password of "%s"', $username), array('action' => 'reset-password', 'username' => $username, 'id' => (int) $userId));
+        if ($io->isDryRun()) {
+            $io->plan(sprintf('Change the password of "%s"', $username), array('action' => 'reset-password', 'username' => $username, 'id' => (int) $userId));
 
-			return self::SUCCESS;
-		}
+            return self::SUCCESS;
+        }
 
-		if (!$user->bind($data) || !$user->save(true))
-		{
-			$io->error($user->getError() ?: 'The password was not changed.');
+        if (!$user->bind($data) || !$user->save(true)) {
+            $io->error($user->getError() ?: 'The password was not changed.');
 
-			return self::FAILURE;
-		}
+            return self::FAILURE;
+        }
 
-		$io->success('Password changed.');
+        $io->success('Password changed.');
 
-		return self::SUCCESS;
-	}
+        return self::SUCCESS;
+    }
 }

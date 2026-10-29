@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  Layout
@@ -11,8 +12,8 @@ defined('_JEXEC') or die;
 
 $form     = $displayData->getForm();
 $options  = array(
-	'formControl' => $form->getFormControl(),
-	'hidden'      => (int) ($form->getValue('language', null, '*') === '*'),
+    'formControl' => $form->getFormControl(),
+    'hidden'      => (int) ($form->getValue('language', null, '*') === '*'),
 );
 
 // CMS.associations (global.js), started from these options

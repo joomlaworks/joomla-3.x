@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Installation
  * @subpackage  Controller
@@ -16,31 +17,31 @@ defined('_JEXEC') or die;
  */
 class InstallationControllerSummary extends JControllerBase
 {
-	/**
-	 * Execute the controller.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.1
-	 */
-	public function execute()
-	{
-		// Get the application
-		/** @var InstallationApplicationWeb $app */
-		$app = $this->getApplication();
+    /**
+     * Execute the controller.
+     *
+     * @return  void
+     *
+     * @since   3.1
+     */
+    public function execute()
+    {
+        // Get the application
+        /** @var InstallationApplicationWeb $app */
+        $app = $this->getApplication();
 
-		// Check for request forgeries.
-		JSession::checkToken() or $app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
+        // Check for request forgeries.
+        JSession::checkToken() or $app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
 
-		// Get the setup model.
-		$model = new InstallationModelSetup;
+        // Get the setup model.
+        $model = new InstallationModelSetup();
 
-		// Check the form
-		$model->checkForm('summary');
+        // Check the form
+        $model->checkForm('summary');
 
-		// Redirect to the page.
-		$r = new stdClass;
-		$r->view = 'install';
-		$app->sendJsonResponse($r);
-	}
+        // Redirect to the page.
+        $r = new stdClass();
+        $r->view = 'install';
+        $app->sendJsonResponse($r);
+    }
 }

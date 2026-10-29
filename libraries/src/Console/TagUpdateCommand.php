@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,114 +18,105 @@ defined('JPATH_PLATFORM') or die;
  */
 class TagUpdateCommand extends AbstractTagCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'tag:update';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'tag:update';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Change a tag';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Change a tag';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Changes the given fields of a tag and leaves the others as they are. --parent moves it. A tag someone has open for '
-		. 'editing is refused unless --force is given.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Changes the given fields of a tag and leaves the others as they are. --parent moves it. A tag someone has open for '
+        . 'editing is refused unless --force is given.';
 
-	/**
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	protected function configure()
-	{
-		parent::configure();
-		$this->addArgument('id', self::ARGUMENT_REQUIRED, 'The tag ID');
-		$this->addFieldOptions();
-		$this->addOption('force', null, self::OPTION_NONE, 'Change the tag even when someone has it open for editing');
-	}
+    /**
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    protected function configure()
+    {
+        parent::configure();
+        $this->addArgument('id', self::ARGUMENT_REQUIRED, 'The tag ID');
+        $this->addFieldOptions();
+        $this->addOption('force', null, self::OPTION_NONE, 'Change the tag even when someone has it open for editing');
+    }
 
-	/**
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	protected function doExecute(CommandIO $io)
-	{
-		$io->title('Change Tag');
+    /**
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    protected function doExecute(CommandIO $io)
+    {
+        $io->title('Change Tag');
 
-		$model = $this->getTagModel();
-		$data  = $this->loadTag($io, $model, $io->getArgument('id'));
+        $model = $this->getTagModel();
+        $data  = $this->loadTag($io, $model, $io->getArgument('id'));
 
-		if ($data === false)
-		{
-			return self::NOT_FOUND;
-		}
+        if ($data === false) {
+            return self::NOT_FOUND;
+        }
 
-		if (!$this->checkNotCheckedOut($io, (object) $data))
-		{
-			return self::REFUSED;
-		}
+        if (!$this->checkNotCheckedOut($io, (object) $data)) {
+            return self::REFUSED;
+        }
 
-		$current = $data;
+        $current = $data;
 
-		if (!$this->applyFieldOptions($io, $data))
-		{
-			return self::INVALID;
-		}
+        if (!$this->applyFieldOptions($io, $data)) {
+            return self::INVALID;
+        }
 
-		if (!$this->user->authorise('core.edit', 'com_tags')
-			&& !($this->user->authorise('core.edit.own', 'com_tags') && (int) $current['created_user_id'] === (int) $this->user->id))
-		{
-			$io->error(sprintf('The user "%s" may not edit this tag.', $this->user->username));
+        if (!$this->user->authorise('core.edit', 'com_tags')
+            && !($this->user->authorise('core.edit.own', 'com_tags') && (int) $current['created_user_id'] === (int) $this->user->id)) {
+            $io->error(sprintf('The user "%s" may not edit this tag.', $this->user->username));
 
-			return self::REFUSED;
-		}
+            return self::REFUSED;
+        }
 
-		if ((int) $data['published'] !== (int) $current['published'] && !$this->user->authorise('core.edit.state', 'com_tags'))
-		{
-			$io->error(sprintf('The user "%s" may not change the state of this tag.', $this->user->username));
+        if ((int) $data['published'] !== (int) $current['published'] && !$this->user->authorise('core.edit.state', 'com_tags')) {
+            $io->error(sprintf('The user "%s" may not change the state of this tag.', $this->user->username));
 
-			return self::REFUSED;
-		}
+            return self::REFUSED;
+        }
 
-		if ((int) $data['parent_id'] === (int) $data['id'])
-		{
-			$io->error('A tag can\'t be its own parent.');
+        if ((int) $data['parent_id'] === (int) $data['id']) {
+            $io->error('A tag can\'t be its own parent.');
 
-			return self::INVALID;
-		}
+            return self::INVALID;
+        }
 
-		$id = $this->validateAndSave($io, $model, $data);
+        $id = $this->validateAndSave($io, $model, $data);
 
-		if ($id === false)
-		{
-			return self::FAILURE;
-		}
+        if ($id === false) {
+            return self::FAILURE;
+        }
 
-		if ($io->isDryRun())
-		{
-			$this->planChanges($io, sprintf('Change the tag %d "%s"', $current['id'], $current['title']), array_diff_key($data, array('params' => 0)), $current);
+        if ($io->isDryRun()) {
+            $this->planChanges($io, sprintf('Change the tag %d "%s"', $current['id'], $current['title']), array_diff_key($data, array('params' => 0)), $current);
 
-			return self::SUCCESS;
-		}
+            return self::SUCCESS;
+        }
 
-		$tag = $this->describeTag($this->loadTag($io, $this->getTagModel(), $id));
+        $tag = $this->describeTag($this->loadTag($io, $this->getTagModel(), $id));
 
-		foreach ($tag as $key => $value)
-		{
-			$io->setData($key, $value);
-		}
+        foreach ($tag as $key => $value) {
+            $io->setData($key, $value);
+        }
 
-		$io->success(sprintf('Tag %d "%s" saved.', $id, $tag['path']));
+        $io->success(sprintf('Tag %d "%s" saved.', $id, $tag['path']));
 
-		return self::SUCCESS;
-	}
+        return self::SUCCESS;
+    }
 }

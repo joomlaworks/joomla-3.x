@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 /* @var InstallationViewLanguagesHtml $this */
 
 // Get version of Joomla! to compare it with the version of the language package
-$version             = new JVersion;
+$version             = new JVersion();
 $currentShortVersion = preg_replace('#^([0-9\.]+)(|.*)$#', '$1', $version->getShortVersion());
 $minorVersion        = $version::MAJOR_VERSION . '.' . $version::MINOR_VERSION;
 ?>

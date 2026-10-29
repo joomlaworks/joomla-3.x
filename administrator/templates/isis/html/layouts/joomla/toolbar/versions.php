@@ -22,20 +22,20 @@ extract($displayData);
 JHtml::_('script', 'administrator/components/com_contenthistory/js/contenthistory.js', array('version' => 'auto'));
 
 $link = 'index.php?option=com_contenthistory&amp;view=history&amp;layout=modal&amp;tmpl=component&amp;item_id='
-	. (int) $itemId . '&amp;type_id=' . $typeId . '&amp;type_alias='
-	. $typeAlias . '&amp;' . JSession::getFormToken() . '=1';
+    . (int) $itemId . '&amp;type_id=' . $typeId . '&amp;type_alias='
+    . $typeAlias . '&amp;' . JSession::getFormToken() . '=1';
 
 echo JHtml::_(
-	'bootstrap.renderModal',
-	'versionsModal',
-	array(
-		'url'    => $link,
-		'title'  => JText::_('COM_CONTENTHISTORY_MODAL_TITLE'),
-		'height' => '300px',
-		'width'  => '800px',
-		'footer' => '<button type="button" class="btn" data-dismiss="modal">'
-			. JText::_('JTOOLBAR_CLOSE') . '</button>'
-	)
+    'bootstrap.renderModal',
+    'versionsModal',
+    array(
+        'url'    => $link,
+        'title'  => JText::_('COM_CONTENTHISTORY_MODAL_TITLE'),
+        'height' => '300px',
+        'width'  => '800px',
+        'footer' => '<button type="button" class="btn" data-dismiss="modal">'
+            . JText::_('JTOOLBAR_CLOSE') . '</button>'
+    )
 );
 ?>
 <button type="button" onclick="jQuery('#versionsModal').modal('show')" class="btn btn-small" data-toggle="modal">

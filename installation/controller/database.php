@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Installation
  * @subpackage  Controller
@@ -16,43 +17,42 @@ defined('_JEXEC') or die;
  */
 class InstallationControllerDatabase extends JControllerBase
 {
-	/**
-	 * Execute the controller.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.1
-	 */
-	public function execute()
-	{
-		// Get the application
-		/* @var InstallationApplicationWeb $app */
-		$app = $this->getApplication();
+    /**
+     * Execute the controller.
+     *
+     * @return  void
+     *
+     * @since   3.1
+     */
+    public function execute()
+    {
+        // Get the application
+        /* @var InstallationApplicationWeb $app */
+        $app = $this->getApplication();
 
-		// Check for request forgeries.
-		JSession::checkToken() or $app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
+        // Check for request forgeries.
+        JSession::checkToken() or $app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
 
-		// Get the setup model.
-		$model = new InstallationModelSetup;
+        // Get the setup model.
+        $model = new InstallationModelSetup();
 
-		// Check the form
-		$vars = $model->checkForm('database');
+        // Check the form
+        $vars = $model->checkForm('database');
 
-		$r = new stdClass;
-		$r->view = 'summary';
+        $r = new stdClass();
+        $r->view = 'summary';
 
-		// Get the database model.
-		$db = new InstallationModelDatabase;
+        // Get the database model.
+        $db = new InstallationModelDatabase();
 
-		// Attempt to initialise the database.
-		$return = $db->createDatabase($vars);
+        // Attempt to initialise the database.
+        $return = $db->createDatabase($vars);
 
-		// Check if the database was initialised
-		if (!$return)
-		{
-			$r->view = 'database';
-		}
+        // Check if the database was initialised
+        if (!$return) {
+            $r->view = 'database';
+        }
 
-		$app->sendJsonResponse($r);
-	}
+        $app->sendJsonResponse($r);
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    Joomla.Installation
  *
@@ -15,33 +16,33 @@ defined('_JEXEC') or die;
  */
 class JRouterInstallation extends JRouter
 {
-	/**
-	 * Function to convert a route to an internal URI
-	 *
-	 * @param   JUri  &$url  The uri.
-	 *
-	 * @return  boolean
-	 *
-	 * @since   1.5
-	 */
-	public function parse(&$url)
-	{
-		return true;
-	}
+    /**
+     * Function to convert a route to an internal URI
+     *
+     * @param   JUri  &$url  The uri.
+     *
+     * @return  boolean
+     *
+     * @since   1.5
+     */
+    public function parse(&$url)
+    {
+        return true;
+    }
 
-	/**
-	 * Function to convert an internal URI to a route
-	 *
-	 * @param   string  $url  The internal URL
-	 *
-	 * @return  string  The absolute search engine friendly URL
-	 *
-	 * @since   1.5
-	 */
-	public function build($url)
-	{
-		$url = str_replace('&amp;', '&', $url);
+    /**
+     * Function to convert an internal URI to a route
+     *
+     * @param   string  $url  The internal URL
+     *
+     * @return  string  The absolute search engine friendly URL
+     *
+     * @since   1.5
+     */
+    public function build($url)
+    {
+        $url = str_replace('&amp;', '&', $url);
 
-		return new JUri($url);
-	}
+        return new JUri($url);
+    }
 }

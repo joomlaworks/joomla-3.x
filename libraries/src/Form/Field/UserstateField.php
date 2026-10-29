@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -21,22 +22,22 @@ FormHelper::loadFieldClass('predefinedlist');
  */
 class UserstateField extends \JFormFieldPredefinedList
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var		string
-	 * @since   3.2
-	 */
-	protected $type = 'UserState';
+    /**
+     * The form field type.
+     *
+     * @var		string
+     * @since   3.2
+     */
+    protected $type = 'UserState';
 
-	/**
-	 * Available statuses
-	 *
-	 * @var  array
-	 * @since  3.2
-	 */
-	protected $predefinedOptions = array(
-		'0'  => 'JENABLED',
-		'1'  => 'JDISABLED',
-	);
+    /**
+     * Available statuses
+     *
+     * @var  array
+     * @since  3.2
+     */
+    protected $predefinedOptions = array(
+        '0'  => 'JENABLED',
+        '1'  => 'JDISABLED',
+    );
 }

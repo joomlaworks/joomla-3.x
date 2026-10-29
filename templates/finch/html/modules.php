@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  Templates.finch
@@ -25,18 +26,16 @@ class_exists('FinchHelper', false) || require_once dirname(__DIR__) . '/helper.p
  */
 function modChrome_finch($module, &$params, &$attribs)
 {
-	if ((string) $module->content === '')
-	{
-		return;
-	}
+    if ((string) $module->content === '') {
+        return;
+    }
 
-	echo '<section class="moduleContainer ' . FinchHelper::e(trim((string) $params->get('moduleclass_sfx'))) . ' ' . str_replace('_', '-', $module->module)
-		. '" id="module-' . (int) $module->id . '">';
+    echo '<section class="moduleContainer ' . FinchHelper::e(trim((string) $params->get('moduleclass_sfx'))) . ' ' . str_replace('_', '-', $module->module)
+        . '" id="module-' . (int) $module->id . '">';
 
-	if ($module->showtitle)
-	{
-		echo '<h2 class="moduleTitle">' . FinchHelper::e($module->title) . '</h2>';
-	}
+    if ($module->showtitle) {
+        echo '<h2 class="moduleTitle">' . FinchHelper::e($module->title) . '</h2>';
+    }
 
-	echo '<div class="moduleContent">' . FinchHelper::lazyImages($module->content) . '</div></section>';
+    echo '<div class="moduleContent">' . FinchHelper::lazyImages($module->content) . '</div></section>';
 }

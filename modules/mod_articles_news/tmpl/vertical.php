@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 ?>
 <ul class="newsflash-vert<?php echo $params->get('moduleclass_sfx'); ?> mod-list">
-	<?php for ($i = 0, $n = count($list); $i < $n; $i ++) : ?>
+	<?php for ($i = 0, $n = count($list); $i < $n; $i++) : ?>
 		<?php $item = $list[$i]; ?>
 		<li class="newsflash-item">
 			<?php require JModuleHelper::getLayoutPath('mod_articles_news', '_item'); ?>

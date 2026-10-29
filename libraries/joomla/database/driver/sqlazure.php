@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  Database
@@ -17,11 +18,11 @@ defined('JPATH_PLATFORM') or die;
  */
 class JDatabaseDriverSqlazure extends JDatabaseDriverSqlsrv
 {
-	/**
-	 * The name of the database driver.
-	 *
-	 * @var    string
-	 * @since  3.0.0
-	 */
-	public $name = 'sqlazure';
+    /**
+     * The name of the database driver.
+     *
+     * @var    string
+     * @since  3.0.0
+     */
+    public $name = 'sqlazure';
 }

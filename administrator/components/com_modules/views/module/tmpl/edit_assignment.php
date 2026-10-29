@@ -84,33 +84,29 @@ JFactory::getDocument()->addScriptDeclaration($script);
 							<label class="pull-left nav-header"><?php echo $type->title; ?></label></div>
 					<?php foreach ($type->links as $i => $link) : ?>
 						<?php
-						if ($prevlevel < $link->level)
-						{
-							echo '<ul class="treeselect-sub">';
-						} elseif ($prevlevel > $link->level)
-						{
-							echo str_repeat('</li></ul>', $prevlevel - $link->level);
-						} else {
-							echo '</li>';
-						}
-						$selected = 0;
-						if ($this->item->assignment == 0)
-						{
-							$selected = 1;
-						} elseif ($this->item->assignment < 0)
-						{
-							$selected = in_array(-$link->value, $this->item->assigned);
-						} elseif ($this->item->assignment > 0)
-						{
-							$selected = in_array($link->value, $this->item->assigned);
-						}
-						?>
+                        if ($prevlevel < $link->level) {
+                            echo '<ul class="treeselect-sub">';
+                        } elseif ($prevlevel > $link->level) {
+                            echo str_repeat('</li></ul>', $prevlevel - $link->level);
+                        } else {
+                            echo '</li>';
+                        }
+					    $selected = 0;
+					    if ($this->item->assignment == 0) {
+					        $selected = 1;
+					    } elseif ($this->item->assignment < 0) {
+					        $selected = in_array(-$link->value, $this->item->assigned);
+					    } elseif ($this->item->assignment > 0) {
+					        $selected = in_array($link->value, $this->item->assigned);
+					    }
+					    ?>
 							<li>
 								<div class="treeselect-item pull-left">
 									<?php
-									$uselessMenuItem = in_array($link->type, array('separator', 'heading', 'alias', 'url'));
-									?>
-									<input type="checkbox" class="pull-left novalidate" name="jform[assigned][]" id="<?php echo $id . $link->value; ?>" value="<?php echo (int) $link->value; ?>"<?php echo $selected ? ' checked="checked"' : ''; echo $uselessMenuItem ? ' disabled="disabled"' : ''; ?> />
+					                $uselessMenuItem = in_array($link->type, array('separator', 'heading', 'alias', 'url'));
+					    ?>
+									<input type="checkbox" class="pull-left novalidate" name="jform[assigned][]" id="<?php echo $id . $link->value; ?>" value="<?php echo (int) $link->value; ?>"<?php echo $selected ? ' checked="checked"' : '';
+					    echo $uselessMenuItem ? ' disabled="disabled"' : ''; ?> />
 									<label for="<?php echo $id . $link->value; ?>" class="pull-left">
 										<?php echo $link->text; ?> <span class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($link->alias)); ?></span>
 										<?php if (JLanguageMultilang::isEnabled() && $link->language != '' && $link->language != '*') : ?>
@@ -130,12 +126,11 @@ JFactory::getDocument()->addScriptDeclaration($script);
 								</div>
 						<?php
 
-						if (!isset($type->links[$i + 1]))
-						{
-							echo str_repeat('</li></ul>', $link->level);
-						}
-						$prevlevel = $link->level;
-						?>
+                        if (!isset($type->links[$i + 1])) {
+                            echo str_repeat('</li></ul>', $link->level);
+                        }
+					    $prevlevel = $link->level;
+					    ?>
 						<?php endforeach; ?>
 					</li>
 					<?php endif; ?>

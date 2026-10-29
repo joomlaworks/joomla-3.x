@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -21,35 +22,34 @@ FormHelper::loadFieldClass('list');
  */
 class ModuletagField extends \JFormFieldList
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  3.0
-	 */
-	protected $type = 'ModuleTag';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  3.0
+     */
+    protected $type = 'ModuleTag';
 
-	/**
-	 * Method to get the field options.
-	 *
-	 * @return  array  The field option objects.
-	 *
-	 * @since   3.0
-	 */
-	protected function getOptions()
-	{
-		$options = array();
-		$tags    = array('address', 'article', 'aside', 'details', 'div', 'footer', 'header', 'main', 'nav', 'section', 'summary');
+    /**
+     * Method to get the field options.
+     *
+     * @return  array  The field option objects.
+     *
+     * @since   3.0
+     */
+    protected function getOptions()
+    {
+        $options = array();
+        $tags    = array('address', 'article', 'aside', 'details', 'div', 'footer', 'header', 'main', 'nav', 'section', 'summary');
 
-		// Create one new option object for each tag
-		foreach ($tags as $tag)
-		{
-			$tmp = \JHtml::_('select.option', $tag, $tag);
-			$options[] = $tmp;
-		}
+        // Create one new option object for each tag
+        foreach ($tags as $tag) {
+            $tmp = \JHtml::_('select.option', $tag, $tag);
+            $options[] = $tmp;
+        }
 
-		reset($options);
+        reset($options);
 
-		return $options;
-	}
+        return $options;
+    }
 }

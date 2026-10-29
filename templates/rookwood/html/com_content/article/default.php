@@ -27,17 +27,15 @@ $intro  = trim(strip_tags($item->introtext)) !== '' ? RookwoodHelper::excerpt($i
 $text  = $item->text;
 $login = '';
 
-if (!$item->params->get('access-view'))
-{
-	$text = JFactory::getUser()->get('guest') ? JHtml::_('content.prepare', $item->introtext, '', 'com_content.article') : '';
+if (!$item->params->get('access-view')) {
+    $text = JFactory::getUser()->get('guest') ? JHtml::_('content.prepare', $item->introtext, '', 'com_content.article') : '';
 
-	if ($text !== '' && $item->params->get('show_readmore') && (string) $item->fulltext !== '')
-	{
-		$active = JFactory::getApplication()->getMenu()->getActive();
-		$link   = new JUri(JRoute::_('index.php?option=com_users&view=login&Itemid=' . ($active ? (int) $active->id : 0), false));
-		$link->setVar('return', base64_encode(ContentHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language)));
-		$login  = JLayoutHelper::render('joomla.content.readmore', array('item' => $item, 'params' => $item->params, 'link' => $link));
-	}
+    if ($text !== '' && $item->params->get('show_readmore') && (string) $item->fulltext !== '') {
+        $active = JFactory::getApplication()->getMenu()->getActive();
+        $link   = new JUri(JRoute::_('index.php?option=com_users&view=login&Itemid=' . ($active ? (int) $active->id : 0), false));
+        $link->setVar('return', base64_encode(ContentHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language)));
+        $login  = JLayoutHelper::render('joomla.content.readmore', array('item' => $item, 'params' => $item->params, 'link' => $link));
+    }
 }
 
 // Resource hints (also sent as HTTP Link headers): what the text embeds, and the main image with the sizes its img() gets
@@ -93,7 +91,7 @@ if (RookwoodHelper::isPage()) : ?>
 	<div class="container prose articleText"><?php echo RookwoodHelper::lazyImages($text, $image['src'] === '') . $login; ?></div>
 	<?php echo $item->event->afterDisplayContent; ?>
 
-	<?php // Previous and next, from the "Content - Page Navigation" plugin (its own layout is empty in this template) ?>
+	<?php // Previous and next, from the "Content - Page Navigation" plugin (its own layout is empty in this template)?>
 	<?php if (!empty($item->prev) || !empty($item->next)) : ?>
 	<nav class="container postNav" aria-label="<?php echo JText::_('TPL_ROOKWOOD_MORE_TO_READ'); ?>">
 		<?php if (!empty($item->prev)) : ?>

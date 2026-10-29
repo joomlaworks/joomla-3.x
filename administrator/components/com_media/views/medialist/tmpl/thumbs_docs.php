@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
 
-$params     = new Registry;
+$params     = new Registry();
 $dispatcher = JEventDispatcher::getInstance();
 ?>
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_latestactions
@@ -13,9 +14,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 
 // Only super user can view this data
-if (!Factory::getUser()->authorise('core.admin'))
-{
-	return;
+if (!Factory::getUser()->authorise('core.admin')) {
+    return;
 }
 
 // Include dependencies.
@@ -23,9 +23,8 @@ JLoader::register('ModLatestActionsHelper', __DIR__ . '/helper.php');
 
 $list = ModLatestActionsHelper::getList($params);
 
-if ($params->get('automatic_title', 0))
-{
-	$module->title = ModLatestActionsHelper::getTitle($params);
+if ($params->get('automatic_title', 0)) {
+    $module->title = ModLatestActionsHelper::getTitle($params);
 }
 
 require ModuleHelper::getLayoutPath('mod_latestactions', $params->get('layout', 'default'));

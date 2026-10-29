@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Editors-xtd.module
@@ -16,47 +17,46 @@ defined('_JEXEC') or die;
  */
 class PlgButtonModule extends JPlugin
 {
-	/**
-	 * Load the language file on instantiation.
-	 *
-	 * @var    boolean
-	 * @since  3.5
-	 */
-	protected $autoloadLanguage = true;
+    /**
+     * Load the language file on instantiation.
+     *
+     * @var    boolean
+     * @since  3.5
+     */
+    protected $autoloadLanguage = true;
 
-	/**
-	 * Display the button
-	 *
-	 * @param   string  $name  The name of the button to add
-	 *
-	 * @return  JObject  The button options as JObject
-	 *
-	 * @since   3.5
-	 */
-	public function onDisplay($name)
-	{
-		/*
-		 * Use the built-in element view to select the module.
-		 * Currently uses blank class.
-		 */
-		$user  = JFactory::getUser();
+    /**
+     * Display the button
+     *
+     * @param   string  $name  The name of the button to add
+     *
+     * @return  JObject  The button options as JObject
+     *
+     * @since   3.5
+     */
+    public function onDisplay($name)
+    {
+        /*
+         * Use the built-in element view to select the module.
+         * Currently uses blank class.
+         */
+        $user  = JFactory::getUser();
 
-		if ($user->authorise('core.create', 'com_modules')
-			|| $user->authorise('core.edit', 'com_modules')
-			|| $user->authorise('core.edit.own', 'com_modules'))
-		{
-			$link = 'index.php?option=com_modules&amp;view=modules&amp;layout=modal&amp;tmpl=component&amp;editor='
-					. $name . '&amp;' . JSession::getFormToken() . '=1';
+        if ($user->authorise('core.create', 'com_modules')
+            || $user->authorise('core.edit', 'com_modules')
+            || $user->authorise('core.edit.own', 'com_modules')) {
+            $link = 'index.php?option=com_modules&amp;view=modules&amp;layout=modal&amp;tmpl=component&amp;editor='
+                    . $name . '&amp;' . JSession::getFormToken() . '=1';
 
-			$button          = new JObject;
-			$button->modal   = true;
-			$button->class   = 'btn';
-			$button->link    = $link;
-			$button->text    = JText::_('PLG_MODULE_BUTTON_MODULE');
-			$button->name    = 'file-add';
-			$button->options = "{handler: 'iframe', size: {x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140)}}";
+            $button          = new JObject();
+            $button->modal   = true;
+            $button->class   = 'btn';
+            $button->link    = $link;
+            $button->text    = JText::_('PLG_MODULE_BUTTON_MODULE');
+            $button->name    = 'file-add';
+            $button->options = "{handler: 'iframe', size: {x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140)}}";
 
-			return $button;
-		}
-	}
+            return $button;
+        }
+    }
 }

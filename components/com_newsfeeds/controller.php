@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_newsfeeds
@@ -16,34 +17,33 @@ defined('_JEXEC') or die;
  */
 class NewsfeedsController extends JControllerLegacy
 {
-	/**
-	 * Method to show a newsfeeds view
-	 *
-	 * @param   boolean  $cachable   If true, the view output will be cached
-	 * @param   array    $urlparams  An array of safe URL parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
-	 *
-	 * @return  JControllerLegacy		This object to support chaining.
-	 *
-	 * @since   1.5
-	 */
-	public function display($cachable = false, $urlparams = false)
-	{
-		$cachable = true;
+    /**
+     * Method to show a newsfeeds view
+     *
+     * @param   boolean  $cachable   If true, the view output will be cached
+     * @param   array    $urlparams  An array of safe URL parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+     *
+     * @return  JControllerLegacy		This object to support chaining.
+     *
+     * @since   1.5
+     */
+    public function display($cachable = false, $urlparams = false)
+    {
+        $cachable = true;
 
-		// Set the default view name and format from the Request.
-		$vName = $this->input->get('view', 'categories');
-		$this->input->set('view', $vName);
+        // Set the default view name and format from the Request.
+        $vName = $this->input->get('view', 'categories');
+        $this->input->set('view', $vName);
 
-		$user = JFactory::getUser();
+        $user = JFactory::getUser();
 
-		if ($user->get('id') || ($this->input->getMethod() === 'POST' && $vName === 'category'))
-		{
-			$cachable = false;
-		}
+        if ($user->get('id') || ($this->input->getMethod() === 'POST' && $vName === 'category')) {
+            $cachable = false;
+        }
 
-		$safeurlparams = array('id' => 'INT', 'limit' => 'UINT', 'limitstart' => 'UINT',
-								'filter_order' => 'CMD', 'filter_order_Dir' => 'CMD', 'lang' => 'CMD');
+        $safeurlparams = array('id' => 'INT', 'limit' => 'UINT', 'limitstart' => 'UINT',
+                                'filter_order' => 'CMD', 'filter_order_Dir' => 'CMD', 'lang' => 'CMD');
 
-		parent::display($cachable, $safeurlparams);
-	}
+        parent::display($cachable, $safeurlparams);
+    }
 }

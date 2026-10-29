@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_finder
@@ -22,63 +23,58 @@ JFormHelper::loadFieldClass('list');
  */
 class JFormFieldContentTypes extends JFormFieldList
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  3.6.0
-	 */
-	protected $type = 'ContentTypes';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  3.6.0
+     */
+    protected $type = 'ContentTypes';
 
-	/**
-	 * Method to get the field options.
-	 *
-	 * @return  array  The field option objects.
-	 *
-	 * @since   3.6.0
-	 */
-	public function getOptions()
-	{
-		$lang    = JFactory::getLanguage();
-		$options = array();
+    /**
+     * Method to get the field options.
+     *
+     * @return  array  The field option objects.
+     *
+     * @since   3.6.0
+     */
+    public function getOptions()
+    {
+        $lang    = JFactory::getLanguage();
+        $options = array();
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true)
-			->select($db->quoteName('id', 'value'))
-			->select($db->quoteName('title', 'text'))
-			->from($db->quoteName('#__finder_types'));
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('id', 'value'))
+            ->select($db->quoteName('title', 'text'))
+            ->from($db->quoteName('#__finder_types'));
 
-		// Get the options.
-		$db->setQuery($query);
+        // Get the options.
+        $db->setQuery($query);
 
-		try
-		{
-			$contentTypes = $db->loadObjectList();
-		}
-		catch (RuntimeException $e)
-		{
-			JError::raiseWarning(500, $db->getMessage());
-		}
+        try {
+            $contentTypes = $db->loadObjectList();
+        } catch (RuntimeException $e) {
+            JError::raiseWarning(500, $db->getMessage());
+        }
 
-		// Translate.
-		foreach ($contentTypes as $contentType)
-		{
-			$key = FinderHelperLanguage::branchSingular($contentType->text);
-			$contentType->translatedText = $lang->hasKey($key) ? JText::_($key) : $contentType->text;
-		}
+        // Translate.
+        foreach ($contentTypes as $contentType) {
+            $key = FinderHelperLanguage::branchSingular($contentType->text);
+            $contentType->translatedText = $lang->hasKey($key) ? JText::_($key) : $contentType->text;
+        }
 
-		// Order by title.
-		$contentTypes = ArrayHelper::sortObjects($contentTypes, 'translatedText', 1, true, true);
+        // Order by title.
+        $contentTypes = ArrayHelper::sortObjects($contentTypes, 'translatedText', 1, true, true);
 
-		// Convert the values to options.
-		foreach ($contentTypes as $contentType)
-		{
-			$options[] = JHtml::_('select.option', $contentType->value, $contentType->translatedText);
-		}
+        // Convert the values to options.
+        foreach ($contentTypes as $contentType) {
+            $options[] = JHtml::_('select.option', $contentType->value, $contentType->translatedText);
+        }
 
-		// Merge any additional options in the XML definition.
-		$options = array_merge(parent::getOptions(), $options);
+        // Merge any additional options in the XML definition.
+        $options = array_merge(parent::getOptions(), $options);
 
-		return $options;
-	}
+        return $options;
+    }
 }

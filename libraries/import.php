@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Bootstrap file for the Joomla Platform.  Including this file into your application will make Joomla
  * Platform libraries available for use.
@@ -10,43 +11,37 @@
  */
 
 // Set the platform root path as a constant if necessary.
-if (!defined('JPATH_PLATFORM'))
-{
-	define('JPATH_PLATFORM', __DIR__);
+if (!defined('JPATH_PLATFORM')) {
+    define('JPATH_PLATFORM', __DIR__);
 }
 
 // Detect the native operating system type.
 $os = strtoupper(substr(PHP_OS, 0, 3));
 
-if (!defined('IS_WIN'))
-{
-	define('IS_WIN', $os === 'WIN');
+if (!defined('IS_WIN')) {
+    define('IS_WIN', $os === 'WIN');
 }
 
-if (!defined('IS_UNIX'))
-{
-	define('IS_UNIX', IS_WIN === false);
+if (!defined('IS_UNIX')) {
+    define('IS_UNIX', IS_WIN === false);
 }
 
 // Import the library loader if necessary.
-if (!class_exists('JLoader'))
-{
-	require_once JPATH_PLATFORM . '/loader.php';
+if (!class_exists('JLoader')) {
+    require_once JPATH_PLATFORM . '/loader.php';
 }
 
 // Make sure that the Joomla Platform has been successfully loaded.
-if (!class_exists('JLoader'))
-{
-	throw new RuntimeException('Joomla Platform not loaded.');
+if (!class_exists('JLoader')) {
+    throw new RuntimeException('Joomla Platform not loaded.');
 }
 
 // Setup the autoloaders.
 JLoader::setup();
 
 // Check if the JsonSerializable interface exists already
-if (!interface_exists('JsonSerializable'))
-{
-	JLoader::register('JsonSerializable', JPATH_PLATFORM . '/vendor/joomla/compat/src/JsonSerializable.php');
+if (!interface_exists('JsonSerializable')) {
+    JLoader::register('JsonSerializable', JPATH_PLATFORM . '/vendor/joomla/compat/src/JsonSerializable.php');
 }
 
 // Register the PasswordHash lib

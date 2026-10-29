@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_categories
@@ -16,85 +17,82 @@ defined('_JEXEC') or die;
  */
 class CategoriesController extends JControllerLegacy
 {
-	/**
-	 * The extension for which the categories apply.
-	 *
-	 * @var    string
-	 * @since  1.6
-	 */
-	protected $extension;
+    /**
+     * The extension for which the categories apply.
+     *
+     * @var    string
+     * @since  1.6
+     */
+    protected $extension;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     JControllerLegacy
-	 * @since   1.6
-	 */
-	public function __construct($config = array())
-	{
-		parent::__construct($config);
+    /**
+     * Constructor.
+     *
+     * @param   array  $config  An optional associative array of configuration settings.
+     *
+     * @see     JControllerLegacy
+     * @since   1.6
+     */
+    public function __construct($config = array())
+    {
+        parent::__construct($config);
 
-		// Guess the JText message prefix. Defaults to the option.
-		if (empty($this->extension))
-		{
-			$this->extension = $this->input->get('extension', 'com_content');
-		}
-	}
+        // Guess the JText message prefix. Defaults to the option.
+        if (empty($this->extension)) {
+            $this->extension = $this->input->get('extension', 'com_content');
+        }
+    }
 
-	/**
-	 * Method to display a view.
-	 *
-	 * @param   boolean  $cachable   If true, the view output will be cached
-	 * @param   array    $urlparams  An array of safe URL parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
-	 *
-	 * @return  CategoriesController  This object to support chaining.
-	 *
-	 * @since   1.5
-	 */
-	public function display($cachable = false, $urlparams = array())
-	{
-		// Get the document object.
-		$document = JFactory::getDocument();
+    /**
+     * Method to display a view.
+     *
+     * @param   boolean  $cachable   If true, the view output will be cached
+     * @param   array    $urlparams  An array of safe URL parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+     *
+     * @return  CategoriesController  This object to support chaining.
+     *
+     * @since   1.5
+     */
+    public function display($cachable = false, $urlparams = array())
+    {
+        // Get the document object.
+        $document = JFactory::getDocument();
 
-		// Set the default view name and format from the Request.
-		$vName   = $this->input->get('view', 'categories');
-		$vFormat = $document->getType();
-		$lName   = $this->input->get('layout', 'default', 'string');
-		$id      = $this->input->getInt('id');
+        // Set the default view name and format from the Request.
+        $vName   = $this->input->get('view', 'categories');
+        $vFormat = $document->getType();
+        $lName   = $this->input->get('layout', 'default', 'string');
+        $id      = $this->input->getInt('id');
 
-		// Check for edit form.
-		if ($vName == 'category' && $lName == 'edit' && !$this->checkEditId('com_categories.edit.category', $id))
-		{
-			// Somehow the person just went to the form - we don't allow that.
-			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
-			$this->setMessage($this->getError(), 'error');
-			$this->setRedirect(JRoute::_('index.php?option=com_categories&view=categories&extension=' . $this->extension, false));
+        // Check for edit form.
+        if ($vName == 'category' && $lName == 'edit' && !$this->checkEditId('com_categories.edit.category', $id)) {
+            // Somehow the person just went to the form - we don't allow that.
+            $this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
+            $this->setMessage($this->getError(), 'error');
+            $this->setRedirect(JRoute::_('index.php?option=com_categories&view=categories&extension=' . $this->extension, false));
 
-			return false;
-		}
+            return false;
+        }
 
-		// Get and render the view.
-		if ($view = $this->getView($vName, $vFormat))
-		{
-			// Get the model for the view.
-			$model = $this->getModel($vName, 'CategoriesModel', array('name' => $vName . '.' . substr($this->extension, 4)));
+        // Get and render the view.
+        if ($view = $this->getView($vName, $vFormat)) {
+            // Get the model for the view.
+            $model = $this->getModel($vName, 'CategoriesModel', array('name' => $vName . '.' . substr($this->extension, 4)));
 
-			// Push the model into the view (as default).
-			$view->setModel($model, true);
-			$view->setLayout($lName);
+            // Push the model into the view (as default).
+            $view->setModel($model, true);
+            $view->setLayout($lName);
 
-			// Push document object into the view.
-			$view->document = $document;
+            // Push document object into the view.
+            $view->document = $document;
 
-			// Load the submenu.
-			JLoader::register('CategoriesHelper', JPATH_ADMINISTRATOR . '/components/com_categories/helpers/categories.php');
+            // Load the submenu.
+            JLoader::register('CategoriesHelper', JPATH_ADMINISTRATOR . '/components/com_categories/helpers/categories.php');
 
-			CategoriesHelper::addSubmenu($model->getState('filter.extension'));
-			$view->display();
-		}
+            CategoriesHelper::addSubmenu($model->getState('filter.extension'));
+            $view->display();
+        }
 
-		return $this;
-	}
+        return $this;
+    }
 }

@@ -35,13 +35,13 @@ JFactory::getDocument()->addScriptDeclaration('
 		<div class="row-fluid">
 			<div class="span9">
 				<?php
-				echo $this->form->renderField('contact');
-				echo $this->form->renderField('email');
-				echo $this->form->renderField('purchase_type');
-				echo $this->form->renderField('track_impressions');
-				echo $this->form->renderField('track_clicks');
-				echo $this->form->renderFieldset('extra');
-				?>
+                echo $this->form->renderField('contact');
+echo $this->form->renderField('email');
+echo $this->form->renderField('purchase_type');
+echo $this->form->renderField('track_impressions');
+echo $this->form->renderField('track_clicks');
+echo $this->form->renderFieldset('extra');
+?>
 			</div>
 			<div class="span3">
 				<?php echo JLayoutHelper::render('joomla.edit.global', $this); ?>

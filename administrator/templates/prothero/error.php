@@ -38,14 +38,12 @@ $cpanel = ($option === 'com_cpanel');
 
 $showSubmenu = false;
 $submenumodules = JModuleHelper::getModules('submenu');
-foreach ($submenumodules as $submenumodule)
-{
-	$output = JModuleHelper::renderModule($submenumodule);
-	if ($output !== '')
-	{
-		$showSubmenu = true;
-		break;
-	}
+foreach ($submenumodules as $submenumodule) {
+    $output = JModuleHelper::renderModule($submenumodule);
+    if ($output !== '') {
+        $showSubmenu = true;
+        break;
+    }
 }
 
 // The logo in the header: the site's own, else Joomla's, inline so its wordmark follows the colour scheme
@@ -70,11 +68,11 @@ $navbar = protheroNavbarColor($params);
 		<!-- Load additional CSS styles for debug mode-->
 		<link href="<?php echo JUri::root(true); ?>/media/system/css/debug.css" rel="stylesheet" />
 	<?php endif; ?>
-	<?php // If Right-to-Left ?>
+	<?php // If Right-to-Left?>
 	<?php if ($this->direction == 'rtl') : ?>
 		<link href="<?php echo JUri::root(true); ?>/media/system/css/bootstrap-rtl.css" rel="stylesheet" />
 	<?php endif; ?>
-	<?php // Load specific language related CSS ?>
+	<?php // Load specific language related CSS?>
 	<?php $file = '/administrator/language/' . $lang->getTag() . '/' . $lang->getTag() . '.css'; ?>
 	<?php if (is_file(JPATH_ROOT . $file)) : ?>
 		<link href="<?php echo JUri::root(true) . $file; ?>" rel="stylesheet" />
@@ -112,7 +110,7 @@ $navbar = protheroNavbarColor($params);
 				<?php else : ?>
 				<div>
 				<?php endif; ?>
-					<?php // Display menu modules ?>
+					<?php // Display menu modules?>
 					<?php $menumodules = JModuleHelper::getModules('menu'); ?>
 					<?php foreach ($menumodules as $menumodule) : ?>
 						<?php $output = JModuleHelper::renderModule($menumodule, array('style' => 'none')); ?>
@@ -181,11 +179,11 @@ $navbar = protheroNavbarColor($params);
 					<?php if ($this->debug) : ?>
 						<div>
 							<?php echo $this->renderBacktrace(); ?>
-							<?php // Check if there are more Exceptions and render their data as well ?>
+							<?php // Check if there are more Exceptions and render their data as well?>
 							<?php if ($this->error->getPrevious()) : ?>
 								<?php $loop = true; ?>
-								<?php // Reference $this->_error here and in the loop as setError() assigns errors to this property and we need this for the backtrace to work correctly ?>
-								<?php // Make the first assignment to setError() outside the loop so the loop does not skip Exceptions ?>
+								<?php // Reference $this->_error here and in the loop as setError() assigns errors to this property and we need this for the backtrace to work correctly?>
+								<?php // Make the first assignment to setError() outside the loop so the loop does not skip Exceptions?>
 								<?php $this->setError($this->_error->getPrevious()); ?>
 								<?php while ($loop === true) : ?>
 									<p><strong><?php echo JText::_('JERROR_LAYOUT_PREVIOUS_ERROR'); ?></strong></p>
@@ -196,7 +194,7 @@ $navbar = protheroNavbarColor($params);
 									<?php echo $this->renderBacktrace(); ?>
 									<?php $loop = $this->setError($this->_error->getPrevious()); ?>
 								<?php endwhile; ?>
-								<?php // Reset the main error object to the base error ?>
+								<?php // Reset the main error object to the base error?>
 								<?php $this->setError($this->error); ?>
 							<?php endif; ?>
 						</div>

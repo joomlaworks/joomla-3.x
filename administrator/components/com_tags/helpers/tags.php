@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_tags
@@ -17,47 +18,43 @@ defined('_JEXEC') or die;
  */
 class TagsHelper extends JHelperContent
 {
-	/**
-	 * Configure the Submenu links.
-	 *
-	 * @param   string  $extension  The extension.
-	 *
-	 * @return  void
-	 *
-	 * @since       3.1
-	 * @deprecated  4.0
-	 */
-	public static function addSubmenu($extension)
-	{
-		$parts     = explode('.', $extension);
-		$component = $parts[0];
+    /**
+     * Configure the Submenu links.
+     *
+     * @param   string  $extension  The extension.
+     *
+     * @return  void
+     *
+     * @since       3.1
+     * @deprecated  4.0
+     */
+    public static function addSubmenu($extension)
+    {
+        $parts     = explode('.', $extension);
+        $component = $parts[0];
 
-		// Avoid nonsense situation.
-		if ($component == 'tags')
-		{
-			return;
-		}
+        // Avoid nonsense situation.
+        if ($component == 'tags') {
+            return;
+        }
 
-		// Try to find the component helper.
-		$file = JPath::clean(JPATH_ADMINISTRATOR . '/components/com_tags/helpers/tags.php');
+        // Try to find the component helper.
+        $file = JPath::clean(JPATH_ADMINISTRATOR . '/components/com_tags/helpers/tags.php');
 
-		if (file_exists($file))
-		{
-			$cName = 'TagsHelper';
+        if (file_exists($file)) {
+            $cName = 'TagsHelper';
 
-			JLoader::register($cName, $file);
+            JLoader::register($cName, $file);
 
-			if (class_exists($cName))
-			{
-				if (is_callable(array($cName, 'addSubmenu')))
-				{
-					$lang = JFactory::getLanguage();
+            if (class_exists($cName)) {
+                if (is_callable(array($cName, 'addSubmenu'))) {
+                    $lang = JFactory::getLanguage();
 
-					// Loading language file from administrator/language directory then administrator/components/<extension>/language
-					$lang->load($component, JPATH_BASE, null, false, true)
-					||	$lang->load($component, JPath::clean(JPATH_ADMINISTRATOR . '/components/' . $component), null, false, true);
-				}
-			}
-		}
-	}
+                    // Loading language file from administrator/language directory then administrator/components/<extension>/language
+                    $lang->load($component, JPATH_BASE, null, false, true)
+                    ||	$lang->load($component, JPath::clean(JPATH_ADMINISTRATOR . '/components/' . $component), null, false, true);
+                }
+            }
+        }
+    }
 }

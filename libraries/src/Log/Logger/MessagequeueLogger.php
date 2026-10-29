@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -25,37 +26,36 @@ use Joomla\CMS\Log\Logger;
  */
 class MessagequeueLogger extends Logger
 {
-	/**
-	 * Method to add an entry to the log.
-	 *
-	 * @param   LogEntry  $entry  The log entry object to add to the log.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.7.0
-	 */
-	public function addEntry(LogEntry $entry)
-	{
-		switch ($entry->priority)
-		{
-			case Log::EMERGENCY:
-			case Log::ALERT:
-			case Log::CRITICAL:
-			case Log::ERROR:
-				\JFactory::getApplication()->enqueueMessage($entry->message, 'error');
-				break;
-			case Log::WARNING:
-				\JFactory::getApplication()->enqueueMessage($entry->message, 'warning');
-				break;
-			case Log::NOTICE:
-				\JFactory::getApplication()->enqueueMessage($entry->message, 'notice');
-				break;
-			case Log::INFO:
-				\JFactory::getApplication()->enqueueMessage($entry->message, 'message');
-				break;
-			default:
-				// Ignore other priorities.
-				break;
-		}
-	}
+    /**
+     * Method to add an entry to the log.
+     *
+     * @param   LogEntry  $entry  The log entry object to add to the log.
+     *
+     * @return  void
+     *
+     * @since   1.7.0
+     */
+    public function addEntry(LogEntry $entry)
+    {
+        switch ($entry->priority) {
+            case Log::EMERGENCY:
+            case Log::ALERT:
+            case Log::CRITICAL:
+            case Log::ERROR:
+                \JFactory::getApplication()->enqueueMessage($entry->message, 'error');
+                break;
+            case Log::WARNING:
+                \JFactory::getApplication()->enqueueMessage($entry->message, 'warning');
+                break;
+            case Log::NOTICE:
+                \JFactory::getApplication()->enqueueMessage($entry->message, 'notice');
+                break;
+            case Log::INFO:
+                \JFactory::getApplication()->enqueueMessage($entry->message, 'message');
+                break;
+            default:
+                // Ignore other priorities.
+                break;
+        }
+    }
 }

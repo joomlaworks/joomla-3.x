@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  Layout
@@ -22,35 +23,29 @@ $data = $displayData['data'];
 
 $rows = isset($data['content']) && is_array($data['content']) ? array_values($data['content']) : array();
 
-if (!$rows)
-{
-	return;
+if (!$rows) {
+    return;
 }
 
 $headings = !empty($data['withHeadings']);
 $html     = '<table class="block-table">';
 
-foreach ($rows as $i => $row)
-{
-	$cell = $headings && $i === 0 ? 'th' : 'td';
+foreach ($rows as $i => $row) {
+    $cell = $headings && $i === 0 ? 'th' : 'td';
 
-	if ($headings && $i === 0)
-	{
-		$html .= '<thead>';
-	}
-	elseif ($i === ($headings ? 1 : 0))
-	{
-		$html .= '<tbody>';
-	}
+    if ($headings && $i === 0) {
+        $html .= '<thead>';
+    } elseif ($i === ($headings ? 1 : 0)) {
+        $html .= '<tbody>';
+    }
 
-	$html .= '<tr>';
+    $html .= '<tr>';
 
-	foreach ((array) $row as $value)
-	{
-		$html .= '<' . $cell . '>' . $r->inline($value) . '</' . $cell . '>';
-	}
+    foreach ((array) $row as $value) {
+        $html .= '<' . $cell . '>' . $r->inline($value) . '</' . $cell . '>';
+    }
 
-	$html .= '</tr>' . ($headings && $i === 0 ? '</thead>' : '');
+    $html .= '</tr>' . ($headings && $i === 0 ? '</thead>' : '');
 }
 
 echo $html . (count($rows) > ($headings ? 1 : 0) ? '</tbody>' : '') . '</table>';

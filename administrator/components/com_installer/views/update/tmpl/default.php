@@ -18,7 +18,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 ?>
 <div id="installer-update" class="clearfix">
 	<form action="<?php echo JRoute::_('index.php?option=com_installer&view=update'); ?>" method="post" name="adminForm" id="adminForm">
-		<?php if (!empty( $this->sidebar)) : ?>
+		<?php if (!empty($this->sidebar)) : ?>
 		<div id="j-sidebar-container" class="span2">
 			<?php echo $this->sidebar; ?>
 		</div>
@@ -83,10 +83,10 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						<tbody>
 						<?php foreach ($this->items as $i => $item) : ?>
 							<?php
-							$client          = $item->client_id ? JText::_('JADMINISTRATOR') : JText::_('JSITE');
-							$manifest        = json_decode((string) $item->manifest_cache);
-							$current_version = isset($manifest->version) ? $manifest->version : JText::_('JLIB_UNKNOWN');
-							?>
+                            $client          = $item->client_id ? JText::_('JADMINISTRATOR') : JText::_('JSITE');
+						    $manifest        = json_decode((string) $item->manifest_cache);
+						    $current_version = isset($manifest->version) ? $manifest->version : JText::_('JLIB_UNKNOWN');
+						    ?>
 							<tr class="row<?php echo $i % 2; ?>">
 								<td>
 									<?php echo JHtml::_('grid.id', $i, $item->update_id); ?>

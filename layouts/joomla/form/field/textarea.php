@@ -49,19 +49,19 @@ $autocomplete = !$autocomplete ? 'autocomplete="off"' : 'autocomplete="' . $auto
 $autocomplete = $autocomplete == 'autocomplete="on"' ? '' : $autocomplete;
 
 $attributes = array(
-	$columns ?: '',
-	$rows ?: '',
-	!empty($class) ? 'class="' . $class . '"' : '',
-	strlen($hint) ? 'placeholder="' . htmlspecialchars($hint, ENT_COMPAT, 'UTF-8') . '"' : '',
-	$disabled ? 'disabled' : '',
-	$readonly ? 'readonly' : '',
-	$onchange ? 'onchange="' . $onchange . '"' : '',
-	$onclick ? 'onclick="' . $onclick . '"' : '',
-	$required ? 'required aria-required="true"' : '',
-	$autocomplete,
-	$autofocus ? 'autofocus' : '',
-	$spellcheck ? '' : 'spellcheck="false"',
-	$maxlength ? $maxlength: ''
+    $columns ?: '',
+    $rows ?: '',
+    !empty($class) ? 'class="' . $class . '"' : '',
+    strlen($hint) ? 'placeholder="' . htmlspecialchars($hint, ENT_COMPAT, 'UTF-8') . '"' : '',
+    $disabled ? 'disabled' : '',
+    $readonly ? 'readonly' : '',
+    $onchange ? 'onchange="' . $onchange . '"' : '',
+    $onclick ? 'onclick="' . $onclick . '"' : '',
+    $required ? 'required aria-required="true"' : '',
+    $autocomplete,
+    $autofocus ? 'autofocus' : '',
+    $spellcheck ? '' : 'spellcheck="false"',
+    $maxlength ? $maxlength : ''
 
 );
 ?>

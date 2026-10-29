@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Installation
  * @subpackage  View
@@ -16,44 +17,44 @@ defined('_JEXEC') or die;
  */
 class InstallationViewCompleteHtml extends JViewHtml
 {
-	/**
-	 * The JConfiguration data if present
-	 *
-	 * @var    \Joomla\Registry\Registry
-	 * @since  3.1
-	 */
-	protected $config;
+    /**
+     * The JConfiguration data if present
+     *
+     * @var    \Joomla\Registry\Registry
+     * @since  3.1
+     */
+    protected $config;
 
-	/**
-	 * Redefine the model so the correct type hinting is available.
-	 *
-	 * @var     InstallationModelSetup
-	 * @since   3.1
-	 */
-	protected $model;
+    /**
+     * Redefine the model so the correct type hinting is available.
+     *
+     * @var     InstallationModelSetup
+     * @since   3.1
+     */
+    protected $model;
 
-	/**
-	 * The session options
-	 *
-	 * @var    array
-	 * @since  3.1
-	 */
-	protected $options;
+    /**
+     * The session options
+     *
+     * @var    array
+     * @since  3.1
+     */
+    protected $options;
 
-	/**
-	 * Method to render the view.
-	 *
-	 * @return  string  The rendered view.
-	 *
-	 * @since   3.1
-	 */
-	public function render()
-	{
-		$this->options = $this->model->getOptions();
+    /**
+     * Method to render the view.
+     *
+     * @return  string  The rendered view.
+     *
+     * @since   3.1
+     */
+    public function render()
+    {
+        $this->options = $this->model->getOptions();
 
-		// Get the config string from the session.
-		$this->config = JFactory::getSession()->get('setup.config', null);
+        // Get the config string from the session.
+        $this->config = JFactory::getSession()->get('setup.config', null);
 
-		return parent::render();
-	}
+        return parent::render();
+    }
 }

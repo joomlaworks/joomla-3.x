@@ -45,7 +45,7 @@ $return = JFactory::getApplication()->input->getBase64('return');
 
 // Drag-drop installation
 JFactory::getDocument()->addScriptDeclaration(
-<<<JS
+    <<<JS
 	jQuery(document).ready(function($) {
 		if (typeof FormData === 'undefined') {
 			$('#legacy-uploader').show();
@@ -217,7 +217,7 @@ JS
 );
 
 JFactory::getDocument()->addStyleDeclaration(
-<<<CSS
+    <<<CSS
 	#dragarea {
 		background-color: #fafbfc;
 		border: 1px dashed #999;

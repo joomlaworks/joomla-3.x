@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_privacy
@@ -21,157 +22,148 @@ JLoader::register('FieldsHelper', JPATH_ADMINISTRATOR . '/components/com_fields/
  */
 abstract class PrivacyPlugin extends JPlugin
 {
-	/**
-	 * Database object
-	 *
-	 * @var    JDatabaseDriver
-	 * @since  3.9.0
-	 */
-	protected $db;
+    /**
+     * Database object
+     *
+     * @var    JDatabaseDriver
+     * @since  3.9.0
+     */
+    protected $db;
 
-	/**
-	 * Affects constructor behaviour. If true, language files will be loaded automatically.
-	 *
-	 * @var    boolean
-	 * @since  3.9.0
-	 */
-	protected $autoloadLanguage = true;
+    /**
+     * Affects constructor behaviour. If true, language files will be loaded automatically.
+     *
+     * @var    boolean
+     * @since  3.9.0
+     */
+    protected $autoloadLanguage = true;
 
-	/**
-	 * Create a new domain object
-	 *
-	 * @param   string  $name         The domain's name
-	 * @param   string  $description  The domain's description
-	 *
-	 * @return  PrivacyExportDomain
-	 *
-	 * @since   3.9.0
-	 */
-	protected function createDomain($name, $description = '')
-	{
-		$domain              = new PrivacyExportDomain;
-		$domain->name        = $name;
-		$domain->description = $description;
+    /**
+     * Create a new domain object
+     *
+     * @param   string  $name         The domain's name
+     * @param   string  $description  The domain's description
+     *
+     * @return  PrivacyExportDomain
+     *
+     * @since   3.9.0
+     */
+    protected function createDomain($name, $description = '')
+    {
+        $domain              = new PrivacyExportDomain();
+        $domain->name        = $name;
+        $domain->description = $description;
 
-		return $domain;
-	}
+        return $domain;
+    }
 
-	/**
-	 * Create an item object for an array
-	 *
-	 * @param   array         $data    The array data to convert
-	 * @param   integer|null  $itemId  The ID of this item
-	 *
-	 * @return  PrivacyExportItem
-	 *
-	 * @since   3.9.0
-	 */
-	protected function createItemFromArray(array $data, $itemId = null)
-	{
-		$item = new PrivacyExportItem;
-		$item->id = $itemId;
+    /**
+     * Create an item object for an array
+     *
+     * @param   array         $data    The array data to convert
+     * @param   integer|null  $itemId  The ID of this item
+     *
+     * @return  PrivacyExportItem
+     *
+     * @since   3.9.0
+     */
+    protected function createItemFromArray(array $data, $itemId = null)
+    {
+        $item = new PrivacyExportItem();
+        $item->id = $itemId;
 
-		foreach ($data as $key => $value)
-		{
-			if (is_object($value))
-			{
-				$value = (array) $value;
-			}
+        foreach ($data as $key => $value) {
+            if (is_object($value)) {
+                $value = (array) $value;
+            }
 
-			if (is_array($value))
-			{
-				$value = print_r($value, true);
-			}
+            if (is_array($value)) {
+                $value = print_r($value, true);
+            }
 
-			$field        = new PrivacyExportField;
-			$field->name  = $key;
-			$field->value = $value;
+            $field        = new PrivacyExportField();
+            $field->name  = $key;
+            $field->value = $value;
 
-			$item->addField($field);
-		}
+            $item->addField($field);
+        }
 
-		return $item;
-	}
+        return $item;
+    }
 
-	/**
-	 * Create an item object for a JTable object
-	 *
-	 * @param   JTable  $table  The JTable object to convert
-	 *
-	 * @return  PrivacyExportItem
-	 *
-	 * @since   3.9.0
-	 */
-	protected function createItemForTable($table)
-	{
-		$data = array();
+    /**
+     * Create an item object for a JTable object
+     *
+     * @param   JTable  $table  The JTable object to convert
+     *
+     * @return  PrivacyExportItem
+     *
+     * @since   3.9.0
+     */
+    protected function createItemForTable($table)
+    {
+        $data = array();
 
-		foreach (array_keys($table->getFields()) as $fieldName)
-		{
-			$data[$fieldName] = $table->$fieldName;
-		}
+        foreach (array_keys($table->getFields()) as $fieldName) {
+            $data[$fieldName] = $table->$fieldName;
+        }
 
-		return $this->createItemFromArray($data, $table->{$table->getKeyName(false)});
-	}
+        return $this->createItemFromArray($data, $table->{$table->getKeyName(false)});
+    }
 
-	/**
-	 * Helper function to create the domain for the items custom fields.
-	 *
-	 * @param   string  $context  The context
-	 * @param   array   $items    The items
-	 *
-	 * @return  PrivacyExportDomain
-	 *
-	 * @since   3.9.0
-	 */
-	protected function createCustomFieldsDomain($context, $items = array())
-	{
-		if (!is_array($items))
-		{
-			$items = array($items);
-		}
+    /**
+     * Helper function to create the domain for the items custom fields.
+     *
+     * @param   string  $context  The context
+     * @param   array   $items    The items
+     *
+     * @return  PrivacyExportDomain
+     *
+     * @since   3.9.0
+     */
+    protected function createCustomFieldsDomain($context, $items = array())
+    {
+        if (!is_array($items)) {
+            $items = array($items);
+        }
 
-		// Fields isn't installed: no custom fields, but the export keeps the domain (callers add whatever this returns)
-		if (!JComponentHelper::isEnabled('com_fields'))
-		{
-			$parts = explode('.', $context);
-			$type  = str_replace('com_', '', $parts[0]);
-			$name  = isset($parts[1]) ? $parts[1] : '';
+        // Fields isn't installed: no custom fields, but the export keeps the domain (callers add whatever this returns)
+        if (!JComponentHelper::isEnabled('com_fields')) {
+            $parts = explode('.', $context);
+            $type  = str_replace('com_', '', $parts[0]);
+            $name  = isset($parts[1]) ? $parts[1] : '';
 
-			return $this->createDomain($type . '_' . $name . '_custom_fields', 'joomla_' . $type . '_' . $name . '_custom_fields_data');
-		}
+            return $this->createDomain($type . '_' . $name . '_custom_fields', 'joomla_' . $type . '_' . $name . '_custom_fields_data');
+        }
 
-		$parts = FieldsHelper::extract($context);
+        $parts = FieldsHelper::extract($context);
 
-		if (!$parts)
-		{
-			return array();
-		}
+        if (!$parts) {
+            return array();
+        }
 
-		$type = str_replace('com_', '', $parts[0]);
+        $type = str_replace('com_', '', $parts[0]);
 
-		$domain = $this->createDomain($type . '_' . $parts[1] . '_custom_fields', 'joomla_' . $type . '_' . $parts[1] . '_custom_fields_data');
+        $domain = $this->createDomain($type . '_' . $parts[1] . '_custom_fields', 'joomla_' . $type . '_' . $parts[1] . '_custom_fields_data');
 
-		foreach ($items as $item)
-		{
-			// Get item's fields, also preparing their value property for manual display
-			$fields = FieldsHelper::getFields($parts[0] . '.' . $parts[1], $item);
+        foreach ($items as $item) {
+            // Get item's fields, also preparing their value property for manual display
+            $fields = FieldsHelper::getFields($parts[0] . '.' . $parts[1], $item);
 
-			foreach ($fields as $field)
-			{
-				$fieldValue = is_array($field->value) ? implode(', ', $field->value) : $field->value;
+            foreach ($fields as $field) {
+                $fieldValue = is_array($field->value) ? implode(', ', $field->value) : $field->value;
 
-				$data = array(
-					$type . '_id' => $item->id,
-					'field_name'  => $field->name,
-					'field_title' => $field->title,
-					'field_value' => $fieldValue,
-				);
+                $data = array(
+                    $type . '_id' => $item->id,
+                    'field_name'  => $field->name,
+                    'field_title' => $field->title,
+                    'field_value' => $fieldValue,
+                );
 
-				$domain->addItem($this->createItemFromArray($data));
-			}
-		}
+                $domain->addItem($this->createItemFromArray($data));
+            }
+        }
 
-		return $domain;
-	}
+        return $domain;
+    }
 }

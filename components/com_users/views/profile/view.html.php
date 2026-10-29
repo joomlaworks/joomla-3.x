@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_users
@@ -16,153 +17,138 @@ defined('_JEXEC') or die;
  */
 class UsersViewProfile extends JViewLegacy
 {
-	protected $data;
+    protected $data;
 
-	protected $form;
+    protected $form;
 
-	protected $params;
+    protected $params;
 
-	protected $state;
+    protected $state;
 
-	/**
-	 * An instance of JDatabaseDriver.
-	 *
-	 * @var    JDatabaseDriver
-	 * @since  3.6.3
-	 */
-	protected $db;
+    /**
+     * An instance of JDatabaseDriver.
+     *
+     * @var    JDatabaseDriver
+     * @since  3.6.3
+     */
+    protected $db;
 
-	/**
-	 * Execute and display a template script.
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  mixed   A string if successful, otherwise an Error object.
-	 *
-	 * @since   1.6
-	 */
-	public function display($tpl = null)
-	{
-		$user = JFactory::getUser();
+    /**
+     * Execute and display a template script.
+     *
+     * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+     *
+     * @return  mixed   A string if successful, otherwise an Error object.
+     *
+     * @since   1.6
+     */
+    public function display($tpl = null)
+    {
+        $user = JFactory::getUser();
 
-		// Get the view data.
-		$this->data	        = $this->get('Data');
-		$this->form	        = $this->getModel()->getForm(new JObject(array('id' => $user->id)));
-		$this->state            = $this->get('State');
-		$this->params           = $this->state->get('params');
-		$this->twofactorform    = $this->get('Twofactorform');
-		$this->twofactormethods = UsersHelper::getTwoFactorMethods();
-		$this->otpConfig        = $this->get('OtpConfig');
-		$this->db               = JFactory::getDbo();
+        // Get the view data.
+        $this->data	        = $this->get('Data');
+        $this->form	        = $this->getModel()->getForm(new JObject(array('id' => $user->id)));
+        $this->state            = $this->get('State');
+        $this->params           = $this->state->get('params');
+        $this->twofactorform    = $this->get('Twofactorform');
+        $this->twofactormethods = UsersHelper::getTwoFactorMethods();
+        $this->otpConfig        = $this->get('OtpConfig');
+        $this->db               = JFactory::getDbo();
 
-		// Check for errors.
-		if (count($errors = $this->get('Errors')))
-		{
-			JError::raiseError(500, implode('<br />', $errors));
+        // Check for errors.
+        if (count($errors = $this->get('Errors'))) {
+            JError::raiseError(500, implode('<br />', $errors));
 
-			return false;
-		}
+            return false;
+        }
 
-		// View also takes responsibility for checking if the user logged in with remember me.
-		$cookieLogin = $user->get('cookieLogin');
+        // View also takes responsibility for checking if the user logged in with remember me.
+        $cookieLogin = $user->get('cookieLogin');
 
-		if (!empty($cookieLogin))
-		{
-			// If so, the user must login to edit the password and other data.
-			// What should happen here? Should we force a logout which destroys the cookies?
-			$app = JFactory::getApplication();
-			$app->enqueueMessage(JText::_('JGLOBAL_REMEMBER_MUST_LOGIN'), 'message');
-			$app->redirect(JRoute::_('index.php?option=com_users&view=login', false));
+        if (!empty($cookieLogin)) {
+            // If so, the user must login to edit the password and other data.
+            // What should happen here? Should we force a logout which destroys the cookies?
+            $app = JFactory::getApplication();
+            $app->enqueueMessage(JText::_('JGLOBAL_REMEMBER_MUST_LOGIN'), 'message');
+            $app->redirect(JRoute::_('index.php?option=com_users&view=login', false));
 
-			return false;
-		}
+            return false;
+        }
 
-		// Check if a user was found.
-		if (!$this->data->id)
-		{
-			JError::raiseError(404, JText::_('JERROR_USERS_PROFILE_NOT_FOUND'));
+        // Check if a user was found.
+        if (!$this->data->id) {
+            JError::raiseError(404, JText::_('JERROR_USERS_PROFILE_NOT_FOUND'));
 
-			return false;
-		}
+            return false;
+        }
 
-		JPluginHelper::importPlugin('content');
-		$this->data->text = '';
-		JEventDispatcher::getInstance()->trigger('onContentPrepare', array ('com_users.user', &$this->data, &$this->data->params, 0));
-		unset($this->data->text);
+        JPluginHelper::importPlugin('content');
+        $this->data->text = '';
+        JEventDispatcher::getInstance()->trigger('onContentPrepare', array('com_users.user', &$this->data, &$this->data->params, 0));
+        unset($this->data->text);
 
-		// Check for layout override
-		$active = JFactory::getApplication()->getMenu()->getActive();
+        // Check for layout override
+        $active = JFactory::getApplication()->getMenu()->getActive();
 
-		if (isset($active->query['layout']))
-		{
-			$this->setLayout($active->query['layout']);
-		}
+        if (isset($active->query['layout'])) {
+            $this->setLayout($active->query['layout']);
+        }
 
-		// Escape strings for HTML output
-		$this->pageclass_sfx = htmlspecialchars((string) $this->params->get('pageclass_sfx', ''));
+        // Escape strings for HTML output
+        $this->pageclass_sfx = htmlspecialchars((string) $this->params->get('pageclass_sfx', ''));
 
-		$this->prepareDocument();
+        $this->prepareDocument();
 
-		return parent::display($tpl);
-	}
+        return parent::display($tpl);
+    }
 
-	/**
-	 * Prepares the document
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 */
-	protected function prepareDocument()
-	{
-		$app   = JFactory::getApplication();
-		$menus = $app->getMenu();
-		$user  = JFactory::getUser();
-		$title = null;
+    /**
+     * Prepares the document
+     *
+     * @return  void
+     *
+     * @since   1.6
+     */
+    protected function prepareDocument()
+    {
+        $app   = JFactory::getApplication();
+        $menus = $app->getMenu();
+        $user  = JFactory::getUser();
+        $title = null;
 
-		// Because the application sets a default page title,
-		// we need to get it from the menu item itself
-		$menu = $menus->getActive();
+        // Because the application sets a default page title,
+        // we need to get it from the menu item itself
+        $menu = $menus->getActive();
 
-		if ($menu)
-		{
-			$this->params->def('page_heading', $this->params->get('page_title', $user->name));
-		}
-		else
-		{
-			$this->params->def('page_heading', JText::_('COM_USERS_PROFILE'));
-		}
+        if ($menu) {
+            $this->params->def('page_heading', $this->params->get('page_title', $user->name));
+        } else {
+            $this->params->def('page_heading', JText::_('COM_USERS_PROFILE'));
+        }
 
-		$title = $this->params->get('page_title', '');
+        $title = $this->params->get('page_title', '');
 
-		if (empty($title))
-		{
-			$title = $app->get('sitename');
-		}
-		elseif ($app->get('sitename_pagetitles', 0) == 1)
-		{
-			$title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-		}
-		elseif ($app->get('sitename_pagetitles', 0) == 2)
-		{
-			$title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
-		}
+        if (empty($title)) {
+            $title = $app->get('sitename');
+        } elseif ($app->get('sitename_pagetitles', 0) == 1) {
+            $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+        } elseif ($app->get('sitename_pagetitles', 0) == 2) {
+            $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+        }
 
-		$this->document->setTitle($title);
+        $this->document->setTitle($title);
 
-		if ($this->params->get('menu-meta_description'))
-		{
-			$this->document->setDescription($this->params->get('menu-meta_description'));
-		}
+        if ($this->params->get('menu-meta_description')) {
+            $this->document->setDescription($this->params->get('menu-meta_description'));
+        }
 
-		if ($this->params->get('menu-meta_keywords'))
-		{
-			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
-		}
+        if ($this->params->get('menu-meta_keywords')) {
+            $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+        }
 
-		if ($this->params->get('robots'))
-		{
-			$this->document->setMetadata('robots', $this->params->get('robots'));
-		}
-	}
+        if ($this->params->get('robots')) {
+            $this->document->setMetadata('robots', $this->params->get('robots'));
+        }
+    }
 }

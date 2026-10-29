@@ -37,15 +37,15 @@ JFactory::getDocument()->addScriptDeclaration('
 			<?php if ($displayData->displayMenu) : ?>
 			<ul id="submenu" class="nav nav-list">
 				<?php foreach ($displayData->list as $item) :
-				if (isset ($item[2]) && $item[2] == 1) : ?>
+				    if (isset($item[2]) && $item[2] == 1) : ?>
 					<li class="active">
 				<?php else : ?>
 					<li>
 				<?php endif;
-				if ($displayData->hide) : ?>
+				    if ($displayData->hide) : ?>
 					<a class="nolink"><?php echo $item[0]; ?></a>
 				<?php else :
-					if ($item[1] !== '') : ?>
+				    if ($item[1] !== '') : ?>
 						<a href="<?php echo JFilterOutput::ampReplace($item[1]); ?>"><?php echo $item[0]; ?></a>
 					<?php else : ?>
 						<?php echo $item[0]; ?>

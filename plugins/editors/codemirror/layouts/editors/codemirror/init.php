@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Editors.codemirror
@@ -27,7 +28,7 @@ $fullScreenCombo = implode('-', $fskeys);
 $fsCombo         = json_encode($fullScreenCombo);
 $modPath         = json_encode(JUri::root(true) . '/' . $modePath . $extJS);
 JFactory::getDocument()->addScriptDeclaration(
-<<<JS
+    <<<JS
 		;(function (cm, $) {
 			cm.commands.toggleFullScreen = function (cm) {
 				cm.setOption('fullScreen', !cm.getOption('fullScreen'));

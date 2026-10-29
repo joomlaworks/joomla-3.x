@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -20,52 +21,52 @@ use Joomla\CMS\Object\CMSObject;
  */
 class AdapterInstance extends CMSObject
 {
-	/**
-	 * Parent
-	 *
-	 * @var    Adapter
-	 * @since  1.6
-	 */
-	protected $parent = null;
+    /**
+     * Parent
+     *
+     * @var    Adapter
+     * @since  1.6
+     */
+    protected $parent = null;
 
-	/**
-	 * Database
-	 *
-	 * @var    \JDatabaseDriver
-	 * @since  1.6
-	 */
-	protected $db = null;
+    /**
+     * Database
+     *
+     * @var    \JDatabaseDriver
+     * @since  1.6
+     */
+    protected $db = null;
 
-	/**
-	 * Constructor
-	 *
-	 * @param   Adapter           $parent   Parent object
-	 * @param   \JDatabaseDriver  $db       Database object
-	 * @param   array             $options  Configuration Options
-	 *
-	 * @since   1.6
-	 */
-	public function __construct(Adapter $parent, \JDatabaseDriver $db, array $options = array())
-	{
-		// Set the properties from the options array that is passed in
-		$this->setProperties($options);
+    /**
+     * Constructor
+     *
+     * @param   Adapter           $parent   Parent object
+     * @param   \JDatabaseDriver  $db       Database object
+     * @param   array             $options  Configuration Options
+     *
+     * @since   1.6
+     */
+    public function __construct(Adapter $parent, \JDatabaseDriver $db, array $options = array())
+    {
+        // Set the properties from the options array that is passed in
+        $this->setProperties($options);
 
-		// Set the parent and db in case $options for some reason overrides it.
-		$this->parent = $parent;
+        // Set the parent and db in case $options for some reason overrides it.
+        $this->parent = $parent;
 
-		// Pull in the global dbo in case something happened to it.
-		$this->db = $db ?: \JFactory::getDbo();
-	}
+        // Pull in the global dbo in case something happened to it.
+        $this->db = $db ?: \JFactory::getDbo();
+    }
 
-	/**
-	 * Retrieves the parent object
-	 *
-	 * @return  Adapter
-	 *
-	 * @since   1.6
-	 */
-	public function getParent()
-	{
-		return $this->parent;
-	}
+    /**
+     * Retrieves the parent object
+     *
+     * @return  Adapter
+     *
+     * @since   1.6
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
 }

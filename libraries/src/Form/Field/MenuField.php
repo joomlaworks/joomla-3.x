@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -25,101 +26,90 @@ FormHelper::loadFieldClass('GroupedList');
  */
 class MenuField extends \JFormFieldGroupedList
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  1.6
-	 */
-	public $type = 'Menu';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  1.6
+     */
+    public $type = 'Menu';
 
-	/**
-	 * Method to get the field option groups.
-	 *
-	 * @return  array  The field option objects as a nested array in groups.
-	 *
-	 * @since   1.7.0
-	 * @throws  \UnexpectedValueException
-	 */
-	protected function getGroups()
-	{
-		$clientId   = (string) $this->element['clientid'];
-		$accessType = (string) $this->element['accesstype'];
-		$showAll    = (string) $this->element['showAll'] == 'true';
+    /**
+     * Method to get the field option groups.
+     *
+     * @return  array  The field option objects as a nested array in groups.
+     *
+     * @since   1.7.0
+     * @throws  \UnexpectedValueException
+     */
+    protected function getGroups()
+    {
+        $clientId   = (string) $this->element['clientid'];
+        $accessType = (string) $this->element['accesstype'];
+        $showAll    = (string) $this->element['showAll'] == 'true';
 
-		$db    = Factory::getDbo();
-		$query = $db->getQuery(true)
-			->select($db->qn(array('id', 'menutype', 'title', 'client_id'), array('id', 'value', 'text', 'client_id')))
-			->from($db->quoteName('#__menu_types'))
-			->order('client_id, title');
+        $db    = Factory::getDbo();
+        $query = $db->getQuery(true)
+            ->select($db->qn(array('id', 'menutype', 'title', 'client_id'), array('id', 'value', 'text', 'client_id')))
+            ->from($db->quoteName('#__menu_types'))
+            ->order('client_id, title');
 
-		if (strlen($clientId))
-		{
-			$query->where('client_id = ' . (int) $clientId);
-		}
+        if (strlen($clientId)) {
+            $query->where('client_id = ' . (int) $clientId);
+        }
 
-		$menus = $db->setQuery($query)->loadObjectList();
+        $menus = $db->setQuery($query)->loadObjectList();
 
-		if ($accessType)
-		{
-			$user = Factory::getUser();
+        if ($accessType) {
+            $user = Factory::getUser();
 
-			foreach ($menus as $key => $menu)
-			{
-				switch ($accessType)
-				{
-					case 'create':
-					case 'manage':
-						if (!$user->authorise('core.' . $accessType, 'com_menus.menu.' . (int) $menu->id))
-						{
-							unset($menus[$key]);
-						}
-						break;
+            foreach ($menus as $key => $menu) {
+                switch ($accessType) {
+                    case 'create':
+                    case 'manage':
+                        if (!$user->authorise('core.' . $accessType, 'com_menus.menu.' . (int) $menu->id)) {
+                            unset($menus[$key]);
+                        }
+                        break;
 
-					// Editing a menu item is a bit tricky, we have to check the current menutype for core.edit and all others for core.create
-					case 'edit':
-						$check = $this->value == $menu->value ? 'edit' : 'create';
+                        // Editing a menu item is a bit tricky, we have to check the current menutype for core.edit and all others for core.create
+                    case 'edit':
+                        $check = $this->value == $menu->value ? 'edit' : 'create';
 
-						if (!$user->authorise('core.' . $check, 'com_menus.menu.' . (int) $menu->id))
-						{
-							unset($menus[$key]);
-						}
-						break;
-				}
-			}
-		}
+                        if (!$user->authorise('core.' . $check, 'com_menus.menu.' . (int) $menu->id)) {
+                            unset($menus[$key]);
+                        }
+                        break;
+                }
+            }
+        }
 
-		$opts = array();
+        $opts = array();
 
-		// Protected menutypes can be shown if requested
-		if ($clientId == 1 && $showAll)
-		{
-			$opts[] = (object) array(
-				'value'     => 'main',
-				'text'      => \JText::_('COM_MENUS_MENU_TYPE_PROTECTED_MAIN_LABEL'),
-				'client_id' => 1,
-			);
-		}
+        // Protected menutypes can be shown if requested
+        if ($clientId == 1 && $showAll) {
+            $opts[] = (object) array(
+                'value'     => 'main',
+                'text'      => \JText::_('COM_MENUS_MENU_TYPE_PROTECTED_MAIN_LABEL'),
+                'client_id' => 1,
+            );
+        }
 
-		$options = array_merge($opts, $menus);
-		$groups  = array();
+        $options = array_merge($opts, $menus);
+        $groups  = array();
 
-		if (strlen($clientId))
-		{
-			$groups[0] = $options;
-		}
-		else
-		{
-			foreach ($options as $option)
-			{
-				// If client id is not specified we group the items.
-				$label = ($option->client_id == 1 ? \JText::_('JADMINISTRATOR') : \JText::_('JSITE'));
+        if (strlen($clientId)) {
+            $groups[0] = $options;
+        } else {
+            foreach ($options as $option) {
+                // If client id is not specified we group the items.
+                $label = ($option->client_id == 1 ? \JText::_('JADMINISTRATOR') : \JText::_('JSITE'));
 
-				$groups[$label][] = $option;
-			}
-		}
+                $groups[$label][] = $option;
+            }
+        }
 
-		// Merge any additional options in the XML definition.
-		return array_merge(parent::getGroups(), $groups);
-	}
+        // Merge any additional options in the XML definition.
+        return array_merge(parent::getGroups(), $groups);
+    }
 }

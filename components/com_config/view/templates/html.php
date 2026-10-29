@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_config
@@ -16,22 +17,22 @@ defined('_JEXEC') or die;
  */
 class ConfigViewTemplatesHtml extends ConfigViewCmsHtml
 {
-	public $item;
+    public $item;
 
-	public $form;
+    public $form;
 
-	/**
-	 * Method to render the view.
-	 *
-	 * @return  string  The rendered view.
-	 *
-	 * @since   3.2
-	 */
-	public function render()
-	{
-		$user = JFactory::getUser();
-		$this->userIsSuperAdmin = $user->authorise('core.admin');
+    /**
+     * Method to render the view.
+     *
+     * @return  string  The rendered view.
+     *
+     * @since   3.2
+     */
+    public function render()
+    {
+        $user = JFactory::getUser();
+        $this->userIsSuperAdmin = $user->authorise('core.admin');
 
-		return parent::render();
-	}
+        return parent::render();
+    }
 }

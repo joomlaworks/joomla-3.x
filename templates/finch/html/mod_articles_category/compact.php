@@ -14,9 +14,8 @@ class_exists('FinchHelper', false) || require_once dirname(__DIR__, 2) . '/helpe
 
 // Posts as a short numbered list: the title and the date (e.g. popular posts in the sidebar, in order)
 /** @var array $list */
-if (!$list)
-{
-	return;
+if (!$list) {
+    return;
 }
 ?>
 <ol class="compactList">

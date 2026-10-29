@@ -64,10 +64,10 @@ JHtml::_('behavior.core');
 							<?php if ($this->items[$i]->image) : ?>
 								<a href="<?php echo JRoute::_(ContactHelperRoute::getContactRoute($item->slug, $item->catid)); ?>">
 									<?php echo JHtml::_(
-										'image',
-										$this->items[$i]->image,
-										JText::_('COM_CONTACT_IMAGE_DETAILS'),
-										array('class' => 'contact-thumbnail img-thumbnail')
+									    'image',
+									    $this->items[$i]->image,
+									    JText::_('COM_CONTACT_IMAGE_DETAILS'),
+									    array('class' => 'contact-thumbnail img-thumbnail')
 									); ?>
 								</a>
 							<?php endif; ?>
@@ -108,7 +108,7 @@ JHtml::_('behavior.core');
 						<?php if ($this->params->get('show_telephone_headings') && !empty($item->telephone)) : ?>
 							<?php echo JText::sprintf('COM_CONTACT_TELEPHONE_NUMBER', $item->telephone); ?><br />
 						<?php endif; ?>
-						<?php if ($this->params->get('show_mobile_headings') && !empty ($item->mobile)) : ?>
+						<?php if ($this->params->get('show_mobile_headings') && !empty($item->mobile)) : ?>
 							<?php echo JText::sprintf('COM_CONTACT_MOBILE_NUMBER', $item->mobile); ?><br />
 						<?php endif; ?>
 						<?php if ($this->params->get('show_fax_headings') && !empty($item->fax)) : ?>

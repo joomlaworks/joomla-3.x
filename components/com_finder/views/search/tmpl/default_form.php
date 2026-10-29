@@ -9,20 +9,18 @@
 
 defined('_JEXEC') or die;
 
-if ($this->params->get('show_advanced', 1) || $this->params->get('show_autosuggest', 1))
-{
-	JHtml::_('jquery.framework');
+if ($this->params->get('show_advanced', 1) || $this->params->get('show_autosuggest', 1)) {
+    JHtml::_('jquery.framework');
 
-	$script = "
+    $script = "
 jQuery(function() {";
 
-	if ($this->params->get('show_advanced', 1))
-	{
-		/*
-		* This segment of code disables select boxes that have no value when the
-		* form is submitted so that the URL doesn't get blown up with null values.
-		*/
-		$script .= "
+    if ($this->params->get('show_advanced', 1)) {
+        /*
+        * This segment of code disables select boxes that have no value when the
+        * form is submitted so that the URL doesn't get blown up with null values.
+        */
+        $script .= "
 	jQuery('#finder-search').on('submit', function(e){
 		e.stopPropagation();
 		// Disable select boxes with no value selected.
@@ -33,16 +31,15 @@ jQuery(function() {";
 			}
 		});
 	});";
-	}
+    }
 
-	/*
-	* This segment of code sets up the autocompleter.
-	*/
-	if ($this->params->get('show_autosuggest', 1))
-	{
-		JHtml::_('script', 'system/jquery.autocomplete.min.js', array('version' => 'auto', 'relative' => true));
+    /*
+    * This segment of code sets up the autocompleter.
+    */
+    if ($this->params->get('show_autosuggest', 1)) {
+        JHtml::_('script', 'system/jquery.autocomplete.min.js', array('version' => 'auto', 'relative' => true));
 
-		$script .= "
+        $script .= "
 	var suggest = jQuery('#q').autocomplete({
 		serviceUrl: '" . JRoute::_('index.php?option=com_finder&task=suggestions.suggest&format=json&tmpl=component') . "',
 		paramName: 'q',
@@ -52,18 +49,18 @@ jQuery(function() {";
 		zIndex: 9999,
 		deferRequestBy: 500
 	});";
-	}
+    }
 
-	$script .= "
+    $script .= "
 });";
 
-	JFactory::getDocument()->addScriptDeclaration($script);
+    JFactory::getDocument()->addScriptDeclaration($script);
 }
 
 ?>
 <form id="finder-search" action="<?php echo JRoute::_($this->query->toUri()); ?>" method="get" class="form-inline">
 	<?php echo $this->getFields(); ?>
-	<?php // DISABLED UNTIL WEIRD VALUES CAN BE TRACKED DOWN. ?>
+	<?php // DISABLED UNTIL WEIRD VALUES CAN BE TRACKED DOWN.?>
 	<?php if (false && $this->state->get('list.ordering') !== 'relevance_dsc') : ?>
 		<input type="hidden" name="o" value="<?php echo $this->escape($this->state->get('list.ordering')); ?>" />
 	<?php endif; ?>
@@ -91,7 +88,9 @@ jQuery(function() {";
 		<?php endif; ?>
 	</fieldset>
 	<?php if ($this->params->get('show_advanced', 1)) : ?>
-		<div id="advancedSearch" class="collapse<?php if ($this->params->get('expand_advanced', 0)) echo ' in'; ?>">
+		<div id="advancedSearch" class="collapse<?php if ($this->params->get('expand_advanced', 0)) {
+		    echo ' in';
+		} ?>">
 			<hr />
 			<?php if ($this->params->get('show_advanced_tips', 1)) : ?>
 				<div id="search-query-explained">

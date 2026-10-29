@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 $lang  = JFactory::getLanguage();
 $title = $lang->hasKey('INSTL_LOCKED_TITLE') ? JText::_('INSTL_LOCKED_TITLE') : 'Joomla! is already installed';
 $desc  = $lang->hasKey('INSTL_LOCKED_DESC') ? JText::sprintf('INSTL_LOCKED_DESC', 'installation')
-	: 'For security, the installer only continues in the browser which installed this site. Continue to the site or its administrator, and the "installation" folder will be removed.';
+    : 'For security, the installer only continues in the browser which installed this site. Continue to the site or its administrator, and the "installation" folder will be removed.';
 ?>
 <form action="index.php" method="post" id="adminForm" class="view">
 	<div class="alert alert-error" id="theDefaultError" hidden="hidden">

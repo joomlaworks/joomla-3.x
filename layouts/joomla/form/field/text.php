@@ -46,29 +46,28 @@ extract($displayData);
 
 $list = '';
 
-if ($options)
-{
-	$list = 'list="' . $id . '_datalist"';
+if ($options) {
+    $list = 'list="' . $id . '_datalist"';
 }
 
 $autocomplete = !$autocomplete ? ' autocomplete="off"' : ' autocomplete="' . $autocomplete . '"';
 $autocomplete = $autocomplete === ' autocomplete="on"' ? '' : $autocomplete;
 
 $attributes = array(
-	!empty($class) ? 'class="' . $class . '"' : '',
-	!empty($size) ? 'size="' . $size . '"' : '',
-	$disabled ? 'disabled' : '',
-	$readonly ? 'readonly' : '',
-	$list,
-	strlen($hint) ? 'placeholder="' . htmlspecialchars($hint, ENT_COMPAT, 'UTF-8') . '"' : '',
-	$onchange ? ' onchange="' . $onchange . '"' : '',
-	!empty($maxLength) ? $maxLength : '',
-	$required ? 'required aria-required="true"' : '',
-	$autocomplete,
-	$autofocus ? ' autofocus' : '',
-	$spellcheck ? '' : 'spellcheck="false"',
-	!empty($inputmode) ? $inputmode : '',
-	!empty($pattern) ? 'pattern="' . $pattern . '"' : '',
+    !empty($class) ? 'class="' . $class . '"' : '',
+    !empty($size) ? 'size="' . $size . '"' : '',
+    $disabled ? 'disabled' : '',
+    $readonly ? 'readonly' : '',
+    $list,
+    strlen($hint) ? 'placeholder="' . htmlspecialchars($hint, ENT_COMPAT, 'UTF-8') . '"' : '',
+    $onchange ? ' onchange="' . $onchange . '"' : '',
+    !empty($maxLength) ? $maxLength : '',
+    $required ? 'required aria-required="true"' : '',
+    $autocomplete,
+    $autofocus ? ' autofocus' : '',
+    $spellcheck ? '' : 'spellcheck="false"',
+    !empty($inputmode) ? $inputmode : '',
+    !empty($pattern) ? 'pattern="' . $pattern . '"' : '',
 );
 ?>
 <input type="text" name="<?php

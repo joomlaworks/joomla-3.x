@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 ?>
 <dl class="contact-address dl-horizontal">
 	<?php if (($this->params->get('address_check') > 0) &&
-		($this->contact->address || $this->contact->suburb  || $this->contact->state || $this->contact->country || $this->contact->postcode)) : ?>
+        ($this->contact->address || $this->contact->suburb  || $this->contact->state || $this->contact->country || $this->contact->postcode)) : ?>
 		<dt>
 			<span class="<?php echo $this->params->get('marker_class'); ?>">
 				<?php echo $this->params->get('marker_address'); ?>

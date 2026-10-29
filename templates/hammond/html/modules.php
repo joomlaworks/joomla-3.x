@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  Templates.hammond
@@ -26,28 +27,25 @@ class_exists('HammondHelper', false) || require_once dirname(__DIR__) . '/helper
  */
 function modChrome_hammond($module, &$params, &$attribs)
 {
-	if ((string) $module->content === '')
-	{
-		return;
-	}
+    if ((string) $module->content === '') {
+        return;
+    }
 
-	$suffix = trim((string) $params->get('moduleclass_sfx'));
-	$title  = HammondHelper::e($module->title);
-	$link   = '';
-	$catids = array_filter((array) $params->get('catid', array()));
+    $suffix = trim((string) $params->get('moduleclass_sfx'));
+    $title  = HammondHelper::e($module->title);
+    $link   = '';
+    $catids = array_filter((array) $params->get('catid', array()));
 
-	if ($module->module === 'mod_articles_category' && count($catids) === 1)
-	{
-		$link = JRoute::_(ContentHelperRoute::getCategoryRoute((int) reset($catids)));
-	}
+    if ($module->module === 'mod_articles_category' && count($catids) === 1) {
+        $link = JRoute::_(ContentHelperRoute::getCategoryRoute((int) reset($catids)));
+    }
 
-	echo '<section class="moduleContainer ' . HammondHelper::e($suffix) . ' ' . str_replace('_', '-', $module->module) . '" id="module-' . (int) $module->id . '">';
+    echo '<section class="moduleContainer ' . HammondHelper::e($suffix) . ' ' . str_replace('_', '-', $module->module) . '" id="module-' . (int) $module->id . '">';
 
-	if ($module->showtitle)
-	{
-		echo '<header class="moduleHeader"><h2 class="moduleTitle">' . ($link ? '<a href="' . $link . '">' . $title . '</a>' : $title) . '</h2>'
-			. ($link ? '<a class="moduleMore" href="' . $link . '">' . JText::_('TPL_HAMMOND_MORE') . HammondHelper::icon('arrow-right') . '</a>' : '') . '</header>';
-	}
+    if ($module->showtitle) {
+        echo '<header class="moduleHeader"><h2 class="moduleTitle">' . ($link ? '<a href="' . $link . '">' . $title . '</a>' : $title) . '</h2>'
+            . ($link ? '<a class="moduleMore" href="' . $link . '">' . JText::_('TPL_HAMMOND_MORE') . HammondHelper::icon('arrow-right') . '</a>' : '') . '</header>';
+    }
 
-	echo '<div class="moduleContent">' . HammondHelper::lazyImages($module->content) . '</div></section>';
+    echo '<div class="moduleContent">' . HammondHelper::lazyImages($module->content) . '</div></section>';
 }

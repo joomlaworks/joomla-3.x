@@ -62,48 +62,40 @@ $seconds    = (bool) preg_match('/%[ST]/', $format) || ($hasTime && (bool) $show
 $type       = !$hasYear && !$hasDay ? ($hasTime ? 'time' : 'date') : ($hasTime ? 'datetime-local' : ($hasDay || !preg_match('/%[mbBh]/', $format) ? 'date' : 'month'));
 $native     = '';
 
-if (strtoupper((string) $value) === 'NOW')
-{
-	$value = JFactory::getDate()->format($dateFormat);
+if (strtoupper((string) $value) === 'NOW') {
+    $value = JFactory::getDate()->format($dateFormat);
 }
 
-if ((string) $value !== '' && $value !== '0000-00-00 00:00:00')
-{
-	$date = DateTime::createFromFormat('!' . $dateFormat, (string) $value, new DateTimeZone('UTC'));
+if ((string) $value !== '' && $value !== '0000-00-00 00:00:00') {
+    $date = DateTime::createFromFormat('!' . $dateFormat, (string) $value, new DateTimeZone('UTC'));
 
-	if (!$date && strtotime((string) $value) !== false)
-	{
-		$date = new DateTime('@' . strtotime((string) $value));
-	}
+    if (!$date && strtotime((string) $value) !== false) {
+        $date = new DateTime('@' . strtotime((string) $value));
+    }
 
-	if ($date)
-	{
-		$nativeFormats = array(
-			'date'           => 'Y-m-d',
-			'month'          => 'Y-m',
-			'time'           => $seconds ? 'H:i:s' : 'H:i',
-			'datetime-local' => $seconds ? 'Y-m-d\TH:i:s' : 'Y-m-d\TH:i',
-		);
-		$native = $date->format($nativeFormats[$type]);
-	}
-}
-else
-{
-	$value = '';
+    if ($date) {
+        $nativeFormats = array(
+            'date'           => 'Y-m-d',
+            'month'          => 'Y-m',
+            'time'           => $seconds ? 'H:i:s' : 'H:i',
+            'datetime-local' => $seconds ? 'Y-m-d\TH:i:s' : 'Y-m-d\TH:i',
+        );
+        $native = $date->format($nativeFormats[$type]);
+    }
+} else {
+    $value = '';
 }
 
 // minyear/maxyear: years before/after this one (or a year itself)
 $limits = array();
 
-foreach (array('min' => isset($minYear) ? $minYear : '', 'max' => isset($maxYear) ? $maxYear : '') as $limit => $year)
-{
-	if (is_numeric($year) && $type !== 'time')
-	{
-		$year   = abs((int) $year) > 999 ? (int) $year : (int) date('Y') + (int) $year;
-		$day    = $limit === 'min' ? '01-01' : '12-31';
-		$values = array('date' => "$year-$day", 'month' => $year . ($limit === 'min' ? '-01' : '-12'), 'datetime-local' => "$year-$day" . ($limit === 'min' ? 'T00:00' : 'T23:59'));
-		$limits[$limit] = sprintf('%04d', $year) . substr($values[$type], strlen((string) $year));
-	}
+foreach (array('min' => isset($minYear) ? $minYear : '', 'max' => isset($maxYear) ? $maxYear : '') as $limit => $year) {
+    if (is_numeric($year) && $type !== 'time') {
+        $year   = abs((int) $year) > 999 ? (int) $year : (int) date('Y') + (int) $year;
+        $day    = $limit === 'min' ? '01-01' : '12-31';
+        $values = array('date' => "$year-$day", 'month' => $year . ($limit === 'min' ? '-01' : '-12'), 'datetime-local' => "$year-$day" . ($limit === 'min' ? 'T00:00' : 'T23:59'));
+        $limits[$limit] = sprintf('%04d', $year) . substr($values[$type], strlen((string) $year));
+    }
 }
 
 $locked = $readonly || $disabled;
@@ -117,112 +109,103 @@ $text = $mode === 'language';
 // Languages using the Jalali calendar (metadata calendar "jalali", as the Persian packs set it): Jalali dates with
 // JalaliDatePicker, whatever the option; the form still posts the Gregorian date in $format
 $jalali     = $type !== 'time' && strtolower((string) JFactory::getLanguage()->getCalendar()) === 'jalali';
-$jalaliDate = function ($gregorian) use ($hasTime, $seconds)
-{
-	list($y, $m, $d) = Joomla\CMS\Date\Jalali::toJalali((int) $gregorian->format('Y'), (int) $gregorian->format('n'), (int) $gregorian->format('j'));
+$jalaliDate = function ($gregorian) use ($hasTime, $seconds) {
+    list($y, $m, $d) = Joomla\CMS\Date\Jalali::toJalali((int) $gregorian->format('Y'), (int) $gregorian->format('n'), (int) $gregorian->format('j'));
 
-	return sprintf('%04d/%02d/%02d', $y, $m, $d) . ($hasTime ? ' ' . $gregorian->format($seconds ? 'H:i:s' : 'H:i') : '');
+    return sprintf('%04d/%02d/%02d', $y, $m, $d) . ($hasTime ? ' ' . $gregorian->format($seconds ? 'H:i:s' : 'H:i') : '');
 };
 
 // The time zone the value is shown in (the field's filter), so Now is the user's now, not the browser's clock
 $timezone = null;
 
-switch (strtoupper(isset($filter) && is_string($filter) ? $filter : ''))
-{
-	case 'USER_UTC':
-		$timezone = JFactory::getUser()->getTimezone();
-		break;
-	case 'SERVER_UTC':
-		$timezone = new DateTimeZone(JFactory::getConfig()->get('offset') ?: 'UTC');
-		break;
+switch (strtoupper(isset($filter) && is_string($filter) ? $filter : '')) {
+    case 'USER_UTC':
+        $timezone = JFactory::getUser()->getTimezone();
+        break;
+    case 'SERVER_UTC':
+        $timezone = new DateTimeZone(JFactory::getConfig()->get('offset') ?: 'UTC');
+        break;
 }
 
 JHtml::_('behavior.core');
 JHtml::_('behavior.styles');
 
 $attributes = array(
-	'type'      => $type,
-	'id'        => $text ? null : $id,
-	'class'     => trim('cms-date-input ' . ($text ? '' : $class)),
-	'value'     => $native,
-	'step'      => $seconds ? '1' : null,
-	'min'       => isset($limits['min']) ? $limits['min'] : null,
-	'max'       => isset($limits['max']) ? $limits['max'] : null,
-	'onchange'  => !$text && !empty($onchange) ? $onchange : null,
-	'tabindex'  => $text ? '-1' : null,
-	'aria-hidden' => $text ? 'true' : null,
-	'data-utc-offset' => $timezone ? (string) ((new DateTime('now', $timezone))->getOffset() / 60) : null,
+    'type'      => $type,
+    'id'        => $text ? null : $id,
+    'class'     => trim('cms-date-input ' . ($text ? '' : $class)),
+    'value'     => $native,
+    'step'      => $seconds ? '1' : null,
+    'min'       => isset($limits['min']) ? $limits['min'] : null,
+    'max'       => isset($limits['max']) ? $limits['max'] : null,
+    'onchange'  => !$text && !empty($onchange) ? $onchange : null,
+    'tabindex'  => $text ? '-1' : null,
+    'aria-hidden' => $text ? 'true' : null,
+    'data-utc-offset' => $timezone ? (string) ((new DateTime('now', $timezone))->getOffset() / 60) : null,
 );
 
 // In the language's format: the value as text, a placeholder spelling the format out and a pattern the form validator
 // checks (no escapes but for regular expression syntax: browsers compile patterns with the v flag)
 $placeholder = strtr($format, array(
-	'%Y' => 'YYYY', '%y' => 'YY', '%m' => 'MM', '%d' => 'DD', '%e' => 'D', '%H' => 'hh', '%k' => 'h', '%I' => 'hh', '%l' => 'h',
-	'%M' => 'mm', '%S' => 'ss', '%p' => 'AM', '%P' => 'am', '%F' => 'YYYY-MM-DD', '%T' => 'hh:mm:ss', '%R' => 'hh:mm', '%%' => '%',
+    '%Y' => 'YYYY', '%y' => 'YY', '%m' => 'MM', '%d' => 'DD', '%e' => 'D', '%H' => 'hh', '%k' => 'h', '%I' => 'hh', '%l' => 'h',
+    '%M' => 'mm', '%S' => 'ss', '%p' => 'AM', '%P' => 'am', '%F' => 'YYYY-MM-DD', '%T' => 'hh:mm:ss', '%R' => 'hh:mm', '%%' => '%',
 ));
-$pattern = preg_replace_callback('/%([a-zA-Z%])|([\\^$.*+?()[\]{}|\/])/', function ($match)
-{
-	if (!empty($match[2]))
-	{
-		return '\\' . $match[2];
-	}
+$pattern = preg_replace_callback('/%([a-zA-Z%])|([\\^$.*+?()[\]{}|\/])/', function ($match) {
+    if (!empty($match[2])) {
+        return '\\' . $match[2];
+    }
 
-	$codes = array(
-		'Y' => '\d{4}', 'y' => '\d{2}', 'C' => '\d{2}', 'm' => '\d{1,2}', 'd' => '\d{1,2}', 'H' => '\d{1,2}', 'I' => '\d{1,2}',
-		'M' => '\d{1,2}', 'S' => '\d{1,2}', 'e' => ' ?\d{1,2}', 'k' => ' ?\d{1,2}', 'l' => ' ?\d{1,2}', 'p' => '[AaPp][Mm]',
-		'P' => '[AaPp][Mm]', 'F' => '\d{4}-\d{1,2}-\d{1,2}', 'T' => '\d{1,2}:\d{1,2}:\d{1,2}', 'R' => '\d{1,2}:\d{1,2}', '%' => '%',
-	);
+    $codes = array(
+        'Y' => '\d{4}', 'y' => '\d{2}', 'C' => '\d{2}', 'm' => '\d{1,2}', 'd' => '\d{1,2}', 'H' => '\d{1,2}', 'I' => '\d{1,2}',
+        'M' => '\d{1,2}', 'S' => '\d{1,2}', 'e' => ' ?\d{1,2}', 'k' => ' ?\d{1,2}', 'l' => ' ?\d{1,2}', 'p' => '[AaPp][Mm]',
+        'P' => '[AaPp][Mm]', 'F' => '\d{4}-\d{1,2}-\d{1,2}', 'T' => '\d{1,2}:\d{1,2}:\d{1,2}', 'R' => '\d{1,2}:\d{1,2}', '%' => '%',
+    );
 
-	return isset($codes[$match[1]]) ? $codes[$match[1]] : '\\S+';
+    return isset($codes[$match[1]]) ? $codes[$match[1]] : '\\S+';
 }, $format);
 
-if ($jalali)
-{
-	JHtml::_('script', 'system/jalalidatepicker.min.js', array('version' => 'auto', 'relative' => true));
-	JHtml::_('stylesheet', 'system/jalalidatepicker.min.css', array('version' => 'auto', 'relative' => true));
+if ($jalali) {
+    JHtml::_('script', 'system/jalalidatepicker.min.js', array('version' => 'auto', 'relative' => true));
+    JHtml::_('stylesheet', 'system/jalalidatepicker.min.css', array('version' => 'auto', 'relative' => true));
 
-	// The limits as Jalali dates (the browser's input's min/max: YYYY-MM-DD, YYYY-MM-DDThh:mm or YYYY-MM for months)
-	$limit = function ($native)
-	{
-		if ($native === null)
-		{
-			return null;
-		}
+    // The limits as Jalali dates (the browser's input's min/max: YYYY-MM-DD, YYYY-MM-DDThh:mm or YYYY-MM for months)
+    $limit = function ($native) {
+        if ($native === null) {
+            return null;
+        }
 
-		$day = strlen($native) >= 10 ? (int) substr($native, 8, 2) : 1;
+        $day = strlen($native) >= 10 ? (int) substr($native, 8, 2) : 1;
 
-		return vsprintf('%04d/%02d/%02d', Joomla\CMS\Date\Jalali::toJalali((int) substr($native, 0, 4), (int) substr($native, 5, 2), $day));
-	};
-	$jalaliAttributes = array(
-		'type'        => 'text',
-		'id'          => $id,
-		'class'       => trim('cms-date-jalali ' . $class),
-		'value'       => !empty($date) && $native !== '' ? $jalaliDate($date) : '',
-		'placeholder' => 'YYYY/MM/DD' . ($hasTime ? ($seconds ? ' hh:mm:ss' : ' hh:mm') : ''),
-		'pattern'     => '\d{3,4}/\d{1,2}/\d{1,2}' . ($hasTime ? ' \d{1,2}:\d{1,2}' . ($seconds ? ':\d{1,2}' : '') : ''),
-		'dir'         => 'ltr',
-		'autocomplete' => 'off',
-		'data-jdp'    => $locked ? null : '',
-		'data-jdp-only-date' => $hasTime ? null : '',
-		'data-jdp-has-second' => $seconds ? 'true' : 'false',
-		'data-jdp-min-date' => $limit(isset($limits['min']) ? $limits['min'] : null),
-		'data-jdp-max-date' => $limit(isset($limits['max']) ? $limits['max'] : null),
-		'data-utc-offset' => $attributes['data-utc-offset'],
-		'onchange'    => !empty($onchange) ? $onchange : null,
-	);
-	?>
+        return vsprintf('%04d/%02d/%02d', Joomla\CMS\Date\Jalali::toJalali((int) substr($native, 0, 4), (int) substr($native, 5, 2), $day));
+    };
+    $jalaliAttributes = array(
+        'type'        => 'text',
+        'id'          => $id,
+        'class'       => trim('cms-date-jalali ' . $class),
+        'value'       => !empty($date) && $native !== '' ? $jalaliDate($date) : '',
+        'placeholder' => 'YYYY/MM/DD' . ($hasTime ? ($seconds ? ' hh:mm:ss' : ' hh:mm') : ''),
+        'pattern'     => '\d{3,4}/\d{1,2}/\d{1,2}' . ($hasTime ? ' \d{1,2}:\d{1,2}' . ($seconds ? ':\d{1,2}' : '') : ''),
+        'dir'         => 'ltr',
+        'autocomplete' => 'off',
+        'data-jdp'    => $locked ? null : '',
+        'data-jdp-only-date' => $hasTime ? null : '',
+        'data-jdp-has-second' => $seconds ? 'true' : 'false',
+        'data-jdp-min-date' => $limit(isset($limits['min']) ? $limits['min'] : null),
+        'data-jdp-max-date' => $limit(isset($limits['max']) ? $limits['max'] : null),
+        'data-utc-offset' => $attributes['data-utc-offset'],
+        'onchange'    => !empty($onchange) ? $onchange : null,
+    );
+    ?>
 <span class="cms-date field-calendar is-jalali">
 	<input<?php
-		foreach ($jalaliAttributes as $attribute => $attributeValue)
-		{
-			if ($attributeValue !== null)
-			{
-				echo ' ' . $attribute . ($attributeValue === '' && strpos($attribute, 'data-jdp') === 0 ? '' : '="' . htmlspecialchars((string) $attributeValue, ENT_COMPAT, 'UTF-8') . '"');
-			}
-		}
+        foreach ($jalaliAttributes as $attribute => $attributeValue) {
+            if ($attributeValue !== null) {
+                echo ' ' . $attribute . ($attributeValue === '' && strpos($attribute, 'data-jdp') === 0 ? '' : '="' . htmlspecialchars((string) $attributeValue, ENT_COMPAT, 'UTF-8') . '"');
+            }
+        }
 
-		echo $readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', !empty($autofocus) ? ' autofocus' : '';
-	?> />
+    echo $readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', !empty($autofocus) ? ' autofocus' : '';
+    ?> />
 	<input type="hidden" class="cms-date-value" name="<?php echo $name; ?>" value="<?php echo htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8'); ?>" data-format="<?php echo htmlspecialchars((string) $format, ENT_COMPAT, 'UTF-8'); ?>"<?php echo $disabled ? ' disabled' : ''; ?> />
 	<?php if (!$locked) : ?>
 		<?php if ($todaybutton) : ?>
@@ -232,35 +215,30 @@ if ($jalali)
 	<?php endif; ?>
 </span>
 	<?php
-	return;
+    return;
 }
 ?>
 <span class="cms-date field-calendar<?php echo $text ? ' is-text' : ''; ?>">
 	<?php if ($text) : ?>
 		<input type="text" id="<?php echo $id; ?>" class="<?php echo htmlspecialchars(trim('cms-date-value cms-date-text ' . $class), ENT_COMPAT, 'UTF-8'); ?>" name="<?php echo $name; ?>" value="<?php
-			echo htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8'); ?>" data-format="<?php echo htmlspecialchars((string) $format, ENT_COMPAT, 'UTF-8'); ?>" placeholder="<?php
-			echo htmlspecialchars($placeholder, ENT_COMPAT, 'UTF-8'); ?>" pattern="<?php echo htmlspecialchars($pattern, ENT_COMPAT, 'UTF-8'); ?>" size="<?php echo strlen($placeholder) + 1; ?>" autocomplete="off"<?php
-			echo !empty($onchange) ? ' onchange="' . htmlspecialchars($onchange, ENT_COMPAT, 'UTF-8') . '"' : '',
-				$readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', !empty($autofocus) ? ' autofocus' : ''; ?> />
+            echo htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8'); ?>" data-format="<?php echo htmlspecialchars((string) $format, ENT_COMPAT, 'UTF-8'); ?>" placeholder="<?php
+            echo htmlspecialchars($placeholder, ENT_COMPAT, 'UTF-8'); ?>" pattern="<?php echo htmlspecialchars($pattern, ENT_COMPAT, 'UTF-8'); ?>" size="<?php echo strlen($placeholder) + 1; ?>" autocomplete="off"<?php
+            echo !empty($onchange) ? ' onchange="' . htmlspecialchars($onchange, ENT_COMPAT, 'UTF-8') . '"' : '',
+	    $readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', !empty($autofocus) ? ' autofocus' : ''; ?> />
 	<?php endif; ?>
 	<input<?php
-		foreach ($attributes as $attribute => $attributeValue)
-		{
-			if ($attributeValue !== null)
-			{
-				echo ' ' . $attribute . '="' . htmlspecialchars((string) $attributeValue, ENT_COMPAT, 'UTF-8') . '"';
-			}
-		}
+        foreach ($attributes as $attribute => $attributeValue) {
+            if ($attributeValue !== null) {
+                echo ' ' . $attribute . '="' . htmlspecialchars((string) $attributeValue, ENT_COMPAT, 'UTF-8') . '"';
+            }
+        }
 
-		if ($text)
-		{
-			echo $locked ? ' disabled' : '';
-		}
-		else
-		{
-			echo $readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', !empty($autofocus) ? ' autofocus' : '';
-		}
-	?> />
+if ($text) {
+    echo $locked ? ' disabled' : '';
+} else {
+    echo $readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', !empty($autofocus) ? ' autofocus' : '';
+}
+?> />
 	<?php if (!$text) : ?>
 		<input type="hidden" class="cms-date-value" name="<?php echo $name; ?>" value="<?php echo htmlspecialchars((string) $value, ENT_COMPAT, 'UTF-8'); ?>" data-format="<?php echo htmlspecialchars((string) $format, ENT_COMPAT, 'UTF-8'); ?>"<?php echo $disabled ? ' disabled' : ''; ?> />
 	<?php endif; ?>

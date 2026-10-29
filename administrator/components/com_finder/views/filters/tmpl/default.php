@@ -38,7 +38,7 @@ JFactory::getDocument()->addScriptDeclaration('
 ');
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_finder&view=filters'); ?>" method="post" name="adminForm" id="adminForm">
-	<?php if (!empty( $this->sidebar)) : ?>
+	<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -88,16 +88,16 @@ JFactory::getDocument()->addScriptDeclaration('
 			</tfoot>
 			<tbody>
 				<?php
-				$canCreate                  = $user->authorise('core.create', 'com_finder');
-				$canEdit                    = $user->authorise('core.edit', 'com_finder');
-				$userAuthoriseCoreManage    = $user->authorise('core.manage', 'com_checkin');
-				$userAuthoriseCoreEditState = $user->authorise('core.edit.state', 'com_finder');
-				$userId                     = $user->get('id');
-				foreach ($this->items as $i => $item) :
-					$canCheckIn   = $userAuthoriseCoreManage || $item->checked_out == $userId || $item->checked_out == 0;
-					$canChange    = $userAuthoriseCoreEditState && $canCheckIn;
-					$escapedTitle = $this->escape($item->title);
-					?>
+                $canCreate                  = $user->authorise('core.create', 'com_finder');
+		    $canEdit                    = $user->authorise('core.edit', 'com_finder');
+		    $userAuthoriseCoreManage    = $user->authorise('core.manage', 'com_checkin');
+		    $userAuthoriseCoreEditState = $user->authorise('core.edit.state', 'com_finder');
+		    $userId                     = $user->get('id');
+		    foreach ($this->items as $i => $item) :
+		        $canCheckIn   = $userAuthoriseCoreManage || $item->checked_out == $userId || $item->checked_out == 0;
+		        $canChange    = $userAuthoriseCoreEditState && $canCheckIn;
+		        $escapedTitle = $this->escape($item->title);
+		        ?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="center">
 							<?php echo JHtml::_('grid.id', $i, $item->filter_id); ?>

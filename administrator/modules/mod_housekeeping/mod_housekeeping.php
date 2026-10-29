@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_housekeeping
@@ -15,9 +16,8 @@ JLoader::register('ModHousekeepingHelper', __DIR__ . '/helper.php');
 $canClean = ModHousekeepingHelper::canCleanCache();
 $isAdmin  = ModHousekeepingHelper::isAdmin();
 
-if (!$canClean && !$isAdmin)
-{
-	return;
+if (!$canClean && !$isAdmin) {
+    return;
 }
 
 require JModuleHelper::getLayoutPath('mod_housekeeping', $params->get('layout', 'default'));

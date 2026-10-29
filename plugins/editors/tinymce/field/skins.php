@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Editors.tinymce
@@ -22,49 +23,48 @@ JFormHelper::loadFieldClass('list');
  */
 class JFormFieldSkins extends JFormFieldList
 {
-	protected $type = 'skins';
+    protected $type = 'skins';
 
-	/**
-	 * Method to get the skins options.
-	 *
-	 * @return  array  The skins option objects.
-	 *
-	 * @since   3.4
-	 */
-	public function getOptions()
-	{
-		$options = array();
+    /**
+     * Method to get the skins options.
+     *
+     * @return  array  The skins option objects.
+     *
+     * @since   3.4
+     */
+    public function getOptions()
+    {
+        $options = array();
 
-		$directories = glob(JPATH_ROOT . '/plugins/editors/tinymce/skins' . '/*', GLOB_ONLYDIR);
+        $directories = glob(JPATH_ROOT . '/plugins/editors/tinymce/skins' . '/*', GLOB_ONLYDIR);
 
-		for ($i = 0, $iMax = count($directories); $i < $iMax; ++$i)
-		{
-			$dir = basename($directories[$i]);
-			$options[] = JHtml::_('select.option', $i, $dir);
-		}
+        for ($i = 0, $iMax = count($directories); $i < $iMax; ++$i) {
+            $dir = basename($directories[$i]);
+            $options[] = JHtml::_('select.option', $i, $dir);
+        }
 
-		$options = array_merge(parent::getOptions(), $options);
+        $options = array_merge(parent::getOptions(), $options);
 
-		return $options;
-	}
+        return $options;
+    }
 
-	/**
-	 * Method to get the field input markup for the list of skins.
-	 *
-	 * @return  string  The field input markup.
-	 *
-	 * @since   3.4
-	 */
-	protected function getInput()
-	{
-		$html = array();
+    /**
+     * Method to get the field input markup for the list of skins.
+     *
+     * @return  string  The field input markup.
+     *
+     * @since   3.4
+     */
+    protected function getInput()
+    {
+        $html = array();
 
-		// Get the field options.
-		$options = (array) $this->getOptions();
+        // Get the field options.
+        $options = (array) $this->getOptions();
 
-		// Create a regular list.
-		$html[] = JHtml::_('select.genericlist', $options, $this->name, '', 'value', 'text', $this->value, $this->id);
+        // Create a regular list.
+        $html[] = JHtml::_('select.genericlist', $options, $this->name, '', 'value', 'text', $this->value, $this->id);
 
-		return implode($html);
-	}
+        return implode($html);
+    }
 }

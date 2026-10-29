@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,57 +18,57 @@ defined('JPATH_PLATFORM') or die;
  */
 class ArticleDeleteCommand extends AbstractDeleteCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.18.0
-	 */
-	protected $component = 'com_content';
+    /**
+     * @var    string
+     * @since  3.18.0
+     */
+    protected $component = 'com_content';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'article:delete';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'article:delete';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Delete trashed articles for good';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Delete trashed articles for good';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Deletes the given articles for good, as Empty Trash in Content: Articles does. Only trashed articles are deleted (article:trash first).';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Deletes the given articles for good, as Empty Trash in Content: Articles does. Only trashed articles are deleted (article:trash first).';
 
-	/**
-	 * @var    string[]
-	 * @since  3.17.0
-	 */
-	protected $model = array('com_content', 'Article', 'ContentModel');
+    /**
+     * @var    string[]
+     * @since  3.17.0
+     */
+    protected $model = array('com_content', 'Article', 'ContentModel');
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $item = 'article';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $item = 'article';
 
-	/**
-	 * @var    string[]
-	 * @since  3.17.0
-	 */
-	protected $table = array('#__content', 'title', 'state');
+    /**
+     * @var    string[]
+     * @since  3.17.0
+     */
+    protected $table = array('#__content', 'title', 'state');
 
-	/**
-	 * @param   object  $row  The item
-	 *
-	 * @return  string
-	 *
-	 * @since   3.17.0
-	 */
-	protected function getAssetName($row)
-	{
-		return 'com_content.article.' . (int) $row->id;
-	}
+    /**
+     * @param   object  $row  The item
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    protected function getAssetName($row)
+    {
+        return 'com_content.article.' . (int) $row->id;
+    }
 }

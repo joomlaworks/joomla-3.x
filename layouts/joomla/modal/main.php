@@ -39,31 +39,27 @@ extract($displayData);
 
 $modalClasses = array('modal', 'hide');
 
-if (!isset($params['animation']) || $params['animation'])
-{
-	$modalClasses[] = 'fade';
+if (!isset($params['animation']) || $params['animation']) {
+    $modalClasses[] = 'fade';
 }
 
 $modalWidth = isset($params['modalWidth']) ? round((int) $params['modalWidth'], -1) : '';
 
-if ($modalWidth && $modalWidth > 0 && $modalWidth <= 100)
-{
-	$modalClasses[] = 'jviewport-width' . $modalWidth;
+if ($modalWidth && $modalWidth > 0 && $modalWidth <= 100) {
+    $modalClasses[] = 'jviewport-width' . $modalWidth;
 }
 
 $modalAttributes = array(
-	'tabindex' => '-1',
-	'class'    => implode(' ', $modalClasses)
+    'tabindex' => '-1',
+    'class'    => implode(' ', $modalClasses)
 );
 
-if (isset($params['backdrop']))
-{
-	$modalAttributes['data-backdrop'] = (is_bool($params['backdrop']) ? ($params['backdrop'] ? 'true' : 'false') : $params['backdrop']);
+if (isset($params['backdrop'])) {
+    $modalAttributes['data-backdrop'] = (is_bool($params['backdrop']) ? ($params['backdrop'] ? 'true' : 'false') : $params['backdrop']);
 }
 
-if (isset($params['keyboard']))
-{
-	$modalAttributes['data-keyboard'] = (is_bool($params['keyboard']) ? ($params['keyboard'] ? 'true' : 'false') : 'true');
+if (isset($params['keyboard'])) {
+    $modalAttributes['data-keyboard'] = (is_bool($params['keyboard']) ? ($params['keyboard'] ? 'true' : 'false') : 'true');
 }
 
 /**
@@ -87,19 +83,16 @@ $script[] = "   $('#" . $selector . "').on('show.bs.modal', function() {";
 
 $script[] = "       $('body').addClass('modal-open');";
 
-if (isset($params['url']))
-{
-	$iframeHtml = JLayoutHelper::render('joomla.modal.iframe', $displayData);
+if (isset($params['url'])) {
+    $iframeHtml = JLayoutHelper::render('joomla.modal.iframe', $displayData);
 
-	// Script for destroying and reloading the iframe
-	$script[] = "       var modalBody = $(this).find('.modal-body');";
-	$script[] = "       modalBody.find('iframe').remove();";
-	$script[] = "       modalBody.prepend('" . trim($iframeHtml) . "');";
-}
-else
-{
-	// Tooltips of .modalTooltip: CMS.tip (JHtml bootstrap.tooltip above), nothing to start here
-	$script[] = "       return;";
+    // Script for destroying and reloading the iframe
+    $script[] = "       var modalBody = $(this).find('.modal-body');";
+    $script[] = "       modalBody.find('iframe').remove();";
+    $script[] = "       modalBody.prepend('" . trim($iframeHtml) . "');";
+} else {
+    // Tooltips of .modalTooltip: CMS.tip (JHtml bootstrap.tooltip above), nothing to start here
+    $script[] = "       return;";
 }
 
 // Adapt modal body max-height to window viewport if needed, when the modal has been made visible to the user.
@@ -122,21 +115,18 @@ $script[] = "           maxModalHeight = ($(window).height()-(padding*2)),";
 $script[] = "           modalBodyPadding = (modalBodyHeightOuter-modalBodyHeight),";
 $script[] = "           maxModalBodyHeight = maxModalHeight-(modalHeaderHeight+modalFooterHeight+modalBodyPadding);";
 
-if (isset($params['url']))
-{
-	// Set max-height for iframe if needed, to adapt to viewport height.
-	$script[] = "       var iframeHeight = $('.iframe').height();";
-	$script[] = "       if (iframeHeight > maxModalBodyHeight){;";
-	$script[] = "           $('.modal-body').css({'max-height': maxModalBodyHeight, 'overflow-y': 'auto'});";
-	$script[] = "           $('.iframe').css('max-height', maxModalBodyHeight-modalBodyPadding);";
-	$script[] = "       }";
-}
-else
-{
-	// Set max-height for modal-body if needed, to adapt to viewport height.
-	$script[] = "       if (modalHeight > maxModalHeight){;";
-	$script[] = "           $('.modal-body').css({'max-height': maxModalBodyHeight, 'overflow-y': 'auto'});";
-	$script[] = "       }";
+if (isset($params['url'])) {
+    // Set max-height for iframe if needed, to adapt to viewport height.
+    $script[] = "       var iframeHeight = $('.iframe').height();";
+    $script[] = "       if (iframeHeight > maxModalBodyHeight){;";
+    $script[] = "           $('.modal-body').css({'max-height': maxModalBodyHeight, 'overflow-y': 'auto'});";
+    $script[] = "           $('.iframe').css('max-height', maxModalBodyHeight-modalBodyPadding);";
+    $script[] = "       }";
+} else {
+    // Set max-height for modal-body if needed, to adapt to viewport height.
+    $script[] = "       if (modalHeight > maxModalHeight){;";
+    $script[] = "           $('.modal-body').css({'max-height': maxModalBodyHeight, 'overflow-y': 'auto'});";
+    $script[] = "       }";
 }
 
 $script[] = "   }).on('hide.bs.modal', function () {";
@@ -150,19 +140,17 @@ JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
 ?>
 <div id="<?php echo $selector; ?>" <?php echo ArrayHelper::toString($modalAttributes); ?>>
 	<?php
-	// Header
-	if (!isset($params['closeButton']) || isset($params['title']) || $params['closeButton'])
-	{
-		echo JLayoutHelper::render('joomla.modal.header', $displayData);
-	}
+    // Header
+    if (!isset($params['closeButton']) || isset($params['title']) || $params['closeButton']) {
+        echo JLayoutHelper::render('joomla.modal.header', $displayData);
+    }
 
-	// Body
-	echo JLayoutHelper::render('joomla.modal.body', $displayData);
+// Body
+echo JLayoutHelper::render('joomla.modal.body', $displayData);
 
-	// Footer
-	if (isset($params['footer']))
-	{
-		echo JLayoutHelper::render('joomla.modal.footer', $displayData);
-	}
-	?>
+// Footer
+if (isset($params['footer'])) {
+    echo JLayoutHelper::render('joomla.modal.footer', $displayData);
+}
+?>
 </div>

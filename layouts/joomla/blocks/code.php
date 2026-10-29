@@ -22,9 +22,8 @@ $data = $displayData['data'];
 
 $code = isset($data['code']) ? (string) $data['code'] : '';
 
-if (trim($code) === '')
-{
-	return;
+if (trim($code) === '') {
+    return;
 }
 ?>
 <pre class="block-code"><code><?php echo $r->e($code); ?></code></pre>

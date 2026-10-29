@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_installer
@@ -16,50 +17,50 @@ defined('_JEXEC') or die;
  */
 class InstallerControllerDiscover extends JControllerLegacy
 {
-	/**
-	 * Refreshes the cache of discovered extensions.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 */
-	public function refresh()
-	{
-		$this->checkToken();
+    /**
+     * Refreshes the cache of discovered extensions.
+     *
+     * @return  void
+     *
+     * @since   1.6
+     */
+    public function refresh()
+    {
+        $this->checkToken();
 
-		$model = $this->getModel('discover');
-		$model->discover();
-		$this->setRedirect(JRoute::_('index.php?option=com_installer&view=discover', false));
-	}
+        $model = $this->getModel('discover');
+        $model->discover();
+        $this->setRedirect(JRoute::_('index.php?option=com_installer&view=discover', false));
+    }
 
-	/**
-	 * Install a discovered extension.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 */
-	public function install()
-	{
-		$this->checkToken();
+    /**
+     * Install a discovered extension.
+     *
+     * @return  void
+     *
+     * @since   1.6
+     */
+    public function install()
+    {
+        $this->checkToken();
 
-		$this->getModel('discover')->discover_install();
-		$this->setRedirect(JRoute::_('index.php?option=com_installer&view=discover', false));
-	}
+        $this->getModel('discover')->discover_install();
+        $this->setRedirect(JRoute::_('index.php?option=com_installer&view=discover', false));
+    }
 
-	/**
-	 * Clean out the discovered extension cache.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 */
-	public function purge()
-	{
-		$this->checkToken();
+    /**
+     * Clean out the discovered extension cache.
+     *
+     * @return  void
+     *
+     * @since   1.6
+     */
+    public function purge()
+    {
+        $this->checkToken();
 
-		$model = $this->getModel('discover');
-		$model->purge();
-		$this->setRedirect(JRoute::_('index.php?option=com_installer&view=discover', false), $model->_message);
-	}
+        $model = $this->getModel('discover');
+        $model->purge();
+        $this->setRedirect(JRoute::_('index.php?option=com_installer&view=discover', false), $model->_message);
+    }
 }

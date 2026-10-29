@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  mod_search
@@ -17,19 +18,20 @@ $app        = JFactory::getApplication();
 $set_Itemid = (int) $params->get('set_itemid', 0);
 $mitemid    = $set_Itemid > 0 ? $set_Itemid : $app->input->getInt('Itemid');
 
-if ($params->get('opensearch', 1))
-{
-	$doc = JFactory::getDocument();
+if ($params->get('opensearch', 1)) {
+    $doc = JFactory::getDocument();
 
-	$ostitle = $params->get('opensearch_title', JText::_('MOD_SEARCH_SEARCHBUTTON_TEXT') . ' ' . $app->get('sitename'));
-	$doc->addHeadLink(
-			JUri::getInstance()->toString(array('scheme', 'host', 'port'))
-			. JRoute::_('&option=com_search&format=opensearch&Itemid=' . $mitemid), 'search', 'rel',
-			array(
-				'title' => htmlspecialchars((string) $ostitle, ENT_COMPAT, 'UTF-8'),
-				'type' => 'application/opensearchdescription+xml'
-			)
-		);
+    $ostitle = $params->get('opensearch_title', JText::_('MOD_SEARCH_SEARCHBUTTON_TEXT') . ' ' . $app->get('sitename'));
+    $doc->addHeadLink(
+        JUri::getInstance()->toString(array('scheme', 'host', 'port'))
+            . JRoute::_('&option=com_search&format=opensearch&Itemid=' . $mitemid),
+        'search',
+        'rel',
+        array(
+                'title' => htmlspecialchars((string) $ostitle, ENT_COMPAT, 'UTF-8'),
+                'type' => 'application/opensearchdescription+xml'
+            )
+    );
 }
 
 $upper_limit     = $lang->getUpperLimitSearchWord();
@@ -43,9 +45,8 @@ $text            = htmlspecialchars((string) $params->get('text', JText::_('MOD_
 $label           = htmlspecialchars((string) $params->get('label', JText::_('MOD_SEARCH_LABEL_TEXT')), ENT_COMPAT, 'UTF-8');
 $moduleclass_sfx = htmlspecialchars((string) $params->get('moduleclass_sfx', ''), ENT_COMPAT, 'UTF-8');
 
-if ($imagebutton)
-{
-	$img = ModSearchHelper::getSearchImage();
+if ($imagebutton) {
+    $img = ModSearchHelper::getSearchImage();
 }
 
 require JModuleHelper::getLayoutPath('mod_search', $params->get('layout', 'default'));

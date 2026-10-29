@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  mod_syndicate
@@ -16,9 +17,8 @@ $params->def('format', 'rss');
 
 $link = ModSyndicateHelper::getLink($params);
 
-if ($link === null)
-{
-	return;
+if ($link === null) {
+    return;
 }
 
 $moduleclass_sfx = htmlspecialchars((string) $params->get('moduleclass_sfx', ''), ENT_COMPAT, 'UTF-8');

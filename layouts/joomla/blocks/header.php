@@ -23,9 +23,8 @@ $data = $displayData['data'];
 $level = isset($data['level']) ? max(1, min(6, (int) $data['level'])) : 2;
 $text  = $r->inline(isset($data['text']) ? $data['text'] : '');
 
-if (trim(strip_tags($text)) === '')
-{
-	return;
+if (trim(strip_tags($text)) === '') {
+    return;
 }
 ?>
 <h<?php echo $level; ?>><?php echo $text; ?></h<?php echo $level; ?>>

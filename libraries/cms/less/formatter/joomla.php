@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Libraries
  * @subpackage  Less
@@ -19,13 +20,13 @@ defined('JPATH_PLATFORM') or die;
  */
 class JLessFormatterJoomla extends lessc_formatter_classic
 {
-	public $disableSingle = true;
+    public $disableSingle = true;
 
-	public $breakSelectors = true;
+    public $breakSelectors = true;
 
-	public $assignSeparator = ': ';
+    public $assignSeparator = ': ';
 
-	public $selectorSeparator = ',';
+    public $selectorSeparator = ',';
 
-	public $indentChar = "\t";
+    public $indentChar = "\t";
 }

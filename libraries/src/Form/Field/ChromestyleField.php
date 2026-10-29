@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -22,236 +23,223 @@ FormHelper::loadFieldClass('groupedlist');
  */
 class ChromestyleField extends \JFormFieldGroupedList
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  3.0
-	 */
-	public $type = 'ChromeStyle';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  3.0
+     */
+    public $type = 'ChromeStyle';
 
-	/**
-	 * The client ID.
-	 *
-	 * @var    integer
-	 * @since  3.2
-	 */
-	protected $clientId;
+    /**
+     * The client ID.
+     *
+     * @var    integer
+     * @since  3.2
+     */
+    protected $clientId;
 
-	/**
-	 * Method to get certain otherwise inaccessible properties from the form field object.
-	 *
-	 * @param   string  $name  The property name for which to get the value.
-	 *
-	 * @return  mixed  The property value or null.
-	 *
-	 * @since   3.2
-	 */
-	public function __get($name)
-	{
-		switch ($name)
-		{
-			case 'clientId':
-				return $this->clientId;
-		}
+    /**
+     * Method to get certain otherwise inaccessible properties from the form field object.
+     *
+     * @param   string  $name  The property name for which to get the value.
+     *
+     * @return  mixed  The property value or null.
+     *
+     * @since   3.2
+     */
+    public function __get($name)
+    {
+        switch ($name) {
+            case 'clientId':
+                return $this->clientId;
+        }
 
-		return parent::__get($name);
-	}
+        return parent::__get($name);
+    }
 
-	/**
-	 * Method to set certain otherwise inaccessible properties of the form field object.
-	 *
-	 * @param   string  $name   The property name for which to get the value.
-	 * @param   mixed   $value  The value of the property.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.2
-	 */
-	public function __set($name, $value)
-	{
-		switch ($name)
-		{
-			case 'clientId':
-				$this->clientId = (string) $value;
-				break;
+    /**
+     * Method to set certain otherwise inaccessible properties of the form field object.
+     *
+     * @param   string  $name   The property name for which to get the value.
+     * @param   mixed   $value  The value of the property.
+     *
+     * @return  void
+     *
+     * @since   3.2
+     */
+    public function __set($name, $value)
+    {
+        switch ($name) {
+            case 'clientId':
+                $this->clientId = (string) $value;
+                break;
 
-			default:
-				parent::__set($name, $value);
-		}
-	}
+            default:
+                parent::__set($name, $value);
+        }
+    }
 
-	/**
-	 * Method to attach a JForm object to the field.
-	 *
-	 * @param   \SimpleXMLElement  $element  The SimpleXMLElement object representing the `<field>` tag for the form field object.
-	 * @param   mixed              $value    The form field value to validate.
-	 * @param   string             $group    The field name group control value. This acts as an array container for the field.
-	 *                                       For example if the field has name="foo" and the group value is set to "bar" then the
-	 *                                       full field name would end up being "bar[foo]".
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @see     JFormField::setup()
-	 * @since   3.2
-	 */
-	public function setup(\SimpleXMLElement $element, $value, $group = null)
-	{
-		$result = parent::setup($element, $value, $group);
+    /**
+     * Method to attach a JForm object to the field.
+     *
+     * @param   \SimpleXMLElement  $element  The SimpleXMLElement object representing the `<field>` tag for the form field object.
+     * @param   mixed              $value    The form field value to validate.
+     * @param   string             $group    The field name group control value. This acts as an array container for the field.
+     *                                       For example if the field has name="foo" and the group value is set to "bar" then the
+     *                                       full field name would end up being "bar[foo]".
+     *
+     * @return  boolean  True on success.
+     *
+     * @see     JFormField::setup()
+     * @since   3.2
+     */
+    public function setup(\SimpleXMLElement $element, $value, $group = null)
+    {
+        $result = parent::setup($element, $value, $group);
 
-		if ($result === true)
-		{
-			// Get the client id.
-			$clientId = $this->element['client_id'];
+        if ($result === true) {
+            // Get the client id.
+            $clientId = $this->element['client_id'];
 
-			if (!isset($clientId))
-			{
-				$clientName = $this->element['client'];
+            if (!isset($clientId)) {
+                $clientName = $this->element['client'];
 
-				if (isset($clientName))
-				{
-					$client = \JApplicationHelper::getClientInfo($clientName, true);
-					$clientId = $client->id;
-				}
-			}
+                if (isset($clientName)) {
+                    $client = \JApplicationHelper::getClientInfo($clientName, true);
+                    $clientId = $client->id;
+                }
+            }
 
-			if (!isset($clientId) && $this->form instanceof \JForm)
-			{
-				$clientId = $this->form->getValue('client_id');
-			}
+            if (!isset($clientId) && $this->form instanceof \JForm) {
+                $clientId = $this->form->getValue('client_id');
+            }
 
-			$this->clientId = (int) $clientId;
-		}
+            $this->clientId = (int) $clientId;
+        }
 
-		return $result;
-	}
+        return $result;
+    }
 
 
-	/**
-	 * Method to get the list of template chrome style options
-	 * grouped by template.
-	 *
-	 * @return  array  The field option objects as a nested array in groups.
-	 *
-	 * @since   3.0
-	 */
-	protected function getGroups()
-	{
-		$groups = array();
+    /**
+     * Method to get the list of template chrome style options
+     * grouped by template.
+     *
+     * @return  array  The field option objects as a nested array in groups.
+     *
+     * @since   3.0
+     */
+    protected function getGroups()
+    {
+        $groups = array();
 
-		// Add Module Style Field
-		$tmp = '---' . \JText::_('JLIB_FORM_VALUE_FROM_TEMPLATE') . '---';
-		$groups[$tmp][] = \JHtml::_('select.option', '0', \JText::_('JLIB_FORM_VALUE_INHERITED'));
+        // Add Module Style Field
+        $tmp = '---' . \JText::_('JLIB_FORM_VALUE_FROM_TEMPLATE') . '---';
+        $groups[$tmp][] = \JHtml::_('select.option', '0', \JText::_('JLIB_FORM_VALUE_INHERITED'));
 
-		$templateStyles = $this->getTemplateModuleStyles();
+        $templateStyles = $this->getTemplateModuleStyles();
 
-		// Create one new option object for each available style, grouped by templates
-		foreach ($templateStyles as $template => $styles)
-		{
-			$template = ucfirst((string) $template);
-			$groups[$template] = array();
+        // Create one new option object for each available style, grouped by templates
+        foreach ($templateStyles as $template => $styles) {
+            $template = ucfirst((string) $template);
+            $groups[$template] = array();
 
-			foreach ($styles as $style)
-			{
-				$tmp = \JHtml::_('select.option', $template . '-' . $style, $style);
-				$groups[$template][] = $tmp;
-			}
-		}
+            foreach ($styles as $style) {
+                $tmp = \JHtml::_('select.option', $template . '-' . $style, $style);
+                $groups[$template][] = $tmp;
+            }
+        }
 
-		reset($groups);
+        reset($groups);
 
-		return $groups;
-	}
+        return $groups;
+    }
 
-	/**
-	 * Method to get the templates module styles.
-	 *
-	 * @return  array  The array of styles, grouped by templates.
-	 *
-	 * @since   3.0
-	 */
-	protected function getTemplateModuleStyles()
-	{
-		$moduleStyles = array();
+    /**
+     * Method to get the templates module styles.
+     *
+     * @return  array  The array of styles, grouped by templates.
+     *
+     * @since   3.0
+     */
+    protected function getTemplateModuleStyles()
+    {
+        $moduleStyles = array();
 
-		$templates = array($this->getSystemTemplate());
-		$templates = array_merge($templates, $this->getTemplates());
-		$path      = JPATH_ADMINISTRATOR;
+        $templates = array($this->getSystemTemplate());
+        $templates = array_merge($templates, $this->getTemplates());
+        $path      = JPATH_ADMINISTRATOR;
 
-		if ($this->clientId === 0)
-		{
-			$path = JPATH_SITE;
-		}
+        if ($this->clientId === 0) {
+            $path = JPATH_SITE;
+        }
 
-		foreach ($templates as $template)
-		{
-			$modulesFilePath = $path . '/templates/' . $template->element . '/html/modules.php';
+        foreach ($templates as $template) {
+            $modulesFilePath = $path . '/templates/' . $template->element . '/html/modules.php';
 
-			// The system chromes are core's (layouts/joomla/system[/admin]/html/modules.php) since 3.18
-			if ($template->element === 'system')
-			{
-				$modulesFilePath = \Joomla\CMS\Document\SystemLayout::chromes($this->clientId);
-			}
+            // The system chromes are core's (layouts/joomla/system[/admin]/html/modules.php) since 3.18
+            if ($template->element === 'system') {
+                $modulesFilePath = \Joomla\CMS\Document\SystemLayout::chromes($this->clientId);
+            }
 
-			// Is there modules.php for that template?
-			if (file_exists($modulesFilePath))
-			{
-				$modulesFileData = file_get_contents($modulesFilePath);
+            // Is there modules.php for that template?
+            if (file_exists($modulesFilePath)) {
+                $modulesFileData = file_get_contents($modulesFilePath);
 
-				preg_match_all('/function[\s\t]*modChrome\_([a-z0-9\-\_]*)[\s\t]*\(/i', $modulesFileData, $styles);
+                preg_match_all('/function[\s\t]*modChrome\_([a-z0-9\-\_]*)[\s\t]*\(/i', $modulesFileData, $styles);
 
-				if (!array_key_exists((string) $template->element, $moduleStyles))
-				{
-					$moduleStyles[$template->element] = array();
-				}
+                if (!array_key_exists((string) $template->element, $moduleStyles)) {
+                    $moduleStyles[$template->element] = array();
+                }
 
-				$moduleStyles[$template->element] = $styles[1];
-			}
-		}
+                $moduleStyles[$template->element] = $styles[1];
+            }
+        }
 
-		return $moduleStyles;
-	}
+        return $moduleStyles;
+    }
 
-	/**
-	 * Method to get the system template as an object.
-	 *
-	 * @return  \stdClass  The object of system template.
-	 *
-	 * @since   3.0
-	 */
-	protected function getSystemTemplate()
-	{
-		$template = new \stdClass;
-		$template->element = 'system';
-		$template->name    = 'system';
+    /**
+     * Method to get the system template as an object.
+     *
+     * @return  \stdClass  The object of system template.
+     *
+     * @since   3.0
+     */
+    protected function getSystemTemplate()
+    {
+        $template = new \stdClass();
+        $template->element = 'system';
+        $template->name    = 'system';
 
-		return $template;
-	}
+        return $template;
+    }
 
-	/**
-	 * Return a list of templates
-	 *
-	 * @return  array  List of templates
-	 *
-	 * @since   3.2.1
-	 */
-	protected function getTemplates()
-	{
-		$db = Factory::getDbo();
+    /**
+     * Return a list of templates
+     *
+     * @return  array  List of templates
+     *
+     * @since   3.2.1
+     */
+    protected function getTemplates()
+    {
+        $db = Factory::getDbo();
 
-		// Get the database object and a new query object.
-		$query = $db->getQuery(true);
+        // Get the database object and a new query object.
+        $query = $db->getQuery(true);
 
-		// Build the query.
-		$query->select('element, name')
-			->from('#__extensions')
-			->where('client_id = ' . $this->clientId)
-			->where('type = ' . $db->quote('template'))
-			->where('enabled = 1');
+        // Build the query.
+        $query->select('element, name')
+            ->from('#__extensions')
+            ->where('client_id = ' . $this->clientId)
+            ->where('type = ' . $db->quote('template'))
+            ->where('enabled = 1');
 
-		// Set the query and load the templates.
-		$db->setQuery($query);
+        // Set the query and load the templates.
+        $db->setQuery($query);
 
-		return $db->loadObjectList('element');
-	}
+        return $db->loadObjectList('element');
+    }
 }

@@ -24,9 +24,8 @@ $text    = $r->inline(isset($data['text']) ? $data['text'] : '');
 $caption = $r->inline(isset($data['caption']) ? $data['caption'] : '');
 $center  = isset($data['alignment']) && $data['alignment'] === 'center';
 
-if (trim(strip_tags($text)) === '')
-{
-	return;
+if (trim(strip_tags($text)) === '') {
+    return;
 }
 ?>
 <blockquote class="block-quote<?php echo $center ? ' is-centered' : ''; ?>"><p><?php echo $text; ?></p><?php echo $caption !== '' ? '<cite>' . $caption . '</cite>' : ''; ?></blockquote>

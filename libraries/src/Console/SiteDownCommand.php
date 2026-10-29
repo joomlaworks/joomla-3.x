@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,54 +18,52 @@ defined('JPATH_PLATFORM') or die;
  */
 class SiteDownCommand extends ConfigSetCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'site:down';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'site:down';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Put the site into offline mode';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Put the site into offline mode';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Sets "Site Offline" in the global configuration to Yes.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Sets "Site Offline" in the global configuration to Yes.';
 
-	/**
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	protected function configure()
-	{
-	}
+    /**
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    protected function configure()
+    {
+    }
 
-	/**
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	protected function doExecute(CommandIO $io)
-	{
-		$io->title('Site ' . ucfirst('offline'));
+    /**
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    protected function doExecute(CommandIO $io)
+    {
+        $io->title('Site ' . ucfirst('offline'));
 
-		if (!$this->saveConfiguration($io, array('offline' => '1')))
-		{
-			return self::FAILURE;
-		}
+        if (!$this->saveConfiguration($io, array('offline' => '1'))) {
+            return self::FAILURE;
+        }
 
-		if (!$io->isDryRun())
-		{
-			$io->success('Website is now offline.');
-		}
+        if (!$io->isDryRun()) {
+            $io->success('Website is now offline.');
+        }
 
-		return self::SUCCESS;
-	}
+        return self::SUCCESS;
+    }
 }

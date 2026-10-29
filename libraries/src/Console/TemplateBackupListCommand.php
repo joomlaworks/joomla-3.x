@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,84 +18,81 @@ defined('JPATH_PLATFORM') or die;
  */
 class TemplateBackupListCommand extends AbstractTemplateCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'template:backup:list';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'template:backup:list';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'List the template backups';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'List the template backups';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Lists the backups template:backup made (of every template, or the given one), newest first.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Lists the backups template:backup made (of every template, or the given one), newest first.';
 
-	/**
-	 * @var    boolean
-	 * @since  3.17.0
-	 */
-	protected $readOnly = true;
+    /**
+     * @var    boolean
+     * @since  3.17.0
+     */
+    protected $readOnly = true;
 
-	/**
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	protected function configure()
-	{
-		$this->addArgument('template', self::ARGUMENT_OPTIONAL, 'Only the backups of this template');
-		$this->addOption('client', null, self::OPTION_REQUIRED, 'site, administrator or all', 'all');
-	}
+    /**
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    protected function configure()
+    {
+        $this->addArgument('template', self::ARGUMENT_OPTIONAL, 'Only the backups of this template');
+        $this->addOption('client', null, self::OPTION_REQUIRED, 'site, administrator or all', 'all');
+    }
 
-	/**
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	protected function doExecute(CommandIO $io)
-	{
-		$client = (string) $io->getOption('client');
+    /**
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    protected function doExecute(CommandIO $io)
+    {
+        $client = (string) $io->getOption('client');
 
-		if (!in_array($client, array('site', 'administrator', 'all'), true))
-		{
-			$io->error('--client must be site, administrator or all.');
+        if (!in_array($client, array('site', 'administrator', 'all'), true)) {
+            $io->error('--client must be site, administrator or all.');
 
-			return self::INVALID;
-		}
+            return self::INVALID;
+        }
 
-		$io->title('Template backups');
+        $io->title('Template backups');
 
-		$rows = array();
+        $rows = array();
 
-		foreach (static::listBackups((string) $io->getArgument('template'), $client) as $backup)
-		{
-			$rows[] = array(
-				'backup'   => $backup['name'],
-				'template' => $backup['template'],
-				'client'   => $backup['client'],
-				'created'  => $backup['created'],
-				'size'     => $backup['size'],
-			);
-		}
+        foreach (static::listBackups((string) $io->getArgument('template'), $client) as $backup) {
+            $rows[] = array(
+                'backup'   => $backup['name'],
+                'template' => $backup['template'],
+                'client'   => $backup['client'],
+                'created'  => $backup['created'],
+                'size'     => $backup['size'],
+            );
+        }
 
-		if (!$rows)
-		{
-			$io->setData('items', array());
-			$io->text('No template backups. template:backup makes one.');
+        if (!$rows) {
+            $io->setData('items', array());
+            $io->text('No template backups. template:backup makes one.');
 
-			return self::SUCCESS;
-		}
+            return self::SUCCESS;
+        }
 
-		$io->table(array('backup' => 'Backup', 'template' => 'Template', 'client' => 'Client', 'created' => 'Created (UTC)', 'size' => 'Size'), $rows);
+        $io->table(array('backup' => 'Backup', 'template' => 'Template', 'client' => 'Client', 'created' => 'Created (UTC)', 'size' => 'Size'), $rows);
 
-		return self::SUCCESS;
-	}
+        return self::SUCCESS;
+    }
 }

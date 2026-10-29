@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,65 +18,63 @@ defined('JPATH_PLATFORM') or die;
  */
 abstract class AbstractTagStateCommand extends AbstractStateCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.18.0
-	 */
-	protected $component = 'com_tags';
+    /**
+     * @var    string
+     * @since  3.18.0
+     */
+    protected $component = 'com_tags';
 
-	/**
-	 * @var    string[]
-	 * @since  3.17.0
-	 */
-	protected $model = array('com_tags', 'Tag', 'TagsModel');
+    /**
+     * @var    string[]
+     * @since  3.17.0
+     */
+    protected $model = array('com_tags', 'Tag', 'TagsModel');
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $item = 'tag';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $item = 'tag';
 
-	/**
-	 * @var    string[]
-	 * @since  3.17.0
-	 */
-	protected $table = array('#__tags', 'title', 'published');
+    /**
+     * @var    string[]
+     * @since  3.17.0
+     */
+    protected $table = array('#__tags', 'title', 'published');
 
-	/**
-	 * The tags, without the root of the tag tree (ID 1), which isn't a tag.
-	 *
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  object[]|false
-	 *
-	 * @since   3.17.0
-	 */
-	protected function loadRows(CommandIO $io)
-	{
-		foreach ((array) $io->getArgument('id') as $id)
-		{
-			if (ctype_digit((string) $id) && (int) $id <= 1)
-			{
-				$io->error(sprintf('There is no tag with ID %s.', $id));
+    /**
+     * The tags, without the root of the tag tree (ID 1), which isn't a tag.
+     *
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  object[]|false
+     *
+     * @since   3.17.0
+     */
+    protected function loadRows(CommandIO $io)
+    {
+        foreach ((array) $io->getArgument('id') as $id) {
+            if (ctype_digit((string) $id) && (int) $id <= 1) {
+                $io->error(sprintf('There is no tag with ID %s.', $id));
 
-				return false;
-			}
-		}
+                return false;
+            }
+        }
 
-		return parent::loadRows($io);
-	}
+        return parent::loadRows($io);
+    }
 
-	/**
-	 * Tags have no permissions of their own: the Tags component's apply.
-	 *
-	 * @param   object  $row  The item
-	 *
-	 * @return  string
-	 *
-	 * @since   3.17.0
-	 */
-	protected function getAssetName($row)
-	{
-		return 'com_tags';
-	}
+    /**
+     * Tags have no permissions of their own: the Tags component's apply.
+     *
+     * @param   object  $row  The item
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    protected function getAssetName($row)
+    {
+        return 'com_tags';
+    }
 }

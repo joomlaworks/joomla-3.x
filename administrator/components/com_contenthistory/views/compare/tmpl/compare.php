@@ -16,7 +16,8 @@ $object2 = $version2->data;
 JHtml::addIncludePath(JPATH_COMPONENT_ADMINISTRATOR . '/helpers/html');
 JHtml::_('textdiff.textdiff', 'diff');
 
-JFactory::getDocument()->addScriptDeclaration("
+JFactory::getDocument()->addScriptDeclaration(
+    "
 	(function ($){
 		$(document).ready(function (){
             jQuery('.diffhtml, .diffhtml-header').hide();

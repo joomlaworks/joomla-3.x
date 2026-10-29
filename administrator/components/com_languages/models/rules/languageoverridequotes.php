@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_languages
@@ -26,27 +27,26 @@ use Joomla\Registry\Registry;
  */
 class JFormRuleLanguageoverridequotes extends JFormRule
 {
-	/**
-	 * Method to test if the override text contains a quote character.
-	 *
-	 * @param   SimpleXMLElement  $element  The SimpleXMLElement object representing the `<field>` tag for the form field object.
-	 * @param   mixed             $value    The form field value to validate.
-	 * @param   string            $group    The field name group control value.
-	 * @param   Registry          $input    An optional Registry object with the entire data set to validate against the entire form.
-	 * @param   JForm             $form     The form object for which the field is being tested.
-	 *
-	 * @return  boolean  True if the value is valid, false otherwise.
-	 *
-	 * @since   3.15.0
-	 */
-	public function test(SimpleXMLElement $element, $value, $group = null, ?Registry $input = null, ?JForm $form = null)
-	{
-		// Super Users are already fully trusted; only restrict quotes for everyone else.
-		if (JFactory::getUser()->authorise('core.admin'))
-		{
-			return true;
-		}
+    /**
+     * Method to test if the override text contains a quote character.
+     *
+     * @param   SimpleXMLElement  $element  The SimpleXMLElement object representing the `<field>` tag for the form field object.
+     * @param   mixed             $value    The form field value to validate.
+     * @param   string            $group    The field name group control value.
+     * @param   Registry          $input    An optional Registry object with the entire data set to validate against the entire form.
+     * @param   JForm             $form     The form object for which the field is being tested.
+     *
+     * @return  boolean  True if the value is valid, false otherwise.
+     *
+     * @since   3.15.0
+     */
+    public function test(SimpleXMLElement $element, $value, $group = null, ?Registry $input = null, ?JForm $form = null)
+    {
+        // Super Users are already fully trusted; only restrict quotes for everyone else.
+        if (JFactory::getUser()->authorise('core.admin')) {
+            return true;
+        }
 
-		return strpos((string) $value, '"') === false && strpos((string) $value, "'") === false;
-	}
+        return strpos((string) $value, '"') === false && strpos((string) $value, "'") === false;
+    }
 }

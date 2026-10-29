@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_config
@@ -16,94 +17,90 @@ defined('_JEXEC') or die;
  */
 class ConfigControllerTemplatesSave extends JControllerBase
 {
-	/**
-	 * Task options, set externally by ConfigControllerHelper::parseController(). Declared here
-	 * (rather than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
-	 *
-	 * @var    array
-	 * @since  3.16.0
-	 */
-	public $options;
+    /**
+     * Task options, set externally by ConfigControllerHelper::parseController(). Declared here
+     * (rather than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
+     *
+     * @var    array
+     * @since  3.16.0
+     */
+    public $options;
 
-	/**
-	 * Prefix for the view and model classes, set externally by config.php. Declared here (rather
-	 * than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
-	 *
-	 * @var    string
-	 * @since  3.16.0
-	 */
-	public $prefix = 'Config';
+    /**
+     * Prefix for the view and model classes, set externally by config.php. Declared here (rather
+     * than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
+     *
+     * @var    string
+     * @since  3.16.0
+     */
+    public $prefix = 'Config';
 
-	/**
-	 * Method to save global configuration.
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @since   3.2
-	 */
-	public function execute()
-	{
-		// Check for request forgeries.
-		if (!JSession::checkToken())
-		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JINVALID_TOKEN'));
-		}
+    /**
+     * Method to save global configuration.
+     *
+     * @return  boolean  True on success.
+     *
+     * @since   3.2
+     */
+    public function execute()
+    {
+        // Check for request forgeries.
+        if (!JSession::checkToken()) {
+            JFactory::getApplication()->redirect('index.php', JText::_('JINVALID_TOKEN'));
+        }
 
-		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin'))
-		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+        // Check if the user is authorized to do this.
+        if (!JFactory::getUser()->authorise('core.admin')) {
+            JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
-			return;
-		}
+            return;
+        }
 
-		// Set FTP credentials, if given.
-		JClientHelper::setCredentialsFromRequest('ftp');
+        // Set FTP credentials, if given.
+        JClientHelper::setCredentialsFromRequest('ftp');
 
-		$app = JFactory::getApplication();
+        $app = JFactory::getApplication();
 
-		// Access backend com_templates
-		JLoader::register('TemplatesControllerStyle', JPATH_ADMINISTRATOR . '/components/com_templates/controllers/style.php');
-		JLoader::register('TemplatesModelStyle', JPATH_ADMINISTRATOR . '/components/com_templates/models/style.php');
-		JLoader::register('TemplatesTableStyle', JPATH_ADMINISTRATOR . '/components/com_templates/tables/style.php');
-		$controllerClass = new TemplatesControllerStyle;
+        // Access backend com_templates
+        JLoader::register('TemplatesControllerStyle', JPATH_ADMINISTRATOR . '/components/com_templates/controllers/style.php');
+        JLoader::register('TemplatesModelStyle', JPATH_ADMINISTRATOR . '/components/com_templates/models/style.php');
+        JLoader::register('TemplatesTableStyle', JPATH_ADMINISTRATOR . '/components/com_templates/tables/style.php');
+        $controllerClass = new TemplatesControllerStyle();
 
-		// Get a document object
-		$document = JFactory::getDocument();
+        // Get a document object
+        $document = JFactory::getDocument();
 
-		// Set backend required params
-		$document->setType('json');
-		$this->input->set('id', $app->getTemplate(true)->id);
+        // Set backend required params
+        $document->setType('json');
+        $this->input->set('id', $app->getTemplate(true)->id);
 
-		// Execute backend controller
-		$return = $controllerClass->save();
+        // Execute backend controller
+        $return = $controllerClass->save();
 
-		// Reset params back after requesting from service
-		$document->setType('html');
+        // Reset params back after requesting from service
+        $document->setType('html');
 
-		// Check the return value.
-		if ($return === false)
-		{
-			// Save the data in the session.
-			$app->setUserState('com_config.config.global.data', $data);
+        // Check the return value.
+        if ($return === false) {
+            // Save the data in the session.
+            $app->setUserState('com_config.config.global.data', $data);
 
-			// Save failed, go back to the screen with the reason (the administrator's controller reports invalid data itself)
-			if ($error = $controllerClass->getError())
-			{
-				$app->enqueueMessage($error, 'error');
-			}
+            // Save failed, go back to the screen with the reason (the administrator's controller reports invalid data itself)
+            if ($error = $controllerClass->getError()) {
+                $app->enqueueMessage($error, 'error');
+            }
 
-			$app->redirect(JRoute::_('index.php?option=com_config&controller=config.display.templates', false));
+            $app->redirect(JRoute::_('index.php?option=com_config&controller=config.display.templates', false));
 
-			return false;
-		}
+            return false;
+        }
 
-		// Set the success message.
-		$message = JText::_('COM_CONFIG_SAVE_SUCCESS');
+        // Set the success message.
+        $message = JText::_('COM_CONFIG_SAVE_SUCCESS');
 
-		// Redirect back to com_config display
-		$app->redirect(JRoute::_('index.php?option=com_config&controller=config.display.templates', false), $message);
+        // Redirect back to com_config display
+        $app->redirect(JRoute::_('index.php?option=com_config&controller=config.display.templates', false), $message);
 
-		return true;
-	}
+        return true;
+    }
 }

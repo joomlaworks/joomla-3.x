@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Editors.codemirror
@@ -21,32 +22,31 @@ JFormHelper::loadFieldClass('list');
  */
 class JFormFieldFonts extends JFormFieldList
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  3.4
-	 */
-	protected $type = 'Fonts';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  3.4
+     */
+    protected $type = 'Fonts';
 
-	/**
-	 * Method to get the list of fonts field options.
-	 *
-	 * @return  array  The field option objects.
-	 *
-	 * @since   3.4
-	 */
-	protected function getOptions()
-	{
-		$fonts = json_decode(file_get_contents(__DIR__ . '/fonts.json'));
-		$options = array();
+    /**
+     * Method to get the list of fonts field options.
+     *
+     * @return  array  The field option objects.
+     *
+     * @since   3.4
+     */
+    protected function getOptions()
+    {
+        $fonts = json_decode(file_get_contents(__DIR__ . '/fonts.json'));
+        $options = array();
 
-		foreach ($fonts as $key => $info)
-		{
-			$options[] = JHtml::_('select.option', $key, $info->name);
-		}
+        foreach ($fonts as $key => $info) {
+            $options[] = JHtml::_('select.option', $key, $info->name);
+        }
 
-		// Merge any additional options in the XML definition.
-		return array_merge(parent::getOptions(), $options);
-	}
+        // Merge any additional options in the XML definition.
+        return array_merge(parent::getOptions(), $options);
+    }
 }

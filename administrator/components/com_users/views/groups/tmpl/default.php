@@ -43,7 +43,7 @@ JFactory::getDocument()->addScriptDeclaration('
 ');
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_users&view=groups'); ?>" method="post" name="adminForm" id="adminForm">
-<?php if (!empty( $this->sidebar)) : ?>
+<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -91,16 +91,15 @@ JFactory::getDocument()->addScriptDeclaration('
 				</tfoot>
 				<tbody>
 				<?php foreach ($this->items as $i => $item) :
-					$canCreate = $user->authorise('core.create', 'com_users');
-					$canEdit   = $user->authorise('core.edit', 'com_users');
+				    $canCreate = $user->authorise('core.create', 'com_users');
+				    $canEdit   = $user->authorise('core.edit', 'com_users');
 
-					// If this group is super admin and this user is not super admin, $canEdit is false
-					if (!$user->authorise('core.admin') && JAccess::checkGroup($item->id, 'core.admin'))
-					{
-						$canEdit = false;
-					}
-					$canChange = $user->authorise('core.edit.state', 'com_users');
-				?>
+				    // If this group is super admin and this user is not super admin, $canEdit is false
+				    if (!$user->authorise('core.admin') && JAccess::checkGroup($item->id, 'core.admin')) {
+				        $canEdit = false;
+				    }
+				    $canChange = $user->authorise('core.edit.state', 'com_users');
+				    ?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="center" data-usercount="<?php echo $item->user_count; ?>">
 							<?php if ($canEdit) : ?>
@@ -121,11 +120,15 @@ JFactory::getDocument()->addScriptDeclaration('
 							<?php endif; ?>
 						</td>
 						<td class="center btns">
-							<a class="badge <?php if ($item->count_enabled > 0) echo 'badge-success'; ?>" href="<?php echo JRoute::_('index.php?option=com_users&view=users&filter[group_id]=' . (int) $item->id . '&filter[state]=0'); ?>">
+							<a class="badge <?php if ($item->count_enabled > 0) {
+							    echo 'badge-success';
+							} ?>" href="<?php echo JRoute::_('index.php?option=com_users&view=users&filter[group_id]=' . (int) $item->id . '&filter[state]=0'); ?>">
 								<?php echo $item->count_enabled; ?></a>
 						</td>
 						<td class="center btns">
-							<a class="badge <?php if ($item->count_disabled > 0) echo 'badge-important'; ?>" href="<?php echo JRoute::_('index.php?option=com_users&view=users&filter[group_id]=' . (int) $item->id . '&filter[state]=1'); ?>">
+							<a class="badge <?php if ($item->count_disabled > 0) {
+							    echo 'badge-important';
+							} ?>" href="<?php echo JRoute::_('index.php?option=com_users&view=users&filter[group_id]=' . (int) $item->id . '&filter[state]=1'); ?>">
 								<?php echo $item->count_disabled; ?></a>
 						</td>
 						<td class="hidden-phone">

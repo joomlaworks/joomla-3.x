@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_config
@@ -18,129 +19,119 @@ defined('_JEXEC') or die;
  */
 class ConfigControllerModulesSave extends JControllerBase
 {
-	/**
-	 * Task options, set externally by ConfigControllerHelper::parseController(). Declared here
-	 * (rather than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
-	 *
-	 * @var    array
-	 * @since  3.16.0
-	 */
-	public $options;
+    /**
+     * Task options, set externally by ConfigControllerHelper::parseController(). Declared here
+     * (rather than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
+     *
+     * @var    array
+     * @since  3.16.0
+     */
+    public $options;
 
-	/**
-	 * Prefix for the view and model classes, set externally by config.php. Declared here (rather
-	 * than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
-	 *
-	 * @var    string
-	 * @since  3.16.0
-	 */
-	public $prefix = 'Config';
+    /**
+     * Prefix for the view and model classes, set externally by config.php. Declared here (rather
+     * than left as a dynamic property) to avoid the PHP 8.2+ deprecation warning.
+     *
+     * @var    string
+     * @since  3.16.0
+     */
+    public $prefix = 'Config';
 
-	/**
-	 * Method to save module editing.
-	 *
-	 * @return  boolean  True on success.
-	 *
-	 * @since   3.2
-	 */
-	public function execute()
-	{
-		// Check for request forgeries.
-		if (!JSession::checkToken())
-		{
-			$this->app->enqueueMessage(JText::_('JINVALID_TOKEN'));
-			$this->app->redirect('index.php');
-		}
+    /**
+     * Method to save module editing.
+     *
+     * @return  boolean  True on success.
+     *
+     * @since   3.2
+     */
+    public function execute()
+    {
+        // Check for request forgeries.
+        if (!JSession::checkToken()) {
+            $this->app->enqueueMessage(JText::_('JINVALID_TOKEN'));
+            $this->app->redirect('index.php');
+        }
 
-		// Check if the user is authorized to do this.
-		$user = JFactory::getUser();
+        // Check if the user is authorized to do this.
+        $user = JFactory::getUser();
 
-		if (!$user->authorise('module.edit.frontend', 'com_modules.module.' . $this->input->get('id')))
-		{
-			$this->app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-			$this->app->redirect('index.php');
-		}
+        if (!$user->authorise('module.edit.frontend', 'com_modules.module.' . $this->input->get('id'))) {
+            $this->app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            $this->app->redirect('index.php');
+        }
 
-		// Set FTP credentials, if given.
-		JClientHelper::setCredentialsFromRequest('ftp');
+        // Set FTP credentials, if given.
+        JClientHelper::setCredentialsFromRequest('ftp');
 
-		// Get submitted module id
-		$moduleId = '&id=' . $this->input->get('id');
+        // Get submitted module id
+        $moduleId = '&id=' . $this->input->get('id');
 
-		// Get returnUri
-		$returnUri = $this->input->post->get('return', null, 'base64');
-		$redirect = '';
+        // Get returnUri
+        $returnUri = $this->input->post->get('return', null, 'base64');
+        $redirect = '';
 
-		if (!empty($returnUri))
-		{
-			$redirect = '&return=' . $returnUri;
-		}
+        if (!empty($returnUri)) {
+            $redirect = '&return=' . $returnUri;
+        }
 
-		// Access backend com_modules to be done
-		JLoader::register('ModulesControllerModule', JPATH_ADMINISTRATOR . '/components/com_modules/controllers/module.php');
-		JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
+        // Access backend com_modules to be done
+        JLoader::register('ModulesControllerModule', JPATH_ADMINISTRATOR . '/components/com_modules/controllers/module.php');
+        JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
 
-		$controllerClass = new ModulesControllerModule;
+        $controllerClass = new ModulesControllerModule();
 
-		// Get a document object
-		$document = JFactory::getDocument();
+        // Get a document object
+        $document = JFactory::getDocument();
 
-		// Set backend required params
-		$document->setType('json');
+        // Set backend required params
+        $document->setType('json');
 
-		// Execute backend controller
-		$return = $controllerClass->save();
+        // Execute backend controller
+        $return = $controllerClass->save();
 
-		// Reset params back after requesting from service
-		$document->setType('html');
+        // Reset params back after requesting from service
+        $document->setType('html');
 
-		// Check the return value.
-		if ($return === false)
-		{
-			// Save the data in the session.
-			$data = $this->input->post->get('jform', array(), 'array');
+        // Check the return value.
+        if ($return === false) {
+            // Save the data in the session.
+            $data = $this->input->post->get('jform', array(), 'array');
 
-			$this->app->setUserState('com_config.modules.global.data', $data);
+            $this->app->setUserState('com_config.modules.global.data', $data);
 
-			// Save failed, go back to the screen with the reason (the administrator's controller reports invalid data itself)
-			if ($error = $controllerClass->getError())
-			{
-				$this->app->enqueueMessage($error, 'error');
-			}
+            // Save failed, go back to the screen with the reason (the administrator's controller reports invalid data itself)
+            if ($error = $controllerClass->getError()) {
+                $this->app->enqueueMessage($error, 'error');
+            }
 
-			$this->app->redirect(JRoute::_('index.php?option=com_config&controller=config.display.modules' . $moduleId . $redirect, false));
-		}
+            $this->app->redirect(JRoute::_('index.php?option=com_config&controller=config.display.modules' . $moduleId . $redirect, false));
+        }
 
-		// Redirect back to com_config display
-		$this->app->enqueueMessage(JText::_('COM_CONFIG_MODULES_SAVE_SUCCESS'));
+        // Redirect back to com_config display
+        $this->app->enqueueMessage(JText::_('COM_CONFIG_MODULES_SAVE_SUCCESS'));
 
-		// Set the redirect based on the task.
-		switch ($this->options[3])
-		{
-			case 'apply':
-				$this->app->redirect(JRoute::_('index.php?option=com_config&controller=config.display.modules' . $moduleId . $redirect, false));
-				break;
+        // Set the redirect based on the task.
+        switch ($this->options[3]) {
+            case 'apply':
+                $this->app->redirect(JRoute::_('index.php?option=com_config&controller=config.display.modules' . $moduleId . $redirect, false));
+                break;
 
-			case 'save':
-			default:
+            case 'save':
+            default:
 
-				if (!empty($returnUri))
-				{
-					$redirect = base64_decode(urldecode((string) $returnUri));
+                if (!empty($returnUri)) {
+                    $redirect = base64_decode(urldecode((string) $returnUri));
 
-					// Don't redirect to an external URL.
-					if (!JUri::isInternal($redirect))
-					{
-						$redirect = JUri::base();
-					}
-				}
-				else
-				{
-					$redirect = JUri::base();
-				}
+                    // Don't redirect to an external URL.
+                    if (!JUri::isInternal($redirect)) {
+                        $redirect = JUri::base();
+                    }
+                } else {
+                    $redirect = JUri::base();
+                }
 
-				$this->app->redirect($redirect);
-				break;
-		}
-	}
+                $this->app->redirect($redirect);
+                break;
+        }
+    }
 }

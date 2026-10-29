@@ -15,11 +15,10 @@ $data = $displayData;
 // Receive overridable options
 $data['options'] = !empty($data['options']) ? $data['options'] : array();
 
-if ($data['view'] instanceof MenusViewItems || $data['view'] instanceof MenusViewMenus)
-{
-	$doc = JFactory::getDocument();
+if ($data['view'] instanceof MenusViewItems || $data['view'] instanceof MenusViewMenus) {
+    $doc = JFactory::getDocument();
 
-	$doc->addStyleDeclaration("
+    $doc->addStyleDeclaration("
 		/* Fixed filter field in search bar */
 		.js-stools .js-stools-menutype,
 		.js-stools .js-stools-client_id {
@@ -38,21 +37,21 @@ if ($data['view'] instanceof MenusViewItems || $data['view'] instanceof MenusVie
 		}
 	");
 
-	// Client selector doesn't have to activate the filter bar.
-	unset($data['view']->activeFilters['client_id']);
+    // Client selector doesn't have to activate the filter bar.
+    unset($data['view']->activeFilters['client_id']);
 
-	// Menutype filter doesn't have to activate the filter bar
-	unset($data['view']->activeFilters['menutype']);
+    // Menutype filter doesn't have to activate the filter bar
+    unset($data['view']->activeFilters['menutype']);
 }
 
 // Set some basic options
 $customOptions = array(
-	'filtersHidden'       => isset($data['options']['filtersHidden']) ? $data['options']['filtersHidden'] : empty($data['view']->activeFilters),
-	'defaultLimit'        => isset($data['options']['defaultLimit']) ? $data['options']['defaultLimit'] : JFactory::getApplication()->get('list_limit', 20),
-	'searchFieldSelector' => '#filter_search',
-	'orderFieldSelector'  => '#list_fullordering',
-	'totalResults'        => isset($data['options']['totalResults']) ? $data['options']['totalResults'] : -1,
-	'noResultsText'       => isset($data['options']['noResultsText']) ? $data['options']['noResultsText'] : JText::_('JGLOBAL_NO_MATCHING_RESULTS'),
+    'filtersHidden'       => isset($data['options']['filtersHidden']) ? $data['options']['filtersHidden'] : empty($data['view']->activeFilters),
+    'defaultLimit'        => isset($data['options']['defaultLimit']) ? $data['options']['defaultLimit'] : JFactory::getApplication()->get('list_limit', 20),
+    'searchFieldSelector' => '#filter_search',
+    'orderFieldSelector'  => '#list_fullordering',
+    'totalResults'        => isset($data['options']['totalResults']) ? $data['options']['totalResults'] : -1,
+    'noResultsText'       => isset($data['options']['noResultsText']) ? $data['options']['noResultsText'] : JText::_('JGLOBAL_NO_MATCHING_RESULTS'),
 );
 
 $data['options'] = array_merge($customOptions, $data['options']);

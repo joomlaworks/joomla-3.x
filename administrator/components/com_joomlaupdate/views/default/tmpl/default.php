@@ -32,7 +32,7 @@ $latestJoomlaVersion = $this->updateInfo['latest'];
 $currentJoomlaVersion = isset($this->updateInfo['installed']) ? $this->updateInfo['installed'] : JVERSION;
 
 JFactory::getDocument()->addScriptDeclaration(
-<<<JS
+    <<<JS
 jQuery(document).ready(function($) {
 	$('#extraction_method').change(function(e){
 		extractionMethodHandler('#extraction_method', 'row_ftp');
@@ -67,23 +67,23 @@ JS
 	<form enctype="multipart/form-data" action="index.php" method="post" id="adminForm" class="form-horizontal">
 
 		<?php if ($this->selfUpdate) : ?>
-			<?php // If we have a self update notice to install it first! ?>
+			<?php // If we have a self update notice to install it first!?>
 			<?php JFactory::getApplication()->enqueueMessage(JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_INSTALL_SELF_UPDATE_FIRST'), 'error'); ?>
 			<?php echo $this->loadTemplate('updatemefirst'); ?>
 		<?php else : ?>
 			<?php if ((!isset($this->updateInfo['object']->downloadurl->_data)
-				&& !$this->updateInfo['hasUpdate'])
-				|| !$this->getModel()->isDatabaseTypeSupported()
-				|| !$this->getModel()->isPhpVersionSupported()) : ?>
-		<?php // If we have no download URL or our PHP version or our DB type is not supported we can't reinstall or update ?>
+                && !$this->updateInfo['hasUpdate'])
+                || !$this->getModel()->isDatabaseTypeSupported()
+                || !$this->getModel()->isPhpVersionSupported()) : ?>
+		<?php // If we have no download URL or our PHP version or our DB type is not supported we can't reinstall or update?>
 				<?php echo $this->loadTemplate('noupdate'); ?>
 			<?php elseif (!isset($this->updateInfo['object']->downloadurl->_data)) : ?>
 				<?php echo $this->loadTemplate('nodownload'); ?>
 			<?php elseif (!$this->updateInfo['hasUpdate']) : ?>
-				<?php // If we have no update but we have a downloadurl we can reinstall the core ?>
+				<?php // If we have no update but we have a downloadurl we can reinstall the core?>
 				<?php echo $this->loadTemplate('reinstall'); ?>
 			<?php else : ?>
-				<?php // Ok let's show the update template ?>
+				<?php // Ok let's show the update template?>
 				<?php echo $this->loadTemplate('update'); ?>
 			<?php endif; ?>
 		<?php endif; ?>
@@ -94,7 +94,7 @@ JS
 		<?php echo JHtml::_('form.token'); ?>
 	</form>
 
-	<?php // Only Super Users have access to the Update & Install for obvious security reasons ?>
+	<?php // Only Super Users have access to the Update & Install for obvious security reasons?>
 	<?php if ($this->showUploadAndUpdate) : ?>
 		<?php echo JHtml::_('bootstrap.endTab'); ?>
 		<?php echo JHtml::_('bootstrap.addTab', 'joomlaupdate-tabs', 'upload-update', JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_TAB_UPLOAD')); ?>

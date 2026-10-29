@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Libraries
  * @subpackage  HTML
@@ -18,68 +19,65 @@ use Joomla\Registry\Registry;
  */
 abstract class JHtmlSearchtools
 {
-	/**
-	 * @var    array  Array containing information for loaded files
-	 * @since  3.2
-	 */
-	protected static $loaded = array();
+    /**
+     * @var    array  Array containing information for loaded files
+     * @since  3.2
+     */
+    protected static $loaded = array();
 
-	/**
-	 * Load the main Searchtools libraries
-	 *
-	 * @return  void
-	 *
-	 * @since   3.2
-	 */
-	public static function main()
-	{
-		// Only load once
-		if (empty(static::$loaded[__METHOD__]))
-		{
-			// Requires jQuery but allows to skip its loading
-			if ($loadJquery = (!isset($options['loadJquery']) || $options['loadJquery'] != 0))
-			{
-				JHtml::_('jquery.framework');
-			}
+    /**
+     * Load the main Searchtools libraries
+     *
+     * @return  void
+     *
+     * @since   3.2
+     */
+    public static function main()
+    {
+        // Only load once
+        if (empty(static::$loaded[__METHOD__])) {
+            // Requires jQuery but allows to skip its loading
+            if ($loadJquery = (!isset($options['loadJquery']) || $options['loadJquery'] != 0)) {
+                JHtml::_('jquery.framework');
+            }
 
-			// Load the jQuery plugin && CSS
-			JHtml::_('script', 'system/jquery.searchtools.min.js', array('version' => 'auto', 'relative' => true));
-			JHtml::_('stylesheet', 'system/jquery.searchtools.css', array('version' => 'auto', 'relative' => true));
+            // Load the jQuery plugin && CSS
+            JHtml::_('script', 'system/jquery.searchtools.min.js', array('version' => 'auto', 'relative' => true));
+            JHtml::_('stylesheet', 'system/jquery.searchtools.css', array('version' => 'auto', 'relative' => true));
 
-			static::$loaded[__METHOD__] = true;
-		}
+            static::$loaded[__METHOD__] = true;
+        }
 
-		return;
-	}
+        return;
+    }
 
-	/**
-	 * Load searchtools for a specific form
-	 *
-	 * @param   mixed  $selector  Is debugging mode on? [optional]
-	 * @param   array  $options   Optional array of parameters for search tools
-	 *
-	 * @return  void
-	 *
-	 * @since   3.2
-	 */
-	public static function form($selector = '.js-stools-form', $options = array())
-	{
-		$sig = md5(serialize(array($selector, $options)));
+    /**
+     * Load searchtools for a specific form
+     *
+     * @param   mixed  $selector  Is debugging mode on? [optional]
+     * @param   array  $options   Optional array of parameters for search tools
+     *
+     * @return  void
+     *
+     * @since   3.2
+     */
+    public static function form($selector = '.js-stools-form', $options = array())
+    {
+        $sig = md5(serialize(array($selector, $options)));
 
-		// Only load once
-		if (!isset(static::$loaded[__METHOD__][$sig]))
-		{
-			// Include Bootstrap framework
-			static::main();
+        // Only load once
+        if (!isset(static::$loaded[__METHOD__][$sig])) {
+            // Include Bootstrap framework
+            static::main();
 
-			// Add the form selector to the search tools options
-			$options['formSelector'] = $selector;
+            // Add the form selector to the search tools options
+            $options['formSelector'] = $selector;
 
-			// Generate options with default values
-			$options = static::optionsToRegistry($options);
+            // Generate options with default values
+            $options = static::optionsToRegistry($options);
 
-			$doc = JFactory::getDocument();
-			$script = "
+            $doc = JFactory::getDocument();
+            $script = "
 				(function($){
 					$(document).ready(function() {
 						$('" . $selector . "').searchtools(
@@ -88,80 +86,83 @@ abstract class JHtmlSearchtools
 					});
 				})(jQuery);
 			";
-			$doc->addScriptDeclaration($script);
+            $doc->addScriptDeclaration($script);
 
-			static::$loaded[__METHOD__][$sig] = true;
-		}
+            static::$loaded[__METHOD__][$sig] = true;
+        }
 
-		return;
-	}
+        return;
+    }
 
-	/**
-	 * Function to receive & pre-process javascript options
-	 *
-	 * @param   mixed  $options  Associative array/Registry object with options
-	 *
-	 * @return  Registry         Options converted to Registry object
-	 */
-	private static function optionsToRegistry($options)
-	{
-		// Support options array
-		if (is_array($options))
-		{
-			$options = new Registry($options);
-		}
+    /**
+     * Function to receive & pre-process javascript options
+     *
+     * @param   mixed  $options  Associative array/Registry object with options
+     *
+     * @return  Registry         Options converted to Registry object
+     */
+    private static function optionsToRegistry($options)
+    {
+        // Support options array
+        if (is_array($options)) {
+            $options = new Registry($options);
+        }
 
-		if (!($options instanceof Registry))
-		{
-			$options = new Registry;
-		}
+        if (!($options instanceof Registry)) {
+            $options = new Registry();
+        }
 
-		return $options;
-	}
+        return $options;
+    }
 
-	/**
-	 * Method to sort a column in a grid
-	 *
-	 * @param   string  $title         The link title
-	 * @param   string  $order         The order field for the column
-	 * @param   string  $direction     The current direction
-	 * @param   mixed   $selected      The selected ordering
-	 * @param   string  $task          An optional task override
-	 * @param   string  $newDirection  An optional direction for the new column
-	 * @param   string  $tip           An optional text shown as tooltip title instead of $title
-	 * @param   string  $icon          Icon to show
-	 * @param   string  $formName      Name of the form to submit
-	 *
-	 * @return  string
-	 */
-	public static function sort($title, $order, $direction = 'asc', $selected = 0, $task = null, $newDirection = 'asc', $tip = '', $icon = null,
-		$formName = 'adminForm')
-	{
-		$direction = strtolower((string) $direction);
-		$orderIcons = array('icon-arrow-up-3', 'icon-arrow-down-3');
-		$index = (int) ($direction === 'desc');
+    /**
+     * Method to sort a column in a grid
+     *
+     * @param   string  $title         The link title
+     * @param   string  $order         The order field for the column
+     * @param   string  $direction     The current direction
+     * @param   mixed   $selected      The selected ordering
+     * @param   string  $task          An optional task override
+     * @param   string  $newDirection  An optional direction for the new column
+     * @param   string  $tip           An optional text shown as tooltip title instead of $title
+     * @param   string  $icon          Icon to show
+     * @param   string  $formName      Name of the form to submit
+     *
+     * @return  string
+     */
+    public static function sort(
+        $title,
+        $order,
+        $direction = 'asc',
+        $selected = 0,
+        $task = null,
+        $newDirection = 'asc',
+        $tip = '',
+        $icon = null,
+        $formName = 'adminForm'
+    ) {
+        $direction = strtolower((string) $direction);
+        $orderIcons = array('icon-arrow-up-3', 'icon-arrow-down-3');
+        $index = (int) ($direction === 'desc');
 
-		if ($order !== $selected)
-		{
-			$direction = $newDirection;
-		}
-		else
-		{
-			$direction = $direction === 'desc' ? 'asc' : 'desc';
-		}
+        if ($order !== $selected) {
+            $direction = $newDirection;
+        } else {
+            $direction = $direction === 'desc' ? 'asc' : 'desc';
+        }
 
-		// Create an object to pass it to the layouts
-		$data            = new stdClass;
-		$data->order     = $order;
-		$data->direction = $direction;
-		$data->selected  = $selected;
-		$data->task      = $task;
-		$data->tip       = $tip;
-		$data->title     = $title;
-		$data->orderIcon = $orderIcons[$index];
-		$data->icon      = $icon;
-		$data->formName  = $formName;
+        // Create an object to pass it to the layouts
+        $data            = new stdClass();
+        $data->order     = $order;
+        $data->direction = $direction;
+        $data->selected  = $selected;
+        $data->task      = $task;
+        $data->tip       = $tip;
+        $data->title     = $title;
+        $data->orderIcon = $orderIcons[$index];
+        $data->icon      = $icon;
+        $data->formName  = $formName;
 
-		return JLayoutHelper::render('joomla.searchtools.grid.sort', $data);
-	}
+        return JLayoutHelper::render('joomla.searchtools.grid.sort', $data);
+    }
 }

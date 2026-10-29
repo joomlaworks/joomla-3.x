@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Installation
  * @subpackage  View
@@ -16,33 +17,33 @@ defined('_JEXEC') or die;
  */
 class InstallationViewDefault extends JViewHtml
 {
-	/**
-	 * The JForm object
-	 *
-	 * @var    JForm
-	 * @since  3.1
-	 */
-	protected $form;
+    /**
+     * The JForm object
+     *
+     * @var    JForm
+     * @since  3.1
+     */
+    protected $form;
 
-	/**
-	 * Redefine the model so the correct type hinting is available.
-	 *
-	 * @var     InstallationModelSetup
-	 * @since   3.1
-	 */
-	protected $model;
+    /**
+     * Redefine the model so the correct type hinting is available.
+     *
+     * @var     InstallationModelSetup
+     * @since   3.1
+     */
+    protected $model;
 
-	/**
-	 * Method to render the view.
-	 *
-	 * @return  string  The rendered view.
-	 *
-	 * @since   3.1
-	 */
-	public function render()
-	{
-		$this->form = $this->model->getForm();
+    /**
+     * Method to render the view.
+     *
+     * @return  string  The rendered view.
+     *
+     * @since   3.1
+     */
+    public function render()
+    {
+        $this->form = $this->model->getForm();
 
-		return parent::render();
-	}
+        return parent::render();
+    }
 }

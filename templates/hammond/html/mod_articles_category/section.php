@@ -15,9 +15,8 @@ class_exists('HammondHelper', false) || require_once dirname(__DIR__, 2) . '/hel
 /** @var array $list  @var Joomla\Registry\Registry $params */
 $items = array_slice(array_values($list), HammondHelper::skip($params));
 
-if (!$items)
-{
-	return;
+if (!$items) {
+    return;
 }
 
 // A category section: the lead article, then the others as a compact list

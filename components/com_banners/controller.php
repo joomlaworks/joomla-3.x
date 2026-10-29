@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_banners
@@ -16,23 +17,22 @@ defined('_JEXEC') or die;
  */
 class BannersController extends JControllerLegacy
 {
-	/**
-	 * Method when a banner is clicked on.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.5
-	 */
-	public function click()
-	{
-		$id = $this->input->getInt('id', 0);
+    /**
+     * Method when a banner is clicked on.
+     *
+     * @return  void
+     *
+     * @since   1.5
+     */
+    public function click()
+    {
+        $id = $this->input->getInt('id', 0);
 
-		if ($id)
-		{
-			$model = $this->getModel('Banner', 'BannersModel', array('ignore_request' => true));
-			$model->setState('banner.id', $id);
-			$model->click();
-			$this->setRedirect($model->getUrl());
-		}
-	}
+        if ($id) {
+            $model = $this->getModel('Banner', 'BannersModel', array('ignore_request' => true));
+            $model->setState('banner.id', $id);
+            $model->click();
+            $this->setRedirect($model->getUrl());
+        }
+    }
 }

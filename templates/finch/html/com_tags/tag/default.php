@@ -15,9 +15,8 @@ class_exists('FinchHelper', false) || require_once dirname(__DIR__, 3) . '/helpe
 /** @var TagsViewTag $this */
 $titles = array();
 
-foreach ((array) $this->item as $tag)
-{
-	$titles[] = $tag->title;
+foreach ((array) $this->item as $tag) {
+    $titles[] = $tag->title;
 }
 
 $items = array_map(array('FinchHelper', 'fromTagItem'), (array) $this->items);

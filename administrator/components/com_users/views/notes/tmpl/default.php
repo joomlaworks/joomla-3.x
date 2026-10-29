@@ -18,7 +18,7 @@ $listOrder  = $this->escape($this->state->get('list.ordering'));
 $listDirn   = $this->escape($this->state->get('list.direction'));
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_users&view=notes'); ?>" method="post" name="adminForm" id="adminForm">
-<?php if (!empty( $this->sidebar)) : ?>
+<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -65,11 +65,11 @@ $listDirn   = $this->escape($this->state->get('list.direction'));
 			</tfoot>
 			<tbody>
 			<?php foreach ($this->items as $i => $item) :
-				$canEdit    = $user->authorise('core.edit',       'com_users.category.' . $item->catid);
-				$canCheckin = $user->authorise('core.admin',      'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
-				$canChange  = $user->authorise('core.edit.state', 'com_users.category.' . $item->catid) && $canCheckin;
-				$subject    = $item->subject ?: JText::_('COM_USERS_EMPTY_SUBJECT');
-				?>
+			    $canEdit    = $user->authorise('core.edit', 'com_users.category.' . $item->catid);
+			    $canCheckin = $user->authorise('core.admin', 'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
+			    $canChange  = $user->authorise('core.edit.state', 'com_users.category.' . $item->catid) && $canCheckin;
+			    $subject    = $item->subject ?: JText::_('COM_USERS_EMPTY_SUBJECT');
+			    ?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="center checklist">
 						<?php echo JHtml::_('grid.id', $i, $item->id); ?>
@@ -78,13 +78,12 @@ $listDirn   = $this->escape($this->state->get('list.direction'));
 						<div class="btn-group">
 							<?php echo JHtml::_('jgrid.published', $item->state, $i, 'notes.', $canChange, 'cb', $item->publish_up, $item->publish_down); ?>
 							<?php // Create dropdown items and render the dropdown list.
-							if ($canChange)
-							{
-								JHtml::_('actionsdropdown.' . ((int) $item->state === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'notes');
-								JHtml::_('actionsdropdown.' . ((int) $item->state === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'notes');
-								echo JHtml::_('actionsdropdown.render', $this->escape($subject));
-							}
-							?>
+			                if ($canChange) {
+			                    JHtml::_('actionsdropdown.' . ((int) $item->state === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'notes');
+			                    JHtml::_('actionsdropdown.' . ((int) $item->state === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'notes');
+			                    echo JHtml::_('actionsdropdown.render', $this->escape($subject));
+			                }
+			    ?>
 						</div>
 					</td>
 					<td>

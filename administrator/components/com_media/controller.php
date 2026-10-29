@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_media
@@ -16,82 +17,80 @@ defined('_JEXEC') or die;
  */
 class MediaController extends JControllerLegacy
 {
-	/**
-	 * Method to display a view.
-	 *
-	 * @param   boolean  $cachable   If true, the view output will be cached
-	 * @param   array    $urlparams  An array of safe URL parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
-	 *
-	 * @return  JController		This object to support chaining.
-	 *
-	 * @since   1.5
-	 */
-	public function display($cachable = false, $urlparams = false)
-	{
-		JPluginHelper::importPlugin('content');
+    /**
+     * Method to display a view.
+     *
+     * @param   boolean  $cachable   If true, the view output will be cached
+     * @param   array    $urlparams  An array of safe URL parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+     *
+     * @return  JController		This object to support chaining.
+     *
+     * @since   1.5
+     */
+    public function display($cachable = false, $urlparams = false)
+    {
+        JPluginHelper::importPlugin('content');
 
-		$vType    = JFactory::getDocument()->getType();
-		$vName    = $this->input->get('view', 'media');
+        $vType    = JFactory::getDocument()->getType();
+        $vName    = $this->input->get('view', 'media');
 
-		switch ($vName)
-		{
-			case 'images':
-				$vLayout = $this->input->get('layout', 'default', 'string');
-				$mName   = 'manager';
+        switch ($vName) {
+            case 'images':
+                $vLayout = $this->input->get('layout', 'default', 'string');
+                $mName   = 'manager';
 
-				break;
+                break;
 
-			case 'imagesList':
-				$mName   = 'list';
-				$vLayout = $this->input->get('layout', 'default', 'string');
+            case 'imagesList':
+                $mName   = 'list';
+                $vLayout = $this->input->get('layout', 'default', 'string');
 
-				break;
+                break;
 
-			case 'mediaList':
-				$app     = JFactory::getApplication();
-				$mName   = 'list';
-				$vLayout = $app->getUserStateFromRequest('media.list.layout', 'layout', 'thumbs', 'word');
+            case 'mediaList':
+                $app     = JFactory::getApplication();
+                $mName   = 'list';
+                $vLayout = $app->getUserStateFromRequest('media.list.layout', 'layout', 'thumbs', 'word');
 
-				break;
+                break;
 
-			case 'media':
-			default:
-				$vName   = 'media';
-				$vLayout = $this->input->get('layout', 'default', 'string');
-				$mName   = 'manager';
+            case 'media':
+            default:
+                $vName   = 'media';
+                $vLayout = $this->input->get('layout', 'default', 'string');
+                $mName   = 'manager';
 
-				break;
-		}
+                break;
+        }
 
-		// Get/Create the view
-		$view = $this->getView($vName, $vType, '', array('base_path' => JPATH_COMPONENT_ADMINISTRATOR));
+        // Get/Create the view
+        $view = $this->getView($vName, $vType, '', array('base_path' => JPATH_COMPONENT_ADMINISTRATOR));
 
-		// Get/Create the model
-		if ($model = $this->getModel($mName))
-		{
-			// Push the model into the view (as default)
-			$view->setModel($model, true);
-		}
+        // Get/Create the model
+        if ($model = $this->getModel($mName)) {
+            // Push the model into the view (as default)
+            $view->setModel($model, true);
+        }
 
-		// Set the layout
-		$view->setLayout($vLayout);
+        // Set the layout
+        $view->setLayout($vLayout);
 
-		// Display the view
-		$view->display();
+        // Display the view
+        $view->display();
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Validate FTP credentials
-	 *
-	 * @return  void
-	 *
-	 * @since   1.5
-	 */
-	public function ftpValidate()
-	{
-		// Set FTP credentials, if given
-		JClientHelper::setCredentialsFromRequest('ftp');
-	}
+    /**
+     * Validate FTP credentials
+     *
+     * @return  void
+     *
+     * @since   1.5
+     */
+    public function ftpValidate()
+    {
+        // Set FTP credentials, if given
+        JClientHelper::setCredentialsFromRequest('ftp');
+    }
 }

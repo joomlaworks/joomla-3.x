@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_finder
@@ -16,68 +17,65 @@ defined('_JEXEC') or die;
  */
 abstract class FinderIndexerStemmer
 {
-	/**
-	 * An internal cache of stemmed tokens.
-	 *
-	 * @var    array
-	 * @since  2.5
-	 */
-	public $cache = array();
+    /**
+     * An internal cache of stemmed tokens.
+     *
+     * @var    array
+     * @since  2.5
+     */
+    public $cache = array();
 
-	/**
-	 * Method to get a stemmer, creating it if necessary.
-	 *
-	 * @param   string  $adapter  The type of stemmer to load.
-	 *
-	 * @return  FinderIndexerStemmer  A FinderIndexerStemmer instance.
-	 *
-	 * @since   2.5
-	 * @throws  Exception on invalid stemmer.
-	 */
-	public static function getInstance($adapter)
-	{
-		static $instances;
+    /**
+     * Method to get a stemmer, creating it if necessary.
+     *
+     * @param   string  $adapter  The type of stemmer to load.
+     *
+     * @return  FinderIndexerStemmer  A FinderIndexerStemmer instance.
+     *
+     * @since   2.5
+     * @throws  Exception on invalid stemmer.
+     */
+    public static function getInstance($adapter)
+    {
+        static $instances;
 
-		// Only create one stemmer for each adapter.
-		if (isset($instances[$adapter]))
-		{
-			return $instances[$adapter];
-		}
+        // Only create one stemmer for each adapter.
+        if (isset($instances[$adapter])) {
+            return $instances[$adapter];
+        }
 
-		// Create an array of instances if necessary.
-		if (!is_array($instances))
-		{
-			$instances = array();
-		}
+        // Create an array of instances if necessary.
+        if (!is_array($instances)) {
+            $instances = array();
+        }
 
-		// Setup the adapter for the stemmer.
-		$adapter = JFilterInput::getInstance()->clean($adapter, 'cmd');
-		$path = __DIR__ . '/stemmer/' . $adapter . '.php';
-		$class = 'FinderIndexerStemmer' . ucfirst((string) $adapter);
+        // Setup the adapter for the stemmer.
+        $adapter = JFilterInput::getInstance()->clean($adapter, 'cmd');
+        $path = __DIR__ . '/stemmer/' . $adapter . '.php';
+        $class = 'FinderIndexerStemmer' . ucfirst((string) $adapter);
 
-		// Check if a stemmer exists for the adapter.
-		if (!file_exists($path))
-		{
-			// Throw invalid adapter exception.
-			throw new Exception(JText::sprintf('COM_FINDER_INDEXER_INVALID_STEMMER', $adapter));
-		}
+        // Check if a stemmer exists for the adapter.
+        if (!file_exists($path)) {
+            // Throw invalid adapter exception.
+            throw new Exception(JText::sprintf('COM_FINDER_INDEXER_INVALID_STEMMER', $adapter));
+        }
 
-		// Instantiate the stemmer.
-		JLoader::register($class, $path);
-		$instances[$adapter] = new $class;
+        // Instantiate the stemmer.
+        JLoader::register($class, $path);
+        $instances[$adapter] = new $class();
 
-		return $instances[$adapter];
-	}
+        return $instances[$adapter];
+    }
 
-	/**
-	 * Method to stem a token and return the root.
-	 *
-	 * @param   string  $token  The token to stem.
-	 * @param   string  $lang   The language of the token.
-	 *
-	 * @return  string  The root token.
-	 *
-	 * @since   2.5
-	 */
-	abstract public function stem($token, $lang);
+    /**
+     * Method to stem a token and return the root.
+     *
+     * @param   string  $token  The token to stem.
+     * @param   string  $lang   The language of the token.
+     *
+     * @return  string  The root token.
+     *
+     * @since   2.5
+     */
+    abstract public function stem($token, $lang);
 }

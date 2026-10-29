@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_banners
@@ -16,18 +17,18 @@ defined('_JEXEC') or die;
  */
 class BannersCategories extends JCategories
 {
-	/**
-	 * Constructor
-	 *
-	 * @param   array  $options  Array of options
-	 *
-	 * @since   1.6
-	 */
-	public function __construct($options = array())
-	{
-		$options['table']     = '#__banners';
-		$options['extension'] = 'com_banners';
+    /**
+     * Constructor
+     *
+     * @param   array  $options  Array of options
+     *
+     * @since   1.6
+     */
+    public function __construct($options = array())
+    {
+        $options['table']     = '#__banners';
+        $options['extension'] = 'com_banners';
 
-		parent::__construct($options);
-	}
+        parent::__construct($options);
+    }
 }

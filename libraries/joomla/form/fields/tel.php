@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  Form
@@ -22,53 +23,53 @@ JFormHelper::loadFieldClass('text');
  */
 class JFormFieldTel extends JFormFieldText
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  1.7.0
-	 */
-	protected $type = 'Tel';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  1.7.0
+     */
+    protected $type = 'Tel';
 
-	/**
-	 * Name of the layout being used to render the field
-	 *
-	 * @var    string
-	 * @since  3.7.0
-	 */
-	protected $layout = 'joomla.form.field.tel';
+    /**
+     * Name of the layout being used to render the field
+     *
+     * @var    string
+     * @since  3.7.0
+     */
+    protected $layout = 'joomla.form.field.tel';
 
-	/**
-	 * Method to get the field input markup.
-	 *
-	 * @return  string  The field input markup.
-	 *
-	 * @since   3.2
-	 */
-	protected function getInput()
-	{
-		// Trim the trailing line in the layout file
-		return rtrim((string) $this->getRenderer($this->layout)->render($this->getLayoutData()), PHP_EOL);
-	}
+    /**
+     * Method to get the field input markup.
+     *
+     * @return  string  The field input markup.
+     *
+     * @since   3.2
+     */
+    protected function getInput()
+    {
+        // Trim the trailing line in the layout file
+        return rtrim((string) $this->getRenderer($this->layout)->render($this->getLayoutData()), PHP_EOL);
+    }
 
-	/**
-	 * Method to get the data to be passed to the layout for rendering.
-	 *
-	 * @return  array
-	 *
-	 * @since 3.7.0
-	 */
-	protected function getLayoutData()
-	{
-		$data = parent::getLayoutData();
+    /**
+     * Method to get the data to be passed to the layout for rendering.
+     *
+     * @return  array
+     *
+     * @since 3.7.0
+     */
+    protected function getLayoutData()
+    {
+        $data = parent::getLayoutData();
 
-		// Initialize some field attributes.
-		$maxLength    = !empty($this->maxLength) ? ' maxlength="' . $this->maxLength . '"' : '';
+        // Initialize some field attributes.
+        $maxLength    = !empty($this->maxLength) ? ' maxlength="' . $this->maxLength . '"' : '';
 
-		$extraData = array(
-			'maxLength' => $maxLength,
-		);
+        $extraData = array(
+            'maxLength' => $maxLength,
+        );
 
-		return array_merge($data, $extraData);
-	}
+        return array_merge($data, $extraData);
+    }
 }

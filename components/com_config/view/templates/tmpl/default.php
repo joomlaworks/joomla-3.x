@@ -47,7 +47,7 @@ JFactory::getDocument()->addScriptDeclaration("
 		<div id="page-site" class="tab-pane active">
 			<div class="row-fluid">
 				<?php // Get the menu parameters that are automatically set but may be modified.
-				echo $this->loadTemplate('options'); ?>
+                echo $this->loadTemplate('options'); ?>
 			</div>
 		</div>
 

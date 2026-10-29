@@ -22,9 +22,8 @@ $params      = $this->params;
 $description = $params->get('all_tags_description');
 $image       = $params->get('all_tags_show_description_image') ? $params->get('all_tags_description_image') : '';
 $levels      = $this->user->getAuthorisedViewLevels();
-$items       = array_filter((array) $this->items, function ($item) use ($levels)
-{
-	return !empty($item->access) && in_array($item->access, $levels);
+$items       = array_filter((array) $this->items, function ($item) use ($levels) {
+    return !empty($item->access) && in_array($item->access, $levels);
 });
 ?>
 <div class="listView tagsView<?php echo $this->pageclass_sfx; ?>">

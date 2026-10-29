@@ -9,9 +9,8 @@
 
 defined('_JEXEC') or die;
 
-if (JFactory::getApplication()->isClient('site'))
-{
-	JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
+if (JFactory::getApplication()->isClient('site')) {
+    JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
 }
 
 // Load needed scripts
@@ -32,9 +31,8 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 $editor    = JFactory::getApplication()->input->get('editor', '', 'cmd');
 $link      = 'index.php?option=com_modules&view=modules&layout=modal&tmpl=component&' . JSession::getFormToken() . '=1';
 
-if (!empty($editor))
-{
-	$link = 'index.php?option=com_modules&view=modules&layout=modal&tmpl=component&editor=' . $editor . '&' . JSession::getFormToken() . '=1';
+if (!empty($editor)) {
+    $link = 'index.php?option=com_modules&view=modules&layout=modal&tmpl=component&editor=' . $editor . '&' . JSession::getFormToken() . '=1';
 }
 ?>
 <div class="container-popup">
@@ -81,14 +79,14 @@ if (!empty($editor))
 			</tfoot>
 			<tbody>
 				<?php
-				$iconStates = array(
-					-2 => 'icon-trash',
-					0  => 'icon-unpublish',
-					1  => 'icon-publish',
-					2  => 'icon-archive',
-				);
-				foreach ($this->items as $i => $item) :
-				?>
+                $iconStates = array(
+                    -2 => 'icon-trash',
+                    0  => 'icon-unpublish',
+                    1  => 'icon-publish',
+                    2  => 'icon-archive',
+                );
+		    foreach ($this->items as $i => $item) :
+		        ?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="center">
 						<span class="<?php echo $iconStates[$this->escape($item->published)]; ?>" aria-hidden="true"></span>

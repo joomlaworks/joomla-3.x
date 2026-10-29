@@ -22,10 +22,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 $saveOrder = $listOrder == 'a.ordering';
 $assoc     = JLanguageAssociations::isEnabled();
 
-if ($saveOrder)
-{
-	$saveOrderingUrl = 'index.php?option=com_contact&task=contacts.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'contactList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
+if ($saveOrder) {
+    $saveOrderingUrl = 'index.php?option=com_contact&task=contacts.saveOrderAjax&tmpl=component';
+    JHtml::_('sortablelist.sortable', 'contactList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 }
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_contact'); ?>" method="post" name="adminForm" id="adminForm">
@@ -87,29 +86,26 @@ if ($saveOrder)
 				</tfoot>
 				<tbody>
 				<?php
-				$n = count($this->items);
-				foreach ($this->items as $i => $item) :
-					$canCreate  = $user->authorise('core.create',     'com_contact.category.' . $item->catid);
-					$canEdit    = $user->authorise('core.edit',       'com_contact.category.' . $item->catid);
-					$canCheckin = $user->authorise('core.manage',     'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
-					$canEditOwn = $user->authorise('core.edit.own',   'com_contact.category.' . $item->catid) && $item->created_by == $userId;
-					$canChange  = $user->authorise('core.edit.state', 'com_contact.category.' . $item->catid) && $canCheckin;
+                $n = count($this->items);
+foreach ($this->items as $i => $item) :
+    $canCreate  = $user->authorise('core.create', 'com_contact.category.' . $item->catid);
+    $canEdit    = $user->authorise('core.edit', 'com_contact.category.' . $item->catid);
+    $canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
+    $canEditOwn = $user->authorise('core.edit.own', 'com_contact.category.' . $item->catid) && $item->created_by == $userId;
+    $canChange  = $user->authorise('core.edit.state', 'com_contact.category.' . $item->catid) && $canCheckin;
 
-					$item->cat_link = JRoute::_('index.php?option=com_categories&extension=com_contact&task=edit&type=other&id=' . $item->catid);
-					?>
+    $item->cat_link = JRoute::_('index.php?option=com_categories&extension=com_contact&task=edit&type=other&id=' . $item->catid);
+    ?>
 					<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->catid; ?>">
 						<td class="order nowrap center hidden-phone">
 							<?php
-							$iconClass = '';
-							if (!$canChange)
-							{
-								$iconClass = ' inactive';
-							}
-							elseif (!$saveOrder)
-							{
-								$iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
-							}
-							?>
+            $iconClass = '';
+    if (!$canChange) {
+        $iconClass = ' inactive';
+    } elseif (!$saveOrder) {
+        $iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
+    }
+    ?>
 							<span class="sortable-handler<?php echo $iconClass; ?>">
 								<span class="icon-menu" aria-hidden="true"></span>
 							</span>
@@ -126,13 +122,12 @@ if ($saveOrder)
 								<?php echo JHtml::_('jgrid.published', $item->published, $i, 'contacts.', $canChange, 'cb', $item->publish_up, $item->publish_down); ?>
 								<?php echo JHtml::_('contact.featured', $item->featured, $i, $canChange); ?>
 								<?php // Create dropdown items and render the dropdown list.
-								if ($canChange)
-								{
-									JHtml::_('actionsdropdown.' . ((int) $item->published === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'contacts');
-									JHtml::_('actionsdropdown.' . ((int) $item->published === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'contacts');
-									echo JHtml::_('actionsdropdown.render', $this->escape($item->name));
-								}
-								?>
+        if ($canChange) {
+            JHtml::_('actionsdropdown.' . ((int) $item->published === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'contacts');
+            JHtml::_('actionsdropdown.' . ((int) $item->published === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'contacts');
+            echo JHtml::_('actionsdropdown.render', $this->escape($item->name));
+        }
+    ?>
 							</div>
 						</td>
 						<td class="has-context">
@@ -179,18 +174,18 @@ if ($saveOrder)
 					<?php endforeach; ?>
 				</tbody>
 			</table>
-			<?php // Load the batch processing form. ?>
+			<?php // Load the batch processing form.?>
 			<?php if ($user->authorise('core.create', 'com_contact')
-				&& $user->authorise('core.edit', 'com_contact')
-				&& $user->authorise('core.edit.state', 'com_contact')) : ?>
+                && $user->authorise('core.edit', 'com_contact')
+                && $user->authorise('core.edit.state', 'com_contact')) : ?>
 				<?php echo JHtml::_(
-					'bootstrap.renderModal',
-					'collapseModal',
-					array(
-						'title'  => JText::_('COM_CONTACT_BATCH_OPTIONS'),
-						'footer' => $this->loadTemplate('batch_footer'),
-					),
-					$this->loadTemplate('batch_body')
+				    'bootstrap.renderModal',
+				    'collapseModal',
+				    array(
+				        'title'  => JText::_('COM_CONTACT_BATCH_OPTIONS'),
+				        'footer' => $this->loadTemplate('batch_footer'),
+				    ),
+				    $this->loadTemplate('batch_body')
 				); ?>
 			<?php endif; ?>
 		<?php endif; ?>

@@ -25,27 +25,20 @@ $currentPage = 1;
 $range = 1;
 $step = 5;
 
-if (!empty($pages['pages']))
-{
-	foreach ($pages['pages'] as $k => $page)
-	{
-		if (!$page['active'])
-		{
-			$currentPage = $k;
-		}
-	}
+if (!empty($pages['pages'])) {
+    foreach ($pages['pages'] as $k => $page) {
+        if (!$page['active']) {
+            $currentPage = $k;
+        }
+    }
 }
 
-if ($currentPage >= $step)
-{
-	if ($currentPage % $step === 0)
-	{
-		$range = ceil($currentPage / $step) + 1;
-	}
-	else
-	{
-		$range = ceil($currentPage / $step);
-	}
+if ($currentPage >= $step) {
+    if ($currentPage % $step === 0) {
+        $range = ceil($currentPage / $step) + 1;
+    } else {
+        $range = ceil($currentPage / $step);
+    }
 }
 ?>
 
@@ -60,8 +53,8 @@ if ($currentPage >= $step)
 	<?php if ($showPagesLinks && (!empty($pages))) : ?>
 		<ul class="pagination-list">
 			<?php
-				echo JLayoutHelper::render('joomla.pagination.link', $pages['start']);
-				echo JLayoutHelper::render('joomla.pagination.link', $pages['previous']); ?>
+                echo JLayoutHelper::render('joomla.pagination.link', $pages['start']);
+	    echo JLayoutHelper::render('joomla.pagination.link', $pages['previous']); ?>
 			<?php foreach ($pages['pages'] as $k => $page) : ?>
 
 				<?php $output = JLayoutHelper::render('joomla.pagination.link', $page); ?>
@@ -74,8 +67,8 @@ if ($currentPage >= $step)
 				<?php echo $output; ?>
 			<?php endforeach; ?>
 			<?php
-				echo JLayoutHelper::render('joomla.pagination.link', $pages['next']);
-				echo JLayoutHelper::render('joomla.pagination.link', $pages['end']); ?>
+	    echo JLayoutHelper::render('joomla.pagination.link', $pages['next']);
+	    echo JLayoutHelper::render('joomla.pagination.link', $pages['end']); ?>
 		</ul>
 	<?php endif; ?>
 

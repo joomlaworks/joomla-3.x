@@ -17,40 +17,33 @@ uksort($this->files, 'strnatcmp');
 	<?php foreach ($this->files as $key => $value) : ?>
 		<?php if (is_array($value)) : ?>
 			<?php
-			$keyArray  = explode('/', (string) $key);
-			$fileArray = explode('/', (string) $this->fileName);
-			$count     = 0;
+            $keyArray  = explode('/', (string) $key);
+		    $fileArray = explode('/', (string) $this->fileName);
+		    $count     = 0;
 
-			$keyArrayCount = count($keyArray);
+		    $keyArrayCount = count($keyArray);
 
-			if (count($fileArray) >= $keyArrayCount)
-			{
-				for ($i = 0; $i < $keyArrayCount; $i++)
-				{
-					if ($keyArray[$i] === $fileArray[$i])
-					{
-						$count++;
-					}
-				}
+		    if (count($fileArray) >= $keyArrayCount) {
+		        for ($i = 0; $i < $keyArrayCount; $i++) {
+		            if ($keyArray[$i] === $fileArray[$i]) {
+		                $count++;
+		            }
+		        }
 
-				if ($count === $keyArrayCount)
-				{
-					$class = 'folder show';
-				}
-				else
-				{
-					$class = 'folder';
-				}
-			}
-			else
-			{
-				$class = 'folder';
-			}
+		        if ($count === $keyArrayCount) {
+		            $class = 'folder show';
+		        } else {
+		            $class = 'folder';
+		        }
+		    } else {
+		        $class = 'folder';
+		    }
 
-			?>
+	    ?>
 			<li class="<?php echo $class; ?>">
 				<a class='folder-url nowrap' href=''>
-					<span class='icon-folder'>&nbsp;<?php $explodeArray = explode('/', (string) $key); echo $this->escape(end($explodeArray)); ?></span>
+					<span class='icon-folder'>&nbsp;<?php $explodeArray = explode('/', (string) $key);
+	    echo $this->escape(end($explodeArray)); ?></span>
 				</a>
 				<?php echo $this->directoryTree($value); ?>
 			</li>

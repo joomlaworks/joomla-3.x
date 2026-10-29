@@ -31,9 +31,8 @@ JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true)
 // Add Stylesheets
 JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
 
-if ($this->direction === 'rtl')
-{
-	JHtml::_('stylesheet', 'template-rtl.css', array('version' => 'auto', 'relative' => true));
+if ($this->direction === 'rtl') {
+    JHtml::_('stylesheet', 'template-rtl.css', array('version' => 'auto', 'relative' => true));
 }
 
 // Load optional RTL Bootstrap CSS
@@ -50,10 +49,9 @@ require_once __DIR__ . '/helper.php';
 
 $optionColors = isisOptionColors(array('link' => $this->params->get('linkColor')));
 
-if ($optionColors['properties'] !== '')
-{
-	JHtml::_('stylesheet', 'template-options.css', array('version' => 'auto', 'relative' => true));
-	$this->addStyleDeclaration(':root {' . $optionColors['properties'] . '}');
+if ($optionColors['properties'] !== '') {
+    JHtml::_('stylesheet', 'template-options.css', array('version' => 'auto', 'relative' => true));
+    $this->addStyleDeclaration(':root {' . $optionColors['properties'] . '}');
 }
 ?>
 <!DOCTYPE html>

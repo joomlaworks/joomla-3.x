@@ -23,9 +23,8 @@ JText::script('MOD_SAMPLEDATA_INSTALLED');
 
 // The form token goes in the requests' body. Sample data plugins written for stock Joomla 3 look for it in the URL, so it's added
 // there too, but only when such a plugin is enabled (a URL ends up in logs)
-$others = array_filter(JPluginHelper::getPlugin('sampledata'), function ($plugin)
-{
-	return $plugin->name !== 'blog';
+$others = array_filter(JPluginHelper::getPlugin('sampledata'), function ($plugin) {
+    return $plugin->name !== 'blog';
 });
 
 JFactory::getDocument()->addScriptDeclaration('
@@ -51,12 +50,10 @@ JFactory::getDocument()->addStyleDeclaration('
 // The set installed now, which installing any set replaces
 $installed = '';
 
-foreach ($items as $item)
-{
-	if (!empty($item->installed))
-	{
-		$installed = (string) $item->title;
-	}
+foreach ($items as $item) {
+    if (!empty($item->installed)) {
+        $installed = (string) $item->title;
+    }
 }
 
 // Descriptions come from the plugins' language strings (which overrides can change): a few inline tags, no attributes

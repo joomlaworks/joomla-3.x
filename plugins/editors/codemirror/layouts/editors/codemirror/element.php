@@ -27,13 +27,13 @@ $modifier = $params->get('fullScreenMod', array()) ? implode(' + ', $params->get
 </p>
 
 <?php
-	echo '<textarea class="codemirror-source" name="', $name,
-		'" id="', $id,
-		'" cols="', $cols,
-		'" rows="', $rows,
-		'" data-options="', htmlspecialchars(json_encode($options)),
-		(!empty($displayData->height) ? '" data-height="' . htmlspecialchars($displayData->height, ENT_COMPAT, 'UTF-8') : ''),
-		'">', $content, '</textarea>';
+    echo '<textarea class="codemirror-source" name="', $name,
+'" id="', $id,
+'" cols="', $cols,
+'" rows="', $rows,
+'" data-options="', htmlspecialchars(json_encode($options)),
+(!empty($displayData->height) ? '" data-height="' . htmlspecialchars($displayData->height, ENT_COMPAT, 'UTF-8') : ''),
+'">', $content, '</textarea>';
 ?>
 
 <?php echo $buttons; ?>

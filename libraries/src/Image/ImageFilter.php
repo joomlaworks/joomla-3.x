@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -19,18 +20,18 @@ use Joomla\CMS\Log\Log;
  */
 abstract class ImageFilter extends \Joomla\Image\ImageFilter
 {
-	/**
-	 * Class constructor.
-	 *
-	 * @param   resource  $handle  The image resource on which to apply the filter.
-	 *
-	 * @since  1.7.3
-	 */
-	public function __construct($handle)
-	{
-		// Inject the PSR-3 compatible logger in for forward compatibility
-		$this->setLogger(Log::createDelegatedLogger());
+    /**
+     * Class constructor.
+     *
+     * @param   resource  $handle  The image resource on which to apply the filter.
+     *
+     * @since  1.7.3
+     */
+    public function __construct($handle)
+    {
+        // Inject the PSR-3 compatible logger in for forward compatibility
+        $this->setLogger(Log::createDelegatedLogger());
 
-		parent::__construct($handle);
-	}
+        parent::__construct($handle);
+    }
 }

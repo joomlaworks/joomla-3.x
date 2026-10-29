@@ -21,14 +21,13 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $saveOrder = $listOrder == 'ordering';
 
-if ($saveOrder)
-{
-	$saveOrderingUrl = 'index.php?option=com_plugins&task=plugins.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'pluginList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
+if ($saveOrder) {
+    $saveOrderingUrl = 'index.php?option=com_plugins&task=plugins.saveOrderAjax&tmpl=component';
+    JHtml::_('sortablelist.sortable', 'pluginList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 }
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_plugins&view=plugins'); ?>" method="post" name="adminForm" id="adminForm">
-<?php if (!empty( $this->sidebar)) : ?>
+<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -81,24 +80,21 @@ if ($saveOrder)
 				</tfoot>
 				<tbody>
 				<?php foreach ($this->items as $i => $item) :
-					$ordering   = ($listOrder == 'ordering');
-					$canEdit    = $user->authorise('core.edit',       'com_plugins');
-					$canCheckin = $user->authorise('core.manage',     'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
-					$canChange  = $user->authorise('core.edit.state', 'com_plugins') && $canCheckin;
-					?>
+				    $ordering   = ($listOrder == 'ordering');
+				    $canEdit    = $user->authorise('core.edit', 'com_plugins');
+				    $canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
+				    $canChange  = $user->authorise('core.edit.state', 'com_plugins') && $canCheckin;
+				    ?>
 					<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->folder; ?>">
 						<td class="order nowrap center hidden-phone">
 							<?php
-							$iconClass = '';
-							if (!$canChange)
-							{
-								$iconClass = ' inactive';
-							}
-							elseif (!$saveOrder)
-							{
-								$iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
-							}
-							?>
+				            $iconClass = '';
+				    if (!$canChange) {
+				        $iconClass = ' inactive';
+				    } elseif (!$saveOrder) {
+				        $iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
+				    }
+				    ?>
 							<span class="sortable-handler<?php echo $iconClass; ?>">
 								<span class="icon-menu" aria-hidden="true"></span>
 							</span>

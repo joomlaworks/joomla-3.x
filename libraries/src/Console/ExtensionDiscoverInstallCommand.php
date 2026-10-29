@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -20,143 +21,134 @@ use Joomla\CMS\Installer\Installer;
  */
 class ExtensionDiscoverInstallCommand extends AbstractExtensionCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'extension:discover:install';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'extension:discover:install';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Install discovered extensions';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Install discovered extensions';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Installs one discovered extension (--eid) or all of them. Run extension:discover first.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Installs one discovered extension (--eid) or all of them. Run extension:discover first.';
 
-	/**
-	 * @var    boolean
-	 * @since  3.17.0
-	 */
-	protected $dryRun = true;
+    /**
+     * @var    boolean
+     * @since  3.17.0
+     */
+    protected $dryRun = true;
 
-	/**
-	 * It installs code it didn't make (a package's PHP files and install script).
-	 *
-	 * @param   array|null  $options    The options of a run
-	 * @param   array|null  $arguments  The arguments of a run
-	 *
-	 * @return  boolean
-	 *
-	 * @since   3.17.0
-	 */
-	public function writesCode(?array $options = null, ?array $arguments = null)
-	{
-		return true;
-	}
+    /**
+     * It installs code it didn't make (a package's PHP files and install script).
+     *
+     * @param   array|null  $options    The options of a run
+     * @param   array|null  $arguments  The arguments of a run
+     *
+     * @return  boolean
+     *
+     * @since   3.17.0
+     */
+    public function writesCode(?array $options = null, ?array $arguments = null)
+    {
+        return true;
+    }
 
-	/**
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	protected function configure()
-	{
-		$this->addOption('eid', null, self::OPTION_REQUIRED, 'The ID of the extension to discover');
-	}
+    /**
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    protected function configure()
+    {
+        $this->addOption('eid', null, self::OPTION_REQUIRED, 'The ID of the extension to discover');
+    }
 
-	/**
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	protected function doExecute(CommandIO $io)
-	{
-		$io->title('Install Discovered Extensions');
+    /**
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    protected function doExecute(CommandIO $io)
+    {
+        $io->title('Install Discovered Extensions');
 
-		$db    = Factory::getDbo();
-		$query = $db->getQuery(true)
-			->select($db->quoteName(array('extension_id', 'name')))
-			->from($db->quoteName('#__extensions'))
-			->where($db->quoteName('state') . ' = -1');
-		$eid = (string) $io->getOption('eid');
+        $db    = Factory::getDbo();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName(array('extension_id', 'name')))
+            ->from($db->quoteName('#__extensions'))
+            ->where($db->quoteName('state') . ' = -1');
+        $eid = (string) $io->getOption('eid');
 
-		if ($eid !== '')
-		{
-			if (!ctype_digit($eid))
-			{
-				$io->error('The --eid option must be an extension ID.');
+        if ($eid !== '') {
+            if (!ctype_digit($eid)) {
+                $io->error('The --eid option must be an extension ID.');
 
-				return self::INVALID;
-			}
+                return self::INVALID;
+            }
 
-			$query->where($db->quoteName('extension_id') . ' = ' . (int) $eid);
-		}
+            $query->where($db->quoteName('extension_id') . ' = ' . (int) $eid);
+        }
 
-		$discovered = $db->setQuery($query)->loadObjectList();
+        $discovered = $db->setQuery($query)->loadObjectList();
 
-		if (!$discovered)
-		{
-			if ($eid !== '')
-			{
-				$io->error(sprintf('There is no discovered extension with ID %s.', $eid));
+        if (!$discovered) {
+            if ($eid !== '') {
+                $io->error(sprintf('There is no discovered extension with ID %s.', $eid));
 
-				return self::NOT_FOUND;
-			}
+                return self::NOT_FOUND;
+            }
 
-			$io->text('There are no pending discovered extensions to install. Perhaps you need to run extension:discover first?');
+            $io->text('There are no pending discovered extensions to install. Perhaps you need to run extension:discover first?');
 
-			return self::SUCCESS;
-		}
+            return self::SUCCESS;
+        }
 
-		$installed = array();
-		$failed    = array();
+        $installed = array();
+        $failed    = array();
 
-		foreach ($discovered as $extension)
-		{
-			if ($io->isDryRun())
-			{
-				$io->plan(sprintf('Install the discovered extension "%s" (ID %d)', $extension->name, $extension->extension_id),
-					array('action' => 'discover-install', 'id' => (int) $extension->extension_id, 'name' => $extension->name));
+        foreach ($discovered as $extension) {
+            if ($io->isDryRun()) {
+                $io->plan(
+                    sprintf('Install the discovered extension "%s" (ID %d)', $extension->name, $extension->extension_id),
+                    array('action' => 'discover-install', 'id' => (int) $extension->extension_id, 'name' => $extension->name)
+                );
 
-				continue;
-			}
+                continue;
+            }
 
-			$installer = new Installer;
+            $installer = new Installer();
 
-			if ($installer->discover_install($extension->extension_id))
-			{
-				$installed[] = (int) $extension->extension_id;
-				$io->text(sprintf('Installed "%s" (ID %d).', $extension->name, $extension->extension_id));
-			}
-			else
-			{
-				$failed[] = (int) $extension->extension_id;
-				$io->error(sprintf('Unable to install "%s" (ID %d).', $extension->name, $extension->extension_id));
-			}
-		}
+            if ($installer->discover_install($extension->extension_id)) {
+                $installed[] = (int) $extension->extension_id;
+                $io->text(sprintf('Installed "%s" (ID %d).', $extension->name, $extension->extension_id));
+            } else {
+                $failed[] = (int) $extension->extension_id;
+                $io->error(sprintf('Unable to install "%s" (ID %d).', $extension->name, $extension->extension_id));
+            }
+        }
 
-		if ($io->isDryRun())
-		{
-			return self::SUCCESS;
-		}
+        if ($io->isDryRun()) {
+            return self::SUCCESS;
+        }
 
-		$io->setData('installed', $installed);
-		$io->setData('failed', $failed);
+        $io->setData('installed', $installed);
+        $io->setData('failed', $failed);
 
-		if ($failed)
-		{
-			return self::FAILURE;
-		}
+        if ($failed) {
+            return self::FAILURE;
+        }
 
-		$io->success(sprintf('%d extension(s) installed.', count($installed)));
+        $io->success(sprintf('%d extension(s) installed.', count($installed)));
 
-		return self::SUCCESS;
-	}
+        return self::SUCCESS;
+    }
 }

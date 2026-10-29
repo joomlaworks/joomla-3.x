@@ -36,7 +36,7 @@ $page = FinchHelper::prepare($this);
 			<?php endif; ?>
 		</div>
 
-		<?php // The search form opens over the page, under the header: it never moves the content (no layout shift) ?>
+		<?php // The search form opens over the page, under the header: it never moves the content (no layout shift)?>
 		<?php if ($page->hasSearch) : ?>
 		<div class="searchPanel" id="searchPanel" hidden>
 			<div class="container">
@@ -49,7 +49,7 @@ $page = FinchHelper::prepare($this);
 	<main id="content" class="siteMain">
 		<jdoc:include type="message" />
 
-		<?php // The home page opens with the greeting (else the blog's name) set across the page, and the tagline ?>
+		<?php // The home page opens with the greeting (else the blog's name) set across the page, and the tagline?>
 		<?php if ($page->isHome) : ?>
 		<div class="container masthead">
 			<h1 class="mastheadTitle"><?php echo FinchHelper::e(trim((string) $page->params->get('greeting')) ?: $page->siteName); ?></h1>
@@ -67,13 +67,13 @@ $page = FinchHelper::prepare($this);
 			<jdoc:include type="component" />
 		</div>
 
-		<?php // After a post (e.g. "Read next") ?>
+		<?php // After a post (e.g. "Read next")?>
 		<?php if ($page->isPost && $this->countModules('below-content')) : ?>
 		<div class="container belowContent"><jdoc:include type="modules" name="below-content" style="finch" /></div>
 		<?php endif; ?>
 	</main>
 
-	<?php // The sidebar's modules (about, popular posts, topics): a band across the page under the lists ?>
+	<?php // The sidebar's modules (about, popular posts, topics): a band across the page under the lists?>
 	<?php if ($page->hasSidebar) : ?>
 	<aside class="sidebar">
 		<div class="container sidebarInner"><jdoc:include type="modules" name="sidebar" style="finch" /></div>

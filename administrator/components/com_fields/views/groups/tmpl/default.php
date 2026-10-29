@@ -22,9 +22,8 @@ $userId    = $user->get('id');
 $component = '';
 $parts     = FieldsHelper::extract($this->state->get('filter.context'));
 
-if ($parts)
-{
-	$component = $this->escape($parts[0]);
+if ($parts) {
+    $component = $this->escape($parts[0]);
 }
 
 $listOrder = $this->escape($this->state->get('list.ordering'));
@@ -32,10 +31,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 $ordering  = ($listOrder == 'a.ordering');
 $saveOrder = ($listOrder == 'a.ordering' && strtolower((string) $listDirn) == 'asc');
 
-if ($saveOrder)
-{
-	$saveOrderingUrl = 'index.php?option=com_fields&task=groups.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'groupList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl, false, true);
+if ($saveOrder) {
+    $saveOrderingUrl = 'index.php?option=com_fields&task=groups.saveOrderAjax&tmpl=component';
+    JHtml::_('sortablelist.sortable', 'groupList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl, false, true);
 }
 ?>
 
@@ -116,7 +114,7 @@ if ($saveOrder)
 							<td class="center">
 								<div class="btn-group">
 									<?php echo JHtml::_('jgrid.published', $item->state, $i, 'groups.', $canChange, 'cb'); ?>
-									<?php // Create dropdown items and render the dropdown list. ?>
+									<?php // Create dropdown items and render the dropdown list.?>
 									<?php if ($canChange) : ?>
 										<?php JHtml::_('actionsdropdown.' . ((int) $item->state === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'groups'); ?>
 										<?php JHtml::_('actionsdropdown.' . ((int) $item->state === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'groups'); ?>
@@ -155,19 +153,19 @@ if ($saveOrder)
 					<?php endforeach; ?>
 				</tbody>
 			</table>
-			<?php //Load the batch processing form. ?>
+			<?php //Load the batch processing form.?>
 			<?php if ($user->authorise('core.create', $component)
-				&& $user->authorise('core.edit', $component)
-				&& $user->authorise('core.edit.state', $component)) : ?>
+                && $user->authorise('core.edit', $component)
+                && $user->authorise('core.edit.state', $component)) : ?>
 				<?php echo JHtml::_(
-						'bootstrap.renderModal',
-						'collapseModal',
-						array(
-							'title' => JText::_('COM_FIELDS_VIEW_GROUPS_BATCH_OPTIONS'),
-							'footer' => $this->loadTemplate('batch_footer')
-						),
-						$this->loadTemplate('batch_body')
-					); ?>
+				    'bootstrap.renderModal',
+				    'collapseModal',
+				    array(
+				            'title' => JText::_('COM_FIELDS_VIEW_GROUPS_BATCH_OPTIONS'),
+				            'footer' => $this->loadTemplate('batch_footer')
+				        ),
+				    $this->loadTemplate('batch_body')
+				); ?>
 			<?php endif; ?>
 		<?php endif; ?>
 		<input type="hidden" name="task" value="" />

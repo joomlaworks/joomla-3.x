@@ -31,9 +31,8 @@ JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true)
 // Add Stylesheets
 JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
 
-if ($this->direction === 'rtl')
-{
-	JHtml::_('stylesheet', 'template-rtl.css', array('version' => 'auto', 'relative' => true));
+if ($this->direction === 'rtl') {
+    JHtml::_('stylesheet', 'template-rtl.css', array('version' => 'auto', 'relative' => true));
 }
 
 // Load optional RTL Bootstrap CSS

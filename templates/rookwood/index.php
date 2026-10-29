@@ -41,7 +41,7 @@ $page = RookwoodHelper::prepare($this);
 				<button type="button" class="iconButton themeToggle" data-label-dark="<?php echo JText::_('TPL_ROOKWOOD_THEME_DARK'); ?>" data-label-light="<?php echo JText::_('TPL_ROOKWOOD_THEME_LIGHT'); ?>" aria-label="<?php echo JText::_('TPL_ROOKWOOD_THEME_SWITCH'); ?>">
 					<?php echo RookwoodHelper::icon('sun') . RookwoodHelper::icon('moon'); ?>
 				</button>
-				<?php // The header's button (a menu of one item, e.g. "Start a project": its Link CSS Style "btn btnPrimary"), also shown in the phone menu ?>
+				<?php // The header's button (a menu of one item, e.g. "Start a project": its Link CSS Style "btn btnPrimary"), also shown in the phone menu?>
 				<?php if ($this->countModules('header-action')) : ?>
 				<div class="headerAction"><jdoc:include type="modules" name="header-action" style="none" /></div>
 				<?php endif; ?>
@@ -51,7 +51,7 @@ $page = RookwoodHelper::prepare($this);
 			</div>
 		</div>
 
-		<?php // The search form opens over the page, under the header: it never moves the content (no layout shift) ?>
+		<?php // The search form opens over the page, under the header: it never moves the content (no layout shift)?>
 		<?php if ($page->hasSearch) : ?>
 		<div class="searchPanel" id="searchPanel" hidden>
 			<div class="container">
@@ -68,7 +68,7 @@ $page = RookwoodHelper::prepare($this);
 		<jdoc:include type="modules" name="frontpage" style="rookwood" />
 		<?php else : ?>
 		<jdoc:include type="modules" name="above-content" style="rookwood" />
-		<?php // The template's own layouts draw their full-width headers themselves; other components get the page's width ?>
+		<?php // The template's own layouts draw their full-width headers themselves; other components get the page's width?>
 		<div class="<?php echo $page->ownLayout ? 'componentArea' : 'componentArea container stockLayout'; ?>">
 			<jdoc:include type="component" />
 		</div>

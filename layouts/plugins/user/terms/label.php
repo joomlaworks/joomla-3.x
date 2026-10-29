@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  User.terms
@@ -69,32 +70,27 @@ $class = !empty($labelclass) ? $class . ' ' . $labelclass : $class;
 $label = '<label id="' . $id . '-lbl" for="' . $id . '" class="' . $class . '"';
 
 // If a description is specified, use it to build a tooltip.
-if (!empty($description))
-{
-	$label .= ' title="' . htmlspecialchars(trim($text, ':'), ENT_COMPAT, 'UTF-8') . '"';
-	$label .= ' data-content="' . htmlspecialchars(
-		$translateDescription ? Text::_($description) : $description,
-		ENT_COMPAT,
-		'UTF-8'
-	) . '"';
+if (!empty($description)) {
+    $label .= ' title="' . htmlspecialchars(trim($text, ':'), ENT_COMPAT, 'UTF-8') . '"';
+    $label .= ' data-content="' . htmlspecialchars(
+        $translateDescription ? Text::_($description) : $description,
+        ENT_COMPAT,
+        'UTF-8'
+    ) . '"';
 }
 
-if (Factory::getLanguage()->isRtl())
-{
-	$label .= ' data-placement="left"';
+if (Factory::getLanguage()->isRtl()) {
+    $label .= ' data-placement="left"';
 }
 
 $attribs          = array();
 $attribs['class'] = 'modal';
 $attribs['rel']   = '{handler: \'iframe\', size: {x:800, y:500}}';
 
-if ($article)
-{
-	$link = HTMLHelper::_('link', Route::_($article->link . '&tmpl=component'), $text, $attribs);
-}
-else
-{
-	$link = $text;
+if ($article) {
+    $link = HTMLHelper::_('link', Route::_($article->link . '&tmpl=component'), $text, $attribs);
+} else {
+    $link = $text;
 }
 
 // Add the label text and closing tag.

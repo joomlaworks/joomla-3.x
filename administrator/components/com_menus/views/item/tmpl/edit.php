@@ -118,16 +118,15 @@ $clientId = $this->state->get('item.client_id', 0);
 $lang     = JFactory::getLanguage()->getTag();
 
 // Load mod_menu.ini file when client is administrator
-if ($clientId === 1)
-{
-	JFactory::getLanguage()->load('mod_menu', JPATH_ADMINISTRATOR, null, false, true);
+if ($clientId === 1) {
+    JFactory::getLanguage()->load('mod_menu', JPATH_ADMINISTRATOR, null, false, true);
 }
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_menus&view=item&client_id=' . $clientId . '&layout=' . $layout . $tmpl . '&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 
 	<?php echo JLayoutHelper::render('joomla.edit.title_alias', $this); ?>
 
-	<?php // Add the translation of the menu item title when client is administrator ?>
+	<?php // Add the translation of the menu item title when client is administrator?>
 	<?php if ($clientId === 1 && $this->item->id != 0) : ?>
 		<div class="form-inline form-inline-header">
 			<div class="control-group">
@@ -148,77 +147,71 @@ if ($clientId === 1)
 		<div class="row-fluid">
 			<div class="span9">
 				<?php
-				echo $this->form->renderField('type');
+                echo $this->form->renderField('type');
 
-				if ($this->item->type == 'alias')
-				{
-					echo $this->form->renderField('aliasoptions', 'params');
-				}
+if ($this->item->type == 'alias') {
+    echo $this->form->renderField('aliasoptions', 'params');
+}
 
-				if ($this->item->type == 'separator')
-				{
-					echo $this->form->renderField('text_separator', 'params');
-				}
+if ($this->item->type == 'separator') {
+    echo $this->form->renderField('text_separator', 'params');
+}
 
-				echo $this->form->renderFieldset('request');
+echo $this->form->renderFieldset('request');
 
-				if ($this->item->type == 'url')
-				{
-					$this->form->setFieldAttribute('link', 'readonly', 'false');
-					$this->form->setFieldAttribute('link', 'required', 'true');
-				}
+if ($this->item->type == 'url') {
+    $this->form->setFieldAttribute('link', 'readonly', 'false');
+    $this->form->setFieldAttribute('link', 'required', 'true');
+}
 
-				echo $this->form->renderField('link');
+echo $this->form->renderField('link');
 
-				if ($this->item->type == 'alias')
-				{
-					echo $this->form->renderField('alias_redirect', 'params');
-				}
+if ($this->item->type == 'alias') {
+    echo $this->form->renderField('alias_redirect', 'params');
+}
 
-				echo $this->form->renderField('browserNav');
-				echo $this->form->renderField('template_style_id');
+echo $this->form->renderField('browserNav');
+echo $this->form->renderField('template_style_id');
 
-				if (!$isModal && $this->item->type == 'container')
-				{
-					echo $this->loadTemplate('container');
-				}
-				?>
+if (!$isModal && $this->item->type == 'container') {
+    echo $this->loadTemplate('container');
+}
+?>
 			</div>
 			<div class="span3">
 				<?php
-				// Set main fields.
-				$this->fields = array(
-					'id',
-					'client_id',
-					'menutype',
-					'parent_id',
-					'menuordering',
-					'published',
-					'home',
-					'access',
-					'language',
-					'note',
-				);
+// Set main fields.
+$this->fields = array(
+    'id',
+    'client_id',
+    'menutype',
+    'parent_id',
+    'menuordering',
+    'published',
+    'home',
+    'access',
+    'language',
+    'note',
+);
 
-				if ($this->item->type != 'component')
-				{
-					$this->fields = array_diff($this->fields, array('home'));
-				}
+if ($this->item->type != 'component') {
+    $this->fields = array_diff($this->fields, array('home'));
+}
 
-				echo JLayoutHelper::render('joomla.edit.global', $this); ?>
+echo JLayoutHelper::render('joomla.edit.global', $this); ?>
 			</div>
 		</div>
 		<?php echo JHtml::_('bootstrap.endTab'); ?>
 
 		<?php
-		$this->fieldsets = array();
-		$this->ignore_fieldsets = array('aliasoptions', 'request', 'item_associations');
-		echo JLayoutHelper::render('joomla.edit.params', $this);
-		?>
+        $this->fieldsets = array();
+$this->ignore_fieldsets = array('aliasoptions', 'request', 'item_associations');
+echo JLayoutHelper::render('joomla.edit.params', $this);
+?>
 
 		<?php if (!$isModal && $assoc && $this->state->get('item.client_id') != 1) : ?>
 			<?php if ($this->item->type !== 'alias' && $this->item->type !== 'url'
-				&& $this->item->type !== 'separator' && $this->item->type !== 'heading') : ?>
+        && $this->item->type !== 'separator' && $this->item->type !== 'heading') : ?>
 				<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'associations', JText::_('JGLOBAL_FIELDSET_ASSOCIATIONS')); ?>
 				<?php echo $this->loadTemplate('associations'); ?>
 				<?php echo JHtml::_('bootstrap.endTab'); ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Installer.folderInstaller
@@ -15,32 +16,32 @@ defined('_JEXEC') or die;
  */
 class PlgInstallerFolderInstaller extends JPlugin
 {
-	/**
-	 * Load the language file on instantiation.
-	 *
-	 * @var    boolean
-	 * @since  3.6.0
-	 */
-	protected $autoloadLanguage = true;
+    /**
+     * Load the language file on instantiation.
+     *
+     * @var    boolean
+     * @since  3.6.0
+     */
+    protected $autoloadLanguage = true;
 
-	/**
-	 * Textfield or Form of the Plugin.
-	 *
-	 * @return  array  Returns an array with the tab information
-	 *
-	 * @since   3.6.0
-	 */
-	public function onInstallerAddInstallationTab()
-	{
-		$tab            = array();
-		$tab['name']    = 'folder';
-		$tab['label']   = JText::_('PLG_INSTALLER_FOLDERINSTALLER_TEXT');
+    /**
+     * Textfield or Form of the Plugin.
+     *
+     * @return  array  Returns an array with the tab information
+     *
+     * @since   3.6.0
+     */
+    public function onInstallerAddInstallationTab()
+    {
+        $tab            = array();
+        $tab['name']    = 'folder';
+        $tab['label']   = JText::_('PLG_INSTALLER_FOLDERINSTALLER_TEXT');
 
-		// Render the input
-		ob_start();
-		include JPluginHelper::getLayoutPath('installer', 'folderinstaller');
-		$tab['content'] = ob_get_clean();
+        // Render the input
+        ob_start();
+        include JPluginHelper::getLayoutPath('installer', 'folderinstaller');
+        $tab['content'] = ob_get_clean();
 
-		return $tab;
-	}
+        return $tab;
+    }
 }

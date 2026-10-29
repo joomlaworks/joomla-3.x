@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_contenthistory
@@ -16,39 +17,37 @@ defined('_JEXEC') or die;
  */
 class ContenthistoryViewPreview extends JViewLegacy
 {
-	protected $items;
+    protected $items;
 
-	protected $state;
+    protected $state;
 
-	/**
-	 * Method to display the view.
-	 *
-	 * @param   string  $tpl  A template file to load. [optional]
-	 *
-	 * @return  mixed  Exception on failure, void on success.
-	 *
-	 * @since   3.2
-	 */
-	public function display($tpl = null)
-	{
-		$this->state = $this->get('State');
-		$this->item  = $this->get('Item');
+    /**
+     * Method to display the view.
+     *
+     * @param   string  $tpl  A template file to load. [optional]
+     *
+     * @return  mixed  Exception on failure, void on success.
+     *
+     * @since   3.2
+     */
+    public function display($tpl = null)
+    {
+        $this->state = $this->get('State');
+        $this->item  = $this->get('Item');
 
-		if (false === $this->item)
-		{
-			JFactory::getLanguage()->load('com_content', JPATH_SITE, null, true);
+        if (false === $this->item) {
+            JFactory::getLanguage()->load('com_content', JPATH_SITE, null, true);
 
-			JError::raiseError(404, JText::_('COM_CONTENT_ERROR_ARTICLE_NOT_FOUND'));
+            JError::raiseError(404, JText::_('COM_CONTENT_ERROR_ARTICLE_NOT_FOUND'));
 
-			return false;
-		}
+            return false;
+        }
 
-		// Check for errors.
-		if (count($errors = $this->get('Errors')))
-		{
-			throw new Exception(implode("\n", $errors), 500);
-		}
+        // Check for errors.
+        if (count($errors = $this->get('Errors'))) {
+            throw new Exception(implode("\n", $errors), 500);
+        }
 
-		return parent::display($tpl);
-	}
+        return parent::display($tpl);
+    }
 }

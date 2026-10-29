@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,27 +18,27 @@ defined('JPATH_PLATFORM') or die;
  */
 class ExtensionEnableCommand extends ExtensionDisableCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'extension:enable';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'extension:enable';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Enable an extension';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Enable an extension';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Enables an extension, like Extensions: Manage.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Enables an extension, like Extensions: Manage.';
 
-	/**
-	 * @var    integer
-	 * @since  3.17.0
-	 */
-	protected $state = 1;
+    /**
+     * @var    integer
+     * @since  3.17.0
+     */
+    protected $state = 1;
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_languages
@@ -16,27 +17,27 @@ defined('_JEXEC') or die;
  */
 class LanguagesViewMultilangstatus extends JViewLegacy
 {
-	/**
-	 * Display the view.
-	 *
-	 * @param   string  $tpl  The name of the template file to parse.
-	 *
-	 * @return  void
-	 */
-	public function display($tpl = null)
-	{
-		JLoader::register('MultilangstatusHelper', JPATH_ADMINISTRATOR . '/components/com_languages/helpers/multilangstatus.php');
+    /**
+     * Display the view.
+     *
+     * @param   string  $tpl  The name of the template file to parse.
+     *
+     * @return  void
+     */
+    public function display($tpl = null)
+    {
+        JLoader::register('MultilangstatusHelper', JPATH_ADMINISTRATOR . '/components/com_languages/helpers/multilangstatus.php');
 
-		$this->homes           = MultilangstatusHelper::getHomes();
-		$this->language_filter = JLanguageMultilang::isEnabled();
-		$this->switchers       = MultilangstatusHelper::getLangswitchers();
-		$this->listUsersError  = MultilangstatusHelper::getContacts();
-		$this->contentlangs    = MultilangstatusHelper::getContentlangs();
-		$this->site_langs      = JLanguageHelper::getInstalledLanguages(0);
-		$this->statuses        = MultilangstatusHelper::getStatus();
-		$this->homepages       = JLanguageMultilang::getSiteHomePages();
-		$this->defaultHome     = MultilangstatusHelper::getDefaultHomeModule();
+        $this->homes           = MultilangstatusHelper::getHomes();
+        $this->language_filter = JLanguageMultilang::isEnabled();
+        $this->switchers       = MultilangstatusHelper::getLangswitchers();
+        $this->listUsersError  = MultilangstatusHelper::getContacts();
+        $this->contentlangs    = MultilangstatusHelper::getContentlangs();
+        $this->site_langs      = JLanguageHelper::getInstalledLanguages(0);
+        $this->statuses        = MultilangstatusHelper::getStatus();
+        $this->homepages       = JLanguageMultilang::getSiteHomePages();
+        $this->defaultHome     = MultilangstatusHelper::getDefaultHomeModule();
 
-		parent::display($tpl);
-	}
+        parent::display($tpl);
+    }
 }

@@ -26,7 +26,9 @@ extract($displayData);
 	data-group="<?php echo $group; ?>"
 >
 	<?php foreach ($form->getFieldsets() as $fieldset) : ?>
-	<td class="<?php if (!empty($fieldset->class)){ echo $fieldset->class; } ?>" data-column="<?php echo $fieldset->name; ?>">
+	<td class="<?php if (!empty($fieldset->class)) {
+	    echo $fieldset->class;
+	} ?>" data-column="<?php echo $fieldset->name; ?>">
 		<?php foreach ($form->getFieldset($fieldset->name) as $field) : ?>
 			<?php echo $field->renderField(); ?>
 		<?php endforeach; ?>

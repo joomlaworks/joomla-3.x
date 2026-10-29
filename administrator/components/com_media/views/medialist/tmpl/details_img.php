@@ -14,7 +14,7 @@ use Joomla\Registry\Registry;
 JHtml::_('bootstrap.tooltip');
 
 $user       = JFactory::getUser();
-$params     = new Registry;
+$params     = new Registry();
 $dispatcher = JEventDispatcher::getInstance();
 $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$this->_tmp_img, &$params, 0));
 ?>

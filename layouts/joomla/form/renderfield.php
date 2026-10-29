@@ -19,10 +19,9 @@ extract($displayData);
  * 	$input           : (string) The input field html code
  */
 
-if (!empty($options['showonEnabled']))
-{
-	JHtml::_('jquery.framework');
-	JHtml::_('behavior.core');
+if (!empty($options['showonEnabled'])) {
+    JHtml::_('jquery.framework');
+    JHtml::_('behavior.core');
 }
 
 $class = empty($options['class']) ? '' : ' ' . $options['class'];

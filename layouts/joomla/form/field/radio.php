@@ -59,21 +59,21 @@ $alt    = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $name);
 	<?php if (!empty($options)) : ?>
 		<?php foreach ($options as $i => $option) : ?>
 			<?php
-				// Initialize some option attributes.
-				$checked        = ((string) $option->value === $value) ? 'checked="checked"' : '';
-				$disabled       = !empty($option->disable) ? 'disabled' : '';
-				$style          = $disabled ? 'style="pointer-events: none"' : '';
-				$option->class  = !empty($option->class) ? $option->class : '';
-				$option->class  = trim($option->class . ' ' . $disabled);
-				$optionClass    = !empty($option->class) ? 'class="' . $option->class . '"' : '';
+                // Initialize some option attributes.
+                $checked        = ((string) $option->value === $value) ? 'checked="checked"' : '';
+		    $disabled       = !empty($option->disable) ? 'disabled' : '';
+		    $style          = $disabled ? 'style="pointer-events: none"' : '';
+		    $option->class  = !empty($option->class) ? $option->class : '';
+		    $option->class  = trim($option->class . ' ' . $disabled);
+		    $optionClass    = !empty($option->class) ? 'class="' . $option->class . '"' : '';
 
-				// Initialize some JavaScript option attributes.
-				$onclick    = !empty($option->onclick) ? 'onclick="' . $option->onclick . '"' : '';
-				$onchange   = !empty($option->onchange) ? 'onchange="' . $option->onchange . '"' : '';
-				$oid        = $id . $i;
-				$ovalue     = htmlspecialchars((string) $option->value, ENT_COMPAT, 'UTF-8');
-				$attributes = array_filter(array($checked, $optionClass, $disabled, $style, $onchange, $onclick));
-			?>
+		    // Initialize some JavaScript option attributes.
+		    $onclick    = !empty($option->onclick) ? 'onclick="' . $option->onclick . '"' : '';
+		    $onchange   = !empty($option->onchange) ? 'onchange="' . $option->onchange . '"' : '';
+		    $oid        = $id . $i;
+		    $ovalue     = htmlspecialchars((string) $option->value, ENT_COMPAT, 'UTF-8');
+		    $attributes = array_filter(array($checked, $optionClass, $disabled, $style, $onchange, $onclick));
+		    ?>
 
 			<?php if ($required) : ?>
 				<?php $attributes[] = 'required aria-required="true"'; ?>

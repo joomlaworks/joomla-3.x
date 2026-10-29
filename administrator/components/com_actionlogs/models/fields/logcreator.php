@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_actionlogs
@@ -21,62 +22,60 @@ FormHelper::loadFieldClass('list');
  */
 class JFormFieldLogCreator extends JFormFieldList
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  3.9.0
-	 */
-	protected $type = 'LogCreator';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  3.9.0
+     */
+    protected $type = 'LogCreator';
 
-	/**
-	 * Cached array of the category items.
-	 *
-	 * @var    array
-	 * @since  3.9.0
-	 */
-	protected static $options = array();
+    /**
+     * Cached array of the category items.
+     *
+     * @var    array
+     * @since  3.9.0
+     */
+    protected static $options = array();
 
-	/**
-	 * Method to get the options to populate list
-	 *
-	 * @return  array  The field option objects.
-	 *
-	 * @since   3.9.0
-	 */
-	protected function getOptions()
-	{
-		// Accepted modifiers
-		$hash = md5($this->element);
+    /**
+     * Method to get the options to populate list
+     *
+     * @return  array  The field option objects.
+     *
+     * @since   3.9.0
+     */
+    protected function getOptions()
+    {
+        // Accepted modifiers
+        $hash = md5($this->element);
 
-		if (!isset(static::$options[$hash]))
-		{
-			static::$options[$hash] = parent::getOptions();
+        if (!isset(static::$options[$hash])) {
+            static::$options[$hash] = parent::getOptions();
 
-			$options = array();
+            $options = array();
 
-			$db = Factory::getDbo();
+            $db = Factory::getDbo();
 
-			// Construct the query
-			$query = $db->getQuery(true)
-				->select($db->quoteName('u.id', 'value'))
-				->select($db->quoteName('u.username', 'text'))
-				->from($db->quoteName('#__users', 'u'))
-				->join('INNER', $db->quoteName('#__action_logs', 'c') . ' ON ' . $db->quoteName('c.user_id') . ' = ' . $db->quoteName('u.id'))
-				->group($db->quoteName('u.id'))
-				->group($db->quoteName('u.username'))
-				->order($db->quoteName('u.username'));
+            // Construct the query
+            $query = $db->getQuery(true)
+                ->select($db->quoteName('u.id', 'value'))
+                ->select($db->quoteName('u.username', 'text'))
+                ->from($db->quoteName('#__users', 'u'))
+                ->join('INNER', $db->quoteName('#__action_logs', 'c') . ' ON ' . $db->quoteName('c.user_id') . ' = ' . $db->quoteName('u.id'))
+                ->group($db->quoteName('u.id'))
+                ->group($db->quoteName('u.username'))
+                ->order($db->quoteName('u.username'));
 
-			// Setup the query
-			$db->setQuery($query);
+            // Setup the query
+            $db->setQuery($query);
 
-			// Return the result
-			if ($options = $db->loadObjectList())
-			{
-				static::$options[$hash] = array_merge(static::$options[$hash], $options);
-			}
-		}
+            // Return the result
+            if ($options = $db->loadObjectList()) {
+                static::$options[$hash] = array_merge(static::$options[$hash], $options);
+            }
+        }
 
-		return static::$options[$hash];
-	}
+        return static::$options[$hash];
+    }
 }

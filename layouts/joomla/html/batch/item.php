@@ -20,8 +20,8 @@ extract($displayData);
 
 // Create the copy/move options.
 $options = array(
-	JHtml::_('select.option', 'c', JText::_('JLIB_HTML_BATCH_COPY')),
-	JHtml::_('select.option', 'm', JText::_('JLIB_HTML_BATCH_MOVE'))
+    JHtml::_('select.option', 'c', JText::_('JLIB_HTML_BATCH_COPY')),
+    JHtml::_('select.option', 'm', JText::_('JLIB_HTML_BATCH_MOVE'))
 );
 ?>
 <label id="batch-choose-action-lbl" for="batch-choose-action"><?php echo JText::_('JLIB_HTML_BATCH_MENU_LABEL'); ?></label>

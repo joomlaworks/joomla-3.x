@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Installer.urlinstaller
@@ -15,32 +16,32 @@ defined('_JEXEC') or die;
  */
 class PlgInstallerUrlInstaller extends JPlugin
 {
-	/**
-	 * Load the language file on instantiation.
-	 *
-	 * @var    boolean
-	 * @since  3.6.0
-	 */
-	protected $autoloadLanguage = true;
+    /**
+     * Load the language file on instantiation.
+     *
+     * @var    boolean
+     * @since  3.6.0
+     */
+    protected $autoloadLanguage = true;
 
-	/**
-	 * Textfield or Form of the Plugin.
-	 *
-	 * @return  array  Returns an array with the tab information
-	 *
-	 * @since   3.6.0
-	 */
-	public function onInstallerAddInstallationTab()
-	{
-		$tab            = array();
-		$tab['name']    = 'url';
-		$tab['label']   = JText::_('PLG_INSTALLER_URLINSTALLER_TEXT');
+    /**
+     * Textfield or Form of the Plugin.
+     *
+     * @return  array  Returns an array with the tab information
+     *
+     * @since   3.6.0
+     */
+    public function onInstallerAddInstallationTab()
+    {
+        $tab            = array();
+        $tab['name']    = 'url';
+        $tab['label']   = JText::_('PLG_INSTALLER_URLINSTALLER_TEXT');
 
-		// Render the input
-		ob_start();
-		include JPluginHelper::getLayoutPath('installer', 'urlinstaller');
-		$tab['content'] = ob_get_clean();
+        // Render the input
+        ob_start();
+        include JPluginHelper::getLayoutPath('installer', 'urlinstaller');
+        $tab['content'] = ob_get_clean();
 
-		return $tab;
-	}
+        return $tab;
+    }
 }

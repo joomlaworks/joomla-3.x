@@ -14,7 +14,7 @@ use Joomla\Registry\Registry;
 JHtml::_('bootstrap.tooltip');
 
 $user       = JFactory::getUser();
-$params     = new Registry;
+$params     = new Registry();
 $dispatcher = JEventDispatcher::getInstance();
 $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$this->_tmp_video, &$params, 0));
 ?>
@@ -29,7 +29,7 @@ $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$this->_
 		</a>
 	</td>
 	<td class="dimensions">
-		<?php // Can we figure out the dimensions of the video? ?>
+		<?php // Can we figure out the dimensions of the video??>
 	</td>
 	<td class="filesize">
 		<?php echo JHtml::_('number.bytes', $this->_tmp_video->size); ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Platform
  * @subpackage  Database
@@ -17,196 +18,196 @@ defined('JPATH_PLATFORM') or die;
  */
 class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 {
-	/**
-	 * The database driver name
-	 *
-	 * @var    string
-	 * @since  3.9.0
-	 */
-	public $name = 'pgsql';
+    /**
+     * The database driver name
+     *
+     * @var    string
+     * @since  3.9.0
+     */
+    public $name = 'pgsql';
 
-	/**
-	 * The character(s) used to quote SQL statement names such as table names or field names,
-	 * etc. The child classes should define this as necessary.  If a single character string the
-	 * same character is used for both sides of the quoted name, else the first character will be
-	 * used for the opening quote and the second for the closing quote.
-	 *
-	 * @var    string
-	 * @since  3.9.0
-	 */
-	protected $nameQuote = '"';
+    /**
+     * The character(s) used to quote SQL statement names such as table names or field names,
+     * etc. The child classes should define this as necessary.  If a single character string the
+     * same character is used for both sides of the quoted name, else the first character will be
+     * used for the opening quote and the second for the closing quote.
+     *
+     * @var    string
+     * @since  3.9.0
+     */
+    protected $nameQuote = '"';
 
-	/**
-	 * The null or zero representation of a timestamp for the database driver.  This should be
-	 * defined in child classes to hold the appropriate value for the engine.
-	 *
-	 * @var    string
-	 * @since  3.9.0
-	 */
-	protected $nullDate = '1970-01-01 00:00:00';
+    /**
+     * The null or zero representation of a timestamp for the database driver.  This should be
+     * defined in child classes to hold the appropriate value for the engine.
+     *
+     * @var    string
+     * @since  3.9.0
+     */
+    protected $nullDate = '1970-01-01 00:00:00';
 
-	/**
-	 * The minimum supported database version.
-	 *
-	 * @var    string
-	 * @since  3.9.0
-	 */
-	protected static $dbMinimum = '9.5.0';
+    /**
+     * The minimum supported database version.
+     *
+     * @var    string
+     * @since  3.9.0
+     */
+    protected static $dbMinimum = '9.5.0';
 
-	/**
-	 * Operator used for concatenation
-	 *
-	 * @var    string
-	 * @since  3.9.0
-	 */
-	protected $concat_operator = '||';
+    /**
+     * Operator used for concatenation
+     *
+     * @var    string
+     * @since  3.9.0
+     */
+    protected $concat_operator = '||';
 
-	/**
-	 * Database object constructor
-	 *
-	 * @param   array  $options  List of options used to configure the connection
-	 *
-	 * @since	3.9.0
-	 */
-	public function __construct($options)
-	{
-		$options['driver']   = 'pgsql';
-		$options['host']     = isset($options['host']) ? $options['host'] : 'localhost';
-		$options['user']     = isset($options['user']) ? $options['user'] : '';
-		$options['password'] = isset($options['password']) ? $options['password'] : '';
-		$options['database'] = isset($options['database']) ? $options['database'] : '';
-		$options['port']     = isset($options['port']) ? $options['port'] : null;
+    /**
+     * Database object constructor
+     *
+     * @param   array  $options  List of options used to configure the connection
+     *
+     * @since	3.9.0
+     */
+    public function __construct($options)
+    {
+        $options['driver']   = 'pgsql';
+        $options['host']     = isset($options['host']) ? $options['host'] : 'localhost';
+        $options['user']     = isset($options['user']) ? $options['user'] : '';
+        $options['password'] = isset($options['password']) ? $options['password'] : '';
+        $options['database'] = isset($options['database']) ? $options['database'] : '';
+        $options['port']     = isset($options['port']) ? $options['port'] : null;
 
-		// Finalize initialization
-		parent::__construct($options);
-	}
+        // Finalize initialization
+        parent::__construct($options);
+    }
 
-	/**
-	 * Connects to the database if needed.
-	 *
-	 * @return  void  Returns void if the database connected successfully.
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function connect()
-	{
-		if ($this->getConnection())
-		{
-			return;
-		}
+    /**
+     * Connects to the database if needed.
+     *
+     * @return  void  Returns void if the database connected successfully.
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function connect()
+    {
+        if ($this->getConnection()) {
+            return;
+        }
 
-		parent::connect();
+        parent::connect();
 
-		$this->setQuery('SET standard_conforming_strings = off')->execute();
-	}
+        $this->setQuery('SET standard_conforming_strings = off')->execute();
+    }
 
-	/**
-	 * Drops a table from the database.
-	 *
-	 * @param   string   $tableName  The name of the database table to drop.
-	 * @param   boolean  $ifExists   Optionally specify that the table must exist before it is dropped.
-	 *
-	 * @return  boolean	true
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function dropTable($tableName, $ifExists = true)
-	{
-		$this->setQuery('DROP TABLE ' . ($ifExists ? 'IF EXISTS ' : '') . $this->quoteName($tableName))->execute();
+    /**
+     * Drops a table from the database.
+     *
+     * @param   string   $tableName  The name of the database table to drop.
+     * @param   boolean  $ifExists   Optionally specify that the table must exist before it is dropped.
+     *
+     * @return  boolean	true
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function dropTable($tableName, $ifExists = true)
+    {
+        $this->setQuery('DROP TABLE ' . ($ifExists ? 'IF EXISTS ' : '') . $this->quoteName($tableName))->execute();
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Method to get the database collation in use by sampling a text field of a table in the database.
-	 *
-	 * @return  mixed  The collation in use by the database or boolean false if not supported.
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function getCollation()
-	{
-		// SHOW LC_COLLATE fails since PostgreSQL 16; pg_database has the collation in every version
-		$this->setQuery('SELECT datcollate FROM pg_database WHERE datname = current_database()');
+    /**
+     * Method to get the database collation in use by sampling a text field of a table in the database.
+     *
+     * @return  mixed  The collation in use by the database or boolean false if not supported.
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function getCollation()
+    {
+        // SHOW LC_COLLATE fails since PostgreSQL 16; pg_database has the collation in every version
+        $this->setQuery('SELECT datcollate FROM pg_database WHERE datname = current_database()');
 
-		return $this->loadResult();
-	}
+        return $this->loadResult();
+    }
 
-	/**
-	 * Method to get the database connection collation in use by sampling a text field of a table in the database.
-	 *
-	 * @return  mixed  The collation in use by the database connection (string) or boolean false if not supported.
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function getConnectionCollation()
-	{
-		// SHOW LC_COLLATE fails since PostgreSQL 16; pg_database has the collation in every version
-		$this->setQuery('SELECT datcollate FROM pg_database WHERE datname = current_database()');
+    /**
+     * Method to get the database connection collation in use by sampling a text field of a table in the database.
+     *
+     * @return  mixed  The collation in use by the database connection (string) or boolean false if not supported.
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function getConnectionCollation()
+    {
+        // SHOW LC_COLLATE fails since PostgreSQL 16; pg_database has the collation in every version
+        $this->setQuery('SELECT datcollate FROM pg_database WHERE datname = current_database()');
 
-		return $this->loadResult();
-	}
+        return $this->loadResult();
+    }
 
-	/**
-	 * Internal function to get the name of the default schema for the current PostgreSQL connection.
-	 * That is the schema where tables are created by Joomla.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.9.24
-	 */
-	private function getDefaultSchema()
-	{
+    /**
+     * Internal function to get the name of the default schema for the current PostgreSQL connection.
+     * That is the schema where tables are created by Joomla.
+     *
+     * @return  string
+     *
+     * @since   3.9.24
+     */
+    private function getDefaultSchema()
+    {
 
-		// Supported since PostgreSQL 7.3
-		$this->setQuery('SELECT (current_schemas(false))[1]');
-		return $this->loadResult();
+        // Supported since PostgreSQL 7.3
+        $this->setQuery('SELECT (current_schemas(false))[1]');
+        return $this->loadResult();
 
-	}
-	
-	/**
-	 * Shows the table CREATE statement that creates the given tables.
-	 *
-	 * This is unsupported by PostgreSQL.
-	 *
-	 * @param   mixed  $tables  A table name or a list of table names.
-	 *
-	 * @return  string  An empty string because this function is not supported by PostgreSQL.
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function getTableCreate($tables)
-	{
-		return '';
-	}
+    }
 
-	/**
-	 * Retrieves field information about a given table.
-	 *
-	 * @param   string   $table     The name of the database table.
-	 * @param   boolean  $typeOnly  True to only return field types.
-	 *
-	 * @return  array  An array of fields for the database table.
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function getTableColumns($table, $typeOnly = true)
-	{
-		$this->connect();
+    /**
+     * Shows the table CREATE statement that creates the given tables.
+     *
+     * This is unsupported by PostgreSQL.
+     *
+     * @param   mixed  $tables  A table name or a list of table names.
+     *
+     * @return  string  An empty string because this function is not supported by PostgreSQL.
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function getTableCreate($tables)
+    {
+        return '';
+    }
 
-		$result = array();
+    /**
+     * Retrieves field information about a given table.
+     *
+     * @param   string   $table     The name of the database table.
+     * @param   boolean  $typeOnly  True to only return field types.
+     *
+     * @return  array  An array of fields for the database table.
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function getTableColumns($table, $typeOnly = true)
+    {
+        $this->connect();
 
-		$tableSub = $this->replacePrefix($table);
+        $result = array();
 
-		$defaultSchema = $this->getDefaultSchema();
-		
-		$this->setQuery('
+        $tableSub = $this->replacePrefix($table);
+
+        $defaultSchema = $this->getDefaultSchema();
+
+        $this->setQuery(
+            '
 			SELECT a.attname AS "column_name",
 				pg_catalog.format_type(a.atttypid, a.atttypmod) as "type",
 				CASE WHEN a.attnotnull IS TRUE
@@ -230,86 +231,77 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 				)
 			AND a.attnum > 0 AND NOT a.attisdropped
 			ORDER BY a.attnum'
-		);
+        );
 
-		$fields = $this->loadObjectList();
+        $fields = $this->loadObjectList();
 
-		if ($typeOnly)
-		{
-			foreach ($fields as $field)
-			{
-				$result[$field->column_name] = preg_replace('/[(0-9)]/', '', (string) $field->type);
-			}
-		}
-		else
-		{
-			$keys = $this->getMysqlColumnKeys($tableSub, $defaultSchema);
+        if ($typeOnly) {
+            foreach ($fields as $field) {
+                $result[$field->column_name] = preg_replace('/[(0-9)]/', '', (string) $field->type);
+            }
+        } else {
+            $keys = $this->getMysqlColumnKeys($tableSub, $defaultSchema);
 
-			foreach ($fields as $field)
-			{
-				if (stristr(strtolower((string) $field->type), 'character varying'))
-				{
-					$field->Default = '';
-				}
+            foreach ($fields as $field) {
+                if (stristr(strtolower((string) $field->type), 'character varying')) {
+                    $field->Default = '';
+                }
 
-				if (stristr(strtolower((string) $field->type), 'text'))
-				{
-					$field->Default = '';
-				}
+                if (stristr(strtolower((string) $field->type), 'text')) {
+                    $field->Default = '';
+                }
 
-				// Do some dirty translation to MySQL output.
-				// @todo: Come up with and implement a standard across databases.
-				$result[$field->column_name] = (object) array(
-					'column_name' => $field->column_name,
-					'type' => $field->type,
-					'null' => $field->null,
-					'Default' => $field->Default,
-					'comments' => '',
-					'Field' => $field->column_name,
-					'Type' => $field->type,
-					'Null' => $field->null,
-					// Joomla 3.x UTD: MySQL's other fields too, for code written against its output (e.g. reading Extra or Key)
-					'Collation' => null,
-					'Key' => isset($keys[$field->column_name]) ? $keys[$field->column_name] : '',
-					'Extra' => preg_match('/^nextval\(/i', (string) $field->Default) ? 'auto_increment' : '',
-					'Privileges' => '',
-					'Comment' => (string) $field->comments,
-				);
-			}
-		}
+                // Do some dirty translation to MySQL output.
+                // @todo: Come up with and implement a standard across databases.
+                $result[$field->column_name] = (object) array(
+                    'column_name' => $field->column_name,
+                    'type' => $field->type,
+                    'null' => $field->null,
+                    'Default' => $field->Default,
+                    'comments' => '',
+                    'Field' => $field->column_name,
+                    'Type' => $field->type,
+                    'Null' => $field->null,
+                    // Joomla 3.x UTD: MySQL's other fields too, for code written against its output (e.g. reading Extra or Key)
+                    'Collation' => null,
+                    'Key' => isset($keys[$field->column_name]) ? $keys[$field->column_name] : '',
+                    'Extra' => preg_match('/^nextval\(/i', (string) $field->Default) ? 'auto_increment' : '',
+                    'Privileges' => '',
+                    'Comment' => (string) $field->comments,
+                );
+            }
+        }
 
-		// Change Postgresql's NULL::* type with PHP's null one
-		foreach ($fields as $field)
-		{
-			if (preg_match('/^NULL::*/', (string) $field->Default))
-			{
-				$field->Default = null;
-			}
-		}
+        // Change Postgresql's NULL::* type with PHP's null one
+        foreach ($fields as $field) {
+            if (preg_match('/^NULL::*/', (string) $field->Default)) {
+                $field->Default = null;
+            }
+        }
 
-		return $result;
-	}
+        return $result;
+    }
 
-	/**
-	 * Joomla 3.x UTD: the columns' Key field as MySQL's SHOW COLUMNS gives it, for getTableColumns(): PRI for the columns of the
-	 * primary key (without one, of the first unique index whose columns are all NOT NULL, as MySQL shows it), UNI for a column
-	 * with a unique index of its own, MUL for the first column of another index. A query of its own, so that a failure only
-	 * leaves the field empty.
-	 *
-	 * @param   string  $table   The table name, prefix replaced
-	 * @param   string  $schema  The schema
-	 *
-	 * @return  array  Column name => PRI, UNI or MUL
-	 *
-	 * @since   3.18.0
-	 */
-	protected function getMysqlColumnKeys($table, $schema)
-	{
-		$keys = array();
+    /**
+     * Joomla 3.x UTD: the columns' Key field as MySQL's SHOW COLUMNS gives it, for getTableColumns(): PRI for the columns of the
+     * primary key (without one, of the first unique index whose columns are all NOT NULL, as MySQL shows it), UNI for a column
+     * with a unique index of its own, MUL for the first column of another index. A query of its own, so that a failure only
+     * leaves the field empty.
+     *
+     * @param   string  $table   The table name, prefix replaced
+     * @param   string  $schema  The schema
+     *
+     * @return  array  Column name => PRI, UNI or MUL
+     *
+     * @since   3.18.0
+     */
+    protected function getMysqlColumnKeys($table, $schema)
+    {
+        $keys = array();
 
-		try
-		{
-			$this->setQuery('
+        try {
+            $this->setQuery(
+                '
 				SELECT i.indexrelid AS "index", a.attname AS "column", i.indisprimary AS "isPrimary", i.indisunique AS "isUnique",
 					a.attnotnull AS "notNull", CASE WHEN a.attnum = i.indkey[0] THEN 1 ELSE 0 END AS "isFirst", i.indnatts AS "columns"
 				FROM pg_catalog.pg_index i
@@ -319,102 +311,87 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 						AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = ' . $this->quote($schema) . ')
 					)
 				ORDER BY i.indexrelid'
-			);
+            );
 
-			$true    = array(true, 't', 1, '1');
-			$indexes = array();
+            $true    = array(true, 't', 1, '1');
+            $indexes = array();
 
-			foreach ($this->loadObjectList() as $row)
-			{
-				$id = (string) $row->index;
+            foreach ($this->loadObjectList() as $row) {
+                $id = (string) $row->index;
 
-				if (!isset($indexes[$id]))
-				{
-					$indexes[$id] = array('primary' => in_array($row->isPrimary, $true, true), 'unique' => in_array($row->isUnique, $true, true),
-						'notNull' => true, 'columns' => array(), 'first' => null, 'count' => (int) $row->columns);
-				}
+                if (!isset($indexes[$id])) {
+                    $indexes[$id] = array('primary' => in_array($row->isPrimary, $true, true), 'unique' => in_array($row->isUnique, $true, true),
+                        'notNull' => true, 'columns' => array(), 'first' => null, 'count' => (int) $row->columns);
+                }
 
-				$indexes[$id]['columns'][] = $row->column;
-				$indexes[$id]['notNull']   = $indexes[$id]['notNull'] && in_array($row->notNull, $true, true);
+                $indexes[$id]['columns'][] = $row->column;
+                $indexes[$id]['notNull']   = $indexes[$id]['notNull'] && in_array($row->notNull, $true, true);
 
-				if ((int) $row->isFirst === 1)
-				{
-					$indexes[$id]['first'] = $row->column;
-				}
-			}
+                if ((int) $row->isFirst === 1) {
+                    $indexes[$id]['first'] = $row->column;
+                }
+            }
 
-			// The primary key; without one, MySQL shows the first unique index whose columns are all NOT NULL as the primary key
-			$primary = null;
+            // The primary key; without one, MySQL shows the first unique index whose columns are all NOT NULL as the primary key
+            $primary = null;
 
-			foreach ($indexes as $id => $index)
-			{
-				if ($index['primary'])
-				{
-					$primary = $id;
-				}
-			}
+            foreach ($indexes as $id => $index) {
+                if ($index['primary']) {
+                    $primary = $id;
+                }
+            }
 
-			foreach ($indexes as $id => $index)
-			{
-				if ($primary === null && $index['unique'] && $index['notNull'])
-				{
-					$primary = $id;
-				}
-			}
+            foreach ($indexes as $id => $index) {
+                if ($primary === null && $index['unique'] && $index['notNull']) {
+                    $primary = $id;
+                }
+            }
 
-			if ($primary !== null)
-			{
-				foreach ($indexes[$primary]['columns'] as $column)
-				{
-					$keys[$column] = 'PRI';
-				}
-			}
+            if ($primary !== null) {
+                foreach ($indexes[$primary]['columns'] as $column) {
+                    $keys[$column] = 'PRI';
+                }
+            }
 
-			foreach ($indexes as $id => $index)
-			{
-				if ($id !== $primary && $index['unique'] && $index['count'] === 1 && !isset($keys[$index['first']]))
-				{
-					$keys[$index['first']] = 'UNI';
-				}
-			}
+            foreach ($indexes as $id => $index) {
+                if ($id !== $primary && $index['unique'] && $index['count'] === 1 && !isset($keys[$index['first']])) {
+                    $keys[$index['first']] = 'UNI';
+                }
+            }
 
-			foreach ($indexes as $id => $index)
-			{
-				if ($id !== $primary && $index['first'] !== null && !isset($keys[$index['first']]))
-				{
-					$keys[$index['first']] = 'MUL';
-				}
-			}
-		}
-		catch (Exception $e)
-		{
-			return array();
-		}
+            foreach ($indexes as $id => $index) {
+                if ($id !== $primary && $index['first'] !== null && !isset($keys[$index['first']])) {
+                    $keys[$index['first']] = 'MUL';
+                }
+            }
+        } catch (Exception $e) {
+            return array();
+        }
 
-		return $keys;
-	}
+        return $keys;
+    }
 
-	/**
-	 * Get the details list of keys for a table.
-	 *
-	 * @param   string  $table  The name of the table.
-	 *
-	 * @return  array  An array of the column specification for the table.
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function getTableKeys($table)
-	{
-		$this->connect();
+    /**
+     * Get the details list of keys for a table.
+     *
+     * @param   string  $table  The name of the table.
+     *
+     * @return  array  An array of the column specification for the table.
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function getTableKeys($table)
+    {
+        $this->connect();
 
-		// To check if table exists and prevent SQL injection
-		$tableList = $this->getTableList();
+        // To check if table exists and prevent SQL injection
+        $tableList = $this->getTableList();
 
-		if (in_array($table, $tableList, true))
-		{
-			// Get the details columns information.
-			$this->setQuery('
+        if (in_array($table, $tableList, true)) {
+            // Get the details columns information.
+            $this->setQuery(
+                '
 				SELECT indexname AS "idxName", indisprimary AS "isPrimary", indisunique  AS "isUnique",
 					CASE WHEN indisprimary = true THEN
 						( SELECT \'ALTER TABLE \' || tablename || \' ADD \' || pg_catalog.pg_get_constraintdef(const.oid, true)
@@ -425,723 +402,670 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
 				LEFT JOIN pg_class AS pgClassFirst ON indexname=pgClassFirst.relname
 				LEFT JOIN pg_index AS pgIndex ON pgClassFirst.oid=pgIndex.indexrelid
 				WHERE tablename=' . $this->quote($table) . ' ORDER BY indkey'
-			);
-
-			return $this->loadObjectList();
-		}
-
-		return false;
-	}
-
-	/**
-	 * Method to get an array of all tables in the database.
-	 *
-	 * @return  array  An array of all the tables in the database.
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function getTableList()
-	{
-		$query = $this->getQuery(true)
-			->select('table_name')
-			->from('information_schema.tables')
-			->where('table_type = ' . $this->quote('BASE TABLE'))
-			->where('table_schema NOT IN (' . $this->quote('pg_catalog') . ', ' . $this->quote('information_schema') . ')')
-			->order('table_name ASC');
-
-		$this->setQuery($query);
-
-		return $this->loadColumn();
-	}
-
-	/**
-	 * Get the details list of sequences for a table.
-	 *
-	 * @param   string  $table  The name of the table.
-	 *
-	 * @return  array  An array of sequences specification for the table.
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function getTableSequences($table)
-	{
-		// To check if table exists and prevent SQL injection
-		$tableList = $this->getTableList();
-
-		if (in_array($table, $tableList, true))
-		{
-			$name = array(
-				's.relname', 'n.nspname', 't.relname', 'a.attname', 'info.data_type',
-				'info.minimum_value', 'info.maximum_value', 'info.increment', 'info.cycle_option'
-			);
-
-			$as = array('sequence', 'schema', 'table', 'column', 'data_type', 'minimum_value', 'maximum_value', 'increment', 'cycle_option');
-
-			if (version_compare($this->getVersion(), '9.1.0') >= 0)
-			{
-				$name[] .= 'info.start_value';
-				$as[] .= 'start_value';
-			}
-
-			// Get the details columns information.
-			$query = $this->getQuery(true)
-				->select($this->quoteName($name, $as))
-				->from('pg_class AS s')
-				->leftJoin("pg_depend d ON d.objid = s.oid AND d.classid = 'pg_class'::regclass AND d.refclassid = 'pg_class'::regclass")
-				->leftJoin('pg_class t ON t.oid = d.refobjid')
-				->leftJoin('pg_namespace n ON n.oid = t.relnamespace')
-				->leftJoin('pg_attribute a ON a.attrelid = t.oid AND a.attnum = d.refobjsubid')
-				->leftJoin('information_schema.sequences AS info ON info.sequence_name = s.relname')
-				->where('s.relkind = ' . $this->quote('S') . ' AND d.deptype = ' . $this->quote('a') . ' AND t.relname = ' . $this->quote($table));
-			$this->setQuery($query);
-
-			return $this->loadObjectList();
-		}
-
-		return false;
-	}
-
-	/**
-	 * Locks a table in the database.
-	 *
-	 * @param   string  $tableName  The name of the table to unlock.
-	 *
-	 * @return  JDatabaseDriverPgsql  Returns this object to support chaining.
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function lockTable($tableName)
-	{
-		$this->transactionStart();
-		$this->setQuery('LOCK TABLE ' . $this->quoteName($tableName) . ' IN ACCESS EXCLUSIVE MODE')->execute();
-
-		return $this;
-	}
-
-	/**
-	 * Renames a table in the database.
-	 *
-	 * @param   string  $oldTable  The name of the table to be renamed
-	 * @param   string  $newTable  The new name for the table.
-	 * @param   string  $backup    Not used by PostgreSQL.
-	 * @param   string  $prefix    Not used by PostgreSQL.
-	 *
-	 * @return  JDatabaseDriverPgsql  Returns this object to support chaining.
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function renameTable($oldTable, $newTable, $backup = null, $prefix = null)
-	{
-		$this->connect();
-
-		// To check if table exists and prevent SQL injection
-		$tableList = $this->getTableList();
-
-		// Origin Table does not exist
-		if (!in_array($oldTable, $tableList, true))
-		{
-			// Origin Table not found
-			throw new \RuntimeException('Table not found in Postgresql database.');
-		}
-
-		// Rename indexes
-		$subQuery = $this->getQuery(true)
-			->select('indexrelid')
-			->from('pg_index, pg_class')
-			->where('pg_class.relname = ' . $this->quote($oldTable))
-			->where('pg_class.oid = pg_index.indrelid');
-
-		$this->setQuery(
-			$this->getQuery(true)
-				->select('relname')
-				->from('pg_class')
-				->where('oid IN (' . (string) $subQuery . ')')
-		);
-
-		$oldIndexes = $this->loadColumn();
-
-		foreach ($oldIndexes as $oldIndex)
-		{
-			$changedIdxName = str_replace($oldTable, $newTable, $oldIndex);
-
-			// An index named without its table (e.g. #__uc_ItemnameTagid) gets the new prefix instead, if any: renaming it to itself
-			// fails, and a new table of the old name would need the old index name again
-			if ($changedIdxName === $oldIndex)
-			{
-				if ($backup === null || $prefix === null || strpos($oldIndex, $prefix) !== 0)
-				{
-					continue;
-				}
-
-				$changedIdxName = $backup . substr($oldIndex, strlen($prefix));
-			}
-
-			$this->setQuery('ALTER INDEX ' . $this->quoteName($oldIndex) . ' RENAME TO ' . $this->quoteName($changedIdxName))->execute();
-		}
-
-		// Rename sequences
-		$subQuery = $this->getQuery(true)
-			->select('oid')
-			->from('pg_namespace')
-			->where('nspname NOT LIKE ' . $this->quote('pg_%'))
-			->where('nspname != ' . $this->quote('information_schema'));
-
-		$this->setQuery(
-			$this->getQuery(true)
-				->select('relname')
-				->from('pg_class')
-				->where('relkind = ' . $this->quote('S'))
-				->where('relnamespace IN (' . (string) $subQuery . ')')
-				->where('relname LIKE ' . $this->quote("%$oldTable%"))
-		);
-
-		$oldSequences = $this->loadColumn();
-
-		foreach ($oldSequences as $oldSequence)
-		{
-			$changedSequenceName = str_replace($oldTable, $newTable, $oldSequence);
-			$this->setQuery('ALTER SEQUENCE ' . $this->quoteName($oldSequence) . ' RENAME TO ' . $this->quoteName($changedSequenceName))->execute();
-		}
-
-		// Rename table
-		$this->setQuery('ALTER TABLE ' . $this->quoteName($oldTable) . ' RENAME TO ' . $this->quoteName($newTable))->execute();
-
-		return true;
-	}
-
-	/**
-	 * This function return a field value as a prepared string to be used in a SQL statement.
-	 *
-	 * @param   array   $columns     Array of table's column returned by ::getTableColumns.
-	 * @param   string  $fieldName   The table field's name.
-	 * @param   string  $fieldValue  The variable value to quote and return.
-	 *
-	 * @return  string  The quoted string.
-	 *
-	 * @since   3.9.0
-	 */
-	public function sqlValue($columns, $fieldName, $fieldValue)
-	{
-		switch ($columns[$fieldName])
-		{
-			case 'boolean':
-				$val = 'NULL';
-
-				if ($fieldValue === 't' || $fieldValue === true || $fieldValue === 1 || $fieldValue === '1')
-				{
-					$val = 'TRUE';
-				}
-				elseif ($fieldValue === 'f' || $fieldValue === false || $fieldValue === 0 || $fieldValue === '0')
-				{
-					$val = 'FALSE';
-				}
-
-				break;
-
-			case 'bigint':
-			case 'bigserial':
-			case 'integer':
-			case 'money':
-			case 'numeric':
-			case 'real':
-			case 'smallint':
-			case 'serial':
-			case 'numeric,':
-				$val = $fieldValue === '' ? 'NULL' : $fieldValue;
-				break;
-
-			case 'date':
-			case 'timestamp without time zone':
-				if (empty($fieldValue))
-				{
-					$fieldValue = $this->getNullDate();
-				}
-
-				$val = $this->quote($fieldValue);
-
-				break;
-
-			default:
-				$val = $this->quote($fieldValue);
-				break;
-		}
-
-		return $val;
-	}
-
-	/**
-	 * Method to commit a transaction.
-	 *
-	 * @param   boolean  $toSavepoint  If true, commit to the last savepoint.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function transactionCommit($toSavepoint = false)
-	{
-		$this->connect();
-
-		if (!$toSavepoint || $this->transactionDepth <= 1)
-		{
-			if ($this->setQuery('COMMIT')->execute())
-			{
-				$this->transactionDepth = 0;
-			}
-
-			return;
-		}
-
-		$this->transactionDepth--;
-	}
-
-	/**
-	 * Method to roll back a transaction.
-	 *
-	 * @param   boolean  $toSavepoint  If true, rollback to the last savepoint.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function transactionRollback($toSavepoint = false)
-	{
-		$this->connect();
-
-		if (!$toSavepoint || $this->transactionDepth <= 1)
-		{
-			if ($this->setQuery('ROLLBACK')->execute())
-			{
-				$this->transactionDepth = 0;
-			}
-
-			return;
-		}
-
-		$savepoint = 'SP_' . ($this->transactionDepth - 1);
-		$this->setQuery('ROLLBACK TO SAVEPOINT ' . $this->quoteName($savepoint));
-
-		if ($this->execute())
-		{
-			$this->transactionDepth--;
-			$this->setQuery('RELEASE SAVEPOINT ' . $this->quoteName($savepoint))->execute();
-		}
-	}
-
-	/**
-	 * Method to initialize a transaction.
-	 *
-	 * @param   boolean  $asSavepoint  If true and a transaction is already active, a savepoint will be created.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function transactionStart($asSavepoint = false)
-	{
-		$this->connect();
-
-		if (!$asSavepoint || !$this->transactionDepth)
-		{
-			if ($this->setQuery('START TRANSACTION')->execute())
-			{
-				$this->transactionDepth = 1;
-			}
-
-			return;
-		}
-
-		$savepoint = 'SP_' . $this->transactionDepth;
-		$this->setQuery('SAVEPOINT ' . $this->quoteName($savepoint));
-
-		if ($this->execute())
-		{
-			$this->transactionDepth++;
-		}
-	}
-
-	/**
-	 * Inserts a row into a table based on an object's properties.
-	 *
-	 * @param   string  $table    The name of the database table to insert into.
-	 * @param   object  &$object  A reference to an object whose public properties match the table fields.
-	 * @param   string  $key      The name of the primary key. If provided the object property is updated.
-	 *
-	 * @return  boolean    True on success.
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function insertObject($table, &$object, $key = null)
-	{
-		$columns = $this->getTableColumns($table);
-
-		$fields = array();
-		$values = array();
-
-		// Iterate over the object variables to build the query fields and values.
-		foreach (get_object_vars($object) as $k => $v)
-		{
-			// Skip columns that don't exist in the table.
-			if (!array_key_exists($k, $columns))
-			{
-				continue;
-			}
-
-			// Only process non-null scalars.
-			if (is_array($v) || is_object($v) || $v === null)
-			{
-				continue;
-			}
-
-			// Ignore any internal fields or primary keys with value 0, or empty (Joomla 3.x UTD: an empty one became NULL, refused by the serial column).
-			if (($k[0] === '_') || ($k == $key && ($v === 0 || $v === '0' || $v === '')))
-			{
-				continue;
-			}
-
-			// Prepare and sanitize the fields and values for the database query.
-			$fields[] = $this->quoteName($k);
-			$values[] = $this->sqlValue($columns, $k, $v);
-		}
-
-		// Create the base insert statement.
-		$query = $this->getQuery(true);
-
-		$query->insert($this->quoteName($table))
-			->columns($fields)
-			->values(implode(',', $values));
-
-		$retVal = false;
-
-		if ($key)
-		{
-			$query->returning($key);
-
-			// Set the query and execute the insert.
-			$this->setQuery($query);
-
-			$id = $this->loadResult();
-
-			if ($id)
-			{
-				$object->$key = $id;
-				$retVal = true;
-			}
-		}
-		else
-		{
-			// Set the query and execute the insert.
-			$this->setQuery($query);
-
-			if ($this->execute())
-			{
-				$retVal = true;
-			}
-		}
-
-		return $retVal;
-	}
-
-	/**
-	 * Test to see if the PostgreSQL connector is available.
-	 *
-	 * @return  boolean  True on success, false otherwise.
-	 *
-	 * @since   3.9.0
-	 */
-	public static function isSupported()
-	{
-		return class_exists('PDO') && in_array('pgsql', PDO::getAvailableDrivers(), true);
-	}
-
-	/**
-	 * Returns an array containing database's table list.
-	 *
-	 * @return  array  The database's table list.
-	 *
-	 * @since   3.9.0
-	 */
-	public function showTables()
-	{
-		$query = $this->getQuery(true)
-			->select('table_name')
-			->from('information_schema.tables')
-			->where('table_type=' . $this->quote('BASE TABLE'))
-			->where('table_schema NOT IN (' . $this->quote('pg_catalog') . ', ' . $this->quote('information_schema') . ' )');
-
-		$this->setQuery($query);
-
-		return $this->loadColumn();
-	}
-
-	/**
-	 * Get the substring position inside a string
-	 *
-	 * @param   string  $substring  The string being sought
-	 * @param   string  $string     The string/column being searched
-	 *
-	 * @return  integer  The position of $substring in $string
-	 *
-	 * @since   3.9.0
-	 */
-	public function getStringPositionSql($substring, $string)
-	{
-		$this->setQuery("SELECT POSITION($substring IN $string)");
-		$position = $this->loadRow();
-
-		return $position['position'];
-	}
-
-	/**
-	 * Generate a random value
-	 *
-	 * @return  float  The random generated number
-	 *
-	 * @since   3.9.0
-	 */
-	public function getRandom()
-	{
-		$this->setQuery('SELECT RANDOM()');
-		$random = $this->loadAssoc();
-
-		return $random['random'];
-	}
-
-	/**
-	 * Get the query string to alter the database character set.
-	 *
-	 * @param   string  $dbName  The database name
-	 *
-	 * @return  string  The query that alter the database query string
-	 *
-	 * @since   3.9.0
-	 */
-	public function getAlterDbCharacterSet($dbName)
-	{
-		return 'ALTER DATABASE ' . $this->quoteName($dbName) . ' SET CLIENT_ENCODING TO ' . $this->quote('UTF8');
-	}
-
-	/**
-	 * Get the query string to create new Database in correct PostgreSQL syntax.
-	 *
-	 * @param   object   $options  object coming from "initialise" function to pass user and database name to database driver.
-	 * @param   boolean  $utf      True if the database supports the UTF-8 character set, not used in PostgreSQL "CREATE DATABASE" query.
-	 *
-	 * @return  string	The query that creates database, owned by $options['user']
-	 *
-	 * @since   3.9.0
-	 */
-	public function getCreateDbQuery($options, $utf)
-	{
-		$query = 'CREATE DATABASE ' . $this->quoteName($options->db_name) . ' OWNER ' . $this->quoteName($options->db_user);
-
-		if ($utf)
-		{
-			$query .= ' ENCODING ' . $this->quote('UTF-8');
-		}
-
-		return $query;
-	}
-
-	/**
-	 * This function replaces a string identifier <var>$prefix</var> with the string held is the <var>tablePrefix</var> class variable.
-	 *
-	 * @param   string  $sql     The SQL statement to prepare.
-	 * @param   string  $prefix  The common table prefix.
-	 *
-	 * @return  string  The processed SQL statement.
-	 *
-	 * @since   3.9.0
-	 */
-	public function replacePrefix($sql, $prefix = '#__')
-	{
-		$sql = trim($sql);
-
-		if (strpos($sql, '\''))
-		{
-			// Sequence name quoted with ' ' but need to be replaced
-			if (strpos($sql, 'currval'))
-			{
-				$sql = explode('currval', $sql);
-
-				for ($nIndex = 1, $nIndexMax = count($sql); $nIndex < $nIndexMax; $nIndex += 2)
-				{
-					$sql[$nIndex] = str_replace($prefix, $this->tablePrefix, $sql[$nIndex]);
-				}
-
-				$sql = implode('currval', $sql);
-			}
-
-			// Sequence name quoted with ' ' but need to be replaced
-			if (strpos($sql, 'nextval'))
-			{
-				$sql = explode('nextval', $sql);
-
-				for ($nIndex = 1, $nIndexMax = count($sql); $nIndex < $nIndexMax; $nIndex += 2)
-				{
-					$sql[$nIndex] = str_replace($prefix, $this->tablePrefix, $sql[$nIndex]);
-				}
-
-				$sql = implode('nextval', $sql);
-			}
-
-			// Sequence name quoted with ' ' but need to be replaced
-			if (strpos($sql, 'setval'))
-			{
-				$sql = explode('setval', $sql);
-
-				for ($nIndex = 1, $nIndexMax = count($sql); $nIndex < $nIndexMax; $nIndex += 2)
-				{
-					$sql[$nIndex] = str_replace($prefix, $this->tablePrefix, $sql[$nIndex]);
-				}
-
-				$sql = implode('setval', $sql);
-			}
-
-			$explodedQuery = explode('\'', $sql);
-
-			for ($nIndex = 0, $nIndexMax = count($explodedQuery); $nIndex < $nIndexMax; $nIndex += 2)
-			{
-				if (strpos($explodedQuery[$nIndex], $prefix))
-				{
-					$explodedQuery[$nIndex] = str_replace($prefix, $this->tablePrefix, $explodedQuery[$nIndex]);
-				}
-			}
-
-			$replacedQuery = implode('\'', $explodedQuery);
-		}
-		else
-		{
-			$replacedQuery = str_replace($prefix, $this->tablePrefix, $sql);
-		}
-
-		// Joomla 3.x UTD: MySQL's backtick-quoted identifiers as PostgreSQL's
-		return JDatabaseDriverPostgresql::translateBackticks($replacedQuery);
-	}
-
-	/**
-	 * Unlocks tables in the database, this command does not exist in PostgreSQL, it is automatically done on commit or rollback.
-	 *
-	 * @return  JDatabaseDriverPgsql  Returns this object to support chaining.
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function unlockTables()
-	{
-		$this->transactionCommit();
-
-		return $this;
-	}
-
-	/**
-	 * Updates a row in a table based on an object's properties.
-	 *
-	 * @param   string   $table    The name of the database table to update.
-	 * @param   object   &$object  A reference to an object whose public properties match the table fields.
-	 * @param   array    $key      The name of the primary key.
-	 * @param   boolean  $nulls    True to update null fields or false to ignore them.
-	 *
-	 * @return  boolean
-	 *
-	 * @since   3.9.0
-	 * @throws  \RuntimeException
-	 */
-	public function updateObject($table, &$object, $key, $nulls = false)
-	{
-		$columns = $this->getTableColumns($table);
-		$fields  = array();
-		$where   = array();
-
-		if (is_string($key))
-		{
-			$key = array($key);
-		}
-
-		if (is_object($key))
-		{
-			$key = (array) $key;
-		}
-
-		// Create the base update statement.
-		$statement = 'UPDATE ' . $this->quoteName($table) . ' SET %s WHERE %s';
-
-		// Iterate over the object variables to build the query fields/value pairs.
-		foreach (get_object_vars($object) as $k => $v)
-		{
-			// Skip columns that don't exist in the table.
-			if (! array_key_exists($k, $columns))
-			{
-				continue;
-			}
-
-			// Only process scalars that are not internal fields.
-			if (is_array($v) || is_object($v) || $k[0] === '_')
-			{
-				continue;
-			}
-
-			// Set the primary key to the WHERE clause instead of a field to update.
-			if (in_array($k, $key, true))
-			{
-				$key_val = $this->sqlValue($columns, $k, $v);
-				$where[] = $this->quoteName($k) . '=' . $key_val;
-				continue;
-			}
-
-			// Prepare and sanitize the fields and values for the database query.
-			if ($v === null)
-			{
-				// If the value is null and we do not want to update nulls then ignore this field.
-				if (!$nulls)
-				{
-					continue;
-				}
-
-				// If the value is null and we want to update nulls then set it.
-				$val = 'NULL';
-			}
-			else
-			// The field is not null so we prep it for update.
-			{
-				$val = $this->sqlValue($columns, $k, $v);
-			}
-
-			// Add the field to be updated.
-			$fields[] = $this->quoteName($k) . '=' . $val;
-		}
-
-		// We don't have any fields to update.
-		if (empty($fields))
-		{
-			return true;
-		}
-
-		// Set the query and execute the update.
-		$this->setQuery(sprintf($statement, implode(',', $fields), implode(' AND ', $where)));
-
-		return $this->execute();
-	}
-
-	/**
-	 * Quotes a binary string to database requirements for use in database queries.
-	 *
-	 * @param   mixed  $data  A binary string to quote.
-	 *
-	 * @return  string  The binary quoted input string.
-	 *
-	 * @since   3.9.12
-	 */
-	public function quoteBinary($data)
-	{
-		return "decode('" . bin2hex((string) $data) . "', 'hex')";
-	}
+            );
+
+            return $this->loadObjectList();
+        }
+
+        return false;
+    }
+
+    /**
+     * Method to get an array of all tables in the database.
+     *
+     * @return  array  An array of all the tables in the database.
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function getTableList()
+    {
+        $query = $this->getQuery(true)
+            ->select('table_name')
+            ->from('information_schema.tables')
+            ->where('table_type = ' . $this->quote('BASE TABLE'))
+            ->where('table_schema NOT IN (' . $this->quote('pg_catalog') . ', ' . $this->quote('information_schema') . ')')
+            ->order('table_name ASC');
+
+        $this->setQuery($query);
+
+        return $this->loadColumn();
+    }
+
+    /**
+     * Get the details list of sequences for a table.
+     *
+     * @param   string  $table  The name of the table.
+     *
+     * @return  array  An array of sequences specification for the table.
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function getTableSequences($table)
+    {
+        // To check if table exists and prevent SQL injection
+        $tableList = $this->getTableList();
+
+        if (in_array($table, $tableList, true)) {
+            $name = array(
+                's.relname', 'n.nspname', 't.relname', 'a.attname', 'info.data_type',
+                'info.minimum_value', 'info.maximum_value', 'info.increment', 'info.cycle_option'
+            );
+
+            $as = array('sequence', 'schema', 'table', 'column', 'data_type', 'minimum_value', 'maximum_value', 'increment', 'cycle_option');
+
+            if (version_compare($this->getVersion(), '9.1.0') >= 0) {
+                $name[] .= 'info.start_value';
+                $as[] .= 'start_value';
+            }
+
+            // Get the details columns information.
+            $query = $this->getQuery(true)
+                ->select($this->quoteName($name, $as))
+                ->from('pg_class AS s')
+                ->leftJoin("pg_depend d ON d.objid = s.oid AND d.classid = 'pg_class'::regclass AND d.refclassid = 'pg_class'::regclass")
+                ->leftJoin('pg_class t ON t.oid = d.refobjid')
+                ->leftJoin('pg_namespace n ON n.oid = t.relnamespace')
+                ->leftJoin('pg_attribute a ON a.attrelid = t.oid AND a.attnum = d.refobjsubid')
+                ->leftJoin('information_schema.sequences AS info ON info.sequence_name = s.relname')
+                ->where('s.relkind = ' . $this->quote('S') . ' AND d.deptype = ' . $this->quote('a') . ' AND t.relname = ' . $this->quote($table));
+            $this->setQuery($query);
+
+            return $this->loadObjectList();
+        }
+
+        return false;
+    }
+
+    /**
+     * Locks a table in the database.
+     *
+     * @param   string  $tableName  The name of the table to unlock.
+     *
+     * @return  JDatabaseDriverPgsql  Returns this object to support chaining.
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function lockTable($tableName)
+    {
+        $this->transactionStart();
+        $this->setQuery('LOCK TABLE ' . $this->quoteName($tableName) . ' IN ACCESS EXCLUSIVE MODE')->execute();
+
+        return $this;
+    }
+
+    /**
+     * Renames a table in the database.
+     *
+     * @param   string  $oldTable  The name of the table to be renamed
+     * @param   string  $newTable  The new name for the table.
+     * @param   string  $backup    Not used by PostgreSQL.
+     * @param   string  $prefix    Not used by PostgreSQL.
+     *
+     * @return  JDatabaseDriverPgsql  Returns this object to support chaining.
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function renameTable($oldTable, $newTable, $backup = null, $prefix = null)
+    {
+        $this->connect();
+
+        // To check if table exists and prevent SQL injection
+        $tableList = $this->getTableList();
+
+        // Origin Table does not exist
+        if (!in_array($oldTable, $tableList, true)) {
+            // Origin Table not found
+            throw new \RuntimeException('Table not found in Postgresql database.');
+        }
+
+        // Rename indexes
+        $subQuery = $this->getQuery(true)
+            ->select('indexrelid')
+            ->from('pg_index, pg_class')
+            ->where('pg_class.relname = ' . $this->quote($oldTable))
+            ->where('pg_class.oid = pg_index.indrelid');
+
+        $this->setQuery(
+            $this->getQuery(true)
+                ->select('relname')
+                ->from('pg_class')
+                ->where('oid IN (' . (string) $subQuery . ')')
+        );
+
+        $oldIndexes = $this->loadColumn();
+
+        foreach ($oldIndexes as $oldIndex) {
+            $changedIdxName = str_replace($oldTable, $newTable, $oldIndex);
+
+            // An index named without its table (e.g. #__uc_ItemnameTagid) gets the new prefix instead, if any: renaming it to itself
+            // fails, and a new table of the old name would need the old index name again
+            if ($changedIdxName === $oldIndex) {
+                if ($backup === null || $prefix === null || strpos($oldIndex, $prefix) !== 0) {
+                    continue;
+                }
+
+                $changedIdxName = $backup . substr($oldIndex, strlen($prefix));
+            }
+
+            $this->setQuery('ALTER INDEX ' . $this->quoteName($oldIndex) . ' RENAME TO ' . $this->quoteName($changedIdxName))->execute();
+        }
+
+        // Rename sequences
+        $subQuery = $this->getQuery(true)
+            ->select('oid')
+            ->from('pg_namespace')
+            ->where('nspname NOT LIKE ' . $this->quote('pg_%'))
+            ->where('nspname != ' . $this->quote('information_schema'));
+
+        $this->setQuery(
+            $this->getQuery(true)
+                ->select('relname')
+                ->from('pg_class')
+                ->where('relkind = ' . $this->quote('S'))
+                ->where('relnamespace IN (' . (string) $subQuery . ')')
+                ->where('relname LIKE ' . $this->quote("%$oldTable%"))
+        );
+
+        $oldSequences = $this->loadColumn();
+
+        foreach ($oldSequences as $oldSequence) {
+            $changedSequenceName = str_replace($oldTable, $newTable, $oldSequence);
+            $this->setQuery('ALTER SEQUENCE ' . $this->quoteName($oldSequence) . ' RENAME TO ' . $this->quoteName($changedSequenceName))->execute();
+        }
+
+        // Rename table
+        $this->setQuery('ALTER TABLE ' . $this->quoteName($oldTable) . ' RENAME TO ' . $this->quoteName($newTable))->execute();
+
+        return true;
+    }
+
+    /**
+     * This function return a field value as a prepared string to be used in a SQL statement.
+     *
+     * @param   array   $columns     Array of table's column returned by ::getTableColumns.
+     * @param   string  $fieldName   The table field's name.
+     * @param   string  $fieldValue  The variable value to quote and return.
+     *
+     * @return  string  The quoted string.
+     *
+     * @since   3.9.0
+     */
+    public function sqlValue($columns, $fieldName, $fieldValue)
+    {
+        switch ($columns[$fieldName]) {
+            case 'boolean':
+                $val = 'NULL';
+
+                if ($fieldValue === 't' || $fieldValue === true || $fieldValue === 1 || $fieldValue === '1') {
+                    $val = 'TRUE';
+                } elseif ($fieldValue === 'f' || $fieldValue === false || $fieldValue === 0 || $fieldValue === '0') {
+                    $val = 'FALSE';
+                }
+
+                break;
+
+            case 'bigint':
+            case 'bigserial':
+            case 'integer':
+            case 'money':
+            case 'numeric':
+            case 'real':
+            case 'smallint':
+            case 'serial':
+            case 'numeric,':
+                $val = $fieldValue === '' ? 'NULL' : $fieldValue;
+                break;
+
+            case 'date':
+            case 'timestamp without time zone':
+                if (empty($fieldValue)) {
+                    $fieldValue = $this->getNullDate();
+                }
+
+                $val = $this->quote($fieldValue);
+
+                break;
+
+            default:
+                $val = $this->quote($fieldValue);
+                break;
+        }
+
+        return $val;
+    }
+
+    /**
+     * Method to commit a transaction.
+     *
+     * @param   boolean  $toSavepoint  If true, commit to the last savepoint.
+     *
+     * @return  void
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function transactionCommit($toSavepoint = false)
+    {
+        $this->connect();
+
+        if (!$toSavepoint || $this->transactionDepth <= 1) {
+            if ($this->setQuery('COMMIT')->execute()) {
+                $this->transactionDepth = 0;
+            }
+
+            return;
+        }
+
+        $this->transactionDepth--;
+    }
+
+    /**
+     * Method to roll back a transaction.
+     *
+     * @param   boolean  $toSavepoint  If true, rollback to the last savepoint.
+     *
+     * @return  void
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function transactionRollback($toSavepoint = false)
+    {
+        $this->connect();
+
+        if (!$toSavepoint || $this->transactionDepth <= 1) {
+            if ($this->setQuery('ROLLBACK')->execute()) {
+                $this->transactionDepth = 0;
+            }
+
+            return;
+        }
+
+        $savepoint = 'SP_' . ($this->transactionDepth - 1);
+        $this->setQuery('ROLLBACK TO SAVEPOINT ' . $this->quoteName($savepoint));
+
+        if ($this->execute()) {
+            $this->transactionDepth--;
+            $this->setQuery('RELEASE SAVEPOINT ' . $this->quoteName($savepoint))->execute();
+        }
+    }
+
+    /**
+     * Method to initialize a transaction.
+     *
+     * @param   boolean  $asSavepoint  If true and a transaction is already active, a savepoint will be created.
+     *
+     * @return  void
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function transactionStart($asSavepoint = false)
+    {
+        $this->connect();
+
+        if (!$asSavepoint || !$this->transactionDepth) {
+            if ($this->setQuery('START TRANSACTION')->execute()) {
+                $this->transactionDepth = 1;
+            }
+
+            return;
+        }
+
+        $savepoint = 'SP_' . $this->transactionDepth;
+        $this->setQuery('SAVEPOINT ' . $this->quoteName($savepoint));
+
+        if ($this->execute()) {
+            $this->transactionDepth++;
+        }
+    }
+
+    /**
+     * Inserts a row into a table based on an object's properties.
+     *
+     * @param   string  $table    The name of the database table to insert into.
+     * @param   object  &$object  A reference to an object whose public properties match the table fields.
+     * @param   string  $key      The name of the primary key. If provided the object property is updated.
+     *
+     * @return  boolean    True on success.
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function insertObject($table, &$object, $key = null)
+    {
+        $columns = $this->getTableColumns($table);
+
+        $fields = array();
+        $values = array();
+
+        // Iterate over the object variables to build the query fields and values.
+        foreach (get_object_vars($object) as $k => $v) {
+            // Skip columns that don't exist in the table.
+            if (!array_key_exists($k, $columns)) {
+                continue;
+            }
+
+            // Only process non-null scalars.
+            if (is_array($v) || is_object($v) || $v === null) {
+                continue;
+            }
+
+            // Ignore any internal fields or primary keys with value 0, or empty (Joomla 3.x UTD: an empty one became NULL, refused by the serial column).
+            if (($k[0] === '_') || ($k == $key && ($v === 0 || $v === '0' || $v === ''))) {
+                continue;
+            }
+
+            // Prepare and sanitize the fields and values for the database query.
+            $fields[] = $this->quoteName($k);
+            $values[] = $this->sqlValue($columns, $k, $v);
+        }
+
+        // Create the base insert statement.
+        $query = $this->getQuery(true);
+
+        $query->insert($this->quoteName($table))
+            ->columns($fields)
+            ->values(implode(',', $values));
+
+        $retVal = false;
+
+        if ($key) {
+            $query->returning($key);
+
+            // Set the query and execute the insert.
+            $this->setQuery($query);
+
+            $id = $this->loadResult();
+
+            if ($id) {
+                $object->$key = $id;
+                $retVal = true;
+            }
+        } else {
+            // Set the query and execute the insert.
+            $this->setQuery($query);
+
+            if ($this->execute()) {
+                $retVal = true;
+            }
+        }
+
+        return $retVal;
+    }
+
+    /**
+     * Test to see if the PostgreSQL connector is available.
+     *
+     * @return  boolean  True on success, false otherwise.
+     *
+     * @since   3.9.0
+     */
+    public static function isSupported()
+    {
+        return class_exists('PDO') && in_array('pgsql', PDO::getAvailableDrivers(), true);
+    }
+
+    /**
+     * Returns an array containing database's table list.
+     *
+     * @return  array  The database's table list.
+     *
+     * @since   3.9.0
+     */
+    public function showTables()
+    {
+        $query = $this->getQuery(true)
+            ->select('table_name')
+            ->from('information_schema.tables')
+            ->where('table_type=' . $this->quote('BASE TABLE'))
+            ->where('table_schema NOT IN (' . $this->quote('pg_catalog') . ', ' . $this->quote('information_schema') . ' )');
+
+        $this->setQuery($query);
+
+        return $this->loadColumn();
+    }
+
+    /**
+     * Get the substring position inside a string
+     *
+     * @param   string  $substring  The string being sought
+     * @param   string  $string     The string/column being searched
+     *
+     * @return  integer  The position of $substring in $string
+     *
+     * @since   3.9.0
+     */
+    public function getStringPositionSql($substring, $string)
+    {
+        $this->setQuery("SELECT POSITION($substring IN $string)");
+        $position = $this->loadRow();
+
+        return $position['position'];
+    }
+
+    /**
+     * Generate a random value
+     *
+     * @return  float  The random generated number
+     *
+     * @since   3.9.0
+     */
+    public function getRandom()
+    {
+        $this->setQuery('SELECT RANDOM()');
+        $random = $this->loadAssoc();
+
+        return $random['random'];
+    }
+
+    /**
+     * Get the query string to alter the database character set.
+     *
+     * @param   string  $dbName  The database name
+     *
+     * @return  string  The query that alter the database query string
+     *
+     * @since   3.9.0
+     */
+    public function getAlterDbCharacterSet($dbName)
+    {
+        return 'ALTER DATABASE ' . $this->quoteName($dbName) . ' SET CLIENT_ENCODING TO ' . $this->quote('UTF8');
+    }
+
+    /**
+     * Get the query string to create new Database in correct PostgreSQL syntax.
+     *
+     * @param   object   $options  object coming from "initialise" function to pass user and database name to database driver.
+     * @param   boolean  $utf      True if the database supports the UTF-8 character set, not used in PostgreSQL "CREATE DATABASE" query.
+     *
+     * @return  string	The query that creates database, owned by $options['user']
+     *
+     * @since   3.9.0
+     */
+    public function getCreateDbQuery($options, $utf)
+    {
+        $query = 'CREATE DATABASE ' . $this->quoteName($options->db_name) . ' OWNER ' . $this->quoteName($options->db_user);
+
+        if ($utf) {
+            $query .= ' ENCODING ' . $this->quote('UTF-8');
+        }
+
+        return $query;
+    }
+
+    /**
+     * This function replaces a string identifier <var>$prefix</var> with the string held is the <var>tablePrefix</var> class variable.
+     *
+     * @param   string  $sql     The SQL statement to prepare.
+     * @param   string  $prefix  The common table prefix.
+     *
+     * @return  string  The processed SQL statement.
+     *
+     * @since   3.9.0
+     */
+    public function replacePrefix($sql, $prefix = '#__')
+    {
+        $sql = trim($sql);
+
+        if (strpos($sql, '\'')) {
+            // Sequence name quoted with ' ' but need to be replaced
+            if (strpos($sql, 'currval')) {
+                $sql = explode('currval', $sql);
+
+                for ($nIndex = 1, $nIndexMax = count($sql); $nIndex < $nIndexMax; $nIndex += 2) {
+                    $sql[$nIndex] = str_replace($prefix, $this->tablePrefix, $sql[$nIndex]);
+                }
+
+                $sql = implode('currval', $sql);
+            }
+
+            // Sequence name quoted with ' ' but need to be replaced
+            if (strpos($sql, 'nextval')) {
+                $sql = explode('nextval', $sql);
+
+                for ($nIndex = 1, $nIndexMax = count($sql); $nIndex < $nIndexMax; $nIndex += 2) {
+                    $sql[$nIndex] = str_replace($prefix, $this->tablePrefix, $sql[$nIndex]);
+                }
+
+                $sql = implode('nextval', $sql);
+            }
+
+            // Sequence name quoted with ' ' but need to be replaced
+            if (strpos($sql, 'setval')) {
+                $sql = explode('setval', $sql);
+
+                for ($nIndex = 1, $nIndexMax = count($sql); $nIndex < $nIndexMax; $nIndex += 2) {
+                    $sql[$nIndex] = str_replace($prefix, $this->tablePrefix, $sql[$nIndex]);
+                }
+
+                $sql = implode('setval', $sql);
+            }
+
+            $explodedQuery = explode('\'', $sql);
+
+            for ($nIndex = 0, $nIndexMax = count($explodedQuery); $nIndex < $nIndexMax; $nIndex += 2) {
+                if (strpos($explodedQuery[$nIndex], $prefix)) {
+                    $explodedQuery[$nIndex] = str_replace($prefix, $this->tablePrefix, $explodedQuery[$nIndex]);
+                }
+            }
+
+            $replacedQuery = implode('\'', $explodedQuery);
+        } else {
+            $replacedQuery = str_replace($prefix, $this->tablePrefix, $sql);
+        }
+
+        // Joomla 3.x UTD: MySQL's backtick-quoted identifiers as PostgreSQL's
+        return JDatabaseDriverPostgresql::translateBackticks($replacedQuery);
+    }
+
+    /**
+     * Unlocks tables in the database, this command does not exist in PostgreSQL, it is automatically done on commit or rollback.
+     *
+     * @return  JDatabaseDriverPgsql  Returns this object to support chaining.
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function unlockTables()
+    {
+        $this->transactionCommit();
+
+        return $this;
+    }
+
+    /**
+     * Updates a row in a table based on an object's properties.
+     *
+     * @param   string   $table    The name of the database table to update.
+     * @param   object   &$object  A reference to an object whose public properties match the table fields.
+     * @param   array    $key      The name of the primary key.
+     * @param   boolean  $nulls    True to update null fields or false to ignore them.
+     *
+     * @return  boolean
+     *
+     * @since   3.9.0
+     * @throws  \RuntimeException
+     */
+    public function updateObject($table, &$object, $key, $nulls = false)
+    {
+        $columns = $this->getTableColumns($table);
+        $fields  = array();
+        $where   = array();
+
+        if (is_string($key)) {
+            $key = array($key);
+        }
+
+        if (is_object($key)) {
+            $key = (array) $key;
+        }
+
+        // Create the base update statement.
+        $statement = 'UPDATE ' . $this->quoteName($table) . ' SET %s WHERE %s';
+
+        // Iterate over the object variables to build the query fields/value pairs.
+        foreach (get_object_vars($object) as $k => $v) {
+            // Skip columns that don't exist in the table.
+            if (! array_key_exists($k, $columns)) {
+                continue;
+            }
+
+            // Only process scalars that are not internal fields.
+            if (is_array($v) || is_object($v) || $k[0] === '_') {
+                continue;
+            }
+
+            // Set the primary key to the WHERE clause instead of a field to update.
+            if (in_array($k, $key, true)) {
+                $key_val = $this->sqlValue($columns, $k, $v);
+                $where[] = $this->quoteName($k) . '=' . $key_val;
+                continue;
+            }
+
+            // Prepare and sanitize the fields and values for the database query.
+            if ($v === null) {
+                // If the value is null and we do not want to update nulls then ignore this field.
+                if (!$nulls) {
+                    continue;
+                }
+
+                // If the value is null and we want to update nulls then set it.
+                $val = 'NULL';
+            } else { // The field is not null so we prep it for update.
+                $val = $this->sqlValue($columns, $k, $v);
+            }
+
+            // Add the field to be updated.
+            $fields[] = $this->quoteName($k) . '=' . $val;
+        }
+
+        // We don't have any fields to update.
+        if (empty($fields)) {
+            return true;
+        }
+
+        // Set the query and execute the update.
+        $this->setQuery(sprintf($statement, implode(',', $fields), implode(' AND ', $where)));
+
+        return $this->execute();
+    }
+
+    /**
+     * Quotes a binary string to database requirements for use in database queries.
+     *
+     * @param   mixed  $data  A binary string to quote.
+     *
+     * @return  string  The binary quoted input string.
+     *
+     * @since   3.9.12
+     */
+    public function quoteBinary($data)
+    {
+        return "decode('" . bin2hex((string) $data) . "', 'hex')";
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,73 +18,70 @@ defined('JPATH_PLATFORM') or die;
  */
 class UpdateJoomlaRemoveOldFilesCommand extends AbstractCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'update:joomla:remove-old-files';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'update:joomla:remove-old-files';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Remove old system files';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Remove old system files';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Deletes the files and folders of earlier Joomla versions which are no longer part of Joomla, as a Joomla update does. '
-		. 'With --dry-run it only lists those which still exist.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Deletes the files and folders of earlier Joomla versions which are no longer part of Joomla, as a Joomla update does. '
+        . 'With --dry-run it only lists those which still exist.';
 
-	/**
-	 * @var    boolean
-	 * @since  3.17.0
-	 */
-	protected $dryRun = true;
+    /**
+     * @var    boolean
+     * @since  3.17.0
+     */
+    protected $dryRun = true;
 
-	/**
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	protected function doExecute(CommandIO $io)
-	{
-		$dryRun = $io->isDryRun();
+    /**
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    protected function doExecute(CommandIO $io)
+    {
+        $dryRun = $io->isDryRun();
 
-		$io->title('Removing Unneeded Files & Folders' . ($dryRun ? ' - Dry Run' : ''));
+        $io->title('Removing Unneeded Files & Folders' . ($dryRun ? ' - Dry Run' : ''));
 
-		\JLoader::register('JoomlaInstallerScript', JPATH_ADMINISTRATOR . '/components/com_admin/script.php');
+        \JLoader::register('JoomlaInstallerScript', JPATH_ADMINISTRATOR . '/components/com_admin/script.php');
 
-		$script = new \JoomlaInstallerScript;
-		$status = $script->deleteUnexistingFiles($dryRun, true);
+        $script = new \JoomlaInstallerScript();
+        $status = $script->deleteUnexistingFiles($dryRun, true);
 
-		foreach (array_merge($status['files_errors'], $status['folders_errors']) as $error)
-		{
-			$io->error($error);
-		}
+        foreach (array_merge($status['files_errors'], $status['folders_errors']) as $error) {
+            $io->error($error);
+        }
 
-		if ($dryRun)
-		{
-			foreach (array_merge($status['files_exist'], $status['folders_exist']) as $path)
-			{
-				$io->plan('Remove ' . $path, array('action' => 'remove', 'path' => $path));
-			}
+        if ($dryRun) {
+            foreach (array_merge($status['files_exist'], $status['folders_exist']) as $path) {
+                $io->plan('Remove ' . $path, array('action' => 'remove', 'path' => $path));
+            }
 
-			$io->setData('files', $status['files_exist']);
-			$io->setData('folders', $status['folders_exist']);
-			$io->success(sprintf('%d files and %d folders would be removed.', count($status['files_exist']), count($status['folders_exist'])));
+            $io->setData('files', $status['files_exist']);
+            $io->setData('folders', $status['folders_exist']);
+            $io->success(sprintf('%d files and %d folders would be removed.', count($status['files_exist']), count($status['folders_exist'])));
 
-			return self::SUCCESS;
-		}
+            return self::SUCCESS;
+        }
 
-		$io->setData('files', $status['files_deleted']);
-		$io->setData('folders', $status['folders_deleted']);
-		$io->setData('errors', array_merge($status['files_errors'], $status['folders_errors']));
-		$io->success(sprintf('%d files and %d folders removed.', count($status['files_deleted']), count($status['folders_deleted'])));
+        $io->setData('files', $status['files_deleted']);
+        $io->setData('folders', $status['folders_deleted']);
+        $io->setData('errors', array_merge($status['files_errors'], $status['folders_errors']));
+        $io->success(sprintf('%d files and %d folders removed.', count($status['files_deleted']), count($status['folders_deleted'])));
 
-		return $status['files_errors'] || $status['folders_errors'] ? self::FAILURE : self::SUCCESS;
-	}
+        return $status['files_errors'] || $status['folders_errors'] ? self::FAILURE : self::SUCCESS;
+    }
 }

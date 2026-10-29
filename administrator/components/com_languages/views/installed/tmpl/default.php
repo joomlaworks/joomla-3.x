@@ -74,13 +74,13 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 			</tfoot>
 			<tbody>
 			<?php
-			$version = new JVersion;
-			$currentShortVersion = preg_replace('#^([0-9\.]+)(|.*)$#', '$1', $version->getShortVersion());
-			foreach ($this->rows as $i => $row) :
-				$canCreate = $user->authorise('core.create',     'com_languages');
-				$canEdit   = $user->authorise('core.edit',       'com_languages');
-				$canChange = $user->authorise('core.edit.state', 'com_languages');
-			?>
+            $version = new JVersion();
+		    $currentShortVersion = preg_replace('#^([0-9\.]+)(|.*)$#', '$1', $version->getShortVersion());
+		    foreach ($this->rows as $i => $row) :
+		        $canCreate = $user->authorise('core.create', 'com_languages');
+		        $canEdit   = $user->authorise('core.edit', 'com_languages');
+		        $canChange = $user->authorise('core.edit.state', 'com_languages');
+		        ?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td>
 						<?php echo JHtml::_('languages.id', $i, $row->language); ?>
@@ -101,7 +101,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 					</td>
 					<td class="center small">
 					<?php $minorVersion = $version::MAJOR_VERSION . '.' . $version::MINOR_VERSION; ?>
-					<?php // Display a Note if language pack version is not equal to Joomla version ?>
+					<?php // Display a Note if language pack version is not equal to Joomla version?>
 					<?php if (strpos((string) $row->version, $minorVersion) !== 0 || strpos((string) $row->version, $currentShortVersion) !== 0) : ?>
 						<span class="label label-warning hasTooltip" title="<?php echo JText::_('JGLOBAL_LANGUAGE_VERSION_NOT_PLATFORM'); ?>"><?php echo $row->version; ?></span>
 					<?php else : ?>

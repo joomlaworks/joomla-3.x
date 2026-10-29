@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_popular
@@ -15,9 +16,8 @@ JLoader::register('ModPopularHelper', __DIR__ . '/helper.php');
 // Get module data.
 $list = ModPopularHelper::getList($params);
 
-if ($params->get('automatic_title', 0))
-{
-	$module->title = ModPopularHelper::getTitle($params);
+if ($params->get('automatic_title', 0)) {
+    $module->title = ModPopularHelper::getTitle($params);
 }
 
 // Render the module

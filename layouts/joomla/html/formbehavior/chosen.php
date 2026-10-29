@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  Layout
@@ -29,7 +30,7 @@ JHtml::_('stylesheet', 'system/chosen.css', array('version' => 'auto', 'relative
 $options_str = json_encode($options, ($debug && defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : false));
 
 JFactory::getDocument()->addScriptDeclaration(
-	'
+    '
 	jQuery(function ($) {
 		initChosen();
 		$("body").on("subform-row-add", initChosen);

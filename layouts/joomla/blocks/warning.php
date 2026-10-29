@@ -23,9 +23,8 @@ $data = $displayData['data'];
 $title   = $r->inline(isset($data['title']) ? $data['title'] : '');
 $message = $r->inline(isset($data['message']) ? $data['message'] : '');
 
-if (trim(strip_tags($title . $message)) === '')
-{
-	return;
+if (trim(strip_tags($title . $message)) === '') {
+    return;
 }
 ?>
 <div class="alert alert-warning block-warning" role="note"><?php echo $title !== '' ? '<strong>' . $title . '</strong> ' : ''; ?><?php echo $message; ?></div>

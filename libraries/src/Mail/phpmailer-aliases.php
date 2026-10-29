@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -14,14 +15,12 @@ defined('JPATH_PLATFORM') or die;
  * needed first defines them all. A catch (phpmailerException ...) then works once any of them, or JMail, is loaded.
  */
 foreach (array(
-	'PHPMailer'          => 'PHPMailer\\PHPMailer\\PHPMailer',
-	'phpmailerException' => 'PHPMailer\\PHPMailer\\Exception',
-	'SMTP'               => 'PHPMailer\\PHPMailer\\SMTP',
-	'POP3'               => 'PHPMailer\\PHPMailer\\POP3',
-) as $alias => $class)
-{
-	if (!class_exists($alias, false))
-	{
-		class_alias($class, $alias);
-	}
+    'PHPMailer'          => 'PHPMailer\\PHPMailer\\PHPMailer',
+    'phpmailerException' => 'PHPMailer\\PHPMailer\\Exception',
+    'SMTP'               => 'PHPMailer\\PHPMailer\\SMTP',
+    'POP3'               => 'PHPMailer\\PHPMailer\\POP3',
+) as $alias => $class) {
+    if (!class_exists($alias, false)) {
+        class_alias($class, $alias);
+    }
 }

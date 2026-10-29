@@ -17,7 +17,7 @@ JHtml::_('behavior.keepalive');
 JHtml::_('bootstrap.tooltip', '.hasTooltip', array('placement' => 'bottom'));
 
 JFactory::getDocument()->addScriptDeclaration(
-	"
+    "
 		Joomla.submitbutton = function(task)
 		{
 			if (task == 'config.cancel' || document.formvalidator.isValid(document.getElementById('config-form')))

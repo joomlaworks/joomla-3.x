@@ -22,36 +22,32 @@ $lang    = JFactory::getLanguage();
 $strings = array();
 
 foreach (array('ERROR', 'WARNING', 'NOTICE', 'MESSAGE', 'INSTL_PROCESS_BUSY',
-	'JLIB_DATABASE_ERROR_DATABASE', 'JLIB_JS_AJAX_ERROR_CONNECTION_ABORT', 'JLIB_JS_AJAX_ERROR_NO_CONTENT',
-	'JLIB_JS_AJAX_ERROR_OTHER', 'JLIB_JS_AJAX_ERROR_PARSE', 'JLIB_JS_AJAX_ERROR_TIMEOUT') as $key)
-{
-	// Only translated strings: the script has English fallbacks, and a missing key would otherwise show as the key itself
-	if ($lang->hasKey($key))
-	{
-		$strings[$key] = JText::_($key);
-	}
+    'JLIB_DATABASE_ERROR_DATABASE', 'JLIB_JS_AJAX_ERROR_CONNECTION_ABORT', 'JLIB_JS_AJAX_ERROR_NO_CONTENT',
+    'JLIB_JS_AJAX_ERROR_OTHER', 'JLIB_JS_AJAX_ERROR_PARSE', 'JLIB_JS_AJAX_ERROR_TIMEOUT') as $key) {
+    // Only translated strings: the script has English fallbacks, and a missing key would otherwise show as the key itself
+    if ($lang->hasKey($key)) {
+        $strings[$key] = JText::_($key);
+    }
 }
 
 // Shown when the installer removes its folder on the way out; English for language packs without it yet
 $strings['INSTL_COMPLETE_FOLDER_REMOVED_AUTO'] = $lang->hasKey('INSTL_COMPLETE_FOLDER_REMOVED_AUTO')
-	? JText::sprintf('INSTL_COMPLETE_FOLDER_REMOVED_AUTO', basename(JPATH_INSTALLATION))
-	: 'The "' . basename(JPATH_INSTALLATION) . '" folder was removed automatically.';
+    ? JText::sprintf('INSTL_COMPLETE_FOLDER_REMOVED_AUTO', basename(JPATH_INSTALLATION))
+    : 'The "' . basename(JPATH_INSTALLATION) . '" folder was removed automatically.';
 
 $options = array(
-	'url'       => JRoute::_('index.php', false),
-	'view'      => $app->input->getWord('view'),
-	'keepalive' => max(60, (int) JFactory::getSession()->getExpire() - 60),
-	'strings'   => $strings,
+    'url'       => JRoute::_('index.php', false),
+    'view'      => $app->input->getWord('view'),
+    'keepalive' => max(60, (int) JFactory::getSession()->getExpire() - 60),
+    'strings'   => $strings,
 );
 
 $messages = array();
 
-foreach ($app->getMessageQueue() as $message)
-{
-	if (isset($message['type'], $message['message']))
-	{
-		$messages[$message['type']][] = $message['message'];
-	}
+foreach ($app->getMessageQueue() as $message) {
+    if (isset($message['type'], $message['message'])) {
+        $messages[$message['type']][] = $message['message'];
+    }
 }
 
 $alertTypes = array('message' => 'success', 'notice' => 'info', 'warning' => 'warning', 'error' => 'error');

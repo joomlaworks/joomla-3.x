@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_users
@@ -16,39 +17,36 @@ defined('_JEXEC') or die;
  */
 class UsersRouter extends JComponentRouterView
 {
-	/**
-	 * Users Component router constructor
-	 *
-	 * @param   JApplicationCms  $app   The application object
-	 * @param   JMenu            $menu  The menu object to work with
-	 */
-	public function __construct($app = null, $menu = null)
-	{
-		$this->registerView(new JComponentRouterViewconfiguration('login'));
-		$profile = new JComponentRouterViewconfiguration('profile');
-		$profile->addLayout('edit');
-		$this->registerView($profile);
-		$this->registerView(new JComponentRouterViewconfiguration('registration'));
-		$this->registerView(new JComponentRouterViewconfiguration('remind'));
-		$this->registerView(new JComponentRouterViewconfiguration('reset'));
+    /**
+     * Users Component router constructor
+     *
+     * @param   JApplicationCms  $app   The application object
+     * @param   JMenu            $menu  The menu object to work with
+     */
+    public function __construct($app = null, $menu = null)
+    {
+        $this->registerView(new JComponentRouterViewconfiguration('login'));
+        $profile = new JComponentRouterViewconfiguration('profile');
+        $profile->addLayout('edit');
+        $this->registerView($profile);
+        $this->registerView(new JComponentRouterViewconfiguration('registration'));
+        $this->registerView(new JComponentRouterViewconfiguration('remind'));
+        $this->registerView(new JComponentRouterViewconfiguration('reset'));
 
-		parent::__construct($app, $menu);
+        parent::__construct($app, $menu);
 
-		$this->attachRule(new JComponentRouterRulesMenu($this));
+        $this->attachRule(new JComponentRouterRulesMenu($this));
 
-		$params = JComponentHelper::getParams('com_users');
+        $params = JComponentHelper::getParams('com_users');
 
-		if ($params->get('sef_advanced', 0))
-		{
-			$this->attachRule(new JComponentRouterRulesStandard($this));
-			$this->attachRule(new JComponentRouterRulesNomenu($this));
-		}
-		else
-		{
-			JLoader::register('UsersRouterRulesLegacy', __DIR__ . '/helpers/legacyrouter.php');
-			$this->attachRule(new UsersRouterRulesLegacy($this));
-		}
-	}
+        if ($params->get('sef_advanced', 0)) {
+            $this->attachRule(new JComponentRouterRulesStandard($this));
+            $this->attachRule(new JComponentRouterRulesNomenu($this));
+        } else {
+            JLoader::register('UsersRouterRulesLegacy', __DIR__ . '/helpers/legacyrouter.php');
+            $this->attachRule(new UsersRouterRulesLegacy($this));
+        }
+    }
 }
 
 /**
@@ -65,10 +63,10 @@ class UsersRouter extends JComponentRouterView
  */
 function usersBuildRoute(&$query)
 {
-	$app = JFactory::getApplication();
-	$router = new UsersRouter($app, $app->getMenu());
+    $app = JFactory::getApplication();
+    $router = new UsersRouter($app, $app->getMenu());
 
-	return $router->build($query);
+    return $router->build($query);
 }
 
 /**
@@ -82,8 +80,8 @@ function usersBuildRoute(&$query)
  */
 function usersParseRoute($segments)
 {
-	$app = JFactory::getApplication();
-	$router = new UsersRouter($app, $app->getMenu());
+    $app = JFactory::getApplication();
+    $router = new UsersRouter($app, $app->getMenu());
 
-	return $router->parse($segments);
+    return $router->parse($segments);
 }

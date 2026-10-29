@@ -12,13 +12,12 @@ defined('_JEXEC') or die;
 /** @var  array  $displayData */
 $data = $displayData;
 
-if ($data['view'] instanceof MenusViewItems)
-{
-	// We will get the menutype filter & remove it from the form filters
-	$menuTypeField = $data['view']->filterForm->getField('menutype');
+if ($data['view'] instanceof MenusViewItems) {
+    // We will get the menutype filter & remove it from the form filters
+    $menuTypeField = $data['view']->filterForm->getField('menutype');
 
-	// The client selector is a row of tabs above the search tools (layout joomla.searchtools.default.client)
-	?>
+    // The client selector is a row of tabs above the search tools (layout joomla.searchtools.default.client)
+    ?>
 	<div class="js-stools-field-filter js-stools-menutype">
 		<?php echo $menuTypeField->input; ?>
 	</div>

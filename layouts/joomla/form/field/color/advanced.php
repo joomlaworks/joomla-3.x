@@ -47,13 +47,10 @@ extract($displayData);
 
 $rgb = $validate !== 'color' && in_array($format, array('rgb', 'rgba'), true);
 
-if ($rgb)
-{
-	$placeholder = $format === 'rgba' ? 'rgba(0, 0, 0, 0.5)' : 'rgb(0, 0, 0)';
-}
-else
-{
-	$placeholder = '#rrggbb';
+if ($rgb) {
+    $placeholder = $format === 'rgba' ? 'rgba(0, 0, 0, 0.5)' : 'rgb(0, 0, 0)';
+} else {
+    $placeholder = '#rrggbb';
 }
 
 // The browser's picker (since 3.18; MiniColors before) shows #rrggbb: #rgb is spelled out, rgb()/rgba() converted, and
@@ -61,18 +58,13 @@ else
 $value  = $color === 'none' && strpos((string) $keywords, 'none') === false ? '' : (string) $color;
 $swatch = '';
 
-if (preg_match('/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i', $value, $match))
-{
-	$swatch = strtolower('#' . $match[1] . $match[1] . $match[2] . $match[2] . $match[3] . $match[3]);
-}
-elseif (preg_match('/^#[0-9a-f]{6}$/i', $value))
-{
-	$swatch = strtolower($value);
-}
-elseif (preg_match('/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*[\d.]+\s*)?\)$/i', $value, $match)
-	&& max($match[1], $match[2], $match[3]) <= 255)
-{
-	$swatch = vsprintf('#%02x%02x%02x', array($match[1], $match[2], $match[3]));
+if (preg_match('/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i', $value, $match)) {
+    $swatch = strtolower('#' . $match[1] . $match[1] . $match[2] . $match[2] . $match[3] . $match[3]);
+} elseif (preg_match('/^#[0-9a-f]{6}$/i', $value)) {
+    $swatch = strtolower($value);
+} elseif (preg_match('/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*[\d.]+\s*)?\)$/i', $value, $match)
+    && max($match[1], $match[2], $match[3]) <= 255) {
+    $swatch = vsprintf('#%02x%02x%02x', array($match[1], $match[2], $match[3]));
 }
 
 $locked = $disabled || $readonly;
@@ -83,35 +75,33 @@ JText::script('JLIB_FORM_FIELD_COLOR_CHOOSE');
 JText::script('JCLEAR');
 
 $attributes = array(
-	'type'        => 'text',
-	'name'        => $name,
-	'id'          => $id,
-	'value'       => $value,
-	'class'       => trim('cms-color-value ' . $class),
-	'placeholder' => strlen($hint) ? $hint : $placeholder,
-	'data-format' => $format ?: null,
-	'data-keywords' => $keywords ?: null,
-	'data-validate' => $validate ?: null,
-	'onchange'    => $onchange ?: null,
-	'autocomplete' => $autocomplete ? null : 'off',
-	// Colour values read left to right, also in right to left languages
-	'dir'         => 'ltr',
+    'type'        => 'text',
+    'name'        => $name,
+    'id'          => $id,
+    'value'       => $value,
+    'class'       => trim('cms-color-value ' . $class),
+    'placeholder' => strlen($hint) ? $hint : $placeholder,
+    'data-format' => $format ?: null,
+    'data-keywords' => $keywords ?: null,
+    'data-validate' => $validate ?: null,
+    'onchange'    => $onchange ?: null,
+    'autocomplete' => $autocomplete ? null : 'off',
+    // Colour values read left to right, also in right to left languages
+    'dir'         => 'ltr',
 );
 ?>
 <span class="cms-color<?php echo $swatch ? '' : ' is-empty'; ?>">
 	<input type="color" class="cms-color-swatch" value="<?php echo $swatch ?: '#000000'; ?>" aria-label="<?php echo $this->escape(JText::_('JLIB_FORM_FIELD_COLOR_CHOOSE')); ?>"<?php
-		echo $locked ? ' disabled' : '', $format === 'rgba' && $rgb ? ' alpha' : ''; ?> />
+        echo $locked ? ' disabled' : '', $format === 'rgba' && $rgb ? ' alpha' : ''; ?> />
 	<input<?php
-		foreach ($attributes as $attribute => $attributeValue)
-		{
-			if ($attributeValue !== null)
-			{
-				echo ' ' . $attribute . '="' . $this->escape($attributeValue) . '"';
-			}
-		}
+        foreach ($attributes as $attribute => $attributeValue) {
+            if ($attributeValue !== null) {
+                echo ' ' . $attribute . '="' . $this->escape($attributeValue) . '"';
+            }
+        }
 
-		echo $readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', $autofocus ? ' autofocus' : '';
-	?> />
+echo $readonly ? ' readonly' : '', $disabled ? ' disabled' : '', $required ? ' required aria-required="true"' : '', $autofocus ? ' autofocus' : '';
+?> />
 	<?php if (!$locked) : ?>
 		<button type="button" class="btn cms-color-clear" title="<?php echo $this->escape(JText::_('JCLEAR')); ?>" aria-label="<?php echo $this->escape(JText::_('JCLEAR')); ?>"><?php echo JHtml::_('icons.svg', 'x-lg', '', array('size' => 12)); ?></button>
 	<?php endif; ?>

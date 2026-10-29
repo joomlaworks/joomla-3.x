@@ -98,8 +98,8 @@ Factory::getDocument()->addScriptDeclaration('
 				</tfoot>
 				<tbody>
 					<?php foreach ($this->items as $i => $item) :
-						$extension = strtok($item->extension, '.');
-						ActionlogsHelper::loadTranslationFiles($extension); ?>
+					    $extension = strtok($item->extension, '.');
+					    ActionlogsHelper::loadTranslationFiles($extension); ?>
 						<tr class="row<?php echo $i % 2; ?>">
 							<td class="center">
 								<?php echo HTMLHelper::_('grid.id', $i, $item->id); ?>

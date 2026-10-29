@@ -16,9 +16,8 @@ $data = $displayData;
 // Receive overridable options
 $data['options'] = !empty($data['options']) ? $data['options'] : array();
 
-if (is_array($data['options']))
-{
-	$data['options'] = new Registry($data['options']);
+if (is_array($data['options'])) {
+    $data['options'] = new Registry($data['options']);
 }
 
 // Options

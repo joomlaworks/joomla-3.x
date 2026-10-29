@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Libraries
  * @subpackage  HTML
@@ -16,65 +17,62 @@ defined('JPATH_PLATFORM') or die;
  */
 abstract class JHtmlContent
 {
-	/**
-	 * Fire onContentPrepare for content that isn't part of an article.
-	 *
-	 * @param   string  $text     The content to be transformed.
-	 * @param   array   $params   The content params.
-	 * @param   string  $context  The context of the content to be transformed.
-	 *
-	 * @return  string   The content after transformation.
-	 *
-	 * @since   1.5
-	 */
-	public static function prepare($text, $params = null, $context = 'text')
-	{
-		if ($params === null)
-		{
-			$params = new JObject;
-		}
+    /**
+     * Fire onContentPrepare for content that isn't part of an article.
+     *
+     * @param   string  $text     The content to be transformed.
+     * @param   array   $params   The content params.
+     * @param   string  $context  The context of the content to be transformed.
+     *
+     * @return  string   The content after transformation.
+     *
+     * @since   1.5
+     */
+    public static function prepare($text, $params = null, $context = 'text')
+    {
+        if ($params === null) {
+            $params = new JObject();
+        }
 
-		$article = new stdClass;
-		$article->text = $text;
-		JPluginHelper::importPlugin('content');
-		$dispatcher = JEventDispatcher::getInstance();
-		$dispatcher->trigger('onContentPrepare', array($context, &$article, &$params, 0));
+        $article = new stdClass();
+        $article->text = $text;
+        JPluginHelper::importPlugin('content');
+        $dispatcher = JEventDispatcher::getInstance();
+        $dispatcher->trigger('onContentPrepare', array($context, &$article, &$params, 0));
 
-		return $article->text;
-	}
+        return $article->text;
+    }
 
-	/**
-	 * Returns an array of months.
-	 *
-	 * @param   Registry  $state  The state object.
-	 *
-	 * @return  array
-	 *
-	 * @since   3.9.0
-	 */
-	public static function months($state)
-	{
-		$model = JModelLegacy::getInstance('Articles', 'ContentModel', array('ignore_request' => true));
+    /**
+     * Returns an array of months.
+     *
+     * @param   Registry  $state  The state object.
+     *
+     * @return  array
+     *
+     * @since   3.9.0
+     */
+    public static function months($state)
+    {
+        $model = JModelLegacy::getInstance('Articles', 'ContentModel', array('ignore_request' => true));
 
-		foreach ($state as $key => $value)
-		{
-			$model->setState($key, $value);
-		}
+        foreach ($state as $key => $value) {
+            $model->setState($key, $value);
+        }
 
-		$model->setState('filter.category_id', $state->get('category.id'));
-		$model->setState('list.start', 0);
-		$model->setState('list.limit', -1);
-		$model->setState('list.direction', 'asc');
-		$model->setState('list.filter', '');
+        $model->setState('filter.category_id', $state->get('category.id'));
+        $model->setState('list.start', 0);
+        $model->setState('list.limit', -1);
+        $model->setState('list.direction', 'asc');
+        $model->setState('list.filter', '');
 
-		$items = array();
+        $items = array();
 
-		foreach ($model->countItemsByMonth() as $item)
-		{
-			$date    = new JDate($item->d);
-			$items[] = JHtml::_('select.option', $item->d, $date->format('F Y') . ' [' . $item->c . ']');
-		}
+        foreach ($model->countItemsByMonth() as $item) {
+            $date    = new JDate($item->d);
+            $items[] = JHtml::_('select.option', $item->d, $date->format('F Y') . ' [' . $item->c . ']');
+        }
 
-		return $items;
-	}
+        return $items;
+    }
 }

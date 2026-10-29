@@ -194,7 +194,7 @@ $notice_switchers = !$this->switchers && ($this->homes > 1 || $this->language_fi
 							<?php echo $status->element; ?>
 						</td>
 				<?php endif; ?>
-				<?php // Published Site languages ?>
+				<?php // Published Site languages?>
 				<?php if ($status->element) : ?>
 						<td class="center">
 							<span class="icon-ok" aria-hidden="true"></span><span class="element-invisible"><?php echo JText::_('JYES'); ?></span>
@@ -204,7 +204,7 @@ $notice_switchers = !$this->switchers && ($this->homes > 1 || $this->language_fi
 							<?php echo JText::_('JNO'); ?>
 						</td>
 				<?php endif; ?>
-				<?php // Published Content languages ?>
+				<?php // Published Content languages?>
 				<?php if ($status->lang_code && $status->published == 1) : ?>
 						<td class="center">
 							<span class="icon-ok" aria-hidden="true"></span><span class="element-invisible"><?php echo JText::_('JYES'); ?></span>
@@ -222,7 +222,7 @@ $notice_switchers = !$this->switchers && ($this->homes > 1 || $this->language_fi
 							<span class="icon-pending" aria-hidden="true"></span><span class="element-invisible"><?php echo JText::_('WARNING'); ?></span>
 						</td>
 				<?php endif; ?>
-				<?php // Published Home pages ?>
+				<?php // Published Home pages?>
 				<?php if ($status->home_language) : ?>
 						<td class="center">
 							<span class="icon-ok" aria-hidden="true"></span><span class="element-invisible"><?php echo JText::_('JYES'); ?></span>

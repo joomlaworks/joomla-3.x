@@ -15,13 +15,12 @@ $i = 0;
 ?>
 <?php foreach ($fieldSets as $name => $fieldSet) : ?>
 	<?php
-	$label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_CATEGORIES_' . $name . '_FIELDSET_LABEL';
-	echo JHtml::_('bootstrap.addSlide', 'categoryOptions', JText::_($label), 'collapse' . ($i++));
-	if (isset($fieldSet->description) && trim($fieldSet->description))
-	{
-		echo '<p class="tip">' . $this->escape(JText::_($fieldSet->description)) . '</p>';
-	}
-	?>
+    $label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_CATEGORIES_' . $name . '_FIELDSET_LABEL';
+    echo JHtml::_('bootstrap.addSlide', 'categoryOptions', JText::_($label), 'collapse' . ($i++));
+    if (isset($fieldSet->description) && trim($fieldSet->description)) {
+        echo '<p class="tip">' . $this->escape(JText::_($fieldSet->description)) . '</p>';
+    }
+    ?>
 	<?php foreach ($this->form->getFieldset($name) as $field) : ?>
 		<div class="control-group">
 			<div class="control-label">

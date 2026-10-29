@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_newsfeeds
@@ -16,16 +17,16 @@ defined('_JEXEC') or die;
  */
 class NewsfeedsCategories extends JCategories
 {
-	/**
-	 * Constructor
-	 *
-	 * @param   array  $options  options
-	 */
-	public function __construct($options = array())
-	{
-		$options['table'] = '#__newsfeeds';
-		$options['extension'] = 'com_newsfeeds';
-		$options['statefield'] = 'published';
-		parent::__construct($options);
-	}
+    /**
+     * Constructor
+     *
+     * @param   array  $options  options
+     */
+    public function __construct($options = array())
+    {
+        $options['table'] = '#__newsfeeds';
+        $options['extension'] = 'com_newsfeeds';
+        $options['statefield'] = 'published';
+        parent::__construct($options);
+    }
 }

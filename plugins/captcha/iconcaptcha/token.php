@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Captcha
@@ -20,40 +21,40 @@ use IconCaptcha\Token\TokenInterface;
  */
 class PlgCaptchaIconcaptchaToken implements TokenInterface
 {
-	/**
-	 * The field, filled in by the plugin's script from the "csrf.token" script option
-	 *
-	 * @return  string
-	 *
-	 * @since   3.18.0
-	 */
-	public static function render(): string
-	{
-		return '<input type="hidden" name="' . AbstractToken::TOKEN_FIELD_NAME . '" value="" />';
-	}
+    /**
+     * The field, filled in by the plugin's script from the "csrf.token" script option
+     *
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    public static function render(): string
+    {
+        return '<input type="hidden" name="' . AbstractToken::TOKEN_FIELD_NAME . '" value="" />';
+    }
 
-	/**
-	 * @return  string
-	 *
-	 * @since   3.18.0
-	 */
-	public function get(): string
-	{
-		return JSession::getFormToken();
-	}
+    /**
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    public function get(): string
+    {
+        return JSession::getFormToken();
+    }
 
-	/**
-	 * @param   string       $payloadToken  The token sent with the request or the form
-	 * @param   string|null  $headerToken   The token of the X-IconCaptcha-Token header, when the widget sent one
-	 *
-	 * @return  boolean
-	 *
-	 * @since   3.18.0
-	 */
-	public function validate(string $payloadToken, ?string $headerToken = null): bool
-	{
-		$token = JSession::getFormToken();
+    /**
+     * @param   string       $payloadToken  The token sent with the request or the form
+     * @param   string|null  $headerToken   The token of the X-IconCaptcha-Token header, when the widget sent one
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    public function validate(string $payloadToken, ?string $headerToken = null): bool
+    {
+        $token = JSession::getFormToken();
 
-		return hash_equals($token, $payloadToken) && ($headerToken === null || $headerToken === '' || hash_equals($token, $headerToken));
-	}
+        return hash_equals($token, $payloadToken) && ($headerToken === null || $headerToken === '' || hash_equals($token, $headerToken));
+    }
 }

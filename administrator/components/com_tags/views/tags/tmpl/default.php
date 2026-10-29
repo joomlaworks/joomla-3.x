@@ -31,28 +31,24 @@ $section   = null;
 $mode      = false;
 $columns   = 7;
 
-if (count($parts) > 1)
-{
-	$section = $parts[1];
-	$inflector = Inflector::getInstance();
+if (count($parts) > 1) {
+    $section = $parts[1];
+    $inflector = Inflector::getInstance();
 
-	if (!$inflector->isPlural($section))
-	{
-		$section = $inflector->toPlural($section);
-	}
+    if (!$inflector->isPlural($section)) {
+        $section = $inflector->toPlural($section);
+    }
 }
 
-if ($section === 'categories')
-{
-	$mode = true;
-	$section = $component;
-	$component = 'com_categories';
+if ($section === 'categories') {
+    $mode = true;
+    $section = $component;
+    $component = 'com_categories';
 }
 
-if ($saveOrder)
-{
-	$saveOrderingUrl = 'index.php?option=com_tags&task=tags.saveOrderAjax';
-	JHtml::_('sortablelist.sortable', 'categoryList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl, false, true);
+if ($saveOrder) {
+    $saveOrderingUrl = 'index.php?option=com_tags&task=tags.saveOrderAjax';
+    JHtml::_('sortablelist.sortable', 'categoryList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl, false, true);
 }
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_tags&view=tags'); ?>" method="post" name="adminForm" id="adminForm">
@@ -65,9 +61,9 @@ if ($saveOrder)
 	<div id="j-main-container">
 <?php endif; ?>
 		<?php
-		// Search tools bar
-		echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
-		?>
+        // Search tools bar
+        echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
+?>
 		<?php if (empty($this->items)) : ?>
 			<div class="alert alert-no-items">
 				<?php echo JText::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
@@ -115,7 +111,7 @@ if ($saveOrder)
 						<?php endif; ?>
 
 						<th width="10%" class="nowrap hidden-phone">
-							<?php echo JHtml::_('searchtools.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
+							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 						</th>
 						<th width="10%" class="nowrap hidden-phone">
 							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_LANGUAGE', 'a.language', $this->state->get('list.direction'), $this->state->get('list.ordering')); ?>
@@ -134,52 +130,43 @@ if ($saveOrder)
 				</tfoot>
 				<tbody>
 				<?php
-				foreach ($this->items as $i => $item) :
-					$orderkey   = array_search($item->id, $this->ordering[$item->parent_id]);
-					$canCreate  = $user->authorise('core.create',     'com_tags');
-					$canEdit    = $user->authorise('core.edit',       'com_tags');
-					$canCheckin = $user->authorise('core.manage',     'com_checkin') || $item->checked_out == $user->get('id')|| $item->checked_out == 0;
-					$canChange  = $user->authorise('core.edit.state', 'com_tags') && $canCheckin;
+        foreach ($this->items as $i => $item) :
+            $orderkey   = array_search($item->id, $this->ordering[$item->parent_id]);
+            $canCreate  = $user->authorise('core.create', 'com_tags');
+            $canEdit    = $user->authorise('core.edit', 'com_tags');
+            $canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
+            $canChange  = $user->authorise('core.edit.state', 'com_tags') && $canCheckin;
 
-					// Get the parents of item for sorting
-					if ($item->level > 1)
-					{
-						$parentsStr = '';
-						$_currentParentId = $item->parent_id;
-						$parentsStr = ' ' . $_currentParentId;
-						for ($j = 0; $j < $item->level; $j++)
-						{
-							foreach ($this->ordering as $k => $v)
-							{
-								$v = implode('-', $v);
-								$v = '-' . $v . '-';
-								if (strpos($v, '-' . $_currentParentId . '-') !== false)
-								{
-									$parentsStr .= ' ' . $k;
-									$_currentParentId = $k;
-									break;
-								}
-							}
-						}
-					}
-					else
-					{
-						$parentsStr = '';
-					}
-					?>
+            // Get the parents of item for sorting
+            if ($item->level > 1) {
+                $parentsStr = '';
+                $_currentParentId = $item->parent_id;
+                $parentsStr = ' ' . $_currentParentId;
+                for ($j = 0; $j < $item->level; $j++) {
+                    foreach ($this->ordering as $k => $v) {
+                        $v = implode('-', $v);
+                        $v = '-' . $v . '-';
+                        if (strpos($v, '-' . $_currentParentId . '-') !== false) {
+                            $parentsStr .= ' ' . $k;
+                            $_currentParentId = $k;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                $parentsStr = '';
+            }
+            ?>
 						<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->parent_id; ?>" item-id="<?php echo $item->id; ?>" parents="<?php echo $parentsStr; ?>" level="<?php echo $item->level; ?>">
 							<td class="order nowrap center hidden-phone">
 								<?php
-								$iconClass = '';
-								if (!$canChange)
-								{
-									$iconClass = ' inactive';
-								}
-								elseif (!$saveOrder)
-								{
-									$iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
-								}
-								?>
+                        $iconClass = '';
+            if (!$canChange) {
+                $iconClass = ' inactive';
+            } elseif (!$saveOrder) {
+                $iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
+            }
+            ?>
 								<span class="sortable-handler<?php echo $iconClass ?>">
 									<span class="icon-menu"></span>
 								</span>
@@ -194,13 +181,12 @@ if ($saveOrder)
 								<div class="btn-group">
 									<?php echo JHtml::_('jgrid.published', $item->published, $i, 'tags.', $canChange); ?>
 									<?php // Create dropdown items and render the dropdown list.
-									if ($canChange)
-									{
-										JHtml::_('actionsdropdown.' . ((int) $item->published === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'tags');
-										JHtml::_('actionsdropdown.' . ((int) $item->published === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'tags');
-										echo JHtml::_('actionsdropdown.render', $this->escape($item->title));
-									}
-									?>
+                if ($canChange) {
+                    JHtml::_('actionsdropdown.' . ((int) $item->published === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'tags');
+                    JHtml::_('actionsdropdown.' . ((int) $item->published === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'tags');
+                    echo JHtml::_('actionsdropdown.render', $this->escape($item->title));
+                }
+            ?>
 								</div>
 							</td>
 							<td>
@@ -225,25 +211,33 @@ if ($saveOrder)
 
 						<?php if (isset($this->items[0]) && property_exists($this->items[0], 'count_published')) : ?>
 							<td class="center btns hidden-phone">
-								<a class="badge <?php if ($item->count_published > 0) echo 'badge-success'; ?>" title="<?php echo JText::_('COM_TAGS_COUNT_PUBLISHED_ITEMS'); ?>" href="<?php echo JRoute::_('index.php?option=' . $component . ($mode ? '&extension=' . $section : '&view=' . $section) . '&filter[tag]=' . (int) $item->id . '&filter[published]=1'); ?>">
+								<a class="badge <?php if ($item->count_published > 0) {
+								    echo 'badge-success';
+								} ?>" title="<?php echo JText::_('COM_TAGS_COUNT_PUBLISHED_ITEMS'); ?>" href="<?php echo JRoute::_('index.php?option=' . $component . ($mode ? '&extension=' . $section : '&view=' . $section) . '&filter[tag]=' . (int) $item->id . '&filter[published]=1'); ?>">
 									<?php echo $item->count_published; ?></a>
 							</td>
 						<?php endif; ?>
 						<?php if (isset($this->items[0]) && property_exists($this->items[0], 'count_unpublished')) : ?>
 							<td class="center btns hidden-phone">
-								<a class="badge <?php if ($item->count_unpublished > 0) echo 'badge-important'; ?>" title="<?php echo JText::_('COM_TAGS_COUNT_UNPUBLISHED_ITEMS'); ?>" href="<?php echo JRoute::_('index.php?option=' . $component . ($mode ? '&extension=' . $section : '&view=' . $section) . '&filter[tag]=' . (int) $item->id . '&filter[published]=0'); ?>">
+								<a class="badge <?php if ($item->count_unpublished > 0) {
+								    echo 'badge-important';
+								} ?>" title="<?php echo JText::_('COM_TAGS_COUNT_UNPUBLISHED_ITEMS'); ?>" href="<?php echo JRoute::_('index.php?option=' . $component . ($mode ? '&extension=' . $section : '&view=' . $section) . '&filter[tag]=' . (int) $item->id . '&filter[published]=0'); ?>">
 									<?php echo $item->count_unpublished; ?></a>
 							</td>
 						<?php endif; ?>
 						<?php if (isset($this->items[0]) && property_exists($this->items[0], 'count_archived')) : ?>
 							<td class="center btns hidden-phone">
-								<a class="badge <?php if ($item->count_archived > 0) echo 'badge-info'; ?>" title="<?php echo JText::_('COM_TAGS_COUNT_ARCHIVED_ITEMS'); ?>" href="<?php echo JRoute::_('index.php?option=' . $component . ($mode ? '&extension=' . $section : '&view=' . $section) . '&filter[tag]=' . (int) $item->id . '&filter[published]=2'); ?>">
+								<a class="badge <?php if ($item->count_archived > 0) {
+								    echo 'badge-info';
+								} ?>" title="<?php echo JText::_('COM_TAGS_COUNT_ARCHIVED_ITEMS'); ?>" href="<?php echo JRoute::_('index.php?option=' . $component . ($mode ? '&extension=' . $section : '&view=' . $section) . '&filter[tag]=' . (int) $item->id . '&filter[published]=2'); ?>">
 									<?php echo $item->count_archived; ?></a>
 							</td>
 						<?php endif; ?>
 						<?php if (isset($this->items[0]) && property_exists($this->items[0], 'count_trashed')) : ?>
 							<td class="center btns hidden-phone">
-								<a class="badge <?php if ($item->count_trashed > 0) echo 'badge-inverse'; ?>" title="<?php echo JText::_('COM_TAGS_COUNT_TRASHED_ITEMS'); ?>" href="<?php echo JRoute::_('index.php?option=' . $component . ($mode ? '&extension=' . $section : '&view=' . $section) . '&filter[tag]=' . (int) $item->id . '&filter[published]=-2'); ?>">
+								<a class="badge <?php if ($item->count_trashed > 0) {
+								    echo 'badge-inverse';
+								} ?>" title="<?php echo JText::_('COM_TAGS_COUNT_TRASHED_ITEMS'); ?>" href="<?php echo JRoute::_('index.php?option=' . $component . ($mode ? '&extension=' . $section : '&view=' . $section) . '&filter[tag]=' . (int) $item->id . '&filter[published]=-2'); ?>">
 									<?php echo $item->count_trashed; ?></a>
 							</td>
 						<?php endif; ?>
@@ -264,18 +258,18 @@ if ($saveOrder)
 				<?php endforeach; ?>
 				</tbody>
 			</table>
-			<?php // Load the batch processing form if user is allowed ?>
+			<?php // Load the batch processing form if user is allowed?>
 			<?php if ($user->authorise('core.create', 'com_tags')
-				&& $user->authorise('core.edit', 'com_tags')
-				&& $user->authorise('core.edit.state', 'com_tags')) : ?>
+                && $user->authorise('core.edit', 'com_tags')
+                && $user->authorise('core.edit.state', 'com_tags')) : ?>
 				<?php echo JHtml::_(
-					'bootstrap.renderModal',
-					'collapseModal',
-					array(
-						'title'  => JText::_('COM_TAGS_BATCH_OPTIONS'),
-						'footer' => $this->loadTemplate('batch_footer'),
-					),
-					$this->loadTemplate('batch_body')
+				    'bootstrap.renderModal',
+				    'collapseModal',
+				    array(
+				        'title'  => JText::_('COM_TAGS_BATCH_OPTIONS'),
+				        'footer' => $this->loadTemplate('batch_footer'),
+				    ),
+				    $this->loadTemplate('batch_body')
 				); ?>
 			<?php endif; ?>
 		<?php endif; ?>

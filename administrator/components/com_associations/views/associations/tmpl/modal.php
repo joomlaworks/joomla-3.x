@@ -11,9 +11,8 @@ defined('_JEXEC') or die;
 
 $app = JFactory::getApplication();
 
-if ($app->isClient('site'))
-{
-	JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
+if ($app->isClient('site')) {
+    JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
 }
 
 JHtml::_('jquery.framework');
@@ -28,14 +27,14 @@ $canManageCheckin = JFactory::getUser()->authorise('core.manage', 'com_checkin')
 $colSpan          = 4;
 
 $iconStates = array(
-	-2 => 'icon-trash',
-	0  => 'icon-unpublish',
-	1  => 'icon-publish',
-	2  => 'icon-archive',
+    -2 => 'icon-trash',
+    0  => 'icon-unpublish',
+    1  => 'icon-publish',
+    2  => 'icon-archive',
 );
 
 $app->getDocument()->addScriptDeclaration(
-	"jQuery(document).ready(function($) {
+    "jQuery(document).ready(function($) {
 		// Run function on parent window.
 		$('.select-link').on('click', function() {
 			if (self != top)
@@ -49,7 +48,7 @@ $app->getDocument()->addScriptDeclaration(
 <form action="<?php echo JRoute::_('index.php?option=com_associations&view=associations&layout=modal&tmpl=component&function='
 . $function . '&' . JSession::getFormToken() . '=1'); ?>" method="post" name="adminForm" id="adminForm">
 
-<?php if (!empty( $this->sidebar)) : ?>
+<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -68,7 +67,8 @@ $app->getDocument()->addScriptDeclaration(
 				<tr>
 					<?php if (!empty($this->typeSupports['state'])) : ?>
 						<th width="1%" class="center nowrap">
-							<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'state', $listDirn, $listOrder); $colSpan++; ?>
+							<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'state', $listDirn, $listOrder);
+					    $colSpan++; ?>
 						</th>
 					<?php endif; ?>
 					<th class="nowrap">
@@ -82,12 +82,14 @@ $app->getDocument()->addScriptDeclaration(
 					</th>
 					<?php if (!empty($this->typeFields['menutype'])) : ?>
 						<th width="10%" class="nowrap">
-							<?php echo JHtml::_('searchtools.sort', 'COM_ASSOCIATIONS_HEADING_MENUTYPE', 'menutype_title', $listDirn, $listOrder); $colSpan++; ?>
+							<?php echo JHtml::_('searchtools.sort', 'COM_ASSOCIATIONS_HEADING_MENUTYPE', 'menutype_title', $listDirn, $listOrder);
+					    $colSpan++; ?>
 						</th>
 					<?php endif; ?>
 					<?php if (!empty($this->typeSupports['acl'])) : ?>
 						<th width="5%" class="nowrap hidden-phone">
-							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ACCESS', 'access_level', $listDirn, $listOrder); $colSpan++; ?>
+							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ACCESS', 'access_level', $listDirn, $listOrder);
+					    $colSpan++; ?>
 						</th>
 					<?php endif; ?>
 					<th width="1%" class="nowrap hidden-phone">
@@ -104,10 +106,10 @@ $app->getDocument()->addScriptDeclaration(
 			</tfoot>
 			<tbody>
 			<?php foreach ($this->items as $i => $item) :
-				$canEdit    = AssociationsHelper::allowEdit($this->extensionName, $this->typeName, $item->id);
-				$canCheckin = $canManageCheckin || AssociationsHelper::canCheckinItem($this->extensionName, $this->typeName, $item->id);
-				$isCheckout = AssociationsHelper::isCheckoutItem($this->extensionName, $this->typeName, $item->id);
-				?>
+			    $canEdit    = AssociationsHelper::allowEdit($this->extensionName, $this->typeName, $item->id);
+			    $canCheckin = $canManageCheckin || AssociationsHelper::canCheckinItem($this->extensionName, $this->typeName, $item->id);
+			    $isCheckout = AssociationsHelper::isCheckoutItem($this->extensionName, $this->typeName, $item->id);
+			    ?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<?php if (!empty($this->typeSupports['state'])) : ?>
 						<td class="center">

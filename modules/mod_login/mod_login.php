@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  mod_login
@@ -21,9 +22,8 @@ $user             = JFactory::getUser();
 $layout           = $params->get('layout', 'default');
 
 // Logged users must load the logout sublayout
-if (!$user->guest)
-{
-	$layout .= '_logout';
+if (!$user->guest) {
+    $layout .= '_logout';
 }
 
 require JModuleHelper::getLayoutPath('mod_login', $layout);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_media
@@ -16,11 +17,10 @@ $author = $input->get('author');
 
 // Access check.
 if (!$user->authorise('core.manage', 'com_media') && (!$asset || (!$user->authorise('core.edit', $asset)
-	&& !$user->authorise('core.create', $asset)
-	&& count($user->getAuthorisedCategories($asset, 'core.create')) == 0)
-	&& !($user->id == $author && $user->authorise('core.edit.own', $asset))))
-{
-	throw new JAccessExceptionNotallowed(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+    && !$user->authorise('core.create', $asset)
+    && count($user->getAuthorisedCategories($asset, 'core.create')) == 0)
+    && !($user->id == $author && $user->authorise('core.edit.own', $asset)))) {
+    throw new JAccessExceptionNotallowed(JText::_('JERROR_ALERTNOAUTHOR'), 403);
 }
 
 $params = JComponentHelper::getParams('com_media');
@@ -33,16 +33,14 @@ $popup_upload = $input->get('pop_up', null);
 $path         = 'file_path';
 $view         = $input->get('view');
 
-if (substr(strtolower((string) $view), 0, 6) == 'images' || $popup_upload == 1)
-{
-	$path = 'image_path';
+if (substr(strtolower((string) $view), 0, 6) == 'images' || $popup_upload == 1) {
+    $path = 'image_path';
 }
 
 $mediaBaseDir = JPATH_ROOT . '/' . $params->get($path, 'images');
 
-if (!is_dir($mediaBaseDir))
-{
-	throw new \InvalidArgumentException(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 500);
+if (!is_dir($mediaBaseDir)) {
+    throw new \InvalidArgumentException(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 500);
 }
 
 define('COM_MEDIA_BASE', $mediaBaseDir);

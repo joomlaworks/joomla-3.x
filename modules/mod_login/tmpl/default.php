@@ -94,7 +94,7 @@ JHtml::_('bootstrap.tooltip');
 			</div>
 		</div>
 		<?php
-			$usersConfig = JComponentHelper::getParams('com_users'); ?>
+            $usersConfig = JComponentHelper::getParams('com_users'); ?>
 			<ul class="unstyled">
 			<?php if ($usersConfig->get('allowUserRegistration')) : ?>
 				<li>

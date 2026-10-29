@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_menu
@@ -19,32 +20,20 @@ defined('_JEXEC') or die;
 $current = $this->tree->getCurrent();
 
 // Build the CSS class suffix
-if (!$this->enabled)
-{
-	$class = ' class="disabled"';
-}
-elseif ($current instanceOf Separator)
-{
-	$class = $current->get('title') ? ' class="menuitem-group"' : ' class="divider"';
-}
-elseif ($current->hasChildren())
-{
-	if ($current->getLevel() == 1)
-	{
-		$class = ' class="dropdown"';
-	}
-	elseif ($current->get('class') == 'scrollable-menu')
-	{
-		$class = ' class="dropdown scrollable-menu"';
-	}
-	else
-	{
-		$class = ' class="dropdown-submenu"';
-	}
-}
-else
-{
-	$class = '';
+if (!$this->enabled) {
+    $class = ' class="disabled"';
+} elseif ($current instanceof Separator) {
+    $class = $current->get('title') ? ' class="menuitem-group"' : ' class="divider"';
+} elseif ($current->hasChildren()) {
+    if ($current->getLevel() == 1) {
+        $class = ' class="dropdown"';
+    } elseif ($current->get('class') == 'scrollable-menu') {
+        $class = ' class="dropdown scrollable-menu"';
+    } else {
+        $class = ' class="dropdown-submenu"';
+    }
+} else {
+    $class = '';
 }
 
 // Print the item
@@ -55,89 +44,69 @@ $linkClass     = array();
 $dataToggle    = '';
 $dropdownCaret = '';
 
-if ($current->hasChildren())
-{
-	$linkClass[] = 'dropdown-toggle';
-	$dataToggle  = ' data-toggle="dropdown"';
+if ($current->hasChildren()) {
+    $linkClass[] = 'dropdown-toggle';
+    $dataToggle  = ' data-toggle="dropdown"';
 
-	if ($current->getLevel() == 1)
-	{
-		$dropdownCaret = ' <span class="caret"></span>';
-	}
-}
-else
-{
-	$linkClass[] = 'no-dropdown';
+    if ($current->getLevel() == 1) {
+        $dropdownCaret = ' <span class="caret"></span>';
+    }
+} else {
+    $linkClass[] = 'no-dropdown';
 }
 
-if (!($current instanceof Separator) && ($current->getLevel() > 1))
-{
-	$iconClass = $this->tree->getIconClass();
+if (!($current instanceof Separator) && ($current->getLevel() > 1)) {
+    $iconClass = $this->tree->getIconClass();
 
-	if (trim($iconClass))
-	{
-		$linkClass[] = $iconClass;
-	}
+    if (trim($iconClass)) {
+        $linkClass[] = $iconClass;
+    }
 }
 
 // Implode out $linkClass for rendering
 $linkClass = ' class="' . implode(' ', $linkClass) . '" ';
 
 // Links: component/url/heading/container
-if ($link = $current->get('link'))
-{
-	$icon = $current->get('icon');
+if ($link = $current->get('link')) {
+    $icon = $current->get('icon');
 
-	if ($icon)
-	{
-		if (substr((string) $icon, 0, 6) == 'class:')
-		{
-			$icon = '<span class="' . substr((string) $icon, 6) . '"></span>';
-		}
-		elseif (substr((string) $icon, 0, 4) == 'svg:')
-		{
-			// An icon of media/system/images/icons, in the text colour
-			$icon = JHtml::_('icons.svg', substr((string) $icon, 4));
-		}
-		elseif (substr((string) $icon, 0, 6) == 'image:')
-		{
-			$icon = JHtml::_('image', substr((string) $icon, 6), null, null, true);
-		}
-		else
-		{
-			$icon = JHtml::_('image', $icon, null);
-		}
-	}
+    if ($icon) {
+        if (substr((string) $icon, 0, 6) == 'class:') {
+            $icon = '<span class="' . substr((string) $icon, 6) . '"></span>';
+        } elseif (substr((string) $icon, 0, 4) == 'svg:') {
+            // An icon of media/system/images/icons, in the text colour
+            $icon = JHtml::_('icons.svg', substr((string) $icon, 4));
+        } elseif (substr((string) $icon, 0, 6) == 'image:') {
+            $icon = JHtml::_('image', substr((string) $icon, 6), null, null, true);
+        } else {
+            $icon = JHtml::_('image', $icon, null);
+        }
+    }
 
-	$target = $current->get('target') ? 'target="' . $current->get('target') . '"' : '';
+    $target = $current->get('target') ? 'target="' . $current->get('target') . '"' : '';
 
-	echo '<a' . $linkClass . $dataToggle . ' href="' . $link . '" ' . $target . '>' .
-				JText::_($current->get('title')) . $icon . $dropdownCaret . '</a>';
+    echo '<a' . $linkClass . $dataToggle . ' href="' . $link . '" ' . $target . '>' .
+                JText::_($current->get('title')) . $icon . $dropdownCaret . '</a>';
 }
 // Separator
-else
-{
-	echo '<span>' . JText::_($current->get('title')) . '</span>';
+else {
+    echo '<span>' . JText::_($current->get('title')) . '</span>';
 }
 
 // Recurse through children if they exist
-if ($this->enabled && $current->hasChildren())
-{
-	if ($current->getLevel() > 1)
-	{
-		$id = $current->get('id') ? ' id="menu-' . strtolower((string) $current->get('id')) . '"' : '';
+if ($this->enabled && $current->hasChildren()) {
+    if ($current->getLevel() > 1) {
+        $id = $current->get('id') ? ' id="menu-' . strtolower((string) $current->get('id')) . '"' : '';
 
-		echo '<ul' . $id . ' class="dropdown-menu menu-scrollable">' . "\n";
-	}
-	else
-	{
-		echo '<ul class="dropdown-menu scroll-menu">' . "\n";
-	}
+        echo '<ul' . $id . ' class="dropdown-menu menu-scrollable">' . "\n";
+    } else {
+        echo '<ul class="dropdown-menu scroll-menu">' . "\n";
+    }
 
-	// WARNING: Do not use direct 'include' or 'require' as it is important to isolate the scope for each call
-	$this->renderSubmenu(__FILE__);
+    // WARNING: Do not use direct 'include' or 'require' as it is important to isolate the scope for each call
+    $this->renderSubmenu(__FILE__);
 
-	echo "</ul>\n";
+    echo "</ul>\n";
 }
 
 echo "</li>\n";

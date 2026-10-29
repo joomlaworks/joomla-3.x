@@ -24,17 +24,15 @@ $item = $this->item;
 $text  = $item->text;
 $login = '';
 
-if (!$item->params->get('access-view'))
-{
-	$text = JFactory::getUser()->get('guest') ? JHtml::_('content.prepare', $item->introtext, '', 'com_content.article') : '';
+if (!$item->params->get('access-view')) {
+    $text = JFactory::getUser()->get('guest') ? JHtml::_('content.prepare', $item->introtext, '', 'com_content.article') : '';
 
-	if ($text !== '' && $item->params->get('show_readmore') && (string) $item->fulltext !== '')
-	{
-		$active = JFactory::getApplication()->getMenu()->getActive();
-		$link   = new JUri(JRoute::_('index.php?option=com_users&view=login&Itemid=' . ($active ? (int) $active->id : 0), false));
-		$link->setVar('return', base64_encode(ContentHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language)));
-		$login  = JLayoutHelper::render('joomla.content.readmore', array('item' => $item, 'params' => $item->params, 'link' => $link));
-	}
+    if ($text !== '' && $item->params->get('show_readmore') && (string) $item->fulltext !== '') {
+        $active = JFactory::getApplication()->getMenu()->getActive();
+        $link   = new JUri(JRoute::_('index.php?option=com_users&view=login&Itemid=' . ($active ? (int) $active->id : 0), false));
+        $link->setVar('return', base64_encode(ContentHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language)));
+        $login  = JLayoutHelper::render('joomla.content.readmore', array('item' => $item, 'params' => $item->params, 'link' => $link));
+    }
 }
 
 // Resource hints (also sent as HTTP Link headers) for what the text embeds
@@ -57,10 +55,10 @@ $bio      = trim((string) JFactory::getApplication()->getTemplate(true)->params-
 $url      = JUri::getInstance()->toString(array('scheme', 'host', 'port')) . JRoute::_(ContentHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language));
 $hue      = (int) (crc32($author) % 360);
 $share    = array(
-	'x'        => array('X', 'https://x.com/intent/post?url=' . rawurlencode($url) . '&text=' . rawurlencode($item->title)),
-	'facebook' => array('Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' . rawurlencode($url)),
-	'linkedin' => array('LinkedIn', 'https://www.linkedin.com/sharing/share-offsite/?url=' . rawurlencode($url)),
-	'mail'     => array(JText::_('JGLOBAL_EMAIL'), 'mailto:?subject=' . rawurlencode($item->title) . '&body=' . rawurlencode($url)),
+    'x'        => array('X', 'https://x.com/intent/post?url=' . rawurlencode($url) . '&text=' . rawurlencode($item->title)),
+    'facebook' => array('Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' . rawurlencode($url)),
+    'linkedin' => array('LinkedIn', 'https://www.linkedin.com/sharing/share-offsite/?url=' . rawurlencode($url)),
+    'mail'     => array(JText::_('JGLOBAL_EMAIL'), 'mailto:?subject=' . rawurlencode($item->title) . '&body=' . rawurlencode($url)),
 );
 
 // The intro as the standfirst, when the text doesn't start with it already ("Show Intro Text" off)
@@ -126,7 +124,7 @@ FinchHelper::preloadImage($image);
 		</div>
 		<?php endif; ?>
 
-		<?php // Previous and next posts, from the "Content - Page Navigation" plugin ?>
+		<?php // Previous and next posts, from the "Content - Page Navigation" plugin?>
 		<?php if (!empty($item->prev) || !empty($item->next)) : ?>
 		<nav class="postNav" aria-label="<?php echo JText::_('TPL_FINCH_POST_NAVIGATION'); ?>">
 			<?php if (!empty($item->prev)) : ?>

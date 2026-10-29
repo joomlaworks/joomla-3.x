@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,12 +18,12 @@ defined('JPATH_PLATFORM') or die;
  */
 interface AssociationExtensionInterface
 {
-	/**
-	 * Checks if the extension supports associations
-	 *
-	 * @return  boolean  Supports the extension associations
-	 *
-	 * @since   3.7.0
-	 */
-	public function hasAssociationsSupport();
+    /**
+     * Checks if the extension supports associations
+     *
+     * @return  boolean  Supports the extension associations
+     *
+     * @since   3.7.0
+     */
+    public function hasAssociationsSupport();
 }

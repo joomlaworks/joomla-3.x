@@ -38,29 +38,25 @@ $iframeClass = 'iframe';
 
 $bodyHeight = isset($params['bodyHeight']) ? round((int) $params['bodyHeight'], -1) : '';
 
-if ($bodyHeight && $bodyHeight >= 20 && $bodyHeight < 90)
-{
-	$iframeClass .= ' jviewport-height' . $bodyHeight;
+if ($bodyHeight && $bodyHeight >= 20 && $bodyHeight < 90) {
+    $iframeClass .= ' jviewport-height' . $bodyHeight;
 }
 
 $iframeAttributes = array(
-	'class' => $iframeClass,
-	'src'   => $params['url']
+    'class' => $iframeClass,
+    'src'   => $params['url']
 );
 
-if (isset($params['title']))
-{
-	$iframeAttributes['name'] = addslashes($params['title']);
+if (isset($params['title'])) {
+    $iframeAttributes['name'] = addslashes($params['title']);
 }
 
-if (isset($params['height']))
-{
-	$iframeAttributes['height'] = $params['height'];
+if (isset($params['height'])) {
+    $iframeAttributes['height'] = $params['height'];
 }
 
-if (isset($params['width']))
-{
-	$iframeAttributes['width'] = $params['width'];
+if (isset($params['width'])) {
+    $iframeAttributes['width'] = $params['width'];
 }
 ?>
 <iframe <?php echo ArrayHelper::toString($iframeAttributes); ?>></iframe>

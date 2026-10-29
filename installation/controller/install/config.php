@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Installation
  * @subpackage  Controller
@@ -16,56 +17,54 @@ defined('_JEXEC') or die;
  */
 class InstallationControllerInstallConfig extends JControllerBase
 {
-	/**
-	 * Execute the controller.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.1
-	 */
-	public function execute()
-	{
-		// Get the application
-		/** @var InstallationApplicationWeb $app */
-		$app = $this->getApplication();
+    /**
+     * Execute the controller.
+     *
+     * @return  void
+     *
+     * @since   3.1
+     */
+    public function execute()
+    {
+        // Get the application
+        /** @var InstallationApplicationWeb $app */
+        $app = $this->getApplication();
 
-		// Check for request forgeries.
-		JSession::checkToken() or $app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
+        // Check for request forgeries.
+        JSession::checkToken() or $app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
 
-		// Get the setup model.
-		$model = new InstallationModelSetup;
+        // Get the setup model.
+        $model = new InstallationModelSetup();
 
-		// Get the options from the session
-		$options = $model->getOptions();
+        // Get the options from the session
+        $options = $model->getOptions();
 
-		/*
-		 * The database step stores the posted settings before checking them, so check them again here, where they are written:
-		 * initialise() enforces the database rules, including the ownership check for remote and SQLite databases.
-		 */
-		$database = new InstallationModelDatabase;
+        /*
+         * The database step stores the posted settings before checking them, so check them again here, where they are written:
+         * initialise() enforces the database rules, including the ownership check for remote and SQLite databases.
+         */
+        $database = new InstallationModelDatabase();
 
-		if (empty($options['db_created']) || !$database->initialise($options))
-		{
-			$r = new stdClass;
-			$r->view = 'database';
-			$app->sendJsonResponse($r);
-		}
+        if (empty($options['db_created']) || !$database->initialise($options)) {
+            $r = new stdClass();
+            $r->view = 'database';
+            $app->sendJsonResponse($r);
+        }
 
-		// Get the database model.
-		$configuration = new InstallationModelConfiguration;
+        // Get the database model.
+        $configuration = new InstallationModelConfiguration();
 
-		// Attempt to setup the configuration.
-		$return = $configuration->setup($options);
+        // Attempt to setup the configuration.
+        $return = $configuration->setup($options);
 
-		$r = new stdClass;
-		$r->view = 'complete';
+        $r = new stdClass();
+        $r->view = 'complete';
 
-		// Check if the database was initialised
-		if (!$return)
-		{
-			$r->view = 'database';
-		}
+        // Check if the database was initialised
+        if (!$return) {
+            $r->view = 'database';
+        }
 
-		$app->sendJsonResponse($r);
-	}
+        $app->sendJsonResponse($r);
+    }
 }

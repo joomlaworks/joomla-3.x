@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    Joomla.Platform
  *
@@ -16,79 +17,79 @@ defined('JPATH_PLATFORM') or die;
  */
 final class JPlatform
 {
-	// Product name.
-	const PRODUCT = 'Joomla Platform';
+    // Product name.
+    public const PRODUCT = 'Joomla Platform';
 
-	// Release version.
-	const RELEASE = '13.1';
+    // Release version.
+    public const RELEASE = '13.1';
 
-	// Maintenance version.
-	const MAINTENANCE = '0';
+    // Maintenance version.
+    public const MAINTENANCE = '0';
 
-	// Development STATUS.
-	const STATUS = 'Stable';
+    // Development STATUS.
+    public const STATUS = 'Stable';
 
-	// Build number.
-	const BUILD = 0;
+    // Build number.
+    public const BUILD = 0;
 
-	// Code name.
-	const CODE_NAME = 'Curiosity';
+    // Code name.
+    public const CODE_NAME = 'Curiosity';
 
-	// Release date.
-	const RELEASE_DATE = '24-Apr-2013';
+    // Release date.
+    public const RELEASE_DATE = '24-Apr-2013';
 
-	// Release time.
-	const RELEASE_TIME = '00:00';
+    // Release time.
+    public const RELEASE_TIME = '00:00';
 
-	// Release timezone.
-	const RELEASE_TIME_ZONE = 'GMT';
+    // Release timezone.
+    public const RELEASE_TIME_ZONE = 'GMT';
 
-	// Copyright Notice.
-	const COPYRIGHT = '(C) 2011 Open Source Matters, Inc. <https://www.joomla.org>';
+    // Copyright Notice.
+    public const COPYRIGHT = '(C) 2011 Open Source Matters, Inc. <https://www.joomla.org>';
 
-	// Link text.
-	const LINK_TEXT = '<a href="https://www.joomla.org">Joomla!</a> is Free Software released under the GNU General Public License.';
+    // Link text.
+    public const LINK_TEXT = '<a href="https://www.joomla.org">Joomla!</a> is Free Software released under the GNU General Public License.';
 
-	/**
-	 * Compares two a "PHP standardized" version number against the current Joomla Platform version.
-	 *
-	 * @param   string  $minimum  The minimum version of the Joomla Platform which is compatible.
-	 *
-	 * @return  boolean  True if the version is compatible.
-	 *
-	 * @link    https://www.php.net/version_compare
-	 * @since   1.7.0
-	 * @deprecated  4.0  Deprecated without replacement
-	 */
-	public static function isCompatible($minimum)
-	{
-		return version_compare(self::getShortVersion(), $minimum, 'eq') == 1;
-	}
+    /**
+     * Compares two a "PHP standardized" version number against the current Joomla Platform version.
+     *
+     * @param   string  $minimum  The minimum version of the Joomla Platform which is compatible.
+     *
+     * @return  boolean  True if the version is compatible.
+     *
+     * @link    https://www.php.net/version_compare
+     * @since   1.7.0
+     * @deprecated  4.0  Deprecated without replacement
+     */
+    public static function isCompatible($minimum)
+    {
+        return version_compare(self::getShortVersion(), $minimum, 'eq') == 1;
+    }
 
-	/**
-	 * Gets a "PHP standardized" version string for the current Joomla Platform.
-	 *
-	 * @return  string  Version string.
-	 *
-	 * @since   1.7.0
-	 * @deprecated  4.0  Deprecated without replacement
-	 */
-	public static function getShortVersion()
-	{
-		return self::RELEASE . '.' . self::MAINTENANCE;
-	}
+    /**
+     * Gets a "PHP standardized" version string for the current Joomla Platform.
+     *
+     * @return  string  Version string.
+     *
+     * @since   1.7.0
+     * @deprecated  4.0  Deprecated without replacement
+     */
+    public static function getShortVersion()
+    {
+        return self::RELEASE . '.' . self::MAINTENANCE;
+    }
 
-	/**
-	 * Gets a version string for the current Joomla Platform with all release information.
-	 *
-	 * @return  string  Complete version string.
-	 *
-	 * @since   1.7.0
-	 * @deprecated  4.0  Deprecated without replacement
-	 */
-	public static function getLongVersion()
-	{
-		return self::PRODUCT . ' ' . self::RELEASE . '.' . self::MAINTENANCE . ' ' . self::STATUS . ' [ ' . self::CODE_NAME . ' ] '
-			. self::RELEASE_DATE . ' ' . self::RELEASE_TIME . ' ' . self::RELEASE_TIME_ZONE;
-	}
+    /**
+     * Gets a version string for the current Joomla Platform with all release information.
+     *
+     * @return  string  Complete version string.
+     *
+     * @since   1.7.0
+     * @deprecated  4.0  Deprecated without replacement
+     */
+    public static function getLongVersion()
+    {
+        return self::PRODUCT . ' ' . self::RELEASE . '.' . self::MAINTENANCE . ' ' . self::STATUS . ' [ ' . self::CODE_NAME . ' ] '
+            . self::RELEASE_DATE . ' ' . self::RELEASE_TIME . ' ' . self::RELEASE_TIME_ZONE;
+    }
 }

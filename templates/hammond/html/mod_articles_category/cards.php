@@ -15,9 +15,8 @@ class_exists('HammondHelper', false) || require_once dirname(__DIR__, 2) . '/hel
 /** @var array $list  @var Joomla\Registry\Registry $params */
 $items = array_slice(array_values($list), HammondHelper::skip($params));
 
-if (!$items)
-{
-	return;
+if (!$items) {
+    return;
 }
 
 // Cards: image, category, title and date; the excerpt for the first card of a "lead-first" module

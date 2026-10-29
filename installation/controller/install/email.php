@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Installation
  * @subpackage  Controller
@@ -16,141 +17,130 @@ defined('_JEXEC') or die;
  */
 class InstallationControllerInstallEmail extends JControllerBase
 {
-	/**
-	 * Constructor.
-	 *
-	 * @since   3.2
-	 */
-	public function __construct()
-	{
-		parent::__construct();
+    /**
+     * Constructor.
+     *
+     * @since   3.2
+     */
+    public function __construct()
+    {
+        parent::__construct();
 
-		// Overrides application config and set the configuration.php file so the send function will work
-		JFactory::$config = null;
-		JFactory::getConfig(JPATH_SITE . '/configuration.php');
-	}
+        // Overrides application config and set the configuration.php file so the send function will work
+        JFactory::$config = null;
+        JFactory::getConfig(JPATH_SITE . '/configuration.php');
+    }
 
-	/**
-	 * Execute the controller.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.1
-	 */
-	public function execute()
-	{
-		// Get the application
-		/** @var InstallationApplicationWeb $app */
-		$app = $this->getApplication();
+    /**
+     * Execute the controller.
+     *
+     * @return  void
+     *
+     * @since   3.1
+     */
+    public function execute()
+    {
+        // Get the application
+        /** @var InstallationApplicationWeb $app */
+        $app = $this->getApplication();
 
-		/*
-		 * No token check here: this step runs after the configuration file is written with a fresh "secret", which this
-		 * controller then loads, so the install-time form token can no longer validate. It only mails the admin the
-		 * summary of their own just-finished installation.
-		 */
+        /*
+         * No token check here: this step runs after the configuration file is written with a fresh "secret", which this
+         * controller then loads, so the install-time form token can no longer validate. It only mails the admin the
+         * summary of their own just-finished installation.
+         */
 
-		// Get the setup model.
-		$model = new InstallationModelSetup;
+        // Get the setup model.
+        $model = new InstallationModelSetup();
 
-		// Get the options from the session
-		$options = $model->getOptions();
+        // Get the options from the session
+        $options = $model->getOptions();
 
-		// Only for the browser which has just installed the site (see InstallationModelConfiguration::createConfiguration())
-		if (!$app->getSession()->get('setup.installed', false) || empty($options['admin_email']) || empty($options['admin_user']))
-		{
-			$app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
-		}
+        // Only for the browser which has just installed the site (see InstallationModelConfiguration::createConfiguration())
+        if (!$app->getSession()->get('setup.installed', false) || empty($options['admin_email']) || empty($options['admin_user'])) {
+            $app->sendJsonResponse(new Exception(JText::_('JINVALID_TOKEN'), 403));
+        }
 
-		$name    = $options['admin_user'];
-		$email   = $options['admin_email'];
-		$subject = JText::sprintf(JText::_('INSTL_EMAIL_SUBJECT'), $options['site_name']);
+        $name    = $options['admin_user'];
+        $email   = $options['admin_email'];
+        $subject = JText::sprintf(JText::_('INSTL_EMAIL_SUBJECT'), $options['site_name']);
 
-		// Prepare email body
-		$body = array();
-		$body[] = JText::sprintf(JText::_('INSTL_EMAIL_HEADING'), $options['site_name']);
-		$body[] = '';
-		$body[] = array(JText::_('INSTL_SITE_NAME_LABEL'), $options['site_name']);
+        // Prepare email body
+        $body = array();
+        $body[] = JText::sprintf(JText::_('INSTL_EMAIL_HEADING'), $options['site_name']);
+        $body[] = '';
+        $body[] = array(JText::_('INSTL_SITE_NAME_LABEL'), $options['site_name']);
 
-		$body[] = $this->emailTitle(JText::_('INSTL_COMPLETE_ADMINISTRATION_LOGIN_DETAILS'));
-		$body[] = array(JText::_('JEMAIL'), $options['admin_email']);
-		$body[] = array(JText::_('JUSERNAME'), $options['admin_user']);
+        $body[] = $this->emailTitle(JText::_('INSTL_COMPLETE_ADMINISTRATION_LOGIN_DETAILS'));
+        $body[] = array(JText::_('JEMAIL'), $options['admin_email']);
+        $body[] = array(JText::_('JUSERNAME'), $options['admin_user']);
 
-		if ($options['summary_email_passwords'])
-		{
-			$body[] = array(JText::_('INSTL_ADMIN_PASSWORD_LABEL'), $options['admin_password_plain']);
-		}
+        if ($options['summary_email_passwords']) {
+            $body[] = array(JText::_('INSTL_ADMIN_PASSWORD_LABEL'), $options['admin_password_plain']);
+        }
 
-		$body[] = $this->emailTitle(JText::_('INSTL_DATABASE'));
-		$body[] = array(JText::_('INSTL_DATABASE_TYPE_LABEL'), $options['db_type']);
-		$body[] = array(JText::_('INSTL_DATABASE_HOST_LABEL'), $options['db_host']);
-		$body[] = array(JText::_('INSTL_DATABASE_USER_LABEL'), $options['db_user']);
+        $body[] = $this->emailTitle(JText::_('INSTL_DATABASE'));
+        $body[] = array(JText::_('INSTL_DATABASE_TYPE_LABEL'), $options['db_type']);
+        $body[] = array(JText::_('INSTL_DATABASE_HOST_LABEL'), $options['db_host']);
+        $body[] = array(JText::_('INSTL_DATABASE_USER_LABEL'), $options['db_user']);
 
-		if ($options['summary_email_passwords'])
-		{
-			$body[] = array(JText::_('INSTL_DATABASE_PASSWORD_LABEL'), $options['db_pass_plain']);
-		}
+        if ($options['summary_email_passwords']) {
+            $body[] = array(JText::_('INSTL_DATABASE_PASSWORD_LABEL'), $options['db_pass_plain']);
+        }
 
-		$body[] = array(JText::_('INSTL_DATABASE_NAME_LABEL'), $options['db_name']);
-		$body[] = array(JText::_('INSTL_DATABASE_PREFIX_LABEL'), $options['db_prefix']);
+        $body[] = array(JText::_('INSTL_DATABASE_NAME_LABEL'), $options['db_name']);
+        $body[] = array(JText::_('INSTL_DATABASE_PREFIX_LABEL'), $options['db_prefix']);
 
-		$max = 0;
+        $max = 0;
 
-		foreach ($body as $line)
-		{
-			if (is_array($line))
-			{
-				$max = max(array($max, strlen($line['0'])));
-			}
-		}
+        foreach ($body as $line) {
+            if (is_array($line)) {
+                $max = max(array($max, strlen($line['0'])));
+            }
+        }
 
-		foreach ($body as $i => $line)
-		{
-			if (is_array($line))
-			{
-				$label = $line['0'];
-				$label .= ': ' . str_repeat(' ', $max - strlen((string) $label));
-				$body[$i] = $label . $line['1'];
-			}
-		}
+        foreach ($body as $i => $line) {
+            if (is_array($line)) {
+                $label = $line['0'];
+                $label .= ': ' . str_repeat(' ', $max - strlen((string) $label));
+                $body[$i] = $label . $line['1'];
+            }
+        }
 
-		$body = implode("\r\n", $body);
+        $body = implode("\r\n", $body);
 
-		$mail = JFactory::getMailer();
-		$mail->addRecipient($email);
-		$mail->addReplyTo($email, $name);
-		$mail->setSender(array($email, $name));
-		$mail->setSubject($subject);
-		$mail->setBody($body);
+        $mail = JFactory::getMailer();
+        $mail->addRecipient($email);
+        $mail->addReplyTo($email, $name);
+        $mail->setSender(array($email, $name));
+        $mail->setSubject($subject);
+        $mail->setBody($body);
 
-		$r = new stdClass;
-		$r->view = 'complete';
+        $r = new stdClass();
+        $r->view = 'complete';
 
-		try
-		{
-			if (!$mail->Send())
-			{
-				$app->enqueueMessage(JText::_('INSTL_EMAIL_NOT_SENT'), 'error');
-			}
-		}
-		catch (Exception $e)
-		{
-			$app->enqueueMessage(JText::_('INSTL_EMAIL_NOT_SENT'), 'error');
-		}
+        try {
+            if (!$mail->Send()) {
+                $app->enqueueMessage(JText::_('INSTL_EMAIL_NOT_SENT'), 'error');
+            }
+        } catch (Exception $e) {
+            $app->enqueueMessage(JText::_('INSTL_EMAIL_NOT_SENT'), 'error');
+        }
 
-		$app->sendJsonResponse($r);
-	}
+        $app->sendJsonResponse($r);
+    }
 
-	/**
-	 * Prepares a title line for the email
-	 *
-	 * @param   string  $title  The title pre-formatting
-	 *
-	 * @return  string
-	 *
-	 * @since   3.1
-	 */
-	protected function emailTitle($title)
-	{
-		return "\r\n" . $title . "\r\n" . str_repeat('=', strlen($title));
-	}
+    /**
+     * Prepares a title line for the email
+     *
+     * @param   string  $title  The title pre-formatting
+     *
+     * @return  string
+     *
+     * @since   3.1
+     */
+    protected function emailTitle($title)
+    {
+        return "\r\n" . $title . "\r\n" . str_repeat('=', strlen($title));
+    }
 }

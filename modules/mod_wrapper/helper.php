@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  mod_wrapper
@@ -16,54 +17,47 @@ defined('_JEXEC') or die;
  */
 class ModWrapperHelper
 {
-	/**
-	 * Gets the parameters for the wrapper
-	 *
-	 * @param   mixed  &$params  The parameters set in the administrator section
-	 *
-	 * @return  mixed  &params  The modified parameters
-	 *
-	 * @since   1.5
-	 */
-	public static function getParams(&$params)
-	{
-		$params->def('url', '');
-		$params->def('scrolling', 'auto');
-		$params->def('height', '200');
-		$params->def('height_auto', 0);
-		$params->def('width', '100%');
-		$params->def('add', 1);
-		$params->def('name', 'wrapper');
+    /**
+     * Gets the parameters for the wrapper
+     *
+     * @param   mixed  &$params  The parameters set in the administrator section
+     *
+     * @return  mixed  &params  The modified parameters
+     *
+     * @since   1.5
+     */
+    public static function getParams(&$params)
+    {
+        $params->def('url', '');
+        $params->def('scrolling', 'auto');
+        $params->def('height', '200');
+        $params->def('height_auto', 0);
+        $params->def('width', '100%');
+        $params->def('add', 1);
+        $params->def('name', 'wrapper');
 
-		$url = $params->get('url');
+        $url = $params->get('url');
 
-		if ($params->get('add'))
-		{
-			// Adds 'http://' if none is set
-			if (strpos((string) $url, '/') === 0)
-			{
-				// Relative URL in component. use server http_host.
-				$url = 'http://' . $_SERVER['HTTP_HOST'] . $url;
-			}
-			elseif (strpos((string) $url, 'http') === false && strpos((string) $url, 'https') === false)
-			{
-				$url = 'http://' . $url;
-			}
-		}
+        if ($params->get('add')) {
+            // Adds 'http://' if none is set
+            if (strpos((string) $url, '/') === 0) {
+                // Relative URL in component. use server http_host.
+                $url = 'http://' . $_SERVER['HTTP_HOST'] . $url;
+            } elseif (strpos((string) $url, 'http') === false && strpos((string) $url, 'https') === false) {
+                $url = 'http://' . $url;
+            }
+        }
 
-		// Auto height control
-		if ($params->def('height_auto'))
-		{
-			$load = 'onload="iFrameHeight(this)"';
-		}
-		else
-		{
-			$load = '';
-		}
+        // Auto height control
+        if ($params->def('height_auto')) {
+            $load = 'onload="iFrameHeight(this)"';
+        } else {
+            $load = '';
+        }
 
-		$params->set('load', $load);
-		$params->set('url', $url);
+        $params->set('load', $load);
+        $params->set('url', $url);
 
-		return $params;
-	}
+        return $params;
+    }
 }

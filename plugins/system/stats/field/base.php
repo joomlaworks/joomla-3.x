@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  System.stats
@@ -16,21 +17,21 @@ defined('_JEXEC') or die;
  */
 abstract class PlgSystemStatsFormFieldBase extends JFormField
 {
-	/**
-	 * Get the layouts paths
-	 *
-	 * @return  array
-	 *
-	 * @since   3.5
-	 */
-	protected function getLayoutPaths()
-	{
-		$template = JFactory::getApplication()->getTemplate();
+    /**
+     * Get the layouts paths
+     *
+     * @return  array
+     *
+     * @since   3.5
+     */
+    protected function getLayoutPaths()
+    {
+        $template = JFactory::getApplication()->getTemplate();
 
-		return array(
-			JPATH_ADMINISTRATOR . '/templates/' . $template . '/html/layouts/plugins/system/stats',
-			dirname(__DIR__) . '/layouts',
-			JPATH_SITE . '/layouts'
-		);
-	}
+        return array(
+            JPATH_ADMINISTRATOR . '/templates/' . $template . '/html/layouts/plugins/system/stats',
+            dirname(__DIR__) . '/layouts',
+            JPATH_SITE . '/layouts'
+        );
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Installation
  * @subpackage  View
@@ -16,34 +17,34 @@ defined('_JEXEC') or die;
  */
 class InstallationViewPreinstallHtml extends InstallationViewDefault
 {
-	/**
-	 * Array of PHP config options.
-	 *
-	 * @var    array
-	 * @since  3.1
-	 */
-	protected $options;
+    /**
+     * Array of PHP config options.
+     *
+     * @var    array
+     * @since  3.1
+     */
+    protected $options;
 
-	/**
-	 * Array of PHP settings
-	 *
-	 * @var    array
-	 * @since  3.1
-	 */
-	protected $settings;
+    /**
+     * Array of PHP settings
+     *
+     * @var    array
+     * @since  3.1
+     */
+    protected $settings;
 
-	/**
-	 * Method to render the view.
-	 *
-	 * @return  string  The rendered view.
-	 *
-	 * @since   3.1
-	 */
-	public function render()
-	{
-		$this->options  = $this->model->getPhpOptions();
-		$this->settings = $this->model->getPhpSettings();
+    /**
+     * Method to render the view.
+     *
+     * @return  string  The rendered view.
+     *
+     * @since   3.1
+     */
+    public function render()
+    {
+        $this->options  = $this->model->getPhpOptions();
+        $this->settings = $this->model->getPhpSettings();
 
-		return parent::render();
-	}
+        return parent::render();
+    }
 }

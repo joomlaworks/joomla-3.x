@@ -49,16 +49,16 @@ $autocomplete = !$autocomplete ? ' autocomplete="off"' : ' autocomplete="' . $au
 $autocomplete = $autocomplete == ' autocomplete="on"' ? '' : $autocomplete;
 
 $attributes = array(
-	!empty($size) ? 'size="' . $size . '"' : '',
-	$disabled ? 'disabled' : '',
-	$readonly ? 'readonly' : '',
-	strlen($hint) ? 'placeholder="' . htmlspecialchars($hint, ENT_COMPAT, 'UTF-8') . '"' : '',
-	$autocomplete,
-	$autofocus ? ' autofocus' : '',
-	$spellcheck ? '' : 'spellcheck="false"',
-	$onchange ? ' onchange="' . $onchange . '"' : '',
-	!empty($maxLength) ? $maxLength : '',
-	$required ? 'required aria-required="true"' : '',
+    !empty($size) ? 'size="' . $size . '"' : '',
+    $disabled ? 'disabled' : '',
+    $readonly ? 'readonly' : '',
+    strlen($hint) ? 'placeholder="' . htmlspecialchars($hint, ENT_COMPAT, 'UTF-8') . '"' : '',
+    $autocomplete,
+    $autofocus ? ' autofocus' : '',
+    $spellcheck ? '' : 'spellcheck="false"',
+    $onchange ? ' onchange="' . $onchange . '"' : '',
+    !empty($maxLength) ? $maxLength : '',
+    $required ? 'required aria-required="true"' : '',
 );
 ?>
 <input type="tel" name="<?php

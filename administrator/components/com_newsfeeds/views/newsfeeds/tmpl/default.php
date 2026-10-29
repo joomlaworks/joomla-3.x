@@ -22,14 +22,13 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 $saveOrder = $listOrder == 'a.ordering';
 $assoc     = JLanguageAssociations::isEnabled();
 
-if ($saveOrder)
-{
-	$saveOrderingUrl = 'index.php?option=com_newsfeeds&task=newsfeeds.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'newsfeedList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
+if ($saveOrder) {
+    $saveOrderingUrl = 'index.php?option=com_newsfeeds&task=newsfeeds.saveOrderAjax&tmpl=component';
+    JHtml::_('sortablelist.sortable', 'newsfeedList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 }
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_newsfeeds&view=newsfeeds'); ?>" method="post" name="adminForm" id="adminForm">
-	<?php if (!empty( $this->sidebar)) : ?>
+	<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -90,26 +89,23 @@ if ($saveOrder)
 				</tfoot>
 				<tbody>
 				<?php foreach ($this->items as $i => $item) :
-					$ordering   = ($listOrder == 'a.ordering');
-					$canCreate  = $user->authorise('core.create',     'com_newsfeeds.category.' . $item->catid);
-					$canEdit    = $user->authorise('core.edit',       'com_newsfeeds.category.' . $item->catid);
-					$canCheckin = $user->authorise('core.manage',     'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
-					$canEditOwn = $user->authorise('core.edit.own',   'com_newsfeeds.category.' . $item->catid) && $item->created_by == $user->id;
-					$canChange  = $user->authorise('core.edit.state', 'com_newsfeeds.category.' . $item->catid) && $canCheckin;
-					?>
+				    $ordering   = ($listOrder == 'a.ordering');
+				    $canCreate  = $user->authorise('core.create', 'com_newsfeeds.category.' . $item->catid);
+				    $canEdit    = $user->authorise('core.edit', 'com_newsfeeds.category.' . $item->catid);
+				    $canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
+				    $canEditOwn = $user->authorise('core.edit.own', 'com_newsfeeds.category.' . $item->catid) && $item->created_by == $user->id;
+				    $canChange  = $user->authorise('core.edit.state', 'com_newsfeeds.category.' . $item->catid) && $canCheckin;
+				    ?>
 					<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->catid; ?>">
 						<td class="order nowrap center hidden-phone">
 							<?php
-							$iconClass = '';
-							if (!$canChange)
-							{
-								$iconClass = ' inactive';
-							}
-							elseif (!$saveOrder)
-							{
-								$iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
-							}
-							?>
+				            $iconClass = '';
+				    if (!$canChange) {
+				        $iconClass = ' inactive';
+				    } elseif (!$saveOrder) {
+				        $iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
+				    }
+				    ?>
 							<span class="sortable-handler<?php echo $iconClass ?>">
 								<span class="icon-menu" aria-hidden="true"></span>
 							</span>
@@ -124,13 +120,12 @@ if ($saveOrder)
 							<div class="btn-group">
 								<?php echo JHtml::_('jgrid.published', $item->published, $i, 'newsfeeds.', $canChange, 'cb', $item->publish_up, $item->publish_down); ?>
 								<?php // Create dropdown items and render the dropdown list.
-								if ($canChange)
-								{
-									JHtml::_('actionsdropdown.' . ((int) $item->published === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'newsfeeds');
-									JHtml::_('actionsdropdown.' . ((int) $item->published === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'newsfeeds');
-									echo JHtml::_('actionsdropdown.render', $this->escape($item->name));
-								}
-								?>
+				        if ($canChange) {
+				            JHtml::_('actionsdropdown.' . ((int) $item->published === 2 ? 'un' : '') . 'archive', 'cb' . $i, 'newsfeeds');
+				            JHtml::_('actionsdropdown.' . ((int) $item->published === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'newsfeeds');
+				            echo JHtml::_('actionsdropdown.render', $this->escape($item->name));
+				        }
+				    ?>
 							</div>
 						</td>
 						<td class="nowrap has-context">
@@ -178,18 +173,18 @@ if ($saveOrder)
 					<?php endforeach; ?>
 				</tbody>
 			</table>
-			<?php // Load the batch processing form if user is allowed ?>
+			<?php // Load the batch processing form if user is allowed?>
 			<?php if ($user->authorise('core.create', 'com_newsfeeds')
-				&& $user->authorise('core.edit', 'com_newsfeeds')
-				&& $user->authorise('core.edit.state', 'com_newsfeeds')) : ?>
+                && $user->authorise('core.edit', 'com_newsfeeds')
+                && $user->authorise('core.edit.state', 'com_newsfeeds')) : ?>
 				<?php echo JHtml::_(
-					'bootstrap.renderModal',
-					'collapseModal',
-					array(
-						'title'  => JText::_('COM_NEWSFEEDS_BATCH_OPTIONS'),
-						'footer' => $this->loadTemplate('batch_footer'),
-					),
-					$this->loadTemplate('batch_body')
+				    'bootstrap.renderModal',
+				    'collapseModal',
+				    array(
+				        'title'  => JText::_('COM_NEWSFEEDS_BATCH_OPTIONS'),
+				        'footer' => $this->loadTemplate('batch_footer'),
+				    ),
+				    $this->loadTemplate('batch_body')
 				); ?>
 			<?php endif; ?>
 		<?php endif; ?>

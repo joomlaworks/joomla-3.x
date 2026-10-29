@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_media
@@ -19,306 +20,270 @@ jimport('joomla.filesystem.folder');
  */
 class MediaControllerFile extends JControllerLegacy
 {
-	/**
-	 * Upload a file
-	 *
-	 * @return  void
-	 *
-	 * @since   1.5
-	 */
-	public function upload()
-	{
-		$params = JComponentHelper::getParams('com_media');
+    /**
+     * Upload a file
+     *
+     * @return  void
+     *
+     * @since   1.5
+     */
+    public function upload()
+    {
+        $params = JComponentHelper::getParams('com_media');
 
-		// Check for request forgeries
-		if (!JSession::checkToken('request'))
-		{
-			$response = array(
-				'status'  => '0',
-				'message' => JText::_('JINVALID_TOKEN'),
-				'error'   => JText::_('JINVALID_TOKEN')
-			);
-			echo json_encode($response);
+        // Check for request forgeries
+        if (!JSession::checkToken('request')) {
+            $response = array(
+                'status'  => '0',
+                'message' => JText::_('JINVALID_TOKEN'),
+                'error'   => JText::_('JINVALID_TOKEN')
+            );
+            echo json_encode($response);
 
-			return;
-		}
+            return;
+        }
 
-		// Get the user
-		$user  = JFactory::getUser();
-		JLog::addLogger(array('text_file' => 'upload.error.php'), JLog::ALL, array('upload'));
+        // Get the user
+        $user  = JFactory::getUser();
+        JLog::addLogger(array('text_file' => 'upload.error.php'), JLog::ALL, array('upload'));
 
-		// Get some data from the request
-		$file   = $this->input->files->get('Filedata', '', 'array');
-		$folder = $this->input->get('folder', '', 'path');
+        // Get some data from the request
+        $file   = $this->input->files->get('Filedata', '', 'array');
+        $folder = $this->input->get('folder', '', 'path');
 
-		// Files dropped on the Media Manager's lists (and the image picker): into the folder shown, as its upload form does
-		$mediaManager = $this->input->getCmd('context') === 'mediamanager';
+        // Files dropped on the Media Manager's lists (and the image picker): into the folder shown, as its upload form does
+        $mediaManager = $this->input->getCmd('context') === 'mediamanager';
 
-		// Instantiate the media helper
-		$mediaHelper = new JHelperMedia;
+        // Instantiate the media helper
+        $mediaHelper = new JHelperMedia();
 
-		// The "Memory Limit" option, where the server allows it (before the limits below are read)
-		$mediaHelper->raiseMemoryLimit($params);
+        // The "Memory Limit" option, where the server allows it (before the limits below are read)
+        $mediaHelper->raiseMemoryLimit($params);
 
-		// Editors upload here (TinyMCE, EasyMDE): into uploads when they name no folder, and into the year, month or day's
-		// folder as the "Organise Editor Uploads" option says (created only for users who may upload)
-		if (!$mediaManager && $user->authorise('core.create', 'com_media'))
-		{
-			$folder = $mediaHelper->getEditorUploadFolder($folder, $params, COM_MEDIA_BASE);
-		}
+        // Editors upload here (TinyMCE, EasyMDE): into uploads when they name no folder, and into the year, month or day's
+        // folder as the "Organise Editor Uploads" option says (created only for users who may upload)
+        if (!$mediaManager && $user->authorise('core.create', 'com_media')) {
+            $folder = $mediaHelper->getEditorUploadFolder($folder, $params, COM_MEDIA_BASE);
+        }
 
-		// Limits of 0 or -1 (the Media Manager's "no limit", PHP's unlimited memory_limit or post_max_size) don't apply, as in file.php
-		$contentLength = (int) $this->input->server->get('CONTENT_LENGTH', 0, 'INT');
-		$tooLarge      = false;
+        // Limits of 0 or -1 (the Media Manager's "no limit", PHP's unlimited memory_limit or post_max_size) don't apply, as in file.php
+        $contentLength = (int) $this->input->server->get('CONTENT_LENGTH', 0, 'INT');
+        $tooLarge      = false;
 
-		foreach (array(
-			$params->get('upload_maxsize', 0) * 1024 * 1024,
-			$mediaHelper->toBytes(ini_get('upload_max_filesize')),
-			$mediaHelper->toBytes(ini_get('post_max_size')),
-			$mediaHelper->toBytes(ini_get('memory_limit')),
-		) as $limit)
-		{
-			$tooLarge = $tooLarge || ((int) $limit > 0 && $contentLength > (int) $limit);
-		}
+        foreach (array(
+            $params->get('upload_maxsize', 0) * 1024 * 1024,
+            $mediaHelper->toBytes(ini_get('upload_max_filesize')),
+            $mediaHelper->toBytes(ini_get('post_max_size')),
+            $mediaHelper->toBytes(ini_get('memory_limit')),
+        ) as $limit) {
+            $tooLarge = $tooLarge || ((int) $limit > 0 && $contentLength > (int) $limit);
+        }
 
-		if ($tooLarge)
-		{
-			$response = array(
-				'status'  => '0',
-				'message' => JText::_('COM_MEDIA_ERROR_WARNFILETOOLARGE'),
-				'error'   => JText::_('COM_MEDIA_ERROR_WARNFILETOOLARGE')
-			);
-			echo json_encode($response);
+        if ($tooLarge) {
+            $response = array(
+                'status'  => '0',
+                'message' => JText::_('COM_MEDIA_ERROR_WARNFILETOOLARGE'),
+                'error'   => JText::_('COM_MEDIA_ERROR_WARNFILETOOLARGE')
+            );
+            echo json_encode($response);
 
-			return;
-		}
+            return;
+        }
 
-		// Set FTP credentials, if given
-		JClientHelper::setCredentialsFromRequest('ftp');
+        // Set FTP credentials, if given
+        JClientHelper::setCredentialsFromRequest('ftp');
 
-		if (isset($file['name']))
-		{
-			// Make the filename safe
-			$file['name'] = JFile::makeSafe($file['name']);
+        if (isset($file['name'])) {
+            // Make the filename safe
+            $file['name'] = JFile::makeSafe($file['name']);
 
-			// We need a URL safe name
-			$fileparts = pathinfo(COM_MEDIA_BASE . '/' . $folder . '/' . $file['name']);
+            // We need a URL safe name
+            $fileparts = pathinfo(COM_MEDIA_BASE . '/' . $folder . '/' . $file['name']);
 
-			// Transform filename to punycode
-			$fileparts['filename'] = JStringPunycode::toPunycode($fileparts['filename']);
-			$tempExt = !empty($fileparts['extension']) ? strtolower($fileparts['extension']) : '';
+            // Transform filename to punycode
+            $fileparts['filename'] = JStringPunycode::toPunycode($fileparts['filename']);
+            $tempExt = !empty($fileparts['extension']) ? strtolower($fileparts['extension']) : '';
 
-			// Transform filename to punycode, then neglect other than non-alphanumeric characters & underscores. Also transform extension to lowercase
-			$safeFileName = preg_replace(array("/[\\s]/", '/[^a-zA-Z0-9_\-]/'), array('_', ''), $fileparts['filename']) . '.' . $tempExt;
+            // Transform filename to punycode, then neglect other than non-alphanumeric characters & underscores. Also transform extension to lowercase
+            $safeFileName = preg_replace(array("/[\\s]/", '/[^a-zA-Z0-9_\-]/'), array('_', ''), $fileparts['filename']) . '.' . $tempExt;
 
-			// Create filepath with safe-filename
-			$files['final'] = $fileparts['dirname'] . DIRECTORY_SEPARATOR . $safeFileName;
-			$file['name']   = $safeFileName;
+            // Create filepath with safe-filename
+            $files['final'] = $fileparts['dirname'] . DIRECTORY_SEPARATOR . $safeFileName;
+            $file['name']   = $safeFileName;
 
-			$filepath = JPath::clean($files['final']);
+            $filepath = JPath::clean($files['final']);
 
-			// A file of the same name is kept: this one gets the time added to its name
-			$filepath     = $mediaHelper->getUniqueFilePath($filepath);
-			$file['name'] = basename($filepath);
+            // A file of the same name is kept: this one gets the time added to its name
+            $filepath     = $mediaHelper->getUniqueFilePath($filepath);
+            $file['name'] = basename($filepath);
 
-			if (!$mediaHelper->canUpload($file, 'com_media')
-				|| strpos(realpath($fileparts['dirname']), JPath::clean(realpath(COM_MEDIA_BASE))) !== 0)
-			{
-				try
-				{
-					JLog::add('Invalid: ' . $filepath, JLog::INFO, 'upload');
-				}
-				catch (RuntimeException $exception)
-				{
-					// Informational log only
-				}
+            if (!$mediaHelper->canUpload($file, 'com_media')
+                || strpos(realpath($fileparts['dirname']), JPath::clean(realpath(COM_MEDIA_BASE))) !== 0) {
+                try {
+                    JLog::add('Invalid: ' . $filepath, JLog::INFO, 'upload');
+                } catch (RuntimeException $exception) {
+                    // Informational log only
+                }
 
-				$response = array(
-					'status'  => '0',
-					'message' => JText::_('COM_MEDIA_ERROR_UNABLE_TO_UPLOAD_FILE'),
-					'error'   => JText::_('COM_MEDIA_ERROR_UNABLE_TO_UPLOAD_FILE')
-				);
+                $response = array(
+                    'status'  => '0',
+                    'message' => JText::_('COM_MEDIA_ERROR_UNABLE_TO_UPLOAD_FILE'),
+                    'error'   => JText::_('COM_MEDIA_ERROR_UNABLE_TO_UPLOAD_FILE')
+                );
 
-				echo json_encode($response);
+                echo json_encode($response);
 
-				return;
-			}
+                return;
+            }
 
-			// Trigger the onContentBeforeSave event.
-			JPluginHelper::importPlugin('content');
-			$dispatcher  = JEventDispatcher::getInstance();
-			$object_file = new JObject($file);
-			$object_file->filepath = $filepath;
-			$result = $dispatcher->trigger('onContentBeforeSave', array('com_media.file', &$object_file, true));
+            // Trigger the onContentBeforeSave event.
+            JPluginHelper::importPlugin('content');
+            $dispatcher  = JEventDispatcher::getInstance();
+            $object_file = new JObject($file);
+            $object_file->filepath = $filepath;
+            $result = $dispatcher->trigger('onContentBeforeSave', array('com_media.file', &$object_file, true));
 
-			if (in_array(false, $result, true))
-			{
-				// There are some errors in the plugins
-				try
-				{
-					JLog::add(
-						'Errors before save: ' . $object_file->filepath . ' : ' . implode(', ', $object_file->getErrors()),
-						JLog::INFO,
-						'upload'
-					);
-				}
-				catch (RuntimeException $exception)
-				{
-					// Informational log only
-				}
+            if (in_array(false, $result, true)) {
+                // There are some errors in the plugins
+                try {
+                    JLog::add(
+                        'Errors before save: ' . $object_file->filepath . ' : ' . implode(', ', $object_file->getErrors()),
+                        JLog::INFO,
+                        'upload'
+                    );
+                } catch (RuntimeException $exception) {
+                    // Informational log only
+                }
 
-				$response = array(
-					'status'  => '0',
-					'message' => JText::plural('COM_MEDIA_ERROR_BEFORE_SAVE', count($errors = $object_file->getErrors()), implode('<br />', $errors)),
-					'error'   => JText::plural('COM_MEDIA_ERROR_BEFORE_SAVE', count($errors = $object_file->getErrors()), implode('<br />', $errors))
-				);
+                $response = array(
+                    'status'  => '0',
+                    'message' => JText::plural('COM_MEDIA_ERROR_BEFORE_SAVE', count($errors = $object_file->getErrors()), implode('<br />', $errors)),
+                    'error'   => JText::plural('COM_MEDIA_ERROR_BEFORE_SAVE', count($errors = $object_file->getErrors()), implode('<br />', $errors))
+                );
 
-				echo json_encode($response);
+                echo json_encode($response);
 
-				return;
-			}
+                return;
+            }
 
-			if (JFile::exists($object_file->filepath))
-			{
-				// File exists
-				try
-				{
-					JLog::add('File exists: ' . $object_file->filepath . ' by user_id ' . $user->id, JLog::INFO, 'upload');
-				}
-				catch (RuntimeException $exception)
-				{
-					// Informational log only
-				}
+            if (JFile::exists($object_file->filepath)) {
+                // File exists
+                try {
+                    JLog::add('File exists: ' . $object_file->filepath . ' by user_id ' . $user->id, JLog::INFO, 'upload');
+                } catch (RuntimeException $exception) {
+                    // Informational log only
+                }
 
-				$response = array(
-					'status'   => '0',
-					'message'  => JText::_('COM_MEDIA_ERROR_FILE_EXISTS'),
-					'error'    => JText::_('COM_MEDIA_ERROR_FILE_EXISTS'),
-					'location' => str_replace(JPATH_ROOT, '',  $filepath)
-				);
+                $response = array(
+                    'status'   => '0',
+                    'message'  => JText::_('COM_MEDIA_ERROR_FILE_EXISTS'),
+                    'error'    => JText::_('COM_MEDIA_ERROR_FILE_EXISTS'),
+                    'location' => str_replace(JPATH_ROOT, '', $filepath)
+                );
 
-				echo json_encode($response);
+                echo json_encode($response);
 
-				return;
-			}
-			elseif (!$user->authorise('core.create', 'com_media'))
-			{
-				// File does not exist and user is not authorised to create
-				try
-				{
-					JLog::add('Create not permitted: ' . $object_file->filepath . ' by user_id ' . $user->id, JLog::INFO, 'upload');
-				}
-				catch (RuntimeException $exception)
-				{
-					// Informational log only
-				}
+                return;
+            } elseif (!$user->authorise('core.create', 'com_media')) {
+                // File does not exist and user is not authorised to create
+                try {
+                    JLog::add('Create not permitted: ' . $object_file->filepath . ' by user_id ' . $user->id, JLog::INFO, 'upload');
+                } catch (RuntimeException $exception) {
+                    // Informational log only
+                }
 
-				$response = array(
-					'status'  => '0',
-					'error'   => JText::_('COM_MEDIA_ERROR_CREATE_NOT_PERMITTED'),
-					'message' => JText::_('COM_MEDIA_ERROR_CREATE_NOT_PERMITTED')
-				);
+                $response = array(
+                    'status'  => '0',
+                    'error'   => JText::_('COM_MEDIA_ERROR_CREATE_NOT_PERMITTED'),
+                    'message' => JText::_('COM_MEDIA_ERROR_CREATE_NOT_PERMITTED')
+                );
 
-				echo json_encode($response);
+                echo json_encode($response);
 
-				return;
-			}
+                return;
+            }
 
-			if (!JFile::upload($object_file->tmp_name, $object_file->filepath))
-			{
-				// Error in upload
-				try
-				{
-					JLog::add('Error on upload: ' . $object_file->filepath, JLog::INFO, 'upload');
-				}
-				catch (RuntimeException $exception)
-				{
-					// Informational log only
-				}
+            if (!JFile::upload($object_file->tmp_name, $object_file->filepath)) {
+                // Error in upload
+                try {
+                    JLog::add('Error on upload: ' . $object_file->filepath, JLog::INFO, 'upload');
+                } catch (RuntimeException $exception) {
+                    // Informational log only
+                }
 
-				$response = array(
-					'status'  => '0',
-					'message' => JText::_('COM_MEDIA_ERROR_UNABLE_TO_UPLOAD_FILE'),
-					'error'   => JText::_('COM_MEDIA_ERROR_UNABLE_TO_UPLOAD_FILE')
-				);
+                $response = array(
+                    'status'  => '0',
+                    'message' => JText::_('COM_MEDIA_ERROR_UNABLE_TO_UPLOAD_FILE'),
+                    'error'   => JText::_('COM_MEDIA_ERROR_UNABLE_TO_UPLOAD_FILE')
+                );
 
-				echo json_encode($response);
+                echo json_encode($response);
 
-				return;
-			}
-			else
-			{
-				// Trigger the onContentAfterSave event.
-				$dispatcher->trigger('onContentAfterSave', array('com_media.file', &$object_file, true));
+                return;
+            } else {
+                // Trigger the onContentAfterSave event.
+                $dispatcher->trigger('onContentAfterSave', array('com_media.file', &$object_file, true));
 
-				try
-				{
-					JLog::add($folder, JLog::INFO, 'upload');
-				}
-				catch (RuntimeException $exception)
-				{
-					// Informational log only
-				}
+                try {
+                    JLog::add($folder, JLog::INFO, 'upload');
+                } catch (RuntimeException $exception) {
+                    // Informational log only
+                }
 
-				// Resized, upright, without metadata, WebP and a copy for small screens, as the Media Manager's options say
-				$sources = array();
+                // Resized, upright, without metadata, WebP and a copy for small screens, as the Media Manager's options say
+                $sources = array();
 
-				if ($mediaHelper->isOptimiseActive($params, $mediaManager ? 'mediamanager' : 'editors'))
-				{
-					$settings              = $mediaHelper->getOptimiseSettings($params);
-					$object_file->filepath = $mediaHelper->optimiseImage($object_file->filepath, $settings);
-					$sources               = $mediaHelper->getImageSources($object_file->filepath, $settings);
-				}
+                if ($mediaHelper->isOptimiseActive($params, $mediaManager ? 'mediamanager' : 'editors')) {
+                    $settings              = $mediaHelper->getOptimiseSettings($params);
+                    $object_file->filepath = $mediaHelper->optimiseImage($object_file->filepath, $settings);
+                    $sources               = $mediaHelper->getImageSources($object_file->filepath, $settings);
+                }
 
-				$returnUrl = str_replace(JPATH_ROOT, '',  $object_file->filepath);
+                $returnUrl = str_replace(JPATH_ROOT, '', $object_file->filepath);
 
-				$response = array(
-					'status'   => '1',
-					'message'  => JText::sprintf('COM_MEDIA_UPLOAD_COMPLETE', $returnUrl),
-					'error'    => JText::sprintf('COM_MEDIA_UPLOAD_COMPLETE', $returnUrl),
-					'location' => str_replace('\\', '/', $returnUrl),
-					// Relative to the Media Manager's folder, as its lists name files (optimising may rename it, e.g. to .webp)
-					'path'     => ltrim(str_replace(array(JPath::clean(COM_MEDIA_BASE), '\\'), array('', '/'), JPath::clean($object_file->filepath)), '/'),
-				);
+                $response = array(
+                    'status'   => '1',
+                    'message'  => JText::sprintf('COM_MEDIA_UPLOAD_COMPLETE', $returnUrl),
+                    'error'    => JText::sprintf('COM_MEDIA_UPLOAD_COMPLETE', $returnUrl),
+                    'location' => str_replace('\\', '/', $returnUrl),
+                    // Relative to the Media Manager's folder, as its lists name files (optimising may rename it, e.g. to .webp)
+                    'path'     => ltrim(str_replace(array(JPath::clean(COM_MEDIA_BASE), '\\'), array('', '/'), JPath::clean($object_file->filepath)), '/'),
+                );
 
-				// The image's size once stored (optimising can make it narrower than the file the editor read)
-				$size = @getimagesize($object_file->filepath);
+                // The image's size once stored (optimising can make it narrower than the file the editor read)
+                $size = @getimagesize($object_file->filepath);
 
-				if ($size)
-				{
-					$response['width']  = (int) $size[0];
-					$response['height'] = (int) $size[1];
-				}
+                if ($size) {
+                    $response['width']  = (int) $size[0];
+                    $response['height'] = (int) $size[1];
+                }
 
-				// The editors write these as the image's srcset, so every template offers small screens the copy made for them
-				foreach ($sources as $source)
-				{
-					$response['srcset'][] = array(
-						'location' => str_replace(array(JPATH_ROOT, '\\'), array('', '/'), $source['path']),
-						'width'    => $source['width'],
-					);
-				}
+                // The editors write these as the image's srcset, so every template offers small screens the copy made for them
+                foreach ($sources as $source) {
+                    $response['srcset'][] = array(
+                        'location' => str_replace(array(JPATH_ROOT, '\\'), array('', '/'), $source['path']),
+                        'width'    => $source['width'],
+                    );
+                }
 
-				echo json_encode($response);
+                echo json_encode($response);
 
-				return;
-			}
-		}
-		else
-		{
-			// A file the input filter refused (an executable or a double extension, e.g. shell.php.jpg): name it as such
-			$raw     = $this->input->files->get('Filedata', null, 'raw');
-			$message = is_array($raw) && !empty($raw['name']) ? 'JLIB_MEDIA_ERROR_WARNFILETYPE' : 'COM_MEDIA_ERROR_BAD_REQUEST';
+                return;
+            }
+        } else {
+            // A file the input filter refused (an executable or a double extension, e.g. shell.php.jpg): name it as such
+            $raw     = $this->input->files->get('Filedata', null, 'raw');
+            $message = is_array($raw) && !empty($raw['name']) ? 'JLIB_MEDIA_ERROR_WARNFILETYPE' : 'COM_MEDIA_ERROR_BAD_REQUEST';
 
-			$response = array(
-				'status'  => '0',
-				'error'   => JText::_($message),
-				'message' => JText::_($message)
-			);
+            $response = array(
+                'status'  => '0',
+                'error'   => JText::_($message),
+                'message' => JText::_($message)
+            );
 
-			echo json_encode($response);
+            echo json_encode($response);
 
-			return;
-		}
-	}
+            return;
+        }
+    }
 }

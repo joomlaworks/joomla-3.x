@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_version
@@ -16,30 +17,28 @@ defined('_JEXEC') or die;
  */
 abstract class ModVersionHelper
 {
-	/**
-	 * Get the member items of the submenu.
-	 *
-	 * @param   \Joomla\Registry\Registry  &$params  The parameters object.
-	 *
-	 * @return  string  String containing the current Joomla version based on the selected format.
-	 */
-	public static function getVersion(&$params)
-	{
-		$version     = new JVersion;
-		$versionText = $version->getShortVersion();
-		$product     = $params->get('product', 1);
+    /**
+     * Get the member items of the submenu.
+     *
+     * @param   \Joomla\Registry\Registry  &$params  The parameters object.
+     *
+     * @return  string  String containing the current Joomla version based on the selected format.
+     */
+    public static function getVersion(&$params)
+    {
+        $version     = new JVersion();
+        $versionText = $version->getShortVersion();
+        $product     = $params->get('product', 1);
 
-		if ($params->get('format', 'short') === 'long')
-		{
-			$versionText = str_replace($version::PRODUCT . ' ', '', $version->getLongVersion());
-		}
+        if ($params->get('format', 'short') === 'long') {
+            $versionText = str_replace($version::PRODUCT . ' ', '', $version->getLongVersion());
+        }
 
-		// The distribution's name, e.g. "Joomla 3.x UTD v3.17.0" (Version::PRODUCT, "Joomla!", stays for update checks)
-		if (!empty($product))
-		{
-			$versionText = $version::DISTRIBUTION . ' v' . $versionText;
-		}
+        // The distribution's name, e.g. "Joomla 3.x UTD v3.17.0" (Version::PRODUCT, "Joomla!", stays for update checks)
+        if (!empty($product)) {
+            $versionText = $version::DISTRIBUTION . ' v' . $versionText;
+        }
 
-		return $versionText;
-	}
+        return $versionText;
+    }
 }

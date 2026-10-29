@@ -17,41 +17,40 @@ JFactory::getDocument()->addScriptDeclaration("var COM_JOOMLAUPDATE_VIEW_DEFAULT
 JFactory::getDocument()->addScriptOptions('nonCoreCriticalPlugins', array_values($this->nonCoreCriticalPlugins));
 
 $compatibilityTypes = array(
-	'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_RUNNING_PRE_UPDATE_CHECKS' => array(
-		'class' => 'label-default',
-		'notes' => 'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_RUNNING_PRE_UPDATE_CHECKS_NOTES',
-		'group' => 0
-	),
-	'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_PRE_UPDATE_CHECKS_FAILED' => array(
-		'class' => 'label-important',
-		'notes' => 'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_PRE_UPDATE_CHECKS_FAILED_NOTES',
-		'group' => 4
-	),
-	'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_UPDATE_SERVER_OFFERS_NO_COMPATIBLE_VERSION' => array(
-		'class' => 'label-important',
-		'notes' => 'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_UPDATE_SERVER_OFFERS_NO_COMPATIBLE_VERSION_NOTES',
-		'group' => 1
-	),
-	'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_REQUIRING_UPDATES_TO_BE_COMPATIBLE' => array(
-		'class' => 'label-warning',
-		'notes' => 'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_REQUIRING_UPDATES_TO_BE_COMPATIBLE_NOTES',
-		'group' => 2
-	),
-	'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_PROBABLY_COMPATIBLE' => array(
-		'class' => 'label-success',
-		'notes' => 'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_PROBABLY_COMPATIBLE_NOTES',
-		'group' => 3
-	)
+    'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_RUNNING_PRE_UPDATE_CHECKS' => array(
+        'class' => 'label-default',
+        'notes' => 'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_RUNNING_PRE_UPDATE_CHECKS_NOTES',
+        'group' => 0
+    ),
+    'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_PRE_UPDATE_CHECKS_FAILED' => array(
+        'class' => 'label-important',
+        'notes' => 'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_PRE_UPDATE_CHECKS_FAILED_NOTES',
+        'group' => 4
+    ),
+    'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_UPDATE_SERVER_OFFERS_NO_COMPATIBLE_VERSION' => array(
+        'class' => 'label-important',
+        'notes' => 'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_UPDATE_SERVER_OFFERS_NO_COMPATIBLE_VERSION_NOTES',
+        'group' => 1
+    ),
+    'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_REQUIRING_UPDATES_TO_BE_COMPATIBLE' => array(
+        'class' => 'label-warning',
+        'notes' => 'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_REQUIRING_UPDATES_TO_BE_COMPATIBLE_NOTES',
+        'group' => 2
+    ),
+    'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_PROBABLY_COMPATIBLE' => array(
+        'class' => 'label-success',
+        'notes' => 'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_PROBABLY_COMPATIBLE_NOTES',
+        'group' => 3
+    )
 );
 
-if (version_compare($this->updateInfo['latest'], '4', '>=') && $this->isBackendTemplateIsis === false)
-{
-	JFactory::getApplication()->enqueueMessage(
-		JText::_(
-			'COM_JOOMLAUPDATE_VIEW_DEFAULT_NON_CORE_BACKEND_TEMPLATE_USED_NOTICE'
-		),
-		'info'
-	);
+if (version_compare($this->updateInfo['latest'], '4', '>=') && $this->isBackendTemplateIsis === false) {
+    JFactory::getApplication()->enqueueMessage(
+        JText::_(
+            'COM_JOOMLAUPDATE_VIEW_DEFAULT_NON_CORE_BACKEND_TEMPLATE_USED_NOTICE'
+        ),
+        'info'
+    );
 }
 
 ?>
@@ -75,8 +74,8 @@ if (version_compare($this->updateInfo['latest'], '4', '>=') && $this->isBackendT
 				<?php echo $labelClass === 'important' ? JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_REQUIRED_SETTINGS_WARNING') : JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_REQUIRED_SETTINGS_PASSED'); ?>
 				<div class="settingstoggle" data-state="closed">
 					<?php echo JText::sprintf(
-						'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION',
-						'<span class="icon-chevron-right small"></span>'
+					    'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION',
+					    '<span class="icon-chevron-right small"></span>'
 					); ?>
 				</div>
 			</h3>
@@ -126,8 +125,8 @@ if (version_compare($this->updateInfo['latest'], '4', '>=') && $this->isBackendT
 				<?php echo $labelClass === 'warning' ? JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_RECOMMENDED_SETTINGS_WARNING') : JText::_('COM_JOOMLAUPDATE_VIEW_DEFAULT_RECOMMENDED_SETTINGS_PASSED'); ?>
 				<div class="settingstoggle" data-state="closed">
 					<?php echo JText::sprintf(
-						'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION',
-						'<span class="icon-chevron-right small"></span>'
+					    'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION',
+					    '<span class="icon-chevron-right small"></span>'
 					); ?>
 				</div>
 			</h3>
@@ -186,8 +185,8 @@ if (version_compare($this->updateInfo['latest'], '4', '>=') && $this->isBackendT
 						<?php if ($compatibilityType !== "COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_RUNNING_PRE_UPDATE_CHECKS") : ?>
 							<div class="compatibilitytoggle" data-state="closed">
 								<?php echo JText::sprintf(
-									'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION',
-									'<span class="icon-chevron-right small"></span>'
+								    'COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION',
+								    '<span class="icon-chevron-right small"></span>'
 								); ?>
 							</div>
 						<?php endif; ?>
@@ -218,7 +217,7 @@ if (version_compare($this->updateInfo['latest'], '4', '>=') && $this->isBackendT
 						</tr>
 					</thead>
 					<tbody class="row-fluid">
-						<?php // Only include this row once since the javascript moves the results into the right place ?>
+						<?php // Only include this row once since the javascript moves the results into the right place?>
 						<?php if ($compatibilityType == "COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_RUNNING_PRE_UPDATE_CHECKS") : ?>
 							<?php foreach ($this->nonCoreExtensions as $extension) : ?>
 								<tr>

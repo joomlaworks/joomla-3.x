@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -20,246 +21,220 @@ use Joomla\CMS\Filter\InputFilter;
  */
 class Cli extends Input
 {
-	/**
-	 * The executable that was called to run the CLI script.
-	 *
-	 * @var    string
-	 * @since  1.7.0
-	 * @deprecated  5.0  Use Joomla\Input\Cli instead
-	 */
-	public $executable;
+    /**
+     * The executable that was called to run the CLI script.
+     *
+     * @var    string
+     * @since  1.7.0
+     * @deprecated  5.0  Use Joomla\Input\Cli instead
+     */
+    public $executable;
 
-	/**
-	 * The additional arguments passed to the script that are not associated
-	 * with a specific argument name.
-	 *
-	 * @var    array
-	 * @since  1.7.0
-	 * @deprecated  5.0  Use Joomla\Input\Cli instead
-	 */
-	public $args = array();
+    /**
+     * The additional arguments passed to the script that are not associated
+     * with a specific argument name.
+     *
+     * @var    array
+     * @since  1.7.0
+     * @deprecated  5.0  Use Joomla\Input\Cli instead
+     */
+    public $args = array();
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $source   Source data (Optional, default is $_REQUEST)
-	 * @param   array  $options  Array of configuration parameters (Optional)
-	 *
-	 * @since   1.7.0
-	 * @deprecated  5.0  Use Joomla\Input\Cli instead
-	 */
-	public function __construct(?array $source = null, array $options = array())
-	{
-		if (isset($options['filter']))
-		{
-			$this->filter = $options['filter'];
-		}
-		else
-		{
-			$this->filter = InputFilter::getInstance();
-		}
+    /**
+     * Constructor.
+     *
+     * @param   array  $source   Source data (Optional, default is $_REQUEST)
+     * @param   array  $options  Array of configuration parameters (Optional)
+     *
+     * @since   1.7.0
+     * @deprecated  5.0  Use Joomla\Input\Cli instead
+     */
+    public function __construct(?array $source = null, array $options = array())
+    {
+        if (isset($options['filter'])) {
+            $this->filter = $options['filter'];
+        } else {
+            $this->filter = InputFilter::getInstance();
+        }
 
-		// Get the command line options
-		$this->parseArguments();
+        // Get the command line options
+        $this->parseArguments();
 
-		// Set the options for the class.
-		$this->options = $options;
-	}
+        // Set the options for the class.
+        $this->options = $options;
+    }
 
-	/**
-	 * Method to serialize the input.
-	 *
-	 * @return  string  The serialized input.
-	 *
-	 * @since   3.0.0
-	 * @deprecated  5.0  Use Joomla\Input\Cli instead
-	 */
-	public function serialize()
-	{
-		// Load all of the inputs.
-		$this->loadAllInputs();
+    /**
+     * Method to serialize the input.
+     *
+     * @return  string  The serialized input.
+     *
+     * @since   3.0.0
+     * @deprecated  5.0  Use Joomla\Input\Cli instead
+     */
+    public function serialize()
+    {
+        // Load all of the inputs.
+        $this->loadAllInputs();
 
-		// Remove $_ENV and $_SERVER from the inputs.
-		$inputs = $this->inputs;
-		unset($inputs['env']);
-		unset($inputs['server']);
+        // Remove $_ENV and $_SERVER from the inputs.
+        $inputs = $this->inputs;
+        unset($inputs['env']);
+        unset($inputs['server']);
 
-		// Serialize the executable, args, options, data, and inputs.
-		return serialize(array($this->executable, $this->args, $this->options, $this->data, $inputs));
-	}
+        // Serialize the executable, args, options, data, and inputs.
+        return serialize(array($this->executable, $this->args, $this->options, $this->data, $inputs));
+    }
 
-	/**
-	 * Method to unserialize the input.
-	 *
-	 * @param   string  $input  The serialized input.
-	 *
-	 * @return  Input  The input object.
-	 *
-	 * @since   3.0.0
-	 * @deprecated  5.0  Use Joomla\Input\Cli instead
-	 */
-	public function unserialize($input)
-	{
-		// Unserialize the executable, args, options, data, and inputs.
-		list($this->executable, $this->args, $this->options, $this->data, $this->inputs) = unserialize($input);
+    /**
+     * Method to unserialize the input.
+     *
+     * @param   string  $input  The serialized input.
+     *
+     * @return  Input  The input object.
+     *
+     * @since   3.0.0
+     * @deprecated  5.0  Use Joomla\Input\Cli instead
+     */
+    public function unserialize($input)
+    {
+        // Unserialize the executable, args, options, data, and inputs.
+        list($this->executable, $this->args, $this->options, $this->data, $this->inputs) = unserialize($input);
 
-		// Load the filter.
-		if (isset($this->options['filter']))
-		{
-			$this->filter = $this->options['filter'];
-		}
-		else
-		{
-			$this->filter = InputFilter::getInstance();
-		}
-	}
+        // Load the filter.
+        if (isset($this->options['filter'])) {
+            $this->filter = $this->options['filter'];
+        } else {
+            $this->filter = InputFilter::getInstance();
+        }
+    }
 
-	/**
-	 * Magic method to serialize the input (PHP 8.1+ __serialize/__unserialize API).
-	 *
-	 * @return  array
-	 *
-	 * @since   3.11.0
-	 * @deprecated  5.0  Use Joomla\Input\Cli instead
-	 */
-	public function __serialize(): array
-	{
-		// Load all of the inputs.
-		$this->loadAllInputs();
+    /**
+     * Magic method to serialize the input (PHP 8.1+ __serialize/__unserialize API).
+     *
+     * @return  array
+     *
+     * @since   3.11.0
+     * @deprecated  5.0  Use Joomla\Input\Cli instead
+     */
+    public function __serialize(): array
+    {
+        // Load all of the inputs.
+        $this->loadAllInputs();
 
-		// Remove $_ENV and $_SERVER from the inputs.
-		$inputs = $this->inputs;
-		unset($inputs['env'], $inputs['server']);
+        // Remove $_ENV and $_SERVER from the inputs.
+        $inputs = $this->inputs;
+        unset($inputs['env'], $inputs['server']);
 
-		return array(
-			'executable' => $this->executable,
-			'args'       => $this->args,
-			'options'    => $this->options,
-			'data'       => $this->data,
-			'inputs'     => $inputs,
-		);
-	}
+        return array(
+            'executable' => $this->executable,
+            'args'       => $this->args,
+            'options'    => $this->options,
+            'data'       => $this->data,
+            'inputs'     => $inputs,
+        );
+    }
 
-	/**
-	 * Magic method to unserialize the input (PHP 8.1+ __serialize/__unserialize API).
-	 *
-	 * @param   array  $data  The serialized data array.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.11.0
-	 * @deprecated  5.0  Use Joomla\Input\Cli instead
-	 */
-	public function __unserialize(array $data): void
-	{
-		$this->executable = $data['executable'];
-		$this->args       = $data['args'];
-		$this->options    = $data['options'];
-		$this->data       = $data['data'];
-		$this->inputs     = $data['inputs'];
+    /**
+     * Magic method to unserialize the input (PHP 8.1+ __serialize/__unserialize API).
+     *
+     * @param   array  $data  The serialized data array.
+     *
+     * @return  void
+     *
+     * @since   3.11.0
+     * @deprecated  5.0  Use Joomla\Input\Cli instead
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->executable = $data['executable'];
+        $this->args       = $data['args'];
+        $this->options    = $data['options'];
+        $this->data       = $data['data'];
+        $this->inputs     = $data['inputs'];
 
-		// Load the filter.
-		if (isset($this->options['filter']))
-		{
-			$this->filter = $this->options['filter'];
-		}
-		else
-		{
-			$this->filter = InputFilter::getInstance();
-		}
-	}
+        // Load the filter.
+        if (isset($this->options['filter'])) {
+            $this->filter = $this->options['filter'];
+        } else {
+            $this->filter = InputFilter::getInstance();
+        }
+    }
 
-	/**
-	 * Initialise the options and arguments
-	 *
-	 * Not supported: -abc c-value
-	 *
-	 * @return  void
-	 *
-	 * @since   1.7.0
-	 * @deprecated  5.0  Use Joomla\Input\Cli instead
-	 */
-	protected function parseArguments()
-	{
-		$argv = $_SERVER['argv'];
+    /**
+     * Initialise the options and arguments
+     *
+     * Not supported: -abc c-value
+     *
+     * @return  void
+     *
+     * @since   1.7.0
+     * @deprecated  5.0  Use Joomla\Input\Cli instead
+     */
+    protected function parseArguments()
+    {
+        $argv = $_SERVER['argv'];
 
-		$this->executable = array_shift($argv);
+        $this->executable = array_shift($argv);
 
-		$out = array();
+        $out = array();
 
-		for ($i = 0, $j = count($argv); $i < $j; $i++)
-		{
-			$arg = $argv[$i];
+        for ($i = 0, $j = count($argv); $i < $j; $i++) {
+            $arg = $argv[$i];
 
-			// --foo --bar=baz
-			if (substr((string) $arg, 0, 2) === '--')
-			{
-				$eqPos = strpos((string) $arg, '=');
+            // --foo --bar=baz
+            if (substr((string) $arg, 0, 2) === '--') {
+                $eqPos = strpos((string) $arg, '=');
 
-				// --foo
-				if ($eqPos === false)
-				{
-					$key = substr((string) $arg, 2);
+                // --foo
+                if ($eqPos === false) {
+                    $key = substr((string) $arg, 2);
 
-					// --foo value
-					if ($i + 1 < $j && substr($argv[$i + 1], 0, 1) !== '-')
-					{
-						$value = $argv[$i + 1];
-						$i++;
-					}
-					else
-					{
-						$value = isset($out[$key]) ? $out[$key] : true;
-					}
+                    // --foo value
+                    if ($i + 1 < $j && substr($argv[$i + 1], 0, 1) !== '-') {
+                        $value = $argv[$i + 1];
+                        $i++;
+                    } else {
+                        $value = isset($out[$key]) ? $out[$key] : true;
+                    }
 
-					$out[$key] = $value;
-				}
+                    $out[$key] = $value;
+                }
 
-				// --bar=baz
-				else
-				{
-					$key = substr((string) $arg, 2, $eqPos - 2);
-					$value = substr((string) $arg, $eqPos + 1);
-					$out[$key] = $value;
-				}
-			}
-			elseif (substr((string) $arg, 0, 1) === '-')
-			// -k=value -abc
-			{
-				// -k=value
-				if (substr((string) $arg, 2, 1) === '=')
-				{
-					$key = substr((string) $arg, 1, 1);
-					$value = substr((string) $arg, 3);
-					$out[$key] = $value;
-				}
-				else
-				// -abc
-				{
-					$chars = str_split(substr((string) $arg, 1));
+                // --bar=baz
+                else {
+                    $key = substr((string) $arg, 2, $eqPos - 2);
+                    $value = substr((string) $arg, $eqPos + 1);
+                    $out[$key] = $value;
+                }
+            } elseif (substr((string) $arg, 0, 1) === '-') {
+                // -k=value -abc
+                // -k=value
+                if (substr((string) $arg, 2, 1) === '=') {
+                    $key = substr((string) $arg, 1, 1);
+                    $value = substr((string) $arg, 3);
+                    $out[$key] = $value;
+                } else { // -abc
+                    $chars = str_split(substr((string) $arg, 1));
 
-					foreach ($chars as $char)
-					{
-						$key = $char;
-						$value = isset($out[$key]) ? $out[$key] : true;
-						$out[$key] = $value;
-					}
+                    foreach ($chars as $char) {
+                        $key = $char;
+                        $value = isset($out[$key]) ? $out[$key] : true;
+                        $out[$key] = $value;
+                    }
 
-					// -a a-value
-					if ((count($chars) === 1) && ($i + 1 < $j) && (substr($argv[$i + 1], 0, 1) !== '-'))
-					{
-						$out[$key] = $argv[$i + 1];
-						$i++;
-					}
-				}
-			}
-			else
-			{
-				// Plain-arg
-				$this->args[] = $arg;
-			}
-		}
+                    // -a a-value
+                    if ((count($chars) === 1) && ($i + 1 < $j) && (substr($argv[$i + 1], 0, 1) !== '-')) {
+                        $out[$key] = $argv[$i + 1];
+                        $i++;
+                    }
+                }
+            } else {
+                // Plain-arg
+                $this->args[] = $arg;
+            }
+        }
 
-		$this->data = $out;
-	}
+        $this->data = $out;
+    }
 }

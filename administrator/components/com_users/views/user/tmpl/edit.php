@@ -60,7 +60,7 @@ $fieldsets = $this->form->getFieldsets();
 						</div>
 						<div class="controls">
 							<?php if ($field->fieldname == 'password') : ?>
-								<?php // Disables autocomplete ?> <input type="password" style="display:none">
+								<?php // Disables autocomplete?> <input type="password" style="display:none">
 							<?php endif; ?>
 							<?php echo $field->input; ?>
 						</div>
@@ -75,9 +75,9 @@ $fieldsets = $this->form->getFieldsets();
 			<?php endif; ?>
 
 			<?php
-			$this->ignore_fieldsets = array('user_details');
-			echo JLayoutHelper::render('joomla.edit.params', $this);
-			?>
+            $this->ignore_fieldsets = array('user_details');
+echo JLayoutHelper::render('joomla.edit.params', $this);
+?>
 
 		<?php if (!empty($this->tfaform) && $this->item->id) : ?>
 		<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'twofactorauth', JText::_('COM_USERS_USER_TWO_FACTOR_AUTH')); ?>

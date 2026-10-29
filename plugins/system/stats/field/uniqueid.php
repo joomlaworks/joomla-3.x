@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  System.stats
@@ -18,19 +19,19 @@ JLoader::register('PlgSystemStatsFormFieldBase', __DIR__ . '/base.php');
  */
 class PlgSystemStatsFormFieldUniqueid extends PlgSystemStatsFormFieldBase
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  3.5
-	 */
-	protected $type = 'Uniqueid';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     * @since  3.5
+     */
+    protected $type = 'Uniqueid';
 
-	/**
-	 * Name of the layout being used to render the field
-	 *
-	 * @var    string
-	 * @since  3.5
-	 */
-	protected $layout = 'field.uniqueid';
+    /**
+     * Name of the layout being used to render the field
+     *
+     * @var    string
+     * @since  3.5
+     */
+    protected $layout = 'field.uniqueid';
 }

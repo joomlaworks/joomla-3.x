@@ -18,12 +18,11 @@ defined('_JEXEC') or die;
 	<li class="nav-header"><?php echo JText::_('COM_CONFIG_COMPONENT_FIELDSET_LABEL'); ?></li>
 	<?php foreach ($this->components as $component) : ?>
 		<?php
-		$active = '';
-		if ($this->currentComponent === $component)
-		{
-			$active = ' class="active"';
-		}
-		?>
+        $active = '';
+	    if ($this->currentComponent === $component) {
+	        $active = ' class="active"';
+	    }
+	    ?>
 		<li<?php echo $active; ?>>
 			<a href="index.php?option=com_config&view=component&component=<?php echo $component; ?>"><?php echo JText::_($component); ?></a>
 		</li>

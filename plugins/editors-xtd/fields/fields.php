@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Editors-xtd.fields
@@ -16,56 +17,54 @@ defined('_JEXEC') or die;
  */
 class PlgButtonFields extends JPlugin
 {
-	/**
-	 * Load the language file on instantiation.
-	 *
-	 * @var    boolean
-	 * @since  3.7.0
-	 */
-	protected $autoloadLanguage = true;
+    /**
+     * Load the language file on instantiation.
+     *
+     * @var    boolean
+     * @since  3.7.0
+     */
+    protected $autoloadLanguage = true;
 
-	/**
-	 * Display the button
-	 *
-	 * @param   string  $name  The name of the button to add
-	 *
-	 * @return  JObject  The button options as JObject
-	 *
-	 * @since  3.7.0
-	 */
-	public function onDisplay($name)
-	{
-		// Check if com_fields is enabled
-		if (!JComponentHelper::isEnabled('com_fields'))
-		{
-			return;
-		}
+    /**
+     * Display the button
+     *
+     * @param   string  $name  The name of the button to add
+     *
+     * @return  JObject  The button options as JObject
+     *
+     * @since  3.7.0
+     */
+    public function onDisplay($name)
+    {
+        // Check if com_fields is enabled
+        if (!JComponentHelper::isEnabled('com_fields')) {
+            return;
+        }
 
-		// Register FieldsHelper
-		JLoader::register('FieldsHelper', JPATH_ADMINISTRATOR . '/components/com_fields/helpers/fields.php');
+        // Register FieldsHelper
+        JLoader::register('FieldsHelper', JPATH_ADMINISTRATOR . '/components/com_fields/helpers/fields.php');
 
-		// Guess the field context based on view.
-		$jinput = JFactory::getApplication()->input;
-		$context = $jinput->get('option') . '.' . $jinput->get('view');
+        // Guess the field context based on view.
+        $jinput = JFactory::getApplication()->input;
+        $context = $jinput->get('option') . '.' . $jinput->get('view');
 
-		// Validate context.
-		$context = implode('.', FieldsHelper::extract($context));
-		if (!FieldsHelper::getFields($context))
-		{
-			return;
-		}
+        // Validate context.
+        $context = implode('.', FieldsHelper::extract($context));
+        if (!FieldsHelper::getFields($context)) {
+            return;
+        }
 
-		$link = 'index.php?option=com_fields&amp;view=fields&amp;layout=modal&amp;tmpl=component&amp;context='
-			. $context . '&amp;editor=' . $name . '&amp;' . JSession::getFormToken() . '=1';
+        $link = 'index.php?option=com_fields&amp;view=fields&amp;layout=modal&amp;tmpl=component&amp;context='
+            . $context . '&amp;editor=' . $name . '&amp;' . JSession::getFormToken() . '=1';
 
-		$button          = new JObject;
-		$button->modal   = true;
-		$button->class   = 'btn';
-		$button->link    = $link;
-		$button->text    = JText::_('PLG_EDITORS-XTD_FIELDS_BUTTON_FIELD');
-		$button->name    = 'puzzle';
-		$button->options = "{handler: 'iframe', size: {x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140)}}";
+        $button          = new JObject();
+        $button->modal   = true;
+        $button->class   = 'btn';
+        $button->link    = $link;
+        $button->text    = JText::_('PLG_EDITORS-XTD_FIELDS_BUTTON_FIELD');
+        $button->name    = 'puzzle';
+        $button->options = "{handler: 'iframe', size: {x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140)}}";
 
-		return $button;
-	}
+        return $button;
+    }
 }

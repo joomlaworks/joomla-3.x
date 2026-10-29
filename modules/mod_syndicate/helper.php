@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  mod_syndicate
@@ -18,28 +19,26 @@ use Joomla\Utilities\ArrayHelper;
  */
 class ModSyndicateHelper
 {
-	/**
-	 * Gets the link
-	 *
-	 * @param   \Joomla\Registry\Registry  &$params  module parameters
-	 *
-	 * @return  array  The link as a string
-	 *
-	 * @since   1.5
-	 */
-	public static function getLink(&$params)
-	{
-		$document = JFactory::getDocument();
+    /**
+     * Gets the link
+     *
+     * @param   \Joomla\Registry\Registry  &$params  module parameters
+     *
+     * @return  array  The link as a string
+     *
+     * @since   1.5
+     */
+    public static function getLink(&$params)
+    {
+        $document = JFactory::getDocument();
 
-		foreach ($document->_links as $link => $value)
-		{
-			$value = ArrayHelper::toString($value);
+        foreach ($document->_links as $link => $value) {
+            $value = ArrayHelper::toString($value);
 
-			if (strpos($value, 'application/' . $params->get('format') . '+xml'))
-			{
-				// Since 3.18 a link carries its address ('href'): the key is the address only for its first relation
-				return isset($document->_links[$link]['href']) ? $document->_links[$link]['href'] : $link;
-			}
-		}
-	}
+            if (strpos($value, 'application/' . $params->get('format') . '+xml')) {
+                // Since 3.18 a link carries its address ('href'): the key is the address only for its first relation
+                return isset($document->_links[$link]['href']) ? $document->_links[$link]['href'] : $link;
+            }
+        }
+    }
 }

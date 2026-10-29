@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_admin
@@ -24,21 +25,20 @@ defined('_JEXEC') or die;
  */
 function admin_postinstall_languageaccess340_condition()
 {
-	$db    = JFactory::getDbo();
-	$query = $db->getQuery(true)
-		->select($db->quoteName('access'))
-		->from($db->quoteName('#__languages'))
-		->where($db->quoteName('access') . ' = ' . $db->quote('0'));
-	$db->setQuery($query);
-	$db->execute();
-	$numRows = $db->getNumRows();
+    $db    = JFactory::getDbo();
+    $query = $db->getQuery(true)
+        ->select($db->quoteName('access'))
+        ->from($db->quoteName('#__languages'))
+        ->where($db->quoteName('access') . ' = ' . $db->quote('0'));
+    $db->setQuery($query);
+    $db->execute();
+    $numRows = $db->getNumRows();
 
-	if (isset($numRows) && $numRows != 0)
-	{
-		// We have rows here so we have at minumum one row with access set to 0
-		return true;
-	}
+    if (isset($numRows) && $numRows != 0) {
+        // We have rows here so we have at minumum one row with access set to 0
+        return true;
+    }
 
-	// All good the query return nothing.
-	return false;
+    // All good the query return nothing.
+    return false;
 }

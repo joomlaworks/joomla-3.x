@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_config
@@ -15,30 +16,29 @@ defined('_JEXEC') or die;
  */
 class ConfigControllerApplicationStore extends JControllerBase
 {
-	/**
-	 * Method to GET permission value and give it to the model for storing in the database.
-	 *
-	 * @return  boolean  true on success, false when failed
-	 *
-	 * @since   3.5
-	 */
-	public function execute()
-	{
-		// Send json mime type.
-		$this->app->mimeType = 'application/json';
-		$this->app->setHeader('Content-Type', $this->app->mimeType . '; charset=' . $this->app->charSet);
-		$this->app->sendHeaders();
+    /**
+     * Method to GET permission value and give it to the model for storing in the database.
+     *
+     * @return  boolean  true on success, false when failed
+     *
+     * @since   3.5
+     */
+    public function execute()
+    {
+        // Send json mime type.
+        $this->app->mimeType = 'application/json';
+        $this->app->setHeader('Content-Type', $this->app->mimeType . '; charset=' . $this->app->charSet);
+        $this->app->sendHeaders();
 
-		// Check if user token is valid.
-		if (!JSession::checkToken('get'))
-		{
-			$this->app->enqueueMessage(JText::_('JINVALID_TOKEN'), 'error');
-			echo new JResponseJson;
-			$this->app->close();
-		}
+        // Check if user token is valid.
+        if (!JSession::checkToken('get')) {
+            $this->app->enqueueMessage(JText::_('JINVALID_TOKEN'), 'error');
+            echo new JResponseJson();
+            $this->app->close();
+        }
 
-		$model = new ConfigModelApplication;
-		echo new JResponseJson($model->storePermissions());
-		$this->app->close();
-	}
+        $model = new ConfigModelApplication();
+        echo new JResponseJson($model->storePermissions());
+        $this->app->close();
+    }
 }

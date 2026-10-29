@@ -48,9 +48,9 @@ JFactory::getDocument()->addScriptDeclaration("
 				<div>
 					<p><?php echo JText::_($this->item->xml->description); ?></p>
 					<?php
-					$this->fieldset = 'description';
-					$description = JLayoutHelper::render('joomla.edit.fieldset', $this);
-					?>
+                    $this->fieldset = 'description';
+$description = JLayoutHelper::render('joomla.edit.fieldset', $this);
+?>
 					<?php if ($description) : ?>
 						<p class="readmore">
 							<a href="#" onclick="jQuery('.nav-tabs a[href=\'#description\']').tab('show');">
@@ -60,20 +60,20 @@ JFactory::getDocument()->addScriptDeclaration("
 					<?php endif; ?>
 				</div>
 				<?php
-				$this->fieldset = 'basic';
-				$html = JLayoutHelper::render('joomla.edit.fieldset', $this);
-				echo $html ? '<hr />' . $html : '';
-				?>
+                $this->fieldset = 'basic';
+$html = JLayoutHelper::render('joomla.edit.fieldset', $this);
+echo $html ? '<hr />' . $html : '';
+?>
 			</div>
 			<div class="span3">
 				<?php
-				// Set main fields.
-				$this->fields = array(
-					'home',
-					'client_id',
-					'template'
-				);
-				?>
+// Set main fields.
+$this->fields = array(
+    'home',
+    'client_id',
+    'template'
+);
+?>
 				<?php echo JLayoutHelper::render('joomla.edit.global', $this); ?>
 			</div>
 		</div>
@@ -86,10 +86,10 @@ JFactory::getDocument()->addScriptDeclaration("
 		<?php endif; ?>
 
 		<?php
-		$this->fieldsets = array();
-		$this->ignore_fieldsets = array('basic', 'description');
-		echo JLayoutHelper::render('joomla.edit.params', $this);
-		?>
+        $this->fieldsets = array();
+$this->ignore_fieldsets = array('basic', 'description');
+echo JLayoutHelper::render('joomla.edit.params', $this);
+?>
 
 		<?php if ($user->authorise('core.edit', 'com_menus') && $this->item->client_id == 0 && $this->canDo->get('core.edit.state')) : ?>
 			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'assignment', JText::_('COM_TEMPLATES_MENUS_ASSIGNMENT')); ?>

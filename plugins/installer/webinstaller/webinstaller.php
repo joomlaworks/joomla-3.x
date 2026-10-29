@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Installer.webinstaller
@@ -28,171 +29,164 @@ use Joomla\CMS\Version;
  */
 class PlgInstallerWebinstaller extends CMSPlugin
 {
-	/**
-	 * The URL for the remote server.
-	 *
-	 * @var    string
-	 * @since  2.0
-	 */
-	const REMOTE_URL = 'https://appscdn.joomla.org/webapps/';
+    /**
+     * The URL for the remote server.
+     *
+     * @var    string
+     * @since  2.0
+     */
+    public const REMOTE_URL = 'https://appscdn.joomla.org/webapps/';
 
-	/**
-	 * The application object.
-	 *
-	 * @var    CMSApplication
-	 * @since  2.0
-	 */
-	protected $app;
+    /**
+     * The application object.
+     *
+     * @var    CMSApplication
+     * @since  2.0
+     */
+    protected $app;
 
-	/**
-	 * Affects constructor behavior. If true, language files will be loaded automatically.
-	 *
-	 * @var    boolean
-	 * @since  2.0
-	 */
-	protected $autoloadLanguage = true;
+    /**
+     * Affects constructor behavior. If true, language files will be loaded automatically.
+     *
+     * @var    boolean
+     * @since  2.0
+     */
+    protected $autoloadLanguage = true;
 
-	/**
-	 * The URL to install from
-	 *
-	 * @var    string|null
-	 * @since  1.0
-	 */
-	private $installfrom = null;
+    /**
+     * The URL to install from
+     *
+     * @var    string|null
+     * @since  1.0
+     */
+    private $installfrom = null;
 
-	/**
-	 * Event listener for the `onInstallerBeforeDisplay` event.
-	 *
-	 * @param   boolean  $showJedAndWebInstaller  Flag indicating the install from web prompt should be displayed
-	 *
-	 * @return  void
-	 *
-	 * @since   1.0
-	 */
-	public function onInstallerBeforeDisplay(&$showJedAndWebInstaller)
-	{
-		$showJedAndWebInstaller = false;
-	}
+    /**
+     * Event listener for the `onInstallerBeforeDisplay` event.
+     *
+     * @param   boolean  $showJedAndWebInstaller  Flag indicating the install from web prompt should be displayed
+     *
+     * @return  void
+     *
+     * @since   1.0
+     */
+    public function onInstallerBeforeDisplay(&$showJedAndWebInstaller)
+    {
+        $showJedAndWebInstaller = false;
+    }
 
-	/**
-	 * Event listener for the `onInstallerAddInstallationTab` event.
-	 *
-	 * @return  array  Returns an array with the tab information
-	 *
-	 * @since   2.0
-	 */
-	public function onInstallerAddInstallationTab()
-	{
-		$tab = array(
-			'name'  => 'web',
-			'label' => Text::_('COM_INSTALLER_INSTALL_FROM_WEB'),
-		);
+    /**
+     * Event listener for the `onInstallerAddInstallationTab` event.
+     *
+     * @return  array  Returns an array with the tab information
+     *
+     * @since   2.0
+     */
+    public function onInstallerAddInstallationTab()
+    {
+        $tab = array(
+            'name'  => 'web',
+            'label' => Text::_('COM_INSTALLER_INSTALL_FROM_WEB'),
+        );
 
-		// Render the input
-		ob_start();
-		include PluginHelper::getLayoutPath('installer', 'webinstaller');
-		$tab['content'] = ob_get_clean();
+        // Render the input
+        ob_start();
+        include PluginHelper::getLayoutPath('installer', 'webinstaller');
+        $tab['content'] = ob_get_clean();
 
-		return $tab;
-	}
+        return $tab;
+    }
 
-	/**
-	 * Event listener for the `onBeforeCompileHead` event.
-	 *
-	 * @return  void
-	 *
-	 * @since   2.0
-	 * @deprecated  Removed when the plugin is merged to 4.0
-	 */
-	public function onBeforeCompileHead()
-	{
-		// Installer plugins are also loaded elsewhere (e.g. Privacy: Capabilities), which have no Install from Web tab
-		$input = $this->app->input;
+    /**
+     * Event listener for the `onBeforeCompileHead` event.
+     *
+     * @return  void
+     *
+     * @since   2.0
+     * @deprecated  Removed when the plugin is merged to 4.0
+     */
+    public function onBeforeCompileHead()
+    {
+        // Installer plugins are also loaded elsewhere (e.g. Privacy: Capabilities), which have no Install from Web tab
+        $input = $this->app->input;
 
-		if (!$this->app->isClient('administrator') || $input->get('option') !== 'com_installer' || $input->get('view', 'install') !== 'install'
-			|| Factory::getDocument()->getType() !== 'html')
-		{
-			return;
-		}
+        if (!$this->app->isClient('administrator') || $input->get('option') !== 'com_installer' || $input->get('view', 'install') !== 'install'
+            || Factory::getDocument()->getType() !== 'html') {
+            return;
+        }
 
-		$installfrom = $this->getInstallFrom();
+        $installfrom = $this->getInstallFrom();
 
-		// Push language strings to the JavaScript store
-		Text::script('COM_INSTALLER_MSG_INSTALL_ENTER_A_URL');
-		Text::script('PLG_INSTALLER_WEBINSTALLER_CANNOT_INSTALL_EXTENSION_IN_PLUGIN');
-		Text::script('PLG_INSTALLER_WEBINSTALLER_REDIRECT_TO_EXTERNAL_SITE_TO_INSTALL');
+        // Push language strings to the JavaScript store
+        Text::script('COM_INSTALLER_MSG_INSTALL_ENTER_A_URL');
+        Text::script('PLG_INSTALLER_WEBINSTALLER_CANNOT_INSTALL_EXTENSION_IN_PLUGIN');
+        Text::script('PLG_INSTALLER_WEBINSTALLER_REDIRECT_TO_EXTERNAL_SITE_TO_INSTALL');
 
-		HTMLHelper::_('behavior.core');
-		HTMLHelper::_('script', 'plugins/installer/webinstaller/js/webinstaller.min.js', array('version' => 'auto'));
-		HTMLHelper::_('stylesheet', 'plugins/installer/webinstaller/css/webinstaller.min.css', array('version' => 'auto'));
+        HTMLHelper::_('behavior.core');
+        HTMLHelper::_('script', 'plugins/installer/webinstaller/js/webinstaller.min.js', array('version' => 'auto'));
+        HTMLHelper::_('stylesheet', 'plugins/installer/webinstaller/css/webinstaller.min.css', array('version' => 'auto'));
 
-		$devLevel = Version::PATCH_VERSION;
-		$extraVer = Version::EXTRA_VERSION;
+        $devLevel = Version::PATCH_VERSION;
+        $extraVer = Version::EXTRA_VERSION;
 
-		if (!empty($extraVer))
-		{
-			$devLevel .= '-' . $extraVer;
-		}
+        if (!empty($extraVer)) {
+            $devLevel .= '-' . $extraVer;
+        }
 
-		$installer = new Installer;
-		$manifest  = $installer->isManifest(__DIR__ . '/webinstaller.xml');
+        $installer = new Installer();
+        $manifest  = $installer->isManifest(__DIR__ . '/webinstaller.xml');
 
-		$doc = Factory::getDocument();
+        $doc = Factory::getDocument();
 
-		$doc->addScriptOptions(
-			'plg_installer_webinstaller',
-			array(
-				'base_url'        => self::REMOTE_URL,
-				'installat_url'   => base64_encode(Uri::current() . '?option=com_installer&view=install'),
-				'installfrom_url' => $installfrom,
-				'product'         => base64_encode(Version::PRODUCT),
-				'release'         => base64_encode(Version::MAJOR_VERSION . '.' . Version::MINOR_VERSION),
-				'dev_level'       => base64_encode($devLevel),
-				'installfromon'   => $installfrom ? 1 : 0,
-				'language'        => base64_encode(Factory::getLanguage()->getTag()),
-				// The plugin's version, which the remote server compares with its latest release
-				'pv'              => base64_encode($manifest ? (string) $manifest->version : ''),
-			)
-		);
-	}
+        $doc->addScriptOptions(
+            'plg_installer_webinstaller',
+            array(
+                'base_url'        => self::REMOTE_URL,
+                'installat_url'   => base64_encode(Uri::current() . '?option=com_installer&view=install'),
+                'installfrom_url' => $installfrom,
+                'product'         => base64_encode(Version::PRODUCT),
+                'release'         => base64_encode(Version::MAJOR_VERSION . '.' . Version::MINOR_VERSION),
+                'dev_level'       => base64_encode($devLevel),
+                'installfromon'   => $installfrom ? 1 : 0,
+                'language'        => base64_encode(Factory::getLanguage()->getTag()),
+                // The plugin's version, which the remote server compares with its latest release
+                'pv'              => base64_encode($manifest ? (string) $manifest->version : ''),
+            )
+        );
+    }
 
-	/**
-	 * Get the install from URL
-	 *
-	 * @return  string
-	 *
-	 * @since   1.0
-	 */
-	private function getInstallFrom()
-	{
-		if ($this->installfrom === null)
-		{
-			$installfrom = base64_decode($this->app->input->getBase64('installfrom', ''));
+    /**
+     * Get the install from URL
+     *
+     * @return  string
+     *
+     * @since   1.0
+     */
+    private function getInstallFrom()
+    {
+        if ($this->installfrom === null) {
+            $installfrom = base64_decode($this->app->input->getBase64('installfrom', ''));
 
-			// Only web addresses: without "schemes", the URL rule also accepts file:, gopher: and others
-			$field = new SimpleXMLElement('<field schemes="http,https"></field>');
-			$rule  = new UrlRule;
+            // Only web addresses: without "schemes", the URL rule also accepts file:, gopher: and others
+            $field = new SimpleXMLElement('<field schemes="http,https"></field>');
+            $rule  = new UrlRule();
 
-			if (!$rule->test($field, $installfrom))
-			{
-				$installfrom = '';
-			}
-			elseif (preg_match('/\.xml\s*$/', $installfrom))
-			{
-				$update = new Update;
-				$update->loadFromXml($installfrom);
-				$download    = $update->get('downloadurl', false);
-				$package_url = $download ? trim((string) $download->_data) : '';
+            if (!$rule->test($field, $installfrom)) {
+                $installfrom = '';
+            } elseif (preg_match('/\.xml\s*$/', $installfrom)) {
+                $update = new Update();
+                $update->loadFromXml($installfrom);
+                $download    = $update->get('downloadurl', false);
+                $package_url = $download ? trim((string) $download->_data) : '';
 
-				if ($package_url && $rule->test($field, $package_url))
-				{
-					$installfrom = $package_url;
-				}
-			}
+                if ($package_url && $rule->test($field, $package_url)) {
+                    $installfrom = $package_url;
+                }
+            }
 
-			$this->installfrom = $installfrom;
-		}
+            $this->installfrom = $installfrom;
+        }
 
-		return $this->installfrom;
-	}
+        return $this->installfrom;
+    }
 }

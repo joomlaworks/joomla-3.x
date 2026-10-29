@@ -13,7 +13,7 @@ use Joomla\Registry\Registry;
 
 JHtml::_('bootstrap.tooltip');
 
-$params     = new Registry;
+$params     = new Registry();
 $dispatcher = JEventDispatcher::getInstance();
 ?>
 
@@ -40,7 +40,7 @@ $dispatcher = JEventDispatcher::getInstance();
 		</td>
 
 		<td class="dimensions">
-			<?php // Can we figure out the dimensions of the video? ?>
+			<?php // Can we figure out the dimensions of the video??>
 		</td>
 
 		<td class="filesize">

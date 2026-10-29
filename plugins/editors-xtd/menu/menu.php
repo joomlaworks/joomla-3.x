@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Editors-xtd.menu
@@ -16,45 +17,44 @@ defined('_JEXEC') or die;
  */
 class PlgButtonMenu extends JPlugin
 {
-	/**
-	 * Load the language file on instantiation.
-	 *
-	 * @var    boolean
-	 * @since  3.7.0
-	 */
-	protected $autoloadLanguage = true;
+    /**
+     * Load the language file on instantiation.
+     *
+     * @var    boolean
+     * @since  3.7.0
+     */
+    protected $autoloadLanguage = true;
 
-	/**
-	 * Display the button
-	 *
-	 * @param   string  $name  The name of the button to add
-	 *
-	 * @since  3.7.0
-	 * @return array
-	 */
-	public function onDisplay($name)
-	{
-		/*
-		 * Use the built-in element view to select the menu item.
-		 * Currently uses blank class.
-		 */
-		$user  = JFactory::getUser();
+    /**
+     * Display the button
+     *
+     * @param   string  $name  The name of the button to add
+     *
+     * @since  3.7.0
+     * @return array
+     */
+    public function onDisplay($name)
+    {
+        /*
+         * Use the built-in element view to select the menu item.
+         * Currently uses blank class.
+         */
+        $user  = JFactory::getUser();
 
-		if ($user->authorise('core.create', 'com_menus')
-			|| $user->authorise('core.edit', 'com_menus'))
-		{
-		$link = 'index.php?option=com_menus&amp;view=items&amp;layout=modal&amp;tmpl=component&amp;'
-			. JSession::getFormToken() . '=1&amp;editor=' . $name;
+        if ($user->authorise('core.create', 'com_menus')
+            || $user->authorise('core.edit', 'com_menus')) {
+            $link = 'index.php?option=com_menus&amp;view=items&amp;layout=modal&amp;tmpl=component&amp;'
+                . JSession::getFormToken() . '=1&amp;editor=' . $name;
 
-		$button          = new JObject;
-		$button->modal   = true;
-		$button->class   = 'btn';
-		$button->link    = $link;
-		$button->text    = JText::_('PLG_EDITORS-XTD_MENU_BUTTON_MENU');
-		$button->name    = 'share-alt';
-		$button->options = "{handler: 'iframe', size: {x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140)}}";
+            $button          = new JObject();
+            $button->modal   = true;
+            $button->class   = 'btn';
+            $button->link    = $link;
+            $button->text    = JText::_('PLG_EDITORS-XTD_MENU_BUTTON_MENU');
+            $button->name    = 'share-alt';
+            $button->options = "{handler: 'iframe', size: {x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140)}}";
 
-		return $button;
-		}
-	}
+            return $button;
+        }
+    }
 }

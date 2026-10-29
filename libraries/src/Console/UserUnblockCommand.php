@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -17,27 +18,27 @@ defined('JPATH_PLATFORM') or die;
  */
 class UserUnblockCommand extends UserBlockCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'user:unblock';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'user:unblock';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Unblock a user';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Unblock a user';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Unblocks a user, like Users: Manage > Unblock, so they can log in again.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Unblocks a user, like Users: Manage > Unblock, so they can log in again.';
 
-	/**
-	 * @var    integer
-	 * @since  3.17.0
-	 */
-	protected $block = 0;
+    /**
+     * @var    integer
+     * @since  3.17.0
+     */
+    protected $block = 0;
 }

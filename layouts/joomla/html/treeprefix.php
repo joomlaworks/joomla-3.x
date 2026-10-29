@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Libraries
  * @subpackage  HTML
@@ -20,7 +21,6 @@ defined('_JEXEC') or die;
 
 extract($displayData);
 
-if ($level > 1)
-{
-	echo '<span class="muted">' . str_repeat('&#9482;&nbsp;&nbsp;&nbsp;', (int) $level - 2) . '</span>&ndash;&nbsp;';
+if ($level > 1) {
+    echo '<span class="muted">' . str_repeat('&#9482;&nbsp;&nbsp;&nbsp;', (int) $level - 2) . '</span>&ndash;&nbsp;';
 }

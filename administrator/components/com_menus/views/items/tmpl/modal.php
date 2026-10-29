@@ -11,9 +11,8 @@ defined('_JEXEC') or die;
 
 $app = JFactory::getApplication();
 
-if ($app->isClient('site'))
-{
-	JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
+if ($app->isClient('site')) {
+    JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
 }
 
 JHtml::addIncludePath(JPATH_COMPONENT_ADMINISTRATOR . '/helpers/html');
@@ -34,12 +33,11 @@ $listOrder    = $this->escape($this->state->get('list.ordering'));
 $listDirn     = $this->escape($this->state->get('list.direction'));
 $link         = 'index.php?option=com_menus&view=items&layout=modal&tmpl=component&' . JSession::getFormToken() . '=1';
 
-if (!empty($editor))
-{
-	// This view is used also in com_menus. Load the xtd script only if the editor is set!
-	JFactory::getDocument()->addScriptOptions('xtd-menus', array('editor' => $editor));
-	$onclick = "jSelectMenuItem";
-	$link    = 'index.php?option=com_menus&view=items&layout=modal&tmpl=component&editor=' . $editor . '&' . JSession::getFormToken() . '=1';
+if (!empty($editor)) {
+    // This view is used also in com_menus. Load the xtd script only if the editor is set!
+    JFactory::getDocument()->addScriptOptions('xtd-menus', array('editor' => $editor));
+    $onclick = "jSelectMenuItem";
+    $link    = 'index.php?option=com_menus&view=items&layout=modal&tmpl=component&editor=' . $editor . '&' . JSession::getFormToken() . '=1';
 }
 ?>
 <div class="container-popup">
@@ -69,7 +67,7 @@ if (!empty($editor))
 							<?php echo JHtml::_('searchtools.sort', 'COM_MENUS_HEADING_HOME', 'a.home', $listDirn, $listOrder); ?>
 						</th>
 						<th width="10%" class="nowrap hidden-phone">
-							<?php echo JHtml::_('searchtools.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
+							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 						</th>
 						<th width="15%" class="nowrap hidden-phone">
 							<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_LANGUAGE', 'language', $listDirn, $listOrder); ?>
@@ -89,22 +87,16 @@ if (!empty($editor))
 				<tbody>
 				<?php foreach ($this->items as $i => $item) : ?>
 				<?php $uselessMenuItem = in_array($item->type, array('separator', 'heading', 'alias', 'url', 'container')); ?>
-					<?php if ($item->language && JLanguageMultilang::isEnabled())
-					{
-						if ($item->language !== '*')
-						{
-							$language = $item->language;
-						}
-						else
-						{
-							$language = '';
-						}
+					<?php if ($item->language && JLanguageMultilang::isEnabled()) {
+					    if ($item->language !== '*') {
+					        $language = $item->language;
+					    } else {
+					        $language = '';
+					    }
+					} elseif (!JLanguageMultilang::isEnabled()) {
+					    $language = '';
 					}
-					elseif (!JLanguageMultilang::isEnabled())
-					{
-						$language = '';
-					}
-					?>
+				    ?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="center">
 							<?php echo JHtml::_('MenusHtml.Menus.state', $item->published, $i, 0); ?>

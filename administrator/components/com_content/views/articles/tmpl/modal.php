@@ -11,9 +11,8 @@ defined('_JEXEC') or die;
 
 $app = JFactory::getApplication();
 
-if ($app->isClient('site'))
-{
-	JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
+if ($app->isClient('site')) {
+    JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
 }
 
 JLoader::register('ContentHelperRoute', JPATH_ROOT . '/components/com_content/helpers/route.php');
@@ -42,11 +41,10 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $onclick   = $this->escape($function);
 
-if (!empty($editor))
-{
-	// This view is used also in com_menus. Load the xtd script only if the editor is set!
-	JFactory::getDocument()->addScriptOptions('xtd-articles', array('editor' => $editor));
-	$onclick = "jSelectArticle";
+if (!empty($editor)) {
+    // This view is used also in com_menus. Load the xtd script only if the editor is set!
+    JFactory::getDocument()->addScriptOptions('xtd-articles', array('editor' => $editor));
+    $onclick = "jSelectArticle";
 }
 ?>
 <div class="container-popup">
@@ -94,46 +92,39 @@ if (!empty($editor))
 				</tfoot>
 				<tbody>
 				<?php
-				$iconStates = array(
-					-2 => 'icon-trash',
-					0  => 'icon-unpublish',
-					1  => 'icon-publish',
-					2  => 'icon-archive',
-				);
-				?>
+                $iconStates = array(
+                    -2 => 'icon-trash',
+                    0  => 'icon-unpublish',
+                    1  => 'icon-publish',
+                    2  => 'icon-archive',
+                );
+		    ?>
 				<?php foreach ($this->items as $i => $item) : ?>
-					<?php if ($item->language && JLanguageMultilang::isEnabled())
-					{
-						$tag = strlen((string) $item->language);
-						if ($tag == 5)
-						{
-							$lang = substr((string) $item->language, 0, 2);
-						}
-						elseif ($tag == 6)
-						{
-							$lang = substr((string) $item->language, 0, 3);
-						}
-						else {
-							$lang = '';
-						}
+					<?php if ($item->language && JLanguageMultilang::isEnabled()) {
+					    $tag = strlen((string) $item->language);
+					    if ($tag == 5) {
+					        $lang = substr((string) $item->language, 0, 2);
+					    } elseif ($tag == 6) {
+					        $lang = substr((string) $item->language, 0, 3);
+					    } else {
+					        $lang = '';
+					    }
+					} elseif (!JLanguageMultilang::isEnabled()) {
+					    $lang = '';
 					}
-					elseif (!JLanguageMultilang::isEnabled())
-					{
-						$lang = '';
-					}
-					?>
+				    ?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="center">
 							<span class="<?php echo $iconStates[$this->escape($item->state)]; ?>" aria-hidden="true"></span>
 						</td>
 						<td>
 							<?php $attribs = 'data-function="' . $this->escape($onclick) . '"'
-								. ' data-id="' . $item->id . '"'
-								. ' data-title="' . $this->escape($item->title) . '"'
-								. ' data-cat-id="' . $this->escape($item->catid) . '"'
-								. ' data-uri="' . $this->escape(ContentHelperRoute::getArticleRoute($item->id, $item->catid, $item->language)) . '"'
-								. ' data-language="' . $this->escape($lang) . '"';
-							?>
+				                . ' data-id="' . $item->id . '"'
+				                . ' data-title="' . $this->escape($item->title) . '"'
+				                . ' data-cat-id="' . $this->escape($item->catid) . '"'
+				                . ' data-uri="' . $this->escape(ContentHelperRoute::getArticleRoute($item->id, $item->catid, $item->language)) . '"'
+				                . ' data-language="' . $this->escape($lang) . '"';
+				    ?>
 							<a class="select-link" href="javascript:void(0)" <?php echo $attribs; ?>>
 								<?php echo $this->escape($item->title); ?></a>
 							<span class="small break-word">

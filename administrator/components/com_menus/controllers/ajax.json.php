@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_menus
@@ -18,71 +19,61 @@ use Joomla\CMS\Language\LanguageHelper;
  */
 class MenusControllerAjax extends JControllerLegacy
 {
-	/**
-	 * Method to fetch associations of a menu item
-	 *
-	 * The method assumes that the following http parameters are passed in an Ajax Get request:
-	 * token: the form token
-	 * assocId: the id of the menu item whose associations are to be returned
-	 * excludeLang: the association for this language is to be excluded
-	 *
-	 * @return  null
-	 *
-	 * @since  3.9.0
-	 */
-	public function fetchAssociations()
-	{
-		if (!JSession::checkToken('get'))
-		{
-			echo new JResponseJson(null, JText::_('JINVALID_TOKEN'), true);
-		}
-		else
-		{
-			$input     = JFactory::getApplication()->input;
-			$extension = $input->get('extension');
+    /**
+     * Method to fetch associations of a menu item
+     *
+     * The method assumes that the following http parameters are passed in an Ajax Get request:
+     * token: the form token
+     * assocId: the id of the menu item whose associations are to be returned
+     * excludeLang: the association for this language is to be excluded
+     *
+     * @return  null
+     *
+     * @since  3.9.0
+     */
+    public function fetchAssociations()
+    {
+        if (!JSession::checkToken('get')) {
+            echo new JResponseJson(null, JText::_('JINVALID_TOKEN'), true);
+        } else {
+            $input     = JFactory::getApplication()->input;
+            $extension = $input->get('extension');
 
-			$assocId   = $input->getInt('assocId', 0);
+            $assocId   = $input->getInt('assocId', 0);
 
-			if ($assocId == 0)
-			{
-				echo new JResponseJson(null, JText::sprintf('JLIB_FORM_VALIDATE_FIELD_INVALID', 'assocId'), true);
+            if ($assocId == 0) {
+                echo new JResponseJson(null, JText::sprintf('JLIB_FORM_VALIDATE_FIELD_INVALID', 'assocId'), true);
 
-				return;
-			}
+                return;
+            }
 
-			$excludeLang = $input->get('excludeLang', '', 'STRING');
+            $excludeLang = $input->get('excludeLang', '', 'STRING');
 
-			$associations = JLanguageAssociations::getAssociations('com_menus', '#__menu', 'com_menus.item', (int) $assocId, 'id', '', '');
+            $associations = JLanguageAssociations::getAssociations('com_menus', '#__menu', 'com_menus.item', (int) $assocId, 'id', '', '');
 
-			unset($associations[$excludeLang]);
+            unset($associations[$excludeLang]);
 
-			// Add the title to each of the associated records
-			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_menus/tables');
-			$menuTable = JTable::getInstance('Menu', 'JTable', array());
+            // Add the title to each of the associated records
+            JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_menus/tables');
+            $menuTable = JTable::getInstance('Menu', 'JTable', array());
 
-			foreach ($associations as $lang => $association)
-			{
-				$menuTable->load($association->id);
-				$associations[$lang]->title = $menuTable->title;
-			}
+            foreach ($associations as $lang => $association) {
+                $menuTable->load($association->id);
+                $associations[$lang]->title = $menuTable->title;
+            }
 
-			$countContentLanguages = count(LanguageHelper::getContentLanguages(array(0, 1)));
+            $countContentLanguages = count(LanguageHelper::getContentLanguages(array(0, 1)));
 
-			if (count($associations) == 0)
-			{
-				$message = JText::_('JGLOBAL_ASSOCIATIONS_PROPAGATE_MESSAGE_NONE');
-			}
-			elseif ($countContentLanguages > count($associations) + 2)
-			{
-				$tags    = implode(', ', array_keys($associations));
-				$message = JText::sprintf('JGLOBAL_ASSOCIATIONS_PROPAGATE_MESSAGE_SOME', $tags);
-			}
-			else
-			{
-				$message = JText::_('JGLOBAL_ASSOCIATIONS_PROPAGATE_MESSAGE_ALL');
-			}
+            if (count($associations) == 0) {
+                $message = JText::_('JGLOBAL_ASSOCIATIONS_PROPAGATE_MESSAGE_NONE');
+            } elseif ($countContentLanguages > count($associations) + 2) {
+                $tags    = implode(', ', array_keys($associations));
+                $message = JText::sprintf('JGLOBAL_ASSOCIATIONS_PROPAGATE_MESSAGE_SOME', $tags);
+            } else {
+                $message = JText::_('JGLOBAL_ASSOCIATIONS_PROPAGATE_MESSAGE_ALL');
+            }
 
-			echo new JResponseJson($associations, $message);
-		}
-	}
+            echo new JResponseJson($associations, $message);
+        }
+    }
 }

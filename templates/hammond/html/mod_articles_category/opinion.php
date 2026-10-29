@@ -15,15 +15,15 @@ class_exists('HammondHelper', false) || require_once dirname(__DIR__, 2) . '/hel
 /** @var array $list  @var Joomla\Registry\Registry $params */
 $items = array_slice(array_values($list), HammondHelper::skip($params));
 
-if (!$items)
-{
-	return;
+if (!$items) {
+    return;
 }
 
 // Opinion: the columnist first, then the title and a short excerpt
 ?>
 <div class="items layout-opinion">
-	<?php foreach ($items as $item) : $link = HammondHelper::link($item); $author = HammondHelper::author($item); ?>
+	<?php foreach ($items as $item) : $link = HammondHelper::link($item);
+	    $author = HammondHelper::author($item); ?>
 	<article class="item">
 		<div class="itemAuthorBlock">
 			<span class="avatar" aria-hidden="true" style="--hue:<?php echo (int) (crc32($author) % 360); ?>"><?php echo HammondHelper::e(HammondHelper::initials($author)); ?></span>

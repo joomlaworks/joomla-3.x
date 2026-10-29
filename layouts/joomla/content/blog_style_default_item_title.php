@@ -17,13 +17,13 @@ $currentDate = JFactory::getDate()->format('Y-m-d H:i:s');
 
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 ?>
-<?php if ($displayData->state == 0 || $params->get('show_title') || ($params->get('show_author') && !empty($displayData->author ))) : ?>
+<?php if ($displayData->state == 0 || $params->get('show_title') || ($params->get('show_author') && !empty($displayData->author))) : ?>
 	<div class="page-header">
 		<?php if ($params->get('show_title')) : ?>
 			<h2>
 				<?php if ($params->get('link_titles') && ($params->get('access-view') || $params->get('show_noauth', '0') == '1')) : ?>
 					<a href="<?php echo JRoute::_(
-						ContentHelperRoute::getArticleRoute($displayData->slug, $displayData->catid, $displayData->language)
+					    ContentHelperRoute::getArticleRoute($displayData->slug, $displayData->catid, $displayData->language)
 					); ?>">
 						<?php echo $this->escape($displayData->title); ?>
 					</a>

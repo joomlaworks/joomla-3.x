@@ -18,7 +18,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 ?>
 <div id="installer-manage" class="clearfix">
 	<form action="<?php echo JRoute::_('index.php?option=com_installer&view=updatesites'); ?>" method="post" name="adminForm" id="adminForm">
-		<?php if (!empty( $this->sidebar)) : ?>
+		<?php if (!empty($this->sidebar)) : ?>
 		<div id="j-sidebar-container" class="span2">
 			<?php echo $this->sidebar; ?>
 		</div>
@@ -71,7 +71,10 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 				</tfoot>
 				<tbody>
 				<?php foreach ($this->items as $i => $item) : ?>
-					<tr class="row<?php echo $i % 2; if ($item->enabled == 2) echo ' protected'; ?>">
+					<tr class="row<?php echo $i % 2;
+				    if ($item->enabled == 2) {
+				        echo ' protected';
+				    } ?>">
 						<td class="center">
 							<?php echo JHtml::_('grid.id', $i, $item->update_site_id); ?>
 						</td>

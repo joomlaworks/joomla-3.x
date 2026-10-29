@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_sampledata
@@ -10,9 +11,8 @@
 defined('_JEXEC') or die;
 
 // Installing a set replaces the one installed before and changes the site's template: Super Users only
-if (!JFactory::getUser()->authorise('core.admin'))
-{
-	return;
+if (!JFactory::getUser()->authorise('core.admin')) {
+    return;
 }
 
 // Include dependencies.

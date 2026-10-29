@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -19,89 +20,88 @@ use Joomla\CMS\Factory;
  */
 class SessionGcCommand extends AbstractCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'session:gc';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'session:gc';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Perform session garbage collection';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Perform session garbage collection';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Removes expired sessions from the configured session handler. '
-		. 'The site and the administrator share the same session storage and lifetime here, so --application only exists for compatibility with Joomla 4 and later.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Removes expired sessions from the configured session handler. '
+        . 'The site and the administrator share the same session storage and lifetime here, so --application only exists for compatibility with Joomla 4 and later.';
 
-	/**
-	 * @var    boolean
-	 * @since  3.17.0
-	 */
-	protected $dryRun = true;
+    /**
+     * @var    boolean
+     * @since  3.17.0
+     */
+    protected $dryRun = true;
 
-	/**
-	 * @var    boolean
-	 * @since  3.17.0
-	 */
-	protected $logged = false;
+    /**
+     * @var    boolean
+     * @since  3.17.0
+     */
+    protected $logged = false;
 
-	/**
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	protected function configure()
-	{
-		$this->addOption('application', null, self::OPTION_REQUIRED, 'The application to run garbage collection for (site or administrator)', 'site');
-	}
+    /**
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    protected function configure()
+    {
+        $this->addOption('application', null, self::OPTION_REQUIRED, 'The application to run garbage collection for (site or administrator)', 'site');
+    }
 
-	/**
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	protected function doExecute(CommandIO $io)
-	{
-		$application = (string) $io->getOption('application');
+    /**
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    protected function doExecute(CommandIO $io)
+    {
+        $application = (string) $io->getOption('application');
 
-		if (!in_array($application, array('site', 'administrator'), true))
-		{
-			$io->error('The --application option must be "site" or "administrator".');
+        if (!in_array($application, array('site', 'administrator'), true)) {
+            $io->error('The --application option must be "site" or "administrator".');
 
-			return self::INVALID;
-		}
+            return self::INVALID;
+        }
 
-		$io->title('Running Session Garbage Collection');
+        $io->title('Running Session Garbage Collection');
 
-		// The command line's own session is in memory only, so clean the configured session storage directly
-		$config  = Factory::getConfig();
-		$storage = \JSessionStorage::getInstance($config->get('session_handler', 'none'));
-		$expire  = (int) $config->get('lifetime') ? (int) $config->get('lifetime') * 60 : 900;
+        // The command line's own session is in memory only, so clean the configured session storage directly
+        $config  = Factory::getConfig();
+        $storage = \JSessionStorage::getInstance($config->get('session_handler', 'none'));
+        $expire  = (int) $config->get('lifetime') ? (int) $config->get('lifetime') * 60 : 900;
 
-		if ($io->isDryRun())
-		{
-			$io->plan(sprintf('Remove the sessions older than %d minutes from the "%s" session storage', $expire / 60, $config->get('session_handler', 'none')),
-				array('action' => 'gc', 'handler' => $config->get('session_handler', 'none'), 'olderThanSeconds' => $expire));
+        if ($io->isDryRun()) {
+            $io->plan(
+                sprintf('Remove the sessions older than %d minutes from the "%s" session storage', $expire / 60, $config->get('session_handler', 'none')),
+                array('action' => 'gc', 'handler' => $config->get('session_handler', 'none'), 'olderThanSeconds' => $expire)
+            );
 
-			return self::SUCCESS;
-		}
+            return self::SUCCESS;
+        }
 
-		if ($storage->gc($expire) === false)
-		{
-			$io->error('Garbage collection was not completed. Either the operation failed or it is not supported on your platform.');
+        if ($storage->gc($expire) === false) {
+            $io->error('Garbage collection was not completed. Either the operation failed or it is not supported on your platform.');
 
-			return self::FAILURE;
-		}
+            return self::FAILURE;
+        }
 
-		$io->success('Garbage collection completed.');
+        $io->success('Garbage collection completed.');
 
-		return self::SUCCESS;
-	}
+        return self::SUCCESS;
+    }
 }

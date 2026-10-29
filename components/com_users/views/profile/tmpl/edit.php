@@ -47,12 +47,12 @@ $lang->load('plg_user_profile', JPATH_ADMINISTRATOR);
 		}
 	</script>
 	<form id="member-profile" action="<?php echo JRoute::_('index.php?option=com_users&task=profile.save'); ?>" method="post" class="form-validate form-horizontal well" enctype="multipart/form-data">
-		<?php // Iterate through the form fieldsets and display each one. ?>
+		<?php // Iterate through the form fieldsets and display each one.?>
 		<?php foreach ($this->form->getFieldsets() as $group => $fieldset) : ?>
 			<?php $fields = $this->form->getFieldset($group); ?>
 			<?php if (count($fields)) : ?>
 				<fieldset>
-					<?php // If the fieldset has a label set, display it as the legend. ?>
+					<?php // If the fieldset has a label set, display it as the legend.?>
 					<?php if (isset($fieldset->label)) : ?>
 						<legend>
 							<?php echo JText::_($fieldset->label); ?>
@@ -63,9 +63,9 @@ $lang->load('plg_user_profile', JPATH_ADMINISTRATOR);
 							<?php echo $this->escape(JText::_($fieldset->description)); ?>
 						</p>
 					<?php endif; ?>
-					<?php // Iterate through the fields in the set and display them. ?>
+					<?php // Iterate through the fields in the set and display them.?>
 					<?php foreach ($fields as $field) : ?>
-						<?php // If the field is hidden, just display the input. ?>
+						<?php // If the field is hidden, just display the input.?>
 						<?php if ($field->hidden) : ?>
 							<?php echo $field->input; ?>
 						<?php else : ?>
@@ -80,7 +80,7 @@ $lang->load('plg_user_profile', JPATH_ADMINISTRATOR);
 								</div>
 								<div class="controls">
 									<?php if ($field->fieldname === 'password1') : ?>
-										<?php // Disables autocomplete ?>
+										<?php // Disables autocomplete?>
 										<input type="password" style="display:none">
 									<?php endif; ?>
 									<?php echo $field->input; ?>

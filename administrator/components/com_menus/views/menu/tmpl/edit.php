@@ -39,14 +39,14 @@ JFactory::getDocument()->addScriptDeclaration("
 			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'details', JText::_('COM_MENUS_MENU_DETAILS')); ?>
 
 			<?php
-			echo $this->form->renderField('menutype');
+            echo $this->form->renderField('menutype');
 
-			echo $this->form->renderField('description');
+echo $this->form->renderField('description');
 
-			echo $this->form->renderField('client_id');
+echo $this->form->renderField('client_id');
 
-			echo $this->form->renderField('preset');
-			?>
+echo $this->form->renderField('preset');
+?>
 
 			<?php echo JHtml::_('bootstrap.endTab'); ?>
 

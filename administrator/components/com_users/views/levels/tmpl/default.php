@@ -21,15 +21,14 @@ $listOrder  = $this->escape($this->state->get('list.ordering'));
 $listDirn   = $this->escape($this->state->get('list.direction'));
 $saveOrder  = $listOrder == 'a.ordering';
 
-if ($saveOrder)
-{
-	$saveOrderingUrl = 'index.php?option=com_users&task=levels.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'levelList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
+if ($saveOrder) {
+    $saveOrderingUrl = 'index.php?option=com_users&task=levels.saveOrderAjax&tmpl=component';
+    JHtml::_('sortablelist.sortable', 'levelList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 }
 
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_users&view=levels'); ?>" method="post" id="adminForm" name="adminForm">
-<?php if (!empty( $this->sidebar)) : ?>
+<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -74,34 +73,30 @@ if ($saveOrder)
 				<tbody>
 				<?php $count = count($this->items); ?>
 				<?php foreach ($this->items as $i => $item) :
-					$ordering  = ($listOrder == 'a.ordering');
-					$canCreate = $user->authorise('core.create',     'com_users');
-					$canEdit   = $user->authorise('core.edit',       'com_users');
-					$canChange = $user->authorise('core.edit.state', 'com_users');
+				    $ordering  = ($listOrder == 'a.ordering');
+				    $canCreate = $user->authorise('core.create', 'com_users');
+				    $canEdit   = $user->authorise('core.edit', 'com_users');
+				    $canChange = $user->authorise('core.edit.state', 'com_users');
 
-					// Decode level groups
-					$groups = json_decode((string) $item->rules);
+				    // Decode level groups
+				    $groups = json_decode((string) $item->rules);
 
-					// If this group is super admin and this user is not super admin, $canEdit is false
-					if (!JFactory::getUser()->authorise('core.admin') && JAccess::checkGroup($groups[0], 'core.admin'))
-					{
-						$canEdit   = false;
-						$canChange = false;
-					}
-					?>
+				    // If this group is super admin and this user is not super admin, $canEdit is false
+				    if (!JFactory::getUser()->authorise('core.admin') && JAccess::checkGroup($groups[0], 'core.admin')) {
+				        $canEdit   = false;
+				        $canChange = false;
+				    }
+				    ?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="order nowrap center hidden-phone">
 							<?php
-							$iconClass = '';
-							if (!$canChange)
-							{
-								$iconClass = ' inactive';
-							}
-							elseif (!$saveOrder)
-							{
-								$iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
-							}
-							?>
+				            $iconClass = '';
+				    if (!$canChange) {
+				        $iconClass = ' inactive';
+				    } elseif (!$saveOrder) {
+				        $iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
+				    }
+				    ?>
 							<span class="sortable-handler<?php echo $iconClass ?>">
 								<span class="icon-menu" aria-hidden="true"></span>
 							</span>

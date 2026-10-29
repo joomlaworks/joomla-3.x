@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -21,148 +22,139 @@ use Joomla\CMS\Updater\Updater;
  */
 class ExtensionUpdateCommand extends AbstractExtensionCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'extension:update';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'extension:update';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Update extensions';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Update extensions';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Updates the given extensions, like Extensions: Update, using the updates found by update:extensions:check '
-		. '(which lists their extension IDs). Download keys set for an update site are used. Joomla itself is updated with core:update.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Updates the given extensions, like Extensions: Update, using the updates found by update:extensions:check '
+        . '(which lists their extension IDs). Download keys set for an update site are used. Joomla itself is updated with core:update.';
 
-	/**
-	 * @var    boolean
-	 * @since  3.17.0
-	 */
-	protected $dryRun = true;
+    /**
+     * @var    boolean
+     * @since  3.17.0
+     */
+    protected $dryRun = true;
 
-	/**
-	 * It installs code it didn't make (a package's PHP files and install script).
-	 *
-	 * @param   array|null  $options    The options of a run
-	 * @param   array|null  $arguments  The arguments of a run
-	 *
-	 * @return  boolean
-	 *
-	 * @since   3.17.0
-	 */
-	public function writesCode(?array $options = null, ?array $arguments = null)
-	{
-		return true;
-	}
+    /**
+     * It installs code it didn't make (a package's PHP files and install script).
+     *
+     * @param   array|null  $options    The options of a run
+     * @param   array|null  $arguments  The arguments of a run
+     *
+     * @return  boolean
+     *
+     * @since   3.17.0
+     */
+    public function writesCode(?array $options = null, ?array $arguments = null)
+    {
+        return true;
+    }
 
-	/**
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	protected function configure()
-	{
-		$this->addArgument('extensionId', self::ARGUMENT_REQUIRED | self::ARGUMENT_ARRAY, 'IDs of the extensions to update (see update:extensions:check)');
-	}
+    /**
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    protected function configure()
+    {
+        $this->addArgument('extensionId', self::ARGUMENT_REQUIRED | self::ARGUMENT_ARRAY, 'IDs of the extensions to update (see update:extensions:check)');
+    }
 
-	/**
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	protected function doExecute(CommandIO $io)
-	{
-		$io->title('Update Extensions');
+    /**
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    protected function doExecute(CommandIO $io)
+    {
+        $io->title('Update Extensions');
 
-		$db      = Factory::getDbo();
-		$updates = array();
+        $db      = Factory::getDbo();
+        $updates = array();
 
-		foreach ((array) $io->getArgument('extensionId') as $id)
-		{
-			if (!ctype_digit((string) $id) || (int) $id === 0)
-			{
-				$io->error(sprintf('"%s" is not an extension ID.', $id));
+        foreach ((array) $io->getArgument('extensionId') as $id) {
+            if (!ctype_digit((string) $id) || (int) $id === 0) {
+                $io->error(sprintf('"%s" is not an extension ID.', $id));
 
-				return self::INVALID;
-			}
+                return self::INVALID;
+            }
 
-			if ((int) $id === 700)
-			{
-				$io->error('Joomla itself is updated with core:update.');
+            if ((int) $id === 700) {
+                $io->error('Joomla itself is updated with core:update.');
 
-				return self::INVALID;
-			}
+                return self::INVALID;
+            }
 
-			$query = $db->getQuery(true)
-				->select($db->quoteName(array('update_id', 'name', 'version')))
-				->from($db->quoteName('#__updates'))
-				->where($db->quoteName('extension_id') . ' = ' . (int) $id);
-			$update = $db->setQuery($query, 0, 1)->loadObject();
+            $query = $db->getQuery(true)
+                ->select($db->quoteName(array('update_id', 'name', 'version')))
+                ->from($db->quoteName('#__updates'))
+                ->where($db->quoteName('extension_id') . ' = ' . (int) $id);
+            $update = $db->setQuery($query, 0, 1)->loadObject();
 
-			if (!$update)
-			{
-				$io->error(sprintf('There is no update for the extension with ID %d. Run update:extensions:check to look for updates.', $id));
+            if (!$update) {
+                $io->error(sprintf('There is no update for the extension with ID %d. Run update:extensions:check to look for updates.', $id));
 
-				return self::NOT_FOUND;
-			}
+                return self::NOT_FOUND;
+            }
 
-			$updates[(int) $id] = $update;
-		}
+            $updates[(int) $id] = $update;
+        }
 
-		/** @var \InstallerModelUpdate $model */
-		if ($io->isDryRun())
-		{
-			foreach ($updates as $id => $update)
-			{
-				$io->plan(sprintf('Update %s (ID %d) to %s', $update->name, $id, $update->version),
-					array('action' => 'update', 'id' => $id, 'name' => $update->name, 'version' => $update->version));
-			}
+        /** @var \InstallerModelUpdate $model */
+        if ($io->isDryRun()) {
+            foreach ($updates as $id => $update) {
+                $io->plan(
+                    sprintf('Update %s (ID %d) to %s', $update->name, $id, $update->version),
+                    array('action' => 'update', 'id' => $id, 'name' => $update->name, 'version' => $update->version)
+                );
+            }
 
-			return self::SUCCESS;
-		}
+            return self::SUCCESS;
+        }
 
-		$model     = $this->getAdministratorModel('com_installer', 'Update', 'InstallerModel');
-		$stability = (int) ComponentHelper::getParams('com_installer')->get('minimum_stability', Updater::STABILITY_STABLE);
-		$updated   = array();
-		$failed    = array();
+        $model     = $this->getAdministratorModel('com_installer', 'Update', 'InstallerModel');
+        $stability = (int) ComponentHelper::getParams('com_installer')->get('minimum_stability', Updater::STABILITY_STABLE);
+        $updated   = array();
+        $failed    = array();
 
-		foreach ($updates as $id => $update)
-		{
-			$io->text(sprintf('Updating %s to %s ...', $update->name, $update->version));
+        foreach ($updates as $id => $update) {
+            $io->text(sprintf('Updating %s to %s ...', $update->name, $update->version));
 
-			// The model reports the result through the messages
-			$model->update(array((int) $update->update_id), $stability);
+            // The model reports the result through the messages
+            $model->update(array((int) $update->update_id), $stability);
 
-			if ($model->getState('result'))
-			{
-				$updated[] = $id;
-			}
-			else
-			{
-				$failed[] = $id;
-			}
-		}
+            if ($model->getState('result')) {
+                $updated[] = $id;
+            } else {
+                $failed[] = $id;
+            }
+        }
 
-		$io->setData('updated', $updated);
-		$io->setData('failed', $failed);
+        $io->setData('updated', $updated);
+        $io->setData('failed', $failed);
 
-		if ($failed)
-		{
-			$io->error(sprintf('%d of %d extension(s) were not updated.', count($failed), count($updates)));
+        if ($failed) {
+            $io->error(sprintf('%d of %d extension(s) were not updated.', count($failed), count($updates)));
 
-			return self::FAILURE;
-		}
+            return self::FAILURE;
+        }
 
-		$io->success(sprintf('%d extension(s) updated.', count($updated)));
+        $io->success(sprintf('%d extension(s) updated.', count($updated)));
 
-		return self::SUCCESS;
-	}
+        return self::SUCCESS;
+    }
 }

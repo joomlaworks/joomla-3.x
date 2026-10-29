@@ -21,10 +21,10 @@ $author = HammondHelper::author($item);
 $image  = HammondHelper::image($item, true);
 $url    = JUri::getInstance()->toString(array('scheme', 'host', 'port')) . JRoute::_(ContentHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language));
 $share  = array(
-	'x'        => array('X', 'https://x.com/intent/post?url=' . rawurlencode($url) . '&text=' . rawurlencode($item->title)),
-	'facebook' => array('Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' . rawurlencode($url)),
-	'linkedin' => array('LinkedIn', 'https://www.linkedin.com/sharing/share-offsite/?url=' . rawurlencode($url)),
-	'mail'     => array(JText::_('JGLOBAL_EMAIL'), 'mailto:?subject=' . rawurlencode($item->title) . '&body=' . rawurlencode($url)),
+    'x'        => array('X', 'https://x.com/intent/post?url=' . rawurlencode($url) . '&text=' . rawurlencode($item->title)),
+    'facebook' => array('Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' . rawurlencode($url)),
+    'linkedin' => array('LinkedIn', 'https://www.linkedin.com/sharing/share-offsite/?url=' . rawurlencode($url)),
+    'mail'     => array(JText::_('JGLOBAL_EMAIL'), 'mailto:?subject=' . rawurlencode($item->title) . '&body=' . rawurlencode($url)),
 );
 
 /*
@@ -34,25 +34,22 @@ $share  = array(
 $text  = $item->text;
 $login = '';
 
-if (!$item->params->get('access-view'))
-{
-	$text = JFactory::getUser()->get('guest') ? JHtml::_('content.prepare', $item->introtext, '', 'com_content.article') : '';
+if (!$item->params->get('access-view')) {
+    $text = JFactory::getUser()->get('guest') ? JHtml::_('content.prepare', $item->introtext, '', 'com_content.article') : '';
 
-	if ($text !== '' && $item->params->get('show_readmore') && (string) $item->fulltext !== '')
-	{
-		$active = JFactory::getApplication()->getMenu()->getActive();
-		$link   = new JUri(JRoute::_('index.php?option=com_users&view=login&Itemid=' . ($active ? (int) $active->id : 0), false));
-		$link->setVar('return', base64_encode(ContentHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language)));
-		$login  = JLayoutHelper::render('joomla.content.readmore', array('item' => $item, 'params' => $item->params, 'link' => $link));
-	}
+    if ($text !== '' && $item->params->get('show_readmore') && (string) $item->fulltext !== '') {
+        $active = JFactory::getApplication()->getMenu()->getActive();
+        $link   = new JUri(JRoute::_('index.php?option=com_users&view=login&Itemid=' . ($active ? (int) $active->id : 0), false));
+        $link->setVar('return', base64_encode(ContentHelperRoute::getArticleRoute($item->slug, $item->catid, $item->language)));
+        $login  = JLayoutHelper::render('joomla.content.readmore', array('item' => $item, 'params' => $item->params, 'link' => $link));
+    }
 }
 
 // Resource hints (also sent as HTTP Link headers): what the text embeds, and the main image (info pages show none)
 HammondHelper::embedHints($text);
 
-if (!HammondHelper::isPage())
-{
-	HammondHelper::preloadImage($image);
+if (!HammondHelper::isPage()) {
+    HammondHelper::preloadImage($image);
 }
 
 // Info pages (the company menu): title and text only

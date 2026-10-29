@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_config
@@ -17,74 +18,68 @@ defined('_JEXEC') or die;
  */
 class ConfigControllerComponent extends JControllerLegacy
 {
-	/**
-	 * Class Constructor
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @since   1.5
-	 * @deprecated  4.0
-	 */
-	public function __construct($config = array())
-	{
-		parent::__construct($config);
+    /**
+     * Class Constructor
+     *
+     * @param   array  $config  An optional associative array of configuration settings.
+     *
+     * @since   1.5
+     * @deprecated  4.0
+     */
+    public function __construct($config = array())
+    {
+        parent::__construct($config);
 
-		// Map the apply task to the save method.
-		$this->registerTask('apply', 'save');
-	}
+        // Map the apply task to the save method.
+        $this->registerTask('apply', 'save');
+    }
 
-	/**
-	 * Cancel operation
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 * @deprecated  4.0  Use ConfigControllerComponentCancel instead.
-	 */
-	public function cancel()
-	{
-		try
-		{
-			JLog::add(
-				sprintf('%s() is deprecated. Use ConfigControllerComponentCancel instead.', __METHOD__),
-				JLog::WARNING,
-				'deprecated'
-			);
-		}
-		catch (RuntimeException $exception)
-		{
-			// Informational log only
-		}
+    /**
+     * Cancel operation
+     *
+     * @return  void
+     *
+     * @since   3.0
+     * @deprecated  4.0  Use ConfigControllerComponentCancel instead.
+     */
+    public function cancel()
+    {
+        try {
+            JLog::add(
+                sprintf('%s() is deprecated. Use ConfigControllerComponentCancel instead.', __METHOD__),
+                JLog::WARNING,
+                'deprecated'
+            );
+        } catch (RuntimeException $exception) {
+            // Informational log only
+        }
 
-		$controller = new ConfigControllerComponentCancel;
+        $controller = new ConfigControllerComponentCancel();
 
-		$controller->execute();
-	}
+        $controller->execute();
+    }
 
-	/**
-	 * Save the configuration.
-	 *
-	 * @return  boolean  True if successful; false otherwise.
-	 *
-	 * @deprecated  4.0  Use ConfigControllerComponentSave instead.
-	 */
-	public function save()
-	{
-		try
-		{
-			JLog::add(
-				sprintf('%s() is deprecated. Use ConfigControllerComponentSave instead.', __METHOD__),
-				JLog::WARNING,
-				'deprecated'
-			);
-		}
-		catch (RuntimeException $exception)
-		{
-			// Informational log only
-		}
+    /**
+     * Save the configuration.
+     *
+     * @return  boolean  True if successful; false otherwise.
+     *
+     * @deprecated  4.0  Use ConfigControllerComponentSave instead.
+     */
+    public function save()
+    {
+        try {
+            JLog::add(
+                sprintf('%s() is deprecated. Use ConfigControllerComponentSave instead.', __METHOD__),
+                JLog::WARNING,
+                'deprecated'
+            );
+        } catch (RuntimeException $exception) {
+            // Informational log only
+        }
 
-		$controller = new ConfigControllerComponentSave;
+        $controller = new ConfigControllerComponentSave();
 
-		return $controller->execute();
-	}
+        return $controller->execute();
+    }
 }

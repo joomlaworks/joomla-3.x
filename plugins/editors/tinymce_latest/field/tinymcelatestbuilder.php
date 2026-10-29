@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Editors.tinymce_latest
@@ -16,126 +17,119 @@ defined('_JEXEC') or die;
  */
 class JFormFieldTinymcelatestbuilder extends JFormField
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $type = 'tinymcelatestbuilder';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $type = 'tinymcelatestbuilder';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $layout = 'plugins.editors.tinymce_latest.field.tinymcebuilder';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $layout = 'plugins.editors.tinymce_latest.field.tinymcebuilder';
 
-	/**
-	 * @var    array
-	 * @since  3.17.0
-	 */
-	protected $layoutData = array();
+    /**
+     * @var    array
+     * @since  3.17.0
+     */
+    protected $layoutData = array();
 
-	/**
-	 * The builder as a block of its own, as wide as the form: in the usual control group, with a hidden label, Isis indents
-	 * it by the labels' column (and the sets' options inside it a second time) and it overflows on the right.
-	 *
-	 * @param   array  $options  Options to be passed into the rendering of the field
-	 *
-	 * @return  string
-	 *
-	 * @since   3.17.0
-	 */
-	public function renderField($options = array())
-	{
-		return '<div class="control-group tinymceBuilderGroup">' . $this->getInput() . '</div>';
-	}
+    /**
+     * The builder as a block of its own, as wide as the form: in the usual control group, with a hidden label, Isis indents
+     * it by the labels' column (and the sets' options inside it a second time) and it overflows on the right.
+     *
+     * @param   array  $options  Options to be passed into the rendering of the field
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    public function renderField($options = array())
+    {
+        return '<div class="control-group tinymceBuilderGroup">' . $this->getInput() . '</div>';
+    }
 
-	/**
-	 * @return  array
-	 *
-	 * @since   3.17.0
-	 */
-	protected function getLayoutData()
-	{
-		if ($this->layoutData)
-		{
-			return $this->layoutData;
-		}
+    /**
+     * @return  array
+     *
+     * @since   3.17.0
+     */
+    protected function getLayoutData()
+    {
+        if ($this->layoutData) {
+            return $this->layoutData;
+        }
 
-		require_once JPATH_PLUGINS . '/editors/tinymce_latest/tinymce_latest.php';
+        require_once JPATH_PLUGINS . '/editors/tinymce_latest/tinymce_latest.php';
 
-		$data       = parent::getLayoutData();
-		$params     = (object) $this->form->getValue('params');
-		$setsAmount = empty($params->sets_amount) ? 3 : max(3, (int) $params->sets_amount);
-		$value      = is_array($this->value) ? $this->value : array();
+        $data       = parent::getLayoutData();
+        $params     = (object) $this->form->getValue('params');
+        $setsAmount = empty($params->sets_amount) ? 3 : max(3, (int) $params->sets_amount);
+        $value      = is_array($this->value) ? $this->value : array();
 
-		$data['value']         = $value;
-		$data['menus']         = array(
-			'edit'   => array('label' => 'Edit'),
-			'insert' => array('label' => 'Insert'),
-			'view'   => array('label' => 'View'),
-			'format' => array('label' => 'Format'),
-			'table'  => array('label' => 'Table'),
-			'tools'  => array('label' => 'Tools'),
-			'help'   => array('label' => 'Help'),
-		);
-		$data['buttons']       = PlgEditorTinymce_latest::getKnownButtons();
-		$data['toolbarPreset'] = PlgEditorTinymce_latest::getToolbarPreset();
-		$data['setsAmount']    = $setsAmount;
-		$data['setsNames']     = array();
-		$data['setsForms']     = array();
+        $data['value']         = $value;
+        $data['menus']         = array(
+            'edit'   => array('label' => 'Edit'),
+            'insert' => array('label' => 'Insert'),
+            'view'   => array('label' => 'View'),
+            'format' => array('label' => 'Format'),
+            'table'  => array('label' => 'Table'),
+            'tools'  => array('label' => 'Tools'),
+            'help'   => array('label' => 'Help'),
+        );
+        $data['buttons']       = PlgEditorTinymce_latest::getKnownButtons();
+        $data['toolbarPreset'] = PlgEditorTinymce_latest::getToolbarPreset();
+        $data['setsAmount']    = $setsAmount;
+        $data['setsNames']     = array();
+        $data['setsForms']     = array();
 
-		for ($i = 0; $i < $setsAmount; $i++)
-		{
-			$data['setsNames'][$i] = JText::sprintf('PLG_TINYMCE_LATEST_SET_TITLE', $i);
-		}
+        for ($i = 0; $i < $setsAmount; $i++) {
+            $data['setsNames'][$i] = JText::sprintf('PLG_TINYMCE_LATEST_SET_TITLE', $i);
+        }
 
-		$groupsInUse = array();
+        $groupsInUse = array();
 
-		foreach (array_keys($data['setsNames']) as $num)
-		{
-			$form = JForm::getInstance('tinymce_latest.set.' . $num, JPATH_PLUGINS . '/editors/tinymce_latest/form/setoptions.xml',
-				array('control' => $this->name . '[setoptions][' . $num . ']'));
+        foreach (array_keys($data['setsNames']) as $num) {
+            $form = JForm::getInstance(
+                'tinymce_latest.set.' . $num,
+                JPATH_PLUGINS . '/editors/tinymce_latest/form/setoptions.xml',
+                array('control' => $this->name . '[setoptions][' . $num . ']')
+            );
 
-			if (empty($value['setoptions'][$num]))
-			{
-				// Set 0: Administrator, Editor and Super Users; set 1: Registered and Manager; Public for the first other set
-				$values         = new stdClass;
-				$values->access = !$num ? array(4, 7, 8) : ($num === 1 ? array(2, 6) : array());
+            if (empty($value['setoptions'][$num])) {
+                // Set 0: Administrator, Editor and Super Users; set 1: Registered and Manager; Public for the first other set
+                $values         = new stdClass();
+                $values->access = !$num ? array(4, 7, 8) : ($num === 1 ? array(2, 6) : array());
 
-				if (!$values->access && !in_array(1, $groupsInUse))
-				{
-					$values->access = array(1);
-				}
-			}
-			else
-			{
-				$values = (object) $value['setoptions'][$num];
-			}
+                if (!$values->access && !in_array(1, $groupsInUse)) {
+                    $values->access = array(1);
+                }
+            } else {
+                $values = (object) $value['setoptions'][$num];
+            }
 
-			if (!empty($values->access))
-			{
-				$groupsInUse = array_merge($groupsInUse, (array) $values->access);
-			}
+            if (!empty($values->access)) {
+                $groupsInUse = array_merge($groupsInUse, (array) $values->access);
+            }
 
-			$form->bind($values);
-			$data['setsForms'][$num] = $form;
-		}
+            $form->bind($values);
+            $data['setsForms'][$num] = $form;
+        }
 
-		// The editor's translation of the labels, when there is one
-		$language            = JFactory::getLanguage();
-		$data['languageFile'] = '';
+        // The editor's translation of the labels, when there is one
+        $language            = JFactory::getLanguage();
+        $data['languageFile'] = '';
 
-		foreach (array($language->getTag(), str_replace('-', '_', $language->getTag()), strtok($language->getTag(), '-')) as $candidate)
-		{
-			if (is_file(JPATH_ROOT . '/plugins/editors/tinymce_latest/langs/' . $candidate . '.js'))
-			{
-				$data['languageFile'] = 'plugins/editors/tinymce_latest/langs/' . $candidate . '.js';
-				break;
-			}
-		}
+        foreach (array($language->getTag(), str_replace('-', '_', $language->getTag()), strtok($language->getTag(), '-')) as $candidate) {
+            if (is_file(JPATH_ROOT . '/plugins/editors/tinymce_latest/langs/' . $candidate . '.js')) {
+                $data['languageFile'] = 'plugins/editors/tinymce_latest/langs/' . $candidate . '.js';
+                break;
+            }
+        }
 
-		$this->layoutData = $data;
+        $this->layoutData = $data;
 
-		return $data;
-	}
+        return $data;
+    }
 }

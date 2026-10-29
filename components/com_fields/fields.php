@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_fields
@@ -14,15 +15,13 @@ $input   = JFactory::getApplication()->input;
 $context = JFactory::getApplication()->getUserStateFromRequest('com_fields.fields.context', 'context', 'com_content.article', 'CMD');
 $parts   = FieldsHelper::extract($context);
 
-if ($input->get('view') === 'fields' && $input->get('layout') === 'modal')
-{
-	if (!JFactory::getUser()->authorise('core.create', $parts[0])
-		|| !JFactory::getUser()->authorise('core.edit', $parts[0]))
-	{
-		JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+if ($input->get('view') === 'fields' && $input->get('layout') === 'modal') {
+    if (!JFactory::getUser()->authorise('core.create', $parts[0])
+        || !JFactory::getUser()->authorise('core.edit', $parts[0])) {
+        JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
 
-		return;
-	}
+        return;
+    }
 }
 
 $controller = JControllerLegacy::getInstance('Fields');

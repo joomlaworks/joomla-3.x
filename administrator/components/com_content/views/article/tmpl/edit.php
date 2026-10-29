@@ -77,7 +77,7 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 		</div>
 		<?php echo JHtml::_('bootstrap.endTab'); ?>
 
-		<?php // Do not show the images and links options if the edit form is configured not to. ?>
+		<?php // Do not show the images and links options if the edit form is configured not to.?>
 		<?php if ($params->get('show_urls_images_backend') == 1) : ?>
 			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'images', JText::_('COM_CONTENT_FIELDSET_URLS_AND_IMAGES')); ?>
 			<div class="row-fluid form-horizontal-desktop">
@@ -99,7 +99,7 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 		<?php $this->show_options = $params->get('show_article_options', 1); ?>
 		<?php echo JLayoutHelper::render('joomla.edit.params', $this); ?>
 
-		<?php // Do not show the publishing options if the edit form is configured not to. ?>
+		<?php // Do not show the publishing options if the edit form is configured not to.?>
 		<?php if ($params->get('show_publishing_options', 1) == 1) : ?>
 			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'publishing', JText::_('COM_CONTENT_FIELDSET_PUBLISHING')); ?>
 			<div class="row-fluid form-horizontal-desktop">
@@ -114,7 +114,7 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 		<?php endif; ?>
 
 
-		<?php if ( ! $isModal && $assoc) : ?>
+		<?php if (! $isModal && $assoc) : ?>
 			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'associations', JText::_('JGLOBAL_FIELDSET_ASSOCIATIONS')); ?>
 			<?php echo $this->loadTemplate('associations'); ?>
 			<?php echo JHtml::_('bootstrap.endTab'); ?>

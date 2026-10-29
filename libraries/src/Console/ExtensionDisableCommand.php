@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -19,121 +20,116 @@ use Joomla\CMS\Factory;
  */
 class ExtensionDisableCommand extends AbstractExtensionCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'extension:disable';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'extension:disable';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Disable an extension';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Disable an extension';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Disables an extension, like Extensions: Manage. Protected core extensions and templates used by a default template style can\'t be disabled.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Disables an extension, like Extensions: Manage. Protected core extensions and templates used by a default template style can\'t be disabled.';
 
-	/**
-	 * @var    boolean
-	 * @since  3.17.0
-	 */
-	protected $dryRun = true;
+    /**
+     * @var    boolean
+     * @since  3.17.0
+     */
+    protected $dryRun = true;
 
-	/**
-	 * The state this command sets
-	 *
-	 * @var    integer
-	 * @since  3.17.0
-	 */
-	protected $state = 0;
+    /**
+     * The state this command sets
+     *
+     * @var    integer
+     * @since  3.17.0
+     */
+    protected $state = 0;
 
-	/**
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	protected function configure()
-	{
-		$this->addArgument('extensionId', self::ARGUMENT_REQUIRED, 'ID or name of the extension, e.g. 123, com_k2, mod_menu, plg_system_k2 or tpl_hammond (see extension:list)');
-	}
+    /**
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    protected function configure()
+    {
+        $this->addArgument('extensionId', self::ARGUMENT_REQUIRED, 'ID or name of the extension, e.g. 123, com_k2, mod_menu, plg_system_k2 or tpl_hammond (see extension:list)');
+    }
 
-	/**
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	protected function doExecute(CommandIO $io)
-	{
-		$verb = $this->state ? 'enabled' : 'disabled';
+    /**
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    protected function doExecute(CommandIO $io)
+    {
+        $verb = $this->state ? 'enabled' : 'disabled';
 
-		$io->title(($this->state ? 'Enable' : 'Disable') . ' Extension');
+        $io->title(($this->state ? 'Enable' : 'Disable') . ' Extension');
 
-		$extension = $this->loadExtension($io, $io->getArgument('extensionId'));
+        $extension = $this->loadExtension($io, $io->getArgument('extensionId'));
 
-		if (!$extension)
-		{
-			return $this->lookupError;
-		}
+        if (!$extension) {
+            return $this->lookupError;
+        }
 
-		if (!$this->state && (int) $extension->protected === 1)
-		{
-			$io->error($this->describe($extension) . ' is protected.');
+        if (!$this->state && (int) $extension->protected === 1) {
+            $io->error($this->describe($extension) . ' is protected.');
 
-			return self::REFUSED;
-		}
+            return self::REFUSED;
+        }
 
-		if (!$this->state && $extension->type === 'template')
-		{
-			$db    = Factory::getDbo();
-			$query = $db->getQuery(true)
-				->select('COUNT(*)')
-				->from($db->quoteName('#__template_styles'))
-				->where($db->quoteName('template') . ' = ' . $db->quote($extension->element))
-				->where($db->quoteName('client_id') . ' = ' . (int) $extension->client_id)
-				->where($db->quoteName('home') . ' <> ' . $db->quote('0'));
+        if (!$this->state && $extension->type === 'template') {
+            $db    = Factory::getDbo();
+            $query = $db->getQuery(true)
+                ->select('COUNT(*)')
+                ->from($db->quoteName('#__template_styles'))
+                ->where($db->quoteName('template') . ' = ' . $db->quote($extension->element))
+                ->where($db->quoteName('client_id') . ' = ' . (int) $extension->client_id)
+                ->where($db->quoteName('home') . ' <> ' . $db->quote('0'));
 
-			if ($db->setQuery($query)->loadResult())
-			{
-				$io->error($this->describe($extension) . ' is used by a default template style.');
+            if ($db->setQuery($query)->loadResult()) {
+                $io->error($this->describe($extension) . ' is used by a default template style.');
 
-				return self::REFUSED;
-			}
-		}
+                return self::REFUSED;
+            }
+        }
 
-		if ((int) $extension->enabled === $this->state)
-		{
-			$io->warning($this->describe($extension) . ' is already ' . $verb . '.');
+        if ((int) $extension->enabled === $this->state) {
+            $io->warning($this->describe($extension) . ' is already ' . $verb . '.');
 
-			return self::SUCCESS;
-		}
+            return self::SUCCESS;
+        }
 
-		/** @var \InstallerModelManage $model */
-		if ($io->isDryRun())
-		{
-			$io->plan(($this->state ? 'Enable ' : 'Disable ') . $this->describe($extension),
-				array('action' => $this->state ? 'enable' : 'disable', 'id' => (int) $extension->extension_id, 'name' => $extension->name));
+        /** @var \InstallerModelManage $model */
+        if ($io->isDryRun()) {
+            $io->plan(
+                ($this->state ? 'Enable ' : 'Disable ') . $this->describe($extension),
+                array('action' => $this->state ? 'enable' : 'disable', 'id' => (int) $extension->extension_id, 'name' => $extension->name)
+            );
 
-			return self::SUCCESS;
-		}
+            return self::SUCCESS;
+        }
 
-		$model = $this->getAdministratorModel('com_installer', 'Manage', 'InstallerModel');
-		$ids   = array((int) $extension->extension_id);
+        $model = $this->getAdministratorModel('com_installer', 'Manage', 'InstallerModel');
+        $ids   = array((int) $extension->extension_id);
 
-		if (!$model->publish($ids, $this->state))
-		{
-			$io->error($this->describe($extension) . ' was not ' . $verb . '. ' . $model->getError());
+        if (!$model->publish($ids, $this->state)) {
+            $io->error($this->describe($extension) . ' was not ' . $verb . '. ' . $model->getError());
 
-			return self::FAILURE;
-		}
+            return self::FAILURE;
+        }
 
-		$io->success($this->describe($extension) . ' ' . $verb . '.');
+        $io->success($this->describe($extension) . ' ' . $verb . '.');
 
-		return self::SUCCESS;
-	}
+        return self::SUCCESS;
+    }
 }

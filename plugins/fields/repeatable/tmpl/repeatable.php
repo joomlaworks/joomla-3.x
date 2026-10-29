@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Fields.Repeatable
@@ -11,24 +12,21 @@ defined('_JEXEC') or die;
 
 $fieldValue = $field->value;
 
-if ($fieldValue === '')
-{
-	return;
+if ($fieldValue === '') {
+    return;
 }
 
 // Get the values
 $fieldValues = json_decode((string) $fieldValue, true);
 
-if (empty($fieldValues))
-{
-	return;
+if (empty($fieldValues)) {
+    return;
 }
 
 $html = '<ul>';
 
-foreach ($fieldValues as $value)
-{
-	$html .= '<li>' . implode(', ', $value) . '</li>';
+foreach ($fieldValues as $value) {
+    $html .= '<li>' . implode(', ', $value) . '</li>';
 }
 
 $html .= '</ul>';

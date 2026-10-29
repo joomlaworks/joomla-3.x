@@ -19,7 +19,7 @@ $loggeduser = JFactory::getUser();
 $debugUsers = $this->state->get('params')->get('debugUsers', 1);
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_users&view=users'); ?>" method="post" name="adminForm" id="adminForm">
-	<?php if (!empty( $this->sidebar)) : ?>
+	<?php if (!empty($this->sidebar)) : ?>
 		<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 		</div>
@@ -28,9 +28,9 @@ $debugUsers = $this->state->get('params')->get('debugUsers', 1);
 		<div id="j-main-container">
 	<?php endif; ?>
 		<?php
-		// Search tools bar
-		echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
-		?>
+        // Search tools bar
+        echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
+?>
 		<?php if (empty($this->items)) : ?>
 			<div class="alert alert-no-items">
 				<?php echo JText::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
@@ -80,16 +80,15 @@ $debugUsers = $this->state->get('params')->get('debugUsers', 1);
 				</tfoot>
 				<tbody>
 				<?php foreach ($this->items as $i => $item) :
-					$canEdit   = $this->canDo->get('core.edit');
-					$canChange = $loggeduser->authorise('core.edit.state',	'com_users');
+				    $canEdit   = $this->canDo->get('core.edit');
+				    $canChange = $loggeduser->authorise('core.edit.state', 'com_users');
 
-					// If this group is super admin and this user is not super admin, $canEdit is false
-					if ((!$loggeduser->authorise('core.admin')) && JAccess::check($item->id, 'core.admin'))
-					{
-						$canEdit   = false;
-						$canChange = false;
-					}
-				?>
+				    // If this group is super admin and this user is not super admin, $canEdit is false
+				    if ((!$loggeduser->authorise('core.admin')) && JAccess::check($item->id, 'core.admin')) {
+				        $canEdit   = false;
+				        $canChange = false;
+				    }
+				    ?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="center">
 							<?php if ($canEdit || $canChange) : ?>
@@ -124,19 +123,19 @@ $debugUsers = $this->state->get('params')->get('debugUsers', 1);
 						</td>
 						<td class="center">
 							<?php
-							$self = $loggeduser->id == $item->id;
+				                $self = $loggeduser->id == $item->id;
 
-							if ($canChange) :
-								echo JHtml::_('jgrid.state', JHtml::_('users.blockStates', $self), $item->block, $i, 'users.', !$self);
-							else :
-								echo JHtml::_('jgrid.state', JHtml::_('users.blockStates', $self), $item->block, $i, 'users.', false);
-							endif; ?>
+				    if ($canChange) :
+				        echo JHtml::_('jgrid.state', JHtml::_('users.blockStates', $self), $item->block, $i, 'users.', !$self);
+				    else :
+				        echo JHtml::_('jgrid.state', JHtml::_('users.blockStates', $self), $item->block, $i, 'users.', false);
+				    endif; ?>
 						</td>
 						<td class="center hidden-phone">
 							<?php
-							$activated = empty( $item->activation) ? 0 : 1;
-							echo JHtml::_('jgrid.state', JHtml::_('users.activateStates'), $activated, $i, 'users.', (bool) $activated);
-							?>
+				    $activated = empty($item->activation) ? 0 : 1;
+				    echo JHtml::_('jgrid.state', JHtml::_('users.activateStates'), $activated, $i, 'users.', (bool) $activated);
+				    ?>
 						</td>
 						<td>
 							<?php if (substr_count((string) $item->group_names, "\n") > 1) : ?>
@@ -165,18 +164,18 @@ $debugUsers = $this->state->get('params')->get('debugUsers', 1);
 					<?php endforeach; ?>
 				</tbody>
 			</table>
-			<?php // Load the batch processing form if user is allowed ?>
+			<?php // Load the batch processing form if user is allowed?>
 			<?php if ($loggeduser->authorise('core.create', 'com_users')
-				&& $loggeduser->authorise('core.edit', 'com_users')
-				&& $loggeduser->authorise('core.edit.state', 'com_users')) : ?>
+                && $loggeduser->authorise('core.edit', 'com_users')
+                && $loggeduser->authorise('core.edit.state', 'com_users')) : ?>
 				<?php echo JHtml::_(
-					'bootstrap.renderModal',
-					'collapseModal',
-					array(
-						'title'  => JText::_('COM_USERS_BATCH_OPTIONS'),
-						'footer' => $this->loadTemplate('batch_footer'),
-					),
-					$this->loadTemplate('batch_body')
+				    'bootstrap.renderModal',
+				    'collapseModal',
+				    array(
+				        'title'  => JText::_('COM_USERS_BATCH_OPTIONS'),
+				        'footer' => $this->loadTemplate('batch_footer'),
+				    ),
+				    $this->loadTemplate('batch_body')
 				); ?>
 			<?php endif; ?>
 		<?php endif; ?>

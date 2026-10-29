@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  mod_feed
@@ -16,13 +17,12 @@ $rssurl = $params->get('rssurl', '');
 $rssrtl = $params->get('rssrtl', 0);
 
 // Check if feed URL has been set
-if (empty ($rssurl))
-{
-	echo '<div>';
-	echo JText::_('MOD_FEED_ERR_NO_URL');
-	echo '</div>';
+if (empty($rssurl)) {
+    echo '<div>';
+    echo JText::_('MOD_FEED_ERR_NO_URL');
+    echo '</div>';
 
-	return;
+    return;
 }
 
 $feed            = ModFeedHelper::getFeed($params);

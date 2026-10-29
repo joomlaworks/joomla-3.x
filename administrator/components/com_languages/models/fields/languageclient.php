@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_newsfeeds
@@ -18,59 +19,56 @@ JFormHelper::loadFieldClass('list');
  */
 class JFormFieldLanguageclient extends JFormFieldList
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var		string
-	 * @since   3.9.0
-	 */
-	protected $type = 'Languageclient';
+    /**
+     * The form field type.
+     *
+     * @var		string
+     * @since   3.9.0
+     */
+    protected $type = 'Languageclient';
 
-	/**
-	 * Cached form field options.
-	 *
-	 * @var		array
-	 * @since   3.9.0
-	 */
-	protected $cache = array();
+    /**
+     * Cached form field options.
+     *
+     * @var		array
+     * @since   3.9.0
+     */
+    protected $cache = array();
 
-	/**
-	 * Method to get the field options.
-	 *
-	 * @return  array  The field option objects.
-	 *
-	 * @since   3.9.0
-	 */
-	protected function getOptions()
-	{
-		// Try to load the data from our mini-cache.
-		if (!empty($this->cache))
-		{
-			return $this->cache;
-		}
+    /**
+     * Method to get the field options.
+     *
+     * @return  array  The field option objects.
+     *
+     * @since   3.9.0
+     */
+    protected function getOptions()
+    {
+        // Try to load the data from our mini-cache.
+        if (!empty($this->cache)) {
+            return $this->cache;
+        }
 
-		// Get all languages of frontend and backend.
-		$languages       = array();
-		$site_languages  = JLanguageHelper::getKnownLanguages(JPATH_SITE);
-		$admin_languages = JLanguageHelper::getKnownLanguages(JPATH_ADMINISTRATOR);
+        // Get all languages of frontend and backend.
+        $languages       = array();
+        $site_languages  = JLanguageHelper::getKnownLanguages(JPATH_SITE);
+        $admin_languages = JLanguageHelper::getKnownLanguages(JPATH_ADMINISTRATOR);
 
-		// Create a single array of them.
-		foreach ($site_languages as $tag => $language)
-		{
-			$languages[$tag . '0'] = JText::sprintf('COM_LANGUAGES_VIEW_OVERRIDES_LANGUAGES_BOX_ITEM', $language['name'], JText::_('JSITE'));
-		}
+        // Create a single array of them.
+        foreach ($site_languages as $tag => $language) {
+            $languages[$tag . '0'] = JText::sprintf('COM_LANGUAGES_VIEW_OVERRIDES_LANGUAGES_BOX_ITEM', $language['name'], JText::_('JSITE'));
+        }
 
-		foreach ($admin_languages as $tag => $language)
-		{
-			$languages[$tag . '1'] = JText::sprintf('COM_LANGUAGES_VIEW_OVERRIDES_LANGUAGES_BOX_ITEM', $language['name'], JText::_('JADMINISTRATOR'));
-		}
+        foreach ($admin_languages as $tag => $language) {
+            $languages[$tag . '1'] = JText::sprintf('COM_LANGUAGES_VIEW_OVERRIDES_LANGUAGES_BOX_ITEM', $language['name'], JText::_('JADMINISTRATOR'));
+        }
 
-		// Sort it by language tag and by client after that.
-		ksort($languages);
+        // Sort it by language tag and by client after that.
+        ksort($languages);
 
-		// Add the languages to the internal cache.
-		$this->cache = array_merge(parent::getOptions(), $languages);
+        // Add the languages to the internal cache.
+        $this->cache = array_merge(parent::getOptions(), $languages);
 
-		return $this->cache;
-	}
+        return $this->cache;
+    }
 }

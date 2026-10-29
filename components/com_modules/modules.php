@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_modules
@@ -15,19 +16,16 @@ $app    = JFactory::getApplication();
 $config = array();
 $lang->load('com_modules', JPATH_ADMINISTRATOR);
 
-if ($app->input->get('view') === 'modules' && $app->input->get('layout') === 'modal')
-{
-	if (!JFactory::getUser()->authorise('core.create', 'com_modules'))
-	{
-		$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+if ($app->input->get('view') === 'modules' && $app->input->get('layout') === 'modal') {
+    if (!JFactory::getUser()->authorise('core.create', 'com_modules')) {
+        $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
 
-		return;
-	}
+        return;
+    }
 }
 
-if ($app->input->get('task') === 'module.orderPosition')
-{
-	$config['base_path'] = JPATH_COMPONENT_ADMINISTRATOR;
+if ($app->input->get('task') === 'module.orderPosition') {
+    $config['base_path'] = JPATH_COMPONENT_ADMINISTRATOR;
 }
 
 // Trigger the controller

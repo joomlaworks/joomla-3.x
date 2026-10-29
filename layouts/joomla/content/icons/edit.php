@@ -19,30 +19,25 @@ $legacy  = $displayData['legacy'];
 
 $currentDate   = JFactory::getDate()->format('Y-m-d H:i:s');
 $isUnpublished = ($article->publish_up > $currentDate)
-	|| ($article->publish_down < $currentDate && $article->publish_down !== JFactory::getDbo()->getNullDate());
+    || ($article->publish_down < $currentDate && $article->publish_down !== JFactory::getDbo()->getNullDate());
 
-if ($legacy)
-{
-	$icon = $article->state ? 'edit.png' : 'edit_unpublished.png';
+if ($legacy) {
+    $icon = $article->state ? 'edit.png' : 'edit_unpublished.png';
 
-	if ($isUnpublished)
-	{
-		$icon = 'edit_unpublished.png';
-	}
-}
-else
-{
-	$icon = $article->state ? 'edit' : 'eye-close';
+    if ($isUnpublished) {
+        $icon = 'edit_unpublished.png';
+    }
+} else {
+    $icon = $article->state ? 'edit' : 'eye-close';
 
-	if ($isUnpublished)
-	{
-		$icon = 'eye-close';
-	}
+    if ($isUnpublished) {
+        $icon = 'eye-close';
+    }
 }
 
 ?>
 <?php if ($legacy) : ?>
-	<?php // An unpublished item's pencil is faded ?>
+	<?php // An unpublished item's pencil is faded?>
 	<?php echo JHtml::_('icons.svg', 'pencil-square', JText::_('JGLOBAL_EDIT'), array('legacy' => 'system/' . $icon, 'style' => $icon === 'edit.png' ? '' : 'opacity:0.5')); ?>
 <?php else : ?>
 	<span class="hasTooltip icon-<?php echo $icon; ?> tip" title="<?php echo JHtml::tooltipText(JText::_('COM_CONTENT_EDIT_ITEM'), $overlib, 0, 0); ?>"></span>

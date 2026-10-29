@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    Joomla.Cli
  *
@@ -19,15 +20,13 @@ error_reporting(E_ALL | E_NOTICE);
 ini_set('display_errors', 1);
 
 // Load system defines
-if (file_exists(dirname(__DIR__) . '/defines.php'))
-{
-	require_once dirname(__DIR__) . '/defines.php';
+if (file_exists(dirname(__DIR__) . '/defines.php')) {
+    require_once dirname(__DIR__) . '/defines.php';
 }
 
-if (!defined('_JDEFINES'))
-{
-	define('JPATH_BASE', dirname(__DIR__));
-	require_once JPATH_BASE . '/includes/defines.php';
+if (!defined('_JDEFINES')) {
+    define('JPATH_BASE', dirname(__DIR__));
+    require_once JPATH_BASE . '/includes/defines.php';
 }
 
 require_once JPATH_LIBRARIES . '/import.legacy.php';
@@ -44,21 +43,21 @@ require_once JPATH_CONFIGURATION . '/configuration.php';
  */
 class Updatecron extends JApplicationCli
 {
-	/**
-	 * Entry point for the script
-	 *
-	 * @return  void
-	 *
-	 * @since   2.5
-	 */
-	public function doExecute()
-	{
-		// Same as: php cli/joomla.php update:extensions:check --use-cache
-		$this->out('Fetching updates...');
-		$exitCode = (new \Joomla\CMS\Application\ConsoleApplication)->runCommand('update:extensions:check', array(), array('use-cache' => true, 'quiet' => true));
-		$this->out('Finished fetching updates');
-		$this->close($exitCode);
-	}
+    /**
+     * Entry point for the script
+     *
+     * @return  void
+     *
+     * @since   2.5
+     */
+    public function doExecute()
+    {
+        // Same as: php cli/joomla.php update:extensions:check --use-cache
+        $this->out('Fetching updates...');
+        $exitCode = (new \Joomla\CMS\Application\ConsoleApplication())->runCommand('update:extensions:check', array(), array('use-cache' => true, 'quiet' => true));
+        $this->out('Finished fetching updates');
+        $this->close($exitCode);
+    }
 }
 
 JApplicationCli::getInstance('Updatecron')->execute();

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_associations
@@ -16,12 +17,12 @@ defined('_JEXEC') or die;
  */
 class AssociationsController extends JControllerLegacy
 {
-	/**
-	 * The default view.
-	 *
-	 * @var     string
-	 *
-	 * @since   3.7.0
-	 */
-	protected $default_view = 'associations';
+    /**
+     * The default view.
+     *
+     * @var     string
+     *
+     * @since   3.7.0
+     */
+    protected $default_view = 'associations';
 }

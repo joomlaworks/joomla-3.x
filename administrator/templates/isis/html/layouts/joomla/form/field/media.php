@@ -34,9 +34,8 @@ defined('_JEXEC') or die;
 extract($displayData);
 
 // The button.
-if ($disabled != true)
-{
-	JHtml::_('bootstrap.tooltip');
+if ($disabled != true) {
+    JHtml::_('bootstrap.tooltip');
 }
 
 $attr = '';
@@ -48,45 +47,40 @@ $attr .= !empty($size) ? ' size="' . $size . '"' : '';
 // Initialize JavaScript field attributes.
 $attr .= !empty($onchange) ? ' onchange="' . $onchange . '"' : '';
 
-switch ($preview)
-{
-	case 'no': // Deprecated parameter value
-	case 'false':
-	case 'none':
-		$showPreview = false;
-		$showAsTooltip = false;
-		break;
-	case 'yes': // Deprecated parameter value
-	case 'true':
-	case 'show':
-		$showPreview = true;
-		$showAsTooltip = false;
-		break;
-	case 'tooltip':
-	default:
-		$showPreview = true;
-		$showAsTooltip = true;
-		break;
+switch ($preview) {
+    case 'no': // Deprecated parameter value
+    case 'false':
+    case 'none':
+        $showPreview = false;
+        $showAsTooltip = false;
+        break;
+    case 'yes': // Deprecated parameter value
+    case 'true':
+    case 'show':
+        $showPreview = true;
+        $showAsTooltip = false;
+        break;
+    case 'tooltip':
+    default:
+        $showPreview = true;
+        $showAsTooltip = true;
+        break;
 }
 
 // Pre fill the contents of the popover
-if ($showPreview)
-{
-	if ($value && file_exists(JPATH_ROOT . '/' . $value))
-	{
-		$src = JUri::root() . $value;
-	}
-	else
-	{
-		$src = JText::_('JLIB_FORM_MEDIA_PREVIEW_EMPTY');
-	}
+if ($showPreview) {
+    if ($value && file_exists(JPATH_ROOT . '/' . $value)) {
+        $src = JUri::root() . $value;
+    } else {
+        $src = JText::_('JLIB_FORM_MEDIA_PREVIEW_EMPTY');
+    }
 }
 
 // The URL for the modal
 $url    = ($readonly ? ''
-	: ($link ?: 'index.php?option=com_media&amp;view=images&amp;tmpl=component&amp;asset='
-		. $asset . '&amp;author=' . $authorId)
-	. '&amp;fieldid={field-media-id}&amp;ismoo=0&amp;folder=' . $folder);
+    : ($link ?: 'index.php?option=com_media&amp;view=images&amp;tmpl=component&amp;asset='
+        . $asset . '&amp;author=' . $authorId)
+    . '&amp;fieldid={field-media-id}&amp;ismoo=0&amp;folder=' . $folder);
 ?>
 <div class="field-media-wrapper"
 	data-basepath="<?php echo JUri::root(); ?>"
@@ -105,18 +99,18 @@ $url    = ($readonly ? ''
 	data-preview-height="<?php echo $previewHeight; ?>"
 >
 	<?php
-	// Render the modal
-	echo JHtml::_(
-		'bootstrap.renderModal',
-		'imageModal_' . $id,
-		array(
-			'title'       => JText::_('JLIB_FORM_CHANGE_IMAGE'),
-			'closeButton' => true,
-		)
-	);
+    // Render the modal
+    echo JHtml::_(
+        'bootstrap.renderModal',
+        'imageModal_' . $id,
+        array(
+            'title'       => JText::_('JLIB_FORM_CHANGE_IMAGE'),
+            'closeButton' => true,
+        )
+    );
 
-	JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true));
-	?>
+JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true));
+?>
 	<?php if ($showPreview && $showAsTooltip) : ?>
 	<div class="input-prepend input-append">
 		<span rel="popover" class="add-on pop-helper field-media-preview"

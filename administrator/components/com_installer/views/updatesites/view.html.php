@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_installer
@@ -20,79 +21,75 @@ JLoader::register('InstallerViewDefault', dirname(__DIR__) . '/default/view.php'
  */
 class InstallerViewUpdatesites extends InstallerViewDefault
 {
-	protected $items;
+    protected $items;
 
-	protected $pagination;
+    protected $pagination;
 
-	protected $form;
+    protected $form;
 
-	protected $state;
+    protected $state;
 
-	/**
-	 * Display the view
-	 *
-	 * @param   string  $tpl  Template
-	 *
-	 * @return  mixed|void
-	 *
-	 * @since   3.4
-	 *
-	 * @throws  Exception on errors
-	 */
-	public function display($tpl = null)
-	{
-		// Get data from the model
-		$this->state         = $this->get('State');
-		$this->items         = $this->get('Items');
-		$this->pagination    = $this->get('Pagination');
-		$this->filterForm    = $this->get('FilterForm');
-		$this->activeFilters = $this->get('ActiveFilters');
+    /**
+     * Display the view
+     *
+     * @param   string  $tpl  Template
+     *
+     * @return  mixed|void
+     *
+     * @since   3.4
+     *
+     * @throws  Exception on errors
+     */
+    public function display($tpl = null)
+    {
+        // Get data from the model
+        $this->state         = $this->get('State');
+        $this->items         = $this->get('Items');
+        $this->pagination    = $this->get('Pagination');
+        $this->filterForm    = $this->get('FilterForm');
+        $this->activeFilters = $this->get('ActiveFilters');
 
-		// Check for errors.
-		if (count($errors = $this->get('Errors')))
-		{
-			throw new Exception(implode("\n", $errors), 500);
-		}
+        // Check for errors.
+        if (count($errors = $this->get('Errors'))) {
+            throw new Exception(implode("\n", $errors), 500);
+        }
 
-		// Include the component HTML helpers.
-		JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+        // Include the component HTML helpers.
+        JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
-		// Display the view
-		parent::display($tpl);
-	}
+        // Display the view
+        parent::display($tpl);
+    }
 
-	/**
-	 * Add the page title and toolbar.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.4
-	 */
-	protected function addToolbar()
-	{
-		$canDo = JHelperContent::getActions('com_installer');
+    /**
+     * Add the page title and toolbar.
+     *
+     * @return  void
+     *
+     * @since   3.4
+     */
+    protected function addToolbar()
+    {
+        $canDo = JHelperContent::getActions('com_installer');
 
-		if ($canDo->get('core.edit.state'))
-		{
-			JToolbarHelper::publish('updatesites.publish', 'JTOOLBAR_ENABLE', true);
-			JToolbarHelper::unpublish('updatesites.unpublish', 'JTOOLBAR_DISABLE', true);
-			JToolbarHelper::divider();
-		}
+        if ($canDo->get('core.edit.state')) {
+            JToolbarHelper::publish('updatesites.publish', 'JTOOLBAR_ENABLE', true);
+            JToolbarHelper::unpublish('updatesites.unpublish', 'JTOOLBAR_DISABLE', true);
+            JToolbarHelper::divider();
+        }
 
-		if ($canDo->get('core.delete'))
-		{
-			JToolbarHelper::deleteList('JGLOBAL_CONFIRM_DELETE', 'updatesites.delete', 'JTOOLBAR_DELETE');
-			JToolbarHelper::divider();
-		}
+        if ($canDo->get('core.delete')) {
+            JToolbarHelper::deleteList('JGLOBAL_CONFIRM_DELETE', 'updatesites.delete', 'JTOOLBAR_DELETE');
+            JToolbarHelper::divider();
+        }
 
-		if ($canDo->get('core.admin') || $canDo->get('core.options'))
-		{
-			JToolbarHelper::custom('updatesites.rebuild', 'refresh.png', 'refresh_f2.png', 'JTOOLBAR_REBUILD', false);
-		}
+        if ($canDo->get('core.admin') || $canDo->get('core.options')) {
+            JToolbarHelper::custom('updatesites.rebuild', 'refresh.png', 'refresh_f2.png', 'JTOOLBAR_REBUILD', false);
+        }
 
-		JHtmlSidebar::setAction('index.php?option=com_installer&view=updatesites');
+        JHtmlSidebar::setAction('index.php?option=com_installer&view=updatesites');
 
-		parent::addToolbar();
-		JToolbarHelper::help('JHELP_EXTENSIONS_EXTENSION_MANAGER_UPDATESITES');
-	}
+        parent::addToolbar();
+        JToolbarHelper::help('JHELP_EXTENSIONS_EXTENSION_MANAGER_UPDATESITES');
+    }
 }

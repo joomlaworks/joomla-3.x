@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_menus
@@ -20,32 +21,31 @@ JFormHelper::loadFieldClass('list');
  */
 class JFormFieldMenuPreset extends JFormFieldList
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var     string
-	 *
-	 * @since   3.8.0
-	 */
-	protected $type = 'MenuPreset';
+    /**
+     * The form field type.
+     *
+     * @var     string
+     *
+     * @since   3.8.0
+     */
+    protected $type = 'MenuPreset';
 
-	/**
-	 * Method to get the field options.
-	 *
-	 * @return  array  The field option objects.
-	 *
-	 * @since  3.8.0
-	 */
-	protected function getOptions()
-	{
-		$options = array();
-		$presets = MenuHelper::getPresets();
+    /**
+     * Method to get the field options.
+     *
+     * @return  array  The field option objects.
+     *
+     * @since  3.8.0
+     */
+    protected function getOptions()
+    {
+        $options = array();
+        $presets = MenuHelper::getPresets();
 
-		foreach ($presets as $preset)
-		{
-			$options[] = JHtml::_('select.option', $preset->name, JText::_($preset->title));
-		}
+        foreach ($presets as $preset) {
+            $options[] = JHtml::_('select.option', $preset->name, JText::_($preset->title));
+        }
 
-		return array_merge(parent::getOptions(), $options);
-	}
+        return array_merge(parent::getOptions(), $options);
+    }
 }

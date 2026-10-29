@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Libraries
  * @subpackage  HTML
@@ -16,125 +17,117 @@ defined('JPATH_PLATFORM') or die;
  */
 abstract class JHtmlJquery
 {
-	/**
-	 * @var    array  Array containing information for loaded files
-	 * @since  3.0
-	 */
-	protected static $loaded = array();
+    /**
+     * @var    array  Array containing information for loaded files
+     * @since  3.0
+     */
+    protected static $loaded = array();
 
-	/**
-	 * Method to load the jQuery JavaScript framework into the document head
-	 *
-	 * If debugging mode is on an uncompressed version of jQuery is included for easier debugging.
-	 *
-	 * @param   boolean  $noConflict  True to load jQuery in noConflict mode [optional]
-	 * @param   mixed    $debug       Is debugging mode on? [optional]
-	 * @param   boolean  $migrate     True to enable the jQuery Migrate plugin
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
-	public static function framework($noConflict = true, $debug = null, $migrate = true)
-	{
-		// Only load once
-		if (!empty(static::$loaded[__METHOD__]))
-		{
-			return;
-		}
+    /**
+     * Method to load the jQuery JavaScript framework into the document head
+     *
+     * If debugging mode is on an uncompressed version of jQuery is included for easier debugging.
+     *
+     * @param   boolean  $noConflict  True to load jQuery in noConflict mode [optional]
+     * @param   mixed    $debug       Is debugging mode on? [optional]
+     * @param   boolean  $migrate     True to enable the jQuery Migrate plugin
+     *
+     * @return  void
+     *
+     * @since   3.0
+     */
+    public static function framework($noConflict = true, $debug = null, $migrate = true)
+    {
+        // Only load once
+        if (!empty(static::$loaded[__METHOD__])) {
+            return;
+        }
 
-		// If no debugging value is set, use the configuration setting
-		if ($debug === null)
-		{
-			$debug = (bool) JFactory::getConfig()->get('debug');
-		}
+        // If no debugging value is set, use the configuration setting
+        if ($debug === null) {
+            $debug = (bool) JFactory::getConfig()->get('debug');
+        }
 
-		JHtml::_('script', 'system/jquery.min.js', array('version' => 'auto', 'relative' => true, 'detectDebug' => $debug));
+        JHtml::_('script', 'system/jquery.min.js', array('version' => 'auto', 'relative' => true, 'detectDebug' => $debug));
 
-		// Check if we are loading in noConflict
-		if ($noConflict)
-		{
-			JHtml::_('script', 'system/jquery-noconflict.js', array('version' => 'auto', 'relative' => true));
-		}
+        // Check if we are loading in noConflict
+        if ($noConflict) {
+            JHtml::_('script', 'system/jquery-noconflict.js', array('version' => 'auto', 'relative' => true));
+        }
 
-		// Check if we are loading Migrate
-		if ($migrate)
-		{
-			JHtml::_('script', 'system/jquery-migrate.min.js', array('version' => 'auto', 'relative' => true, 'detectDebug' => $debug));
-		}
+        // Check if we are loading Migrate
+        if ($migrate) {
+            JHtml::_('script', 'system/jquery-migrate.min.js', array('version' => 'auto', 'relative' => true, 'detectDebug' => $debug));
+        }
 
-		static::$loaded[__METHOD__] = true;
+        static::$loaded[__METHOD__] = true;
 
-		return;
-	}
+        return;
+    }
 
-	/**
-	 * Method to load the jQuery UI JavaScript framework into the document head
-	 *
-	 * If debugging mode is on an uncompressed version of jQuery UI is included for easier debugging.
-	 *
-	 * @param   array  $components  The jQuery UI components to load [optional]
-	 * @param   mixed  $debug       Is debugging mode on? [optional]
-	 *
-	 * @return  void
-	 *
-	 * @since       3.0
-	 * @deprecated  4.0  jQuery UI will be removed from Joomla 4 without replacement.
-	 */
-	public static function ui(array $components = array('core'), $debug = null)
-	{
-		// Set an array containing the supported jQuery UI components handled by this method
-		$supported = array('core', 'sortable');
+    /**
+     * Method to load the jQuery UI JavaScript framework into the document head
+     *
+     * If debugging mode is on an uncompressed version of jQuery UI is included for easier debugging.
+     *
+     * @param   array  $components  The jQuery UI components to load [optional]
+     * @param   mixed  $debug       Is debugging mode on? [optional]
+     *
+     * @return  void
+     *
+     * @since       3.0
+     * @deprecated  4.0  jQuery UI will be removed from Joomla 4 without replacement.
+     */
+    public static function ui(array $components = array('core'), $debug = null)
+    {
+        // Set an array containing the supported jQuery UI components handled by this method
+        $supported = array('core', 'sortable');
 
-		// Include jQuery
-		static::framework();
+        // Include jQuery
+        static::framework();
 
-		// If no debugging value is set, use the configuration setting
-		if ($debug === null)
-		{
-			$debug = JDEBUG;
-		}
+        // If no debugging value is set, use the configuration setting
+        if ($debug === null) {
+            $debug = JDEBUG;
+        }
 
-		// Load each of the requested components
-		foreach ($components as $component)
-		{
-			// Only attempt to load the component if it's supported in core and hasn't already been loaded
-			if (in_array($component, $supported) && empty(static::$loaded[__METHOD__][$component]))
-			{
-				JHtml::_('script', 'system/jquery.ui.' . $component . '.min.js', array('version' => 'auto', 'relative' => true, 'detectDebug' => $debug));
-				static::$loaded[__METHOD__][$component] = true;
-			}
-		}
+        // Load each of the requested components
+        foreach ($components as $component) {
+            // Only attempt to load the component if it's supported in core and hasn't already been loaded
+            if (in_array($component, $supported) && empty(static::$loaded[__METHOD__][$component])) {
+                JHtml::_('script', 'system/jquery.ui.' . $component . '.min.js', array('version' => 'auto', 'relative' => true, 'detectDebug' => $debug));
+                static::$loaded[__METHOD__][$component] = true;
+            }
+        }
 
-		return;
-	}
+        return;
+    }
 
-	/**
-	 * Auto set CSRF token to ajaxSetup so all jQuery ajax call will contains CSRF token.
-	 *
-	 * @param   string  $name  The CSRF meta tag name.
-	 *
-	 * @return  void
-	 *
-	 * @throws  \InvalidArgumentException
-	 *
-	 * @since   3.8.0
-	 */
-	public static function token($name = 'csrf.token')
-	{
-		// Only load once
-		if (!empty(static::$loaded[__METHOD__][$name]))
-		{
-			return;
-		}
+    /**
+     * Auto set CSRF token to ajaxSetup so all jQuery ajax call will contains CSRF token.
+     *
+     * @param   string  $name  The CSRF meta tag name.
+     *
+     * @return  void
+     *
+     * @throws  \InvalidArgumentException
+     *
+     * @since   3.8.0
+     */
+    public static function token($name = 'csrf.token')
+    {
+        // Only load once
+        if (!empty(static::$loaded[__METHOD__][$name])) {
+            return;
+        }
 
-		static::framework();
-		JHtml::_('form.csrf', $name);
+        static::framework();
+        JHtml::_('form.csrf', $name);
 
-		$doc = JFactory::getDocument();
+        $doc = JFactory::getDocument();
 
-		$doc->addScriptDeclaration(
-<<<JS
+        $doc->addScriptDeclaration(
+            <<<JS
 ;(function ($) {
 	$.ajaxSetup({
 		headers: {
@@ -143,8 +136,8 @@ abstract class JHtmlJquery
 	});
 })(jQuery);
 JS
-		);
+        );
 
-		static::$loaded[__METHOD__][$name] = true;
-	}
+        static::$loaded[__METHOD__][$name] = true;
+    }
 }

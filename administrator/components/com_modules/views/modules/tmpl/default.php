@@ -18,15 +18,14 @@ $user		= JFactory::getUser();
 $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
 $saveOrder	= ($listOrder == 'a.ordering');
-if ($saveOrder)
-{
-	$saveOrderingUrl = 'index.php?option=com_modules&task=modules.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'moduleList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
+if ($saveOrder) {
+    $saveOrderingUrl = 'index.php?option=com_modules&task=modules.saveOrderAjax&tmpl=component';
+    JHtml::_('sortablelist.sortable', 'moduleList', 'adminForm', strtolower((string) $listDirn), $saveOrderingUrl);
 }
 $colSpan = $clientId === 1 ? 8 : 10;
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_modules'); ?>" method="post" name="adminForm" id="adminForm">
-<?php if (!empty( $this->sidebar)) : ?>
+<?php if (!empty($this->sidebar)) : ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
@@ -88,25 +87,22 @@ $colSpan = $clientId === 1 ? 8 : 10;
 				</tfoot>
 				<tbody>
 				<?php foreach ($this->items as $i => $item) :
-					$ordering   = ($listOrder == 'a.ordering');
-					$canCreate  = $user->authorise('core.create',     'com_modules');
-					$canEdit	= $user->authorise('core.edit',		  'com_modules.module.' . $item->id);
-					$canCheckin = $user->authorise('core.manage',     'com_checkin') || $item->checked_out == $user->get('id')|| $item->checked_out == 0;
-					$canChange  = $user->authorise('core.edit.state', 'com_modules.module.' . $item->id) && $canCheckin;
-				?>
+				    $ordering   = ($listOrder == 'a.ordering');
+				    $canCreate  = $user->authorise('core.create', 'com_modules');
+				    $canEdit	= $user->authorise('core.edit', 'com_modules.module.' . $item->id);
+				    $canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
+				    $canChange  = $user->authorise('core.edit.state', 'com_modules.module.' . $item->id) && $canCheckin;
+				    ?>
 					<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $this->escape($item->position) ?: 'none'; ?>">
 						<td class="order nowrap center hidden-phone">
 							<?php
-							$iconClass = '';
-							if (!$canChange)
-							{
-								$iconClass = ' inactive';
-							}
-							elseif (!$saveOrder)
-							{
-								$iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
-							}
-							?>
+				                $iconClass = '';
+				    if (!$canChange) {
+				        $iconClass = ' inactive';
+				    } elseif (!$saveOrder) {
+				        $iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::_('tooltipText', 'JORDERINGDISABLED');
+				    }
+				    ?>
 							<span class="sortable-handler<?php echo $iconClass; ?>">
 								<span class="icon-menu"></span>
 							</span>
@@ -121,25 +117,22 @@ $colSpan = $clientId === 1 ? 8 : 10;
 						</td>
 						<td class="center">
 							<div class="btn-group">
-							<?php // Check if extension is enabled ?>
+							<?php // Check if extension is enabled?>
 							<?php if ($item->enabled > 0) : ?>
 								<?php echo JHtml::_('jgrid.published', $item->published, $i, 'modules.', $canChange, 'cb', $item->publish_up, $item->publish_down); ?>
 								<?php // Create dropdown items and render the dropdown list.
-								if ($canCreate)
-								{
-									JHtml::_('actionsdropdown.duplicate', 'cb' . $i, 'modules');
-								}
-								if ($canChange)
-								{
-									JHtml::_('actionsdropdown.' . ((int) $item->published === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'modules');
-								}
-								if ($canCreate || $canChange)
-								{
-									echo JHtml::_('actionsdropdown.render', $this->escape($item->title));
-								}
-								?>
+				        if ($canCreate) {
+				            JHtml::_('actionsdropdown.duplicate', 'cb' . $i, 'modules');
+				        }
+							    if ($canChange) {
+							        JHtml::_('actionsdropdown.' . ((int) $item->published === -2 ? 'un' : '') . 'trash', 'cb' . $i, 'modules');
+							    }
+							    if ($canCreate || $canChange) {
+							        echo JHtml::_('actionsdropdown.render', $this->escape($item->title));
+							    }
+							    ?>
 							<?php else : ?>
-								<?php // Extension is not enabled, show a message that indicates this. ?>
+								<?php // Extension is not enabled, show a message that indicates this.?>
 								<button class="btn btn-micro hasTooltip" title="<?php echo JText::_('COM_MODULES_MSG_MANAGE_EXTENSION_DISABLED'); ?>">
 									<span class="icon-ban-circle" aria-hidden="true"></span>
 								</button>
@@ -211,18 +204,18 @@ $colSpan = $clientId === 1 ? 8 : 10;
 			</table>
 		<?php endif; ?>
 
-		<?php // Load the batch processing form. ?>
+		<?php // Load the batch processing form.?>
 		<?php if ($user->authorise('core.create', 'com_modules')
-			&& $user->authorise('core.edit', 'com_modules')
-			&& $user->authorise('core.edit.state', 'com_modules')) : ?>
+            && $user->authorise('core.edit', 'com_modules')
+            && $user->authorise('core.edit.state', 'com_modules')) : ?>
 			<?php echo JHtml::_(
-				'bootstrap.renderModal',
-				'collapseModal',
-				array(
-					'title'  => JText::_('COM_MODULES_BATCH_OPTIONS'),
-					'footer' => $this->loadTemplate('batch_footer'),
-				),
-				$this->loadTemplate('batch_body')
+			    'bootstrap.renderModal',
+			    'collapseModal',
+			    array(
+			        'title'  => JText::_('COM_MODULES_BATCH_OPTIONS'),
+			        'footer' => $this->loadTemplate('batch_footer'),
+			    ),
+			    $this->loadTemplate('batch_body')
 			); ?>
 		<?php endif; ?>
 		<input type="hidden" name="task" value="" />

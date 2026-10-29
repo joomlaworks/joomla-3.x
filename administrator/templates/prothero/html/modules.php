@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  Templates.prothero
@@ -28,45 +29,41 @@ defined('_JEXEC') or die;
  */
 function modChrome_title($module, &$params, &$attribs)
 {
-	if ($module->content)
-	{
-		echo '<div class="module-title"><h6>' . $module->title . '</h6></div>';
-		echo $module->content;
-	}
+    if ($module->content) {
+        echo '<div class="module-title"><h6>' . $module->title . '</h6></div>';
+        echo $module->content;
+    }
 }
 
 function modChrome_no($module, &$params, &$attribs)
 {
-	if ($module->content)
-	{
-		echo $module->content;
-	}
+    if ($module->content) {
+        echo $module->content;
+    }
 }
 
 function modChrome_well($module, &$params, &$attribs)
 {
-	if ($module->content)
-	{
-		$moduleTag     = $params->get('module_tag', 'div');
-		$bootstrapSize = (int) $params->get('bootstrap_size');
-		$moduleClass   = $bootstrapSize ? ' span' . $bootstrapSize : '';
-		$headerTag     = htmlspecialchars((string) $params->get('header_tag', 'h2'), ENT_COMPAT, 'UTF-8');
+    if ($module->content) {
+        $moduleTag     = $params->get('module_tag', 'div');
+        $bootstrapSize = (int) $params->get('bootstrap_size');
+        $moduleClass   = $bootstrapSize ? ' span' . $bootstrapSize : '';
+        $headerTag     = htmlspecialchars((string) $params->get('header_tag', 'h2'), ENT_COMPAT, 'UTF-8');
 
-		// Temporarily store header class in variable
-		$headerClass   = $params->get('header_class');
-		$headerClass   = $headerClass ? ' ' . htmlspecialchars($headerClass, ENT_COMPAT, 'UTF-8') : '';
+        // Temporarily store header class in variable
+        $headerClass   = $params->get('header_class');
+        $headerClass   = $headerClass ? ' ' . htmlspecialchars($headerClass, ENT_COMPAT, 'UTF-8') : '';
 
-		// The module's name (underscores as dashes) and ID, so a dashboard module can be styled on its own
-		$moduleClass .= ' ' . htmlspecialchars(str_replace('_', '-', (string) $module->module), ENT_COMPAT, 'UTF-8') . ' module-id-' . (int) $module->id;
+        // The module's name (underscores as dashes) and ID, so a dashboard module can be styled on its own
+        $moduleClass .= ' ' . htmlspecialchars(str_replace('_', '-', (string) $module->module), ENT_COMPAT, 'UTF-8') . ' module-id-' . (int) $module->id;
 
-		echo '<' . $moduleTag . ' class="well well-small' . $moduleClass . '">';
+        echo '<' . $moduleTag . ' class="well well-small' . $moduleClass . '">';
 
-			if ($module->showtitle)
-			{
-				echo '<' . $headerTag . ' class="module-title nav-header' . $headerClass . '">' . $module->title . '</' . $headerTag . '>';
-			}
+        if ($module->showtitle) {
+            echo '<' . $headerTag . ' class="module-title nav-header' . $headerClass . '">' . $module->title . '</' . $headerTag . '>';
+        }
 
-			echo $module->content;
-		echo '</' . $moduleTag . '>';
-	}
+        echo $module->content;
+        echo '</' . $moduleTag . '>';
+    }
 }

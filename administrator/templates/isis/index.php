@@ -38,9 +38,8 @@ JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true)
 // Add Stylesheets
 JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
 
-if ($this->direction === 'rtl')
-{
-	JHtml::_('stylesheet', 'template-rtl.css', array('version' => 'auto', 'relative' => true));
+if ($this->direction === 'rtl') {
+    JHtml::_('stylesheet', 'template-rtl.css', array('version' => 'auto', 'relative' => true));
 }
 
 // Load specific language related CSS
@@ -66,15 +65,13 @@ $hidden = $app->input->get('hidemainmenu');
 $showSubmenu          = false;
 $this->submenumodules = JModuleHelper::getModules('submenu');
 
-foreach ($this->submenumodules as $submenumodule)
-{
-	$output = JModuleHelper::renderModule($submenumodule);
+foreach ($this->submenumodules as $submenumodule) {
+    $output = JModuleHelper::renderModule($submenumodule);
 
-	if ($output !== '')
-	{
-		$showSubmenu = true;
-		break;
-	}
+    if ($output !== '') {
+        $showSubmenu = true;
+        break;
+    }
 }
 
 // Template Parameters
@@ -88,59 +85,52 @@ $header_color    = $displayHeader && $this->params->get('headerColor') ? $this->
 $navbar_is_light = $navbar_color && colorIsLight($navbar_color);
 $header_is_light = $header_color && colorIsLight($header_color);
 
-if ($displayHeader)
-{
-	// Logo file
-	if ($this->params->get('logoFile'))
-	{
-		$logo = JUri::root() . htmlspecialchars((string) $this->params->get('logoFile'), ENT_QUOTES);
-	}
-	else
-	{
-		$logo = $this->baseurl . '/templates/' . $this->template . '/images/logo' . ($header_is_light ? '-inverse' : '') . '.png';
-	}
+if ($displayHeader) {
+    // Logo file
+    if ($this->params->get('logoFile')) {
+        $logo = JUri::root() . htmlspecialchars((string) $this->params->get('logoFile'), ENT_QUOTES);
+    } else {
+        $logo = $this->baseurl . '/templates/' . $this->template . '/images/logo' . ($header_is_light ? '-inverse' : '') . '.png';
+    }
 }
 
 function colorIsLight($color)
 {
-	$r = hexdec(substr((string) $color, 1, 2));
-	$g = hexdec(substr((string) $color, 3, 2));
-	$b = hexdec(substr((string) $color, 5, 2));
+    $r = hexdec(substr((string) $color, 1, 2));
+    $g = hexdec(substr((string) $color, 3, 2));
+    $b = hexdec(substr((string) $color, 5, 2));
 
-	$yiq = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+    $yiq = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
 
-	return $yiq >= 200;
+    return $yiq >= 200;
 }
 
 // Pass some values to javascript
 $offset = 20;
 
-if ($displayHeader || !$statusFixed)
-{
-	$offset = 30;
+if ($displayHeader || !$statusFixed) {
+    $offset = 30;
 }
 
 $stickyBar = 0;
 
-if ($stickyToolbar)
-{
-	$stickyBar = 'true';
+if ($stickyToolbar) {
+    $stickyBar = 'true';
 }
 
 // Template options: their colours as custom properties, which css/template-options.css applies after custom.css
 require_once __DIR__ . '/helper.php';
 
 $optionColors = isisOptionColors(array(
-	'navbar'  => $navbar_color,
-	'header'  => $header_color,
-	'sidebar' => $this->params->get('sidebarColor'),
-	'link'    => $this->params->get('linkColor'),
+    'navbar'  => $navbar_color,
+    'header'  => $header_color,
+    'sidebar' => $this->params->get('sidebarColor'),
+    'link'    => $this->params->get('linkColor'),
 ));
 
-if ($optionColors['properties'] !== '')
-{
-	JHtml::_('stylesheet', 'template-options.css', array('version' => 'auto', 'relative' => true));
-	$this->addStyleDeclaration(':root {' . $optionColors['properties'] . '}');
+if ($optionColors['properties'] !== '') {
+    JHtml::_('stylesheet', 'template-options.css', array('version' => 'auto', 'relative' => true));
+    $this->addStyleDeclaration(':root {' . $optionColors['properties'] . '}');
 }
 ?>
 <!DOCTYPE html>
@@ -166,7 +156,7 @@ if ($optionColors['properties'] !== '')
 			<!-- skip to content -->
 			<a class="element-invisible" href="#skiptarget"><?php echo JText::_('TPL_ISIS_SKIP_TO_MAIN_CONTENT'); ?></a>
 
-			<a class="admin-logo <?php echo ($hidden ? 'disabled' : ''); ?>" <?php echo ($hidden ? '' : 'href="' . $this->baseurl . '/index.php"'); ?>>
+			<a class="admin-logo <?php echo($hidden ? 'disabled' : ''); ?>" <?php echo($hidden ? '' : 'href="' . $this->baseurl . '/index.php"'); ?>>
 				<span class="icon-joomla"></span>
 				<div class="element-invisible">
 					<?php echo JText::_('TPL_ISIS_CONTROL_PANEL'); ?>
@@ -180,7 +170,7 @@ if ($optionColors['properties'] !== '')
 				<jdoc:include type="modules" name="menu" style="none" />
 				<ul class="nav nav-user<?php echo ($this->direction == 'rtl') ? ' pull-left' : ' pull-right'; ?>">
 					<li class="dropdown">
-						<a class="<?php echo ($hidden ? ' disabled' : 'dropdown-toggle'); ?>" data-toggle="<?php echo ($hidden ? '' : 'dropdown'); ?>" <?php echo ($hidden ? '' : 'href="#"'); ?>><span class="icon-user"></span>
+						<a class="<?php echo($hidden ? ' disabled' : 'dropdown-toggle'); ?>" data-toggle="<?php echo($hidden ? '' : 'dropdown'); ?>" <?php echo($hidden ? '' : 'href="#"'); ?>><span class="icon-user"></span>
 							<span class="caret"></span>
 							<div class="element-invisible">
 								<?php echo JText::_('TPL_ISIS_USERMENU'); ?>

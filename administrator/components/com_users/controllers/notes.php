@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_users
@@ -16,27 +17,27 @@ defined('_JEXEC') or die;
  */
 class UsersControllerNotes extends JControllerAdmin
 {
-	/**
-	 * The prefix to use with controller messages.
-	 *
-	 * @var    string
-	 * @since  2.5
-	 */
-	protected $text_prefix = 'COM_USERS_NOTES';
+    /**
+     * The prefix to use with controller messages.
+     *
+     * @var    string
+     * @since  2.5
+     */
+    protected $text_prefix = 'COM_USERS_NOTES';
 
-	/**
-	 * Method to get a model object, loading it if required.
-	 *
-	 * @param   string  $name    The model name. Optional.
-	 * @param   string  $prefix  The class prefix. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
-	 *
-	 * @return  object  The model.
-	 *
-	 * @since   2.5
-	 */
-	public function getModel($name = 'Note', $prefix = 'UsersModel', $config = array('ignore_request' => true))
-	{
-		return parent::getModel($name, $prefix, $config);
-	}
+    /**
+     * Method to get a model object, loading it if required.
+     *
+     * @param   string  $name    The model name. Optional.
+     * @param   string  $prefix  The class prefix. Optional.
+     * @param   array   $config  Configuration array for model. Optional.
+     *
+     * @return  object  The model.
+     *
+     * @since   2.5
+     */
+    public function getModel($name = 'Note', $prefix = 'UsersModel', $config = array('ignore_request' => true))
+    {
+        return parent::getModel($name, $prefix, $config);
+    }
 }

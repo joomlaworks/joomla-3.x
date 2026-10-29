@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Joomla! Content Management System
  *
@@ -20,98 +21,92 @@ use Joomla\CMS\User\UserHelper;
  */
 class UserAddToGroupCommand extends AbstractUserCommand
 {
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $name = 'user:addtogroup';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $name = 'user:addtogroup';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $description = 'Add a user to a group';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $description = 'Add a user to a group';
 
-	/**
-	 * @var    string
-	 * @since  3.17.0
-	 */
-	protected $help = 'Adds a user to one or more user groups, given by title and separated by commas.';
+    /**
+     * @var    string
+     * @since  3.17.0
+     */
+    protected $help = 'Adds a user to one or more user groups, given by title and separated by commas.';
 
-	/**
-	 * @var    boolean
-	 * @since  3.17.0
-	 */
-	protected $dryRun = true;
+    /**
+     * @var    boolean
+     * @since  3.17.0
+     */
+    protected $dryRun = true;
 
-	/**
-	 * @return  void
-	 *
-	 * @since   3.17.0
-	 */
-	protected function configure()
-	{
-		$this->addOption('username', null, self::OPTION_REQUIRED, 'username');
-		$this->addOption('group', null, self::OPTION_REQUIRED, 'group');
-	}
+    /**
+     * @return  void
+     *
+     * @since   3.17.0
+     */
+    protected function configure()
+    {
+        $this->addOption('username', null, self::OPTION_REQUIRED, 'username');
+        $this->addOption('group', null, self::OPTION_REQUIRED, 'group');
+    }
 
-	/**
-	 * @param   CommandIO  $io  The input values and the output
-	 *
-	 * @return  integer
-	 *
-	 * @since   3.17.0
-	 */
-	protected function doExecute(CommandIO $io)
-	{
-		$io->title('Add User To Group');
+    /**
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.17.0
+     */
+    protected function doExecute(CommandIO $io)
+    {
+        $io->title('Add User To Group');
 
-		$username = $this->getRequiredOption($io, 'username', 'Please enter a username');
+        $username = $this->getRequiredOption($io, 'username', 'Please enter a username');
 
-		if ($username === '')
-		{
-			return self::INVALID;
-		}
+        if ($username === '') {
+            return self::INVALID;
+        }
 
-		$userId = $this->getUserId($username);
+        $userId = $this->getUserId($username);
 
-		if (!$userId)
-		{
-			$io->error(sprintf('The user "%s" does not exist.', $username));
+        if (!$userId) {
+            $io->error(sprintf('The user "%s" does not exist.', $username));
 
-			return self::NOT_FOUND;
-		}
+            return self::NOT_FOUND;
+        }
 
-		$groups = $this->getRequiredOption($io, 'group', 'Please enter the user groups (separate multiple groups with a comma)');
+        $groups = $this->getRequiredOption($io, 'group', 'Please enter the user groups (separate multiple groups with a comma)');
 
-		if ($groups === '' || ($groupIds = $this->getGroupIds($io, $groups)) === false)
-		{
-			return self::INVALID;
-		}
+        if ($groups === '' || ($groupIds = $this->getGroupIds($io, $groups)) === false) {
+            return self::INVALID;
+        }
 
-		$user = User::getInstance($userId);
+        $user = User::getInstance($userId);
 
-		foreach ($groupIds as $groupId)
-		{
-			$title = $this->getGroupTitle($groupId);
+        foreach ($groupIds as $groupId) {
+            $title = $this->getGroupTitle($groupId);
 
-			if ($io->isDryRun())
-			{
-				$io->plan(sprintf('Add "%s" to the group "%s"', $user->username, $title), array('action' => 'addtogroup', 'username' => $user->username, 'group' => $title));
+            if ($io->isDryRun()) {
+                $io->plan(sprintf('Add "%s" to the group "%s"', $user->username, $title), array('action' => 'addtogroup', 'username' => $user->username, 'group' => $title));
 
-				continue;
-			}
+                continue;
+            }
 
-			if (!UserHelper::addUserToGroup($user->id, $groupId))
-			{
-				$io->error(sprintf('Can\'t add "%s" to the group "%s".', $user->username, $title));
+            if (!UserHelper::addUserToGroup($user->id, $groupId)) {
+                $io->error(sprintf('Can\'t add "%s" to the group "%s".', $user->username, $title));
 
-				return self::FAILURE;
-			}
+                return self::FAILURE;
+            }
 
-			$io->success(sprintf('Added "%s" to the group "%s".', $user->username, $title));
-		}
+            $io->success(sprintf('Added "%s" to the group "%s".', $user->username, $title));
+        }
 
-		return self::SUCCESS;
-	}
+        return self::SUCCESS;
+    }
 }

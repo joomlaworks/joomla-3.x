@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Libraries
  * @subpackage  HTML
@@ -17,90 +18,89 @@ defined('JPATH_PLATFORM') or die;
  */
 abstract class JHtmlTabs
 {
-	/**
-	 * Creates a panes and creates the JavaScript object for it.
-	 *
-	 * @param   string  $group   The pane identifier.
-	 * @param   array   $params  An array of option.
-	 *
-	 * @return  string
-	 *
-	 * @since   1.6
-	 * @deprecated  3.7.0 These helpers are dependent on the deprecated MooTools support
-	 */
-	public static function start($group = 'tabs', $params = array())
-	{
-		static::loadBehavior($group, $params);
+    /**
+     * Creates a panes and creates the JavaScript object for it.
+     *
+     * @param   string  $group   The pane identifier.
+     * @param   array   $params  An array of option.
+     *
+     * @return  string
+     *
+     * @since   1.6
+     * @deprecated  3.7.0 These helpers are dependent on the deprecated MooTools support
+     */
+    public static function start($group = 'tabs', $params = array())
+    {
+        static::loadBehavior($group, $params);
 
-		return '<dl class="tabs" id="' . $group . '"><dt style="display:none;"></dt><dd style="display:none;">';
-	}
+        return '<dl class="tabs" id="' . $group . '"><dt style="display:none;"></dt><dd style="display:none;">';
+    }
 
-	/**
-	 * Close the current pane
-	 *
-	 * @return  string  HTML to close the pane
-	 *
-	 * @since   1.6
-	 * @deprecated  3.7.0 These helpers are dependent on the deprecated MooTools support
-	 */
-	public static function end()
-	{
-		return '</dd></dl>';
-	}
+    /**
+     * Close the current pane
+     *
+     * @return  string  HTML to close the pane
+     *
+     * @since   1.6
+     * @deprecated  3.7.0 These helpers are dependent on the deprecated MooTools support
+     */
+    public static function end()
+    {
+        return '</dd></dl>';
+    }
 
-	/**
-	 * Begins the display of a new panel.
-	 *
-	 * @param   string  $text  Text to display.
-	 * @param   string  $id    Identifier of the panel.
-	 *
-	 * @return  string  HTML to start a new panel
-	 *
-	 * @since   1.6
-	 * @deprecated  3.7.0 These helpers are dependent on the deprecated MooTools support
-	 */
-	public static function panel($text, $id)
-	{
-		return '</dd><dt class="tabs ' . $id . '"><span><h3><a href="javascript:void(0);">' . $text . '</a></h3></span></dt><dd class="tabs">';
-	}
+    /**
+     * Begins the display of a new panel.
+     *
+     * @param   string  $text  Text to display.
+     * @param   string  $id    Identifier of the panel.
+     *
+     * @return  string  HTML to start a new panel
+     *
+     * @since   1.6
+     * @deprecated  3.7.0 These helpers are dependent on the deprecated MooTools support
+     */
+    public static function panel($text, $id)
+    {
+        return '</dd><dt class="tabs ' . $id . '"><span><h3><a href="javascript:void(0);">' . $text . '</a></h3></span></dt><dd class="tabs">';
+    }
 
-	/**
-	 * Load the JavaScript behavior.
-	 *
-	 * @param   string  $group   The pane identifier.
-	 * @param   array   $params  Array of options.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.6
-	 * @deprecated  3.7.0 These helpers are dependent on the deprecated MooTools support
-	 */
-	protected static function loadBehavior($group, $params = array())
-	{
-		static $loaded = array();
+    /**
+     * Load the JavaScript behavior.
+     *
+     * @param   string  $group   The pane identifier.
+     * @param   array   $params  Array of options.
+     *
+     * @return  void
+     *
+     * @since   1.6
+     * @deprecated  3.7.0 These helpers are dependent on the deprecated MooTools support
+     */
+    protected static function loadBehavior($group, $params = array())
+    {
+        static $loaded = array();
 
-		if (!array_key_exists((string) $group, $loaded))
-		{
-			// CMS.tabs (global.js), what MooTools' JTabs was
-			JHtml::_('behavior.cms');
+        if (!array_key_exists((string) $group, $loaded)) {
+            // CMS.tabs (global.js), what MooTools' JTabs was
+            JHtml::_('behavior.cms');
 
-			$opt['onActive']            = isset($params['onActive']) ? '\\' . $params['onActive'] : null;
-			$opt['onBackground']        = isset($params['onBackground']) ? '\\' . $params['onBackground'] : null;
-			$opt['display']             = isset($params['startOffset']) ? (int) $params['startOffset'] : null;
-			$opt['titleSelector']       = 'dt.tabs';
-			$opt['descriptionSelector'] = 'dd.tabs';
+            $opt['onActive']            = isset($params['onActive']) ? '\\' . $params['onActive'] : null;
+            $opt['onBackground']        = isset($params['onBackground']) ? '\\' . $params['onBackground'] : null;
+            $opt['display']             = isset($params['startOffset']) ? (int) $params['startOffset'] : null;
+            $opt['titleSelector']       = 'dt.tabs';
+            $opt['descriptionSelector'] = 'dd.tabs';
 
-			// When use storage is set and value is false - By default we allow to use storage
-			$opt['useStorage'] = !(isset($params['useCookie']) && !$params['useCookie']);
+            // When use storage is set and value is false - By default we allow to use storage
+            $opt['useStorage'] = !(isset($params['useCookie']) && !$params['useCookie']);
 
-			$options = JHtml::getJSObject($opt);
+            $options = JHtml::getJSObject($opt);
 
-			$js = 'CMS.ready(function () { var lists = document.querySelectorAll(' . json_encode('dl#' . $group . '.tabs', JSON_HEX_TAG | JSON_HEX_AMP)
-				. '); for (var i = 0; i < lists.length; i++) { CMS.tabs.create(lists[i], ' . $options . '); } });';
+            $js = 'CMS.ready(function () { var lists = document.querySelectorAll(' . json_encode('dl#' . $group . '.tabs', JSON_HEX_TAG | JSON_HEX_AMP)
+                . '); for (var i = 0; i < lists.length; i++) { CMS.tabs.create(lists[i], ' . $options . '); } });';
 
-			JFactory::getDocument()->addScriptDeclaration($js);
+            JFactory::getDocument()->addScriptDeclaration($js);
 
-			$loaded[(string) $group] = true;
-		}
-	}
+            $loaded[(string) $group] = true;
+        }
+    }
 }

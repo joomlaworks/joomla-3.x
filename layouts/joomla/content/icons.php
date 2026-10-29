@@ -26,7 +26,7 @@ $articleId = $displayData['item']->id;
 					<span class="icon-cog" aria-hidden="true"></span>
 					<span class="caret" aria-hidden="true"></span>
 				</button>
-				<?php // Note the actions class is deprecated. Use dropdown-menu instead. ?>
+				<?php // Note the actions class is deprecated. Use dropdown-menu instead.?>
 				<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton-<?php echo $articleId; ?>">
 					<?php if ($displayData['params']->get('show_print_icon')) : ?>
 						<li class="print-icon"> <?php echo JHtml::_('icon.print_popup', $displayData['item'], $displayData['params']); ?> </li>

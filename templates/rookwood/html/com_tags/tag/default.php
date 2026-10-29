@@ -20,9 +20,8 @@ class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/he
  */
 $titles = array();
 
-foreach ((array) $this->item as $tag)
-{
-	$titles[] = $tag->title;
+foreach ((array) $this->item as $tag) {
+    $titles[] = $tag->title;
 }
 ?>
 <div class="listView tagView">

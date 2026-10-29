@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  com_mailto
@@ -16,20 +17,20 @@ defined('_JEXEC') or die;
  */
 class MailtoViewMailto extends JViewLegacy
 {
-	/**
-	 * Execute and display a template script.
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  mixed  A string if successful, otherwise an Error object.
-	 *
-	 * @since   1.5
-	 */
-	public function display($tpl = null)
-	{
-		$this->form = $this->get('Form');
-		$this->link = urldecode((string) JFactory::getApplication()->input->get('link', '', 'BASE64'));
+    /**
+     * Execute and display a template script.
+     *
+     * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+     *
+     * @return  mixed  A string if successful, otherwise an Error object.
+     *
+     * @since   1.5
+     */
+    public function display($tpl = null)
+    {
+        $this->form = $this->get('Form');
+        $this->link = urldecode((string) JFactory::getApplication()->input->get('link', '', 'BASE64'));
 
-		return parent::display($tpl);
-	}
+        return parent::display($tpl);
+    }
 }
