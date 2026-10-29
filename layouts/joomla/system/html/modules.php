@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 /*
- * none (output raw module content)
+ * None (output raw module content)
  */
 function modChrome_none($module, &$params, &$attribs)
 {
@@ -18,7 +18,7 @@ function modChrome_none($module, &$params, &$attribs)
 }
 
 /*
- * html5 (chosen html5 tag and font header tags)
+ * HTML5 (chosen html5 tag and font header tags)
  */
 function modChrome_html5($module, &$params, &$attribs)
 {
@@ -87,7 +87,7 @@ function modChrome_horz($module, &$params, &$attribs)
 }
 
 /*
- * xhtml (divs and font header tags)
+ * XHTML (divs and font header tags)
  * With the new advanced parameter it does the same as the html5 chrome
  */
 function modChrome_xhtml($module, &$params, &$attribs)
@@ -137,13 +137,15 @@ function modChrome_rounded($module, &$params, &$attribs)
 }
 
 /*
- * Module chrome that add preview information to the module
+ * Module chrome that adds preview information to the module
  */
 function modChrome_outline($module, &$params, &$attribs)
 {
     // The preview's styles (frontend.css: .mod-preview...), as the site's templates don't load it themselves
     JHtml::_('stylesheet', 'system/frontend.min.css', array('version' => 'auto', 'relative' => true));
-    ?>
+
+	?>
+
 	<div class="mod-preview">
 		<div class="mod-preview-info">
 			<div class="mod-preview-position">
@@ -157,5 +159,6 @@ function modChrome_outline($module, &$params, &$attribs)
 			<?php echo $module->content; ?>
 		</div>
 	</div>
+
 	<?php
 }
