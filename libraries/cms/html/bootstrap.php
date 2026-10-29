@@ -341,9 +341,6 @@ abstract class JHtmlBootstrap
             return;
         }
 
-        // Include Bootstrap framework
-        JHtml::_('bootstrap.framework');
-
         $opt['animation'] = isset($params['animation']) ? $params['animation'] : null;
         $opt['html']      = isset($params['html']) ? $params['html'] : true;
         $opt['placement'] = isset($params['placement']) ? $params['placement'] : null;
@@ -354,14 +351,18 @@ abstract class JHtmlBootstrap
         $opt['delay']     = isset($params['delay']) ? $params['delay'] : null;
         $opt['container'] = isset($params['container']) ? $params['container'] : 'body';
 
-        // The CMS's own popovers (CMS.tip), as for tooltips; Bootstrap's plugin for a delegated selector
+        // The CMS's own popovers (CMS.tip), as for tooltips, which need neither Bootstrap's script nor jQuery; Bootstrap's
+        // plugin for a delegated selector
         if ($opt['selector'] === null) {
             JHtml::_('behavior.core');
             JFactory::getDocument()->addScriptOptions('system.popover', array($selector => static::tipOptions($opt)));
+            static::tipStyles();
             static::$loaded[__METHOD__][$selector] = true;
 
             return;
         }
+
+        JHtml::_('bootstrap.framework');
 
         $options = JHtml::getJSObject($opt);
 
@@ -444,9 +445,6 @@ abstract class JHtmlBootstrap
     public static function tooltip($selector = '.hasTooltip', $params = array())
     {
         if (!isset(static::$loaded[__METHOD__][$selector])) {
-            // Include Bootstrap framework
-            JHtml::_('bootstrap.framework');
-
             // Setup options object
             $opt['animation'] = isset($params['animation']) ? (bool) $params['animation'] : null;
             $opt['html']      = isset($params['html']) ? (bool) $params['html'] : true;
@@ -463,15 +461,19 @@ abstract class JHtmlBootstrap
             $onHidden         = isset($params['onHidden']) ? (string) $params['onHidden'] : null;
 
             // The CMS's own tooltips (global.js, frontend.js: CMS.tip) in Bootstrap's markup and look, placed to stay
-            // inside the window; Bootstrap's plugin only for what script options can't carry (callbacks, a template, a
-            // delegated selector)
+            // inside the window, needing neither Bootstrap's script nor jQuery (maintainer: Bootstrap is for the
+            // administrator, whose templates load it anyway); Bootstrap's plugin only for what script options can't carry
+            // (callbacks, a template, a delegated selector)
             if (!$onShow && !$onShown && !$onHide && !$onHidden && $opt['template'] === null && $opt['selector'] === null) {
                 JHtml::_('behavior.core');
                 JFactory::getDocument()->addScriptOptions('system.tooltip', array($selector => static::tipOptions($opt)));
+                static::tipStyles();
                 static::$loaded[__METHOD__][$selector] = true;
 
                 return;
             }
+
+            JHtml::_('bootstrap.framework');
 
             $options = JHtml::getJSObject($opt);
 
@@ -508,6 +510,21 @@ abstract class JHtmlBootstrap
         }
 
         return;
+    }
+
+    /**
+     * The styles of the CMS's tooltips and popovers on the site (media/system/css/frontend.css: a base templates' own
+     * styles override); the administrator's templates have Bootstrap's
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    protected static function tipStyles()
+    {
+        if (JFactory::getApplication()->isClient('site')) {
+            JHtml::_('stylesheet', 'system/frontend.min.css', array('version' => 'auto', 'relative' => true));
+        }
     }
 
     /**

@@ -7,25 +7,60 @@
 /* The site's shared styles: what the system template's stylesheets were (templates/system/css/*.css import this file
    for templates linking them), the system pages' scoped to their body class (tmpl-component, tmpl-error, tmpl-offline) */
 
+/* Base rules under :where() (no specificity): a template's own styles win, whatever the order the stylesheets load in */
+
 /* --- System messages --- */
-#system-message {margin-bottom:10px;padding:0;}
-#system-message > dt {font-weight:bold;display:none;}
-#system-message > dd {margin:0;font-weight:bold;text-indent:30px;}
-#system-message > dd > ul {color:#0055bb;background-position:4px top;background-size:24px 24px;background-repeat:no-repeat;margin-bottom:10px;list-style:none;padding:10px;border-top:3px solid #84a7db;border-bottom:3px solid #84a7db;}
-#system-message > dd > ul > li {line-height:1.5em;}
-#system-message > .message > ul {background-color:#c3d2e5;background-image:url(../images/icons/notice-info.svg);}
-#system-message > .error > ul,#system-message > .warning > ul,#system-message > .notice > ul {color:#c00;}
-#system-message > .error > ul {background-color:#e6c0c0;background-image:url(../images/icons/notice-alert.svg);border-color:#de7a7b;}
-#system-message > .warning > ul {background-color:#e6c8a6;background-image:url(../images/icons/notice-note.svg);border-color:#ffbb00;}
-#system-message > .notice > ul {background-color:#efe7b8;background-image:url(../images/icons/notice-note.svg);border-color:#f0dc7e;}
+:where(#system-message) {margin-bottom:10px;padding:0;}
+:where(#system-message > dt) {font-weight:bold;display:none;}
+:where(#system-message > dd) {margin:0;font-weight:bold;text-indent:30px;}
+:where(#system-message > dd > ul) {color:#0055bb;background-position:4px top;background-size:24px 24px;background-repeat:no-repeat;margin-bottom:10px;list-style:none;padding:10px;border-top:3px solid #84a7db;border-bottom:3px solid #84a7db;}
+:where(#system-message > dd > ul > li) {line-height:1.5em;}
+:where(#system-message > .message > ul) {background-color:#c3d2e5;background-image:url(../images/icons/notice-info.svg);}
+:where(#system-message > .error > ul),:where(#system-message > .warning > ul),:where(#system-message > .notice > ul) {color:#c00;}
+:where(#system-message > .error > ul) {background-color:#e6c0c0;background-image:url(../images/icons/notice-alert.svg);border-color:#de7a7b;}
+:where(#system-message > .warning > ul) {background-color:#e6c8a6;background-image:url(../images/icons/notice-note.svg);border-color:#ffbb00;}
+:where(#system-message > .notice > ul) {background-color:#efe7b8;background-image:url(../images/icons/notice-note.svg);border-color:#f0dc7e;}
 
 /* --- Content --- */
-.system-unpublished,tr.system-unpublished {background:#e8edf1;border-top:4px solid #c4d3df;border-bottom:4px solid #c4d3df;}
-span.highlight {background-color:#ffffcc;font-weight:bold;padding:1px 0;}
+:where(.system-unpublished),:where(tr.system-unpublished) {background:#e8edf1;border-top:4px solid #c4d3df;border-bottom:4px solid #c4d3df;}
+:where(span.highlight) {background-color:#ffffcc;font-weight:bold;padding:1px 0;}
 
 /* --- Forms --- */
-.invalid {border-color:#ff0000;}
-label.invalid {color:#ff0000;}
+:where(.invalid) {border-color:#ff0000;}
+:where(label.invalid) {color:#ff0000;}
+
+/* --- Tooltips and popovers (CMS.tip, in Bootstrap 2's markup and look; templates styling them win) --- */
+:where(.tooltip) {position:absolute;z-index:1030;display:block;font-size:11px;line-height:1.4;opacity:0;}
+:where(.tooltip.in) {opacity:0.8;}
+:where(.tooltip.top) {margin-top:-3px;padding:5px 0;}
+:where(.tooltip.right) {margin-left:3px;padding:0 5px;}
+:where(.tooltip.bottom) {margin-top:3px;padding:5px 0;}
+:where(.tooltip.left) {margin-left:-3px;padding:0 5px;}
+:where(.tooltip-inner) {max-width:200px;padding:8px;color:#fff;text-align:center;text-decoration:none;background-color:#000;border-radius:4px;}
+:where(.tooltip-arrow) {position:absolute;width:0;height:0;border-color:transparent;border-style:solid;}
+:where(.tooltip.top .tooltip-arrow) {bottom:0;left:50%;margin-left:-5px;border-width:5px 5px 0;border-top-color:#000;}
+:where(.tooltip.right .tooltip-arrow) {top:50%;left:0;margin-top:-5px;border-width:5px 5px 5px 0;border-right-color:#000;}
+:where(.tooltip.left .tooltip-arrow) {top:50%;right:0;margin-top:-5px;border-width:5px 0 5px 5px;border-left-color:#000;}
+:where(.tooltip.bottom .tooltip-arrow) {top:0;left:50%;margin-left:-5px;border-width:0 5px 5px;border-bottom-color:#000;}
+:where(.popover) {position:absolute;top:0;left:0;z-index:1010;display:none;max-width:276px;padding:1px;text-align:left;white-space:normal;background-color:#fff;background-clip:padding-box;border:1px solid rgba(0, 0, 0, 0.2);border-radius:6px;box-shadow:0 5px 10px rgba(0, 0, 0, 0.2);}
+:where(.popover.top) {margin-top:-10px;}
+:where(.popover.right) {margin-left:10px;}
+:where(.popover.bottom) {margin-top:10px;}
+:where(.popover.left) {margin-left:-10px;}
+:where(.popover-title) {margin:0;padding:8px 14px;font-size:14px;font-weight:normal;line-height:18px;background-color:#f7f7f7;border-bottom:1px solid #ebebeb;border-radius:5px 5px 0 0;}
+:where(.popover-title:empty) {display:none;}
+:where(.popover-content) {padding:9px 14px;}
+:where(.popover .arrow),:where(.popover .arrow::after) {position:absolute;display:block;width:0;height:0;border-color:transparent;border-style:solid;}
+:where(.popover .arrow) {border-width:11px;}
+:where(.popover .arrow::after) {border-width:10px;content:"";}
+:where(.popover.top .arrow) {left:50%;bottom:-11px;margin-left:-11px;border-bottom-width:0;border-top-color:rgba(0, 0, 0, 0.25);}
+:where(.popover.top .arrow::after) {bottom:1px;margin-left:-10px;border-bottom-width:0;border-top-color:#fff;}
+:where(.popover.right .arrow) {top:50%;left:-11px;margin-top:-11px;border-left-width:0;border-right-color:rgba(0, 0, 0, 0.25);}
+:where(.popover.right .arrow::after) {left:1px;bottom:-10px;border-left-width:0;border-right-color:#fff;}
+:where(.popover.bottom .arrow) {left:50%;top:-11px;margin-left:-11px;border-top-width:0;border-bottom-color:rgba(0, 0, 0, 0.25);}
+:where(.popover.bottom .arrow::after) {top:1px;margin-left:-10px;border-top-width:0;border-bottom-color:#fff;}
+:where(.popover.left .arrow) {top:50%;right:-11px;margin-top:-11px;border-right-width:0;border-left-color:rgba(0, 0, 0, 0.25);}
+:where(.popover.left .arrow::after) {right:1px;bottom:-10px;border-right-width:0;border-left-color:#fff;}
 
 /* --- Module preview (?tp=1: the module chrome outline shows each module's position and style) --- */
 .mod-preview {margin:8px 0;border-radius:1px;background:rgba(100, 100, 100, 0.08);box-shadow:0 0 0 4px #f4f4f4, 0 0 0 5px rgba(100, 100, 100, 0.2);}
