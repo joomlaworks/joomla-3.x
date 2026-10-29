@@ -54,28 +54,29 @@ if ($meter) {
 }
 
 if ($lock) {
-    // The lock's button (jQuery)
-    JHtml::_('jquery.framework');
+    // The lock's button: Modify enables the field, Cancel empties and locks it again (the stored password stays)
     JFactory::getDocument()->addScriptDeclaration(
-        "
-		jQuery(document).ready(function() {
-			jQuery('#" . $id ."_lock').on('click', function() {
-				var lockButton = jQuery(this);
-				var passwordInput = jQuery('#" . $id . "');
-				var lock = lockButton.hasClass('active');
+        'document.addEventListener("DOMContentLoaded", function () {
+			var button = document.getElementById(' . json_encode($id . '_lock', JSON_HEX_TAG | JSON_HEX_AMP) . ');
+			var input = document.getElementById(' . json_encode($id, JSON_HEX_TAG | JSON_HEX_AMP) . ');
 
-				if (lock === true) {
-					lockButton.html('" . JText::_('JMODIFY', true) . "');
-					passwordInput.attr('disabled', true);
-					passwordInput.val('');
-				}
-				else
-				{
-					lockButton.html('" . JText::_('JCANCEL', true) . "');
-					passwordInput.attr('disabled', false);
+			if (!button || !input) {
+				return;
+			}
+
+			button.addEventListener("click", function () {
+				var unlock = input.disabled;
+
+				button.textContent = unlock ? ' . json_encode(JText::_('JCANCEL'), JSON_HEX_TAG | JSON_HEX_AMP) . ' : ' . json_encode(JText::_('JMODIFY'), JSON_HEX_TAG | JSON_HEX_AMP) . ';
+				button.classList.toggle("active", unlock);
+				button.setAttribute("aria-pressed", unlock ? "true" : "false");
+				input.disabled = !unlock;
+
+				if (!unlock) {
+					input.value = "";
 				}
 			});
-		});"
+		});'
     );
 
     $disabled = true;
@@ -107,6 +108,6 @@ $attributes = array(
 	<?php echo implode(' ', $attributes); ?>
 />
 <?php if ($lock): ?>
-	<button type="button" id="<?php echo $id; ?>_lock" class="btn btn-info" data-toggle="button"><?php echo JText::_('JMODIFY'); ?></button>
+	<button type="button" id="<?php echo $id; ?>_lock" class="btn btn-info" aria-pressed="false"><?php echo JText::_('JMODIFY'); ?></button>
 	</span>
 <?php endif; ?>

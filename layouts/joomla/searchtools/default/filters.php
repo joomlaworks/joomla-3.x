@@ -19,7 +19,6 @@ $filters = $data['view']->filterForm->getGroup('filter');
 		<?php if ($fieldName !== 'filter_search') : ?>
 			<?php $dataShowOn = ''; ?>
 			<?php if ($field->showon) : ?>
-				<?php JHtml::_('jquery.framework'); ?>
 				<?php JHtml::_('behavior.core'); ?>
 				<?php $dataShowOn = " data-showon='" . json_encode(JFormHelper::parseShowOnConditions($field->showon, $field->formControl, $field->group)) . "'"; ?>
 			<?php endif; ?>

@@ -11,7 +11,6 @@ defined('_JEXEC') or die;
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
-JHtml::_('jquery.framework');
 JHtml::_('behavior.formvalidator');
 JHtml::_('formbehavior.chosen', '#jform_catid', null, array('disable_search_threshold' => 0 ));
 JHtml::_('formbehavior.chosen', 'select');
@@ -24,27 +23,34 @@ JFactory::getDocument()->addScriptDeclaration('
 			Joomla.submitform(task, document.getElementById("banner-form"));
 		}
 	};
-	jQuery(document).ready(function ($){
-		$("#jform_type").on("change", function (a, params) {
+	// The type shows the image and link fields, or the custom code (the list is drawn by Chosen, which changes through jQuery)
+	document.addEventListener("DOMContentLoaded", function () {
+		var type = document.getElementById("jform_type");
+		var update = function () {
+			["image", "url"].forEach(function (id) {
+				var element = document.getElementById(id);
 
-			var v = typeof(params) !== "object" ? $("#jform_type").val() : params.selected;
+				if (element) {
+					element.style.display = type.value === "0" ? "" : "none";
+				}
+			});
 
-			var img_url = $("#image, #url");
-			var custom  = $("#custom");
-
-			switch (v) {
-				case "0":
-					// Image
-					img_url.show();
-					custom.hide();
-					break;
-				case "1":
-					// Custom
-					img_url.hide();
-					custom.show();
-					break;
+			if (document.getElementById("custom")) {
+				document.getElementById("custom").style.display = type.value === "1" ? "" : "none";
 			}
-		}).trigger("change");
+		};
+
+		if (!type) {
+			return;
+		}
+
+		update();
+
+		if (window.jQuery) {
+			window.jQuery(type).on("change", update);
+		} else {
+			type.addEventListener("change", update);
+		}
 	});
 ');
 ?>

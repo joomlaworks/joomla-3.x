@@ -9,20 +9,21 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('jquery.framework');
 JHtml::_('behavior.core');
 
+// The template's toggleSidebar() (Isis, Prothero) sets the sidebar up; without one its toggle is hidden
 JFactory::getDocument()->addScriptDeclaration('
-	jQuery(document).ready(function($)
-	{
-		if (window.toggleSidebar)
-		{
+	document.addEventListener("DOMContentLoaded", function () {
+		if (window.toggleSidebar) {
 			toggleSidebar(true);
-		}
-		else
-		{
-			$("#j-toggle-sidebar-header").css("display", "none");
-			$("#j-toggle-button-wrapper").css("display", "none");
+		} else {
+			["j-toggle-sidebar-header", "j-toggle-button-wrapper"].forEach(function (id) {
+				var element = document.getElementById(id);
+
+				if (element) {
+					element.style.display = "none";
+				}
+			});
 		}
 	});
 ');

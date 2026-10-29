@@ -142,6 +142,7 @@ Summary of changes:
 - Menu Assignment's tree (modules, menu item containers) is plain JavaScript in `global.js`, with keyboard toggles; System Information lists the configuration alphabetically
 - Lists sorted by ordering are reordered without jQuery UI: drag with mouse, touch or pen, or use the arrow keys; no core page loads jQuery UI
 - The Control Panel's update and privacy checks, the statistics message, the language override search, Smart Search's indexer, the Multilingual Associations editor and Content History's versions and comparison are plain JavaScript
+- Show-on fields and a dozen small administrator scripts no longer load jQuery
 - Unused libraries removed (Symfony's PHP 7.3 polyfill, the Framework's DI container and PSR-11); FOF's LESS compiler updated to lessphp 0.5.0
 - Administrator menu: Media at the top level after Content, no Help menu; Prothero's phone menu in two columns without gaps
 - Inline Editing (front-end editing of modules and menus) is off by default

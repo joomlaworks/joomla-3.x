@@ -20,7 +20,7 @@ extract($displayData);
  */
 
 if (!empty($options['showonEnabled'])) {
-    JHtml::_('jquery.framework');
+    // Show-on (CMS.showon) needs no jQuery
     JHtml::_('behavior.core');
 }
 

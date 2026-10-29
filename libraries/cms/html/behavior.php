@@ -690,21 +690,20 @@ abstract class JHtmlBehavior
         // Include core
         static::core();
 
-        // Include jQuery
-        JHtml::_('jquery.framework');
-
-        $js = 'jQuery(function () {
+        $js = 'document.addEventListener("DOMContentLoaded", function () {
 			if (top == self) {
 				document.documentElement.style.display = "block";
-			}
-			else
-			{
+			} else {
 				top.location = self.location;
 			}
 
-			// Firefox fix
-			jQuery("input[autofocus]").focus();
-		})';
+			// The page was hidden while autofocus would have applied
+			var field = document.querySelector("input[autofocus]");
+
+			if (field) {
+				field.focus();
+			}
+		});';
         $document = JFactory::getDocument();
         $document->addStyleDeclaration('html { display:none }');
         $document->addScriptDeclaration($js);

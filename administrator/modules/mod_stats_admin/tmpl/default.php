@@ -9,20 +9,24 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('jquery.framework');
+// A link opens its page on the tab named after # (the tab state, as the page's own tabs keep it)
 JFactory::getDocument()->addScriptDeclaration('
-	jQuery(document).ready(function($) {
-		$("a.js-revert").on("click", function(e) {
-			e.preventDefault();
-			e.stopPropagation();
+	document.addEventListener("click", function (event) {
+		var link = event.target.closest ? event.target.closest("a.js-revert") : null;
 
-			var activeTab = [];
-			activeTab.push("#" + e.target.href.split("#")[1]);
-			var path = window.location.pathname;
-			localStorage.removeItem(e.target.href.replace(/&return=[a-zA-Z0-9%]+/, "").replace(/&[a-zA-Z-_]+=[0-9]+/, ""));
-			localStorage.setItem(path + e.target.href.split("index.php")[1].split("#")[0], JSON.stringify(activeTab));
-			return window.location.href = e.target.href.split("#")[0];
-		});
+		if (!link) {
+			return;
+		}
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		var href = link.href;
+		var path = window.location.pathname;
+
+		localStorage.removeItem(href.replace(/&return=[a-zA-Z0-9%]+/, "").replace(/&[a-zA-Z-_]+=[0-9]+/, ""));
+		localStorage.setItem(path + href.split("index.php")[1].split("#")[0], JSON.stringify(["#" + href.split("#")[1]]));
+		window.location.href = href.split("#")[0];
 	});
 ');
 ?>

@@ -36,45 +36,43 @@ class JFormFieldFilters extends JFormField
      */
     protected function getInput()
     {
-        // Load Framework
-        JHtml::_('jquery.framework');
-
         // Add translation string for notification
         JText::script('COM_CONFIG_TEXT_FILTERS_NOTE');
 
-        // Add Javascript
+        // A group set to No Filtering whose parent or child groups filter: a note (lists drawn by Chosen change through jQuery)
         $doc = JFactory::getDocument();
         $doc->addScriptDeclaration('
-			jQuery( document ).ready(function( $ ) {
-				$("#filter-config select").change(function() {
-					var currentFilter = $(this).children("option:selected").val();
+			document.addEventListener("DOMContentLoaded", function () {
+				var lists = function (attribute, value) {
+					return document.querySelector("#filter-config select[" + attribute + "=\\"" + value + "\\"]");
+				};
+				var check = function (event) {
+					var select = event.target, other, attribute, next;
 
-					if($(this).children("option:selected").val() === "NONE") {
-						var child = $("#filter-config select[data-parent=" + $(this).attr("data-id") + "]");
-
-						while(child.length !== 0) {
-							if(child.children("option:selected").val() !== "NONE") {
-								alert(Joomla.JText._("COM_CONFIG_TEXT_FILTERS_NOTE"));
-								break;
-							}
-
-							child = $("#filter-config select[data-parent=" + child.attr("data-id") + "]");
-						}
-
+					if (!select.closest || !select.closest("#filter-config") || select.tagName !== "SELECT") {
 						return;
 					}
 
-					var parent = $("#filter-config select[data-id=" + $(this).attr("data-parent") + "]");
+					// No Filtering: the groups below must not filter; anything else: the groups above must
+					attribute = select.value === "NONE" ? "data-parent" : "data-id";
+					next = select.value === "NONE" ? "data-id" : "data-parent";
+					other = lists(attribute, select.getAttribute(next));
 
-					while(parent.length !== 0) {
-						if(parent.children("option:selected").val() === "NONE") {
+					while (other) {
+						if ((select.value === "NONE") === (other.value !== "NONE")) {
 							alert(Joomla.JText._("COM_CONFIG_TEXT_FILTERS_NOTE"));
 							break;
 						}
 
-						parent = $("#filter-config select[data-id=" + parent.attr("data-parent") + "]")
+						other = lists(attribute, other.getAttribute(next));
 					}
-				});
+				};
+
+				if (window.jQuery) {
+					window.jQuery(document).on("change", "#filter-config select", check);
+				} else {
+					document.addEventListener("change", check);
+				}
 			});
 		');
 

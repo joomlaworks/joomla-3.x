@@ -31,14 +31,20 @@ JFactory::getDocument()->addScriptDeclaration(
 	{
 		if (task === "config.cancel.component" || document.formvalidator.isValid(document.getElementById("component-form")))
 		{
-			jQuery("#permissions-sliders select").attr("disabled", "disabled");
+			document.querySelectorAll("#permissions-sliders select").forEach(function (select) {
+				select.disabled = true;
+			});
 			Joomla.submitform(task, document.getElementById("component-form"));
 		}
 	};
 
-	// Select first tab
-	jQuery(document).ready(function() {
-		jQuery("#configTabs a:first").tab("show");
+	// The first tab (a native click reaches Bootstrap\'s tab handler)
+	document.addEventListener("DOMContentLoaded", function () {
+		var tab = document.querySelector("#configTabs a");
+
+		if (tab) {
+			tab.click();
+		}
 	});'
 );
 ?>
@@ -60,7 +66,6 @@ JFactory::getDocument()->addScriptDeclaration(
 				<?php foreach ($this->fieldsets as $name => $fieldSet) : ?>
 					<?php $dataShowOn = ''; ?>
 					<?php if (!empty($fieldSet->showon)) : ?>
-						<?php JHtml::_('jquery.framework'); ?>
 						<?php JHtml::_('behavior.core'); ?>
 						<?php $dataShowOn = ' data-showon=\'' . json_encode(JFormHelper::parseShowOnConditions($fieldSet->showon, $this->formControl)) . '\''; ?>
 					<?php endif; ?>
@@ -83,8 +88,7 @@ JFactory::getDocument()->addScriptDeclaration(
 						    $groupClass = $field->type === 'Spacer' ? ' field-spacer' : '';
 						    ?>
 							<?php if ($field->showon) : ?>
-								<?php JHtml::_('jquery.framework'); ?>
-								<?php JHtml::_('behavior.core'); ?>
+										<?php JHtml::_('behavior.core'); ?>
 								<?php $dataShowOn = ' data-showon=\'' . json_encode(JFormHelper::parseShowOnConditions($field->showon, $field->formControl, $field->group)) . '\''; ?>
 							<?php endif; ?>
 							<?php if ($field->hidden) : ?>

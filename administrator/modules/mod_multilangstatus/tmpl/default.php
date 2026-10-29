@@ -9,15 +9,14 @@
 
 defined('_JEXEC') or die;
 
-// Include jQuery
-JHtml::_('jquery.framework');
-
-// Use javascript to remove the modal added below from the current div and add it to the end of html body tag.
+// The modal below goes to the end of the page (the status bar it's in would clip it)
 JFactory::getDocument()->addScriptDeclaration("
-	jQuery(document).ready(function($) {
-		var multilangueModal = $('#multiLangModal').clone();
-		$('#multiLangModal').remove();
-		$('body').append(multilangueModal);
+	document.addEventListener('DOMContentLoaded', function () {
+		var modal = document.getElementById('multiLangModal');
+
+		if (modal) {
+			document.body.appendChild(modal);
+		}
 	});
 ");
 ?>
