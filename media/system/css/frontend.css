@@ -27,6 +27,12 @@ span.highlight {background-color:#ffffcc;font-weight:bold;padding:1px 0;}
 .invalid {border-color:#ff0000;}
 label.invalid {color:#ff0000;}
 
+/* --- Module preview (?tp=1: the module chrome outline shows each module's position and style) --- */
+.mod-preview {margin:8px 0;border-radius:1px;background:rgba(100, 100, 100, 0.08);box-shadow:0 0 0 4px #f4f4f4, 0 0 0 5px rgba(100, 100, 100, 0.2);}
+.mod-preview-info {margin-bottom:5px;padding:4px 6px;border-radius:3px;background-color:#33373f;box-shadow:0 -10px 20px rgba(0, 0, 0, 0.2) inset;color:#fff;font:0.75rem/1rem Arial, sans-serif;}
+.mod-preview-info span {color:#ccc;font-weight:bold;}
+.mod-preview-wrapper {margin-bottom:0.5rem;}
+
 /* --- System pages: tokens (body.tmpl-error, body.tmpl-offline; light, dark as the device is) --- */
 body.tmpl-error,body.tmpl-offline {
     --sys-bg:          #f6f6f7;

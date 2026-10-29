@@ -84,30 +84,33 @@ try {
 } catch (Throwable $e) {
     $debugStyles = false;
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $escape($this->language); ?>" dir="<?php echo $escape($this->direction); ?>">
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta name="robots" content="noindex" />
-	<title><?php echo $code; ?> - <?php echo $escape($title); ?><?php echo $siteName !== '' ? ' | ' . $escape($siteName) : ''; ?></title>
-	<link href="<?php echo $root; ?>media/system/css/frontend.min.css" rel="stylesheet" />
-	<?php if ($debugStyles) : ?>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="robots" content="noindex" />
+		<title><?php echo $code; ?> - <?php echo $escape($title); ?><?php echo $siteName !== '' ? ' | ' . $escape($siteName) : ''; ?></title>
+		<link href="<?php echo $root; ?>media/system/css/frontend.min.css" rel="stylesheet" />
+		<?php if ($debugStyles): ?>
 		<link href="<?php echo $root; ?>media/system/css/debug.css" rel="stylesheet" />
-	<?php endif; ?>
-</head>
-<body class="tmpl-error">
-	<main class="sys-page">
-		<div class="sys-card">
-			<?php if ($siteName !== '') : ?>
-				<p class="sys-site"><a href="<?php echo $root; ?>"><?php echo $escape($siteName); ?></a></p>
-			<?php endif; ?>
-			<p class="sys-code"><?php echo $code; ?></p>
-			<h1 class="sys-title"><?php echo $escape($title); ?></h1>
-			<p class="sys-text"><?php echo $escape($message); ?></p>
+		<?php endif; ?>
+	</head>
+	<body class="tmpl-error">
+		<main class="sys-page">
+			<div class="sys-card">
+				<?php if ($siteName !== ''): ?>
+				<p class="sys-site">
+					<a href="<?php echo $root; ?>"><?php echo $escape($siteName); ?></a>
+				</p>
+				<?php endif; ?>
+				<p class="sys-code"><?php echo $code; ?></p>
+				<h1 class="sys-title"><?php echo $escape($title); ?></h1>
+				<p class="sys-text"><?php echo $escape($message); ?></p>
 
-			<?php if ($search) : ?>
+				<?php if ($search): ?>
 				<form class="sys-search" action="<?php echo $root; ?>index.php" method="get" role="search">
 					<label for="sys-search-field"><?php echo $escape($text('JERROR_LAYOUT_SEARCH_PAGE', 'Search this site')); ?></label>
 					<div class="sys-search-row">
@@ -117,38 +120,38 @@ try {
 						<button type="submit" class="sys-button"><?php echo $escape($text('JERROR_LAYOUT_SEARCH_BUTTON', 'Search')); ?></button>
 					</div>
 				</form>
-			<?php endif; ?>
-
-			<p class="sys-actions">
-				<a class="sys-button sys-button-primary" href="<?php echo $root; ?>"><?php echo $escape($text('JERROR_LAYOUT_HOME_PAGE', 'Home Page')); ?></a>
-				<?php if ($login) : ?>
-					<a class="sys-button" href="<?php echo $root; ?>index.php?option=com_users&amp;view=login"><?php echo $escape($text('JLOGIN', 'Log in')); ?></a>
 				<?php endif; ?>
-			</p>
 
-			<?php if ($this->debug) : ?>
+				<p class="sys-actions">
+					<a class="sys-button sys-button-primary" href="<?php echo $root; ?>"><?php echo $escape($text('JERROR_LAYOUT_HOME_PAGE', 'Home Page')); ?></a>
+					<?php if ($login): ?>
+					<a class="sys-button" href="<?php echo $root; ?>index.php?option=com_users&amp;view=login"><?php echo $escape($text('JLOGIN', 'Log in')); ?></a>
+					<?php endif; ?>
+				</p>
+
+				<?php if ($this->debug): ?>
 				<details class="sys-details" open>
 					<summary><?php echo $escape($text('JERROR_LAYOUT_TECHNICAL_DETAILS', 'Technical details')); ?></summary>
 					<p><?php echo $escape($this->error->getMessage()); ?><br /><?php echo $escape($this->error->getFile()); ?>:<?php echo $this->error->getLine(); ?></p>
 					<?php echo $this->renderBacktrace(); ?>
 					<?php // Earlier exceptions, each with its data and backtrace?>
-					<?php if ($this->error->getPrevious()) : ?>
-						<?php $loop = true; ?>
-						<?php // setError() assigns to $this->_error, which the backtrace reads; the first assignment outside the loop so none is skipped?>
-						<?php $this->setError($this->_error->getPrevious()); ?>
-						<?php while ($loop === true) : ?>
-							<p><strong><?php echo $escape($text('JERROR_LAYOUT_PREVIOUS_ERROR', 'Previous Error')); ?></strong></p>
-							<p><?php echo $escape($this->_error->getMessage()); ?><br /><?php echo $escape($this->_error->getFile()); ?>:<?php echo $this->_error->getLine(); ?></p>
-							<?php echo $this->renderBacktrace(); ?>
-							<?php $loop = $this->setError($this->_error->getPrevious()); ?>
-						<?php endwhile; ?>
-						<?php $this->setError($this->error); ?>
+					<?php if ($this->error->getPrevious()): ?>
+					<?php $loop = true; ?>
+					<?php // setError() assigns to $this->_error, which the backtrace reads; the first assignment outside the loop so none is skipped?>
+					<?php $this->setError($this->_error->getPrevious()); ?>
+					<?php while ($loop === true): ?>
+					<p><strong><?php echo $escape($text('JERROR_LAYOUT_PREVIOUS_ERROR', 'Previous Error')); ?></strong></p>
+					<p><?php echo $escape($this->_error->getMessage()); ?><br /><?php echo $escape($this->_error->getFile()); ?>:<?php echo $this->_error->getLine(); ?></p>
+					<?php echo $this->renderBacktrace(); ?>
+					<?php $loop = $this->setError($this->_error->getPrevious()); ?>
+					<?php endwhile; ?>
+					<?php $this->setError($this->error); ?>
 					<?php endif; ?>
 				</details>
-			<?php else : ?>
+				<?php else: ?>
 				<p class="sys-reference"><?php echo $escape($this->error->getMessage()); ?></p>
-			<?php endif; ?>
-		</div>
-	</main>
-</body>
+				<?php endif; ?>
+			</div>
+		</main>
+	</body>
 </html>

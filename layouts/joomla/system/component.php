@@ -16,15 +16,16 @@ $this->setHtml5(true);
 
 // Styles (system messages, forms; what the system template's general.css was)
 JHtml::_('stylesheet', 'system/frontend.min.css', array('version' => 'auto', 'relative' => true));
+
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
-<head>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<jdoc:include type="head" />
-</head>
-<body class="contentpane tmpl-component">
-	<jdoc:include type="message" />
-	<jdoc:include type="component" />
-</body>
+	<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<jdoc:include type="head" />
+	</head>
+	<body class="contentpane tmpl-component">
+		<jdoc:include type="message" />
+		<jdoc:include type="component" />
+	</body>
 </html>
