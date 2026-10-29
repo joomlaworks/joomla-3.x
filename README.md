@@ -136,6 +136,7 @@ Summary of changes:
 - Tooltips and popovers are the CMS's own, looking as before but always inside the window (they flip side and slide along the edges, arrows following)
 - The user field opens the list of users in the CMS's own modal (no Bootstrap modal or jQuery plugin); `fielduser.js` removed
 - Image cropping (template editor) is the CMS's own `CMS.cropper`, with touch and keyboard; Jcrop removed
+- The Article, Category, Contact, Menu Item and News Feed pickers open in the CMS's own modal (Create and Edit with their buttons below the form); `modal-fields.js` removed
 - Administrator menu: Media at the top level after Content, no Help menu; Prothero's phone menu in two columns without gaps
 - Inline Editing (front-end editing of modules and menus) is off by default
 - The distribution's PHP code follows PSR-12 (third-party libraries keep their own style)
@@ -157,6 +158,7 @@ Summary of changes:
 - Media uploads compare executable extensions in any case (`x.SHTML.png` got through), and the "Illegal MIME Types" option is actually checked
 
 **Bug fixes:**
+- Associations' Propagate fills the other languages' items correctly on SQLite and PostgreSQL
 - Invisible reCAPTCHA no longer refuses forms that take more than two minutes to fill in (its check now runs when the form is sent)
 - **Caching** (all bugs of stock Joomla 3):
   - A damaged cache entry (an interrupted write) no longer serves an empty page until it expires

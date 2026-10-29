@@ -57,7 +57,10 @@ class CategoriesControllerAjax extends JControllerLegacy
             JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_categories/tables');
             $categoryTable = JTable::getInstance('Category', 'JTable');
 
+            // Its number: the id is 12:alias (the query's slug), which only MySQL casts when comparing,
+            // and which the fields would post
             foreach ($associations as $lang => $association) {
+                $association->id = (int) $association->id;
                 $categoryTable->load($association->id);
                 $associations[$lang]->title = $categoryTable->title;
             }

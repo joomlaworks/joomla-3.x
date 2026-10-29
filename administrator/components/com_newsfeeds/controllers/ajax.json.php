@@ -56,7 +56,10 @@ class NewsfeedsControllerAjax extends JControllerLegacy
             JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_newsfeeds/tables');
             $newsfeedsTable = JTable::getInstance('Newsfeed', 'NewsfeedsTable');
 
+            // Its number: the id is 12:alias (the query's slug), which only MySQL casts when comparing,
+            // and which the fields would post
             foreach ($associations as $lang => $association) {
+                $association->id = (int) $association->id;
                 $newsfeedsTable->load($association->id);
                 $associations[$lang]->title = $newsfeedsTable->name;
             }

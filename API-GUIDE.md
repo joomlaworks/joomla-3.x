@@ -26,6 +26,7 @@ For commands of your own on the command line, see [CLI-GUIDE.md](CLI-GUIDE.md). 
 - [JavaScript: global.js and the CMS namespace](#javascript-globaljs-and-the-cms-namespace)
   - [The old names](#the-old-names)
   - [The modal](#the-modal)
+  - [Item pickers (Article, Category, Contact, Menu Item, News Feed)](#item-pickers-article-category-contact-menu-item-news-feed)
   - [Tooltips, tabs, sliders, tree, password meter](#tooltips-tabs-sliders-tree-password-meter)
 - [Other additions](#other-additions)
 - [Compatibility with stock Joomla 3, Joomla 4 and later](#compatibility-with-stock-joomla-3-joomla-4-and-later)
@@ -382,6 +383,7 @@ Every name `core.js` and the MooTools behaviours offered still works and calls t
 | `Joomla.propagateAssociation()`, `Joomla.injectAssociations()`, `hideAssociation()`, `showAssociationMessage()` | `CMS.associations.propagate()`, `inject()`, `hide()`, `showMessage()` |
 | `sendPermissions()`, `getUrlParam()` (the Permissions field) | `CMS.permissions.send()`, `CMS.permissions.urlParam()` |
 | `frontediting.js` | `CMS.frontEditing.showModule()`, `CMS.frontEditing.showMenuItem()` |
+| `processModalParent()`, `processModalSelect()`, `processModalEdit()` (`modal-fields.js`) | `CMS.modalField.set()`, `CMS.modalField.select()`, `CMS.modalField.submit()` |
 
 `SqueezeBox`, `JTabs`, `Form.PasswordStrength` and `MooTreeControl` are defined only when MooTools' own versions aren't there: an extension that loads MooTools and `media/system/js/modal.js` itself gets the real SqueezeBox, and `CMS.modal.close()` (so `jModalClose()`) closes whichever box is open.
 
@@ -403,6 +405,29 @@ CMS.modal.close();          // also from the page inside: window.parent.CMS.moda
 ```
 
 Handlers are `iframe`, `image`, `ajax` (the default for addresses: the page's HTML, its scripts run), `clone` and `adopt` (an element of the page, `#id`; adopt puts it back when the box closes) and `string`. Options and events are SqueezeBox's: `size`, `closable`, `closeBtn`, `overlay`, `iframeOptions`, `iframePreload`, `classWindow`, `onOpen`, `onClose`, `onUpdate`, `onShow`, `onHide`, `onResize`, `onMove`. Below 980px wide the box fills the screen. The box is `#sbox-window` over `#sbox-overlay`, styled by the modal section of `media/system/css/global.css`, so templates' SqueezeBox styles still apply. Escape and a click on the overlay close it. Events also go out as `cms:modal-open`, `cms:modal-close` and so on, on `document`.
+
+Two options SqueezeBox didn't have: `title`, written above the content (`#sbox-title`, the box's accessible name), and `buttons`, a row below it (`#sbox-buttons`). Both fit inside the box's size; an iframe takes the height they leave.
+
+```js
+CMS.modal.open(url, {
+	handler: 'iframe',
+	title: 'Edit Example',
+	closable: false,            // no Escape, no overlay click: only the buttons close it
+	closeBtn: false,
+	buttons: [
+		{text: 'Close', className: 'btn', onClick: () => CMS.modal.close()},
+		{text: 'Save', className: 'btn btn-primary', onClick: (event, button) => { /* ... */ }},
+	],
+});
+```
+
+### Item pickers (Article, Category, Contact, Menu Item, News Feed)
+
+The fields `modal_article`, `modal_category`, `modal_contact`, `modal_menu` and `modal_newsfeed` render the layout `joomla.form.field.modal`, which templates may override. Their lists and forms open in the CMS's modal at the pickers' size: Select opens the list, Create and Edit the item's form with Close, Save & Close and Save below it. The script is `CMS.modalField` in `global.js` (`JHtml::_('behavior.cms')`); jQuery and Bootstrap's modal are no longer needed, and `media/system/js/modal-fields.js` was removed (asking for it through `JHtml` loads `global.js`).
+
+The markup keeps the old ids (`<id>_name`, `<id>_select`, `<id>_new`, `<id>_edit`, `<id>_clear`, `<id>_propagate`, `<id>_id`), and the lists still call the field's function by name (`function=jSelectArticle_<id>` in the list's address), which the script defines for each field. A field of your own can use the layout with the same data the core fields pass (see `administrator/components/com_content/models/fields/modal/article.php`): the urls (`{id}` in the edit address is replaced with the field's value), titles, tooltips, the buttons allowed, the form's task prefix (`article`), its id and its id and title fields.
+
+`processModalParent()`, `processModalSelect()` and `processModalEdit()` still work, also from fields that write their own Bootstrap modals: `processModalEdit()` runs the form in the modal its button is in.
 
 ### Tooltips, tabs, sliders, tree, password meter
 

@@ -498,6 +498,8 @@
 			iframeOptions: null,
 			iframePreload: false,
 			ajaxOptions: {},
+			title: '',
+			buttons: null,
 		},
 		initialized: false,
 		isOpen: false,
@@ -565,6 +567,48 @@
 	};
 
 	const viewport = () => ({ x: document.documentElement.clientWidth, y: document.documentElement.clientHeight });
+
+	/*
+	 * A title above the content (options.title) and a row of buttons below it (options.buttons: {text, className,
+	 * onClick(event, button)}), inside the box's size: the content takes what they leave
+	 */
+	const decorate = () => {
+		[modal.header, modal.footer].forEach((part) => part && part.remove());
+		modal.header = null;
+		modal.footer = null;
+		modal.win.removeAttribute('aria-labelledby');
+
+		if (modal.options.title) {
+			modal.header = document.createElement('h3');
+			modal.header.id = 'sbox-title';
+			modal.header.textContent = modal.options.title;
+			modal.win.insertBefore(modal.header, modal.content);
+			modal.win.setAttribute('aria-labelledby', 'sbox-title');
+		}
+
+		if (Array.isArray(modal.options.buttons) && modal.options.buttons.length) {
+			modal.footer = document.createElement('div');
+			modal.footer.id = 'sbox-buttons';
+
+			modal.options.buttons.forEach((item) => {
+				const button = document.createElement('button');
+
+				button.type = 'button';
+				button.className = item.className || 'btn';
+				button.textContent = item.text || '';
+
+				if (typeof item.onClick === 'function') {
+					button.addEventListener('click', (event) => item.onClick.call(CMS.modal, event, button));
+				}
+
+				modal.footer.appendChild(button);
+			});
+
+			modal.win.insertBefore(modal.footer, modal.content.nextSibling);
+		}
+
+		modal.win.classList.toggle('sbox-framed', Boolean(modal.header || modal.footer));
+	};
 
 	// The box's place and size: the size asked for, centred, or below 980px the whole screen less a margin
 	const layout = (size) => {
@@ -902,6 +946,7 @@
 			build();
 			modal.overlay.className = modal.options.classOverlay || '';
 			modal.win.className = ('shadow ' + (modal.options.classWindow || '')).trim();
+			decorate();
 
 			const handler = modal.options.handler;
 
@@ -946,12 +991,12 @@
 				emit('hide', [modal.win]);
 				trash();
 				toggleLoading(false);
+				modal.options = merge({}, modal.presets);
+				decorate();
 
 				if (modal.opener && typeof modal.opener.focus === 'function') {
 					modal.opener.focus();
 				}
-
-				modal.options = merge({}, modal.presets);
 
 				return CMS.modal;
 			}
@@ -2787,6 +2832,272 @@
 	if (!window.jSelectUser) {
 		window.jSelectUser = (link) => CMS.userField.select(link);
 	}
+
+	/*
+	 * --- The item pickers (layout joomla.form.field.modal: the fields Modal_Article, Modal_Category, Modal_Contact,
+	 * Modal_Menu and Modal_Newsfeed; what modal-fields.js was) ---
+	 */
+
+	CMS.modalField = {
+		/**
+		 * Sets a field's item (without an id: clears it) and shows the buttons which fit
+		 *
+		 * @param  {string}  fieldId  The field's id (its parts are <id>_id, <id>_name, <id>_select...)
+		 * @param  {string}  id
+		 * @param  {string}  title
+		 */
+		set(fieldId, id, title) {
+			const value = byId(fieldId + '_id');
+			const name = byId(fieldId + '_name');
+			const shown = { select: !id, new: !id, edit: Boolean(id), clear: Boolean(id), propagate: Boolean(id) };
+
+			if (!value) {
+				return false;
+			}
+
+			value.value = id || '';
+
+			if (name) {
+				name.value = id ? title || '' : value.getAttribute('data-text') || '';
+			}
+
+			Object.keys(shown).forEach((action) => {
+				const button = byId(fieldId + '_' + action);
+
+				if (button) {
+					button.classList.toggle('hidden', !shown[action]);
+				}
+			});
+
+			value.dispatchEvent(new Event('change', { bubbles: true }));
+
+			if (value.getAttribute('data-required') === '1' && document.formvalidator) {
+				document.formvalidator.validate(value);
+
+				if (name) {
+					document.formvalidator.validate(name);
+				}
+			}
+
+			return false;
+		},
+
+		// The list's choice: sets the field and closes the list
+		select(fieldId, id, title) {
+			CMS.modalField.set(fieldId, id, title);
+
+			if (CMS.modal.isOpen) {
+				CMS.modal.close();
+			}
+
+			return false;
+		},
+
+		/**
+		 * The function the field's list calls (data-function, e.g. jSelectArticle_<id>), which Propagate also calls for
+		 * each language's field (its data-propagate prefix + en_GB)
+		 *
+		 * @param  {HTMLElement}  wrapper  The field's [data-modal-field]
+		 */
+		register(wrapper) {
+			const fieldId = wrapper.getAttribute('data-modal-field');
+			const name = wrapper.getAttribute('data-function') || '';
+
+			if (/^[\w$]+$/.test(name) && typeof window[name] !== 'function') {
+				window[name] = (id, title) => CMS.modalField.select(fieldId, id, title);
+			}
+		},
+
+		/**
+		 * Opens the list (select) or the item's form (new, edit: with Close, Save and Apply below it) at the pickers' size
+		 *
+		 * @param  {HTMLElement}  wrapper  The field's [data-modal-field]
+		 * @param  {string}       action   select, new or edit
+		 */
+		open(wrapper, action) {
+			const value = byId(wrapper.getAttribute('data-modal-field') + '_id');
+			const url = (wrapper.getAttribute('data-url-' + action) || '').replace('{id}', encodeURIComponent(value ? value.value : ''));
+			const options = {
+				handler: 'iframe',
+				size: { x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140) },
+				title: wrapper.getAttribute('data-title-' + action) || '',
+			};
+
+			if (!url) {
+				return;
+			}
+
+			CMS.modalField.register(wrapper);
+
+			// The form closes only through its buttons, so the item is checked in again
+			if (action !== 'select') {
+				const run = (task) => (event, button) => CMS.modalField.edit(wrapper, task, button);
+
+				Object.assign(options, {
+					closable: false,
+					closeBtn: false,
+					buttons: [
+						{ text: wrapper.getAttribute('data-close'), className: 'btn', onClick: run('cancel') },
+						{ text: wrapper.getAttribute('data-save'), className: 'btn btn-primary', onClick: run('save') },
+						{ text: wrapper.getAttribute('data-apply'), className: 'btn btn-success', onClick: run('apply') },
+					],
+				});
+			}
+
+			CMS.modal.open(url, options);
+		},
+
+		// A button below the item's form
+		edit(wrapper, task, button) {
+			const frame = CMS.modal.content ? CMS.modal.content.querySelector('iframe') : null;
+
+			return CMS.modalField.submit(frame, {
+				fieldId: wrapper.getAttribute('data-modal-field'),
+				task,
+				prefix: wrapper.getAttribute('data-task'),
+				form: wrapper.getAttribute('data-form'),
+				idField: wrapper.getAttribute('data-id-field') || 'jform_id',
+				titleField: wrapper.getAttribute('data-title-field') || 'jform_title',
+				buttons: button ? Array.prototype.slice.call(button.parentNode.querySelectorAll('button')) : [],
+			}, () => CMS.modal.close());
+		},
+
+		/**
+		 * Runs a task of the form in an item's iframe: cancel (checks the item in, then done()), apply (saves, and sets
+		 * the field from the saved item's id and title), save (apply, then cancel)
+		 *
+		 * @param  {HTMLIFrameElement}  frame
+		 * @param  {Object}             options  fieldId, task, prefix (article), form (its id), idField, titleField, buttons
+		 * @param  {Function}           done     Closes the box
+		 */
+		submit(frame, options, done) {
+			let page = null;
+
+			try {
+				page = frame ? frame.contentDocument : null;
+			} catch (error) {
+				page = null;
+			}
+
+			const win = page ? frame.contentWindow : null;
+			const busy = (state) => (options.buttons || []).forEach((item) => {
+				item.disabled = state;
+			});
+
+			// A page without the form (an error): nothing to save or check in
+			if (!win || !win.Joomla || typeof win.Joomla.submitbutton !== 'function') {
+				if (options.task === 'cancel') {
+					done();
+				}
+
+				return false;
+			}
+
+			if (options.task === 'cancel') {
+				busy(true);
+				frame.addEventListener('load', () => {
+					busy(false);
+					done();
+				}, { once: true });
+				win.Joomla.submitbutton(options.prefix + '.cancel');
+
+				return false;
+			}
+
+			const form = page.getElementById(options.form) || page.querySelector('form[name="adminForm"]');
+
+			if (form && page.formvalidator && !page.formvalidator.isValid(form)) {
+				return false;
+			}
+
+			busy(true);
+			frame.addEventListener('load', () => {
+				const saved = frame.contentDocument;
+				const id = saved ? saved.getElementById(options.idField) : null;
+				const title = saved ? saved.getElementById(options.titleField) : null;
+
+				busy(false);
+
+				// Not saved (the page shows why): the form stays open
+				if (!id || id.value === '' || id.value === '0') {
+					return;
+				}
+
+				CMS.modalField.set(options.fieldId, id.value, title ? title.value : '');
+
+				if (options.task === 'save') {
+					CMS.modalField.submit(frame, Object.assign({}, options, { task: 'cancel' }), done);
+				}
+			}, { once: true });
+
+			// Save is apply first, as saving redirects to the list: the saved item's id is read from its form
+			win.Joomla.submitbutton(options.prefix + '.apply');
+
+			return false;
+		},
+	};
+
+	document.addEventListener('click', (event) => {
+		const button = event.target.closest ? event.target.closest('[data-modal-field] [data-modal-action]') : null;
+
+		if (!button || button.disabled) {
+			return;
+		}
+
+		const wrapper = button.closest('[data-modal-field]');
+		const fieldId = wrapper.getAttribute('data-modal-field');
+		const action = button.getAttribute('data-modal-action');
+
+		event.preventDefault();
+
+		if (action === 'clear') {
+			CMS.modalField.set(fieldId);
+		} else if (action === 'propagate') {
+			document.querySelectorAll('[data-modal-field]').forEach(CMS.modalField.register);
+			CMS.associations.propagate(fieldId, wrapper.getAttribute('data-propagate'));
+		} else {
+			CMS.modalField.open(wrapper, action);
+		}
+	});
+
+	CMS.ready(() => document.querySelectorAll('[data-modal-field]').forEach(CMS.modalField.register));
+
+	// modal-fields.js' functions, which item lists and extensions' fields call
+	window.processModalParent = (fieldPrefix, id, title) => CMS.modalField.set(fieldPrefix, id, title);
+
+	window.processModalSelect = (itemType, fieldPrefix, id, title) => {
+		const box = document.getElementById('ModalSelect' + itemType + '_' + fieldPrefix);
+
+		CMS.modalField.select(fieldPrefix, id, title);
+
+		// A field of an extension which still writes its own Bootstrap modals
+		if (box && window.jQuery && window.jQuery.fn.modal) {
+			window.jQuery(box).modal('hide');
+		}
+
+		return false;
+	};
+
+	window.processModalEdit = (element, fieldPrefix, action, itemType, task, formId, idFieldId, titleFieldId) => {
+		const box = element.closest('.modal');
+		const frame = box ? box.querySelector('iframe') : (CMS.modal.content && CMS.modal.content.querySelector('iframe'));
+
+		return CMS.modalField.submit(frame, {
+			fieldId: fieldPrefix,
+			task,
+			prefix: itemType.toLowerCase(),
+			form: formId || itemType.toLowerCase() + '-form',
+			idField: idFieldId || 'jform_id',
+			titleField: titleFieldId || 'jform_title',
+			buttons: [],
+		}, () => {
+			if (box && window.jQuery && window.jQuery.fn.modal) {
+				window.jQuery(box).modal('hide');
+			} else {
+				CMS.modal.close();
+			}
+		});
+	};
 
 	/* --- Cropping: selecting an area of an image (CMS.cropper; the template editor's image tool, what Jcrop was) --- */
 
@@ -5497,6 +5808,7 @@
 		'jQuery.fn.minicolors() (behavior.colorpicker, MiniColors)': 'CMS.colorField.attach(), the layout joomla.form.field.color',
 		'jQuery.fn.simplecolors() (behavior.simplecolorpicker)': 'the layout joomla.form.field.color.simple (swatches)',
 		'jSelectUser(), jQuery.fn.fieldUser() (fielduser.js)': 'CMS.userField.select(), CMS.userField.open()',
+		'processModalParent(), processModalSelect(), processModalEdit() (modal-fields.js)': 'CMS.modalField.set(), CMS.modalField.select(), CMS.modalField.submit()',
 		'tabs-state.js (behavior.tabstate), jQuery.urlParam(), jQuery.getXpath(), jQuery.findXpath()': 'CMS.tabState.init()',
 		'new JCaption()': 'CMS.caption.attach()',
 		'Joomla.Highlighter()': 'CMS.highlighter.create()',

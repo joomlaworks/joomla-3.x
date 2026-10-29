@@ -50,49 +50,16 @@ class JFormFieldModal_Article extends JFormField
         // The active article id field.
         $value = (int) $this->value > 0 ? (int) $this->value : '';
 
-        // Create the modal id.
-        $modalId = 'Article_' . $this->id;
-
-        // Add the modal field script to the document head.
-        JHtml::_('jquery.framework');
-        JHtml::_('script', 'system/modal-fields.js', array('version' => 'auto', 'relative' => true));
-
-        // Script to proxy the select modal function to the modal-fields.js file.
-        if ($allowSelect) {
-            static $scriptSelect = null;
-
-            if (is_null($scriptSelect)) {
-                $scriptSelect = array();
-            }
-
-            if (!isset($scriptSelect[$this->id])) {
-                JFactory::getDocument()->addScriptDeclaration("
-				function jSelectArticle_" . $this->id . "(id, title, catid, object, url, language) {
-					window.processModalSelect('Article', '" . $this->id . "', id, title, catid, object, url, language);
-				}
-				");
-
-                JText::script('JGLOBAL_ASSOCIATIONS_PROPAGATE_FAILED');
-
-                $scriptSelect[$this->id] = true;
-            }
-        }
-
         // Setup variables for display.
-        $linkArticles = 'index.php?option=com_content&amp;view=articles&amp;layout=modal&amp;tmpl=component&amp;' . JSession::getFormToken() . '=1';
-        $linkArticle  = 'index.php?option=com_content&amp;view=article&amp;layout=modal&amp;tmpl=component&amp;' . JSession::getFormToken() . '=1';
+        $linkArticles = 'index.php?option=com_content&view=articles&layout=modal&tmpl=component&' . JSession::getFormToken() . '=1';
+        $linkArticle  = 'index.php?option=com_content&view=article&layout=modal&tmpl=component&' . JSession::getFormToken() . '=1';
+        $modalTitle   = JText::_('COM_CONTENT_CHANGE_ARTICLE');
 
         if (isset($this->element['language'])) {
-            $linkArticles .= '&amp;forcedLanguage=' . $this->element['language'];
-            $linkArticle  .= '&amp;forcedLanguage=' . $this->element['language'];
-            $modalTitle    = JText::_('COM_CONTENT_CHANGE_ARTICLE') . ' &#8212; ' . $this->element['label'];
-        } else {
-            $modalTitle    = JText::_('COM_CONTENT_CHANGE_ARTICLE');
+            $linkArticles .= '&forcedLanguage=' . $this->element['language'];
+            $linkArticle  .= '&forcedLanguage=' . $this->element['language'];
+            $modalTitle   .= " \u{2014} " . $this->element['label'];
         }
-
-        $urlSelect = $linkArticles . '&amp;function=jSelectArticle_' . $this->id;
-        $urlEdit   = $linkArticle . '&amp;task=article.edit&amp;id=\' + document.getElementById("' . $this->id . '_id").value + \'';
-        $urlNew    = $linkArticle . '&amp;task=article.add';
 
         if ($value) {
             $db    = JFactory::getDbo();
@@ -111,158 +78,44 @@ class JFormFieldModal_Article extends JFormField
 
         $title = empty($title) ? JText::_('COM_CONTENT_SELECT_AN_ARTICLE') : htmlspecialchars((string) $title, ENT_QUOTES, 'UTF-8');
 
-        // The current article display field.
-        $html  = '<span class="input-append">';
-        $html .= '<input class="input-medium" id="' . $this->id . '_name" type="text" value="' . $title . '" disabled="disabled" size="35" />';
-
-        // Select article button
-        if ($allowSelect) {
-            $html .= '<button'
-                . ' type="button"'
-                . ' class="btn hasTooltip' . ($value ? ' hidden' : '') . '"'
-                . ' id="' . $this->id . '_select"'
-                . ' data-toggle="modal"'
-                . ' data-target="#ModalSelect' . $modalId . '"'
-                . ' title="' . JHtml::tooltipText('COM_CONTENT_CHANGE_ARTICLE') . '">'
-                . '<span class="icon-file" aria-hidden="true"></span> ' . JText::_('JSELECT')
-                . '</button>';
-        }
-
-        // New article button
-        if ($allowNew) {
-            $html .= '<button'
-                . ' type="button"'
-                . ' class="btn hasTooltip' . ($value ? ' hidden' : '') . '"'
-                . ' id="' . $this->id . '_new"'
-                . ' data-toggle="modal"'
-                . ' data-target="#ModalNew' . $modalId . '"'
-                . ' title="' . JHtml::tooltipText('COM_CONTENT_NEW_ARTICLE') . '">'
-                . '<span class="icon-new" aria-hidden="true"></span> ' . JText::_('JACTION_CREATE')
-                . '</button>';
-        }
-
-        // Edit article button
-        if ($allowEdit) {
-            $html .= '<button'
-                . ' type="button"'
-                . ' class="btn hasTooltip' . ($value ? '' : ' hidden') . '"'
-                . ' id="' . $this->id . '_edit"'
-                . ' data-toggle="modal"'
-                . ' data-target="#ModalEdit' . $modalId . '"'
-                . ' title="' . JHtml::tooltipText('COM_CONTENT_EDIT_ARTICLE') . '">'
-                . '<span class="icon-edit" aria-hidden="true"></span> ' . JText::_('JACTION_EDIT')
-                . '</button>';
-        }
-
-        // Clear article button
-        if ($allowClear) {
-            $html .= '<button'
-                . ' type="button"'
-                . ' class="btn' . ($value ? '' : ' hidden') . '"'
-                . ' id="' . $this->id . '_clear"'
-                . ' onclick="window.processModalParent(\'' . $this->id . '\'); return false;">'
-                . '<span class="icon-remove" aria-hidden="true"></span>' . JText::_('JCLEAR')
-                . '</button>';
-        }
-
-        // Propagate article button
-        if ($allowPropagate && count($languages) > 2) {
-            // Strip off language tag at the end
-            $tagLength = (int) strlen($this->element['language']);
-            $callbackFunctionStem = substr("jSelectArticle_" . $this->id, 0, -$tagLength);
-
-            $html .= '<a'
-            . ' class="btn hasTooltip' . ($value ? '' : ' hidden') . '"'
-            . ' id="' . $this->id . '_propagate"'
-            . ' href="#"'
-            . ' title="' . JHtml::tooltipText('JGLOBAL_ASSOCIATIONS_PROPAGATE_TIP') . '"'
-            . ' onclick="Joomla.propagateAssociation(\'' . $this->id . '\', \'' . $callbackFunctionStem . '\');">'
-            . '<span class="icon-refresh" aria-hidden="true"></span>' . JText::_('JGLOBAL_ASSOCIATIONS_PROPAGATE_BUTTON')
-            . '</a>';
-        }
-
-        $html .= '</span>';
-
-        // Select article modal
-        if ($allowSelect) {
-            $html .= JHtml::_(
-                'bootstrap.renderModal',
-                'ModalSelect' . $modalId,
-                array(
-                    'title'       => $modalTitle,
-                    'url'         => $urlSelect,
-                    'height'      => '400px',
-                    'width'       => '800px',
-                    'bodyHeight'  => '70',
-                    'modalWidth'  => '80',
-                    'footer'      => '<button type="button" class="btn" data-dismiss="modal">' . JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>',
-                )
-            );
-        }
-
-        // New article modal
-        if ($allowNew) {
-            $html .= JHtml::_(
-                'bootstrap.renderModal',
-                'ModalNew' . $modalId,
-                array(
-                    'title'       => JText::_('COM_CONTENT_NEW_ARTICLE'),
-                    'backdrop'    => 'static',
-                    'keyboard'    => false,
-                    'closeButton' => false,
-                    'url'         => $urlNew,
-                    'height'      => '400px',
-                    'width'       => '800px',
-                    'bodyHeight'  => '70',
-                    'modalWidth'  => '80',
-                    'footer'      => '<button type="button" class="btn"'
-                            . ' onclick="window.processModalEdit(this, \'' . $this->id . '\', \'add\', \'article\', \'cancel\', \'item-form\'); return false;">'
-                            . JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>'
-                            . '<button type="button" class="btn btn-primary"'
-                            . ' onclick="window.processModalEdit(this, \'' . $this->id . '\', \'add\', \'article\', \'save\', \'item-form\'); return false;">'
-                            . JText::_('JSAVE') . '</button>'
-                            . '<button type="button" class="btn btn-success"'
-                            . ' onclick="window.processModalEdit(this, \'' . $this->id . '\', \'add\', \'article\', \'apply\', \'item-form\'); return false;">'
-                            . JText::_('JAPPLY') . '</button>',
-                )
-            );
-        }
-
-        // Edit article modal
-        if ($allowEdit) {
-            $html .= JHtml::_(
-                'bootstrap.renderModal',
-                'ModalEdit' . $modalId,
-                array(
-                    'title'       => JText::_('COM_CONTENT_EDIT_ARTICLE'),
-                    'backdrop'    => 'static',
-                    'keyboard'    => false,
-                    'closeButton' => false,
-                    'url'         => $urlEdit,
-                    'height'      => '400px',
-                    'width'       => '800px',
-                    'bodyHeight'  => '70',
-                    'modalWidth'  => '80',
-                    'footer'      => '<button type="button" class="btn"'
-                            . ' onclick="window.processModalEdit(this, \'' . $this->id . '\', \'edit\', \'article\', \'cancel\', \'item-form\'); return false;">'
-                            . JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>'
-                            . '<button type="button" class="btn btn-primary"'
-                            . ' onclick="window.processModalEdit(this, \'' . $this->id . '\', \'edit\', \'article\', \'save\', \'item-form\'); return false;">'
-                            . JText::_('JSAVE') . '</button>'
-                            . '<button type="button" class="btn btn-success"'
-                            . ' onclick="window.processModalEdit(this, \'' . $this->id . '\', \'edit\', \'article\', \'apply\', \'item-form\'); return false;">'
-                            . JText::_('JAPPLY') . '</button>',
-                )
-            );
-        }
-
-        // Note: class='required' for client side validation.
-        $class = $this->required ? ' class="required modal-value"' : '';
-
-        $html .= '<input type="hidden" id="' . $this->id . '_id" ' . $class . ' data-required="' . (int) $this->required . '" name="' . $this->name
-            . '" data-text="' . htmlspecialchars(JText::_('COM_CONTENT_SELECT_AN_ARTICLE'), ENT_COMPAT, 'UTF-8') . '" value="' . $value . '" />';
-
-        return $html;
+        // The field's markup and script are shared by the item pickers (global.js: CMS.modalField)
+        return JLayoutHelper::render('joomla.form.field.modal', array(
+            'id'         => $this->id,
+            'name'       => $this->name,
+            'value'      => $value,
+            'required'   => $this->required,
+            'title'      => $title,
+            'empty'      => JText::_('COM_CONTENT_SELECT_AN_ARTICLE'),
+            'function'   => 'jSelectArticle_' . $this->id,
+            'urls'       => array(
+                'select' => $linkArticles . '&function=jSelectArticle_' . $this->id,
+                'new'    => $linkArticle . '&task=article.add',
+                'edit'   => $linkArticle . '&task=article.edit&id={id}',
+            ),
+            'titles'     => array(
+                'select' => $modalTitle,
+                'new'    => JText::_('COM_CONTENT_NEW_ARTICLE'),
+                'edit'   => JText::_('COM_CONTENT_EDIT_ARTICLE'),
+            ),
+            'tips'       => array(
+                'select' => 'COM_CONTENT_CHANGE_ARTICLE',
+                'new'    => 'COM_CONTENT_NEW_ARTICLE',
+                'edit'   => 'COM_CONTENT_EDIT_ARTICLE',
+            ),
+            'allow'      => array(
+                'select'    => $allowSelect,
+                'new'       => $allowNew,
+                'edit'      => $allowEdit,
+                'clear'     => $allowClear,
+                'propagate' => $allowPropagate && count($languages) > 2,
+            ),
+            // The callbacks of the other languages' fields: this one's without its language tag
+            'propagate'  => substr('jSelectArticle_' . $this->id, 0, -strlen((string) $this->element['language'])),
+            'task'       => 'article',
+            'form'       => 'item-form',
+            'idField'    => 'jform_id',
+            'titleField' => 'jform_title',
+        ));
     }
 
     /**

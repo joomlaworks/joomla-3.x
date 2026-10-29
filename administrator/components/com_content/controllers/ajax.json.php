@@ -55,7 +55,10 @@ class ContentControllerAjax extends JControllerLegacy
             // Add the title to each of the associated records
             $contentTable = JTable::getInstance('Content', 'JTable');
 
+            // Its number: the id is 12:alias (the query's slug), which only MySQL casts when comparing,
+            // and which the fields would post
             foreach ($associations as $lang => $association) {
+                $association->id = (int) $association->id;
                 $contentTable->load($association->id);
                 $associations[$lang]->title = $contentTable->title;
             }

@@ -56,7 +56,10 @@ class ContactControllerAjax extends JControllerLegacy
             JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_contact/tables');
             $contactTable = JTable::getInstance('Contact', 'ContactTable');
 
+            // Its number: the id is 12:alias (the query's slug), which only MySQL casts when comparing,
+            // and which the fields would post
             foreach ($associations as $lang => $association) {
+                $association->id = (int) $association->id;
                 $contactTable->load($association->id);
                 $associations[$lang]->title = $contactTable->name;
             }

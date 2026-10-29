@@ -3,5 +3,10 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 window.addEventListener('DOMContentLoaded', function() {
-	document.body.appendChild(document.getElementById('versionsModal'));
+	var versions = document.getElementById('versionsModal');
+
+	// Pages which render the toolbar without showing it (edit forms in a modal) have no Versions modal
+	if (versions) {
+		document.body.appendChild(versions);
+	}
 });

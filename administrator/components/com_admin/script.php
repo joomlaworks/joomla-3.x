@@ -4736,6 +4736,9 @@ class JoomlaInstallerScript
             '/administrator/templates/isis/html/layouts/joomla/form/field/user.php',
             '/administrator/templates/prothero/html/layouts/joomla/form/field/user.php',
             '/templates/protostar/html/layouts/joomla/form/field/user.php',
+            // The item pickers' script (now global.js' CMS.modalField, the lists and forms in the CMS's modal)
+            '/media/system/js/modal-fields.js',
+            '/media/system/js/modal-fields-uncompressed.js',
             // Show-on (cms.js), part of global.js and frontend.js
             '/media/system/js/cms.js',
             '/media/system/js/cms-uncompressed.js',
