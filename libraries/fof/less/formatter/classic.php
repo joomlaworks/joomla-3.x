@@ -12,83 +12,57 @@
 defined('FOF_INCLUDED') or die;
 
 /**
- * This class is taken verbatim from:
+ * This class is taken near verbatim (changes marked with **FOF** comment markers) from:
  *
- * lessphp v0.3.9
+ * lessphp v0.5.0
  * http://leafo.net/lessphp
  *
- * LESS css compiler, adapted from http://lesscss.org
+ * LESS CSS compiler, adapted from http://lesscss.org
  *
- * Copyright 2012, Leaf Corcoran <leafot@gmail.com>
+ * Copyright 2013, Leaf Corcoran <leafot@gmail.com>
  * Licensed under MIT or GPLv3, see LICENSE
+ *
+ * Joomla 3.x UTD: updated from lessphp v0.3.9 to the copy of v0.5.0 in libraries/vendor/leafo/lessphp, with its patches
  *
  * @package  FrameworkOnFramework
  * @since    2.0
  */
 class FOFLessFormatterClassic
 {
-    public $indentChar			 = "  ";
+    public $indentChar = "  ";
 
-    public $break				 = "\n";
+    public $break = "\n";
+    public $open = " {";
+    public $close = "}";
+    public $selectorSeparator = ", ";
+    public $assignSeparator = ":";
 
-    public $open				 = " {";
+    public $openSingle = " { ";
+    public $closeSingle = " }";
 
-    public $close				 = "}";
+    public $disableSingle = false;
+    public $breakSelectors = false;
 
-    public $selectorSeparator	 = ", ";
+    public $compressColors = false;
 
-    public $assignSeparator	 = ":";
+    // Joomla 3.x UTD patch: declared (PHP 8.2+ deprecates creating it)
+    public $indentLevel;
 
-    public $openSingle			 = " { ";
-
-    public $closeSingle		 = " }";
-
-    public $disableSingle		 = false;
-
-    public $breakSelectors		 = false;
-
-    public $compressColors		 = false;
-
-    /**
-     * Public constructor
-     */
     public function __construct()
     {
         $this->indentLevel = 0;
     }
 
-    /**
-     * Indent a string by $n positions
-     *
-     * @param   integer  $n  How many positions to indent
-     *
-     * @return  string  The indented string
-     */
     public function indentStr($n = 0)
     {
         return str_repeat((string) $this->indentChar, max($this->indentLevel + $n, 0));
     }
 
-    /**
-     * Return the code for a property
-     *
-     * @param   string  $name   The name of the property
-     * @param   string  $value  The value of the property
-     *
-     * @return  string  The CSS code
-     */
     public function property($name, $value)
     {
         return $name . $this->assignSeparator . $value . ";";
     }
 
-    /**
-     * Is a block empty?
-     *
-     * @param   stdClass  $block  The block to check
-     *
-     * @return  boolean  True if the block has no lines or children
-     */
     protected function isEmpty($block)
     {
         if (empty($block->lines)) {
@@ -100,24 +74,16 @@ class FOFLessFormatterClassic
 
             return true;
         }
-
         return false;
     }
 
-    /**
-     * Output a CSS block
-     *
-     * @param   stdClass  $block  The block definition to output
-     *
-     * @return  void
-     */
     public function block($block)
     {
         if ($this->isEmpty($block)) {
             return;
         }
 
-        $inner	 = $pre	 = $this->indentStr();
+        $inner = $pre = $this->indentStr();
 
         $isSingle = !$this->disableSingle &&
             is_null($block->type) && count($block->lines) == 1;
@@ -132,8 +98,7 @@ class FOFLessFormatterClassic
             }
 
             echo $pre .
-            implode($selectorSeparator, $block->selectors);
-
+                implode($selectorSeparator, $block->selectors);
             if ($isSingle) {
                 echo $this->openSingle;
                 $inner = "";
@@ -141,12 +106,12 @@ class FOFLessFormatterClassic
                 echo $this->open . $this->break;
                 $inner = $this->indentStr();
             }
+
         }
 
         if (!empty($block->lines)) {
-            $glue = $this->break . $inner;
+            $glue = $this->break.$inner;
             echo $inner . implode($glue, $block->lines);
-
             if (!$isSingle && !empty($block->children)) {
                 echo $this->break;
             }

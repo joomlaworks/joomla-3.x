@@ -23,7 +23,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         '4292e2fa66516089e6006723267587b4' => __DIR__ . '/..' . '/joomla/string/src/phputf8/utils/ascii.php',
         '87465e33b7551b401bf051928f220e9a' => __DIR__ . '/..' . '/joomla/string/src/phputf8/utils/validation.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
-        '0d59ee240a4cd96ddbb4ff164fccea4d' => __DIR__ . '/..' . '/symfony/polyfill-php73/bootstrap.php',
         '3109cb1a231dcd04bee1f9f620d46975' => __DIR__ . '/..' . '/paragonie/sodium_compat/autoload.php',
     );
 
@@ -34,7 +33,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         ),
         'S' => 
         array (
-            'Symfony\\Polyfill\\Php73\\' => 23,
             'SimplePie\\' => 10,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\Yaml\\' => 23,
@@ -43,7 +41,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         array (
             'Psr\\Log\\' => 8,
             'PHPMailer\\PHPMailer\\' => 20,
-            'Psr\\Container\\' => 14,
         ),
         'J' => 
         array (
@@ -58,7 +55,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
             'Joomla\\Filesystem\\' => 18,
             'Joomla\\Event\\' => 13,
             'Joomla\\Data\\' => 12,
-            'Joomla\\DI\\' => 10,
             'Joomla\\Archive\\' => 15,
             'Joomla\\Application\\' => 19,
         ),
@@ -76,9 +72,7 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         array (
             0 => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src',
         ),
-        'Symfony\\Polyfill\\Php73\\' => 
         array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php73',
         ),
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
@@ -96,9 +90,7 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
-        'Psr\\Container\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/container/src',
         ),
         'Joomla\\Utilities\\' => 
         array (
@@ -144,9 +136,7 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         array (
             0 => __DIR__ . '/..' . '/joomla/data/src',
         ),
-        'Joomla\\DI\\' => 
         array (
-            0 => __DIR__ . '/..' . '/joomla/di/src',
         ),
         'Joomla\\Archive\\' => 
         array (
@@ -199,13 +189,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'Joomla\\Archive\\Gzip' => __DIR__ . '/..' . '/joomla/archive/src/Gzip.php',
         'Joomla\\Archive\\Tar' => __DIR__ . '/..' . '/joomla/archive/src/Tar.php',
         'Joomla\\Archive\\Zip' => __DIR__ . '/..' . '/joomla/archive/src/Zip.php',
-        'Joomla\\DI\\Container' => __DIR__ . '/..' . '/joomla/di/src/Container.php',
-        'Joomla\\DI\\ContainerAwareInterface' => __DIR__ . '/..' . '/joomla/di/src/ContainerAwareInterface.php',
-        'Joomla\\DI\\ContainerAwareTrait' => __DIR__ . '/..' . '/joomla/di/src/ContainerAwareTrait.php',
-        'Joomla\\DI\\Exception\\DependencyResolutionException' => __DIR__ . '/..' . '/joomla/di/src/Exception/DependencyResolutionException.php',
-        'Joomla\\DI\\Exception\\KeyNotFoundException' => __DIR__ . '/..' . '/joomla/di/src/Exception/KeyNotFoundException.php',
-        'Joomla\\DI\\Exception\\ProtectedKeyException' => __DIR__ . '/..' . '/joomla/di/src/Exception/ProtectedKeyException.php',
-        'Joomla\\DI\\ServiceProviderInterface' => __DIR__ . '/..' . '/joomla/di/src/ServiceProviderInterface.php',
         'Joomla\\Data\\DataObject' => __DIR__ . '/..' . '/joomla/data/src/DataObject.php',
         'Joomla\\Data\\DataSet' => __DIR__ . '/..' . '/joomla/data/src/DataSet.php',
         'Joomla\\Data\\DumpableInterface' => __DIR__ . '/..' . '/joomla/data/src/DumpableInterface.php',
@@ -278,13 +261,9 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'Joomla\\Uri\\UriInterface' => __DIR__ . '/..' . '/joomla/uri/src/UriInterface.php',
         'Joomla\\Utilities\\ArrayHelper' => __DIR__ . '/..' . '/joomla/utilities/src/ArrayHelper.php',
         'Joomla\\Utilities\\IpHelper' => __DIR__ . '/..' . '/joomla/utilities/src/IpHelper.php',
-        'JsonException' => __DIR__ . '/..' . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
         'JsonSerializable' => __DIR__ . '/..' . '/joomla/compat/src/JsonSerializable.php',
         'PHPMailer' => __DIR__ . '/../../..' . '/libraries/src/Mail/phpmailer-aliases.php',
         'POP3' => __DIR__ . '/../../..' . '/libraries/src/Mail/phpmailer-aliases.php',
-        'Psr\\Container\\ContainerExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerExceptionInterface.php',
-        'Psr\\Container\\ContainerInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerInterface.php',
-        'Psr\\Container\\NotFoundExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/NotFoundExceptionInterface.php',
         'Psr\\Log\\AbstractLogger' => __DIR__ . '/..' . '/psr/log/Psr/Log/AbstractLogger.php',
         'Psr\\Log\\InvalidArgumentException' => __DIR__ . '/..' . '/psr/log/Psr/Log/InvalidArgumentException.php',
         'Psr\\Log\\LogLevel' => __DIR__ . '/..' . '/psr/log/Psr/Log/LogLevel.php',
@@ -340,7 +319,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'Symfony\\Component\\Yaml\\Unescaper' => __DIR__ . '/..' . '/symfony/yaml/Unescaper.php',
         'Symfony\\Component\\Yaml\\Yaml' => __DIR__ . '/..' . '/symfony/yaml/Yaml.php',
         'Symfony\\Polyfill\\Ctype\\Ctype' => __DIR__ . '/..' . '/symfony/polyfill-ctype/Ctype.php',
-        'Symfony\\Polyfill\\Php73\\Php73' => __DIR__ . '/..' . '/symfony/polyfill-php73/Php73.php',
         'TYPO3\\PharStreamWrapper\\Assertable' => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src/Assertable.php',
         'TYPO3\\PharStreamWrapper\\Behavior' => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src/Behavior.php',
         'TYPO3\\PharStreamWrapper\\Collectable' => __DIR__ . '/..' . '/typo3/phar-stream-wrapper/src/Collectable.php',

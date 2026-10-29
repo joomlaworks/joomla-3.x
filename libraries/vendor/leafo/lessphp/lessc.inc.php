@@ -63,6 +63,14 @@ class lessc {
     protected $sourceParser = null;
     protected $sourceLoc = null;
 
+    // Joomla 3.x UTD patch: properties declared (PHP 8.2+ deprecates creating them), public as they were
+    public $formatterName;
+    public $_parseFile;
+    public $env;
+    public $formatter;
+    public $parser;
+    public $scope;
+
     protected static $nextImportId = 0; // uniquely identify imports
 
     // attempts to find the path of an import url, returns null for css files
@@ -662,7 +670,8 @@ class lessc {
 
         // check for a rest
         $last = end($args);
-        if ($last[0] == "rest") {
+        // Joomla 3.x UTD patch: no arguments (end() gives false)
+        if ($last !== false && $last[0] == "rest") {
             $rest = array_slice($orderedValues, count($args) - 1);
             $this->set($last[1], $this->reduce(array("list", " ", $rest)));
         }
@@ -1669,7 +1678,8 @@ class lessc {
                 $width = strlen($colorStr) == 3 ? 16 : 256;
 
                 for ($i = 3; $i > 0; $i--) { // 3 2 1
-                    $t = $num % $width;
+                    // Joomla 3.x UTD patch: truncated explicitly, as % did (PHP 8.1+ deprecates the implicit loss)
+                    $t = (int) $num % $width;
                     $num /= $width;
 
                     $c[$i] = $t * (256/$width) + $t * floor(16/$width);
@@ -2424,6 +2434,19 @@ class lessc_parser {
 
     // caches preg escaped literals
     protected static $literalCache = array();
+
+    // Joomla 3.x UTD patch: properties declared (PHP 8.2+ deprecates creating them), public as they were
+    public $buffer;
+    public $count;
+    public $currentProperty;
+    public $eatWhiteDefault;
+    public $env;
+    public $inExp;
+    public $lessc;
+    public $line;
+    public $seenComments;
+    public $sourceName;
+    public $writeComments;
 
     public function __construct($lessc, $sourceName = null) {
         $this->eatWhiteDefault = true;
@@ -3605,7 +3628,7 @@ class lessc_parser {
         if ($eatWhitespace === null) $eatWhitespace = $this->eatWhiteDefault;
 
         $r = '/'.$regex.($eatWhitespace && !$this->writeComments ? '\s*' : '').'/Ais';
-        if (preg_match($r, $this->buffer, $out, null, $this->count)) {
+        if (preg_match($r, $this->buffer, $out, 0, $this->count) /* Joomla 3.x UTD patch: 0, not null (PHP 8.1+) */) {
             $this->count += strlen($out[0]);
             if ($eatWhitespace && $this->writeComments) $this->whitespace();
             return true;
@@ -3617,7 +3640,7 @@ class lessc_parser {
     protected function whitespace() {
         if ($this->writeComments) {
             $gotWhite = false;
-            while (preg_match(self::$whitePattern, $this->buffer, $m, null, $this->count)) {
+            while (preg_match(self::$whitePattern, $this->buffer, $m, 0, $this->count)) { // Joomla 3.x UTD patch: 0, not null (PHP 8.1+)
                 if (isset($m[1]) && empty($this->seenComments[$this->count])) {
                     $this->append(array("comment", $m[1]));
                     $this->seenComments[$this->count] = true;
@@ -3636,7 +3659,7 @@ class lessc_parser {
     protected function peek($regex, &$out = null, $from = null) {
         if (is_null($from)) $from = $this->count;
         $r = '/'.$regex.'/Ais';
-        $result = preg_match($r, $this->buffer, $out, null, $from);
+        $result = preg_match($r, $this->buffer, $out, 0, $from) /* Joomla 3.x UTD patch: 0, not null (PHP 8.1+) */;
 
         return $result;
     }
@@ -3780,6 +3803,9 @@ class lessc_formatter_classic {
     public $breakSelectors = false;
 
     public $compressColors = false;
+
+    // Joomla 3.x UTD patch: declared (PHP 8.2+ deprecates creating it)
+    public $indentLevel;
 
     public function __construct() {
         $this->indentLevel = 0;

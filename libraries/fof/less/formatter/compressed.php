@@ -10,15 +10,17 @@
 defined('FOF_INCLUDED') or die;
 
 /**
- * This class is taken verbatim from:
+ * This class is taken near verbatim (changes marked with **FOF** comment markers) from:
  *
- * lessphp v0.3.9
+ * lessphp v0.5.0
  * http://leafo.net/lessphp
  *
- * LESS css compiler, adapted from http://lesscss.org
+ * LESS CSS compiler, adapted from http://lesscss.org
  *
- * Copyright 2012, Leaf Corcoran <leafot@gmail.com>
+ * Copyright 2013, Leaf Corcoran <leafot@gmail.com>
  * Licensed under MIT or GPLv3, see LICENSE
+ *
+ * Joomla 3.x UTD: updated from lessphp v0.3.9 to the copy of v0.5.0 in libraries/vendor/leafo/lessphp, with its patches
  *
  * @package  FrameworkOnFramework
  * @since    2.0
@@ -26,24 +28,12 @@ defined('FOF_INCLUDED') or die;
 class FOFLessFormatterCompressed extends FOFLessFormatterClassic
 {
     public $disableSingle = true;
-
     public $open = "{";
-
     public $selectorSeparator = ",";
-
     public $assignSeparator = ":";
-
     public $break = "";
-
     public $compressColors = true;
 
-    /**
-     * Indent a string by $n positions
-     *
-     * @param   integer  $n  How many positions to indent
-     *
-     * @return  string  The indented string
-     */
     public function indentStr($n = 0)
     {
         return "";

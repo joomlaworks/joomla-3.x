@@ -7,13 +7,11 @@ $baseDir = dirname(dirname($vendorDir));
 
 return array(
     'TYPO3\\PharStreamWrapper\\' => array($vendorDir . '/typo3/phar-stream-wrapper/src'),
-    'Symfony\\Polyfill\\Php73\\' => array($vendorDir . '/symfony/polyfill-php73'),
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'SimplePie\\' => array($vendorDir . '/simplepie/simplepie/src'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
-    'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'Joomla\\Utilities\\' => array($vendorDir . '/joomla/utilities/src'),
     'Joomla\\Uri\\' => array($vendorDir . '/joomla/uri/src'),
     'Joomla\\String\\' => array($vendorDir . '/joomla/string/src'),
@@ -25,7 +23,6 @@ return array(
     'Joomla\\Filesystem\\' => array($vendorDir . '/joomla/filesystem/src'),
     'Joomla\\Event\\' => array($vendorDir . '/joomla/event/src'),
     'Joomla\\Data\\' => array($vendorDir . '/joomla/data/src'),
-    'Joomla\\DI\\' => array($vendorDir . '/joomla/di/src'),
     'Joomla\\Archive\\' => array($vendorDir . '/joomla/archive/src'),
     'Joomla\\Application\\' => array($vendorDir . '/joomla/application/src'),
 );

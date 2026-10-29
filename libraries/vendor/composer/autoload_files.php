@@ -22,6 +22,5 @@ return array(
     '4292e2fa66516089e6006723267587b4' => $vendorDir . '/joomla/string/src/phputf8/utils/ascii.php',
     '87465e33b7551b401bf051928f220e9a' => $vendorDir . '/joomla/string/src/phputf8/utils/validation.php',
     '320cde22f66dd4f5d3fd621d3e88b98f' => $vendorDir . '/symfony/polyfill-ctype/bootstrap.php',
-    '0d59ee240a4cd96ddbb4ff164fccea4d' => $vendorDir . '/symfony/polyfill-php73/bootstrap.php',
     '3109cb1a231dcd04bee1f9f620d46975' => $vendorDir . '/paragonie/sodium_compat/autoload.php',
 );

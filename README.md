@@ -140,6 +140,7 @@ Summary of changes:
 - The module ordering list is plain JavaScript in `global.js` (`moduleorder.js` removed), and `Joomla.request()` uses `fetch()` with the same callbacks
 - Subforms and the old Repeatable field are part of `global.js` (no jQuery UI): rows move by dragging with mouse, touch or pen, or with the arrow keys
 - Menu Assignment's tree (modules, menu item containers) is plain JavaScript in `global.js`, with keyboard toggles; System Information lists the configuration alphabetically
+- Unused libraries removed (Symfony's PHP 7.3 polyfill, the Framework's DI container and PSR-11); FOF's LESS compiler updated to lessphp 0.5.0
 - Administrator menu: Media at the top level after Content, no Help menu; Prothero's phone menu in two columns without gaps
 - Inline Editing (front-end editing of modules and menus) is off by default
 - The distribution's PHP code follows PSR-12 (third-party libraries keep their own style)
@@ -163,6 +164,7 @@ Summary of changes:
 **Bug fixes:**
 - Associations' Propagate fills the other languages' items correctly on SQLite and PostgreSQL
 - Module forms' Ordering list shows titles with commas and `&` correctly
+- LESS compiling no longer floods the log with PHP 8 deprecations
 - Invisible reCAPTCHA no longer refuses forms that take more than two minutes to fill in (its check now runs when the form is sent)
 - **Caching** (all bugs of stock Joomla 3):
   - A damaged cache entry (an interrupted write) no longer serves an empty page until it expires

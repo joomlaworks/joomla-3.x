@@ -46,15 +46,6 @@
             'reference' => '57ee292ba23307a6a6059e69b7b19ca5b624ab80',
             'dev_requirement' => false,
         ),
-        'joomla/di' => array(
-            'pretty_version' => '1.5.1',
-            'version' => '1.5.1.0',
-            'type' => 'joomla-package',
-            'install_path' => __DIR__ . '/../joomla/di',
-            'aliases' => array(),
-            'reference' => '33c66e4091e4433f33ddf4a0ac36604cf3b73c41',
-            'dev_requirement' => false,
-        ),
         'joomla/event' => array(
             'pretty_version' => '1.3.0',
             'version' => '1.3.0.0',
@@ -192,21 +183,6 @@
             'reference' => '1bc1716a507a65e039d4ac9d9adebbbd0d346e15',
             'dev_requirement' => false,
         ),
-        'psr/container' => array(
-            'pretty_version' => '1.0.0',
-            'version' => '1.0.0.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../psr/container',
-            'aliases' => array(),
-            'reference' => 'b7ce3b176482dbbc1245ebf52b181af44c2cf55f',
-            'dev_requirement' => false,
-        ),
-        'psr/container-implementation' => array(
-            'dev_requirement' => false,
-            'provided' => array(
-                0 => '~1.0',
-            ),
-        ),
         'psr/log' => array(
             'pretty_version' => '1.1.4',
             'version' => '1.1.4.0',
@@ -232,15 +208,6 @@
             'install_path' => __DIR__ . '/../symfony/polyfill-ctype',
             'aliases' => array(),
             'reference' => 'aed596913b70fae57be53d86faa2e9ef85a2297b',
-            'dev_requirement' => false,
-        ),
-        'symfony/polyfill-php73' => array(
-            'pretty_version' => 'v1.19.0',
-            'version' => '1.19.0.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../symfony/polyfill-php73',
-            'aliases' => array(),
-            'reference' => '9d920e3218205554171b2503bb3e4a1366824a16',
             'dev_requirement' => false,
         ),
         'symfony/yaml' => array(
