@@ -6984,13 +6984,16 @@
 		/**
 		 * Lets an area of an image be selected: drawn by dragging, moved, resized from its corners and edges, nudged
 		 * with the arrow keys (Shift: 10 pixels), cleared with Escape or a click outside it. Coordinates are in the
-		 * image's own pixels (options.trueSize, as the image may be shown smaller), as Jcrop gave them.
+		 * image's own pixels (options.trueSize, as the image may be shown smaller), as Jcrop gave them. With an
+		 * aspectRatio (width / height) the area keeps that shape: a corner resizes from the opposite one, an edge from
+		 * the opposite edge around the area's middle, always inside the image.
 		 *
 		 * @param  {HTMLImageElement}  image
-		 * @param  {Object}            options  trueSize [width, height]; onChange(c), onSelect(c), onRelease(); c is
-		 *                                      {x, y, x2, y2, w, h}
+		 * @param  {Object}            options  trueSize [width, height]; aspectRatio (0: free); onChange(c),
+		 *                                      onSelect(c), onRelease(); c is {x, y, x2, y2, w, h}
 		 *
-		 * @return  {Object}  release(), setSelect([x, y, x2, y2]), getSelection(), destroy()
+		 * @return  {Object}  release(), setSelect([x, y, x2, y2]), maximise(), setOptions(options), getSelection(),
+		 *                    destroy()
 		 */
 		attach(image, options) {
 			options = options || {};
@@ -7017,6 +7020,38 @@
 				height: (options.trueSize && options.trueSize[1]) || image.naturalHeight || image.clientHeight,
 			});
 			const scale = () => size().width / (image.clientWidth || 1);
+			const ratio = () => (options.aspectRatio > 0 ? options.aspectRatio : 0);
+
+			// An area of the ratio from a corner (ax, ay) towards (sx, sy), as wide as the pointer asks, inside the image
+			const fromCorner = (ax, ay, sx, sy, w, h) => {
+				const r = ratio();
+
+				w = Math.min(Math.max(w, h * r), sx > 0 ? image.clientWidth - ax : ax, (sy > 0 ? image.clientHeight - ay : ay) * r);
+				h = w / r;
+
+				return { x: sx > 0 ? ax : ax - w, y: sy > 0 ? ay : ay - h, w, h };
+			};
+
+			// The same from an edge: the opposite edge stays, the area grows around its middle
+			const fromEdge = (dir, p, from) => {
+				const r = ratio();
+				const width = image.clientWidth;
+				const height = image.clientHeight;
+
+				if (dir === 'e' || dir === 'w') {
+					const middle = from.y + from.h / 2;
+					const fixed = dir === 'e' ? from.x : from.x + from.w;
+					const w = Math.max(0, Math.min(dir === 'e' ? p.x - fixed : fixed - p.x, dir === 'e' ? width - fixed : fixed, 2 * Math.min(middle, height - middle) * r));
+
+					return { x: dir === 'e' ? fixed : fixed - w, y: middle - w / r / 2, w, h: w / r };
+				}
+
+				const middle = from.x + from.w / 2;
+				const fixed = dir === 's' ? from.y : from.y + from.h;
+				const h = Math.max(0, Math.min(dir === 's' ? p.y - fixed : fixed - p.y, dir === 's' ? height - fixed : fixed, 2 * Math.min(middle, width - middle) / r));
+
+				return { x: middle - h * r / 2, y: dir === 's' ? fixed : fixed - h, w: h * r, h };
+			};
 
 			const coords = () => {
 				const s = scale();
@@ -7100,11 +7135,23 @@
 				const width = image.clientWidth;
 				const height = image.clientHeight;
 
-				if (drag.mode === 'draw') {
+				if (drag.mode === 'draw' && ratio()) {
+					area = fromCorner(drag.start.x, drag.start.y, p.x < drag.start.x ? -1 : 1, p.y < drag.start.y ? -1 : 1, Math.abs(p.x - drag.start.x), Math.abs(p.y - drag.start.y));
+				} else if (drag.mode === 'draw') {
 					area = { x: Math.min(drag.start.x, p.x), y: Math.min(drag.start.y, p.y), w: Math.abs(p.x - drag.start.x), h: Math.abs(p.y - drag.start.y) };
 				} else if (drag.mode === 'move') {
 					area.x = Math.max(0, Math.min(width - drag.from.w, drag.from.x + p.x - drag.start.x));
 					area.y = Math.max(0, Math.min(height - drag.from.h, drag.from.y + p.y - drag.start.y));
+				} else if (ratio() && drag.dir.length === 2) {
+					const from = drag.from;
+					const sx = drag.dir.indexOf('e') !== -1 ? 1 : -1;
+					const sy = drag.dir.indexOf('s') !== -1 ? 1 : -1;
+					const ax = sx > 0 ? from.x : from.x + from.w;
+					const ay = sy > 0 ? from.y : from.y + from.h;
+
+					area = fromCorner(ax, ay, sx, sy, Math.max(0, (p.x - ax) * sx), Math.max(0, (p.y - ay) * sy));
+				} else if (ratio()) {
+					area = fromEdge(drag.dir, p, drag.from);
 				} else {
 					// Resizing: the edges the handle carries follow the pointer, the others stay
 					let left = drag.from.x;
@@ -7159,8 +7206,10 @@
 			wrapper.addEventListener('pointercancel', end);
 
 			wrapper.addEventListener('keydown', (event) => {
+				// Only the selection goes (a window around the image stays open)
 				if (event.key === 'Escape' && area) {
 					event.preventDefault();
+					event.stopPropagation();
 					release();
 
 					return;
@@ -7189,6 +7238,22 @@
 
 					area = { x: c[0] / s, y: c[1] / s, w: (c[2] - c[0]) / s, h: (c[3] - c[1]) / s };
 					changed(true);
+				},
+
+				// The largest area the ratio allows (the whole image when free), in the middle
+				maximise() {
+					const { width, height } = size();
+					const r = ratio() || width / height;
+					const w = Math.min(width, height * r);
+					const h = w / r;
+
+					api.setSelect([(width - w) / 2, (height - h) / 2, (width + w) / 2, (height + h) / 2]);
+				},
+
+				setOptions(more) {
+					Object.assign(options, more || {});
+
+					return api;
 				},
 
 				getSelection: () => (area ? coords() : null),

@@ -751,8 +751,9 @@ function jMediaRefreshImgpathTip(tip, els)
 			return args.folder;
 		},
 
+		// Without an address (refreshFrame()) the list reloads (it went to "undefined")
 		setFrameUrl: function( url ) {
-			if ( url !== null ) {
+			if ( url ) {
 				this.frameurl = url;
 			}
 
@@ -1176,3 +1177,275 @@ function jMediaRefreshImgpathTip(tip, els)
 	});
 
 }(window.jQuery, document));
+
+/* --- Cropping (the Media Manager's Crop button) --- */
+/*
+ * The image checked in the list opens in the CMS's modal: a bar of shapes above it (Free, or a ratio, which selects the
+ * largest area of that shape), the selection's size below it, and Cancel, Save & Replace and Save As New under that. The
+ * area is posted in the image's own pixels to com_media's crop task; the list reloads with the result.
+ */
+(() => {
+	'use strict';
+
+	const RATIOS = ['21:9', '16:9', '14:9', '4:3', '3:2', '1:1'];
+	const TYPES = /\.(?:jpe?g|png|webp|gif)$/i;
+
+	const start = () => {
+		const CMS = window.CMS;
+		const options = CMS && CMS.options.get('com_media.crop');
+		const button = document.getElementById('media-crop');
+		const frame = document.getElementById('folderframe');
+
+		if (!options || !button || !frame || !CMS.cropper || !CMS.modal) {
+			return;
+		}
+
+		const text = (key) => CMS.text.get(key, key);
+		const listDocument = () => {
+			try {
+				return frame.contentDocument;
+			} catch (error) {
+				return null;
+			}
+		};
+
+		// One checked image of a type that can be cropped
+		const chosen = () => {
+			const doc = listDocument();
+			const boxes = doc ? Array.prototype.filter.call(doc.querySelectorAll('input[name="rm[]"]'), (box) => box.checked) : [];
+
+			return boxes.length === 1 && /^cb-image/.test(boxes[0].id) && TYPES.test(boxes[0].value) ? boxes[0].value : null;
+		};
+		const update = () => {
+			button.disabled = !chosen();
+		};
+		const watch = () => {
+			const doc = listDocument();
+
+			update();
+
+			if (doc) {
+				doc.addEventListener('change', update);
+				doc.addEventListener('click', () => setTimeout(update, 0));
+			}
+		};
+
+		const folder = () => (window.MediaManager && window.MediaManager.frame ? window.MediaManager.getFolder() || '' : '');
+		const address = (path) => options.base + '/' + path.split('/').map(encodeURIComponent).join('/');
+
+		// After a replacement the browser still holds the old picture: the list's links to it ask for a fresh one
+		const refresh = (path) => {
+			const stamp = 't=' + Date.now();
+
+			frame.addEventListener('load', () => {
+				const doc = listDocument();
+
+				if (!doc) {
+					return;
+				}
+
+				doc.querySelectorAll('img[src], a[href]').forEach((element) => {
+					const attribute = element.tagName === 'IMG' ? 'src' : 'href';
+					let url;
+
+					try {
+						url = new URL(element.getAttribute(attribute), doc.baseURI);
+					} catch (error) {
+						return;
+					}
+
+					if (decodeURIComponent(url.pathname).endsWith('/' + path)) {
+						url.search = stamp;
+						element.setAttribute(attribute, url.href);
+					}
+				});
+			}, { once: true });
+
+			window.MediaManager.refreshFrame();
+		};
+
+		const open = (name) => {
+			const path = (folder() ? folder() + '/' : '') + name;
+			const root = document.createElement('div');
+			const bar = document.createElement('div');
+			const stage = document.createElement('div');
+			const image = document.createElement('img');
+			const size = document.createElement('p');
+			let cropper = null;
+			let busy = false;
+			let buttons = [];
+
+			root.className = 'media-crop';
+			bar.className = 'media-crop-bar btn-group';
+			bar.setAttribute('role', 'group');
+			bar.setAttribute('aria-label', text('COM_MEDIA_CROP_RATIO'));
+			stage.className = 'media-crop-stage';
+			size.className = 'media-crop-size';
+			size.setAttribute('aria-live', 'polite');
+			image.alt = name;
+
+			[['0', text('COM_MEDIA_CROP_FREE')]].concat(RATIOS.map((ratio) => [ratio, ratio])).forEach(([value, label]) => {
+				const choice = document.createElement('button');
+
+				choice.type = 'button';
+				choice.className = 'btn btn-small' + (value === '0' ? ' active' : '');
+				choice.setAttribute('aria-pressed', value === '0' ? 'true' : 'false');
+				choice.setAttribute('data-ratio', value);
+				choice.textContent = label;
+				bar.appendChild(choice);
+			});
+
+			stage.appendChild(image);
+			root.appendChild(bar);
+			root.appendChild(stage);
+			root.appendChild(size);
+
+			const showSize = (c) => {
+				size.classList.remove('text-error');
+				size.textContent = c && c.w > 0 && c.h > 0 ? text('COM_MEDIA_CROP_SIZE').replace('%s', c.w).replace('%s', c.h) : text('COM_MEDIA_CROP_NO_AREA');
+			};
+
+			// The image as large as the space between the bar and the size allows
+			const fit = () => {
+				const selection = cropper ? cropper.getSelection() : null;
+
+				image.style.maxHeight = Math.max(50, stage.clientHeight) + 'px';
+
+				if (selection) {
+					cropper.setSelect([selection.x, selection.y, selection.x2, selection.y2]);
+				}
+			};
+
+			bar.addEventListener('click', (event) => {
+				const choice = event.target.closest('[data-ratio]');
+
+				if (!choice || !cropper) {
+					return;
+				}
+
+				const [w, h] = choice.getAttribute('data-ratio').split(':').map(Number);
+
+				bar.querySelectorAll('[data-ratio]').forEach((item) => {
+					item.classList.toggle('active', item === choice);
+					item.setAttribute('aria-pressed', item === choice ? 'true' : 'false');
+				});
+
+				cropper.setOptions({ aspectRatio: h ? w / h : 0 });
+
+				// A shape selects its largest area; Free keeps the selection
+				if (h) {
+					cropper.maximise();
+				}
+			});
+
+			const save = (mode) => {
+				const c = cropper ? cropper.getSelection() : null;
+
+				if (busy) {
+					return;
+				}
+
+				if (!c || c.w < 1 || c.h < 1) {
+					size.classList.add('text-error');
+					size.textContent = text('COM_MEDIA_CROP_NO_AREA');
+
+					return;
+				}
+
+				if (mode === 'replace' && !window.confirm(text('COM_MEDIA_CROP_CONFIRM_REPLACE').replace('%s', name))) {
+					return;
+				}
+
+				const data = new FormData();
+
+				data.append(CMS.options.get('csrf.token', ''), '1');
+				data.append('folder', folder());
+				data.append('file', name);
+				data.append('mode', mode);
+				[['x', c.x], ['y', c.y], ['w', c.w], ['h', c.h]].forEach(([key, value]) => data.append(key, value));
+
+				busy = true;
+				buttons.forEach((item) => {
+					item.disabled = true;
+				});
+
+				fetch(options.url, { method: 'POST', body: data, credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+					.then((response) => response.json())
+					.then((answer) => {
+						if (!answer || answer.status !== '1') {
+							throw new Error(answer && answer.message ? answer.message : text('COM_MEDIA_ERROR_UNABLE_TO_CROP'));
+						}
+
+						busy = false;
+						CMS.modal.close();
+						Joomla.renderMessages({ message: [answer.message] });
+						refresh(mode === 'replace' ? path : answer.path);
+					})
+					.catch((error) => {
+						busy = false;
+						buttons.forEach((item) => {
+							item.disabled = false;
+						});
+						size.classList.add('text-error');
+						size.textContent = error && error.message && !(error instanceof SyntaxError) ? error.message : text('COM_MEDIA_ERROR_UNABLE_TO_CROP');
+					});
+			};
+
+			CMS.modal.open(root, {
+				handler: 'adopt',
+				title: text('COM_MEDIA_CROP_TITLE').replace('%s', name),
+				size: { x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140) },
+				closable: () => !busy,
+				buttons: [
+					{ text: text('JCANCEL'), className: 'btn', onClick: () => CMS.modal.close() },
+					{ text: text('COM_MEDIA_CROP_SAVE_REPLACE'), className: 'btn btn-danger', onClick: () => save('replace') },
+					{ text: text('COM_MEDIA_CROP_SAVE_NEW'), className: 'btn btn-primary', onClick: () => save('new') },
+				],
+				onClose() {
+					window.removeEventListener('resize', fit);
+
+					if (cropper) {
+						cropper.destroy();
+						cropper = null;
+					}
+				},
+			});
+
+			buttons = Array.prototype.slice.call(document.querySelectorAll('#sbox-buttons .btn'));
+			buttons.slice(1).forEach((item) => {
+				item.disabled = true;
+			});
+
+			image.addEventListener('load', () => {
+				fit();
+				cropper = CMS.cropper.attach(image, { onChange: showSize, onSelect: showSize, onRelease: () => showSize(null) });
+				showSize(null);
+				buttons.forEach((item) => {
+					item.disabled = false;
+				});
+				window.addEventListener('resize', fit);
+			}, { once: true });
+			image.addEventListener('error', () => {
+				size.classList.add('text-error');
+				size.textContent = text('COM_MEDIA_ERROR_UNABLE_TO_CROP');
+			}, { once: true });
+			image.src = address(path) + '?t=' + Date.now();
+		};
+
+		frame.addEventListener('load', watch);
+		watch();
+		button.addEventListener('click', () => {
+			const name = chosen();
+
+			if (name) {
+				open(name);
+			}
+		});
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', start);
+	} else {
+		start();
+	}
+})();

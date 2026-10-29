@@ -92,6 +92,14 @@ class MediaViewMedia extends JViewLegacy
             JToolbarHelper::divider();
         }
 
+        // A crop button: images are chosen with the list's checkboxes, which only users who may delete have
+        if ($user->authorise('core.create', 'com_media') && $user->authorise('core.delete', 'com_media')) {
+            $layout = new JLayoutFile('toolbar.cropmedia');
+
+            $bar->appendButton('Custom', $layout->render(array()), 'crop');
+            JToolbarHelper::divider();
+        }
+
         // Add a delete button
         if ($user->authorise('core.delete', 'com_media')) {
             // Instantiate a new JLayoutFile instance and render the layout

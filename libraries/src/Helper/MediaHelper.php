@@ -353,28 +353,11 @@ class MediaHelper
         imagesavealpha($image, true);
 
         // Upright: the EXIF orientation of JPEG photos
-        $rotated = false;
+        $rotated = $type === IMAGETYPE_JPEG && $this->turnUpright($image, $path);
 
-        if ($type === IMAGETYPE_JPEG && function_exists('exif_read_data')) {
-            $exif        = @exif_read_data($path);
-            $orientation = is_array($exif) && isset($exif['Orientation']) ? (int) $exif['Orientation'] : 1;
-            $turns       = array(2 => array(0, true), 3 => array(180, false), 4 => array(180, true), 5 => array(270, true), 6 => array(270, false), 7 => array(90, true), 8 => array(90, false));
-
-            if (isset($turns[$orientation])) {
-                list($angle, $flip) = $turns[$orientation];
-
-                if ($angle) {
-                    $image = imagerotate($image, $angle, 0);
-                }
-
-                if ($flip) {
-                    imageflip($image, IMG_FLIP_HORIZONTAL);
-                }
-
-                $width   = imagesx($image);
-                $height  = imagesy($image);
-                $rotated = true;
-            }
+        if ($rotated) {
+            $width  = imagesx($image);
+            $height = imagesy($image);
         }
 
         $keepName = !empty($settings['keep_name']);
@@ -424,6 +407,170 @@ class MediaHelper
         $this->freeImage($image);
 
         return $target;
+    }
+
+    /**
+     * Turns a JPEG photo upright by its EXIF orientation (phones store photos sideways with a flag, which browsers follow).
+     *
+     * @param   resource|\GdImage  &$image  The image, replaced when turned
+     * @param   string             $path    Its file, for the EXIF data
+     *
+     * @return  boolean  Whether it was turned
+     *
+     * @since   3.18.0
+     */
+    private function turnUpright(&$image, $path)
+    {
+        if (!function_exists('exif_read_data')) {
+            return false;
+        }
+
+        $exif        = @exif_read_data($path);
+        $orientation = is_array($exif) && isset($exif['Orientation']) ? (int) $exif['Orientation'] : 1;
+        $turns       = array(2 => array(0, true), 3 => array(180, false), 4 => array(180, true), 5 => array(270, true), 6 => array(270, false), 7 => array(90, true), 8 => array(90, false));
+
+        if (!isset($turns[$orientation])) {
+            return false;
+        }
+
+        list($angle, $flip) = $turns[$orientation];
+
+        if ($angle) {
+            $image = imagerotate($image, $angle, 0);
+        }
+
+        if ($flip) {
+            imageflip($image, IMG_FLIP_HORIZONTAL);
+        }
+
+        return true;
+    }
+
+    /**
+     * The image types cropImage() can read and write again (GD's reader and writer, the format written)
+     *
+     * @var    array
+     * @since  3.18.0
+     */
+    private const CROP_TYPES = array(
+        IMAGETYPE_JPEG => array('imagecreatefromjpeg', 'imagejpeg', 'jpg'),
+        IMAGETYPE_PNG  => array('imagecreatefrompng', 'imagepng', 'png'),
+        IMAGETYPE_WEBP => array('imagecreatefromwebp', 'imagewebp', 'webp'),
+        IMAGETYPE_GIF  => array('imagecreatefromgif', 'imagegif', 'gif'),
+    );
+
+    /**
+     * Whether cropImage() can crop a file: JPEG, PNG, WebP or GIF (its first frame), which GD can read and write here.
+     *
+     * @param   string  $path  The image
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    public function canCrop($path)
+    {
+        $info = is_file($path) && function_exists('imagecrop') ? @getimagesize($path) : false;
+        $gd   = $info && isset(self::CROP_TYPES[(int) $info[2]]) ? self::CROP_TYPES[(int) $info[2]] : null;
+
+        return $gd && function_exists($gd[0]) && function_exists($gd[1]);
+    }
+
+    /**
+     * Crops an image into a file of the same format: an area of the upright image (as browsers show JPEG photos), written
+     * once at the optimiser's quality, without metadata; transparency is kept (a GIF keeps its palette, and loses its
+     * animation). The target may be the image itself.
+     *
+     * @param   string   $path     The image
+     * @param   integer  $x        The area's left edge, in the image's pixels
+     * @param   integer  $y        Its top edge
+     * @param   integer  $width    Its width
+     * @param   integer  $height   Its height
+     * @param   string   $target   The file to write
+     * @param   integer  $quality  1-100 (JPEG, WebP)
+     *
+     * @return  boolean  False when the image can't be read, is too large for PHP's memory, the area isn't inside it, or the
+     *                   file can't be written
+     *
+     * @since   3.18.0
+     */
+    public function cropImage($path, $x, $y, $width, $height, $target, $quality = 90)
+    {
+        if (!$this->canCrop($path)) {
+            return false;
+        }
+
+        $info = @getimagesize($path);
+        $type = (int) $info[2];
+        $x    = (int) $x;
+        $y    = (int) $y;
+
+        $width  = (int) $width;
+        $height = (int) $height;
+        $limit  = $this->toBytes(ini_get('memory_limit'));
+
+        // GD needs about 5 bytes a pixel, twice while cropping
+        if ($limit > 0 && memory_get_usage() + $info[0] * $info[1] * 10 > $limit * 0.9) {
+            return false;
+        }
+
+        try {
+            $image = @call_user_func(self::CROP_TYPES[$type][0], $path);
+
+            if (!$image) {
+                return false;
+            }
+
+            if (imageistruecolor($image)) {
+                imagealphablending($image, false);
+                imagesavealpha($image, true);
+            }
+
+            if ($type === IMAGETYPE_JPEG) {
+                $this->turnUpright($image, $path);
+            }
+
+            if ($width < 1 || $height < 1 || $x < 0 || $y < 0 || $x + $width > imagesx($image) || $y + $height > imagesy($image)) {
+                $this->freeImage($image);
+
+                return false;
+            }
+
+            if (imageistruecolor($image)) {
+                $cropped = imagecrop($image, array('x' => $x, 'y' => $y, 'width' => $width, 'height' => $height));
+            } else {
+                // A palette image (GIF) by hand: imagecrop() loses its palette, giving one colour
+                $cropped     = imagecreate($width, $height);
+                $transparent = imagecolortransparent($image);
+
+                imagepalettecopy($cropped, $image);
+
+                if ($transparent >= 0 && $transparent < imagecolorstotal($image)) {
+                    imagefill($cropped, 0, 0, $transparent);
+                    imagecolortransparent($cropped, $transparent);
+                }
+
+                imagecopy($cropped, $image, 0, 0, $x, $y, $width, $height);
+            }
+
+            $this->freeImage($image);
+
+            if (!$cropped) {
+                return false;
+            }
+
+            if (imageistruecolor($cropped)) {
+                imagealphablending($cropped, false);
+                imagesavealpha($cropped, true);
+            }
+
+            $written = $this->writeImage($cropped, $target, self::CROP_TYPES[$type][2], min(100, max(1, (int) $quality)));
+            $this->freeImage($cropped);
+
+            return $written;
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     /**
@@ -485,7 +632,7 @@ class MediaHelper
      *
      * @param   resource|\GdImage  $image    The image
      * @param   string             $path     Where
-     * @param   string             $format   jpg, png, webp, avif or bmp
+     * @param   string             $format   jpg, png, webp, avif, bmp or gif
      * @param   integer            $quality  1-100 (lossy formats)
      *
      * @return  boolean
@@ -517,6 +664,10 @@ class MediaHelper
 
             case 'bmp':
                 $written = function_exists('imagebmp') && imagebmp($image, $temporary);
+                break;
+
+            case 'gif':
+                $written = imagegif($image, $temporary);
                 break;
 
             default:

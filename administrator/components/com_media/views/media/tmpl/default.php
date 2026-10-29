@@ -30,6 +30,19 @@ JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relativ
 JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));
 JHtml::_('behavior.styles');
 
+// The Crop button's window (media.js, global.js' cropper)
+if ($user->authorise('core.create', 'com_media') && $user->authorise('core.delete', 'com_media')) {
+    JHtml::_('behavior.cms');
+    JFactory::getDocument()->addScriptOptions('com_media.crop', array(
+        'url'  => JUri::base(true) . '/index.php?option=com_media&task=file.crop&format=json',
+        'base' => COM_MEDIA_BASEURL,
+    ));
+
+    foreach (array('COM_MEDIA_CROP_TITLE', 'COM_MEDIA_CROP_FREE', 'COM_MEDIA_CROP_RATIO', 'COM_MEDIA_CROP_SIZE', 'COM_MEDIA_CROP_NO_AREA', 'COM_MEDIA_CROP_SAVE_NEW', 'COM_MEDIA_CROP_SAVE_REPLACE', 'COM_MEDIA_CROP_CONFIRM_REPLACE', 'COM_MEDIA_ERROR_UNABLE_TO_CROP', 'JCANCEL') as $key) {
+        JText::script($key);
+    }
+}
+
 ?>
 <div class="row-fluid">
 	<!-- Begin Sidebar -->

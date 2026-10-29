@@ -286,4 +286,103 @@ class MediaControllerFile extends JControllerLegacy
             return;
         }
     }
+
+    /**
+     * Crops an image of the Media Manager (its Crop button): posted are the image's folder and name, the area in the image's
+     * own pixels (x, y, w, h) and mode "new" (a file next to it, named with its size: photo_1920x823.jpg) or "replace" (the
+     * image itself, which needs the right to delete too).
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    public function crop()
+    {
+        $user    = JFactory::getUser();
+        $replace = $this->input->post->getCmd('mode') === 'replace';
+        $error   = function ($key) {
+            echo json_encode(array('status' => '0', 'message' => JText::_($key), 'error' => JText::_($key)));
+        };
+
+        if (!JSession::checkToken('post')) {
+            $error('JINVALID_TOKEN');
+
+            return;
+        }
+
+        if (!$user->authorise('core.create', 'com_media') || ($replace && !$user->authorise('core.delete', 'com_media'))) {
+            $error('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN');
+
+            return;
+        }
+
+        $folder = (string) $this->input->post->get('folder', '', 'path');
+        $name   = (string) $this->input->post->get('file', '', 'string');
+        $base   = realpath(COM_MEDIA_BASE);
+        $path   = realpath(JPath::clean(COM_MEDIA_BASE . '/' . ($folder !== '' ? $folder . '/' : '') . $name));
+
+        // A file of the media folder, named as the list names it (no folder in the name)
+        if ($name === '' || $name !== basename($name) || !$base || !$path || strpos($path, $base . DIRECTORY_SEPARATOR) !== 0 || !is_file($path)) {
+            $error('COM_MEDIA_ERROR_UNABLE_TO_CROP');
+
+            return;
+        }
+
+        $mediaHelper = new JHelperMedia();
+
+        if (!$mediaHelper->canCrop($path)) {
+            $error('COM_MEDIA_ERROR_CROP_TYPE');
+
+            return;
+        }
+
+        $params = JComponentHelper::getParams('com_media');
+        $x      = $this->input->post->getInt('x', -1);
+        $y      = $this->input->post->getInt('y', -1);
+        $width  = $this->input->post->getInt('w', 0);
+        $height = $this->input->post->getInt('h', 0);
+        $target = $path;
+
+        if (!$replace) {
+            $target = $mediaHelper->getUniqueFilePath(
+                dirname($path) . DIRECTORY_SEPARATOR . pathinfo($path, PATHINFO_FILENAME) . '_' . $width . 'x' . $height . '.' . pathinfo($path, PATHINFO_EXTENSION)
+            );
+        }
+
+        $mediaHelper->raiseMemoryLimit($params);
+
+        // Plugins may refuse it, as an upload
+        JPluginHelper::importPlugin('content');
+        $dispatcher = JEventDispatcher::getInstance();
+        $object     = new JObject(array('name' => basename($target), 'filepath' => $target, 'type' => 'image'));
+        $result     = $dispatcher->trigger('onContentBeforeSave', array('com_media.file', &$object, !$replace));
+
+        if (in_array(false, $result, true)) {
+            $errors  = $object->getErrors();
+            $message = JText::plural('COM_MEDIA_ERROR_BEFORE_SAVE', count($errors), implode('<br />', $errors));
+
+            echo json_encode(array('status' => '0', 'message' => $message, 'error' => $message));
+
+            return;
+        }
+
+        if (!$mediaHelper->cropImage($path, $x, $y, $width, $height, $target, $params->get('optimise_quality', 90))) {
+            $error('COM_MEDIA_ERROR_UNABLE_TO_CROP');
+
+            return;
+        }
+
+        $dispatcher->trigger('onContentAfterSave', array('com_media.file', &$object, !$replace));
+
+        $relative = ltrim(str_replace(array($base, '\\'), array('', '/'), $target), '/');
+        $message  = JText::sprintf($replace ? 'COM_MEDIA_CROP_REPLACED' : 'COM_MEDIA_CROP_SAVED', $relative);
+
+        echo json_encode(array(
+            'status'  => '1',
+            'message' => $message,
+            'path'    => $relative,
+            'width'   => $width,
+            'height'  => $height,
+        ));
+    }
 }

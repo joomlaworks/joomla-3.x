@@ -137,3 +137,14 @@
 .media-drop-item.is-done .media-drop-status {color:var(--c-success-fg, #2f7d32);}
 .media-drop-item.is-failed .media-drop-status {color:var(--c-danger-fg, #c0392b);}
 .media-drop-close {margin-top:10px;}
+
+/* --- Cropping (the Crop button's window) --- */
+/* The window's content holds it at its size, in the window's colours (the content's own background is white) */
+#sbox-content:has(> .media-crop) {display:flex;overflow:hidden;background:none;}
+.media-crop {display:flex;flex:1 1 auto;flex-direction:column;gap:10px;min-width:0;min-height:0;}
+.media-crop-bar {display:flex;flex:none;flex-wrap:wrap;}
+.media-crop-bar .btn[aria-pressed="true"] {font-weight:600;}
+/* Transparent parts of the image show as a chequerboard */
+.media-crop-stage {display:flex;flex:1 1 auto;align-items:center;justify-content:center;min-height:0;overflow:hidden;background:repeating-conic-gradient(rgba(128, 128, 128, 0.18) 0% 25%, transparent 0% 50%) 50% / 20px 20px;}
+.media-crop-stage .cms-crop > img {max-width:100%;width:auto;height:auto;}
+.media-crop-size {flex:none;margin:0;min-height:20px;line-height:20px;font-variant-numeric:tabular-nums;}
