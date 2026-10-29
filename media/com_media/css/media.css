@@ -184,7 +184,7 @@ td.media-rename .media-rename-pencil {margin-inline-start:4px;}
 .manager:not(.media-picker) > .imgOutline > .imgPreview.media-rename {position:absolute;left:0;right:0;bottom:0;z-index:2;}
 .manager:not(.media-picker) > .imgOutline > .imgPreview.media-rename a {position:relative;left:auto;bottom:auto;}
 .manager:not(.media-picker) > .imgOutline > .imgPreview.media-rename > .media-rename-label {flex:1 1 auto;}
-.imgPreview.media-rename > .media-rename-pencil {position:absolute;bottom:100%;inset-inline-end:8px;margin-bottom:3px;}
+.imgPreview.media-rename > .media-rename-pencil {position:absolute;bottom:100%;inset-inline-end:8px;margin-bottom:8px;}
 .imgOutline > .imgPreview.media-rename > .media-rename-form {position:absolute;bottom:0;left:0;right:0;z-index:2;box-sizing:border-box;min-height:26px;padding:1px 2px;background:var(--c-card, #fff);}
 
 /* --- Thumbnail sizes (--media-tile, set by the size buttons next to the views' buttons; the tiles are a little taller than wide, for the renaming buttons above the name) --- */
@@ -198,5 +198,10 @@ td.media-rename .media-rename-pencil {margin-inline-start:4px;}
 /* Their icon's area takes what the pencil and a name of two lines leave */
 #mediamanager-form .manager:not(.media-picker) > .imgOutline:has(> .small:not(.imgPreview)) > .height-50 {flex:1 1 auto;height:auto;min-height:0;}
 .manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview) {flex:none;margin-top:auto;padding-bottom:6px;}
+/* Image tiles (Isis, Prothero): the picture fills the tile, cropped to it, under the name bar; the checkbox and the delete
+   button float over it (the preview shows it whole) */
+#mediamanager-form .manager:not(.media-picker) > .imgOutline > .imgThumb:has(> a.img-preview) {position:absolute;inset:0;display:block;}
+#mediamanager-form .manager:not(.media-picker) > .imgOutline > .imgThumb > a.img-preview {position:absolute;inset:0;line-height:0;}
+#mediamanager-form .manager:not(.media-picker) > .imgOutline > .imgThumb > a.img-preview > img {width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;}
 .media-tile-size .cms-icon {display:block;}
 .media-tile-size[hidden] {display:none;}
