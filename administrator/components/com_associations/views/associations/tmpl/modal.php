@@ -15,7 +15,6 @@ if ($app->isClient('site')) {
     JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
 }
 
-JHtml::_('jquery.framework');
 JHtml::_('bootstrap.tooltip', '.hasTooltip', array('placement' => 'bottom'));
 JHtml::_('behavior.multiselect');
 JHtml::_('formbehavior.chosen', 'select');
@@ -33,15 +32,14 @@ $iconStates = array(
     2  => 'icon-archive',
 );
 
+// A chosen item goes to the function of the page that opened the list
 $app->getDocument()->addScriptDeclaration(
-    "jQuery(document).ready(function($) {
-		// Run function on parent window.
-		$('.select-link').on('click', function() {
-			if (self != top)
-			{
-				window.parent." . $function . "(this.getAttribute('data-id'));
-			}
-		});
+    "document.addEventListener('click', function (event) {
+		var link = event.target.closest ? event.target.closest('.select-link') : null;
+
+		if (link && self != top) {
+			window.parent." . $function . "(link.getAttribute('data-id'));
+		}
 	});"
 );
 ?>

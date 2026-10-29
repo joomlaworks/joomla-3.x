@@ -1,104 +1,127 @@
-var FinderIndexer = function(){
-	var totalItems= null;
-	var batchSize= null;
-	var offset= null;
-	var progress= null;
-	var optimized= false;
-	var path = 'index.php?option=com_finder&tmpl=component&format=json';
+/**
+ * @copyright  (C) 2011 Open Source Matters, Inc. <https://www.joomla.org>
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
+ */
 
-	var initialize = function () {
-		offset = 0;
-		progress = 0;
-		path = path + '&' + jQuery('#finder-indexer-token').attr('name') + '=1';
-		getRequest('indexer.start');
+/**
+ * Smart Search's indexer (view indexer, in a modal of the Index page): starts the index, sends batches until every item is
+ * done, optimises, and shows the progress; when it's complete it closes the modal, whose page then reloads.
+ */
+window.FinderIndexer = function FinderIndexer() {
+	const options = Joomla.getOptions('com_finder.indexer') || {};
+	const token = document.getElementById('finder-indexer-token');
+	const path = 'index.php?option=com_finder&tmpl=component&format=json' + (token ? '&' + token.getAttribute('name') + '=1' : '');
+	const header = document.getElementById('finder-progress-header');
+	const message = document.getElementById('finder-progress-message');
+	const bar = document.getElementById('progress-bar');
+	let totalItems = null;
+	let offset = 0;
+	let optimized = false;
+
+	const removeBar = () => {
+		const progress = document.getElementById('progress');
+
+		if (progress) {
+			progress.remove();
+		}
 	};
 
-	var getRequest= function (task) {
-		jQuery.ajax({
-			type : "GET",
-			url : path,
-			data :  'task=' + task,
-			dataType : 'json',
-			success : handleResponse,
-			error : handleFailure
-		});
+	// The server's messages may hold markup (links to the options)
+	const fail = (title, text) => {
+		removeBar();
+		header.textContent = title;
+		header.classList.add('finder-error');
+		message.innerHTML = text;
+		message.classList.add('finder-error');
 	};
 
-	var handleResponse = function (json, resp) {
-		try {
-			if (json === null) {
-				throw resp;
+	// The modal the indexer is in: a Bootstrap modal of the toolbar, or the CMS's
+	const closeModal = () => {
+		const parent = window.parent;
+
+		if (parent === window) {
+			return;
+		}
+
+		if (parent.jQuery && parent.jQuery.fn.modal && parent.document.getElementById('modal-archive')) {
+			parent.jQuery('#modal-archive').modal('hide');
+		} else if (parent.CMS && parent.CMS.modal) {
+			parent.CMS.modal.close();
+		}
+	};
+
+	const update = (title, text) => {
+		const progress = (offset / totalItems) * 100;
+
+		header.textContent = title;
+		message.innerHTML = text;
+
+		if (bar) {
+			if (progress >= 100) {
+				bar.classList.remove('bar-success');
+				bar.classList.add('bar-warning');
+				bar.setAttribute('aria-valuemin', 100);
+				bar.setAttribute('aria-valuemax', 200);
 			}
-			if (json.error) {
-				throw json;
-			}
-			if (json.start) {
-				totalItems = json.totalItems;
-			}
-			offset += json.batchOffset;
-			updateProgress(json.header, json.message);
-			if (offset < totalItems) {
-				getRequest('indexer.batch');
-			} else if (!optimized) {
-				optimized = true;
-				getRequest('indexer.optimize');
-			}
-		} catch (error) {
-			jQuery('#progress').remove();
-			try {
-				if (json.error) {
-					jQuery('#finder-progress-header').text(json.header).addClass('finder-error');
-					jQuery('#finder-progress-message').html(json.message).addClass('finder-error');
+
+			bar.style.width = progress + '%';
+			bar.setAttribute('aria-valuenow', progress);
+		}
+
+		if (text === options.complete) {
+			removeBar();
+			closeModal();
+		}
+	};
+
+	const request = (task) => {
+		fetch(path + '&task=' + task, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+			.then((response) => response.text().then((text) => ({ response, text })))
+			.then(({ response, text }) => {
+				let json = null;
+
+				try {
+					json = JSON.parse(text);
+				} catch (error) {
+					json = null;
 				}
-			} catch (ignore) {
-				if (error === '') {
-					error = Joomla.JText._('COM_FINDER_NO_ERROR_RETURNED');
+
+				if (!response.ok || !json || json.error) {
+					if (json && json.header) {
+						fail(json.header, json.message);
+					} else {
+						fail(Joomla.JText._('COM_FINDER_AN_ERROR_HAS_OCCURRED'), Joomla.JText._('COM_FINDER_MESSAGE_RETURNED') + ' <br />'
+							+ (text ? text.replace(/</g, '&lt;') : Joomla.JText._('COM_FINDER_NO_ERROR_RETURNED')));
+					}
+
+					return;
 				}
-				jQuery('#finder-progress-header').text(Joomla.JText._('COM_FINDER_AN_ERROR_HAS_OCCURRED')).addClass('finder-error');
-				jQuery('#finder-progress-message').html(error).addClass('finder-error');
-			}
-		}
-		return true;
+
+				if (json.start) {
+					totalItems = json.totalItems;
+				}
+
+				offset += json.batchOffset;
+				update(json.header, json.message);
+
+				if (offset < totalItems) {
+					request('indexer.batch');
+				} else if (!optimized) {
+					optimized = true;
+					request('indexer.optimize');
+				}
+			})
+			.catch(() => fail(Joomla.JText._('COM_FINDER_AN_ERROR_HAS_OCCURRED'), Joomla.JText._('COM_FINDER_NO_ERROR_RETURNED')));
 	};
 
-	var handleFailure= function (xhr) {
-		json = (typeof xhr == 'object' && xhr.responseText) ? xhr.responseText : null;
-		json = json ? jQuery.parseJSON(json) : null;
-		jQuery('#progress').remove();
-		if (json) {
-			json = json.responseText != null ? Json.evaluate(json.responseText, true) : json;
-		}
-		var header = json ? json.header : Joomla.JText._('COM_FINDER_AN_ERROR_HAS_OCCURRED');
-		var message = json ? json.message : Joomla.JText._('COM_FINDER_MESSAGE_RETURNED') + ' <br />' + json;
-		jQuery('#finder-progress-header').text(header).addClass('finder-error');
-		jQuery('#finder-progress-message').html(message).addClass('finder-error');
-	};
-
-	var updateProgress = function (header, message) {
-		progress = (offset / totalItems) * 100;
-		jQuery('#finder-progress-header').text(header);
-		jQuery('#finder-progress-message').html(message);
-		if (progress < 100) {
-			jQuery('#progress-bar').css('width', progress + '%').attr('aria-valuenow', progress);
-		}
-		else {
-			jQuery('#progress-bar').removeClass('bar-success').addClass('bar-warning').attr('aria-valuemin', 100).attr('aria-valuemax', 200);
-			jQuery('#progress-bar').css('width', progress + '%').attr('aria-valuenow', progress);
-		}
-		if (message == msg) {
-			jQuery('#progress').remove();
-			window.parent.jQuery('#modal-archive', parent.document).modal('hide');
-		}
-	};
-
-	initialize();
+	request('indexer.start');
 };
 
-jQuery(function () {
-	Indexer = new FinderIndexer();
-	if (typeof window.parent.SqueezeBox == 'object') {
-		jQuery(window.parent.SqueezeBox).on('close', function () {
-			window.parent.location.reload(true);
-		});
+document.addEventListener('DOMContentLoaded', () => {
+	window.Indexer = new window.FinderIndexer();
+
+	// In the CMS's modal (SqueezeBox's names), its page reloads when it closes
+	if (window.parent !== window && window.parent.CMS && window.parent.CMS.modal && window.parent.CMS.modal.isOpen) {
+		window.parent.CMS.modal.on('close', () => window.parent.location.reload());
 	}
 });

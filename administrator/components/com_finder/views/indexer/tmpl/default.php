@@ -11,9 +11,13 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.core');
-JHtml::_('jquery.framework');
 JHtml::_('script', 'administrator/components/com_finder/js/finder.js', array('version' => 'auto'));
-JFactory::getDocument()->addScriptDeclaration('var msg = "' . JText::_('COM_FINDER_INDEXER_MESSAGE_COMPLETE') . '";');
+
+// The message that ends the run (js/finder.js closes the modal on it)
+JFactory::getDocument()->addScriptOptions('com_finder.indexer', array('complete' => JText::_('COM_FINDER_INDEXER_MESSAGE_COMPLETE')));
+JText::script('COM_FINDER_AN_ERROR_HAS_OCCURRED');
+JText::script('COM_FINDER_MESSAGE_RETURNED');
+JText::script('COM_FINDER_NO_ERROR_RETURNED');
 ?>
 
 <div id="finder-indexer-container">

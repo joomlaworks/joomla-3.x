@@ -3,327 +3,316 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
-jQuery(document).ready(function($) {
-	$('#toolbar-target').hide();
-	$('#toolbar-copy').hide();
+/**
+ * The side by side association editor: the reference item and a target language's item in two iframes. Saving, copying and
+ * removing go through the iframes' own forms; the association fields of both are kept in step. Lists drawn by Chosen are
+ * redrawn through their page's own jQuery (liszt:updated); changes are native events, which jQuery's listeners hear too.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+	const byId = (id) => document.getElementById(id);
+	const reference = byId('reference-association');
+	const target = byId('target-association');
+	const switcher = byId('jform_itemlanguage');
+	const form = byId('adminForm');
 
-	// Save button actions, replacing the default Joomla.submitbutton() with custom function.
-	Joomla.submitbutton = function(task)
-	{
-		// Using close button, normal joomla submit.
-		if (task === 'association.cancel')
-		{
+	if (!reference || !target || !form) {
+		return;
+	}
+
+	const code = (language) => String(language).replace(/-/, '_');
+	const show = (id, shown) => {
+		const element = byId(id);
+
+		if (element) {
+			element.style.display = shown ? '' : 'none';
+		}
+	};
+	const frameDocument = (frame) => {
+		try {
+			return frame.contentDocument;
+		} catch (error) {
+			return null;
+		}
+	};
+
+	// A field of a frame: its value, a change event, and Chosen's redraw
+	const setField = (frame, id, value, extra) => {
+		const doc = frameDocument(frame);
+		const field = doc ? doc.getElementById(id) : null;
+		const jq = frame.contentWindow && frame.contentWindow.jQuery;
+
+		if (!field) {
+			return null;
+		}
+
+		if (extra && extra.option && field.tagName === 'SELECT' && !Array.prototype.some.call(field.options, (option) => option.value === String(value))) {
+			const option = doc.createElement('option');
+
+			option.value = value;
+			option.textContent = extra.option === true ? '' : extra.option;
+			field.appendChild(option);
+		}
+
+		if (value !== undefined) {
+			field.value = value;
+		}
+
+		if (extra && extra.disabled !== undefined) {
+			field.disabled = extra.disabled;
+		}
+
+		if (extra && extra.change) {
+			field.dispatchEvent(new Event('change', { bubbles: true }));
+		}
+
+		if (jq && field.tagName === 'SELECT') {
+			jq(field).trigger('liszt:updated');
+		}
+
+		return field;
+	};
+
+	// The association of a language in a frame: the modal field (_id, _name) or the list (menus)
+	const associate = (frame, language, id, title) => {
+		setField(frame, 'jform_associations_' + language + '_id', id);
+
+		if (title !== undefined) {
+			setField(frame, 'jform_associations_' + language + '_name', title);
+		}
+
+		setField(frame, 'jform_associations_' + language, id, { option: id === '' ? undefined : (title === undefined ? true : title), change: true });
+	};
+
+	const languages = () => (switcher ? Array.prototype.map.call(switcher.options, (option) => option.value.split(':')) : []);
+	const removeButtons = (doc, selector) => doc.querySelectorAll(selector).forEach((button) => button.remove());
+
+	show('toolbar-target', false);
+	show('toolbar-copy', false);
+
+	// The toolbar's buttons
+	Joomla.submitbutton = (task) => {
+		const view = form.getAttribute('data-associatedview');
+
+		if (task === 'association.cancel') {
 			Joomla.submitform(task);
-		}
-		else if(task === 'copy')
-		{
+		} else if (task === 'copy') {
+			// The copy takes the target's language
 			Joomla.loadingLayer('show');
+			setField(reference, 'jform_language', target.getAttribute('data-language'), { disabled: false });
+			reference.contentWindow.Joomla.submitbutton(view + '.save2copy');
+		} else if (task === 'undo-association') {
+			const referenceLanguage = code(reference.getAttribute('data-language'));
+			const targetLanguage = code(target.getAttribute('data-language'));
 
-			var targetLang     = document.getElementById('target-association').getAttribute('data-language'),
-				referlangInput = window.frames['reference-association'].document.getElementById('jform_language');
-
-			// Set target language, to get correct content language in the copy
-			referlangInput.removeAttribute('disabled');
-			referlangInput.value = targetLang;
-
-			window.frames['reference-association'].Joomla.submitbutton(document.getElementById('adminForm').getAttribute('data-associatedview') + '.save2copy');
-		}
-		// Undo association
-		else if (task === 'undo-association')
-		{
-			var reference     = document.getElementById('reference-association');
-			var target        = document.getElementById('target-association');
-			var referenceId   = reference.getAttribute('data-id');
-			var referenceLang = reference.getAttribute('data-language').replace(/-/,'_');
-			var targetId      = target.getAttribute('data-id');
-			var targetLang    = target.getAttribute('data-language').replace(/-/,'_');
-			reference         = $(reference).contents();
-			target            = $(target).contents();
-
-			// Remove it on the reference
-			// - For modal association selectors.
-			reference.find('#jform_associations_' + targetLang + '_id').val('');
-			reference.find('#jform_associations_' + targetLang + '_name').val('');
-
-			// - For chosen association selectors (menus).
-			reference.find('#jform_associations_' + targetLang + '_chzn').remove();
-			reference.find('#jform_associations_' + targetLang).val('').change().chosen();
-
-			var lang = '';
-
-			// Remove it on the target
-			$('#jform_itemlanguage option').each(function()
-			{
-				lang = $(this).val().split('|')[0];
-				if (typeof lang !== 'undefined')
-				{
-					lang = lang.replace(/-/,'_');
-					// - For modal association selectors.
-					target.find('#jform_associations_' + lang + '_id').val('');
-					// - For chosen association selectors (menus).
-					target.find('#jform_associations_' + lang + '_chzn').remove();
-					target.find('#jform_associations_' + lang).val('').change().chosen();
+			associate(reference, targetLanguage, '', '');
+			languages().forEach((parts) => {
+				if (parts[0]) {
+					associate(target, code(parts[0].split('|')[0]), '');
 				}
 			});
+			associate(target, referenceLanguage, '', '');
 
-			// Same as above but reference language is not in the selector
-			// - For modal association selectors.
-			target.find('#jform_associations_' + referenceLang + '_id').val('');
-			target.find('#jform_associations_' + referenceLang + '_name').val('');
+			// The switcher's entry becomes "add" again
+			const current = switcher.querySelector('option[value="' + switcher.value.replace(/["\\]/g, '\\$&') + '"]');
 
-			// - For chosen association selectors (menus).
-			target.find('#jform_associations_' + referenceLang + '_chzn').remove();
-			target.find('#jform_associations_' + referenceLang).val('').change().chosen();
+			if (current) {
+				current.value = target.getAttribute('data-language') + ':0:add';
+			}
 
-			// Reset switcher after removing association
-			var currentSwitcher = $('#jform_itemlanguage').val();
-			var currentLang = targetLang.replace(/_/,'-');
-			$('#jform_itemlanguage option[value=\"' + currentSwitcher + '\"]').val(currentLang + ':0:add');
-			$('#jform_itemlanguage').val('').change();
-			$('#jform_itemlanguage').trigger('liszt:updated');
+			switcher.value = '';
+			switcher.dispatchEvent(new Event('change', { bubbles: true }));
 
-			// Save one of the items to confirm action
+			if (window.jQuery) {
+				window.jQuery(switcher).trigger('liszt:updated');
+			}
+
+			// Saving one of the items confirms it
 			Joomla.submitbutton('reference');
-		}
-		// Saving target or reference, send the save action to the target/reference iframe.
-		else
-		{
-			// We need to re-enable the language field to save.
+		} else {
+			// Saving the target or the reference: their language field must be enabled to be posted
+			const frame = byId(task + '-association');
 
-			$('#' + task + '-association').contents().find('#jform_language').attr('disabled', false);
-			window.frames[task + '-association'].Joomla.submitbutton(document.getElementById('adminForm').getAttribute('data-associatedview') + '.apply');
+			setField(frame, 'jform_language', undefined, { disabled: false });
+			frame.contentWindow.Joomla.submitbutton(view + '.apply');
 		}
 
 		return false;
 	};
 
-	// Preload Joomla loading layer.
 	Joomla.loadingLayer('load');
 
-	// Attach behaviour to toggle button.
-	$(document).on('click', '#toogle-left-panel', function()
-	{
-		var referenceHide = this.getAttribute('data-hide-reference');
-		var referenceShow = this.getAttribute('data-show-reference');
+	// Hiding and showing the reference
+	document.addEventListener('click', (event) => {
+		const button = event.target.closest ? event.target.closest('#toogle-left-panel') : null;
 
-		if ($(this).text() === referenceHide)
-		{
-			$(this).text(referenceShow);
-		}
-		else
-		{
-			$(this).text(referenceHide);
+		if (!button) {
+			return;
 		}
 
-		$('#left-panel').toggle();
-		$('#right-panel').toggleClass('full-width');
+		const hide = button.getAttribute('data-hide-reference');
+
+		button.textContent = button.textContent.trim() === hide ? button.getAttribute('data-show-reference') : hide;
+		show('left-panel', byId('left-panel').style.display === 'none');
+		byId('right-panel').classList.toggle('full-width');
 	});
 
-	// Attach behaviour to language selector change event.
-	$(document).on('change', '#jform_itemlanguage', function() {
-		var target   = document.getElementById('target-association');
-		var selected = $(this).val();
+	// The target language chosen: its item (or a new one) in the target frame
+	const chosen = () => {
+		const selected = switcher.value;
 
-		// Populate the data attributes and load the the edit page in target frame.
-		if (selected !== '' && typeof selected !== 'undefined')
-		{
-			target.setAttribute('data-action', selected.split(':')[2]);
-			target.setAttribute('data-id', selected.split(':')[1]);
-			target.setAttribute('data-language', selected.split(':')[0]);
+		if (selected) {
+			const parts = selected.split(':');
 
-			// Iframe load start, show Joomla loading layer.
+			target.setAttribute('data-action', parts[2]);
+			target.setAttribute('data-id', parts[1]);
+			target.setAttribute('data-language', parts[0]);
 			Joomla.loadingLayer('show');
-
-			// Load the target frame.
-			target.src = target.getAttribute('data-editurl') + '&task=' + target.getAttribute('data-item') + '.' + target.getAttribute('data-action') + '&id=' + target.getAttribute('data-id');
-		}
-		// Reset the data attributes and no item to load.
-		else
-		{
-			$('#toolbar-target').hide();
-			$('#toolbar-copy').hide();
-			$('#select-change').addClass("hidden");
-			$('#remove-assoc').addClass("hidden");
-
+			target.src = target.getAttribute('data-editurl') + '&task=' + target.getAttribute('data-item') + '.' + parts[2] + '&id=' + parts[1];
+		} else {
+			show('toolbar-target', false);
+			show('toolbar-copy', false);
+			byId('select-change').classList.add('hidden');
+			byId('remove-assoc').classList.add('hidden');
 			target.setAttribute('data-action', '');
 			target.setAttribute('data-id', '0');
 			target.setAttribute('data-language', '');
 			target.src = '';
 		}
-	});
+	};
 
-	// Attach behaviour to reference frame load event.
-	$('#reference-association').on('load', function() {
-		// Waiting until the reference has loaded before loading the target to avoid race conditions
-		var targetURL = Joomla.getOptions('targetSrc', false);
+	// Chosen sends its changes through jQuery only
+	if (switcher) {
+		if (window.jQuery) {
+			window.jQuery(switcher).on('change', chosen);
+		} else {
+			switcher.addEventListener('change', chosen);
+		}
+	}
 
-		if (targetURL)
-		{
-			targetURL = targetURL.split('&amp;').join('&');
-			document.getElementById('target-association').setAttribute('src', targetURL);
-			Joomla.loadOptions({'targetSrc': false});
+	reference.addEventListener('load', () => {
+		const doc = frameDocument(reference);
+		let targetUrl = Joomla.getOptions('targetSrc', false);
+
+		// The target loads after the reference (both check items out in the same session)
+		if (targetUrl) {
+			target.setAttribute('src', targetUrl.split('&amp;').join('&'));
+			Joomla.loadOptions({ targetSrc: false });
+
 			return;
 		}
 
-		// Load Target Pane AFTER reference pane has loaded to prevent session conflict with checkout
-		document.getElementById('target-association').setAttribute('src', document.getElementById('target-association').getAttribute('src'));
+		target.setAttribute('src', target.getAttribute('src'));
 
-		// If copy button used
-		if ($(this).contents().find('#jform_id').val() !== this.getAttribute('data-id'))
-		{
-			var target = document.getElementById('target-association');
-			target.src = target.getAttribute('data-editurl') + '&task=' + target.getAttribute('data-item') + '.edit' + '&id=' + $(this).contents().find('#jform_id').val();
-			this.src   = this.getAttribute('data-editurl') + '&task=' + this.getAttribute('data-item') + '.edit' + '&id=' + this.getAttribute('data-id');
+		if (!doc) {
+			return;
 		}
 
-		var reference = $(this).contents();
+		// After a copy the reference shows the copy: the copy goes to the target, the reference back to itself
+		const loadedId = doc.getElementById('jform_id') ? doc.getElementById('jform_id').value : '';
 
-		// Disable language field.
-		reference.find('#jform_language_chzn').remove();
-		reference.find('#jform_language').attr('disabled', true).chosen();
+		if (loadedId !== reference.getAttribute('data-id')) {
+			target.src = target.getAttribute('data-editurl') + '&task=' + target.getAttribute('data-item') + '.edit&id=' + loadedId;
+			reference.src = reference.getAttribute('data-editurl') + '&task=' + reference.getAttribute('data-item') + '.edit&id=' + reference.getAttribute('data-id');
+		}
 
-		// Remove modal buttons on the reference
-		reference.find('#associations').find('.btn').remove();
+		setField(reference, 'jform_language', undefined, { disabled: true });
+		removeButtons(doc, '#associations .btn');
 
-		var parse = '';
+		languages().forEach((parts) => {
+			const language = parts[0] ? code(parts[0]) : '';
+			const id = language ? doc.getElementById('jform_associations_' + language + '_id') : null;
 
-		$('#jform_itemlanguage option').each(function()
-		{
-			parse = $(this).val().split(':');
-
-			if (typeof parse[0] !== 'undefined')
-			{
-				// - For modal association selectors.
-				langAssociation = parse[0].replace(/-/,'_');
-				if (reference.find('#jform_associations_' + langAssociation + '_id').val() == '')
-				{
-					reference.find('#jform_associations_' + langAssociation + '_name')
-						.val(document.getElementById('reference-association').getAttribute('data-no-assoc'));
-				}
+			if (id && id.value === '') {
+				setField(reference, 'jform_associations_' + language + '_name', reference.getAttribute('data-no-assoc'));
 			}
 		});
 
-		// Iframe load finished, hide Joomla loading layer.
 		Joomla.loadingLayer('hide');
 	});
 
-	// Attach behaviour to target frame load event.
-	$('#target-association').on('load', function() {
-		// We need to check if we are not loading a blank iframe.
-		if (this.getAttribute('src') != '')
-		{
-			$('#toolbar-target').show();
-			$('#toolbar-copy').show();
-			$('#select-change').removeClass("hidden");
+	target.addEventListener('load', () => {
+		const doc = frameDocument(target);
 
-			var targetLanguage       = this.getAttribute('data-language');
-			var targetId             = this.getAttribute('data-id');
-			var targetLoadedId       = $(this).contents().find('#jform_id').val() || '0';
-
-			// Remove modal buttons on the target
-			$(this).contents().find('a[href=\"#associations\"]').parent().find('.btn').remove();
-			$(this).contents().find('#associations').find('.btn').remove();
-
-			// Always show General tab first if associations tab is selected on the reference
-			if ($(this).contents().find('#associations').hasClass('active'))
-			{
-				$(this).contents().find('a[href=\"#associations\"]').parent().removeClass('active');
-				$(this).contents().find('#associations').removeClass('active');
-
-				$(this).contents().find('.nav-tabs').find('li').first().addClass('active');
-				$(this).contents().find('.tab-content').find('.tab-pane').first().addClass('active');
-			}
-
-			// Update language field with the selected language and them disable it.
-			$(this).contents().find('#jform_language_chzn').remove();
-			$(this).contents().find('#jform_language').val(targetLanguage).change().attr('disabled', true).chosen();
-
-			// If we are creating a new association (before save) we need to add the new association.
-			if (targetLoadedId == '0')
-			{
-				document.getElementById('select-change-text').innerHTML =  document.getElementById('select-change').getAttribute('data-select');
-			}
-			// If we are editing an association.
-			else
-			{
-				// Show change language button
-				document.getElementById('select-change-text').innerHTML =  document.getElementById('select-change').getAttribute('data-change');
-				$('#remove-assoc').removeClass("hidden");
-				$('#toolbar-copy').hide();
-
-				// Add the id to list of items to check in on close.
-				var currentIdList = document.getElementById('target-id').value;
-				var updatedList   = currentIdList == '' ? targetLoadedId : currentIdList + ',' + targetLoadedId;
-				document.getElementById('target-id').value = updatedList;
-
-				// If we created a new association (after save).
-				if (targetLoadedId != targetId)
-				{
-					// Refresh the language selector with the new id (used after save).
-					$('#jform_itemlanguage option[value^=\"' + targetLanguage + ':' + targetId + ':add\"]').val(targetLanguage + ':' + targetLoadedId + ':edit');
-
-					// Update main frame data-id attribute (used after save).
-					this.setAttribute('data-id', targetLoadedId);
-					this.setAttribute('data-action', 'edit');
-				}
-
-				// Update the reference item associations tab.
-				var reference      = document.getElementById('reference-association');
-				var languageCode   = targetLanguage.replace(/-/, '_');
-				var referenceTitle = reference.getAttribute('data-title');
-				var title          = $(this).contents().find('#jform_' + referenceTitle).val();
-
-				// - For modal association selectors.
-				$(reference).contents().find('#jform_associations_' + languageCode + '_id').val(targetLoadedId);
-				$(reference).contents().find('#jform_associations_' + languageCode + '_name').val(title);
-
-				// - For chosen association selectors (menus).
-				$(reference).contents().find('#jform_associations_' + languageCode + '_chzn').remove();
-				$(reference).contents().find('#jform_associations_' + languageCode).append('<option value=\"'+ targetLoadedId + '\">' + title + '</option>');
-				$(reference).contents().find('#jform_associations_' + languageCode).val(targetLoadedId).change().chosen();
-			}
-
-			// Update the target item associations tab.
-			var reference    = document.getElementById('reference-association');
-			var referenceId  = reference.getAttribute('data-id');
-			var languageCode = reference.getAttribute('data-language').replace(/-/, '_');
-			var target       = document.getElementById('target-association');
-			var targetTitle  = target.getAttribute('data-title');
-			var title        = reference.getAttribute('data-title-value');
-			var target       = $(this).contents();
-
-			// - For modal association selectors.
-			target.find('#jform_associations_' + languageCode + '_id').val(referenceId);
-			target.find('#jform_associations_' + languageCode + '_name').val(title);
-
-			// - For chosen association selectors (menus).
-			target.find('#jform_associations_' + languageCode + '_chzn').remove();
-			var chznField = target.find('#jform_associations_' + languageCode);
-			chznField.append('<option value=\"'+ referenceId + '\">' + title + '</option>');
-			chznField.val(referenceId).change().chosen();
-
-			var parse, langAssociation;
-
-			$('#jform_itemlanguage option').each(function()
-			{
-				parse = $(this).val().split(':');
-
-				if (typeof parse[1] !== 'undefined' && parse[1] !== '0')
-				{
-					// - For modal association selectors.
-					langAssociation = parse[0].replace(/-/,'_');
-					target.find('#jform_associations_' + langAssociation + '_id').val(parse[1]);
-
-					// - For chosen association selectors (menus).
-					target.find('#jform_associations_' + langAssociation + '_chzn').remove();
-					chznField = target.find('#jform_associations_' + langAssociation);
-					chznField.append('<option value=\"'+ parse[1] + '\"></option>');
-					chznField.val(parse[1]).change().chosen();
-				}
-			});
-
-			// Iframe load finished, hide Joomla loading layer.
-			Joomla.loadingLayer('hide');
+		// A blank frame (no language chosen)
+		if (!target.getAttribute('src') || !doc) {
+			return;
 		}
+
+		const targetLanguage = target.getAttribute('data-language');
+		const targetId = target.getAttribute('data-id');
+		const loadedId = (doc.getElementById('jform_id') || {}).value || '0';
+		const tab = doc.querySelector('a[href="#associations"]');
+
+		show('toolbar-target', true);
+		show('toolbar-copy', true);
+		byId('select-change').classList.remove('hidden');
+
+		if (tab) {
+			removeButtons(tab.parentNode, '.btn');
+		}
+
+		removeButtons(doc, '#associations .btn');
+
+		// The first tab, not Associations
+		const pane = doc.getElementById('associations');
+
+		if (pane && pane.classList.contains('active')) {
+			tab.parentNode.classList.remove('active');
+			pane.classList.remove('active');
+
+			const firstTab = doc.querySelector('.nav-tabs li');
+			const firstPane = doc.querySelector('.tab-content .tab-pane');
+
+			if (firstTab) {
+				firstTab.classList.add('active');
+			}
+
+			if (firstPane) {
+				firstPane.classList.add('active');
+			}
+		}
+
+		setField(target, 'jform_language', targetLanguage, { change: true, disabled: true });
+
+		if (loadedId === '0') {
+			byId('select-change-text').innerHTML = byId('select-change').getAttribute('data-select');
+		} else {
+			byId('select-change-text').innerHTML = byId('select-change').getAttribute('data-change');
+			byId('remove-assoc').classList.remove('hidden');
+			show('toolbar-copy', false);
+
+			// Checked in when the editor closes
+			const ids = byId('target-id');
+
+			ids.value = ids.value === '' ? loadedId : ids.value + ',' + loadedId;
+
+			// Saved for the first time: the switcher's entry and the frame know its id now
+			if (loadedId !== targetId) {
+				const option = switcher.querySelector('option[value^="' + targetLanguage + ':' + targetId + ':add"]');
+
+				if (option) {
+					option.value = targetLanguage + ':' + loadedId + ':edit';
+				}
+
+				target.setAttribute('data-id', loadedId);
+				target.setAttribute('data-action', 'edit');
+			}
+
+			// The reference's associations tab
+			const title = (doc.getElementById('jform_' + reference.getAttribute('data-title')) || {}).value || '';
+
+			associate(reference, code(targetLanguage), loadedId, title);
+		}
+
+		// The target's associations tab: the reference and the languages already associated
+		associate(target, code(reference.getAttribute('data-language')), reference.getAttribute('data-id'), reference.getAttribute('data-title-value'));
+
+		languages().forEach((parts) => {
+			if (parts[1] !== undefined && parts[1] !== '0') {
+				associate(target, code(parts[0]), parts[1]);
+			}
+		});
+
+		Joomla.loadingLayer('hide');
 	});
 });
