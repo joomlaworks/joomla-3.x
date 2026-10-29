@@ -4104,6 +4104,200 @@
 		window.addEventListener('load', startRepeatables);
 	}
 
+	/*
+	 * --- Tree of checkboxes (ul.treeselect: a module's Menu Assignment, a Menu Item Container's items; what
+	 * treeselectmenu.jquery.js was) ---
+	 *
+	 * Each node gets a toggle (+/-) and, where #treeselectmenu is on the page, a copy of its menu (select, deselect, expand,
+	 * collapse the node's items). The links #treeCheckAll, #treeUncheckAll, #treeExpandAll and #treeCollapseAll, the filter
+	 * #treeselectfilter and the notice #noresultsfound are the page's. ul.treeselect[data-treeselect-propagate] (a Menu
+	 * Item Container): a checked item checks its sub-items and disables them, and "All" (value 1) checks everything.
+	 */
+	const treeSubs = (node) => node.querySelectorAll('ul.treeselect-sub');
+
+	CMS.treeSelect = {
+		start(tree) {
+			const menu = document.getElementById('treeselectmenu');
+
+			tree.querySelectorAll('li').forEach((node) => {
+				const item = node.querySelector('div.treeselect-item');
+				const toggle = document.createElement('span');
+				const clearfix = document.createElement('div');
+
+				toggle.className = 'pull-left icon-';
+				node.insertBefore(toggle, node.firstChild);
+				clearfix.className = 'clearfix';
+
+				if (item) {
+					item.parentNode.insertBefore(clearfix, item.nextSibling);
+				}
+
+				if (!node.querySelector('ul.treeselect-sub')) {
+					return;
+				}
+
+				toggle.classList.add('treeselect-toggle', 'icon-minus');
+				toggle.tabIndex = 0;
+				toggle.setAttribute('role', 'button');
+				toggle.setAttribute('aria-expanded', 'true');
+
+				const label = item ? item.querySelector('label') : null;
+
+				if (menu && label) {
+					label.insertAdjacentHTML('afterend', menu.innerHTML);
+
+					// Expand and collapse only where the node's items have items of their own
+					if (!node.querySelector('ul.treeselect-sub ul.treeselect-sub')) {
+						item.querySelectorAll('div.treeselect-menu-expand').forEach((part) => part.remove());
+					}
+				}
+			});
+
+			if (tree.hasAttribute('data-treeselect-propagate')) {
+				tree.querySelectorAll('input[type="checkbox"]:checked').forEach((box) => CMS.treeSelect.propagate(box));
+			}
+		},
+
+		// Opens or closes a node and everything in it
+		toggle(node, open) {
+			node.querySelectorAll('span.treeselect-toggle').forEach((toggle) => {
+				toggle.classList.toggle('icon-minus', open);
+				toggle.classList.toggle('icon-plus', !open);
+				toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+			});
+
+			treeSubs(node).forEach((sub) => {
+				sub.style.display = open ? '' : 'none';
+			});
+		},
+
+		check(root, checked) {
+			const tree = root.closest ? root.closest('ul.treeselect') || root : root;
+
+			root.querySelectorAll('input[type="checkbox"]').forEach((box) => {
+				box.checked = checked;
+			});
+
+			if (tree.hasAttribute && tree.hasAttribute('data-treeselect-propagate')) {
+				tree.querySelectorAll('input[type="checkbox"]').forEach((box) => {
+					box.disabled = false;
+				});
+				tree.querySelectorAll('input[type="checkbox"]:checked').forEach((box) => CMS.treeSelect.propagate(box));
+			}
+		},
+
+		// A Menu Item Container's checkbox: its sub-items follow it (and are disabled while it's checked); "All" sets them all
+		propagate(box) {
+			const node = box.closest('li');
+			const subs = node ? node.querySelectorAll('.treeselect-sub input[type="checkbox"]') : [];
+
+			subs.forEach((sub) => {
+				sub.checked = box.checked;
+
+				if (box.value === '1') {
+					CMS.treeSelect.propagate(sub);
+				} else {
+					sub.disabled = box.checked;
+				}
+			});
+		},
+
+		filter(text) {
+			const nodes = document.querySelectorAll('.treeselect li');
+			const notice = document.getElementById('noresultsfound');
+			let hidden = 0;
+
+			text = text.toLowerCase();
+
+			nodes.forEach((node) => {
+				const shown = node.textContent.toLowerCase().indexOf(text) > -1;
+
+				node.style.display = shown ? '' : 'none';
+				hidden += shown ? 0 : 1;
+			});
+
+			if (notice) {
+				notice.style.display = nodes.length && hidden === nodes.length ? '' : 'none';
+			}
+		},
+	};
+
+	CMS.ready(() => {
+		const trees = document.querySelectorAll('ul.treeselect');
+		const assignment = document.getElementById('jform_assignment');
+		const selection = document.getElementById('menuselect-group');
+
+		trees.forEach((tree) => CMS.treeSelect.start(tree));
+
+		// A module's Menu Assignment: the menu items only when it's not "On all pages" (0) or "No pages" (-)
+		if (assignment && selection) {
+			const update = () => {
+				selection.style.display = assignment.value === '0' || assignment.value === '-' ? 'none' : '';
+			};
+
+			update();
+			onChange(assignment, update);
+		}
+
+		if (!trees.length) {
+			return;
+		}
+
+		const filter = document.getElementById('treeselectfilter');
+
+		if (filter) {
+			filter.addEventListener('input', () => CMS.treeSelect.filter(filter.value));
+		}
+
+		document.addEventListener('click', (event) => {
+			const target = event.target.closest ? event.target.closest('a, span.treeselect-toggle, input[type="checkbox"]') : null;
+			const node = target && target.closest('.treeselect-item') ? target.closest('.treeselect-item').parentNode : null;
+
+			if (!target) {
+				return;
+			}
+
+			if (target.matches('input[type="checkbox"]')) {
+				const tree = target.closest('ul.treeselect');
+
+				if (tree && tree.hasAttribute('data-treeselect-propagate')) {
+					CMS.treeSelect.propagate(target);
+				}
+
+				return;
+			}
+
+			const actions = {
+				treeCheckAll: () => trees.forEach((tree) => CMS.treeSelect.check(tree, true)),
+				treeUncheckAll: () => trees.forEach((tree) => CMS.treeSelect.check(tree, false)),
+				treeExpandAll: () => trees.forEach((tree) => CMS.treeSelect.toggle(tree, true)),
+				treeCollapseAll: () => trees.forEach((tree) => CMS.treeSelect.toggle(tree, false)),
+			};
+
+			if (actions[target.id]) {
+				event.preventDefault();
+				actions[target.id]();
+			} else if (target.matches('span.treeselect-toggle') && target.closest('ul.treeselect')) {
+				CMS.treeSelect.toggle(target.parentNode, target.classList.contains('icon-plus'));
+			} else if (node && target.matches('a.checkall, a.uncheckall')) {
+				event.preventDefault();
+				node.querySelectorAll('ul.treeselect-sub').forEach((sub) => CMS.treeSelect.check(sub, target.matches('a.checkall')));
+			} else if (node && target.matches('a.expandall, a.collapseall')) {
+				event.preventDefault();
+				CMS.treeSelect.toggle(node, target.matches('a.expandall'));
+			}
+		});
+
+		document.addEventListener('keydown', (event) => {
+			const toggle = event.target.matches && event.target.matches('ul.treeselect span.treeselect-toggle') ? event.target : null;
+
+			if (toggle && (event.key === 'Enter' || event.key === ' ')) {
+				event.preventDefault();
+				toggle.click();
+			}
+		});
+	});
+
 	/* --- Cropping: selecting an area of an image (CMS.cropper; the template editor's image tool, what Jcrop was) --- */
 
 	CMS.cropper = {
@@ -6814,6 +7008,7 @@
 		'jQuery.fn.simplecolors() (behavior.simplecolorpicker)': 'the layout joomla.form.field.color.simple (swatches)',
 		'jSelectUser(), jQuery.fn.fieldUser() (fielduser.js)': 'CMS.userField.select(), CMS.userField.open()',
 		'moduleorder.js': 'CMS.moduleOrder.load(), CMS.moduleOrder.write()',
+		'treeselectmenu.jquery.js': 'CMS.treeSelect.start(), toggle(), check(), filter()',
 		'jQuery.fn.subformRepeatable() (subform-repeatable.js)': 'CMS.subform.attach(), CMS.subform.get()',
 		'jQuery.fn.JRepeatable() (repeatable.js)': 'CMS.repeatable.attach()',
 		'processModalParent(), processModalSelect(), processModalEdit() (modal-fields.js)': 'CMS.modalField.set(), CMS.modalField.select(), CMS.modalField.submit()',

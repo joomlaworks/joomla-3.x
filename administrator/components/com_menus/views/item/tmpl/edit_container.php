@@ -13,24 +13,8 @@ use Joomla\Registry\Registry;
 // Initialise related data.
 $menuLinks = MenusHelper::getMenuLinks('main');
 
-JHtml::_('script', 'system/treeselectmenu.jquery.min.js', array('version' => 'auto', 'relative' => true));
-
-$script = <<<'JS'
-	jQuery(document).ready(function ($) {
-		var propagate = function () {
-			var $this = $(this);
-			var sub = $this.closest('li').find('.treeselect-sub [type="checkbox"]');
-			sub.prop('checked', this.checked);
-			if ($this.val() == 1)
-				sub.each(propagate);
-			else
-				sub.attr('disabled', this.checked ? 'disabled' : null);
-		};
-		$('.treeselect')
-			.on('click', '[type="checkbox"]', propagate)
-			.find('[type="checkbox"]:checked').each(propagate);
-	});
-JS;
+// The tree, and sub-items following a hidden item (data-treeselect-propagate): global.js (CMS.treeSelect)
+JHtml::_('behavior.cms');
 
 $style = <<<'CSS'
 	.checkbox-toggle {
@@ -53,7 +37,6 @@ $style = <<<'CSS'
 	}
 CSS;
 
-JFactory::getDocument()->addScriptDeclaration($script);
 JFactory::getDocument()->addStyleDeclaration($style);
 ?>
 <div id="menuselect-group" class="control-group">
@@ -80,7 +63,7 @@ JFactory::getDocument()->addStyleDeclaration($style);
 
 			<hr class="hr-condensed" />
 
-			<ul class="treeselect">
+			<ul class="treeselect" data-treeselect-propagate="true">
 
 				<?php if (count($menuLinks)) : ?>
 					<?php $prevlevel = 0; ?>

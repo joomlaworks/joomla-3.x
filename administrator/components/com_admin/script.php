@@ -4746,6 +4746,9 @@ class JoomlaInstallerScript
             '/media/system/js/subform-repeatable-uncompressed.js',
             '/media/system/js/repeatable.js',
             '/media/system/js/repeatable-uncompressed.js',
+            // The tree of checkboxes (module assignment, menu item containers; now global.js' CMS.treeSelect)
+            '/media/system/js/treeselectmenu.jquery.js',
+            '/media/system/js/treeselectmenu.jquery.min.js',
             // Show-on (cms.js), part of global.js and frontend.js
             '/media/system/js/cms.js',
             '/media/system/js/cms-uncompressed.js',

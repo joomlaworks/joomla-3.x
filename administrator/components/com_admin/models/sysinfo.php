@@ -280,6 +280,9 @@ class AdminModelSysInfo extends JModelLegacy
             $this->config[$key] = 'xxxxxx';
         }
 
+        // Alphabetically, ignoring case (configuration.php's order is whatever wrote it last)
+        ksort($this->config, SORT_STRING | SORT_FLAG_CASE);
+
         return $this->config;
     }
 

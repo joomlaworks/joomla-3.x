@@ -387,6 +387,7 @@ Every name `core.js` and the MooTools behaviours offered still works and calls t
 | `moduleorder.js` (the module ordering field) | `CMS.moduleOrder.load()`, `CMS.moduleOrder.write()` |
 | `jQuery.fn.subformRepeatable()`, `$.subformRepeatable` (`subform-repeatable.js`) | `CMS.subform.attach()`, `CMS.subform.get()` |
 | `jQuery.fn.JRepeatable()`, `$.JRepeatable` (`repeatable.js`, the deprecated Repeatable field) | `CMS.repeatable.attach()` |
+| `treeselectmenu.jquery.js` (trees of checkboxes: menu assignment, menu item containers) | `CMS.treeSelect.start()`, `toggle()`, `check()`, `filter()` |
 | `processModalParent()`, `processModalSelect()`, `processModalEdit()` (`modal-fields.js`) | `CMS.modalField.set()`, `CMS.modalField.select()`, `CMS.modalField.submit()` |
 
 `Joomla.request()` (`CMS.request()`) sends with `fetch()` now. It takes the same options (`url`, `method`, `data`, `headers`, `perform`, `onBefore`, `onSuccess`, `onError`) and returns an object with what callers read of the XMLHttpRequest it used to return: `status`, `statusText`, `responseText`, `readyState`, `getResponseHeader()`, `getAllResponseHeaders()`, `setRequestHeader()` (in `onBefore`, or before `send()` with `perform: false`), `send()` and `abort()` (`onError` then gets status 0). An exception thrown in `onSuccess` is reported as an error of its own and doesn't call `onError`. Code that set `xhr.onreadystatechange` or `xhr.timeout` itself needs `fetch()` or its own XMLHttpRequest.
