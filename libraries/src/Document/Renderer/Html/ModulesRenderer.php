@@ -40,8 +40,8 @@ class ModulesRenderer extends DocumentRenderer
 
         $app          = \JFactory::getApplication();
         $user         = \JFactory::getUser();
-        $frontediting = ($app->isClient('site') && $app->get('frontediting', 1) && !$user->guest);
-        $menusEditing = ($app->get('frontediting', 1) == 2) && $user->authorise('core.edit', 'com_menus');
+        $frontediting = ($app->isClient('site') && $app->get('frontediting', 0) && !$user->guest);
+        $menusEditing = ($app->get('frontediting', 0) == 2) && $user->authorise('core.edit', 'com_menus');
 
         foreach (ModuleHelper::getModules($position) as $mod) {
             $moduleHtml = $renderer->render($mod, $params, $content);

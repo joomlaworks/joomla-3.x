@@ -68,6 +68,7 @@ class InstallationModelConfiguration extends JModelBase
         $registry->set('offline_image', '');
         $registry->set('sitename', $options->site_name);
         $registry->set('editor', 'tinymce_latest');
+        $registry->set('frontediting', 0);
         $registry->set('editor_site', '');
         $registry->set('captcha', '0');
         // 50 items per list page: 20 means a lot of paging through the managers

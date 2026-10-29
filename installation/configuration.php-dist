@@ -36,7 +36,7 @@ class JConfig
 	public $captcha = '0';
 	public $list_limit = '50';
 	public $access = '1';
-	public $frontediting = '1';
+	public $frontediting = '0';
 
 	/* Database Settings */
 	public $dbtype = 'mysqli';               // Normally mysqli

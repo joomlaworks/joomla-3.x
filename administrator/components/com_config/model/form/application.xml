@@ -217,7 +217,7 @@
         </field>
         <field name="offline_message" type="textarea" label="COM_CONFIG_FIELD_OFFLINE_MESSAGE_LABEL" description="COM_CONFIG_FIELD_OFFLINE_MESSAGE_DESC" filter="safehtml" cols="60" rows="2" showon="offline:1[AND]display_offline_message:1" />
         <field name="offline_image" type="media" schemes="http,https,ftp,ftps,data,file" validate="url" relative="true" label="COM_CONFIG_FIELD_OFFLINE_IMAGE_LABEL" description="COM_CONFIG_FIELD_OFFLINE_IMAGE_DESC" showon="offline:1" />
-        <field name="frontediting" type="list" label="COM_CONFIG_FRONTEDITING_LABEL" description="COM_CONFIG_FRONTEDITING_DESC" default="1" filter="integer">
+        <field name="frontediting" type="list" label="COM_CONFIG_FRONTEDITING_LABEL" description="COM_CONFIG_FRONTEDITING_DESC" default="0" filter="integer">
             <option value="2">COM_CONFIG_FRONTEDITING_MENUSANDMODULES</option>
             <option value="1">COM_CONFIG_FRONTEDITING_MODULES</option>
             <option value="0">JNONE</option>
