@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    FrameworkOnFramework
  * @subpackage form
@@ -16,13 +17,13 @@ defined('FOF_INCLUDED') or die;
  */
 class FOFFormHeaderFiltersql extends FOFFormHeaderFieldsql
 {
-	/**
-	 * Get the header
-	 *
-	 * @return  string  The header HTML
-	 */
-	protected function getHeader()
-	{
-		return '';
-	}
+    /**
+     * Get the header
+     *
+     * @return  string  The header HTML
+     */
+    protected function getHeader()
+    {
+        return '';
+    }
 }

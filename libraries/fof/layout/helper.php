@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  layout
@@ -17,25 +18,25 @@ defined('FOF_INCLUDED') or die;
  */
 class FOFLayoutHelper extends JLayoutHelper
 {
-	/**
-	 * Method to render the layout.
-	 *
-	 * @param   string  $layoutFile   Dot separated path to the layout file, relative to base path
-	 * @param   object  $displayData  Object which properties are used inside the layout file to build displayed output
-	 * @param   string  $basePath     Base path to use when loading layout files
-	 * @param   mixed   $options      Optional custom options to load. Registry or array format
-	 *
-	 * @return  string
-	 */
-	public static function render($layoutFile, $displayData = null, $basePath = '', $options = null)
-	{
-		$basePath = empty($basePath) ? self::$defaultBasePath : $basePath;
+    /**
+     * Method to render the layout.
+     *
+     * @param   string  $layoutFile   Dot separated path to the layout file, relative to base path
+     * @param   object  $displayData  Object which properties are used inside the layout file to build displayed output
+     * @param   string  $basePath     Base path to use when loading layout files
+     * @param   mixed   $options      Optional custom options to load. Registry or array format
+     *
+     * @return  string
+     */
+    public static function render($layoutFile, $displayData = null, $basePath = '', $options = null)
+    {
+        $basePath = empty($basePath) ? self::$defaultBasePath : $basePath;
 
-		// Make sure we send null to FOFLayoutFile if no path set
-		$basePath = empty($basePath) ? null : $basePath;
-		$layout = new FOFLayoutFile($layoutFile, $basePath, $options);
-		$renderedLayout = $layout->render($displayData);
+        // Make sure we send null to FOFLayoutFile if no path set
+        $basePath = empty($basePath) ? null : $basePath;
+        $layout = new FOFLayoutFile($layoutFile, $basePath, $options);
+        $renderedLayout = $layout->render($displayData);
 
-		return $renderedLayout;
-	}
+        return $renderedLayout;
+    }
 }

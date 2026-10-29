@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  less
@@ -26,166 +27,147 @@ defined('FOF_INCLUDED') or die;
  */
 class FOFLessFormatterClassic
 {
-	public $indentChar			 = "  ";
+    public $indentChar			 = "  ";
 
-	public $break				 = "\n";
+    public $break				 = "\n";
 
-	public $open				 = " {";
+    public $open				 = " {";
 
-	public $close				 = "}";
+    public $close				 = "}";
 
-	public $selectorSeparator	 = ", ";
+    public $selectorSeparator	 = ", ";
 
-	public $assignSeparator	 = ":";
+    public $assignSeparator	 = ":";
 
-	public $openSingle			 = " { ";
+    public $openSingle			 = " { ";
 
-	public $closeSingle		 = " }";
+    public $closeSingle		 = " }";
 
-	public $disableSingle		 = false;
+    public $disableSingle		 = false;
 
-	public $breakSelectors		 = false;
+    public $breakSelectors		 = false;
 
-	public $compressColors		 = false;
+    public $compressColors		 = false;
 
-	/**
-	 * Public constructor
-	 */
-	public function __construct()
-	{
-		$this->indentLevel = 0;
-	}
+    /**
+     * Public constructor
+     */
+    public function __construct()
+    {
+        $this->indentLevel = 0;
+    }
 
-	/**
-	 * Indent a string by $n positions
-	 *
-	 * @param   integer  $n  How many positions to indent
-	 *
-	 * @return  string  The indented string
-	 */
-	public function indentStr($n = 0)
-	{
-		return str_repeat((string) $this->indentChar, max($this->indentLevel + $n, 0));
-	}
+    /**
+     * Indent a string by $n positions
+     *
+     * @param   integer  $n  How many positions to indent
+     *
+     * @return  string  The indented string
+     */
+    public function indentStr($n = 0)
+    {
+        return str_repeat((string) $this->indentChar, max($this->indentLevel + $n, 0));
+    }
 
-	/**
-	 * Return the code for a property
-	 *
-	 * @param   string  $name   The name of the property
-	 * @param   string  $value  The value of the property
-	 *
-	 * @return  string  The CSS code
-	 */
-	public function property($name, $value)
-	{
-		return $name . $this->assignSeparator . $value . ";";
-	}
+    /**
+     * Return the code for a property
+     *
+     * @param   string  $name   The name of the property
+     * @param   string  $value  The value of the property
+     *
+     * @return  string  The CSS code
+     */
+    public function property($name, $value)
+    {
+        return $name . $this->assignSeparator . $value . ";";
+    }
 
-	/**
-	 * Is a block empty?
-	 *
-	 * @param   stdClass  $block  The block to check
-	 *
-	 * @return  boolean  True if the block has no lines or children
-	 */
-	protected function isEmpty($block)
-	{
-		if (empty($block->lines))
-		{
-			foreach ($block->children as $child)
-			{
-				if (!$this->isEmpty($child))
-				{
-					return false;
-				}
-			}
+    /**
+     * Is a block empty?
+     *
+     * @param   stdClass  $block  The block to check
+     *
+     * @return  boolean  True if the block has no lines or children
+     */
+    protected function isEmpty($block)
+    {
+        if (empty($block->lines)) {
+            foreach ($block->children as $child) {
+                if (!$this->isEmpty($child)) {
+                    return false;
+                }
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Output a CSS block
-	 *
-	 * @param   stdClass  $block  The block definition to output
-	 *
-	 * @return  void
-	 */
-	public function block($block)
-	{
-		if ($this->isEmpty($block))
-		{
-			return;
-		}
+    /**
+     * Output a CSS block
+     *
+     * @param   stdClass  $block  The block definition to output
+     *
+     * @return  void
+     */
+    public function block($block)
+    {
+        if ($this->isEmpty($block)) {
+            return;
+        }
 
-		$inner	 = $pre	 = $this->indentStr();
+        $inner	 = $pre	 = $this->indentStr();
 
-		$isSingle = !$this->disableSingle &&
-			is_null($block->type) && count($block->lines) == 1;
+        $isSingle = !$this->disableSingle &&
+            is_null($block->type) && count($block->lines) == 1;
 
-		if (!empty($block->selectors))
-		{
-			$this->indentLevel++;
+        if (!empty($block->selectors)) {
+            $this->indentLevel++;
 
-			if ($this->breakSelectors)
-			{
-				$selectorSeparator = $this->selectorSeparator . $this->break . $pre;
-			}
-			else
-			{
-				$selectorSeparator = $this->selectorSeparator;
-			}
+            if ($this->breakSelectors) {
+                $selectorSeparator = $this->selectorSeparator . $this->break . $pre;
+            } else {
+                $selectorSeparator = $this->selectorSeparator;
+            }
 
-			echo $pre .
-			implode($selectorSeparator, $block->selectors);
+            echo $pre .
+            implode($selectorSeparator, $block->selectors);
 
-			if ($isSingle)
-			{
-				echo $this->openSingle;
-				$inner = "";
-			}
-			else
-			{
-				echo $this->open . $this->break;
-				$inner = $this->indentStr();
-			}
-		}
+            if ($isSingle) {
+                echo $this->openSingle;
+                $inner = "";
+            } else {
+                echo $this->open . $this->break;
+                $inner = $this->indentStr();
+            }
+        }
 
-		if (!empty($block->lines))
-		{
-			$glue = $this->break . $inner;
-			echo $inner . implode($glue, $block->lines);
+        if (!empty($block->lines)) {
+            $glue = $this->break . $inner;
+            echo $inner . implode($glue, $block->lines);
 
-			if (!$isSingle && !empty($block->children))
-			{
-				echo $this->break;
-			}
-		}
+            if (!$isSingle && !empty($block->children)) {
+                echo $this->break;
+            }
+        }
 
-		foreach ($block->children as $child)
-		{
-			$this->block($child);
-		}
+        foreach ($block->children as $child) {
+            $this->block($child);
+        }
 
-		if (!empty($block->selectors))
-		{
-			if (!$isSingle && empty($block->children))
-			{
-				echo $this->break;
-			}
+        if (!empty($block->selectors)) {
+            if (!$isSingle && empty($block->children)) {
+                echo $this->break;
+            }
 
-			if ($isSingle)
-			{
-				echo $this->closeSingle . $this->break;
-			}
-			else
-			{
-				echo $pre . $this->close . $this->break;
-			}
+            if ($isSingle) {
+                echo $this->closeSingle . $this->break;
+            } else {
+                echo $pre . $this->close . $this->break;
+            }
 
-			$this->indentLevel--;
-		}
-	}
+            $this->indentLevel--;
+        }
+    }
 }

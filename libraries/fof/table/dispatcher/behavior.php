@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  table
@@ -17,5 +18,4 @@ defined('FOF_INCLUDED') or die;
  */
 class FOFTableDispatcherBehavior extends FOFUtilsObservableDispatcher
 {
-
 }

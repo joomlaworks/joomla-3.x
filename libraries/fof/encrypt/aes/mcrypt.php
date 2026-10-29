@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  utils
@@ -11,149 +12,133 @@ defined('FOF_INCLUDED') or die;
 
 class FOFEncryptAesMcrypt extends FOFEncryptAesAbstract implements FOFEncryptAesInterface
 {
-	// The mcrypt constants' values: PHP 7.2+ has no mcrypt, and PHP 8 throws on the undefined constants as soon as the class is
-	// instantiated, before isSupported() can say so
-	protected $cipherType = 'rijndael-128';
+    // The mcrypt constants' values: PHP 7.2+ has no mcrypt, and PHP 8 throws on the undefined constants as soon as the class is
+    // instantiated, before isSupported() can say so
+    protected $cipherType = 'rijndael-128';
 
-	protected $cipherMode = 'cbc';
+    protected $cipherMode = 'cbc';
 
-	public function setEncryptionMode($mode = 'cbc', $strength = 128)
-	{
-		switch ((int) $strength)
-		{
-			default:
-			case '128':
-				$this->cipherType = 'rijndael-128';
-				break;
+    public function setEncryptionMode($mode = 'cbc', $strength = 128)
+    {
+        switch ((int) $strength) {
+            default:
+            case '128':
+                $this->cipherType = 'rijndael-128';
+                break;
 
-			case '192':
-				$this->cipherType = 'rijndael-192';
-				break;
+            case '192':
+                $this->cipherType = 'rijndael-192';
+                break;
 
-			case '256':
-				$this->cipherType = 'rijndael-256';
-				break;
-		}
+            case '256':
+                $this->cipherType = 'rijndael-256';
+                break;
+        }
 
-		switch (strtolower($mode))
-		{
-			case 'ecb':
-				$this->cipherMode = 'ecb';
-				break;
+        switch (strtolower($mode)) {
+            case 'ecb':
+                $this->cipherMode = 'ecb';
+                break;
 
-			default:
-			case 'cbc':
-				$this->cipherMode = 'cbc';
-				break;
-		}
+            default:
+            case 'cbc':
+                $this->cipherMode = 'cbc';
+                break;
+        }
 
-	}
+    }
 
-	public function encrypt($plainText, $key, $iv = null)
-	{
-		$iv_size = $this->getBlockSize();
-		$key     = $this->resizeKey($key, $iv_size);
-		$iv      = $this->resizeKey($iv, $iv_size);
+    public function encrypt($plainText, $key, $iv = null)
+    {
+        $iv_size = $this->getBlockSize();
+        $key     = $this->resizeKey($key, $iv_size);
+        $iv      = $this->resizeKey($iv, $iv_size);
 
-		if (empty($iv))
-		{
-			$randVal   = new FOFEncryptRandval();
-			$iv        = $randVal->generate($iv_size);
-		}
+        if (empty($iv)) {
+            $randVal   = new FOFEncryptRandval();
+            $iv        = $randVal->generate($iv_size);
+        }
 
-		$cipherText = mcrypt_encrypt($this->cipherType, $key, $plainText, $this->cipherMode, $iv);
-		$cipherText = $iv . $cipherText;
+        $cipherText = mcrypt_encrypt($this->cipherType, $key, $plainText, $this->cipherMode, $iv);
+        $cipherText = $iv . $cipherText;
 
-		return $cipherText;
-	}
+        return $cipherText;
+    }
 
-	public function decrypt($cipherText, $key)
-	{
-		$iv_size    = $this->getBlockSize();
-		$key        = $this->resizeKey($key, $iv_size);
-		$iv         = substr($cipherText, 0, $iv_size);
-		$cipherText = substr($cipherText, $iv_size);
-		$plainText  = mcrypt_decrypt($this->cipherType, $key, $cipherText, $this->cipherMode, $iv);
+    public function decrypt($cipherText, $key)
+    {
+        $iv_size    = $this->getBlockSize();
+        $key        = $this->resizeKey($key, $iv_size);
+        $iv         = substr($cipherText, 0, $iv_size);
+        $cipherText = substr($cipherText, $iv_size);
+        $plainText  = mcrypt_decrypt($this->cipherType, $key, $cipherText, $this->cipherMode, $iv);
 
-		return $plainText;
-	}
+        return $plainText;
+    }
 
-	public function isSupported(?FOFUtilsPhpfunc $phpfunc = null)
-	{
-		if (!is_object($phpfunc) || !($phpfunc instanceof $phpfunc))
-		{
-			$phpfunc = new FOFUtilsPhpfunc();
-		}
+    public function isSupported(?FOFUtilsPhpfunc $phpfunc = null)
+    {
+        if (!is_object($phpfunc) || !($phpfunc instanceof $phpfunc)) {
+            $phpfunc = new FOFUtilsPhpfunc();
+        }
 
-		if (!$phpfunc->function_exists('mcrypt_get_key_size'))
-		{
-			return false;
-		}
+        if (!$phpfunc->function_exists('mcrypt_get_key_size')) {
+            return false;
+        }
 
-		if (!$phpfunc->function_exists('mcrypt_get_iv_size'))
-		{
-			return false;
-		}
+        if (!$phpfunc->function_exists('mcrypt_get_iv_size')) {
+            return false;
+        }
 
-		if (!$phpfunc->function_exists('mcrypt_create_iv'))
-		{
-			return false;
-		}
+        if (!$phpfunc->function_exists('mcrypt_create_iv')) {
+            return false;
+        }
 
-		if (!$phpfunc->function_exists('mcrypt_encrypt'))
-		{
-			return false;
-		}
+        if (!$phpfunc->function_exists('mcrypt_encrypt')) {
+            return false;
+        }
 
-		if (!$phpfunc->function_exists('mcrypt_decrypt'))
-		{
-			return false;
-		}
+        if (!$phpfunc->function_exists('mcrypt_decrypt')) {
+            return false;
+        }
 
-		if (!$phpfunc->function_exists('mcrypt_list_algorithms'))
-		{
-			return false;
-		}
+        if (!$phpfunc->function_exists('mcrypt_list_algorithms')) {
+            return false;
+        }
 
-		if (!$phpfunc->function_exists('hash'))
-		{
-			return false;
-		}
+        if (!$phpfunc->function_exists('hash')) {
+            return false;
+        }
 
-		if (!$phpfunc->function_exists('hash_algos'))
-		{
-			return false;
-		}
+        if (!$phpfunc->function_exists('hash_algos')) {
+            return false;
+        }
 
-		$algorightms = $phpfunc->mcrypt_list_algorithms();
+        $algorightms = $phpfunc->mcrypt_list_algorithms();
 
-		if (!in_array('rijndael-128', $algorightms))
-		{
-			return false;
-		}
+        if (!in_array('rijndael-128', $algorightms)) {
+            return false;
+        }
 
-		if (!in_array('rijndael-192', $algorightms))
-		{
-			return false;
-		}
+        if (!in_array('rijndael-192', $algorightms)) {
+            return false;
+        }
 
-		if (!in_array('rijndael-256', $algorightms))
-		{
-			return false;
-		}
+        if (!in_array('rijndael-256', $algorightms)) {
+            return false;
+        }
 
-		$algorightms = $phpfunc->hash_algos();
+        $algorightms = $phpfunc->hash_algos();
 
-		if (!in_array('sha256', $algorightms))
-		{
-			return false;
-		}
+        if (!in_array('sha256', $algorightms)) {
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public function getBlockSize()
-	{
-		return mcrypt_get_iv_size($this->cipherType, $this->cipherMode);
-	}
+    public function getBlockSize()
+    {
+        return mcrypt_get_iv_size($this->cipherType, $this->cipherMode);
+    }
 }

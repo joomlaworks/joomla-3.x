@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    FrameworkOnFramework
  * @subpackage form
@@ -16,28 +17,28 @@ defined('FOF_INCLUDED') or die;
  */
 class FOFFormHeaderAccesslevel extends FOFFormHeaderFieldselectable
 {
-	/**
-	 * Method to get the list of access levels
-	 *
-	 * @return  array	A list of access levels.
-	 *
-	 * @since   2.0
-	 */
-	protected function getOptions()
-	{
-		$db    = FOFPlatform::getInstance()->getDbo();
-		$query = $db->getQuery(true);
+    /**
+     * Method to get the list of access levels
+     *
+     * @return  array	A list of access levels.
+     *
+     * @since   2.0
+     */
+    protected function getOptions()
+    {
+        $db    = FOFPlatform::getInstance()->getDbo();
+        $query = $db->getQuery(true);
 
-		$query->select('a.id AS value, a.title AS text');
-		$query->from('#__viewlevels AS a');
-		$query->group('a.id, a.title, a.ordering');
-		$query->order('a.ordering ASC');
-		$query->order($query->qn('title') . ' ASC');
+        $query->select('a.id AS value, a.title AS text');
+        $query->from('#__viewlevels AS a');
+        $query->group('a.id, a.title, a.ordering');
+        $query->order('a.ordering ASC');
+        $query->order($query->qn('title') . ' ASC');
 
-		// Get the options.
-		$db->setQuery($query);
-		$options = $db->loadObjectList();
+        // Get the options.
+        $db->setQuery($query);
+        $options = $db->loadObjectList();
 
-		return $options;
-	}
+        return $options;
+    }
 }

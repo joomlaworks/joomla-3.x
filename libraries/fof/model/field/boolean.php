@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  model
@@ -16,15 +17,15 @@ defined('FOF_INCLUDED') or die;
  */
 class FOFModelFieldBoolean extends FOFModelFieldNumber
 {
-	/**
-	 * Is it a null or otherwise empty value?
-	 *
-	 * @param   mixed  $value  The value to test for emptiness
-	 *
-	 * @return  boolean
-	 */
-	public function isEmpty($value)
-	{
-		return is_null($value) || ($value === '');
-	}
+    /**
+     * Is it a null or otherwise empty value?
+     *
+     * @param   mixed  $value  The value to test for emptiness
+     *
+     * @return  boolean
+     */
+    public function isEmpty($value)
+    {
+        return is_null($value) || ($value === '');
+    }
 }

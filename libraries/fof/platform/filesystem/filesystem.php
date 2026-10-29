@@ -1,4 +1,5 @@
 <?php
+
 /**
 * @package     FrameworkOnFramework
 * @subpackage  platform
@@ -35,8 +36,7 @@ abstract class FOFPlatformFilesystem implements FOFPlatformFilesystemInterface
         $files  = self::scanDirectory($path, $ignoreFolders, $ignoreFiles);
 
         // Ok, I got the files, now I have to organize them
-        foreach($files as $file)
-        {
+        foreach ($files as $file) {
             $clean = str_replace($path, '', $file);
             $clean = trim(str_replace('\\', '/', $clean), '/');
 
@@ -44,8 +44,7 @@ abstract class FOFPlatformFilesystem implements FOFPlatformFilesystemInterface
 
             // If I have less than 3 fragments, it means that the file was inside the generic folder
             // (interface + abstract) so I have to skip it
-            if(count($parts) < 3)
-            {
+            if (count($parts) < 3) {
                 continue;
             }
 
@@ -74,31 +73,24 @@ abstract class FOFPlatformFilesystem implements FOFPlatformFilesystemInterface
 
         $handle = @opendir($path);
 
-        if(!$handle)
-        {
+        if (!$handle) {
             return $return;
         }
 
-        while (($file = readdir($handle)) !== false)
-        {
-            if($file == '.' || $file == '..')
-            {
+        while (($file = readdir($handle)) !== false) {
+            if ($file == '.' || $file == '..') {
                 continue;
             }
 
             $fullpath = $path . '/' . $file;
 
-            if((is_dir($fullpath) && in_array($file, $ignoreFolders)) || (is_file($fullpath) && in_array($file, $ignoreFiles)))
-            {
+            if ((is_dir($fullpath) && in_array($file, $ignoreFolders)) || (is_file($fullpath) && in_array($file, $ignoreFiles))) {
                 continue;
             }
 
-            if(is_dir($fullpath))
-            {
+            if (is_dir($fullpath)) {
                 $return = array_merge(self::scanDirectory($fullpath, $ignoreFolders, $ignoreFiles), $return);
-            }
-            else
-            {
+            } else {
                 $return[] = $path . '/' . $file;
             }
         }

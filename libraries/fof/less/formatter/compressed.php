@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  less
@@ -24,27 +25,27 @@ defined('FOF_INCLUDED') or die;
  */
 class FOFLessFormatterCompressed extends FOFLessFormatterClassic
 {
-	public $disableSingle = true;
+    public $disableSingle = true;
 
-	public $open = "{";
+    public $open = "{";
 
-	public $selectorSeparator = ",";
+    public $selectorSeparator = ",";
 
-	public $assignSeparator = ":";
+    public $assignSeparator = ":";
 
-	public $break = "";
+    public $break = "";
 
-	public $compressColors = true;
+    public $compressColors = true;
 
-	/**
-	 * Indent a string by $n positions
-	 *
-	 * @param   integer  $n  How many positions to indent
-	 *
-	 * @return  string  The indented string
-	 */
-	public function indentStr($n = 0)
-	{
-		return "";
-	}
+    /**
+     * Indent a string by $n positions
+     *
+     * @param   integer  $n  How many positions to indent
+     *
+     * @return  string  The indented string
+     */
+    public function indentStr($n = 0)
+    {
+        return "";
+    }
 }

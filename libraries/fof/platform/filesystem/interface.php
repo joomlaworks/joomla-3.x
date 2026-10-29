@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  platformFilesystem
@@ -104,8 +105,14 @@ interface FOFPlatformFilesystemInterface
      *
      * @return  array  Files in the given folder.
      */
-    public function folderFiles($path, $filter = '.', $recurse = false, $full = false, $exclude = array('.svn', 'CVS', '.DS_Store', '__MACOSX'),
-                                $excludefilter = array('^\..*', '.*~'));
+    public function folderFiles(
+        $path,
+        $filter = '.',
+        $recurse = false,
+        $full = false,
+        $exclude = array('.svn', 'CVS', '.DS_Store', '__MACOSX'),
+        $excludefilter = array('^\..*', '.*~')
+    );
 
     /**
      * Utility function to read the folders in a folder.
@@ -119,8 +126,14 @@ interface FOFPlatformFilesystemInterface
      *
      * @return  array  Folders in the given folder.
      */
-    public function folderFolders($path, $filter = '.', $recurse = false, $full = false, $exclude = array('.svn', 'CVS', '.DS_Store', '__MACOSX'),
-                                  $excludefilter = array('^\..*'));
+    public function folderFolders(
+        $path,
+        $filter = '.',
+        $recurse = false,
+        $full = false,
+        $exclude = array('.svn', 'CVS', '.DS_Store', '__MACOSX'),
+        $excludefilter = array('^\..*')
+    );
 
     /**
      * Create a folder -- and all necessary parent folders.

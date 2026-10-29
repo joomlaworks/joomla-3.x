@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  utils
@@ -11,12 +12,12 @@ defined('FOF_INCLUDED') or die;
 
 interface FOFEncryptRandvalinterface
 {
-	/**
-	 *
-	 * Returns a cryptographically secure random value.
-	 *
-	 * @return string
-	 *
-	 */
-	public function generate();
+    /**
+     *
+     * Returns a cryptographically secure random value.
+     *
+     * @return string
+     *
+     */
+    public function generate();
 }

@@ -395,38 +395,6 @@
     ],
     "PHP Libraries": [
         {
-            "name": "Akeeba Restore (Kickstart)",
-            "version": "",
-            "date": "2022.02.12",
-            "dateSource": "Joomla's last change before 3.x's end (joomla-cms, OPcache support, #37003)",
-            "license": "GPL-2.0-or-later",
-            "url": "https://github.com/akeeba/kickstart",
-            "path": "administrator/components/com_joomlaupdate/restore.php",
-            "note": "Joomla Update's extractor; patched by Joomla and by Joomla 3.x UTD (safe paths, PHP 8)",
-            "latest": "",
-            "isLatest": false,
-            "checked": "",
-            "use": "core",
-            "series": "",
-            "seriesLatest": ""
-        },
-        {
-            "name": "FOF (Framework on Framework)",
-            "version": "2.5.5",
-            "date": "2016.08.19",
-            "dateSource": "libraries/fof/version.txt",
-            "license": "GPL-2.0-or-later",
-            "url": "https://github.com/akeeba/fof",
-            "path": "libraries/fof",
-            "note": "Patched by Joomla and by Joomla 3.x UTD (PHP 8, database drivers)",
-            "latest": "",
-            "isLatest": false,
-            "checked": "",
-            "use": "shared",
-            "series": "",
-            "seriesLatest": ""
-        },
-        {
             "name": "IconCaptcha",
             "version": "4.0.6",
             "date": "2025.06.16",

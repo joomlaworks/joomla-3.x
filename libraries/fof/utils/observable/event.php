@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  utils
@@ -58,12 +59,9 @@ abstract class FOFUtilsObservableEvent extends FOFUtilsObject
          * If the method to handle an event exists, call it and return its return
          * value.  If it does not exist, return null.
          */
-        if (method_exists($this, $event))
-        {
+        if (method_exists($this, $event)) {
             return call_user_func_array(array($this, $event), $args);
-        }
-        else
-        {
+        } else {
             return null;
         }
     }

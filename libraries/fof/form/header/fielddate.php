@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    FrameworkOnFramework
  * @subpackage form
@@ -17,112 +18,97 @@ defined('FOF_INCLUDED') or die;
  */
 class FOFFormHeaderFielddate extends FOFFormHeaderField
 {
-	/**
-	 * Get the filter field
-	 *
-	 * @return  string  The HTML
-	 */
-	protected function getFilter()
-	{
-		// Initialize some field attributes.
-		$format		 = $this->element['format'] ? (string) $this->element['format'] : '%Y-%m-%d';
-		$attributes  = array();
+    /**
+     * Get the filter field
+     *
+     * @return  string  The HTML
+     */
+    protected function getFilter()
+    {
+        // Initialize some field attributes.
+        $format		 = $this->element['format'] ? (string) $this->element['format'] : '%Y-%m-%d';
+        $attributes  = array();
 
-		if ($this->element['size'])
-		{
-			$attributes['size'] = (int) $this->element['size'];
-		}
+        if ($this->element['size']) {
+            $attributes['size'] = (int) $this->element['size'];
+        }
 
-		if ($this->element['maxlength'])
-		{
-			$attributes['maxlength'] = (int) $this->element['maxlength'];
-		}
+        if ($this->element['maxlength']) {
+            $attributes['maxlength'] = (int) $this->element['maxlength'];
+        }
 
-		if ($this->element['filterclass'])
-		{
-			$attributes['class'] = (string) $this->element['filterclass'];
-		}
+        if ($this->element['filterclass']) {
+            $attributes['class'] = (string) $this->element['filterclass'];
+        }
 
-		if ((string) $this->element['readonly'] == 'true')
-		{
-			$attributes['readonly'] = 'readonly';
-		}
+        if ((string) $this->element['readonly'] == 'true') {
+            $attributes['readonly'] = 'readonly';
+        }
 
-		if ((string) $this->element['disabled'] == 'true')
-		{
-			$attributes['disabled'] = 'disabled';
-		}
+        if ((string) $this->element['disabled'] == 'true') {
+            $attributes['disabled'] = 'disabled';
+        }
 
-		if ($this->element['onchange'])
-		{
-			$attributes['onchange'] = (string) $this->element['onchange'];
-		}
-		else
-		{
-			$onchange = 'document.adminForm.submit()';
-		}
+        if ($this->element['onchange']) {
+            $attributes['onchange'] = (string) $this->element['onchange'];
+        } else {
+            $onchange = 'document.adminForm.submit()';
+        }
 
-		if ((string) $this->element['placeholder'])
-		{
-			$attributes['placeholder'] = JText::_((string) $this->element['placeholder']);
-		}
+        if ((string) $this->element['placeholder']) {
+            $attributes['placeholder'] = JText::_((string) $this->element['placeholder']);
+        }
 
-		$name = $this->element['searchfieldname'] ? $this->element['searchfieldname'] : $this->name;
+        $name = $this->element['searchfieldname'] ? $this->element['searchfieldname'] : $this->name;
 
-		if ($this->element['searchfieldname'])
-		{
-			$model       = $this->form->getModel();
-			$searchvalue = $model->getState((string) $this->element['searchfieldname']);
-		}
-		else
-		{
-			$searchvalue = $this->value;
-		}
+        if ($this->element['searchfieldname']) {
+            $model       = $this->form->getModel();
+            $searchvalue = $model->getState((string) $this->element['searchfieldname']);
+        } else {
+            $searchvalue = $this->value;
+        }
 
-		// Get some system objects.
-		$config = FOFPlatform::getInstance()->getConfig();
-		$user   = JFactory::getUser();
+        // Get some system objects.
+        $config = FOFPlatform::getInstance()->getConfig();
+        $user   = JFactory::getUser();
 
-		// If a known filter is given use it.
-		switch (strtoupper((string) $this->element['filter']))
-		{
-			case 'SERVER_UTC':
-				// Convert a date to UTC based on the server timezone.
-				if ((int) $this->value)
-				{
-					// Get a date object based on the correct timezone.
-					$date = FOFPlatform::getInstance()->getDate($searchvalue, 'UTC');
-					$date->setTimezone(new DateTimeZone($config->get('offset')));
+        // If a known filter is given use it.
+        switch (strtoupper((string) $this->element['filter'])) {
+            case 'SERVER_UTC':
+                // Convert a date to UTC based on the server timezone.
+                if ((int) $this->value) {
+                    // Get a date object based on the correct timezone.
+                    $date = FOFPlatform::getInstance()->getDate($searchvalue, 'UTC');
+                    $date->setTimezone(new DateTimeZone($config->get('offset')));
 
-					// Transform the date string.
-					$searchvalue = $date->format('Y-m-d H:i:s', true, false);
-				}
-				break;
+                    // Transform the date string.
+                    $searchvalue = $date->format('Y-m-d H:i:s', true, false);
+                }
+                break;
 
-			case 'USER_UTC':
-				// Convert a date to UTC based on the user timezone.
-				if ((int) $searchvalue)
-				{
-					// Get a date object based on the correct timezone.
-					$date = FOFPlatform::getInstance()->getDate($this->value, 'UTC');
-					$date->setTimezone($user->getTimezone());
+            case 'USER_UTC':
+                // Convert a date to UTC based on the user timezone.
+                if ((int) $searchvalue) {
+                    // Get a date object based on the correct timezone.
+                    $date = FOFPlatform::getInstance()->getDate($this->value, 'UTC');
+                    $date->setTimezone($user->getTimezone());
 
-					// Transform the date string.
-					$searchvalue = $date->format('Y-m-d H:i:s', true, false);
-				}
-				break;
-		}
+                    // Transform the date string.
+                    $searchvalue = $date->format('Y-m-d H:i:s', true, false);
+                }
+                break;
+        }
 
-		return JHtml::_('calendar', $searchvalue, $name, $name, $format, $attributes);
-	}
+        return JHtml::_('calendar', $searchvalue, $name, $name, $format, $attributes);
+    }
 
-	/**
-	 * Get the buttons HTML code
-	 *
-	 * @return  string  The HTML
-	 */
-	protected function getButtons()
-	{
-		return '';
-	}
+    /**
+     * Get the buttons HTML code
+     *
+     * @return  string  The HTML
+     */
+    protected function getButtons()
+    {
+        return '';
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  view
@@ -17,344 +18,295 @@ defined('FOF_INCLUDED') or die;
  */
 class FOFViewJson extends FOFViewHtml
 {
-	/**
-	 * When set to true we'll add hypermedia to the output, implementing the
-	 * HAL specification (http://stateless.co/hal_specification.html)
-	 *
-	 * @var   boolean
-	 */
-	public $useHypermedia = false;
+    /**
+     * When set to true we'll add hypermedia to the output, implementing the
+     * HAL specification (http://stateless.co/hal_specification.html)
+     *
+     * @var   boolean
+     */
+    public $useHypermedia = false;
 
-	/**
-	 * Public constructor
-	 *
-	 * @param   array  $config  The component's configuration array
-	 */
-	public function __construct($config = array())
-	{
-		parent::__construct($config);
+    /**
+     * Public constructor
+     *
+     * @param   array  $config  The component's configuration array
+     */
+    public function __construct($config = array())
+    {
+        parent::__construct($config);
 
-		if (isset($config['use_hypermedia']))
-		{
-			$this->useHypermedia = (bool) $config['use_hypermedia'];
-		}
-	}
+        if (isset($config['use_hypermedia'])) {
+            $this->useHypermedia = (bool) $config['use_hypermedia'];
+        }
+    }
 
-	/**
-	 * The event which runs when we are displaying the record list JSON view
-	 *
-	 * @param   string  $tpl  The view sub-template to use
-	 *
-	 * @return  boolean  True to allow display of the view
-	 */
-	protected function onDisplay($tpl = null)
-	{
-		// Load the model
-		$model = $this->getModel();
+    /**
+     * The event which runs when we are displaying the record list JSON view
+     *
+     * @param   string  $tpl  The view sub-template to use
+     *
+     * @return  boolean  True to allow display of the view
+     */
+    protected function onDisplay($tpl = null)
+    {
+        // Load the model
+        $model = $this->getModel();
 
-		$items = $model->getItemList();
-		$this->items = $items;
+        $items = $model->getItemList();
+        $this->items = $items;
 
-		$document = FOFPlatform::getInstance()->getDocument();
+        $document = FOFPlatform::getInstance()->getDocument();
 
-		if ($document instanceof JDocument)
-		{
-			if ($this->useHypermedia)
-			{
-				$document->setMimeEncoding('application/hal+json');
-			}
-			else
-			{
-				$document->setMimeEncoding('application/json');
-			}
-		}
+        if ($document instanceof JDocument) {
+            if ($this->useHypermedia) {
+                $document->setMimeEncoding('application/hal+json');
+            } else {
+                $document->setMimeEncoding('application/json');
+            }
+        }
 
-		if (is_null($tpl))
-		{
-			$tpl = 'json';
-		}
+        if (is_null($tpl)) {
+            $tpl = 'json';
+        }
 
-		FOFPlatform::getInstance()->setErrorHandling(E_ALL, 'ignore');
+        FOFPlatform::getInstance()->setErrorHandling(E_ALL, 'ignore');
 
-		$hasFailed = false;
+        $hasFailed = false;
 
-		try
-		{
-			$result = $this->loadTemplate($tpl, true);
+        try {
+            $result = $this->loadTemplate($tpl, true);
 
-			if ($result instanceof Exception)
-			{
-				$hasFailed = true;
-			}
-		}
-		catch (Exception $e)
-		{
-			$hasFailed = true;
-		}
-
-		if ($hasFailed)
-		{
-			// Default JSON behaviour in case the template isn't there!
-			if ($this->useHypermedia)
-			{
-				$haldocument = $this->_createDocumentWithHypermedia($items, $model);
-				$json = $haldocument->render('json');
-			}
-			else
-			{
-				$json = json_encode($items);
-			}
-
-			// JSONP support
-			$callback = $this->input->get('callback', null, 'raw');
-
-			if (!empty($callback))
-			{
-				echo $callback . '(' . $json . ')';
-			}
-			else
-			{
-				$defaultName = $this->input->getCmd('view', 'joomla');
-				$filename = $this->input->getCmd('basename', $defaultName);
-
-				$document->setName($filename);
-				echo $json;
-			}
-
-			return false;
-		}
-		else
-		{
-			echo $result;
-
-			return false;
-		}
-	}
-
-	/**
-	 * The event which runs when we are displaying a single item JSON view
-	 *
-	 * @param   string  $tpl  The view sub-template to use
-	 *
-	 * @return  boolean  True to allow display of the view
-	 */
-	protected function onRead($tpl = null)
-	{
-		$model = $this->getModel();
-
-		$item = $model->getItem();
-		$this->item = $item;
-
-		$document = FOFPlatform::getInstance()->getDocument();
-
-		if ($document instanceof JDocument)
-		{
-			if ($this->useHypermedia)
-			{
-				$document->setMimeEncoding('application/hal+json');
-			}
-			else
-			{
-				$document->setMimeEncoding('application/json');
-			}
-		}
-
-		if (is_null($tpl))
-		{
-			$tpl = 'json';
-		}
-
-    	FOFPlatform::getInstance()->setErrorHandling(E_ALL, 'ignore');
-
-		$hasFailed = false;
-
-		try
-		{
-			$result = $this->loadTemplate($tpl, true);
-
-            if ($result instanceof Exception)
-            {
+            if ($result instanceof Exception) {
                 $hasFailed = true;
             }
-		}
-		catch (Exception $e)
-		{
-			$hasFailed = true;
-		}
+        } catch (Exception $e) {
+            $hasFailed = true;
+        }
 
-		if ($hasFailed)
-		{
-			// Default JSON behaviour in case the template isn't there!
+        if ($hasFailed) {
+            // Default JSON behaviour in case the template isn't there!
+            if ($this->useHypermedia) {
+                $haldocument = $this->_createDocumentWithHypermedia($items, $model);
+                $json = $haldocument->render('json');
+            } else {
+                $json = json_encode($items);
+            }
 
-			if ($this->useHypermedia)
-			{
-				$haldocument = $this->_createDocumentWithHypermedia($item, $model);
-				$json = $haldocument->render('json');
-			}
-			else
-			{
-				$json = json_encode($item);
-			}
+            // JSONP support
+            $callback = $this->input->get('callback', null, 'raw');
 
-			// JSONP support
-			$callback = $this->input->get('callback', null);
+            if (!empty($callback)) {
+                echo $callback . '(' . $json . ')';
+            } else {
+                $defaultName = $this->input->getCmd('view', 'joomla');
+                $filename = $this->input->getCmd('basename', $defaultName);
 
-			if (!empty($callback))
-			{
-				echo $callback . '(' . $json . ')';
-			}
-			else
-			{
-				$defaultName = $this->input->getCmd('view', 'joomla');
-				$filename = $this->input->getCmd('basename', $defaultName);
-				$document->setName($filename);
-				echo $json;
-			}
+                $document->setName($filename);
+                echo $json;
+            }
 
-			return false;
-		}
-		else
-		{
-			echo $result;
+            return false;
+        } else {
+            echo $result;
 
-			return false;
-		}
-	}
+            return false;
+        }
+    }
 
-	/**
-	 * Creates a FOFHalDocument using the provided data
-	 *
-	 * @param   array     $data   The data to put in the document
-	 * @param   FOFModel  $model  The model of this view
-	 *
-	 * @return  FOFHalDocument  A HAL-enabled document
-	 */
-	protected function _createDocumentWithHypermedia($data, $model = null)
-	{
-		// Create a new HAL document
+    /**
+     * The event which runs when we are displaying a single item JSON view
+     *
+     * @param   string  $tpl  The view sub-template to use
+     *
+     * @return  boolean  True to allow display of the view
+     */
+    protected function onRead($tpl = null)
+    {
+        $model = $this->getModel();
 
-		if (is_array($data))
-		{
-			$count = count($data);
-		}
-		else
-		{
-			$count = null;
-		}
+        $item = $model->getItem();
+        $this->item = $item;
 
-		if ($count == 1)
-		{
-			reset($data);
-			$document = new FOFHalDocument(end($data));
-		}
-		else
-		{
-			$document = new FOFHalDocument($data);
-		}
+        $document = FOFPlatform::getInstance()->getDocument();
 
-		// Create a self link
-		$uri = (string) (JUri::getInstance());
-		$uri = $this->_removeURIBase($uri);
-		$uri = JRoute::_($uri);
-		$document->addLink('self', new FOFHalLink($uri));
+        if ($document instanceof JDocument) {
+            if ($this->useHypermedia) {
+                $document->setMimeEncoding('application/hal+json');
+            } else {
+                $document->setMimeEncoding('application/json');
+            }
+        }
 
-		// Create relative links in a record list context
+        if (is_null($tpl)) {
+            $tpl = 'json';
+        }
 
-		if (is_array($data) && ($model instanceof FOFModel))
-		{
-			$pagination = $model->getPagination();
+        FOFPlatform::getInstance()->setErrorHandling(E_ALL, 'ignore');
 
-			if ($pagination->get('pages.total') > 1)
-			{
-				// Try to guess URL parameters and create a prototype URL
-				// NOTE: You are better off specialising this method
-				$protoUri = $this->_getPrototypeURIForPagination();
+        $hasFailed = false;
 
-				// The "first" link
-				$uri = clone $protoUri;
-				$uri->setVar('limitstart', 0);
-				$uri = JRoute::_((string) $uri);
+        try {
+            $result = $this->loadTemplate($tpl, true);
 
-				$document->addLink('first', new FOFHalLink($uri));
+            if ($result instanceof Exception) {
+                $hasFailed = true;
+            }
+        } catch (Exception $e) {
+            $hasFailed = true;
+        }
 
-				// Do we need a "prev" link?
+        if ($hasFailed) {
+            // Default JSON behaviour in case the template isn't there!
 
-				if ($pagination->get('pages.current') > 1)
-				{
-					$prevPage = $pagination->get('pages.current') - 1;
-					$limitstart = ($prevPage - 1) * $pagination->limit;
-					$uri = clone $protoUri;
-					$uri->setVar('limitstart', $limitstart);
-					$uri = JRoute::_((string) $uri);
+            if ($this->useHypermedia) {
+                $haldocument = $this->_createDocumentWithHypermedia($item, $model);
+                $json = $haldocument->render('json');
+            } else {
+                $json = json_encode($item);
+            }
 
-					$document->addLink('prev', new FOFHalLink($uri));
-				}
+            // JSONP support
+            $callback = $this->input->get('callback', null);
 
-				// Do we need a "next" link?
+            if (!empty($callback)) {
+                echo $callback . '(' . $json . ')';
+            } else {
+                $defaultName = $this->input->getCmd('view', 'joomla');
+                $filename = $this->input->getCmd('basename', $defaultName);
+                $document->setName($filename);
+                echo $json;
+            }
 
-				if ($pagination->get('pages.current') < $pagination->get('pages.total'))
-				{
-					$nextPage = $pagination->get('pages.current') + 1;
-					$limitstart = ($nextPage - 1) * $pagination->limit;
-					$uri = clone $protoUri;
-					$uri->setVar('limitstart', $limitstart);
-					$uri = JRoute::_((string) $uri);
+            return false;
+        } else {
+            echo $result;
 
-					$document->addLink('next', new FOFHalLink($uri));
-				}
+            return false;
+        }
+    }
 
-				// The "last" link?
-				$lastPage = $pagination->get('pages.total');
-				$limitstart = ($lastPage - 1) * $pagination->limit;
-				$uri = clone $protoUri;
-				$uri->setVar('limitstart', $limitstart);
-				$uri = JRoute::_((string) $uri);
+    /**
+     * Creates a FOFHalDocument using the provided data
+     *
+     * @param   array     $data   The data to put in the document
+     * @param   FOFModel  $model  The model of this view
+     *
+     * @return  FOFHalDocument  A HAL-enabled document
+     */
+    protected function _createDocumentWithHypermedia($data, $model = null)
+    {
+        // Create a new HAL document
 
-				$document->addLink('last', new FOFHalLink($uri));
-			}
-		}
+        if (is_array($data)) {
+            $count = count($data);
+        } else {
+            $count = null;
+        }
 
-		return $document;
-	}
+        if ($count == 1) {
+            reset($data);
+            $document = new FOFHalDocument(end($data));
+        } else {
+            $document = new FOFHalDocument($data);
+        }
 
-	/**
-	 * Convert an absolute URI to a relative one
-	 *
-	 * @param   string  $uri  The URI to convert
-	 *
-	 * @return  string  The relative URL
-	 */
-	protected function _removeURIBase($uri)
-	{
-		static $root = null, $rootlen = 0;
+        // Create a self link
+        $uri = (string) (JUri::getInstance());
+        $uri = $this->_removeURIBase($uri);
+        $uri = JRoute::_($uri);
+        $document->addLink('self', new FOFHalLink($uri));
 
-		if (is_null($root))
-		{
-			$root = rtrim(FOFPlatform::getInstance()->URIbase(), '/');
-			$rootlen = strlen($root);
-		}
+        // Create relative links in a record list context
 
-		if (substr($uri, 0, $rootlen) == $root)
-		{
-			$uri = substr($uri, $rootlen);
-		}
+        if (is_array($data) && ($model instanceof FOFModel)) {
+            $pagination = $model->getPagination();
 
-		return ltrim($uri, '/');
-	}
+            if ($pagination->get('pages.total') > 1) {
+                // Try to guess URL parameters and create a prototype URL
+                // NOTE: You are better off specialising this method
+                $protoUri = $this->_getPrototypeURIForPagination();
 
-	/**
-	 * Returns a JUri instance with a prototype URI used as the base for the
-	 * other URIs created by the JSON renderer
-	 *
-	 * @return  JUri  The prototype JUri instance
-	 */
-	protected function _getPrototypeURIForPagination()
-	{
-		$protoUri = new JUri('index.php');
-		$protoUri->setQuery($this->input->getData());
-		$protoUri->delVar('savestate');
-		$protoUri->delVar('base_path');
+                // The "first" link
+                $uri = clone $protoUri;
+                $uri->setVar('limitstart', 0);
+                $uri = JRoute::_((string) $uri);
 
-		return $protoUri;
-	}
+                $document->addLink('first', new FOFHalLink($uri));
+
+                // Do we need a "prev" link?
+
+                if ($pagination->get('pages.current') > 1) {
+                    $prevPage = $pagination->get('pages.current') - 1;
+                    $limitstart = ($prevPage - 1) * $pagination->limit;
+                    $uri = clone $protoUri;
+                    $uri->setVar('limitstart', $limitstart);
+                    $uri = JRoute::_((string) $uri);
+
+                    $document->addLink('prev', new FOFHalLink($uri));
+                }
+
+                // Do we need a "next" link?
+
+                if ($pagination->get('pages.current') < $pagination->get('pages.total')) {
+                    $nextPage = $pagination->get('pages.current') + 1;
+                    $limitstart = ($nextPage - 1) * $pagination->limit;
+                    $uri = clone $protoUri;
+                    $uri->setVar('limitstart', $limitstart);
+                    $uri = JRoute::_((string) $uri);
+
+                    $document->addLink('next', new FOFHalLink($uri));
+                }
+
+                // The "last" link?
+                $lastPage = $pagination->get('pages.total');
+                $limitstart = ($lastPage - 1) * $pagination->limit;
+                $uri = clone $protoUri;
+                $uri->setVar('limitstart', $limitstart);
+                $uri = JRoute::_((string) $uri);
+
+                $document->addLink('last', new FOFHalLink($uri));
+            }
+        }
+
+        return $document;
+    }
+
+    /**
+     * Convert an absolute URI to a relative one
+     *
+     * @param   string  $uri  The URI to convert
+     *
+     * @return  string  The relative URL
+     */
+    protected function _removeURIBase($uri)
+    {
+        static $root = null, $rootlen = 0;
+
+        if (is_null($root)) {
+            $root = rtrim(FOFPlatform::getInstance()->URIbase(), '/');
+            $rootlen = strlen($root);
+        }
+
+        if (substr($uri, 0, $rootlen) == $root) {
+            $uri = substr($uri, $rootlen);
+        }
+
+        return ltrim($uri, '/');
+    }
+
+    /**
+     * Returns a JUri instance with a prototype URI used as the base for the
+     * other URIs created by the JSON renderer
+     *
+     * @return  JUri  The prototype JUri instance
+     */
+    protected function _getPrototypeURIForPagination()
+    {
+        $protoUri = new JUri('index.php');
+        $protoUri->setQuery($this->input->getData());
+        $protoUri->delVar('savestate');
+        $protoUri->delVar('base_path');
+
+        return $protoUri;
+    }
 }

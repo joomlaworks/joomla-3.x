@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  database
@@ -18,240 +19,235 @@ defined('FOF_INCLUDED') or die;
  */
 abstract class FOFDatabaseIterator implements Iterator
 {
-	/**
-	 * The database cursor.
-	 *
-	 * @var    mixed
-	 */
-	protected $cursor;
+    /**
+     * The database cursor.
+     *
+     * @var    mixed
+     */
+    protected $cursor;
 
-	/**
-	 * The class of object to create.
-	 *
-	 * @var    string
-	 */
-	protected $class;
+    /**
+     * The class of object to create.
+     *
+     * @var    string
+     */
+    protected $class;
 
-	/**
-	 * The name of the column to use for the key of the database record.
-	 *
-	 * @var    mixed
-	 */
-	private $_column;
+    /**
+     * The name of the column to use for the key of the database record.
+     *
+     * @var    mixed
+     */
+    private $_column;
 
-	/**
-	 * The current database record.
-	 *
-	 * @var    mixed
-	 */
-	private $_current;
+    /**
+     * The current database record.
+     *
+     * @var    mixed
+     */
+    private $_current;
 
-	/**
-	 * The current database record as a FOFTable object.
-	 *
-	 * @var    FOFTable
-	 */
-	private $_currentTable;
+    /**
+     * The current database record as a FOFTable object.
+     *
+     * @var    FOFTable
+     */
+    private $_currentTable;
 
-	/**
-	 * A numeric or string key for the current database record.
-	 *
-	 * @var    scalar
-	 */
-	private $_key;
+    /**
+     * A numeric or string key for the current database record.
+     *
+     * @var    scalar
+     */
+    private $_key;
 
-	/**
-	 * The number of fetched records.
-	 *
-	 * @var    integer
-	 */
-	private $_fetched = 0;
+    /**
+     * The number of fetched records.
+     *
+     * @var    integer
+     */
+    private $_fetched = 0;
 
-	/**
-	 * A FOFTable object created using the class type $class, used by getTable
-	 *
-	 * @var   FOFTable
-	 */
-	private $_tableObject = null;
+    /**
+     * A FOFTable object created using the class type $class, used by getTable
+     *
+     * @var   FOFTable
+     */
+    private $_tableObject = null;
 
-	/**
-	 * Returns an iterator object for a specific database type
-	 *
-	 * @param   string  $dbName  The database type, e.g. mysql, mysqli, sqlazure etc.
-	 * @param   mixed   $cursor  The database cursor
-	 * @param   string  $column  An option column to use as the iterator key
-	 * @param   string  $class   The table class of the returned objects
-	 * @param   array   $config  Configuration parameters to push to the table class
-	 *
-	 * @return  FOFDatabaseIterator
-	 *
-	 * @throws  InvalidArgumentException
-	 */
-	public static function &getIterator($dbName, $cursor, $column, $class, $config = array())
-	{
-		$className = 'FOFDatabaseIterator' . ucfirst($dbName);
+    /**
+     * Returns an iterator object for a specific database type
+     *
+     * @param   string  $dbName  The database type, e.g. mysql, mysqli, sqlazure etc.
+     * @param   mixed   $cursor  The database cursor
+     * @param   string  $column  An option column to use as the iterator key
+     * @param   string  $class   The table class of the returned objects
+     * @param   array   $config  Configuration parameters to push to the table class
+     *
+     * @return  FOFDatabaseIterator
+     *
+     * @throws  InvalidArgumentException
+     */
+    public static function &getIterator($dbName, $cursor, $column, $class, $config = array())
+    {
+        $className = 'FOFDatabaseIterator' . ucfirst($dbName);
 
-		$object = new $className($cursor, $column, $class, $config);
+        $object = new $className($cursor, $column, $class, $config);
 
-		return $object;
-	}
+        return $object;
+    }
 
-	/**
-	 * Database iterator constructor.
-	 *
-	 * @param   mixed   $cursor  The database cursor.
-	 * @param   string  $column  An option column to use as the iterator key.
-	 * @param   string  $class   The table class of the returned objects.
-	 * @param   array   $config  Configuration parameters to push to the table class
-	 *
-	 * @throws  InvalidArgumentException
-	 */
-	public function __construct($cursor, $column, $class, $config = array())
-	{
-		// Figure out the type and prefix of the class by the class name
-		$parts = FOFInflector::explode($class);
+    /**
+     * Database iterator constructor.
+     *
+     * @param   mixed   $cursor  The database cursor.
+     * @param   string  $column  An option column to use as the iterator key.
+     * @param   string  $class   The table class of the returned objects.
+     * @param   array   $config  Configuration parameters to push to the table class
+     *
+     * @throws  InvalidArgumentException
+     */
+    public function __construct($cursor, $column, $class, $config = array())
+    {
+        // Figure out the type and prefix of the class by the class name
+        $parts = FOFInflector::explode($class);
 
-        if(count($parts) != 3)
-        {
+        if (count($parts) != 3) {
             throw new InvalidArgumentException('Invalid table name, expected a pattern like ComponentTableFoobar got '.$class);
         }
 
-		$this->_tableObject = FOFTable::getInstance($parts[2], ucfirst($parts[0]) . ucfirst($parts[1]))->getClone();
+        $this->_tableObject = FOFTable::getInstance($parts[2], ucfirst($parts[0]) . ucfirst($parts[1]))->getClone();
 
-		$this->cursor   = $cursor;
-		$this->class    = 'stdClass';
-		$this->_column  = $column;
-		$this->_fetched = 0;
+        $this->cursor   = $cursor;
+        $this->class    = 'stdClass';
+        $this->_column  = $column;
+        $this->_fetched = 0;
 
-		$this->next();
-	}
+        $this->next();
+    }
 
-	/**
-	 * Database iterator destructor.
-	 */
-	public function __destruct()
-	{
-		if ($this->cursor)
-		{
-			$this->freeResult($this->cursor);
-		}
-	}
+    /**
+     * Database iterator destructor.
+     */
+    public function __destruct()
+    {
+        if ($this->cursor) {
+            $this->freeResult($this->cursor);
+        }
+    }
 
-	/**
-	 * The current element in the iterator.
-	 *
-	 * @return  object
-	 *
-	 * @see     Iterator::current()
-	 */
-	#[\ReturnTypeWillChange]
-	public function current()
-	{
-		return $this->_currentTable;
-	}
+    /**
+     * The current element in the iterator.
+     *
+     * @return  object
+     *
+     * @see     Iterator::current()
+     */
+    #[\ReturnTypeWillChange]
+    public function current()
+    {
+        return $this->_currentTable;
+    }
 
-	/**
-	 * The key of the current element in the iterator.
-	 *
-	 * @return  scalar
-	 *
-	 * @see     Iterator::key()
-	 */
-	#[\ReturnTypeWillChange]
-	public function key()
-	{
-		return $this->_key;
-	}
+    /**
+     * The key of the current element in the iterator.
+     *
+     * @return  scalar
+     *
+     * @see     Iterator::key()
+     */
+    #[\ReturnTypeWillChange]
+    public function key()
+    {
+        return $this->_key;
+    }
 
-	/**
-	 * Moves forward to the next result from the SQL query.
-	 *
-	 * @return  void
-	 *
-	 * @see     Iterator::next()
-	 */
-	#[\ReturnTypeWillChange]
-	public function next()
-	{
-		// Set the default key as being the number of fetched object
-		$this->_key = $this->_fetched;
+    /**
+     * Moves forward to the next result from the SQL query.
+     *
+     * @return  void
+     *
+     * @see     Iterator::next()
+     */
+    #[\ReturnTypeWillChange]
+    public function next()
+    {
+        // Set the default key as being the number of fetched object
+        $this->_key = $this->_fetched;
 
-		// Try to get an object
-		$this->_current = $this->fetchObject();
+        // Try to get an object
+        $this->_current = $this->fetchObject();
 
-		// If an object has been found
-		if ($this->_current)
-		{
-			$this->_currentTable = $this->getTable();
+        // If an object has been found
+        if ($this->_current) {
+            $this->_currentTable = $this->getTable();
 
-			// Set the key as being the indexed column (if it exists)
-			if (isset($this->_current->{$this->_column}))
-			{
-				$this->_key = $this->_current->{$this->_column};
-			}
+            // Set the key as being the indexed column (if it exists)
+            if (isset($this->_current->{$this->_column})) {
+                $this->_key = $this->_current->{$this->_column};
+            }
 
-			// Update the number of fetched object
-			$this->_fetched++;
-		}
-	}
+            // Update the number of fetched object
+            $this->_fetched++;
+        }
+    }
 
-	/**
-	 * Rewinds the iterator.
-	 *
-	 * This iterator cannot be rewound.
-	 *
-	 * @return  void
-	 *
-	 * @see     Iterator::rewind()
-	 */
-	#[\ReturnTypeWillChange]
-	public function rewind()
-	{
-	}
+    /**
+     * Rewinds the iterator.
+     *
+     * This iterator cannot be rewound.
+     *
+     * @return  void
+     *
+     * @see     Iterator::rewind()
+     */
+    #[\ReturnTypeWillChange]
+    public function rewind()
+    {
+    }
 
-	/**
-	 * Checks if the current position of the iterator is valid.
-	 *
-	 * @return  boolean
-	 *
-	 * @see     Iterator::valid()
-	 */
-	#[\ReturnTypeWillChange]
-	public function valid()
-	{
-		return (bool) $this->_current;
-	}
+    /**
+     * Checks if the current position of the iterator is valid.
+     *
+     * @return  boolean
+     *
+     * @see     Iterator::valid()
+     */
+    #[\ReturnTypeWillChange]
+    public function valid()
+    {
+        return (bool) $this->_current;
+    }
 
-	/**
-	 * Method to fetch a row from the result set cursor as an object.
-	 *
-	 * @return  mixed  Either the next row from the result set or false if there are no more rows.
-	 */
-	abstract protected function fetchObject();
+    /**
+     * Method to fetch a row from the result set cursor as an object.
+     *
+     * @return  mixed  Either the next row from the result set or false if there are no more rows.
+     */
+    abstract protected function fetchObject();
 
-	/**
-	 * Method to free up the memory used for the result set.
-	 *
-	 * @return  void
-	 */
-	abstract protected function freeResult();
+    /**
+     * Method to free up the memory used for the result set.
+     *
+     * @return  void
+     */
+    abstract protected function freeResult();
 
-	/**
-	 * Returns the data in $this->_current as a FOFTable instance
-	 *
-	 * @return  FOFTable
-	 *
-	 * @throws  OutOfBoundsException
-	 */
-	protected function getTable()
-	{
-		if (!$this->valid())
-		{
-			throw new OutOfBoundsException('Cannot get item past iterator\'s bounds', 500);
-		}
+    /**
+     * Returns the data in $this->_current as a FOFTable instance
+     *
+     * @return  FOFTable
+     *
+     * @throws  OutOfBoundsException
+     */
+    protected function getTable()
+    {
+        if (!$this->valid()) {
+            throw new OutOfBoundsException('Cannot get item past iterator\'s bounds', 500);
+        }
 
-		$this->_tableObject->bind($this->_current);
+        $this->_tableObject->bind($this->_current);
 
-		return $this->_tableObject;
-	}
+        return $this->_tableObject;
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  utils
@@ -54,9 +55,8 @@ class FOFUtilsObservableDispatcher extends FOFUtilsObject
      */
     public static function getInstance()
     {
-        if (self::$instance === null)
-        {
-            self::$instance = new static;
+        if (self::$instance === null) {
+            self::$instance = new static();
         }
 
         return self::$instance;
@@ -85,19 +85,14 @@ class FOFUtilsObservableDispatcher extends FOFUtilsObject
     public function register($event, $handler)
     {
         // Are we dealing with a class or callback type handler?
-        if (is_callable($handler))
-        {
+        if (is_callable($handler)) {
             // Ok, function type event handler... let's attach it.
             $method = array('event' => $event, 'handler' => $handler);
             $this->attach($method);
-        }
-        elseif (class_exists($handler))
-        {
+        } elseif (class_exists($handler)) {
             // Ok, class type event handler... let's instantiate and attach it.
             $this->attach(new $handler($this));
-        }
-        else
-        {
+        } else {
             throw new InvalidArgumentException('Invalid event handler.');
         }
     }
@@ -124,35 +119,29 @@ class FOFUtilsObservableDispatcher extends FOFUtilsObject
         $event = strtolower($event);
 
         // Check if any plugins are attached to the event.
-        if (!isset($this->_methods[$event]) || empty($this->_methods[$event]))
-        {
+        if (!isset($this->_methods[$event]) || empty($this->_methods[$event])) {
             // No Plugins Associated To Event!
             return $result;
         }
 
         // Loop through all plugins having a method matching our event
-        foreach ($this->_methods[$event] as $key)
-        {
+        foreach ($this->_methods[$event] as $key) {
             // Check if the plugin is present.
-            if (!isset($this->_observers[$key]))
-            {
+            if (!isset($this->_observers[$key])) {
                 continue;
             }
 
             // Fire the event for an object based observer.
-            if (is_object($this->_observers[$key]))
-            {
+            if (is_object($this->_observers[$key])) {
                 $args['event'] = $event;
                 $value = $this->_observers[$key]->update($args);
             }
             // Fire the event for a function based observer.
-            elseif (is_array($this->_observers[$key]))
-            {
+            elseif (is_array($this->_observers[$key])) {
                 $value = call_user_func_array($this->_observers[$key]['handler'], $args);
             }
 
-            if (isset($value))
-            {
+            if (isset($value)) {
                 $result[] = $value;
             }
         }
@@ -169,18 +158,14 @@ class FOFUtilsObservableDispatcher extends FOFUtilsObject
      */
     public function attach($observer)
     {
-        if (is_array($observer))
-        {
-            if (!isset($observer['handler']) || !isset($observer['event']) || !is_callable($observer['handler']))
-            {
+        if (is_array($observer)) {
+            if (!isset($observer['handler']) || !isset($observer['event']) || !is_callable($observer['handler'])) {
                 return;
             }
 
             // Make sure we haven't already attached this array as an observer
-            foreach ($this->_observers as $check)
-            {
-                if (is_array($check) && $check['event'] == $observer['event'] && $check['handler'] == $observer['handler'])
-                {
+            foreach ($this->_observers as $check) {
+                if (is_array($check) && $check['event'] == $observer['event'] && $check['handler'] == $observer['handler']) {
                     return;
                 }
             }
@@ -188,21 +173,16 @@ class FOFUtilsObservableDispatcher extends FOFUtilsObject
             $this->_observers[] = $observer;
             end($this->_observers);
             $methods = array($observer['event']);
-        }
-        else
-        {
-            if (!($observer instanceof FOFUtilsObservableEvent))
-            {
+        } else {
+            if (!($observer instanceof FOFUtilsObservableEvent)) {
                 return;
             }
 
             // Make sure we haven't already attached this object as an observer
             $class = get_class($observer);
 
-            foreach ($this->_observers as $check)
-            {
-                if ($check instanceof $class)
-                {
+            foreach ($this->_observers as $check) {
+                if ($check instanceof $class) {
                     return;
                 }
             }
@@ -214,11 +194,9 @@ class FOFUtilsObservableDispatcher extends FOFUtilsObject
 
             $methods = array();
 
-            foreach(get_class_methods($observer) as $obs_method)
-            {
+            foreach (get_class_methods($observer) as $obs_method) {
                 // Magic methods are not allowed
-                if(strpos('__', $obs_method) === 0)
-                {
+                if (strpos('__', $obs_method) === 0) {
                     continue;
                 }
 
@@ -230,12 +208,10 @@ class FOFUtilsObservableDispatcher extends FOFUtilsObject
 
         $key = key($this->_observers);
 
-        foreach ($methods as $method)
-        {
+        foreach ($methods as $method) {
             $method = strtolower($method);
 
-            if (!isset($this->_methods[$method]))
-            {
+            if (!isset($this->_methods[$method])) {
                 $this->_methods[$method] = array();
             }
 
@@ -256,17 +232,14 @@ class FOFUtilsObservableDispatcher extends FOFUtilsObject
 
         $key = array_search($observer, $this->_observers);
 
-        if ($key !== false)
-        {
+        if ($key !== false) {
             unset($this->_observers[$key]);
             $retval = true;
 
-            foreach ($this->_methods as &$method)
-            {
+            foreach ($this->_methods as &$method) {
                 $k = array_search($key, $method);
 
-                if ($k !== false)
-                {
+                if ($k !== false) {
                     unset($method[$k]);
                 }
             }

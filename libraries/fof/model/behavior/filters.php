@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  model
@@ -16,89 +17,82 @@ defined('FOF_INCLUDED') or die;
  */
 class FOFModelBehaviorFilters extends FOFModelBehavior
 {
-	/**
-	 * This event runs after we have built the query used to fetch a record
-	 * list in a model. It is used to apply automatic query filters.
-	 *
-	 * @param   FOFModel        &$model  The model which calls this event
-	 * @param   FOFDatabaseQuery  &$query  The model which calls this event
-	 *
-	 * @return  void
-	 */
-	public function onAfterBuildQuery(&$model, &$query)
-	{
-		$table = $model->getTable();
-		$tableName = $table->getTableName();
-		$tableKey = $table->getKeyName();
-		$db = $model->getDBO();
+    /**
+     * This event runs after we have built the query used to fetch a record
+     * list in a model. It is used to apply automatic query filters.
+     *
+     * @param   FOFModel        &$model  The model which calls this event
+     * @param   FOFDatabaseQuery  &$query  The model which calls this event
+     *
+     * @return  void
+     */
+    public function onAfterBuildQuery(&$model, &$query)
+    {
+        $table = $model->getTable();
+        $tableName = $table->getTableName();
+        $tableKey = $table->getKeyName();
+        $db = $model->getDBO();
 
-		$filterzero = $model->getState('_emptynonzero', null);
+        $filterzero = $model->getState('_emptynonzero', null);
 
-		$fields = $model->getTableFields();
-		$backlist = $model->blacklistFilters();
+        $fields = $model->getTableFields();
+        $backlist = $model->blacklistFilters();
 
-		foreach ($fields as $fieldname => $fieldtype)
-		{
-			if (in_array($fieldname, $backlist)) {
-				continue;
-			}
-			$field = new stdClass;
-			$field->name = $fieldname;
-			$field->type = $fieldtype;
-			$field->filterzero = $filterzero;
+        foreach ($fields as $fieldname => $fieldtype) {
+            if (in_array($fieldname, $backlist)) {
+                continue;
+            }
+            $field = new stdClass();
+            $field->name = $fieldname;
+            $field->type = $fieldtype;
+            $field->filterzero = $filterzero;
 
-			$filterName = ($field->name == $tableKey) ? 'id' : $field->name;
-			$filterState = $model->getState($filterName, null);
+            $filterName = ($field->name == $tableKey) ? 'id' : $field->name;
+            $filterState = $model->getState($filterName, null);
 
-			$field = FOFModelField::getField($field, array('dbo' => $db, 'table_alias' => $model->getTableAlias()));
+            $field = FOFModelField::getField($field, array('dbo' => $db, 'table_alias' => $model->getTableAlias()));
 
-			if ((is_array($filterState) && (
-					array_key_exists('value', $filterState) ||
-					array_key_exists('from', $filterState) ||
-					array_key_exists('to', $filterState)
-				)) || is_object($filterState))
-			{
-				$options = new JRegistry($filterState);
-			}
-			else
-			{
-				$options = new JRegistry;
-				$options->set('value', $filterState);
-			}
+            if ((is_array($filterState) && (
+                array_key_exists('value', $filterState) ||
+                    array_key_exists('from', $filterState) ||
+                    array_key_exists('to', $filterState)
+            )) || is_object($filterState)) {
+                $options = new JRegistry($filterState);
+            } else {
+                $options = new JRegistry();
+                $options->set('value', $filterState);
+            }
 
-			$methods = $field->getSearchMethods();
-			$method = $options->get('method', $field->getDefaultSearchMethod());
+            $methods = $field->getSearchMethods();
+            $method = $options->get('method', $field->getDefaultSearchMethod());
 
-			if (!in_array($method, $methods))
-			{
-				$method = 'exact';
-			}
+            if (!in_array($method, $methods)) {
+                $method = 'exact';
+            }
 
-			switch ($method)
-			{
-				case 'between':
-				case 'outside':
-				case 'range' :
-					$sql = $field->$method($options->get('from', null), $options->get('to'));
-					break;
+            switch ($method) {
+                case 'between':
+                case 'outside':
+                case 'range' :
+                    $sql = $field->$method($options->get('from', null), $options->get('to'));
+                    break;
 
-				case 'interval':
-				case 'modulo':
-					$sql = $field->$method($options->get('value', null), $options->get('interval'));
-					break;
+                case 'interval':
+                case 'modulo':
+                    $sql = $field->$method($options->get('value', null), $options->get('interval'));
+                    break;
 
-				case 'exact':
-				case 'partial':
-				case 'search':
-				default:
-					$sql = $field->$method($options->get('value', null));
-					break;
-			}
+                case 'exact':
+                case 'partial':
+                case 'search':
+                default:
+                    $sql = $field->$method($options->get('value', null));
+                    break;
+            }
 
-			if ($sql)
-			{
-				$query->where($sql);
-			}
-		}
-	}
+            if ($sql) {
+                $query->where($sql);
+            }
+        }
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    FrameworkOnFramework
  * @subpackage form
@@ -16,15 +17,15 @@ defined('FOF_INCLUDED') or die;
  */
 class FOFFormHeaderRowselect extends FOFFormHeader
 {
-	/**
-	 * Get the header
-	 *
-	 * @return  string  The header HTML
-	 */
-	protected function getHeader()
-	{
-		return '<input type="checkbox" name="checkall-toggle" value="" title="'
-			. JText::_('JGLOBAL_CHECK_ALL')
-			. '" onclick="Joomla.checkAll(this)" />';
-	}
+    /**
+     * Get the header
+     *
+     * @return  string  The header HTML
+     */
+    protected function getHeader()
+    {
+        return '<input type="checkbox" name="checkall-toggle" value="" title="'
+            . JText::_('JGLOBAL_CHECK_ALL')
+            . '" onclick="Joomla.checkAll(this)" />';
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    FrameworkOnFramework
  * @subpackage form
@@ -19,87 +20,83 @@ JFormHelper::loadFieldClass('rules');
  */
 class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
 {
-	protected $static;
+    protected $static;
 
-	protected $repeatable;
+    protected $repeatable;
 
-	/** @var   FOFTable  The item being rendered in a repeatable form field */
-	public $item;
+    /** @var   FOFTable  The item being rendered in a repeatable form field */
+    public $item;
 
-	/** @var int A monotonically increasing number, denoting the row number in a repeatable view */
-	public $rowid;
-
-	/**
-	 * Method to get certain otherwise inaccessible properties from the form field object.
-	 *
-	 * @param   string  $name  The property name for which to the the value.
-	 *
-	 * @return  mixed  The property value or null.
-	 *
-	 * @since   2.0
-	 */
-	public function __get($name)
-	{
-		switch ($name)
-		{
-			// This field cannot provide a static display
-			case 'static':
-				return '';
-				break;
-
-			// This field cannot provide a repeateable display
-			case 'repeatable':
-				return '';
-				break;
-
-			default:
-				return parent::__get($name);
-		}
-	}
-
-	/**
-	 * Get the rendering of this field type for static display, e.g. in a single
-	 * item view (typically a "read" task).
-	 *
-	 * @since 2.0
-	 *
-	 * @return  string  The field HTML
-	 */
-	public function getStatic()
-	{
-		return '';
-	}
-
-	/**
-	 * Get the rendering of this field type for a repeatable (grid) display,
-	 * e.g. in a view listing many item (typically a "browse" task)
-	 *
-	 * @since 2.1
-	 *
-	 * @return  string  The field HTML
-	 */
-	public function getRepeatable()
-	{
-		return '';
-	}
+    /** @var int A monotonically increasing number, denoting the row number in a repeatable view */
+    public $rowid;
 
     /**
-	 * At the timing of this writing (2013-12-03), the Joomla "rules" field is buggy. When you are
-	 * dealing with a new record it gets the default permissions from the root asset node, which
-	 * is fine for the default permissions of Joomla articles, but unsuitable for third party software.
-	 * We had to copy & paste the whole code, since we can't "inject" the correct asset id if one is
-	 * not found. Our fixes are surrounded by `FOF Library fix` remarks.
+     * Method to get certain otherwise inaccessible properties from the form field object.
+     *
+     * @param   string  $name  The property name for which to the the value.
+     *
+     * @return  mixed  The property value or null.
+     *
+     * @since   2.0
+     */
+    public function __get($name)
+    {
+        switch ($name) {
+            // This field cannot provide a static display
+            case 'static':
+                return '';
+                break;
+
+                // This field cannot provide a repeateable display
+            case 'repeatable':
+                return '';
+                break;
+
+            default:
+                return parent::__get($name);
+        }
+    }
+
+    /**
+     * Get the rendering of this field type for static display, e.g. in a single
+     * item view (typically a "read" task).
+     *
+     * @since 2.0
+     *
+     * @return  string  The field HTML
+     */
+    public function getStatic()
+    {
+        return '';
+    }
+
+    /**
+     * Get the rendering of this field type for a repeatable (grid) display,
+     * e.g. in a view listing many item (typically a "browse" task)
+     *
+     * @since 2.1
+     *
+     * @return  string  The field HTML
+     */
+    public function getRepeatable()
+    {
+        return '';
+    }
+
+    /**
+     * At the timing of this writing (2013-12-03), the Joomla "rules" field is buggy. When you are
+     * dealing with a new record it gets the default permissions from the root asset node, which
+     * is fine for the default permissions of Joomla articles, but unsuitable for third party software.
+     * We had to copy & paste the whole code, since we can't "inject" the correct asset id if one is
+     * not found. Our fixes are surrounded by `FOF Library fix` remarks.
      *
      * @return  string  The input field's HTML for this field type
      */
     public function getInput()
     {
-        if (version_compare(JVERSION, '3.0', 'ge'))
-        {
+        if (version_compare(JVERSION, '3.0', 'ge')) {
             return $this->getInput3x();
-        }
-        else
-        {
+        } else {
             return $this->getInput25();
         }
     }
@@ -117,18 +114,15 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
         $actions = JAccess::getActions($component, $section);
 
         // Iterate over the children and add to the actions.
-        foreach ($this->element->children() as $el)
-        {
-            if ($el->getName() == 'action')
-            {
+        foreach ($this->element->children() as $el) {
+            if ($el->getName() == 'action') {
                 $actions[] = (object) array('name' => (string) $el['name'], 'title' => (string) $el['title'],
                     'description' => (string) $el['description']);
             }
         }
 
         // Get the explicit rules for this asset.
-        if ($section == 'component')
-        {
+        if ($section == 'component') {
             // Need to find the asset id by the name of the component.
             $db    = FOFPlatform::getInstance()->getDbo();
             $query = $db->getQuery(true);
@@ -138,13 +132,10 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
             $db->setQuery($query);
             $assetId = (int) $db->loadResult();
 
-            if ($error = $db->getErrorMsg())
-            {
+            if ($error = $db->getErrorMsg()) {
                 JError::raiseNotice(500, $error);
             }
-        }
-        else
-        {
+        } else {
             // Find the asset id of the content.
             // Note that for global configuration, com_config injects asset_id = 1 into the form.
             $assetId = $this->form->getValue($assetField);
@@ -153,8 +144,7 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
             // If there is no assetId (let's say we are dealing with a new record), let's ask the table
             // to give it to us. Here you should implement your logic (ie getting default permissions from
             // the component or from the category)
-            if(!$assetId)
-            {
+            if (!$assetId) {
                 $table   = $this->form->getModel()->getTable();
                 $assetId = $table->getAssetParentId();
             }
@@ -184,16 +174,12 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
         $html[] = '<ul id="rules">';
 
         // Start a row for each user group.
-        foreach ($groups as $group)
-        {
+        foreach ($groups as $group) {
             $difLevel = $group->level - $curLevel;
 
-            if ($difLevel > 0)
-            {
+            if ($difLevel > 0) {
                 $html[] = '<li><ul>';
-            }
-            elseif ($difLevel < 0)
-            {
+            } elseif ($difLevel < 0) {
                 $html[] = str_repeat('</ul></li>', -$difLevel);
             }
 
@@ -219,8 +205,7 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
 
             // The calculated setting is not shown for the root group of global configuration.
             $canCalculateSettings = ($group->parent_id || !empty($component));
-            if ($canCalculateSettings)
-            {
+            if ($canCalculateSettings) {
                 $html[] = '<th id="aclactionth' . $group->value . '">';
                 $html[] = '<span class="acl-action">' . JText::_('JLIB_RULES_CALCULATED_SETTING') . '</span>';
                 $html[] = '</th>';
@@ -230,8 +215,7 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
             $html[] = '</thead>';
             $html[] = '<tbody>';
 
-            foreach ($actions as $action)
-            {
+            foreach ($actions as $action) {
                 $html[] = '<tr>';
                 $html[] = '<td headers="actions-th' . $group->value . '">';
                 $html[] = '<label class="hasTip" for="' . $this->id . '_' . $action->name . '_' . $group->value . '" title="'
@@ -264,8 +248,7 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
                 $html[] = '</select>&#160; ';
 
                 // If this asset's rule is allowed, but the inherited rule is deny, we have a conflict.
-                if (($assetRule === true) && ($inheritedRule === false))
-                {
+                if (($assetRule === true) && ($inheritedRule === false)) {
                     $html[] = JText::_('JLIB_RULES_CONFLICT');
                 }
 
@@ -273,57 +256,38 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
 
                 // Build the Calculated Settings column.
                 // The inherited settings column is not displayed for the root group in global configuration.
-                if ($canCalculateSettings)
-                {
+                if ($canCalculateSettings) {
                     $html[] = '<td headers="aclactionth' . $group->value . '">';
 
                     // This is where we show the current effective settings considering currrent group, path and cascade.
                     // Check whether this is a component or global. Change the text slightly.
 
-                    if (JAccess::checkGroup($group->value, 'core.admin', $assetId) !== true)
-                    {
-                        if ($inheritedRule === null)
-                        {
+                    if (JAccess::checkGroup($group->value, 'core.admin', $assetId) !== true) {
+                        if ($inheritedRule === null) {
                             $html[] = '<span class="icon-16-unset">' . JText::_('JLIB_RULES_NOT_ALLOWED') . '</span>';
-                        }
-                        elseif ($inheritedRule === true)
-                        {
+                        } elseif ($inheritedRule === true) {
                             $html[] = '<span class="icon-16-allowed">' . JText::_('JLIB_RULES_ALLOWED') . '</span>';
-                        }
-                        elseif ($inheritedRule === false)
-                        {
-                            if ($assetRule === false)
-                            {
+                        } elseif ($inheritedRule === false) {
+                            if ($assetRule === false) {
                                 $html[] = '<span class="icon-16-denied">' . JText::_('JLIB_RULES_NOT_ALLOWED') . '</span>';
-                            }
-                            else
-                            {
+                            } else {
                                 $html[] = '<span class="icon-16-denied"><span class="icon-16-locked">' . JText::_('JLIB_RULES_NOT_ALLOWED_LOCKED')
                                     . '</span></span>';
                             }
                         }
-                    }
-                    elseif (!empty($component))
-                    {
+                    } elseif (!empty($component)) {
                         $html[] = '<span class="icon-16-allowed"><span class="icon-16-locked">' . JText::_('JLIB_RULES_ALLOWED_ADMIN')
                             . '</span></span>';
-                    }
-                    else
-                    {
+                    } else {
                         // Special handling for  groups that have global admin because they can't  be denied.
                         // The admin rights can be changed.
-                        if ($action->name === 'core.admin')
-                        {
+                        if ($action->name === 'core.admin') {
                             $html[] = '<span class="icon-16-allowed">' . JText::_('JLIB_RULES_ALLOWED') . '</span>';
-                        }
-                        elseif ($inheritedRule === false)
-                        {
+                        } elseif ($inheritedRule === false) {
                             // Other actions cannot be changed.
                             $html[] = '<span class="icon-16-denied"><span class="icon-16-locked">'
                                 . JText::_('JLIB_RULES_NOT_ALLOWED_ADMIN_CONFLICT') . '</span></span>';
-                        }
-                        else
-                        {
+                        } else {
                             $html[] = '<span class="icon-16-allowed"><span class="icon-16-locked">' . JText::_('JLIB_RULES_ALLOWED_ADMIN')
                                 . '</span></span>';
                         }
@@ -345,12 +309,9 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
 
         $html[] = str_repeat('</ul></li>', $curLevel);
         $html[] = '</ul><div class="rule-notes">';
-        if ($section == 'component' || $section == null)
-        {
+        if ($section == 'component' || $section == null) {
             $html[] = JText::_('JLIB_RULES_SETTING_NOTES');
-        }
-        else
-        {
+        } else {
             $html[] = JText::_('JLIB_RULES_SETTING_NOTES_ITEM');
         }
         $html[] = '</div></div>';
@@ -383,18 +344,15 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
         $actions = JAccess::getActions($component, $section);
 
         // Iterate over the children and add to the actions.
-        foreach ($this->element->children() as $el)
-        {
-            if ($el->getName() == 'action')
-            {
+        foreach ($this->element->children() as $el) {
+            if ($el->getName() == 'action') {
                 $actions[] = (object) array('name' => (string) $el['name'], 'title' => (string) $el['title'],
                     'description' => (string) $el['description']);
             }
         }
 
         // Get the explicit rules for this asset.
-        if ($section == 'component')
-        {
+        if ($section == 'component') {
             // Need to find the asset id by the name of the component.
             $db    = FOFPlatform::getInstance()->getDbo();
             $query = $db->getQuery(true)
@@ -403,9 +361,7 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
                         ->where($db->quoteName('name') . ' = ' . $db->quote($component));
 
             $assetId = (int) $db->setQuery($query)->loadResult();
-        }
-        else
-        {
+        } else {
             // Find the asset id of the content.
             // Note that for global configuration, com_config injects asset_id = 1 into the form.
             $assetId = $this->form->getValue($assetField);
@@ -414,8 +370,7 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
             // If there is no assetId (let's say we are dealing with a new record), let's ask the table
             // to give it to us. Here you should implement your logic (ie getting default permissions from
             // the component or from the category)
-            if(!$assetId)
-            {
+            if (!$assetId) {
                 $table   = $this->form->getModel()->getTable();
                 $assetId = $table->getAssetParentId();
             }
@@ -442,13 +397,11 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
         // Building tab nav
         $html[] = '<ul class="nav nav-tabs">';
 
-        foreach ($groups as $group)
-        {
+        foreach ($groups as $group) {
             // Initial Active Tab
             $active = "";
 
-            if ($group->value == 1)
-            {
+            if ($group->value == 1) {
                 $active = "active";
             }
 
@@ -464,13 +417,11 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
         $html[] = '<div class="tab-content">';
 
         // Start a row for each user group.
-        foreach ($groups as $group)
-        {
+        foreach ($groups as $group) {
             // Initial Active Pane
             $active = "";
 
-            if ($group->value == 1)
-            {
+            if ($group->value == 1) {
                 $active = " active";
             }
 
@@ -490,8 +441,7 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
             // The calculated setting is not shown for the root group of global configuration.
             $canCalculateSettings = ($group->parent_id || !empty($component));
 
-            if ($canCalculateSettings)
-            {
+            if ($canCalculateSettings) {
                 $html[] = '<th id="aclactionth' . $group->value . '">';
                 $html[] = '<span class="acl-action">' . JText::_('JLIB_RULES_CALCULATED_SETTING') . '</span>';
                 $html[] = '</th>';
@@ -501,8 +451,7 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
             $html[] = '</thead>';
             $html[] = '<tbody>';
 
-            foreach ($actions as $action)
-            {
+            foreach ($actions as $action) {
                 $html[] = '<tr>';
                 $html[] = '<td headers="actions-th' . $group->value . '">';
                 $html[] = '<label for="' . $this->id . '_' . $action->name . '_' . $group->value . '" class="hasTooltip" title="'
@@ -535,8 +484,7 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
                 $html[] = '</select>&#160; ';
 
                 // If this asset's rule is allowed, but the inherited rule is deny, we have a conflict.
-                if (($assetRule === true) && ($inheritedRule === false))
-                {
+                if (($assetRule === true) && ($inheritedRule === false)) {
                     $html[] = JText::_('JLIB_RULES_CONFLICT');
                 }
 
@@ -544,57 +492,38 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
 
                 // Build the Calculated Settings column.
                 // The inherited settings column is not displayed for the root group in global configuration.
-                if ($canCalculateSettings)
-                {
+                if ($canCalculateSettings) {
                     $html[] = '<td headers="aclactionth' . $group->value . '">';
 
                     // This is where we show the current effective settings considering currrent group, path and cascade.
                     // Check whether this is a component or global. Change the text slightly.
 
-                    if (JAccess::checkGroup($group->value, 'core.admin', $assetId) !== true)
-                    {
-                        if ($inheritedRule === null)
-                        {
+                    if (JAccess::checkGroup($group->value, 'core.admin', $assetId) !== true) {
+                        if ($inheritedRule === null) {
                             $html[] = '<span class="label label-important">' . JText::_('JLIB_RULES_NOT_ALLOWED') . '</span>';
-                        }
-                        elseif ($inheritedRule === true)
-                        {
+                        } elseif ($inheritedRule === true) {
                             $html[] = '<span class="label label-success">' . JText::_('JLIB_RULES_ALLOWED') . '</span>';
-                        }
-                        elseif ($inheritedRule === false)
-                        {
-                            if ($assetRule === false)
-                            {
+                        } elseif ($inheritedRule === false) {
+                            if ($assetRule === false) {
                                 $html[] = '<span class="label label-important">' . JText::_('JLIB_RULES_NOT_ALLOWED') . '</span>';
-                            }
-                            else
-                            {
+                            } else {
                                 $html[] = '<span class="label"><i class="icon-lock icon-white"></i> ' . JText::_('JLIB_RULES_NOT_ALLOWED_LOCKED')
                                     . '</span>';
                             }
                         }
-                    }
-                    elseif (!empty($component))
-                    {
+                    } elseif (!empty($component)) {
                         $html[] = '<span class="label label-success"><i class="icon-lock icon-white"></i> ' . JText::_('JLIB_RULES_ALLOWED_ADMIN')
                             . '</span>';
-                    }
-                    else
-                    {
+                    } else {
                         // Special handling for  groups that have global admin because they can't  be denied.
                         // The admin rights can be changed.
-                        if ($action->name === 'core.admin')
-                        {
+                        if ($action->name === 'core.admin') {
                             $html[] = '<span class="label label-success">' . JText::_('JLIB_RULES_ALLOWED') . '</span>';
-                        }
-                        elseif ($inheritedRule === false)
-                        {
+                        } elseif ($inheritedRule === false) {
                             // Other actions cannot be changed.
                             $html[] = '<span class="label label-important"><i class="icon-lock icon-white"></i> '
                                 . JText::_('JLIB_RULES_NOT_ALLOWED_ADMIN_CONFLICT') . '</span>';
-                        }
-                        else
-                        {
+                        } else {
                             $html[] = '<span class="label label-success"><i class="icon-lock icon-white"></i> ' . JText::_('JLIB_RULES_ALLOWED_ADMIN')
                                 . '</span>';
                         }
@@ -614,12 +543,9 @@ class FOFFormFieldRules extends JFormFieldRules implements FOFFormField
 
         $html[] = '<div class="alert">';
 
-        if ($section == 'component' || $section == null)
-        {
+        if ($section == 'component' || $section == null) {
             $html[] = JText::_('JLIB_RULES_SETTING_NOTES');
-        }
-        else
-        {
+        } else {
             $html[] = JText::_('JLIB_RULES_SETTING_NOTES_ITEM');
         }
 

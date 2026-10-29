@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  query
@@ -17,26 +18,23 @@ defined('FOF_INCLUDED') or die;
  */
 abstract class FOFQueryAbstract
 {
-	/**
-	 * Returns a new database query class
-	 *
-	 * @param   FOFDatabaseDriver  $db  The DB driver which will provide us with a query object
-	 *
-	 * @return FOFQueryAbstract
-	 */
-	public static function &getNew($db = null)
-	{
-		FOFPlatform::getInstance()->logDeprecated('FOFQueryAbstract is deprecated. Use FOFDatabaseQuery instead.');
+    /**
+     * Returns a new database query class
+     *
+     * @param   FOFDatabaseDriver  $db  The DB driver which will provide us with a query object
+     *
+     * @return FOFQueryAbstract
+     */
+    public static function &getNew($db = null)
+    {
+        FOFPlatform::getInstance()->logDeprecated('FOFQueryAbstract is deprecated. Use FOFDatabaseQuery instead.');
 
-		if (is_null($db))
-		{
-			$ret = FOFPlatform::getInstance()->getDbo()->getQuery(true);
-		}
-		else
-		{
-			$ret = $db->getQuery(true);
-		}
+        if (is_null($db)) {
+            $ret = FOFPlatform::getInstance()->getDbo()->getQuery(true);
+        } else {
+            $ret = $db->getQuery(true);
+        }
 
-		return $ret;
-	}
+        return $ret;
+    }
 }

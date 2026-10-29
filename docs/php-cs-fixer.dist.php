@@ -1,8 +1,9 @@
 <?php
 
 /**
- * PHP CS Fixer configuration: PSR-12 for the project's own PHP (maintainer's decision, 3.18), third-party code left as
- * its upstream ships it so it can still be compared and updated. Run from the repository's root:
+ * PHP CS Fixer configuration: PSR-12 for the project's own PHP (maintainer's decision, 3.18), FOF and Joomla Update's
+ * restore.php (Akeeba Kickstart) included, as Joomla's own; third-party code left as its upstream ships it so it can
+ * still be compared and updated. Run from the repository's root:
  *
  *     php-cs-fixer fix --config=docs/php-cs-fixer.dist.php
  *
@@ -16,14 +17,11 @@ $finder = PhpCsFixer\Finder::create()
     ->ignoreVCSIgnored(true)
     ->exclude([
         'libraries/vendor',
-        'libraries/fof',
         'libraries/idna_convert',
         'libraries/phpass',
         'libraries/php-encryption',
         'plugins/captcha/iconcaptcha/lib',
-    ])
-    // Akeeba Kickstart (Joomla Update's extraction script)
-    ->notPath('administrator/components/com_joomlaupdate/restore.php');
+    ]);
 
 return (new PhpCsFixer\Config())
     ->setRules(['@PSR12' => true])

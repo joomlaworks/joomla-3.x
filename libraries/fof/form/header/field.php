@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    FrameworkOnFramework
  * @subpackage form
@@ -16,29 +17,30 @@ defined('FOF_INCLUDED') or die;
  */
 class FOFFormHeaderField extends FOFFormHeader
 {
-	/**
-	 * Get the header
-	 *
-	 * @return  string  The header HTML
-	 */
-	protected function getHeader()
-	{
-		$sortable = ($this->element['sortable'] != 'false');
+    /**
+     * Get the header
+     *
+     * @return  string  The header HTML
+     */
+    protected function getHeader()
+    {
+        $sortable = ($this->element['sortable'] != 'false');
 
-		$label = $this->getLabel();
+        $label = $this->getLabel();
 
-		if ($sortable)
-		{
-			$view = $this->form->getView();
+        if ($sortable) {
+            $view = $this->form->getView();
 
-			return JHTML::_('grid.sort', $label, $this->name,
-				$view->getLists()->order_Dir, $view->getLists()->order,
-				$this->form->getModel()->task
-			);
-		}
-		else
-		{
-			return JText::_($label);
-		}
-	}
+            return JHTML::_(
+                'grid.sort',
+                $label,
+                $this->name,
+                $view->getLists()->order_Dir,
+                $view->getLists()->order,
+                $this->form->getModel()->task
+            );
+        } else {
+            return JText::_($label);
+        }
+    }
 }

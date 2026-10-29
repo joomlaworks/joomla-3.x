@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     FrameworkOnFramework
  * @subpackage  model
@@ -16,197 +17,182 @@ defined('FOF_INCLUDED') or die;
  */
 class FOFModelFieldDate extends FOFModelFieldText
 {
-	/**
-	 * Returns the default search method for this field.
-	 *
-	 * @return  string
-	 */
-	public function getDefaultSearchMethod()
-	{
-		return 'exact';
-	}
+    /**
+     * Returns the default search method for this field.
+     *
+     * @return  string
+     */
+    public function getDefaultSearchMethod()
+    {
+        return 'exact';
+    }
 
-	/**
-	 * Perform a between limits match. When $include is true
-	 * the condition tested is:
-	 * $from <= VALUE <= $to
-	 * When $include is false the condition tested is:
-	 * $from < VALUE < $to
-	 *
-	 * @param   mixed    $from     The lowest value to compare to
-	 * @param   mixed    $to       The higherst value to compare to
-	 * @param   boolean  $include  Should we include the boundaries in the search?
-	 *
-	 * @return  string  The SQL where clause for this search
-	 */
-	public function between($from, $to, $include = true)
-	{
-		if ($this->isEmpty($from) || $this->isEmpty($to))
-		{
-			return '';
-		}
+    /**
+     * Perform a between limits match. When $include is true
+     * the condition tested is:
+     * $from <= VALUE <= $to
+     * When $include is false the condition tested is:
+     * $from < VALUE < $to
+     *
+     * @param   mixed    $from     The lowest value to compare to
+     * @param   mixed    $to       The higherst value to compare to
+     * @param   boolean  $include  Should we include the boundaries in the search?
+     *
+     * @return  string  The SQL where clause for this search
+     */
+    public function between($from, $to, $include = true)
+    {
+        if ($this->isEmpty($from) || $this->isEmpty($to)) {
+            return '';
+        }
 
-		$extra = '';
+        $extra = '';
 
-		if ($include)
-		{
-			$extra = '=';
-		}
+        if ($include) {
+            $extra = '=';
+        }
 
-		$sql = '((' . $this->getFieldName() . ' >' . $extra . ' "' . $from . '") AND ';
-		$sql .= '(' . $this->getFieldName() . ' <' . $extra . ' "' . $to . '"))';
+        $sql = '((' . $this->getFieldName() . ' >' . $extra . ' "' . $from . '") AND ';
+        $sql .= '(' . $this->getFieldName() . ' <' . $extra . ' "' . $to . '"))';
 
-		return $sql;
-	}
+        return $sql;
+    }
 
-	/**
-	 * Perform an outside limits match. When $include is true
-	 * the condition tested is:
-	 * (VALUE <= $from) || (VALUE >= $to)
-	 * When $include is false the condition tested is:
-	 * (VALUE < $from) || (VALUE > $to)
-	 *
-	 * @param   mixed    $from     The lowest value of the excluded range
-	 * @param   mixed    $to       The higherst value of the excluded range
-	 * @param   boolean  $include  Should we include the boundaries in the search?
-	 *
-	 * @return  string  The SQL where clause for this search
-	 */
-	public function outside($from, $to, $include = false)
-	{
-		if ($this->isEmpty($from) || $this->isEmpty($to))
-		{
-			return '';
-		}
+    /**
+     * Perform an outside limits match. When $include is true
+     * the condition tested is:
+     * (VALUE <= $from) || (VALUE >= $to)
+     * When $include is false the condition tested is:
+     * (VALUE < $from) || (VALUE > $to)
+     *
+     * @param   mixed    $from     The lowest value of the excluded range
+     * @param   mixed    $to       The higherst value of the excluded range
+     * @param   boolean  $include  Should we include the boundaries in the search?
+     *
+     * @return  string  The SQL where clause for this search
+     */
+    public function outside($from, $to, $include = false)
+    {
+        if ($this->isEmpty($from) || $this->isEmpty($to)) {
+            return '';
+        }
 
-		$extra = '';
+        $extra = '';
 
-		if ($include)
-		{
-			$extra = '=';
-		}
+        if ($include) {
+            $extra = '=';
+        }
 
-		$sql = '((' . $this->getFieldName() . ' <' . $extra . ' "' . $from . '") OR ';
-		$sql .= '(' . $this->getFieldName() . ' >' . $extra . ' "' . $to . '"))';
+        $sql = '((' . $this->getFieldName() . ' <' . $extra . ' "' . $from . '") OR ';
+        $sql .= '(' . $this->getFieldName() . ' >' . $extra . ' "' . $to . '"))';
 
-		return $sql;
-	}
+        return $sql;
+    }
 
-	/**
-	 * Interval date search
-	 *
-	 * @param   string               $value     The value to search
-	 * @param   string|array|object  $interval  The interval. Can be (+1 MONTH or array('value' => 1, 'unit' => 'MONTH', 'sign' => '+'))
-	 * @param   boolean              $include   If the borders should be included
-	 *
-	 * @return  string  the sql string
-	 */
-	public function interval($value, $interval, $include = true)
-	{
-		if ($this->isEmpty($value) || $this->isEmpty($interval))
-		{
-			return '';
-		}
+    /**
+     * Interval date search
+     *
+     * @param   string               $value     The value to search
+     * @param   string|array|object  $interval  The interval. Can be (+1 MONTH or array('value' => 1, 'unit' => 'MONTH', 'sign' => '+'))
+     * @param   boolean              $include   If the borders should be included
+     *
+     * @return  string  the sql string
+     */
+    public function interval($value, $interval, $include = true)
+    {
+        if ($this->isEmpty($value) || $this->isEmpty($interval)) {
+            return '';
+        }
 
-		$interval = $this->getInterval($interval);
+        $interval = $this->getInterval($interval);
 
-		if ($interval['sign'] == '+')
-		{
-			$function = 'DATE_ADD';
-		}
-		else
-		{
-			$function = 'DATE_SUB';
-		}
+        if ($interval['sign'] == '+') {
+            $function = 'DATE_ADD';
+        } else {
+            $function = 'DATE_SUB';
+        }
 
-		$extra = '';
+        $extra = '';
 
-		if ($include)
-		{
-			$extra = '=';
-		}
+        if ($include) {
+            $extra = '=';
+        }
 
-		$sql = '(' . $this->getFieldName() . ' >' . $extra . ' ' . $function;
-		$sql .= '(' . $this->getFieldName() . ', INTERVAL ' . $interval['value'] . ' ' . $interval['unit'] . '))';
+        $sql = '(' . $this->getFieldName() . ' >' . $extra . ' ' . $function;
+        $sql .= '(' . $this->getFieldName() . ', INTERVAL ' . $interval['value'] . ' ' . $interval['unit'] . '))';
 
-		return $sql;
-	}
+        return $sql;
+    }
 
-	/**
-	 * Perform a between limits match. When $include is true
-	 * the condition tested is:
-	 * $from <= VALUE <= $to
-	 * When $include is false the condition tested is:
-	 * $from < VALUE < $to
-	 *
-	 * @param   mixed    $from     The lowest value to compare to
-	 * @param   mixed    $to       The higherst value to compare to
-	 * @param   boolean  $include  Should we include the boundaries in the search?
-	 *
-	 * @return  string  The SQL where clause for this search
-	 */
-	public function range($from, $to, $include = true)
-	{
-		if ($this->isEmpty($from) && $this->isEmpty($to))
-		{
-			return '';
-		}
+    /**
+     * Perform a between limits match. When $include is true
+     * the condition tested is:
+     * $from <= VALUE <= $to
+     * When $include is false the condition tested is:
+     * $from < VALUE < $to
+     *
+     * @param   mixed    $from     The lowest value to compare to
+     * @param   mixed    $to       The higherst value to compare to
+     * @param   boolean  $include  Should we include the boundaries in the search?
+     *
+     * @return  string  The SQL where clause for this search
+     */
+    public function range($from, $to, $include = true)
+    {
+        if ($this->isEmpty($from) && $this->isEmpty($to)) {
+            return '';
+        }
 
-		$extra = '';
+        $extra = '';
 
-		if ($include)
-		{
-			$extra = '=';
-		}
+        if ($include) {
+            $extra = '=';
+        }
 
-		if ($from)
-			$sql[] = '(' . $this->getFieldName() . ' >' . $extra . ' "' . $from . '")';
-		if ($to)
-			$sql[] = '(' . $this->getFieldName() . ' <' . $extra . ' "' . $to . '")';
+        if ($from) {
+            $sql[] = '(' . $this->getFieldName() . ' >' . $extra . ' "' . $from . '")';
+        }
+        if ($to) {
+            $sql[] = '(' . $this->getFieldName() . ' <' . $extra . ' "' . $to . '")';
+        }
 
-		$sql = '(' . implode(' AND ', $sql) . ')';
+        $sql = '(' . implode(' AND ', $sql) . ')';
 
-		return $sql;
-	}
+        return $sql;
+    }
 
-	/**
-	 * Parses an interval –which may be given as a string, array or object– into
-	 * a standardised hash array that can then be used bu the interval() method.
-	 *
-	 * @param   string|array|object  $interval  The interval expression to parse
-	 *
-	 * @return  array  The parsed, hash array form of the interval
-	 */
-	protected function getInterval($interval)
-	{
-		if (is_string($interval))
-		{
-			if (strlen($interval) > 2)
-			{
-				$interval = explode(" ", $interval);
-				$sign = ($interval[0] == '-') ? '-' : '+';
-				$value = (int) substr($interval[0], 1);
+    /**
+     * Parses an interval –which may be given as a string, array or object– into
+     * a standardised hash array that can then be used bu the interval() method.
+     *
+     * @param   string|array|object  $interval  The interval expression to parse
+     *
+     * @return  array  The parsed, hash array form of the interval
+     */
+    protected function getInterval($interval)
+    {
+        if (is_string($interval)) {
+            if (strlen($interval) > 2) {
+                $interval = explode(" ", $interval);
+                $sign = ($interval[0] == '-') ? '-' : '+';
+                $value = (int) substr($interval[0], 1);
 
-				$interval = array(
-					'unit' => $interval[1],
-					'value' => $value,
-					'sign' => $sign
-				);
-			}
-			else
-			{
-				$interval = array(
-					'unit' => 'MONTH',
-					'value' => 1,
-					'sign' => '+'
-				);
-			}
-		}
-		else
-		{
-			$interval = (array) $interval;
-		}
+                $interval = array(
+                    'unit' => $interval[1],
+                    'value' => $value,
+                    'sign' => $sign
+                );
+            } else {
+                $interval = array(
+                    'unit' => 'MONTH',
+                    'value' => 1,
+                    'sign' => '+'
+                );
+            }
+        } else {
+            $interval = (array) $interval;
+        }
 
-		return $interval;
-	}
+        return $interval;
+    }
 }
