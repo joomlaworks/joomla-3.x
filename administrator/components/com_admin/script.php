@@ -4761,8 +4761,11 @@ class JoomlaInstallerScript
             '/media/system/js/jquery.searchtools.js',
             '/media/system/js/jquery.searchtools.min.js',
             '/media/system/css/jquery.searchtools.css',
+            // jQuery UI's sortable and Ajax Autocomplete for jQuery (now stand-ins in jquery.compat.js)
             '/media/system/js/jquery.ui.sortable.js',
             '/media/system/js/jquery.ui.sortable.min.js',
+            '/media/system/js/jquery.autocomplete.js',
+            '/media/system/js/jquery.autocomplete.min.js',
             // Show-on (cms.js), part of global.js and frontend.js
             '/media/system/js/cms.js',
             '/media/system/js/cms-uncompressed.js',

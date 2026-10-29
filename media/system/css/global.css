@@ -154,14 +154,16 @@ html[dir=rtl] .js-stools .chzn-container {text-align:right;}
     .js-stools .js-stools-container-bar,.js-stools .js-stools-container-list {float:none;display:block;}
 }
 
-/* --- Sorting rows (subforms, the Repeatable field, lists sorted by ordering) --- */
+/* --- Sorting rows (subforms, the Repeatable field, lists sorted by ordering, CMS.sortable) --- */
 /* none: a touch on a handle drags the row instead of scrolling the page (touch-action needs a box, not an inline element) */
 .group-move,.sortable-handler {cursor:move;touch-action:none;}
 .sortable-handler {display:inline-block;}
 /* The row being moved */
 .cms-sort-dragging {opacity:0.6;outline:2px dashed var(--c-primary, #2a6fb5);outline-offset:-2px;}
 /* Where the row will go: a shadow, as striped tables' backgrounds outrank this rule */
-div.cms-sort-placeholder {height:4px;margin:4px 0;background:var(--c-primary, #2a6fb5);border-radius:2px;}
+div.cms-sort-placeholder,li.cms-sort-placeholder {height:4px;margin:4px 0;list-style:none;background:var(--c-primary, #2a6fb5);border-radius:2px;}
+/* Items side by side: a frame of the item's size (set by the script) */
+.cms-sort-placeholder.is-inline {box-sizing:border-box;background:none;border:2px dashed var(--c-primary, #2a6fb5);border-radius:4px;}
 tr.cms-sort-placeholder > td {height:4px;padding:0;border:0;box-shadow:inset 0 0 0 2px var(--c-primary, #2a6fb5);}
 /* Handles of lists not sorted by ordering do nothing */
 .sortable-handler.inactive {cursor:default;touch-action:auto;}

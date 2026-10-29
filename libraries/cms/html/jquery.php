@@ -91,6 +91,11 @@ abstract class JHtmlJquery
             $debug = JDEBUG;
         }
 
+        // The sortable plugin was removed in 3.18: jQuery UI's core, then the stand-in on the CMS's own code (jquery.compat.js)
+        if (in_array('sortable', $components)) {
+            array_unshift($components, 'core');
+        }
+
         // Load each of the requested components
         foreach ($components as $component) {
             // Only attempt to load the component if it's supported in core and hasn't already been loaded
@@ -98,6 +103,10 @@ abstract class JHtmlJquery
                 JHtml::_('script', 'system/jquery.ui.' . $component . '.min.js', array('version' => 'auto', 'relative' => true, 'detectDebug' => $debug));
                 static::$loaded[__METHOD__][$component] = true;
             }
+        }
+
+        if (in_array('sortable', $components)) {
+            JHtml::_('behavior.jquerycompat');
         }
 
         return;

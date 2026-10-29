@@ -72,7 +72,7 @@ Summary of changes:
 - MooTools is gone from the core: one shared script, `global.js` (namespace `CMS`), replaces `core.js` (removed; `JHtml` requests for it load `global.js`) and does what MooTools did (modals, tooltips, tabs, sliders, tree, password meter) in plain JavaScript; old names keep working, and MooTools stays available for extensions that ask for it. Polyfills for old browsers are gone too
 
 **Improvements:**
-- Library updates: jQuery UI 1.14.2 (with the 1.9 helpers kept for extensions), SimplePie 1.9.0 (needs PHP 7.2; core doesn't use it), sodium_compat 1.24.2, Ajax Autocomplete 1.5.0
+- Library updates: jQuery UI 1.14.2 (with the 1.9 helpers kept for extensions), SimplePie 1.9.0 (needs PHP 7.2; core doesn't use it), sodium_compat 1.24.2
 - SQLite driver: MySQL on SQLite 3.1.1 (temporary tables, transactions and date arithmetic fixed upstream), Joomla's patches kept
 - Three unused libraries removed: HTML5 Shiv (for Internet Explorer 8), Google's reCAPTCHA PHP client and a duplicate copy of PHP UTF-8
 - PHPMailer updated from 5.2.28 (2020) to 7.1.1 (May 2026), with Joomla's mailer and extensions using PHPMailer's old class names working as before
@@ -147,7 +147,7 @@ Summary of changes:
 - Keep-alive only while editing after logging in: login, registration, reset, contact and other one-off forms no longer ping the server
 - Searchable lists (Chosen, Ajax Chosen) rewritten in plain JavaScript in `global.js`: same look and markup, screen-reader roles added, no jQuery needed
 - Lists' search tools and Smart Search's suggestions rewritten in plain JavaScript (`global.js`, `frontend.js`): same look and behaviour, no jQuery needed; Smart Search's search page and module load no jQuery
-- TinyMCE (legacy)'s toolbar builder in plain JavaScript; jQuery UI's sortable plugin removed (nothing in core uses it)
+- TinyMCE (legacy)'s toolbar builder in plain JavaScript; jQuery UI's sortable and Ajax Autocomplete removed, with stand-ins on the CMS's own code for extensions that still call them (`jquery.compat.js`)
 - Unused libraries removed (Symfony's PHP 7.3 polyfill, the Framework's DI container and PSR-11); FOF's LESS compiler updated to lessphp 0.5.0
 - Administrator menu: Media at the top level after Content, no Help menu; Prothero's phone menu in two columns without gaps
 - Inline Editing (front-end editing of modules and menus) is off by default

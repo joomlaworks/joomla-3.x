@@ -217,22 +217,6 @@
     ],
     "JavaScript Libraries": [
         {
-            "name": "Ajax Autocomplete for jQuery",
-            "version": "1.5.0",
-            "date": "2025.07.09",
-            "dateSource": "npm, devbridge-autocomplete 1.5.0; GitHub tag v1.5.0",
-            "license": "MIT",
-            "url": "https://github.com/devbridge/jQuery-Autocomplete",
-            "path": "media/system/js/jquery.autocomplete.js",
-            "note": "",
-            "latest": "2.0.7",
-            "isLatest": false,
-            "checked": "2026.10.27",
-            "use": "shared",
-            "series": "",
-            "seriesLatest": "1.x: 1.5.0 (2025.07.09)"
-        },
-        {
             "name": "Chosen",
             "version": "1.6.2",
             "date": "2016.08.02",

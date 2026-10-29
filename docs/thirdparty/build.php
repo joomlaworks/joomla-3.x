@@ -54,8 +54,6 @@ $groups = array(
             'note' => 'Date fields of languages using the Jalali calendar', 'check' => array('media/system/js/jalalidatepicker-license.txt', '/JalaliDatePicker ([0-9.]+)/')),
         array('name' => 'Chosen', 'use' => 'shared', 'upstream' => 'npm:chosen-js', 'version' => '1.6.2', 'date' => '2016-08-02', 'dateSource' => 'GitHub release v1.6.2', 'license' => 'MIT', 'url' => 'https://harvesthq.github.io/chosen/', 'path' => 'media/system/css/chosen.css', 'note' => 'Its stylesheet and sprite only (the markup templates style), image paths changed by Joomla 3.x UTD; the script is Joomla 3.x UTD\'s own (CMS.chosen in global.js)',
             'check' => array('media/system/css/chosen.css', '/Version ([0-9.]+)/')),
-        array('name' => 'Ajax Autocomplete for jQuery', 'use' => 'shared', 'upstream' => 'npm:devbridge-autocomplete', 'version' => '1.5.0', 'date' => '2025-07-09', 'dateSource' => 'npm, devbridge-autocomplete 1.5.0; GitHub tag v1.5.0', 'license' => 'MIT', 'url' => 'https://github.com/devbridge/jQuery-Autocomplete', 'path' => 'media/system/js/jquery.autocomplete.js',
-            'check' => array('media/system/js/jquery.autocomplete.js', '/Ajax Autocomplete for jQuery, version ([0-9.]+)/')),
         array('name' => 'diff-match-patch', 'use' => 'core', 'version' => '', 'license' => 'Apache-2.0', 'url' => 'https://github.com/google/diff-match-patch', 'path' => 'media/com_contenthistory/js/contenthistory.js',
             'note' => 'Google Code release as stock Joomla 3 shipped it (older than the GitHub repository, so without a version); the comparison around it is Joomla\'s'),
     ),

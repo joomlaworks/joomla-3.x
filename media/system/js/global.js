@@ -3246,82 +3246,190 @@
 	});
 
 	/*
-	 * --- Sorting rows by dragging a handle (subforms and the Repeatable field; what jQuery UI's sortable did for them) ---
+	 * --- Sorting items by dragging them (CMS.sortable; subforms and the Repeatable field use it through sortRows(), and
+	 * jquery.compat.js' jQuery.fn.sortable() for extensions; what jQuery UI's sortable did) ---
 	 *
-	 * Pointer events, so mouse, pen and touch; a line shows where the row will go and the row moves once, when released
-	 * (moving it while dragging reloaded the iframes in it, an editor's, every time it passed a row). A focused handle moves
-	 * its row with the arrow keys. jQuery UI's "sortstop" goes out through jQuery when it's there (TinyMCE 4 restarts the
-	 * editors of a moved row on it).
+	 * Pointer events, so mouse, pen and touch: a drag starts after the pointer moved 3 pixels (a click on a link or a button
+	 * in an item still works), a placeholder shows where the item will go and the item moves once, when released (moving it
+	 * while dragging reloaded the iframes in it, an editor's, every time it passed one). Items in a column go above or below
+	 * an item's middle; items side by side (a grid, floats, inline blocks, axis "x") before or after its centre. A
+	 * placeholder of the item's size (side by side, a placeholder class, forcePlaceholderSize) takes the item's place while
+	 * the item follows the pointer, as jQuery UI's did; otherwise the item stays and a line shows the place. A focused
+	 * handle moves its item with the arrow keys.
 	 */
-	const sortRows = (container, rowSelector, handleSelector, onMove) => {
-		const isRow = (element) => element.nodeType === 1 && element.matches(rowSelector) && !element.classList.contains('cms-sort-placeholder');
-		const siblings = (row) => Array.prototype.filter.call(row.parentNode.children, (item) => item !== row && isRow(item));
-		const moved = (row) => {
-			if (window.jQuery) {
-				window.jQuery(row).trigger('sortstop', [{ item: window.jQuery(row) }]);
+	const sortItems = (container, settings) => {
+		const s = settings;
+		let placeholder = null;
+
+		const matches = (element) => (typeof s.items === 'function' ? s.items(element) : (s.items ? element.matches(s.items) : element.parentNode === container));
+		const isItem = (element) => element && element.nodeType === 1 && element !== placeholder && container.contains(element) && element !== container && matches(element);
+		const itemsOf = (parent) => Array.prototype.filter.call(parent.children, isItem);
+		const closestItem = (node) => {
+			while (node && node !== container) {
+				if (isItem(node)) {
+					return node;
+				}
+
+				node = node.parentNode;
 			}
 
-			if (onMove) {
-				onMove(row);
+			return null;
+		};
+		const ownItem = (target) => {
+			const handle = s.handle ? (target.closest ? target.closest(s.handle) : null) : null;
+			const item = closestItem(s.handle ? handle : target);
+
+			if (!item || (s.handle && !item.contains(handle)) || (s.cancel && target.closest && target.closest(s.cancel) && item.contains(target.closest(s.cancel)))) {
+				return null;
+			}
+
+			return { handle: handle || item, item };
+		};
+		const isRtl = (element) => window.getComputedStyle(element).direction === 'rtl';
+		const sideBySide = (items) => s.axis === 'x' || (s.axis !== 'y' && items.some((item, index) => {
+			const next = items[index + 1];
+
+			if (!next) {
+				return false;
+			}
+
+			const a = item.getBoundingClientRect();
+			const b = next.getBoundingClientRect();
+
+			return Math.abs(a.top - b.top) < Math.min(a.height, b.height) / 2 && a.left !== b.left;
+		}));
+		const makePlaceholder = (item, inline) => {
+			const tag = item.tagName === 'TR' ? 'tr' : (item.tagName === 'LI' ? 'li' : 'div');
+			const element = document.createElement(tag);
+			const style = window.getComputedStyle(item);
+
+			if (tag === 'tr') {
+				const cell = document.createElement('td');
+
+				cell.colSpan = item.cells.length;
+				element.appendChild(cell);
+			}
+
+			element.className = s.placeholder ? 'ui-sortable-placeholder ' + s.placeholder : 'cms-sort-placeholder' + (inline ? ' is-inline' : '');
+
+			// Side by side, or when asked for (forcePlaceholderSize), it has the item's size; a placeholder class sizes its own
+			if ((inline && !s.placeholder) || s.forcePlaceholderSize) {
+				element.style.width = item.offsetWidth + 'px';
+				element.style.height = item.offsetHeight + 'px';
+				element.style.margin = style.margin;
+
+				if (inline) {
+					element.style.display = style.display === 'inline' ? 'inline-block' : style.display;
+					element.style.float = style.float;
+				}
+			}
+
+			return element;
+		};
+		const call = (name, item, changed) => {
+			if (s[name]) {
+				s[name](item, placeholder, changed);
 			}
 		};
-		const ownRow = (target) => {
-			const handle = target.closest ? target.closest(handleSelector) : null;
-			const row = handle ? handle.closest(rowSelector) : null;
 
-			return row && container.contains(row) ? { handle, row } : null;
-		};
-
-		container.addEventListener('pointerdown', (event) => {
-			const found = event.button > 0 ? null : ownRow(event.target);
+		const onPointerDown = (event) => {
+			const found = event.button > 0 || s.disabled ? null : ownItem(event.target);
 
 			if (!found) {
 				return;
 			}
 
-			const { handle, row } = found;
-			const placeholder = document.createElement(row.tagName === 'TR' ? 'tr' : 'div');
+			const { handle, item } = found;
+			const startX = event.clientX;
+			const startY = event.clientY;
 			let started = false;
+			let inline = false;
+			let rtl = false;
+			let lifted = null;
 
-			if (row.tagName === 'TR') {
-				const cell = document.createElement('td');
-
-				cell.colSpan = row.cells.length;
-				placeholder.appendChild(cell);
-			}
-
-			placeholder.className = 'cms-sort-placeholder';
 			event.preventDefault();
-			handle.setPointerCapture(event.pointerId);
+
+			// The item out of the flow, following the pointer (fixed, at the size it had); a row's cells keep their widths
+			const lift = (x, y) => {
+				const box = item.getBoundingClientRect();
+				const cells = item.tagName === 'TR' ? Array.prototype.slice.call(item.cells) : [];
+
+				lifted = { x: x - box.left, y: y - box.top, style: item.getAttribute('style'), cells: cells.map((cell) => [cell, cell.getAttribute('style'), cell.getBoundingClientRect().width]) };
+				lifted.cells.forEach(([cell, , width]) => {
+					cell.style.width = width + 'px';
+					cell.style.boxSizing = 'border-box';
+				});
+				Object.assign(item.style, {
+					position: 'fixed', left: box.left + 'px', top: box.top + 'px', width: box.width + 'px', height: box.height + 'px', margin: '0',
+					boxSizing: 'border-box', zIndex: '10000', pointerEvents: 'none',
+				});
+			};
+			const restore = (element, style) => {
+				if (style === null) {
+					element.removeAttribute('style');
+				} else {
+					element.setAttribute('style', style);
+				}
+			};
 
 			const move = (moveEvent) => {
+				const x = moveEvent.clientX;
 				const y = moveEvent.clientY;
 				let before = null;
 
 				if (!started) {
+					if (Math.abs(x - startX) < 3 && Math.abs(y - startY) < 3) {
+						return;
+					}
+
 					started = true;
-					row.classList.add('cms-sort-dragging');
+					inline = sideBySide(itemsOf(item.parentNode));
+					rtl = isRtl(item.parentNode);
+					placeholder = makePlaceholder(item, inline);
+					item.classList.add('cms-sort-dragging');
+
+					if (inline || s.placeholder || s.forcePlaceholderSize) {
+						item.parentNode.insertBefore(placeholder, item);
+						lift(startX, startY);
+					} else {
+						try {
+							handle.setPointerCapture(moveEvent.pointerId);
+						} catch (error) {
+							// The pointer is gone already
+						}
+					}
+
+					call('onStart', item);
 				}
 
-				const others = siblings(row);
+				if (lifted) {
+					item.style.left = (x - lifted.x) + 'px';
+					item.style.top = (y - lifted.y) + 'px';
+				}
 
-				for (const item of others) {
-					const box = item.getBoundingClientRect();
+				const others = itemsOf(item.parentNode).filter((other) => other !== item);
 
-					if (y < box.top + box.height / 2) {
-						before = item;
+				for (const other of others) {
+					const box = other.getBoundingClientRect();
+					const beforeCentre = rtl ? x > box.left + box.width / 2 : x < box.left + box.width / 2;
+
+					if (inline ? (y < box.top || (y <= box.bottom && beforeCentre)) : y < box.top + box.height / 2) {
+						before = other;
 						break;
 					}
 				}
 
-				// Below the last row: right after it (a subform's <template> may follow the rows)
+				// After the last item: right after it (a subform's <template> may follow the rows)
 				if (!before) {
-					const last = others.length ? others[others.length - 1] : row;
+					const last = others.length ? others[others.length - 1] : item;
 
-					before = last === row ? row.nextSibling : last.nextSibling;
+					before = last === item ? item.nextSibling : last.nextSibling;
 				}
 
-				row.parentNode.insertBefore(placeholder, before);
+				if (before !== placeholder && (placeholder.nextSibling !== before || placeholder.parentNode !== item.parentNode)) {
+					item.parentNode.insertBefore(placeholder, before);
+					call('onChange', item);
+				}
 
 				// Near the window's edges the page scrolls
 				if (y < 40) {
@@ -3332,64 +3440,152 @@
 			};
 
 			const stop = () => {
-				handle.removeEventListener('pointermove', move);
-				handle.removeEventListener('pointerup', stop);
-				handle.removeEventListener('pointercancel', stop);
-				row.classList.remove('cms-sort-dragging');
+				document.removeEventListener('pointermove', move);
+				document.removeEventListener('pointerup', stop);
+				document.removeEventListener('pointercancel', stop);
+
+				if (!started) {
+					return;
+				}
+
+				let changed = false;
+
+				item.classList.remove('cms-sort-dragging');
+
+				if (lifted) {
+					restore(item, lifted.style);
+					lifted.cells.forEach(([cell, style]) => restore(cell, style));
+					lifted = null;
+				}
 
 				if (placeholder.parentNode) {
-					const changed = placeholder.nextSibling !== row && placeholder.previousSibling !== row;
+					changed = placeholder.nextElementSibling !== item && placeholder.previousElementSibling !== item;
 
 					if (changed) {
-						placeholder.parentNode.insertBefore(row, placeholder);
+						placeholder.parentNode.insertBefore(item, placeholder);
 					}
 
 					placeholder.remove();
-
-					if (changed) {
-						moved(row);
-					}
 				}
+
+				// The click that ends a drag opens nothing
+				const swallow = (clickEvent) => {
+					clickEvent.preventDefault();
+					clickEvent.stopPropagation();
+				};
+
+				window.addEventListener('click', swallow, true);
+				setTimeout(() => window.removeEventListener('click', swallow, true), 0);
+
+				if (changed) {
+					call('onMove', item);
+				}
+
+				call('onStop', item, changed);
+				placeholder = null;
 			};
 
-			handle.addEventListener('pointermove', move);
-			handle.addEventListener('pointerup', stop);
-			handle.addEventListener('pointercancel', stop);
-		});
+			document.addEventListener('pointermove', move);
+			document.addEventListener('pointerup', stop);
+			document.addEventListener('pointercancel', stop);
+		};
 
-		// A touch on a handle drags, never pans the page (touch-action alone fails on inline handles)
-		container.addEventListener('touchstart', (event) => {
-			if (ownRow(event.target)) {
+		// A touch on a handle drags, never pans the page (touch-action alone fails on inline handles); items without a
+		// handle of their own leave touches to the page, or a list could never be scrolled past
+		const onTouchStart = (event) => {
+			if (s.handle && !s.disabled && ownItem(event.target)) {
 				event.preventDefault();
 			}
-		}, { passive: false });
+		};
 
-		container.addEventListener('keydown', (event) => {
-			const found = event.key === 'ArrowUp' || event.key === 'ArrowDown' ? ownRow(event.target) : null;
+		const onKeyDown = (event) => {
+			const keys = { ArrowUp: -1, ArrowDown: 1 };
+
+			if (s.horizontalKeys) {
+				keys.ArrowLeft = -1;
+				keys.ArrowRight = 1;
+			}
+
+			const found = keys[event.key] && !s.disabled && s.handle ? ownItem(event.target) : null;
 
 			if (!found) {
 				return;
 			}
 
-			const { handle, row } = found;
-			const others = siblings(row);
-			const all = Array.prototype.filter.call(row.parentNode.children, isRow);
-			const index = all.indexOf(row);
+			const { handle, item } = found;
+			const all = itemsOf(item.parentNode);
+			const index = all.indexOf(item);
+			const step = (event.key === 'ArrowLeft' || event.key === 'ArrowRight') && isRtl(item.parentNode) ? -keys[event.key] : keys[event.key];
 
 			event.preventDefault();
 
-			if (event.key === 'ArrowUp' && index > 0) {
-				row.parentNode.insertBefore(row, all[index - 1]);
-			} else if (event.key === 'ArrowDown' && index < others.length) {
-				row.parentNode.insertBefore(row, all[index + 1].nextSibling);
+			if (step < 0 && index > 0) {
+				item.parentNode.insertBefore(item, all[index - 1]);
+			} else if (step > 0 && index < all.length - 1) {
+				item.parentNode.insertBefore(item, all[index + 1].nextSibling);
 			} else {
 				return;
 			}
 
 			handle.focus();
-			moved(row);
-		});
+			call('onMove', item);
+			call('onStop', item, true);
+		};
+
+		container.addEventListener('pointerdown', onPointerDown);
+		container.addEventListener('touchstart', onTouchStart, { passive: false });
+		container.addEventListener('keydown', onKeyDown);
+
+		return {
+			options: s,
+			items: () => Array.prototype.filter.call(container.querySelectorAll('*'), isItem),
+			destroy() {
+				container.removeEventListener('pointerdown', onPointerDown);
+				container.removeEventListener('touchstart', onTouchStart, { passive: false });
+				container.removeEventListener('keydown', onKeyDown);
+			},
+		};
 	};
+
+	CMS.sortable = {
+		/**
+		 * @param  {HTMLElement|string}  container  The element whose items are sorted (or a selector)
+		 * @param  {Object}              options    items (a selector or a function(element); the container's children
+		 *                                          by default), handle (a selector; the item itself by default), cancel (a
+		 *                                          selector where no drag starts; form controls by default), axis (x, y),
+		 *                                          placeholder (a class name instead of the CMS's own placeholder),
+		 *                                          forcePlaceholderSize, disabled (read on every drag, so it can change),
+		 *                                          onStart(item, placeholder), onChange(item, placeholder),
+		 *                                          onMove(item) when its place changed, onStop(item, changed)
+		 *
+		 * @return  {Object|null}  options (live), items(), destroy()
+		 */
+		attach(container, options) {
+			container = typeof container === 'string' ? document.querySelector(container) : (container && container.jquery ? container[0] : container);
+
+			if (!container) {
+				return null;
+			}
+
+			return sortItems(container, Object.assign({ cancel: 'input, textarea, button, select, option', horizontalKeys: true }, options || {}));
+		},
+	};
+
+	// Rows of subforms and the Repeatable field: jQuery UI's "sortstop" goes out through jQuery when it's there (TinyMCE 4
+	// restarts the editors of a moved row on it)
+	const sortRows = (container, rowSelector, handleSelector, onMove) => sortItems(container, {
+		items: rowSelector,
+		handle: handleSelector,
+		onMove(row) {
+			if (window.jQuery) {
+				window.jQuery(row).trigger('sortstop', [{ item: window.jQuery(row) }]);
+			}
+
+			if (onMove) {
+				onMove(row);
+			}
+		},
+	});
 
 	// Handles written as links without an address can't be focused: they get a tab stop
 	const focusableHandles = (root, handleSelector) => {
@@ -6447,57 +6643,78 @@
 	});
 
 	/*
-	 * --- Search suggestions (Smart Search's module and search page; what core used jquery.autocomplete.js for) ---
+	 * --- Search suggestions (Smart Search's module and search page, and jquery.compat.js' jQuery.fn.autocomplete() for
+	 * extensions; what jquery.autocomplete.js was) ---
 	 *
-	 * As the visitor types, terms from the server (url?q=..., an answer {suggestions: [...]}) in a list under the field:
-	 * requests wait for a pause (delay), answers are kept per text, and a text whose start had no suggestions isn't asked
-	 * for; matches in <strong>. The list keeps jQuery Autocomplete's class names (.autocomplete-suggestions,
-	 * .autocomplete-suggestion, .autocomplete-selected), which Smart Search's and templates' styles use. Arrows, Enter,
-	 * Escape and the mouse; the field is a combobox of the listbox for screen readers. jquery.autocomplete.js stays for
-	 * extensions.
+	 * As the visitor types, suggestions from the server (url?q=..., an answer {suggestions: [...]}, each a text or {value,
+	 * data}) or from a list of the page's own (lookup) in a list under the field: requests wait for a pause (delay),
+	 * answers are kept per text, and a text whose start had no suggestions isn't asked for; matches in <strong>. The list
+	 * keeps jQuery Autocomplete's class names (.autocomplete-suggestions, .autocomplete-suggestion, .autocomplete-selected),
+	 * which Smart Search's and templates' styles use. Arrows, Enter, Escape and the mouse; the field is a combobox of the
+	 * listbox for screen readers.
 	 */
 	if (!CMS.suggest) {
 		let suggestCount = 0;
 
+		const suggestDefaults = {
+			paramName: 'q', minChars: 1, delay: 500, maxHeight: 400, params: {}, preventBadQueries: true, zIndex: 9999,
+			containerClass: 'autocomplete-suggestions', lookupLimit: 0,
+		};
+
 		CMS.suggest = {
 			/**
 			 * @param  {HTMLInputElement|string}  input
-			 * @param  {Object}                   options  url, paramName (q), minChars (1), delay (500), maxHeight (400), width
+			 * @param  {Object}                   options  url (or a function(query)), paramName (q), params (more query values), minChars (1),
+			 *                                             delay (500), maxHeight (400), width, lookup (suggestions, or a
+			 *                                             function(query, done)), lookupFilter(suggestion, query,
+			 *                                             lowerCaseQuery), lookupLimit, transformResult(response, query),
+			 *                                             formatResult(suggestion, query) (HTML), onSelect(suggestion),
+			 *                                             onSearchStart(params) (false stops it), onSearchComplete(query,
+			 *                                             suggestions), onSearchError(query, error), autoSelectFirst,
+			 *                                             noCache, preventBadQueries, zIndex, containerClass
+			 *
+			 * @return  {Object|null}  setOptions(), disable(), enable(), clear(), hide(), dispose(), and options
 			 */
 			attach(input, options) {
-				input = typeof input === 'string' ? document.querySelector(input) : input;
+				input = typeof input === 'string' ? document.querySelector(input) : (input && input.jquery ? input[0] : input);
 
-				if (!input || input.cmsSuggest) {
-					return;
+				if (!input) {
+					return null;
 				}
 
-				const o = Object.assign({ paramName: 'q', minChars: 1, delay: 500, maxHeight: 400 }, options || {});
+				if (input.cmsSuggest) {
+					return input.cmsSuggest;
+				}
+
+				const o = Object.assign({}, suggestDefaults, options || {});
 				const box = document.createElement('div');
-				const cache = {};
-				const empty = [];
+				let cache = {};
+				let empty = [];
 				let items = [];
 				let active = -1;
 				let timer = null;
 				let current = '';
+				let disabled = false;
 
 				suggestCount += 1;
-				input.cmsSuggest = true;
 				input.setAttribute('autocomplete', 'off');
 				input.setAttribute('role', 'combobox');
 				input.setAttribute('aria-autocomplete', 'list');
 				input.setAttribute('aria-expanded', 'false');
-				box.className = 'autocomplete-suggestions';
+				box.className = o.containerClass;
 				box.id = 'cms-suggest-' + suggestCount;
 				box.setAttribute('role', 'listbox');
-				box.style.cssText = 'position:absolute;display:none;z-index:9999;max-height:' + parseInt(o.maxHeight, 10) + 'px;';
+				box.style.cssText = 'position:absolute;display:none;z-index:' + parseInt(o.zIndex, 10) + ';max-height:' + parseInt(o.maxHeight, 10) + 'px;';
 				input.setAttribute('aria-controls', box.id);
 				document.body.appendChild(box);
 
 				const escape = (text) => String(text).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+				const format = (suggestion, query) => escape(suggestion.value)
+					.replace(new RegExp(escape(query).replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'gi'), (m) => '<strong>' + m + '</strong>');
 				const place = () => {
 					const rect = input.getBoundingClientRect();
 					const room = document.documentElement.clientWidth;
-					const width = Math.min(o.width ? parseInt(o.width, 10) : rect.width, room);
+					const width = Math.min(parseInt(o.width, 10) > 0 ? parseInt(o.width, 10) : rect.width, room);
 
 					// Within the window: a list wider than a field near its edge moves left
 					box.style.left = (Math.max(0, Math.min(rect.left, room - width)) + window.pageXOffset) + 'px';
@@ -6535,13 +6752,19 @@
 					}
 				};
 				const choose = (index) => {
-					if (items[index] !== undefined) {
-						input.value = items[index];
+					const suggestion = items[index];
+
+					if (suggestion !== undefined) {
+						input.value = suggestion.value;
 						hide();
+
+						if (o.onSelect) {
+							o.onSelect.call(input, suggestion);
+						}
 					}
 				};
 				const show = (query, list) => {
-					items = list.map((item) => (typeof item === 'string' ? item : item.value));
+					items = list.map((item) => (typeof item === 'string' ? { value: item, data: null } : item)).filter((item) => item && item.value !== undefined);
 
 					if (!items.length || input.value.trim() !== query || document.activeElement !== input) {
 						hide();
@@ -6550,11 +6773,32 @@
 					}
 
 					box.innerHTML = items.map((item, index) => '<div class="autocomplete-suggestion" role="option" aria-selected="false" id="' + box.id + '-' + index
-						+ '" data-index="' + index + '">' + escape(item).replace(new RegExp(escape(query).replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'gi'), (m) => '<strong>' + m + '</strong>') + '</div>').join('');
+						+ '" data-index="' + index + '">' + (o.formatResult ? o.formatResult(item, query) : format(item, query)) + '</div>').join('');
 					active = -1;
 					place();
 					box.style.display = 'block';
 					input.setAttribute('aria-expanded', 'true');
+
+					if (o.autoSelectFirst) {
+						highlight(0);
+					}
+				};
+				const answer = (query, list) => {
+					if (!o.noCache) {
+						cache[query] = list;
+					}
+
+					if (!list.length && o.preventBadQueries) {
+						empty.push(query);
+					}
+
+					if (o.onSearchComplete) {
+						o.onSearchComplete.call(input, query, list);
+					}
+
+					if (query === current) {
+						show(query, list);
+					}
 				};
 				const ask = (query) => {
 					if (cache[query]) {
@@ -6571,42 +6815,69 @@
 					}
 
 					current = query;
-					fetch(o.url + (o.url.indexOf('?') > -1 ? '&' : '?') + encodeURIComponent(o.paramName) + '=' + encodeURIComponent(query), {
+
+					// The page's own suggestions
+					if (o.lookup) {
+						if (typeof o.lookup === 'function') {
+							o.lookup(query, (data) => answer(query, (data && data.suggestions) || []));
+						} else {
+							const lower = query.toLowerCase();
+							const filter = o.lookupFilter || ((suggestion) => suggestion.value.toLowerCase().indexOf(lower) > -1);
+							const list = o.lookup.map((item) => (typeof item === 'string' ? { value: item, data: null } : item)).filter((item) => filter(item, query, lower));
+
+							answer(query, o.lookupLimit > 0 ? list.slice(0, o.lookupLimit) : list);
+						}
+
+						return;
+					}
+
+					const params = Object.assign({}, o.params);
+
+					params[o.paramName] = query;
+
+					if (o.onSearchStart && o.onSearchStart.call(input, params) === false) {
+						return;
+					}
+
+					const post = String(o.type || 'GET').toUpperCase() === 'POST';
+					const body = new URLSearchParams(params).toString();
+					const url = typeof o.url === 'function' ? o.url.call(input, query) : o.url;
+
+					fetch(post ? url : url + (url.indexOf('?') > -1 ? '&' : '?') + body, {
+						method: post ? 'POST' : 'GET',
+						body: post ? body : undefined,
 						credentials: 'same-origin',
-						headers: { 'X-Requested-With': 'XMLHttpRequest' },
+						headers: post ? { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' } : { 'X-Requested-With': 'XMLHttpRequest' },
 					})
-						.then((response) => response.json())
-						.then((data) => {
-							const list = (data && Array.isArray(data.suggestions) ? data.suggestions : []);
+						.then((response) => response.text())
+						.then((text) => {
+							const data = o.transformResult ? o.transformResult(text, query) : JSON.parse(text);
 
-							cache[query] = list;
-
-							if (!list.length) {
-								empty.push(query);
-							}
-
-							if (query === current) {
-								show(query, list);
-							}
+							answer(query, data && Array.isArray(data.suggestions) ? data.suggestions : []);
 						})
-						.catch(() => hide());
+						.catch((error) => {
+							hide();
+
+							if (o.onSearchError) {
+								o.onSearchError.call(input, query, error);
+							}
+						});
 				};
 
-				input.addEventListener('input', () => {
+				const onInput = () => {
 					const query = input.value.trim();
 
 					clearTimeout(timer);
 
-					if (query.length < o.minChars) {
+					if (disabled || query.length < o.minChars) {
 						hide();
 
 						return;
 					}
 
-					timer = setTimeout(() => ask(query), cache[query] ? 0 : parseInt(o.delay, 10));
-				});
-
-				input.addEventListener('keydown', (event) => {
+					timer = setTimeout(() => ask(query), cache[query] ? 0 : parseInt(o.delay, 10) || 0);
+				};
+				const onKeyDown = (event) => {
 					const open = box.style.display === 'block';
 
 					if (event.key === 'ArrowDown' && open) {
@@ -6624,9 +6895,17 @@
 					} else if (event.key === 'Tab') {
 						hide();
 					}
-				});
+				};
+				const onBlur = () => setTimeout(hide, 150);
+				const onResize = () => {
+					if (box.style.display === 'block') {
+						place();
+					}
+				};
 
-				input.addEventListener('blur', () => setTimeout(hide, 150));
+				input.addEventListener('input', onInput);
+				input.addEventListener('keydown', onKeyDown);
+				input.addEventListener('blur', onBlur);
 				box.addEventListener('mousedown', (event) => {
 					const row = event.target.closest ? event.target.closest('.autocomplete-suggestion') : null;
 
@@ -6644,11 +6923,50 @@
 						highlight(parseInt(row.getAttribute('data-index'), 10));
 					}
 				});
-				window.addEventListener('resize', () => {
-					if (box.style.display === 'block') {
-						place();
-					}
-				});
+				window.addEventListener('resize', onResize);
+
+				input.cmsSuggest = {
+					options: o,
+					element: input,
+					container: box,
+					setOptions(more) {
+						Object.assign(o, more || {});
+						box.className = o.containerClass;
+						box.style.zIndex = parseInt(o.zIndex, 10);
+						box.style.maxHeight = parseInt(o.maxHeight, 10) + 'px';
+					},
+					disable() {
+						disabled = true;
+						clearTimeout(timer);
+						hide();
+					},
+					enable() {
+						disabled = false;
+					},
+					clear() {
+						cache = {};
+						empty = [];
+						items = [];
+						current = '';
+					},
+					hide,
+					dispose() {
+						clearTimeout(timer);
+						input.removeEventListener('input', onInput);
+						input.removeEventListener('keydown', onKeyDown);
+						input.removeEventListener('blur', onBlur);
+						window.removeEventListener('resize', onResize);
+						input.removeAttribute('role');
+						input.removeAttribute('aria-autocomplete');
+						input.removeAttribute('aria-expanded');
+						input.removeAttribute('aria-controls');
+						input.removeAttribute('aria-activedescendant');
+						box.remove();
+						delete input.cmsSuggest;
+					},
+				};
+
+				return input.cmsSuggest;
 			},
 		};
 
@@ -9370,7 +9688,8 @@
 		'jQuery.fn.simplecolors() (behavior.simplecolorpicker)': 'the layout joomla.form.field.color.simple (swatches)',
 		'jSelectUser(), jQuery.fn.fieldUser() (fielduser.js)': 'CMS.userField.select(), CMS.userField.open()',
 		'moduleorder.js': 'CMS.moduleOrder.load(), CMS.moduleOrder.write()',
-		'jQuery.fn.autocomplete() for Smart Search (jquery.autocomplete.js, kept for extensions)': 'CMS.suggest.attach()',
+		'jQuery.fn.autocomplete(), jQuery.fn.devbridgeAutocomplete() (jquery.autocomplete.js; stand-in in jquery.compat.js)': 'CMS.suggest.attach()',
+		'jQuery.fn.sortable() (jQuery UI\'s sortable; stand-in in jquery.compat.js)': 'CMS.sortable.attach()',
 		'jQuery.fn.searchtools() (jquery.searchtools.js, JHtml searchtools.form)': 'CMS.searchtools.attach()',
 		'jQuery.fn.chosen(), jQuery.fn.ajaxChosen() (chosen.jquery.js, ajax-chosen.js; formbehavior.chosen, formbehavior.ajaxchosen)': 'CMS.chosen.attach(), CMS.chosen.update(), CMS.chosen.get()',
 		'jQuery.JSortableList() (sortablelist.js, JHtml sortablelist.sortable)': 'CMS.sortableList.attach()',

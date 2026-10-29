@@ -386,6 +386,8 @@ Every name `core.js` and the MooTools behaviours offered still works and calls t
 | `frontediting.js` | `CMS.frontEditing.showModule()`, `CMS.frontEditing.showMenuItem()` |
 | `moduleorder.js` (the module ordering field) | `CMS.moduleOrder.load()`, `CMS.moduleOrder.write()` |
 | `jQuery.JSortableList` (`sortablelist.js`, `JHtml::_('sortablelist.sortable')`) | `CMS.sortableList.attach(tbody, {formId, sortDir, url, nested})` |
+| `jQuery.fn.sortable()` (jQuery UI's sortable; stand-in in `jquery.compat.js`) | `CMS.sortable.attach(container, options)` |
+| `jQuery.fn.autocomplete()`, `jQuery.fn.devbridgeAutocomplete()` (`jquery.autocomplete.js`; stand-in in `jquery.compat.js`) | `CMS.suggest.attach(input, options)` |
 | `jQuery.fn.subformRepeatable()`, `$.subformRepeatable` (`subform-repeatable.js`) | `CMS.subform.attach()`, `CMS.subform.get()` |
 | `jQuery.fn.JRepeatable()`, `$.JRepeatable` (`repeatable.js`, the deprecated Repeatable field) | `CMS.repeatable.attach()` |
 | `treeselectmenu.jquery.js` (trees of checkboxes: menu assignment, menu item containers) | `CMS.treeSelect.start()`, `toggle()`, `check()`, `filter()` |
@@ -394,6 +396,21 @@ Every name `core.js` and the MooTools behaviours offered still works and calls t
 `Joomla.request()` (`CMS.request()`) sends with `fetch()` now. It takes the same options (`url`, `method`, `data`, `headers`, `perform`, `onBefore`, `onSuccess`, `onError`) and returns an object with what callers read of the XMLHttpRequest it used to return: `status`, `statusText`, `responseText`, `readyState`, `getResponseHeader()`, `getAllResponseHeaders()`, `setRequestHeader()` (in `onBefore`, or before `send()` with `perform: false`), `send()` and `abort()` (`onError` then gets status 0). An exception thrown in `onSuccess` is reported as an error of its own and doesn't call `onError`. Code that set `xhr.onreadystatechange` or `xhr.timeout` itself needs `fetch()` or its own XMLHttpRequest.
 
 `SqueezeBox`, `JTabs`, `Form.PasswordStrength` and `MooTreeControl` are defined only when MooTools' own versions aren't there: an extension that loads MooTools and `media/system/js/modal.js` itself gets the real SqueezeBox, and `CMS.modal.close()` (so `jModalClose()`) closes whichever box is open.
+
+### Sorting by dragging, suggestions, and the jQuery stand-ins
+
+`CMS.sortable.attach(container, options)` lets the user reorder elements by dragging them (mouse, touch, pen; the arrow keys on a focused handle). Items in a column go above or below an item's middle, items side by side (a grid, floats) before or after its centre. Options: `items` (a selector or a function; the container's children by default), `handle` (a selector; the whole item by default, and then form controls and a short click on a link work as usual), `cancel`, `axis` (`x`, `y`), `placeholder` (a class name; the CMS draws a line otherwise), `forcePlaceholderSize`, `disabled`, and the callbacks `onStart(item, placeholder)`, `onChange(item, placeholder)`, `onMove(item)` (its place changed) and `onStop(item, changed)`. It returns an object with `options` (read on every drag, so `options.disabled = true` works), `items()` and `destroy()`.
+
+```js
+CMS.sortable.attach('#gallery', {
+    items: '.photo',
+    onMove: () => saveOrder([...document.querySelectorAll('#gallery .photo')].map((photo) => photo.dataset.id)),
+});
+```
+
+`CMS.suggest.attach(input, options)` shows suggestions under a text field: from the server (`url`, a string or a function of the text, answering `{suggestions: [...]}`, each a text or `{value, data}`; `paramName`, default `q`; `params`; `type` GET or POST) or from the page (`lookup`, a list or a function `(query, done)`), with `minChars`, `delay`, `width`, `maxHeight`, `transformResult(responseText, query)`, `formatResult(suggestion, query)` (HTML), `onSelect(suggestion)`, `onSearchStart(params)`, `onSearchComplete(query, suggestions)`, `onSearchError(query, error)`, `autoSelectFirst`, `noCache`, `preventBadQueries`. It returns an object with `setOptions()`, `disable()`, `enable()`, `clear()`, `hide()` and `dispose()`. The list uses jQuery Autocomplete's class names (`.autocomplete-suggestions`, `.autocomplete-suggestion`, `.autocomplete-selected`).
+
+jQuery UI's sortable plugin and Ajax Autocomplete for jQuery are no longer shipped. For extensions that still call them, `media/system/js/jquery.compat.js` provides `jQuery.fn.sortable()` on `CMS.sortable` and `jQuery.fn.autocomplete()`/`devbridgeAutocomplete()` on `CMS.suggest`, with the plugins' option names, events, callbacks and methods (see the file's header for the list). It's loaded by `JHtml::_('jquery.ui', array('sortable'))`, by requests for either plugin's file under any of its names, and by `JHtml::_('behavior.jquerycompat')`. Not covered: dragging between lists (`connectWith`), helpers, containment and revert animations; options it doesn't know are ignored. New code should use `CMS.sortable` and `CMS.suggest` directly.
 
 ### The modal
 

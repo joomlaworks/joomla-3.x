@@ -63,6 +63,7 @@ abstract class HTMLHelper
             'system/calendar' => 'calendar', 'system/calendar-setup' => 'calendar', 'system/calendar-field' => 'core',
             'system/fields/calendar' => 'core', 'system/cms' => 'core', 'system/fielduser' => 'cms',
             'system/modal-fields' => 'cms', 'system/moduleorder' => 'cms', 'system/subform-repeatable' => 'cms', 'system/repeatable' => 'cms', 'system/treeselectmenu.jquery' => 'cms', 'system/sortablelist' => 'cms', 'system/chosen.jquery' => 'cms', 'system/ajax-chosen' => 'cms', 'system/jquery.searchtools' => 'cms',
+            'system/jquery.ui.sortable' => 'jquerycompat', 'system/jquery.autocomplete' => 'jquerycompat',
         ),
         'css' => array(
             'system/editor-switch' => 'styles', 'system/frontediting' => 'styles', 'system/modal' => 'styles', 'system/mootree' => 'styles',
@@ -163,7 +164,6 @@ abstract class HTMLHelper
         'js'  => array(
             'system/html5fallback', 'system/polyfill.classlist', 'system/polyfill.event', 'system/polyfill.filter', 'system/polyfill.map',
             'system/polyfill.xpath', 'system/progressbar', 'system/punycode', 'com_joomlaupdate/json2', 'system/bootstrap-tooltip-extended', 'system/jquery.Jcrop',
-            'system/jquery.ui.sortable',
         ),
         'css' => array('com_finder/indexer', 'system/bootstrap-tooltip-extended', 'system/jquery.Jcrop'),
     );
@@ -1274,15 +1274,28 @@ abstract class HTMLHelper
             $names[$name] = array($path);
         }
 
-        foreach ($names as $name => $behaviour) {
-            list($extension, $base) = explode('/', $name, 2);
+        // Also by a renamed folder's old name (jui/x.js, media/jui/js/x.js: what extensions written for Joomla 3 ask for)
+        $files = array($file);
 
-            // Relative (system/x.js) or from the site's root (media/system/js/x.js)
-            $pattern = '#^(?:' . preg_quote($name, '#') . '|/?media/' . preg_quote($extension, '#') . '/' . $type . '/' . preg_quote($base, '#')
-                . ')(?:-uncompressed|\.min)?\.' . $type . '(?:\?.*)?$#';
+        foreach (static::MOVED_FOLDERS as $old => $folder) {
+            if (preg_match('#^(/?(?:media/)?)' . preg_quote($old, '#') . '/#', $file, $match)) {
+                $files[] = $match[1] . $folder . substr($file, strlen($match[0]) - 1);
 
-            if (preg_match($pattern, $file) && ($options['relative'] || strpos($file, $name) !== 0)) {
-                return $behaviour;
+                break;
+            }
+        }
+
+        foreach ($files as $file) {
+            foreach ($names as $name => $behaviour) {
+                list($extension, $base) = explode('/', $name, 2);
+
+                // Relative (system/x.js) or from the site's root (media/system/js/x.js)
+                $pattern = '#^(?:' . preg_quote($name, '#') . '|/?media/' . preg_quote($extension, '#') . '/' . $type . '/' . preg_quote($base, '#')
+                    . ')(?:-uncompressed|\.min)?\.' . $type . '(?:\?.*)?$#';
+
+                if (preg_match($pattern, $file) && ($options['relative'] || strpos($file, $name) !== 0)) {
+                    return $behaviour;
+                }
             }
         }
 

@@ -138,6 +138,27 @@ abstract class JHtmlBehavior
     }
 
     /**
+     * Loads media/system/js/jquery.compat.js: jQuery plugins core no longer ships (jQuery UI's sortable, Ajax Autocomplete
+     * for jQuery) as stand-ins on global.js' code, for extensions calling them. Core never uses it.
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    public static function jquerycompat()
+    {
+        if (isset(static::$loaded[__METHOD__])) {
+            return;
+        }
+
+        static::$loaded[__METHOD__] = true;
+
+        JHtml::_('jquery.framework');
+        static::cms();
+        JHtml::_('script', 'system/jquery.compat.min.js', array('version' => 'auto', 'relative' => true));
+    }
+
+    /**
      * Loads media/system/css/global.css, the styles of what global.js draws (the modal, the tree, the editor switcher), always
      * with global.js (cms()).
      *
