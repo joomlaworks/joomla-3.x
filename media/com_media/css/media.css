@@ -182,7 +182,11 @@ td.media-rename .media-rename-pencil {margin-inline-start:4px;}
 /* --- Thumbnail sizes (--media-tile, set by the size buttons next to the views' buttons; the tiles are a little taller than wide, for the renaming buttons above the name) --- */
 #mediamanager-form .manager:not(.media-picker) > .imgOutline.thumbnail {width:var(--media-tile, 163px);height:calc(var(--media-tile, 163px) + 24px);}
 #mediamanager-form .manager:not(.media-picker) > .imgOutline .imgThumb > a.img-preview,#mediamanager-form .manager:not(.media-picker) > .imgOutline .imgTotal {line-height:var(--media-tile, 163px);}
-#mediamanager-form .manager:not(.media-picker) > .imgOutline .height-50 {height:calc(var(--media-tile, 163px) - 59px);}
+#mediamanager-form .manager:not(.media-picker) > .imgOutline .height-50 {display:flex;align-items:center;justify-content:center;height:calc(var(--media-tile, 163px) - 59px);}
 #mediamanager-form .manager:not(.media-picker) > .imgOutline .height-50 a,#mediamanager-form .manager:not(.media-picker) > .imgOutline .height-50 .icon-folder-2 {line-height:calc(var(--media-tile, 163px) - 61px);}
+/* Folder and document tiles: a column with the name (and renaming) at the foot, as image tiles have theirs */
+#mediamanager-form .manager:not(.media-picker) > .imgOutline:has(> .small:not(.imgPreview)) {display:flex;flex-direction:column;}
+.manager:not(.media-picker) > .imgOutline:has(> .small:not(.imgPreview)) > .close {align-self:flex-end;}
+.manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview) {flex:none;margin-top:auto;padding-bottom:6px;}
 .media-tile-size .cms-icon {display:block;}
 .media-tile-size[hidden] {display:none;}
