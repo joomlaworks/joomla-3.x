@@ -63,6 +63,12 @@ class MediaViewMediaList extends JViewLegacy
         // A pencil next to each name renames the file or folder
         MediaHelper::renaming((string) $this->state->folder);
 
+        // The thumbnails' size chosen in this session (media.js), set before they're drawn
+        JFactory::getDocument()->addScriptDeclaration(
+            "try { var size = parseInt(sessionStorage.getItem('com_media.tileSize'), 10);"
+            . " if (size > 0) { document.documentElement.style.setProperty('--media-tile', size + 'px'); } } catch (error) {}"
+        );
+
         parent::display($tpl);
     }
 }

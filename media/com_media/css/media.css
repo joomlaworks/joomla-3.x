@@ -164,10 +164,25 @@
 /* Tiles: the name (clamped as before) and the pencil side by side, the field across the tile */
 :is(.small, .imgPreview).media-rename {display:flex;align-items:center;justify-content:center;gap:2px;}
 :is(.small, .imgPreview).media-rename > .media-rename-label {min-width:0;overflow:hidden;}
+/* Names of other tiles: the two-line clamp on the name itself, so the row shows the buttons above it */
+.manager:not(.media-picker) > .imgOutline > .small.media-rename:not(.imgPreview) {display:flex;align-items:center;justify-content:center;gap:2px;overflow:visible;}
+.manager:not(.media-picker) > .imgOutline > .small.media-rename:not(.imgPreview) > .media-rename-label:not([hidden]) {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
 .imgOutline .media-rename-form {display:flex;width:100%;}
 .imgOutline .media-rename-input {width:auto;}
+.media-rename-actions {display:inline-flex;flex:none;gap:2px;}
+/* Tiles: save and cancel above the name, at its end, on a plate over the picture */
+.imgOutline .media-rename-actions {position:absolute;bottom:100%;inset-inline-end:2px;margin-bottom:3px;padding:2px;border-radius:5px;background:rgba(0, 0, 0, 0.6);color:#fff;}
+.imgOutline .media-rename-actions button:hover {background:rgba(255, 255, 255, 0.25);}
 td.media-rename .media-rename-pencil {margin-inline-start:4px;}
 /* Image tiles: their name is a bar over the tile's foot (Isis, Prothero), which the pencil and the field sit in */
 .imgPreview.media-rename > .media-rename-pencil {position:absolute;bottom:2px;inset-inline-end:3px;z-index:2;}
 .manager:not(.media-picker) > .imgOutline .imgPreview.media-rename a {padding-inline-end:28px;}
 .imgOutline > .imgPreview.media-rename > .media-rename-form {position:absolute;bottom:0;left:0;right:0;z-index:2;box-sizing:border-box;min-height:26px;padding:1px 2px;background:var(--c-card, #fff);}
+
+/* --- Thumbnail sizes (--media-tile, set by the size buttons next to the views' buttons; the tiles are a little taller than wide, for the renaming buttons above the name) --- */
+#mediamanager-form .manager:not(.media-picker) > .imgOutline.thumbnail {width:var(--media-tile, 163px);height:calc(var(--media-tile, 163px) + 24px);}
+#mediamanager-form .manager:not(.media-picker) > .imgOutline .imgThumb > a.img-preview,#mediamanager-form .manager:not(.media-picker) > .imgOutline .imgTotal {line-height:var(--media-tile, 163px);}
+#mediamanager-form .manager:not(.media-picker) > .imgOutline .height-50 {height:calc(var(--media-tile, 163px) - 59px);}
+#mediamanager-form .manager:not(.media-picker) > .imgOutline .height-50 a,#mediamanager-form .manager:not(.media-picker) > .imgOutline .height-50 .icon-folder-2 {line-height:calc(var(--media-tile, 163px) - 61px);}
+.media-tile-size .cms-icon {display:block;}
+.media-tile-size[hidden] {display:none;}

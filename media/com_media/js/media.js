@@ -1547,8 +1547,13 @@ function jMediaRefreshImgpathTip(tip, els)
 				form.appendChild(suffix);
 			}
 
-			form.appendChild(save);
-			form.appendChild(cancel);
+			// In tiles they sit above the name, so the field has the tile's width
+			const actions = document.createElement('span');
+
+			actions.className = 'media-rename-actions';
+			actions.appendChild(save);
+			actions.appendChild(cancel);
+			form.appendChild(actions);
 			label.hidden = true;
 			pencil.hidden = true;
 			label.parentNode.insertBefore(form, pencil);
@@ -1665,6 +1670,97 @@ function jMediaRefreshImgpathTip(tip, els)
 				edit(box, label, pencil);
 			});
 		});
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', start);
+	} else {
+		start();
+	}
+})();
+
+/* --- Thumbnail sizes (the buttons next to the views' buttons) --- */
+/*
+ * The size of the list's tiles, in steps (data-sizes; data-default the size without a choice), set as --media-tile on the
+ * list's frame and kept for the session (the frame sets it from there before drawing, view medialist). Shown with the
+ * thumbnails only.
+ */
+(() => {
+	'use strict';
+
+	const KEY = 'com_media.tileSize';
+
+	const start = () => {
+		const group = document.querySelector('.media-tile-size');
+		const frame = document.getElementById('folderframe');
+
+		if (!group || !frame) {
+			return;
+		}
+
+		const sizes = group.getAttribute('data-sizes').split(',').map(Number);
+		const standard = Number(group.getAttribute('data-default'));
+		const read = () => {
+			try {
+				const stored = parseInt(sessionStorage.getItem(KEY), 10);
+
+				return sizes.indexOf(stored) > -1 ? stored : standard;
+			} catch (error) {
+				return standard;
+			}
+		};
+		let size = read();
+
+		const apply = () => {
+			try {
+				frame.contentDocument.documentElement.style.setProperty('--media-tile', size + 'px');
+			} catch (error) {
+				// The list isn't there yet
+			}
+
+			group.querySelector('[data-tile-size="-1"]').disabled = size === sizes[0];
+			group.querySelector('[data-tile-size="1"]').disabled = size === sizes[sizes.length - 1];
+			group.querySelector('[data-tile-size="0"]').disabled = size === standard;
+		};
+
+		group.addEventListener('click', (event) => {
+			const button = event.target.closest('[data-tile-size]');
+
+			if (!button) {
+				return;
+			}
+
+			const step = Number(button.getAttribute('data-tile-size'));
+			const index = sizes.indexOf(size);
+
+			size = step === 0 ? standard : sizes[Math.max(0, Math.min(sizes.length - 1, index + step))];
+
+			try {
+				if (size === standard) {
+					sessionStorage.removeItem(KEY);
+				} else {
+					sessionStorage.setItem(KEY, String(size));
+				}
+			} catch (error) {
+				// Kept for this page only
+			}
+
+			apply();
+		});
+
+		// The views' buttons (MediaManager.setViewType()): the sizes go with the thumbnails
+		['thumbs', 'details'].forEach((id) => {
+			const view = document.getElementById(id);
+
+			if (view) {
+				view.addEventListener('click', () => {
+					group.hidden = id !== 'thumbs';
+				});
+			}
+		});
+
+		frame.addEventListener('load', apply);
+		apply();
 	};
 
 	if (document.readyState === 'loading') {
