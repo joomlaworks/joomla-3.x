@@ -19,96 +19,70 @@ defined('_JEXEC') or die;
  * @var  JDocumentError  $this
  */
 
-if (!isset($this->error))
-{
-	$this->error = JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
-	$this->debug = false;
+if (!isset($this->error)) {
+    $this->error = JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
+    $this->debug = false;
 }
 
-$text = function ($key, $english)
-{
-	try
-	{
-		$string = JText::_($key);
-	}
-	catch (Throwable $e)
-	{
-		return $english;
-	}
+$text = function ($key, $english) {
+    try {
+        $string = JText::_($key);
+    } catch (Throwable $e) {
+        return $english;
+    }
 
-	return $string === $key ? $english : $string;
+    return $string === $key ? $english : $string;
 };
 
-$escape = function ($value)
-{
-	return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+$escape = function ($value) {
+    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 };
 
 $code = (int) $this->error->getCode();
 $root = JUri::root(true) . '/';
 
-try
-{
-	$siteName = (string) JFactory::getConfig()->get('sitename');
-}
-catch (Throwable $e)
-{
-	$siteName = '';
+try {
+    $siteName = (string) JFactory::getConfig()->get('sitename');
+} catch (Throwable $e) {
+    $siteName = '';
 }
 
 // What went wrong, by kind
-if ($code === 404)
-{
-	$title   = $text('JERROR_LAYOUT_NOT_FOUND_TITLE', 'Page not found');
-	$message = $text('JERROR_LAYOUT_NOT_FOUND_TEXT', 'The page you are looking for doesn\'t exist, or has moved. Check the address, search the site or go to the home page.');
-}
-elseif ($code === 401 || $code === 403)
-{
-	$title   = $text('JERROR_LAYOUT_NO_ACCESS_TITLE', 'Access denied');
-	$message = $text('JERROR_LAYOUT_NO_ACCESS_TEXT', 'You don\'t have permission to view this page. Logging in may give you access.');
-}
-else
-{
-	$title   = $text('JERROR_LAYOUT_SERVER_ERROR_TITLE', 'Something went wrong');
-	$message = $text('JERROR_LAYOUT_SERVER_ERROR_TEXT', 'The site couldn\'t complete your request. Please try again in a few minutes. If it keeps happening, let the site\'s administrator know.');
+if ($code === 404) {
+    $title   = $text('JERROR_LAYOUT_NOT_FOUND_TITLE', 'Page not found');
+    $message = $text('JERROR_LAYOUT_NOT_FOUND_TEXT', 'The page you are looking for doesn\'t exist, or has moved. Check the address, search the site or go to the home page.');
+} elseif ($code === 401 || $code === 403) {
+    $title   = $text('JERROR_LAYOUT_NO_ACCESS_TITLE', 'Access denied');
+    $message = $text('JERROR_LAYOUT_NO_ACCESS_TEXT', 'You don\'t have permission to view this page. Logging in may give you access.');
+} else {
+    $title   = $text('JERROR_LAYOUT_SERVER_ERROR_TITLE', 'Something went wrong');
+    $message = $text('JERROR_LAYOUT_SERVER_ERROR_TEXT', 'The site couldn\'t complete your request. Please try again in a few minutes. If it keeps happening, let the site\'s administrator know.');
 }
 
 // The search form, when a search component is enabled (Smart Search first)
 $search = null;
 
-try
-{
-	if (JComponentHelper::isEnabled('com_finder'))
-	{
-		$search = array('option' => 'com_finder', 'view' => 'search', 'field' => 'q');
-	}
-	elseif (JComponentHelper::isEnabled('com_search'))
-	{
-		$search = array('option' => 'com_search', 'view' => 'search', 'field' => 'searchword');
-	}
-}
-catch (Throwable $e)
-{
-	$search = null;
+try {
+    if (JComponentHelper::isEnabled('com_finder')) {
+        $search = array('option' => 'com_finder', 'view' => 'search', 'field' => 'q');
+    } elseif (JComponentHelper::isEnabled('com_search')) {
+        $search = array('option' => 'com_search', 'view' => 'search', 'field' => 'searchword');
+    }
+} catch (Throwable $e) {
+    $search = null;
 }
 
 // A guest denied access may log in
-try
-{
-	$login = ($code === 401 || $code === 403) && JFactory::getUser()->guest && JComponentHelper::isEnabled('com_users');
-}
-catch (Throwable $e)
-{
-	$login = false;
+try {
+    $login = ($code === 401 || $code === 403) && JFactory::getUser()->guest && JComponentHelper::isEnabled('com_users');
+} catch (Throwable $e) {
+    $login = false;
 }
 
-try
-{
-	$debugStyles = JFactory::getApplication()->get('debug_lang', '0') == '1' || JFactory::getApplication()->get('debug', '0') == '1';
-}
-catch (Throwable $e)
-{
-	$debugStyles = false;
+try {
+    $debugStyles = JFactory::getApplication()->get('debug_lang', '0') == '1' || JFactory::getApplication()->get('debug', '0') == '1';
+} catch (Throwable $e) {
+    $debugStyles = false;
 }
 ?>
 <!DOCTYPE html>
@@ -157,10 +131,10 @@ catch (Throwable $e)
 					<summary><?php echo $escape($text('JERROR_LAYOUT_TECHNICAL_DETAILS', 'Technical details')); ?></summary>
 					<p><?php echo $escape($this->error->getMessage()); ?><br /><?php echo $escape($this->error->getFile()); ?>:<?php echo $this->error->getLine(); ?></p>
 					<?php echo $this->renderBacktrace(); ?>
-					<?php // Earlier exceptions, each with its data and backtrace ?>
+					<?php // Earlier exceptions, each with its data and backtrace?>
 					<?php if ($this->error->getPrevious()) : ?>
 						<?php $loop = true; ?>
-						<?php // setError() assigns to $this->_error, which the backtrace reads; the first assignment outside the loop so none is skipped ?>
+						<?php // setError() assigns to $this->_error, which the backtrace reads; the first assignment outside the loop so none is skipped?>
 						<?php $this->setError($this->_error->getPrevious()); ?>
 						<?php while ($loop === true) : ?>
 							<p><strong><?php echo $escape($text('JERROR_LAYOUT_PREVIOUS_ERROR', 'Previous Error')); ?></strong></p>

@@ -29,13 +29,10 @@ $siteName         = htmlspecialchars((string) $app->get('sitename'), ENT_COMPAT,
 $image            = $app->get('offline_image') && file_exists($app->get('offline_image')) ? $app->get('offline_image') : '';
 $message          = '';
 
-if ($app->get('display_offline_message', 1) == 1 && str_replace(' ', '', $app->get('offline_message')) !== '')
-{
-	$message = $app->get('offline_message');
-}
-elseif ($app->get('display_offline_message', 1) == 2 && str_replace(' ', '', JText::_('JOFFLINE_MESSAGE')) !== '')
-{
-	$message = JText::_('JOFFLINE_MESSAGE');
+if ($app->get('display_offline_message', 1) == 1 && str_replace(' ', '', $app->get('offline_message')) !== '') {
+    $message = $app->get('offline_message');
+} elseif ($app->get('display_offline_message', 1) == 2 && str_replace(' ', '', JText::_('JOFFLINE_MESSAGE')) !== '') {
+    $message = JText::_('JOFFLINE_MESSAGE');
 }
 ?>
 <!DOCTYPE html>

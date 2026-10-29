@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
  */
 function modChrome_none($module, &$params, &$attribs)
 {
-	echo $module->content;
+    echo $module->content;
 }
 
 /*
@@ -22,16 +22,16 @@ function modChrome_none($module, &$params, &$attribs)
  */
 function modChrome_html5($module, &$params, &$attribs)
 {
-	$moduleTag      = htmlspecialchars((string) $params->get('module_tag', 'div'), ENT_QUOTES, 'UTF-8');
-	$headerTag      = htmlspecialchars((string) $params->get('header_tag', 'h3'), ENT_QUOTES, 'UTF-8');
-	$bootstrapSize  = (int) $params->get('bootstrap_size', 0);
-	$moduleClass    = $bootstrapSize !== 0 ? ' span' . $bootstrapSize : '';
+    $moduleTag      = htmlspecialchars((string) $params->get('module_tag', 'div'), ENT_QUOTES, 'UTF-8');
+    $headerTag      = htmlspecialchars((string) $params->get('header_tag', 'h3'), ENT_QUOTES, 'UTF-8');
+    $bootstrapSize  = (int) $params->get('bootstrap_size', 0);
+    $moduleClass    = $bootstrapSize !== 0 ? ' span' . $bootstrapSize : '';
 
-	// Temporarily store header class in variable
-	$headerClass    = $params->get('header_class');
-	$headerClass    = !empty($headerClass) ? ' class="' . htmlspecialchars($headerClass, ENT_COMPAT, 'UTF-8') . '"' : '';
+    // Temporarily store header class in variable
+    $headerClass    = $params->get('header_class');
+    $headerClass    = !empty($headerClass) ? ' class="' . htmlspecialchars($headerClass, ENT_COMPAT, 'UTF-8') . '"' : '';
 
-	if (!empty ($module->content)) : ?>
+    if (!empty($module->content)) : ?>
 		<<?php echo $moduleTag; ?> class="moduletable<?php echo htmlspecialchars((string) $params->get('moduleclass_sfx', ''), ENT_COMPAT, 'UTF-8') . $moduleClass; ?>">
 
 		<?php if ((bool) $module->showtitle) :?>
@@ -88,16 +88,16 @@ function modChrome_horz($module, &$params, &$attribs)
  */
 function modChrome_xhtml($module, &$params, &$attribs)
 {
-	$moduleTag      = htmlspecialchars((string) $params->get('module_tag', 'div'), ENT_QUOTES, 'UTF-8');
-	$headerTag      = htmlspecialchars((string) $params->get('header_tag', 'h3'), ENT_QUOTES, 'UTF-8');
-	$bootstrapSize  = (int) $params->get('bootstrap_size', 0);
-	$moduleClass    = $bootstrapSize !== 0 ? ' span' . $bootstrapSize : '';
+    $moduleTag      = htmlspecialchars((string) $params->get('module_tag', 'div'), ENT_QUOTES, 'UTF-8');
+    $headerTag      = htmlspecialchars((string) $params->get('header_tag', 'h3'), ENT_QUOTES, 'UTF-8');
+    $bootstrapSize  = (int) $params->get('bootstrap_size', 0);
+    $moduleClass    = $bootstrapSize !== 0 ? ' span' . $bootstrapSize : '';
 
-	// Temporarily store header class in variable
-	$headerClass    = $params->get('header_class');
-	$headerClass    = $headerClass ? ' class="' . htmlspecialchars($headerClass, ENT_COMPAT, 'UTF-8') . '"' : '';
+    // Temporarily store header class in variable
+    $headerClass    = $params->get('header_class');
+    $headerClass    = $headerClass ? ' class="' . htmlspecialchars($headerClass, ENT_COMPAT, 'UTF-8') . '"' : '';
 
-	if (!empty ($module->content)) : ?>
+    if (!empty($module->content)) : ?>
 		<<?php echo $moduleTag; ?> class="moduletable<?php echo htmlspecialchars((string) $params->get('moduleclass_sfx', ''), ENT_COMPAT, 'UTF-8') . $moduleClass; ?>">
 			<?php if ((bool) $module->showtitle) : ?>
 				<<?php echo $headerTag . $headerClass . '>' . $module->title; ?></<?php echo $headerTag; ?>>
@@ -132,14 +132,13 @@ function modChrome_rounded($module, &$params, &$attribs)
  */
 function modChrome_outline($module, &$params, &$attribs)
 {
-	static $css = false;
+    static $css = false;
 
-	if (!$css)
-	{
-		$css = true;
-		$doc = JFactory::getDocument();
+    if (!$css) {
+        $css = true;
+        $doc = JFactory::getDocument();
 
-		$doc->addStyleDeclaration('
+        $doc->addStyleDeclaration('
 		.mod-preview {
 			background: rgba(100,100,100,.08);
 			box-shadow: 0 0 0 4px #f4f4f4, 0 0 0 5px rgba(100,100,100,.2);
@@ -165,8 +164,8 @@ function modChrome_outline($module, &$params, &$attribs)
 			margin-bottom: .5rem;
 		}
 		');
-	}
-	?>
+    }
+    ?>
 	<div class="mod-preview">
 		<div class="mod-preview-info">
 			<div class="mod-preview-position">
