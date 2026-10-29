@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     Joomla.Site
- * @subpackage  Template.system
+ * @subpackage  Layout
  *
  * @copyright   (C) 2006 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.md
@@ -24,15 +24,13 @@ $app = JFactory::getApplication();
 <head>
 	<meta charset="utf-8" />
 	<title><?php echo $this->error->getCode(); ?> - <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
-	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/error.css" rel="stylesheet" />
-	<?php if ($this->direction === 'rtl') : ?>
-		<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/error_rtl.css" rel="stylesheet" />
-	<?php endif; ?>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link href="<?php echo JUri::root(true); ?>/media/system/css/frontend.min.css" rel="stylesheet" />
 	<?php if ($app->get('debug_lang', '0') == '1' || $app->get('debug', '0') == '1') : ?>
 		<link href="<?php echo JUri::root(true); ?>/media/system/css/debug.css" rel="stylesheet" />
 	<?php endif; ?>
 </head>
-<body>
+<body class="tmpl-error">
 	<div class="error">
 		<div id="outline">
 		<div id="errorboxoutline">

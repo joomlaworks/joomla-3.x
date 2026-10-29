@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     Joomla.Site
- * @subpackage  Template.system
+ * @subpackage  Layout
  *
  * @copyright   (C) 2005 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.md
@@ -16,20 +16,8 @@ $app = JFactory::getApplication();
 // Output as HTML5
 $this->setHtml5(true);
 
-// Add html5 shiv
-
-// Styles
-JHtml::_('stylesheet', 'templates/system/css/offline.css', array('version' => 'auto'));
-
-if ($this->direction === 'rtl')
-{
-	JHtml::_('stylesheet', 'templates/system/css/offline_rtl.css', array('version' => 'auto'));
-}
-
-JHtml::_('stylesheet', 'templates/system/css/general.css', array('version' => 'auto'));
-
-// Add JavaScript Frameworks
-JHtml::_('bootstrap.framework');
+// Styles (the offline page's, scoped to body.tmpl-offline, and the system messages)
+JHtml::_('stylesheet', 'system/frontend.min.css', array('version' => 'auto', 'relative' => true));
 
 $twofactormethods = JAuthenticationHelper::getTwoFactorMethods();
 ?>
@@ -39,7 +27,7 @@ $twofactormethods = JAuthenticationHelper::getTwoFactorMethods();
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<jdoc:include type="head" />
 </head>
-<body>
+<body class="tmpl-offline">
 	<jdoc:include type="message" />
 	<div id="frame" class="outline">
 		<?php if ($app->get('offline_image') && file_exists($app->get('offline_image'))) : ?>

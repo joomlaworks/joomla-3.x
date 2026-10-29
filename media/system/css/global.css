@@ -111,3 +111,12 @@ div.mod-languages a {text-decoration:none;}
 .cms-date.is-text .cms-date-text {width:auto;min-width:0;margin:0;font-variant-numeric:tabular-nums;}
 .cms-date.is-text .cms-date-input {position:absolute;top:0;left:0;width:100%;height:100%;padding:0;border:0;opacity:0;pointer-events:none;}
 .cms-date .cms-date-pick {display:inline-flex;align-items:center;justify-content:center;margin:0;padding:0 9px;}
+
+/* --- Administrator error page without a template's own (layout joomla.system.admin.error, body.tmpl-error) --- */
+body.tmpl-error {margin:15px;padding:0;background:#fff;color:#333;font:11px/1.4 Arial, Helvetica, sans-serif;}
+body.tmpl-error .outline {max-width:550px;margin:0 auto;padding:2px;border:1px solid #ccc;background:#fff;}
+body.tmpl-error .outline td {padding:3px 5px;border:1px solid #bbb;text-align:center;font-size:10px;overflow-wrap:anywhere;}
+body.tmpl-error h1 {color:#cc3333;font-size:18px;}
+body.tmpl-error .frame {margin:13px 0 25px;padding:8px;border:1px solid #000;background-color:#fefcf3;}
+body.tmpl-error .table {margin-top:13px;border-collapse:collapse;}
+body.tmpl-error .type {padding:3px;background-color:#cc0000;color:#fff;font-weight:bold;}

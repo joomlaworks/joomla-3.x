@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     Joomla.Administrator
- * @subpackage  Template.system
+ * @subpackage  Layout
  *
  * @copyright   (C) 2006 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.md
@@ -17,10 +17,11 @@ defined('_JEXEC') or die;
 <head>
 	<meta charset="utf-8" />
 	<title><?php echo $this->error->getCode(); ?> - <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
-	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/error.css" rel="stylesheet" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link href="<?php echo JUri::root(true); ?>/media/system/css/global.min.css" rel="stylesheet" />
 </head>
-<body>
-	<table class="outline" style="margin: 0 auto; width: 550px;">
+<body class="tmpl-error">
+	<table class="outline">
 		<tr>
 			<td style="text-align: center;">
 				<h1><?php echo $this->error->getCode() ?> - <?php echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED'); ?></h1>

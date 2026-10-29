@@ -131,6 +131,7 @@ Summary of changes:
 - Date fields use the browser's date input, with Now and Clear buttons; the calendar scripts (about 140 KB) removed, dates posted as before
 - Global Configuration's new UI Settings: date and time fields in the browser's format (default) or the site's language format (text with the browser's calendar); users can choose in their profile
 - Jalali dates again for languages using the Jalali calendar (Persian), with JalaliDatePicker; dates are still saved as Gregorian
+- The system templates' pages (error, offline, component) and module chromes are core's layouts (`layouts/joomla/system/`), still overridable by templates; the site's shared styles are `media/system/css/frontend.css`; the administrator's system template removed, the site's kept with stylesheets importing the new files; a modern fallback `editor.css`
 - Tooltips and popovers are the CMS's own, looking as before but always inside the window (they flip side and slide along the edges, arrows following)
 - The user field opens the list of users in the CMS's own modal (no Bootstrap modal or jQuery plugin); `fielduser.js` removed
 - Show-on (fields shown depending on other fields) is plain JavaScript in `global.js`; `cms.js` removed

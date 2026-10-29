@@ -1,0 +1,59 @@
+/**
+ * @copyright  (C) 2006 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
+ */
+
+/* The site's shared styles: what the system template's stylesheets were (templates/system/css/*.css import this file
+   for templates linking them), the system pages' scoped to their body class (tmpl-component, tmpl-error, tmpl-offline) */
+
+/* --- System messages --- */
+#system-message {margin-bottom:10px;padding:0;}
+#system-message > dt {font-weight:bold;display:none;}
+#system-message > dd {margin:0;font-weight:bold;text-indent:30px;}
+#system-message > dd > ul {color:#0055bb;background-position:4px top;background-size:24px 24px;background-repeat:no-repeat;margin-bottom:10px;list-style:none;padding:10px;border-top:3px solid #84a7db;border-bottom:3px solid #84a7db;}
+#system-message > dd > ul > li {line-height:1.5em;}
+#system-message > .message > ul {background-color:#c3d2e5;background-image:url(../images/icons/notice-info.svg);}
+#system-message > .error > ul,#system-message > .warning > ul,#system-message > .notice > ul {color:#c00;}
+#system-message > .error > ul {background-color:#e6c0c0;background-image:url(../images/icons/notice-alert.svg);border-color:#de7a7b;}
+#system-message > .warning > ul {background-color:#e6c8a6;background-image:url(../images/icons/notice-note.svg);border-color:#ffbb00;}
+#system-message > .notice > ul {background-color:#efe7b8;background-image:url(../images/icons/notice-note.svg);border-color:#f0dc7e;}
+
+/* --- Content --- */
+.system-unpublished,tr.system-unpublished {background:#e8edf1;border-top:4px solid #c4d3df;border-bottom:4px solid #c4d3df;}
+span.highlight {background-color:#ffffcc;font-weight:bold;padding:1px 0;}
+
+/* --- Forms --- */
+.invalid {border-color:#ff0000;}
+label.invalid {color:#ff0000;}
+
+/* --- Error page (body.tmpl-error) --- */
+body.tmpl-error {margin:0;padding:0;background:#fff;color:#5f6565;font:11px/1.4 helvetica, arial, sans-serif;}
+body.tmpl-error .error {margin-left:auto;margin-right:auto;}
+body.tmpl-error #outline {max-width:900px;margin:0 auto;padding:60px 10px;background:#fff;}
+body.tmpl-error #errorboxoutline {margin:0;padding:0;border:1px solid #000;}
+body.tmpl-error #errorboxheader {margin:0;padding:0;background:#e44249;color:#fff;font-weight:bold;font-size:12px;line-height:22px;text-align:center;border-bottom:1px solid #000;}
+body.tmpl-error #errorboxbody {margin:0;padding:10px;text-align:start;}
+body.tmpl-error #techinfo {margin:10px;padding:10px;text-align:start;border:1px solid #ccc;color:#ccc;overflow-wrap:anywhere;}
+body.tmpl-error #techinfo p {color:#ccc;}
+
+/* --- Offline page (body.tmpl-offline) --- */
+body.tmpl-offline {margin:0;padding:0;color:#333;font:14px/1.4 Arial, Helvetica, sans-serif;text-align:center;}
+body.tmpl-offline img {border:0 none;margin-left:auto;margin-right:auto;}
+body.tmpl-offline #frame {margin:20px auto;max-width:400px;padding:20px;}
+body.tmpl-offline #frame img {max-width:100%;height:auto;}
+body.tmpl-offline #frame form {text-align:start;}
+body.tmpl-offline .outline {border:1px solid #ccc;background:#fff;padding:2px;}
+body.tmpl-offline form {margin:auto;}
+body.tmpl-offline form br {display:none;}
+body.tmpl-offline form p {margin:0;padding:0.5em 0;}
+body.tmpl-offline form fieldset {border:0 none;margin:0;padding:0.2em;}
+body.tmpl-offline label {display:block;margin:5px 0 2px;}
+body.tmpl-offline input {box-sizing:border-box;width:100%;padding:5px 10px;border:1px solid #0e67a1;font-size:inherit;font-family:inherit;}
+body.tmpl-offline input.button {width:auto;margin-top:5px;cursor:pointer;background-color:#006dcc;border-color:#04c;color:#fff;-webkit-appearance:none;appearance:none;}
+body.tmpl-offline input.button:hover {background-color:#04c;}
+body.tmpl-offline #system-message-container {margin:0 auto;padding:20px 0 0;max-width:445px;}
+body.tmpl-offline .alert {background:#fff;border:1px solid #ccc;padding:8px 25px 8px 14px;text-align:start;}
+body.tmpl-offline .alert h4 {color:red;margin:5px 0;}
+body.tmpl-offline .alert p {padding:0;margin:0;}
+body.tmpl-offline .alert .close {float:inline-end;font-size:24px;line-height:18px;position:relative;inset-inline-end:-20px;top:-2px;cursor:pointer;}

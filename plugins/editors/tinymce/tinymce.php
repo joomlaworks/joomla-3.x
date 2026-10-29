@@ -356,17 +356,17 @@ class PlgEditorTinymce extends JPlugin
 			if ($use_content_css)
 			{
 				// First check templates folder for default template
-				// if no editor.css file in templates folder, check system template folder
+				// if no editor.css file in templates folder, use core's
 				if (!file_exists($templates_path . '/' . $template . '/css/editor.css'))
 				{
-					// If no editor.css file in system folder, show alert
-					if (!file_exists($templates_path . '/system/css/editor.css'))
+					// If there's no core editor.css either (media/system/css, the system template's until 3.18), show alert
+					if (!file_exists(JPATH_ROOT . '/media/system/css/editor.css'))
 					{
 						JLog::add(JText::_('PLG_TINY_ERR_EDITORCSSFILENOTPRESENT'), JLog::WARNING, 'jerror');
 					}
 					else
 					{
-						$content_css = JUri::root(true) . '/templates/system/css/editor.css';
+						$content_css = JUri::root(true) . '/media/system/css/editor.css';
 					}
 				}
 				else
@@ -1402,17 +1402,17 @@ class PlgEditorTinymce extends JPlugin
 			if ($use_content_css)
 			{
 				// First check templates folder for default template
-				// if no editor.css file in templates folder, check system template folder
+				// if no editor.css file in templates folder, use core's
 				if (!file_exists($templates_path . '/' . $template . '/css/editor.css'))
 				{
-					// If no editor.css file in system folder, show alert
-					if (!file_exists($templates_path . '/system/css/editor.css'))
+					// If there's no core editor.css either (media/system/css, the system template's until 3.18), show alert
+					if (!file_exists(JPATH_ROOT . '/media/system/css/editor.css'))
 					{
 						JLog::add(JText::_('PLG_TINY_ERR_EDITORCSSFILENOTPRESENT'), JLog::WARNING, 'jerror');
 					}
 					else
 					{
-						$content_css = JUri::root(true) . '/templates/system/css/editor.css';
+						$content_css = JUri::root(true) . '/media/system/css/editor.css';
 					}
 				}
 				else

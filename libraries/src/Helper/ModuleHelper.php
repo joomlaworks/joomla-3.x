@@ -207,7 +207,8 @@ abstract class ModuleHelper
 			$chrome = array();
 		}
 
-		include_once JPATH_THEMES . '/system/html/modules.php';
+		// The chromes every template can use (layouts/joomla/system[/admin]/html/modules.php since 3.18)
+		include_once \Joomla\CMS\Document\SystemLayout::chromes();
 		$chromePath = JPATH_THEMES . '/' . $template . '/html/modules.php';
 
 		if (!isset($chrome[$chromePath]))

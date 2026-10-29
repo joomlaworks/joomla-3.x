@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     Joomla.Site
- * @subpackage  Template.system
+ * @subpackage  Layout
  *
  * @copyright   (C) 2005 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.md
@@ -14,17 +14,16 @@ defined('_JEXEC') or die;
 // Output as HTML5
 $this->setHtml5(true);
 
-// Add html5 shiv
-
-// Styles
-JHtml::_('stylesheet', 'general.css', array('version' => 'auto', 'relative' => true));
+// Styles (system messages, forms; what the system template's general.css was)
+JHtml::_('stylesheet', 'system/frontend.min.css', array('version' => 'auto', 'relative' => true));
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<jdoc:include type="head" />
 </head>
-<body class="contentpane">
+<body class="contentpane tmpl-component">
 	<jdoc:include type="message" />
 	<jdoc:include type="component" />
 </body>

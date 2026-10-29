@@ -922,14 +922,18 @@ class HtmlDocument extends Document
 		$template = $filter->clean($params['template'], 'cmd');
 		$file = $filter->clean($params['file'], 'cmd');
 
-		if (!file_exists($directory . '/' . $template . '/' . $file))
-		{
-			$template = 'system';
-		}
+		// A page the template lacks: its override of core's layout, else core's (layouts/joomla/system/, the "system"
+		// templates' until 3.18); index.php when there is none of that name either
+		$path = $directory . '/' . $template;
 
-		if (!file_exists($directory . '/' . $template . '/' . $file))
+		if (!file_exists($path . '/' . $file))
 		{
-			$file = 'index.php';
+			$path = SystemLayout::path($path, $file);
+
+			if (!file_exists($path . '/' . $file))
+			{
+				$file = 'index.php';
+			}
 		}
 
 		// Load the language file for the template
@@ -945,7 +949,7 @@ class HtmlDocument extends Document
 		$this->params = isset($params['params']) ? $params['params'] : new Registry;
 
 		// Load
-		$this->_template = $this->_loadTemplate($directory . '/' . $template, $file);
+		$this->_template = $this->_loadTemplate($path, $file);
 
 		return $this;
 	}

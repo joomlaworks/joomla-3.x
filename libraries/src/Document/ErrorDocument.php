@@ -150,9 +150,12 @@ class ErrorDocument extends Document
 		$directory = isset($params['directory']) ? $params['directory'] : 'templates';
 		$template = isset($params['template']) ? \JFilterInput::getInstance()->clean($params['template'], 'cmd') : 'system';
 
-		if (!file_exists($directory . '/' . $template . '/' . $file))
+		// A template without error.php: its override of core's layout, else core's (layouts/joomla/system/)
+		$path = $directory . '/' . $template;
+
+		if (!file_exists($path . '/' . $file))
 		{
-			$template = 'system';
+			$path = SystemLayout::path($path, $file);
 		}
 
 		// Set variables
@@ -172,7 +175,7 @@ class ErrorDocument extends Document
 		}
 
 		// Load
-		$data = $this->_loadTemplate($directory . '/' . $template, $file);
+		$data = $this->_loadTemplate($path, $file);
 
 		parent::render($cache, $params);
 

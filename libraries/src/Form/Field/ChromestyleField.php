@@ -187,6 +187,12 @@ class ChromestyleField extends \JFormFieldGroupedList
 		{
 			$modulesFilePath = $path . '/templates/' . $template->element . '/html/modules.php';
 
+			// The system chromes are core's (layouts/joomla/system[/admin]/html/modules.php) since 3.18
+			if ($template->element === 'system')
+			{
+				$modulesFilePath = \Joomla\CMS\Document\SystemLayout::chromes($this->clientId);
+			}
+
 			// Is there modules.php for that template?
 			if (file_exists($modulesFilePath))
 			{

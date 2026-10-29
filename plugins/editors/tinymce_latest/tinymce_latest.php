@@ -563,12 +563,15 @@ class PlgEditorTinymce_latest extends JPlugin
 			return $this->versionedUrl('templates/' . $template . '/css/' . $custom);
 		}
 
-		foreach (array($template, 'system') as $folder)
+		if ($template !== '' && is_file(JPATH_SITE . '/templates/' . $template . '/css/editor.css'))
 		{
-			if ($folder !== '' && is_file(JPATH_SITE . '/templates/' . $folder . '/css/editor.css'))
-			{
-				return $this->versionedUrl('templates/' . $folder . '/css/editor.css');
-			}
+			return $this->versionedUrl('templates/' . $template . '/css/editor.css');
+		}
+
+		// Core's (the system template's until 3.18)
+		if (is_file(JPATH_ROOT . '/media/system/css/editor.css'))
+		{
+			return $this->versionedUrl('media/system/css/editor.css');
 		}
 
 		JLog::add(JText::_('PLG_TINYMCE_LATEST_ERR_EDITORCSSFILENOTPRESENT'), JLog::WARNING, 'jerror');

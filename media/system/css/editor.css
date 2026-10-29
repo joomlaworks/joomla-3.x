@@ -1,0 +1,55 @@
+/**
+ * @copyright  (C) 2005 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
+ */
+
+/* The editing area's stylesheet when the site's template has no css/editor.css of its own (TinyMCE 8 and 4): plain,
+   readable text in the system font, light or dark as the device is */
+
+/* --- Page --- */
+:root {
+    color-scheme: light dark;
+    --c-text:     CanvasText;
+    --c-page:     Canvas;
+    --c-muted:    color-mix(in srgb, CanvasText 60%, Canvas);
+    --c-line:     color-mix(in srgb, CanvasText 18%, Canvas);
+    --c-soft:     color-mix(in srgb, CanvasText 6%, Canvas);
+    --c-link:     LinkText;
+    --c-mark:     #d93025;
+}
+body {max-width:46rem;margin:0 auto;padding:1rem 1.25rem;background:var(--c-page);color:var(--c-text);font:1rem/1.65 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;overflow-wrap:break-word;}
+
+/* --- Text --- */
+h1,h2,h3,h4,h5,h6 {margin:1.6em 0 0.5em;line-height:1.25;font-weight:700;}
+h1 {font-size:2rem;}
+h2 {font-size:1.6rem;}
+h3 {font-size:1.3rem;}
+h4 {font-size:1.1rem;}
+h5,h6 {font-size:1rem;}
+p,ul,ol,dl,blockquote,pre,table,figure {margin:0 0 1em;}
+ul,ol {padding-inline-start:1.5em;}
+a {color:var(--c-link);text-decoration:underline;text-underline-offset:0.15em;}
+blockquote {margin-inline:0;padding:0.25em 1em;border-inline-start:3px solid var(--c-line);color:var(--c-muted);}
+code,kbd,pre,samp {font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;font-size:0.9em;}
+code {padding:0.1em 0.3em;border-radius:3px;background:var(--c-soft);}
+pre {padding:0.75em 1em;overflow:auto;border-radius:4px;background:var(--c-soft);}
+pre code {padding:0;background:none;}
+mark {padding:0 0.15em;}
+hr {height:0;margin:2em 0;border:0;border-top:1px solid var(--c-line);}
+
+/* --- Media --- */
+img,video,iframe {max-width:100%;}
+img,video {height:auto;}
+figure {margin-inline:0;}
+figcaption,.caption p {font-size:0.875rem;color:var(--c-muted);}
+.caption,div.caption {padding:0 10px;}
+
+/* --- Tables --- */
+table {border-collapse:collapse;max-width:100%;}
+th,td {padding:0.4em 0.6em;border:1px solid var(--c-line);vertical-align:top;}
+th {background:var(--c-soft);text-align:start;}
+
+/* --- Joomla's markers: Read More and page breaks --- */
+hr#system-readmore {height:0;margin:1.5em 0;border:0;border-top:2px dashed var(--c-mark);}
+hr.system-pagebreak {height:0;margin:1.5em 0;border:0;border-top:2px dashed var(--c-muted);}
