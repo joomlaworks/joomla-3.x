@@ -4749,6 +4749,9 @@ class JoomlaInstallerScript
             // The tree of checkboxes (module assignment, menu item containers; now global.js' CMS.treeSelect)
             '/media/system/js/treeselectmenu.jquery.js',
             '/media/system/js/treeselectmenu.jquery.min.js',
+            // Lists reordered by dragging (now global.js' CMS.sortableList, no jQuery UI)
+            '/media/system/js/sortablelist.js',
+            '/media/system/css/sortablelist.css',
             // Show-on (cms.js), part of global.js and frontend.js
             '/media/system/js/cms.js',
             '/media/system/js/cms-uncompressed.js',

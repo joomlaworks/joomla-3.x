@@ -385,6 +385,7 @@ Every name `core.js` and the MooTools behaviours offered still works and calls t
 | `sendPermissions()`, `getUrlParam()` (the Permissions field) | `CMS.permissions.send()`, `CMS.permissions.urlParam()` |
 | `frontediting.js` | `CMS.frontEditing.showModule()`, `CMS.frontEditing.showMenuItem()` |
 | `moduleorder.js` (the module ordering field) | `CMS.moduleOrder.load()`, `CMS.moduleOrder.write()` |
+| `jQuery.JSortableList` (`sortablelist.js`, `JHtml::_('sortablelist.sortable')`) | `CMS.sortableList.attach(tbody, {formId, sortDir, url, nested})` |
 | `jQuery.fn.subformRepeatable()`, `$.subformRepeatable` (`subform-repeatable.js`) | `CMS.subform.attach()`, `CMS.subform.get()` |
 | `jQuery.fn.JRepeatable()`, `$.JRepeatable` (`repeatable.js`, the deprecated Repeatable field) | `CMS.repeatable.attach()` |
 | `treeselectmenu.jquery.js` (trees of checkboxes: menu assignment, menu item containers) | `CMS.treeSelect.start()`, `toggle()`, `check()`, `filter()` |

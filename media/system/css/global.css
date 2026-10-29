@@ -119,13 +119,20 @@ div.mod-languages a {text-decoration:none;}
 .cms-date.is-text .cms-date-input {position:absolute;top:0;left:0;width:100%;height:100%;padding:0;border:0;opacity:0;pointer-events:none;}
 .cms-date .cms-date-pick {display:inline-flex;align-items:center;justify-content:center;margin:0;padding:0 9px;}
 
-/* --- Sorting rows (subforms, the Repeatable field) --- */
-/* none: a touch on a handle drags the row instead of scrolling the page */
+/* --- Sorting rows (subforms, the Repeatable field, lists sorted by ordering) --- */
+/* none: a touch on a handle drags the row instead of scrolling the page (touch-action needs a box, not an inline element) */
 .group-move,.sortable-handler {cursor:move;touch-action:none;}
-.cms-sort-dragging {opacity:0.4;}
-/* Where the row will go */
+.sortable-handler {display:inline-block;}
+/* The row being moved */
+.cms-sort-dragging {opacity:0.6;outline:2px dashed var(--c-primary, #2a6fb5);outline-offset:-2px;}
+/* Where the row will go: a shadow, as striped tables' backgrounds outrank this rule */
 div.cms-sort-placeholder {height:4px;margin:4px 0;background:var(--c-primary, #2a6fb5);border-radius:2px;}
-tr.cms-sort-placeholder > td {height:4px;padding:0;background:var(--c-primary, #2a6fb5);border:0;}
+tr.cms-sort-placeholder > td {height:4px;padding:0;border:0;box-shadow:inset 0 0 0 2px var(--c-primary, #2a6fb5);}
+/* Handles of lists not sorted by ordering do nothing */
+.sortable-handler.inactive {cursor:default;touch-action:auto;}
+/* Rows of other groups (another category) while a row is dragged */
+.dndlist-group-disabled {opacity:0.3;}
+.middle,.table td.middle,.table th.middle {vertical-align:middle;}
 
 /* --- Administrator error page without a template's own (layout joomla.system.admin.error, body.tmpl-error) --- */
 body.tmpl-error {margin:15px;padding:0;background:#fff;color:#333;font:11px/1.4 Arial, Helvetica, sans-serif;}

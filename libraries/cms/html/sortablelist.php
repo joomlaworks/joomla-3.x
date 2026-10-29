@@ -83,26 +83,13 @@ abstract class JHtmlSortablelist
      */
     public static function _proceedSaveOrderButton()
     {
-        JFactory::getDocument()->addScriptDeclaration(
-            "(function ($){
-				$(document).ready(function (){
-					var saveOrderButton = $('.saveorder');
-					saveOrderButton.css({'opacity':'0.2', 'cursor':'default'}).attr('onclick','return false;');
-					var oldOrderingValue = '';
-					$('.text-area-order').focus(function ()
-					{
-						oldOrderingValue = $(this).attr('value');
-					})
-					.keyup(function (){
-						var newOrderingValue = $(this).attr('value');
-						if (oldOrderingValue != newOrderingValue)
-						{
-							saveOrderButton.css({'opacity':'1', 'cursor':'pointer'}).removeAttr('onclick')
-						}
-					});
-				});
-			})(jQuery);"
-        );
+        // global.js (CMS.sortableList) dims Save Order until an order field changes
+        JHtml::_('behavior.cms');
+        $document = JFactory::getDocument();
+        $lists    = (array) $document->getScriptOptions('system.sortablelist');
+        $lists[]  = array('tableId' => '', 'saveOrderButton' => true);
+
+        $document->addScriptOptions('system.sortablelist', $lists, false);
 
         return;
     }

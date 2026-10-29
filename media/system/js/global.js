@@ -3357,6 +3357,13 @@
 			handle.addEventListener('pointercancel', stop);
 		});
 
+		// A touch on a handle drags, never pans the page (touch-action alone fails on inline handles)
+		container.addEventListener('touchstart', (event) => {
+			if (ownRow(event.target)) {
+				event.preventDefault();
+			}
+		}, { passive: false });
+
 		container.addEventListener('keydown', (event) => {
 			const found = event.key === 'ArrowUp' || event.key === 'ArrowDown' ? ownRow(event.target) : null;
 
@@ -3429,6 +3436,283 @@
 			}
 		});
 	};
+
+	/*
+	 * --- Lists reordered by dragging (JHtml::_('sortablelist.sortable'), layout joomla.html.sortablelist; what
+	 * sortablelist.js and jQuery UI's sortable were) ---
+	 *
+	 * A row's handle (.sortable-handler) drags it among the rows of its group (sortable-group-id: an article's category, a
+	 * category's parent); in nested lists (Categories, Menu Items) its sub-rows (tr[parents~="<item-id>"]) move with it.
+	 * Mouse, pen and touch, a line where it will go, the arrow keys on a focused handle. After a move the group's order[]
+	 * values are given out again by position (ascending or descending, as the list is sorted) and posted with the rows'
+	 * cid[] to the list's saveOrderAjax address, as before.
+	 */
+	const sortableLists = new WeakSet();
+
+	CMS.sortableList = {
+		/**
+		 * @param  {HTMLElement|string}  tbody    The list's tbody (or a selector)
+		 * @param  {Object}              options  formId, sortDir (asc/desc), url (saveOrderAjax), nested, saveOrderButton
+		 */
+		attach(tbody, options) {
+			tbody = typeof tbody === 'string' ? document.querySelector(tbody) : (tbody && tbody.jquery ? tbody[0] : tbody);
+			options = Object.assign({ formId: 'adminForm', sortDir: 'asc', url: '', nested: false, saveOrderButton: false }, options || {});
+
+			if (!tbody || sortableLists.has(tbody)) {
+				return;
+			}
+
+			sortableLists.add(tbody);
+
+			// ui-sortable: templates style a list being sorted by it (jQuery UI's class)
+			tbody.classList.add('ui-sortable');
+
+			const form = document.getElementById(options.formId);
+			const handleSelector = tbody.querySelector('.sortable-handler') ? '.sortable-handler' : 'tr';
+			const rows = () => Array.prototype.filter.call(tbody.rows, (row) => !row.classList.contains('cms-sort-placeholder'));
+			const groupOf = (row) => row.getAttribute('sortable-group-id') || '';
+			const sameGroup = (row) => rows().filter((item) => groupOf(item) === groupOf(row));
+			const blockOf = (row) => {
+				const id = row.getAttribute('item-id');
+
+				return [row].concat(options.nested && id ? rows().filter((item) => (' ' + (item.getAttribute('parents') || '') + ' ').indexOf(' ' + id + ' ') > -1) : []);
+			};
+			const lastOf = (row) => {
+				const block = blockOf(row);
+
+				return block[block.length - 1];
+			};
+			const ownRow = (target) => {
+				const handle = target.closest ? target.closest(handleSelector) : null;
+				const row = handle ? handle.closest('tr') : null;
+
+				return row && row.parentNode === tbody && !(handle.classList && handle.classList.contains('inactive')) ? { handle, row } : null;
+			};
+
+			if (form) {
+				form.setAttribute('autocomplete', 'off');
+			}
+
+			focusableHandles(tbody, '.sortable-handler');
+
+			// The group's order[] values, given out again in the rows' new order, then posted with their cid[]
+			const save = (row) => {
+				const group = sameGroup(row).filter((item) => item.querySelector('[name="order[]"]'));
+				const values = group.map((item) => parseInt(item.querySelector('[name="order[]"]').value, 10) || 0)
+					.sort((a, b) => (options.sortDir === 'desc' ? b - a : a - b));
+
+				group.forEach((item, index) => {
+					const input = item.querySelector('[name="order[]"]');
+
+					input.value = values[index];
+					input.setAttribute('value', values[index]);
+				});
+
+				if (!options.url || !form) {
+					return;
+				}
+
+				const data = new FormData(form);
+
+				['task', 'cid[]', 'order[]'].forEach((name) => data.delete(name));
+
+				group.forEach((item) => {
+					const box = item.querySelector('input[type="checkbox"][name="cid[]"]') || item.querySelector('input[type="checkbox"]');
+
+					if (box) {
+						data.append('cid[]', box.value);
+						data.append('order[]', item.querySelector('[name="order[]"]').value);
+					}
+				});
+
+				fetch(options.url, {
+					method: 'POST',
+					body: new URLSearchParams(data),
+					credentials: 'same-origin',
+					headers: { 'X-Requested-With': 'XMLHttpRequest' },
+				}).catch((error) => window.console.warn(error));
+			};
+
+			// Moves a row (and its sub-rows) before an element, or to the end
+			const place = (row, before) => blockOf(row).forEach((item) => tbody.insertBefore(item, before));
+
+			tbody.addEventListener('pointerdown', (event) => {
+				const found = event.button > 0 ? null : ownRow(event.target);
+
+				if (!found) {
+					return;
+				}
+
+				const { handle, row } = found;
+				const own = blockOf(row);
+				const others = sameGroup(row).filter((item) => own.indexOf(item) < 0);
+				const placeholder = document.createElement('tr');
+				const cell = document.createElement('td');
+				let started = false;
+
+				cell.colSpan = row.cells.length;
+				placeholder.className = 'cms-sort-placeholder';
+				placeholder.appendChild(cell);
+				event.preventDefault();
+				handle.setPointerCapture(event.pointerId);
+
+				const move = (moveEvent) => {
+					const y = moveEvent.clientY;
+					let before = null;
+
+					if (!started) {
+						started = true;
+						own.forEach((item) => item.classList.add('cms-sort-dragging'));
+
+						// Rows of other groups can't take it
+						rows().forEach((item) => {
+							if (groupOf(item) !== groupOf(row)) {
+								item.classList.add('dndlist-group-disabled');
+							}
+						});
+					}
+
+					for (const item of others) {
+						const box = item.getBoundingClientRect();
+
+						if (y < box.top + box.height / 2) {
+							before = item;
+							break;
+						}
+					}
+
+					if (!before) {
+						before = others.length ? lastOf(others[others.length - 1]).nextSibling : own[own.length - 1].nextSibling;
+					}
+
+					tbody.insertBefore(placeholder, before);
+
+					if (y < 40) {
+						window.scrollBy(0, -20);
+					} else if (y > window.innerHeight - 40) {
+						window.scrollBy(0, 20);
+					}
+				};
+
+				const stop = () => {
+					handle.removeEventListener('pointermove', move);
+					handle.removeEventListener('pointerup', stop);
+					handle.removeEventListener('pointercancel', stop);
+					own.forEach((item) => item.classList.remove('cms-sort-dragging'));
+					rows().forEach((item) => item.classList.remove('dndlist-group-disabled'));
+
+					if (!placeholder.parentNode) {
+						return;
+					}
+
+					const changed = placeholder.nextSibling !== row && placeholder.previousSibling !== own[own.length - 1];
+
+					if (changed) {
+						place(row, placeholder);
+					}
+
+					placeholder.remove();
+
+					if (changed) {
+						save(row);
+
+						if (window.jQuery) {
+							window.jQuery(row).trigger('sortstop', [{ item: window.jQuery(row) }]);
+						}
+					}
+				};
+
+				handle.addEventListener('pointermove', move);
+				handle.addEventListener('pointerup', stop);
+				handle.addEventListener('pointercancel', stop);
+			});
+
+			// A touch on a handle drags, never pans the page (touch-action alone fails on inline handles)
+			tbody.addEventListener('touchstart', (event) => {
+				if (ownRow(event.target)) {
+					event.preventDefault();
+				}
+			}, { passive: false });
+
+			tbody.addEventListener('keydown', (event) => {
+				const found = event.key === 'ArrowUp' || event.key === 'ArrowDown' ? ownRow(event.target) : null;
+
+				if (!found) {
+					return;
+				}
+
+				const { handle, row } = found;
+				const group = sameGroup(row);
+				const index = group.indexOf(row);
+
+				event.preventDefault();
+
+				if (event.key === 'ArrowUp' && index > 0) {
+					place(row, group[index - 1]);
+				} else if (event.key === 'ArrowDown' && index < group.length - 1) {
+					place(row, lastOf(group[index + 1]).nextSibling);
+				} else {
+					return;
+				}
+
+				handle.focus();
+				save(row);
+			});
+
+			if (options.saveOrderButton) {
+				CMS.sortableList.saveOrderButton();
+			}
+		},
+
+		// Lists with order fields (.text-area-order): Save Order (.saveorder) only once one changed
+		saveOrderButton() {
+			if (CMS.sortableList.buttonStarted) {
+				return;
+			}
+
+			CMS.sortableList.buttonStarted = true;
+
+			const buttons = document.querySelectorAll('.saveorder');
+			const enable = (on) => buttons.forEach((button) => {
+				button.style.opacity = on ? '' : '0.2';
+				button.style.cursor = on ? '' : 'default';
+
+				if (on) {
+					button.removeAttribute('onclick');
+				} else {
+					button.setAttribute('onclick', 'return false;');
+				}
+			});
+
+			enable(false);
+			document.querySelectorAll('.text-area-order').forEach((input) => {
+				const original = input.value;
+
+				input.addEventListener('input', () => {
+					if (input.value !== original) {
+						enable(true);
+					}
+				});
+			});
+		},
+	};
+
+	CMS.ready(() => {
+		[].concat(CMS.options.get('system.sortablelist') || []).forEach((list) => {
+			if (list.tableId) {
+				CMS.sortableList.attach('#' + list.tableId + ' tbody', list);
+			} else if (list.saveOrderButton) {
+				CMS.sortableList.saveOrderButton();
+			}
+		});
+
+		// sortablelist.js' name, for extensions which start their lists themselves
+		if (window.jQuery && !window.jQuery.JSortableList) {
+			window.jQuery.JSortableList = function JSortableList(tbody, formId, sortDir, url, options, nested) {
+				CMS.sortableList.attach(tbody, { formId, sortDir, url, nested: Boolean(nested) });
+			};
+		}
+	});
 
 	/* --- Subforms (layouts joomla.form.field.subform.repeatable and repeatable-table; what subform-repeatable.js was) --- */
 
@@ -7008,6 +7292,7 @@
 		'jQuery.fn.simplecolors() (behavior.simplecolorpicker)': 'the layout joomla.form.field.color.simple (swatches)',
 		'jSelectUser(), jQuery.fn.fieldUser() (fielduser.js)': 'CMS.userField.select(), CMS.userField.open()',
 		'moduleorder.js': 'CMS.moduleOrder.load(), CMS.moduleOrder.write()',
+		'jQuery.JSortableList() (sortablelist.js, JHtml sortablelist.sortable)': 'CMS.sortableList.attach()',
 		'treeselectmenu.jquery.js': 'CMS.treeSelect.start(), toggle(), check(), filter()',
 		'jQuery.fn.subformRepeatable() (subform-repeatable.js)': 'CMS.subform.attach(), CMS.subform.get()',
 		'jQuery.fn.JRepeatable() (repeatable.js)': 'CMS.repeatable.attach()',

@@ -62,13 +62,14 @@ abstract class HTMLHelper
             'system/jquery.simplecolors' => 'simplecolorpicker', 'system/color-field-init' => 'simplecolorpicker',
             'system/calendar' => 'calendar', 'system/calendar-setup' => 'calendar', 'system/calendar-field' => 'core',
             'system/fields/calendar' => 'core', 'system/cms' => 'core', 'system/fielduser' => 'cms',
-            'system/modal-fields' => 'cms', 'system/moduleorder' => 'cms', 'system/subform-repeatable' => 'cms', 'system/repeatable' => 'cms', 'system/treeselectmenu.jquery' => 'cms',
+            'system/modal-fields' => 'cms', 'system/moduleorder' => 'cms', 'system/subform-repeatable' => 'cms', 'system/repeatable' => 'cms', 'system/treeselectmenu.jquery' => 'cms', 'system/sortablelist' => 'cms',
         ),
         'css' => array(
             'system/editor-switch' => 'styles', 'system/frontediting' => 'styles', 'system/modal' => 'styles', 'system/mootree' => 'styles',
             'system/mootree_rtl' => 'styles', 'mod_languages/languages' => 'styles', 'system/jquery.minicolors' => 'styles',
             'system/jquery.simplecolors' => 'styles', 'system/calendar-jos' => 'styles', 'system/calendar-field' => 'styles',
             'system/calendar-field-rtl' => 'styles', 'system/fields/calendar' => 'styles', 'system/fields/calendar-rtl' => 'styles',
+            'system/sortablelist' => 'styles',
         ),
     );
 

@@ -24,41 +24,18 @@ defined('_JEXEC') or die;
 
 extract($displayData);
 
-// Depends on jQuery UI
-JHtml::_('jquery.ui', array('core', 'sortable'));
+// Started by global.js (CMS.sortableList) from these options; several lists on a page each get theirs
+JHtml::_('behavior.cms');
 
-JHtml::_('script', 'system/sortablelist.js', array('version' => 'auto', 'relative' => true));
-JHtml::_('stylesheet', 'system/sortablelist.css', array('version' => 'auto', 'relative' => true));
-
-// Attach sortable to document
-JFactory::getDocument()->addScriptDeclaration(
-    "
-		jQuery(document).ready(function ($){
-			var sortableList = new $.JSortableList('#"
-    . $tableId . " tbody','" . $formId . "','" . $sortDir . "' , '" . $saveOrderingUrl . "','','" . $nestedList . "');
-		});
-	"
+$document = JFactory::getDocument();
+$lists    = (array) $document->getScriptOptions('system.sortablelist');
+$lists[]  = array(
+    'tableId'         => $tableId,
+    'formId'          => $formId,
+    'sortDir'         => strtolower((string) $sortDir) === 'desc' ? 'desc' : 'asc',
+    'url'             => $saveOrderingUrl,
+    'nested'          => (bool) $nestedList,
+    'saveOrderButton' => (bool) $proceedSaveOrderButton,
 );
 
-if ($proceedSaveOrderButton) {
-    JFactory::getDocument()->addScriptDeclaration(
-        "
-		jQuery(document).ready(function ($){
-			var saveOrderButton = $('.saveorder');
-			saveOrderButton.css({'opacity':'0.2', 'cursor':'default'}).attr('onclick','return false;');
-			var oldOrderingValue = '';
-			$('.text-area-order').focus(function ()
-			{
-				oldOrderingValue = $(this).attr('value');
-			})
-			.keyup(function (){
-				var newOrderingValue = $(this).attr('value');
-				if (oldOrderingValue != newOrderingValue)
-				{
-					saveOrderButton.css({'opacity':'1', 'cursor':'pointer'}).removeAttr('onclick')
-				}
-			});
-		});
-		"
-    );
-}
+$document->addScriptOptions('system.sortablelist', $lists, false);
