@@ -4757,6 +4757,10 @@ class JoomlaInstallerScript
             '/media/system/js/chosen.jquery.min.js',
             '/media/system/js/ajax-chosen.js',
             '/media/system/js/ajax-chosen.min.js',
+            // The search tools (now global.js' CMS.searchtools, their styles in global.css)
+            '/media/system/js/jquery.searchtools.js',
+            '/media/system/js/jquery.searchtools.min.js',
+            '/media/system/css/jquery.searchtools.css',
             // Show-on (cms.js), part of global.js and frontend.js
             '/media/system/js/cms.js',
             '/media/system/js/cms-uncompressed.js',

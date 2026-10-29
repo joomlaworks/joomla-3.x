@@ -498,6 +498,220 @@
 		return request;
 	};
 
+	/*
+	 * --- Search suggestions (Smart Search's module and search page; what core used jquery.autocomplete.js for) ---
+	 *
+	 * As the visitor types, terms from the server (url?q=..., an answer {suggestions: [...]}) in a list under the field:
+	 * requests wait for a pause (delay), answers are kept per text, and a text whose start had no suggestions isn't asked
+	 * for; matches in <strong>. The list keeps jQuery Autocomplete's class names (.autocomplete-suggestions,
+	 * .autocomplete-suggestion, .autocomplete-selected), which Smart Search's and templates' styles use. Arrows, Enter,
+	 * Escape and the mouse; the field is a combobox of the listbox for screen readers. jquery.autocomplete.js stays for
+	 * extensions.
+	 */
+	if (!CMS.suggest) {
+		let suggestCount = 0;
+
+		CMS.suggest = {
+			/**
+			 * @param  {HTMLInputElement|string}  input
+			 * @param  {Object}                   options  url, paramName (q), minChars (1), delay (500), maxHeight (400), width
+			 */
+			attach(input, options) {
+				input = typeof input === 'string' ? document.querySelector(input) : input;
+
+				if (!input || input.cmsSuggest) {
+					return;
+				}
+
+				const o = Object.assign({ paramName: 'q', minChars: 1, delay: 500, maxHeight: 400 }, options || {});
+				const box = document.createElement('div');
+				const cache = {};
+				const empty = [];
+				let items = [];
+				let active = -1;
+				let timer = null;
+				let current = '';
+
+				suggestCount += 1;
+				input.cmsSuggest = true;
+				input.setAttribute('autocomplete', 'off');
+				input.setAttribute('role', 'combobox');
+				input.setAttribute('aria-autocomplete', 'list');
+				input.setAttribute('aria-expanded', 'false');
+				box.className = 'autocomplete-suggestions';
+				box.id = 'cms-suggest-' + suggestCount;
+				box.setAttribute('role', 'listbox');
+				box.style.cssText = 'position:absolute;display:none;z-index:9999;max-height:' + parseInt(o.maxHeight, 10) + 'px;';
+				input.setAttribute('aria-controls', box.id);
+				document.body.appendChild(box);
+
+				const escape = (text) => String(text).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+				const place = () => {
+					const rect = input.getBoundingClientRect();
+					const room = document.documentElement.clientWidth;
+					const width = Math.min(o.width ? parseInt(o.width, 10) : rect.width, room);
+
+					// Within the window: a list wider than a field near its edge moves left
+					box.style.left = (Math.max(0, Math.min(rect.left, room - width)) + window.pageXOffset) + 'px';
+					box.style.top = (rect.bottom + window.pageYOffset) + 'px';
+					box.style.width = width + 'px';
+				};
+				const hide = () => {
+					box.style.display = 'none';
+					input.setAttribute('aria-expanded', 'false');
+					input.removeAttribute('aria-activedescendant');
+					active = -1;
+				};
+				const highlight = (index) => {
+					const rows = box.children;
+
+					if (rows[active]) {
+						rows[active].classList.remove('autocomplete-selected');
+						rows[active].setAttribute('aria-selected', 'false');
+					}
+
+					active = index;
+
+					if (rows[active]) {
+						rows[active].classList.add('autocomplete-selected');
+						rows[active].setAttribute('aria-selected', 'true');
+						input.setAttribute('aria-activedescendant', rows[active].id);
+
+						if (rows[active].offsetTop < box.scrollTop) {
+							box.scrollTop = rows[active].offsetTop;
+						} else if (rows[active].offsetTop + rows[active].offsetHeight > box.scrollTop + box.clientHeight) {
+							box.scrollTop = rows[active].offsetTop + rows[active].offsetHeight - box.clientHeight;
+						}
+					} else {
+						input.removeAttribute('aria-activedescendant');
+					}
+				};
+				const choose = (index) => {
+					if (items[index] !== undefined) {
+						input.value = items[index];
+						hide();
+					}
+				};
+				const show = (query, list) => {
+					items = list.map((item) => (typeof item === 'string' ? item : item.value));
+
+					if (!items.length || input.value.trim() !== query || document.activeElement !== input) {
+						hide();
+
+						return;
+					}
+
+					box.innerHTML = items.map((item, index) => '<div class="autocomplete-suggestion" role="option" aria-selected="false" id="' + box.id + '-' + index
+						+ '" data-index="' + index + '">' + escape(item).replace(new RegExp(escape(query).replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'gi'), (m) => '<strong>' + m + '</strong>') + '</div>').join('');
+					active = -1;
+					place();
+					box.style.display = 'block';
+					input.setAttribute('aria-expanded', 'true');
+				};
+				const ask = (query) => {
+					if (cache[query]) {
+						show(query, cache[query]);
+
+						return;
+					}
+
+					// A text whose start had no suggestions has none either
+					if (empty.some((start) => query.indexOf(start) === 0)) {
+						hide();
+
+						return;
+					}
+
+					current = query;
+					fetch(o.url + (o.url.indexOf('?') > -1 ? '&' : '?') + encodeURIComponent(o.paramName) + '=' + encodeURIComponent(query), {
+						credentials: 'same-origin',
+						headers: { 'X-Requested-With': 'XMLHttpRequest' },
+					})
+						.then((response) => response.json())
+						.then((data) => {
+							const list = (data && Array.isArray(data.suggestions) ? data.suggestions : []);
+
+							cache[query] = list;
+
+							if (!list.length) {
+								empty.push(query);
+							}
+
+							if (query === current) {
+								show(query, list);
+							}
+						})
+						.catch(() => hide());
+				};
+
+				input.addEventListener('input', () => {
+					const query = input.value.trim();
+
+					clearTimeout(timer);
+
+					if (query.length < o.minChars) {
+						hide();
+
+						return;
+					}
+
+					timer = setTimeout(() => ask(query), cache[query] ? 0 : parseInt(o.delay, 10));
+				});
+
+				input.addEventListener('keydown', (event) => {
+					const open = box.style.display === 'block';
+
+					if (event.key === 'ArrowDown' && open) {
+						event.preventDefault();
+						highlight(Math.min(active + 1, items.length - 1));
+					} else if (event.key === 'ArrowUp' && open) {
+						event.preventDefault();
+						highlight(Math.max(active - 1, 0));
+					} else if (event.key === 'Enter' && open && active > -1) {
+						// The suggestion goes into the field; the next Enter sends the form
+						event.preventDefault();
+						choose(active);
+					} else if (event.key === 'Escape' && open) {
+						hide();
+					} else if (event.key === 'Tab') {
+						hide();
+					}
+				});
+
+				input.addEventListener('blur', () => setTimeout(hide, 150));
+				box.addEventListener('mousedown', (event) => {
+					const row = event.target.closest ? event.target.closest('.autocomplete-suggestion') : null;
+
+					// The field keeps its focus
+					event.preventDefault();
+
+					if (row) {
+						choose(parseInt(row.getAttribute('data-index'), 10));
+					}
+				});
+				box.addEventListener('mouseover', (event) => {
+					const row = event.target.closest ? event.target.closest('.autocomplete-suggestion') : null;
+
+					if (row) {
+						highlight(parseInt(row.getAttribute('data-index'), 10));
+					}
+				});
+				window.addEventListener('resize', () => {
+					if (box.style.display === 'block') {
+						place();
+					}
+				});
+			},
+		};
+
+		// The fields the page asks for (script options system.suggest: {selector: options})
+		CMS.ready(() => {
+			const fields = CMS.options.get('system.suggest') || {};
+
+			Object.keys(fields).forEach((selector) => CMS.suggest.attach(selector, fields[selector]));
+		});
+	}
+
 	/* --- Captions from the title of images (behavior.caption, deprecated: use <figure>) --- */
 
 	CMS.caption = {

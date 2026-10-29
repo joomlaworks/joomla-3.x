@@ -11,9 +11,15 @@ defined('_JEXEC') or die;
 
 JHtml::addIncludePath(JPATH_SITE . '/components/com_finder/helpers/html');
 
-JHtml::_('jquery.framework');
-JHtml::_('formbehavior.chosen');
-JHtml::_('bootstrap.tooltip');
+$show_advanced = $params->get('show_advanced', 0);
+
+if ($show_advanced == 1) {
+    JHtml::_('formbehavior.chosen');
+}
+
+if ($params->get('show_button', 0)) {
+    JHtml::_('bootstrap.tooltip');
+}
 
 // Load the smart search component language file.
 $lang = JFactory::getLanguage();
@@ -72,75 +78,33 @@ if ($params->get('show_button', 0)) {
 
 JHtml::_('stylesheet', 'com_finder/finder.css', array('version' => 'auto', 'relative' => true));
 
-$script = "
-jQuery(document).ready(function() {
-	var value, searchword = jQuery('#mod-finder-searchword" . $module->id . "');
-
-		// Get the current value.
-		value = searchword.val();
-
-		// If the current value equals the default value, clear it.
-		searchword.on('focus', function ()
-		{
-			var el = jQuery(this);
-
-			if (el.val() === '" . JText::_('MOD_FINDER_SEARCH_VALUE', true) . "')
-			{
-				el.val('');
-			}
-		});
-
-		// If the current value is empty, set the previous value.
-		searchword.on('blur', function ()
-		{
-			var el = jQuery(this);
-
-			if (!el.val())
-			{
-				el.val(value);
-			}
-		});
-
-		jQuery('#mod-finder-searchform" . $module->id . "').on('submit', function (e)
-		{
-			e.stopPropagation();
-			var advanced = jQuery('#mod-finder-advanced" . $module->id . "');
-
-			// Disable select boxes with no value selected.
-			if (advanced.length)
-			{
-				advanced.find('select').each(function (index, el)
-				{
-					var el = jQuery(el);
-
-					if (!el.val())
-					{
-						el.attr('disabled', 'disabled');
-					}
-				});
-			}
-		});";
-/*
- * This segment of code sets up the autocompleter.
- */
-if ($params->get('show_autosuggest', 1)) {
-    JHtml::_('script', 'system/jquery.autocomplete.min.js', array('version' => 'auto', 'relative' => true));
-
-    $script .= "
-	var suggest = jQuery('#mod-finder-searchword" . $module->id . "').autocomplete({
-		serviceUrl: '" . JRoute::_('index.php?option=com_finder&task=suggestions.suggest&format=json&tmpl=component') . "',
-		paramName: 'q',
-		minChars: 1,
-		maxHeight: 400,
-		width: 300,
-		zIndex: 9999,
-		deferRequestBy: 500
-	});";
+if ($show_advanced == 1) {
+    // Select boxes without a value are left out of the address (the same script as the search page's, written once)
+    JFactory::getDocument()->addScriptDeclaration(
+        "document.addEventListener('submit', function (event) {\n"
+        . "\tvar selects = event.target.querySelectorAll('#finder-search #advancedSearch select, [id^=\"mod-finder-searchform\"] [id^=\"mod-finder-advanced\"] select');\n\n"
+        . "\tfor (var i = 0; i < selects.length; i++) {\n"
+        . "\t\tif (!selects[i].value) {\n"
+        . "\t\t\tselects[i].disabled = true;\n"
+        . "\t\t}\n"
+        . "\t}\n"
+        . "});"
+    );
 }
 
-$script .= '});';
-
-JFactory::getDocument()->addScriptDeclaration($script);
+if ($params->get('show_autosuggest', 1)) {
+    JHtml::_('behavior.core');
+    JFactory::getDocument()->addScriptOptions('system.suggest', array(
+        '#mod-finder-searchword' . $module->id => array(
+            'url'       => JRoute::_('index.php?option=com_finder&task=suggestions.suggest&format=json&tmpl=component', false),
+            'paramName' => 'q',
+            'minChars'  => 1,
+            'maxHeight' => 400,
+            'width'     => 300,
+            'delay'     => 500,
+        ),
+    ));
+}
 ?>
 
 <div class="finder<?php echo $suffix; ?>">
@@ -150,7 +114,6 @@ JFactory::getDocument()->addScriptDeclaration($script);
         echo $output;
 ?>
 
-		<?php $show_advanced = $params->get('show_advanced', 0); ?>
 		<?php if ($show_advanced == 2) : ?>
 			<br />
 			<a href="<?php echo JRoute::_($route); ?>"><?php echo JText::_('COM_FINDER_ADVANCED_SEARCH'); ?></a>

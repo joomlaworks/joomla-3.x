@@ -146,6 +146,7 @@ Summary of changes:
 - Tooltips and popovers no longer load Bootstrap's script or jQuery; the Login Form loads no script at all (its tooltips removed, the secret key's help shown as text)
 - Keep-alive only while editing after logging in: login, registration, reset, contact and other one-off forms no longer ping the server
 - Searchable lists (Chosen, Ajax Chosen) rewritten in plain JavaScript in `global.js`: same look and markup, screen-reader roles added, no jQuery needed
+- Lists' search tools and Smart Search's suggestions rewritten in plain JavaScript (`global.js`, `frontend.js`): same look and behaviour, no jQuery needed; Smart Search's search page and module load no jQuery
 - Unused libraries removed (Symfony's PHP 7.3 polyfill, the Framework's DI container and PSR-11); FOF's LESS compiler updated to lessphp 0.5.0
 - Administrator menu: Media at the top level after Content, no Help menu; Prothero's phone menu in two columns without gaps
 - Inline Editing (front-end editing of modules and menus) is off by default

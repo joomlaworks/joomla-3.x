@@ -6053,6 +6053,589 @@
 		}
 	});
 
+	/*
+	 * --- Search tools (the filter bar of lists, layout joomla.searchtools.default; what jquery.searchtools.js was) ---
+	 *
+	 * The Filter Options and list options buttons show and hide their containers, filters with a value are marked active
+	 * (the select and its Chosen container), Clear empties them and sends the form, the columns' sort links set the
+	 * ordering field. Lists drawn by Chosen are redrawn through liszt:updated (jQuery's trigger when it's there).
+	 */
+	const searchtoolsRedraw = (element) => {
+		if (window.jQuery) {
+			window.jQuery(element).trigger('liszt:updated');
+		} else {
+			element.dispatchEvent(new CustomEvent('liszt:updated'));
+		}
+	};
+
+	// As jQuery's val(''): the empty option, or nothing chosen
+	const searchtoolsEmpty = (element) => {
+		if (element.tagName === 'SELECT') {
+			let found = false;
+
+			Array.prototype.forEach.call(element.options, (option) => {
+				option.selected = !found && option.value === '';
+				found = found || option.selected;
+			});
+
+			if (!found) {
+				element.selectedIndex = -1;
+			}
+		} else if (element.type !== 'checkbox' && element.type !== 'radio' && element.type !== 'hidden') {
+			element.value = '';
+		}
+	};
+
+	// As jQuery's submit(): the submit event (listeners and onsubmit), then the form unless one cancelled it
+	const searchtoolsSubmit = (form) => {
+		if (form && form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))) {
+			form.submit();
+		}
+	};
+
+	const searchtoolsForms = new WeakMap();
+
+	class Searchtools {
+		constructor(form, options) {
+			const o = Object.assign({}, Searchtools.defaults, options || {});
+			const inForm = (selector) => list(form.querySelectorAll(selector));
+
+			this.form = form;
+			this.options = o;
+			this.filterButton = inForm(o.filterBtnSelector);
+			this.filterContainer = inForm(o.filterContainerSelector);
+			this.listButton = inForm(o.listBtnSelector);
+			this.listContainer = inForm(o.listContainerSelector);
+			this.searchField = form.querySelector(o.searchFieldSelector) || document.querySelector(o.searchFieldSelector);
+			this.clearButton = list(document.querySelectorAll(o.clearBtnSelector));
+			this.orderField = form.querySelector(o.orderFieldSelector) || document.querySelector(o.orderFieldSelector);
+			this.activeColumn = null;
+			this.activeDirection = o.activeDirection;
+			this.activeOrder = o.activeOrder;
+
+			searchtoolsForms.set(form, this);
+
+			if (o.filtersHidden) {
+				this.hideFilters();
+			} else {
+				this.showFilters();
+			}
+
+			if (o.listHidden) {
+				this.hideList();
+			} else {
+				this.showList();
+			}
+
+			this.filterButton.forEach((button) => button.addEventListener('click', (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				this.toggleFilters();
+			}));
+			this.listButton.forEach((button) => button.addEventListener('click', (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				this.toggleList();
+			}));
+			this.clearButton.forEach((button) => button.addEventListener('click', () => this.clear()));
+
+			// Filters with a value are marked (Chosen's changes reach jQuery's listeners only)
+			this.getFilterFields().forEach((element) => {
+				this.checkFilter(element);
+
+				if (window.jQuery) {
+					window.jQuery(element).on('change', () => this.checkFilter(element));
+				} else {
+					element.addEventListener('change', () => this.checkFilter(element));
+				}
+			});
+
+			this.createOrderField();
+
+			form.addEventListener('click', (event) => {
+				const column = event.target.closest ? event.target.closest(o.orderColumnSelector) : null;
+				const order = column ? column.getAttribute('data-order') || '' : '';
+
+				if (!column || !form.contains(column) || !order.length) {
+					return;
+				}
+
+				const direction = column.getAttribute('data-direction');
+				const ordering = order + ' ' + direction;
+
+				event.preventDefault();
+				this.activeColumn = order;
+
+				if (ordering !== this.activeOrder) {
+					this.activeDirection = direction;
+					this.activeOrder = ordering;
+					this.updateFieldValue(this.orderField, ordering);
+				} else {
+					this.toggleDirection();
+				}
+
+				searchtoolsSubmit(form);
+			});
+		}
+
+		getFilterFields() {
+			return this.filterContainer.reduce((all, container) => all.concat(list(container.querySelectorAll('select, input'))), []);
+		}
+
+		getListFields() {
+			return this.listContainer.reduce((all, container) => all.concat(list(container.querySelectorAll('select'))), []);
+		}
+
+		checkFilter(element) {
+			// A list by its chosen option, a text input by its value (jquery.searchtools.js marked text inputs always)
+			const active = element.tagName === 'SELECT' ? element.selectedIndex > -1 && element.options[element.selectedIndex].value !== '' : element.value !== '';
+			const chosen = element.id ? document.getElementById(element.id.replace(/[^\w]/g, '_') + '_chzn') : null;
+
+			element.classList.toggle('active', active);
+
+			if (chosen) {
+				chosen.classList.toggle('active', active);
+			}
+		}
+
+		clear() {
+			this.getFilterFields().forEach((element) => {
+				searchtoolsEmpty(element);
+				this.checkFilter(element);
+
+				if (this.options.chosenSupport) {
+					searchtoolsRedraw(element);
+				}
+			});
+
+			if (this.options.clearListOptions) {
+				this.getListFields().forEach((element) => {
+					searchtoolsEmpty(element);
+					this.checkFilter(element);
+
+					if (this.options.chosenSupport) {
+						searchtoolsRedraw(element);
+					}
+				});
+
+				const limit = document.getElementById('list_limit');
+
+				if (limit) {
+					limit.value = this.options.defaultLimit;
+
+					if (this.options.chosenSupport) {
+						searchtoolsRedraw(limit);
+					}
+				}
+			}
+
+			if (this.searchField) {
+				this.searchField.value = '';
+			}
+
+			searchtoolsSubmit(this.form);
+		}
+
+		showContainers(containers, shown) {
+			containers.forEach((container) => {
+				container.style.display = shown ? 'block' : 'none';
+				container.classList.toggle('shown', shown);
+			});
+		}
+
+		hideList() {
+			this.showContainers(this.listContainer, false);
+			this.listButton.forEach((button) => button.classList.remove('btn-primary'));
+		}
+
+		showList() {
+			this.showContainers(this.listContainer, true);
+			this.listButton.forEach((button) => button.classList.add('btn-primary'));
+		}
+
+		toggleList() {
+			const shown = !(this.listContainer[0] && this.listContainer[0].classList.contains('shown'));
+
+			this.showContainers(this.listContainer, shown);
+			this.listButton.forEach((button) => button.classList.toggle('btn-primary', shown));
+		}
+
+		hideFilters() {
+			this.showContainers(this.filterContainer, false);
+			this.filterButton.forEach((button) => button.classList.remove('btn-primary'));
+		}
+
+		showFilters() {
+			this.showContainers(this.filterContainer, true);
+			this.filterButton.forEach((button) => button.classList.add('btn-primary'));
+		}
+
+		toggleFilters() {
+			const shown = !(this.filterContainer[0] && this.filterContainer[0].classList.contains('shown'));
+
+			this.showContainers(this.filterContainer, shown);
+			this.filterButton.forEach((button) => button.classList.toggle('btn-primary', shown));
+		}
+
+		toggleDirection() {
+			this.activeDirection = String(this.activeDirection).toUpperCase() === 'ASC' ? 'DESC' : 'ASC';
+			this.activeOrder = this.activeColumn + ' ' + this.activeDirection;
+			this.updateFieldValue(this.orderField, this.activeOrder);
+		}
+
+		createOrderField() {
+			const o = this.options;
+
+			if (!this.orderField) {
+				this.orderField = document.createElement('input');
+				this.orderField.type = 'hidden';
+				this.orderField.id = 'js-stools-field-order';
+				this.orderField.className = 'js-stools-field-order';
+				this.orderField.name = o.orderFieldName;
+				this.orderField.value = this.activeOrder + ' ' + this.activeDirection;
+				this.form.appendChild(this.orderField);
+			}
+
+			// The sort links' orderings the list lacks
+			if (this.orderField.tagName === 'SELECT') {
+				list(this.form.querySelectorAll(o.orderColumnSelector)).forEach((column) => {
+					const order = column.getAttribute('data-order') || '';
+
+					if (!order.length) {
+						return;
+					}
+
+					const value = order + ' ' + column.getAttribute('data-direction');
+
+					if (!Array.prototype.some.call(this.orderField.options, (option) => option.value === value)) {
+						const option = document.createElement('option');
+
+						option.textContent = column.getAttribute('data-name');
+						option.value = value;
+						option.selected = column.classList.contains('active');
+						this.orderField.appendChild(option);
+					}
+				});
+
+				searchtoolsRedraw(this.orderField);
+			}
+
+			this.activeOrder = this.orderField.value;
+		}
+
+		updateFieldValue(field, value) {
+			const type = field.getAttribute('type');
+
+			if (type === 'hidden' || type === 'text') {
+				field.setAttribute('value', value);
+				field.value = value;
+			} else if (field.tagName === 'SELECT') {
+				let option = Array.prototype.find.call(field.options, (item) => item.value === value);
+
+				if (!option) {
+					option = document.createElement('option');
+					option.textContent = value;
+					option.value = value;
+					field.appendChild(option);
+				}
+
+				option.selected = true;
+
+				if (this.options.chosenSupport) {
+					searchtoolsRedraw(field);
+				}
+			}
+		}
+	}
+
+	Searchtools.defaults = {
+		formSelector: '.js-stools-form',
+		searchFieldSelector: '.js-stools-field-search',
+		clearBtnSelector: '.js-stools-btn-clear',
+		mainContainerSelector: '.js-stools',
+		searchBtnSelector: '.js-stools-btn-search',
+		filterBtnSelector: '.js-stools-btn-filter',
+		filterContainerSelector: '.js-stools-container-filters',
+		filtersHidden: true,
+		listBtnSelector: '.js-stools-btn-list',
+		listContainerSelector: '.js-stools-container-list',
+		listHidden: false,
+		orderColumnSelector: '.js-stools-column-order',
+		orderBtnSelector: '.js-stools-btn-order',
+		orderFieldSelector: '.js-stools-field-order',
+		orderFieldName: 'list[fullordering]',
+		limitFieldSelector: '.js-stools-field-limit',
+		defaultLimit: 20,
+		activeOrder: null,
+		activeDirection: 'ASC',
+		chosenSupport: true,
+		clearListOptions: false,
+	};
+
+	CMS.searchtools = {
+		Searchtools,
+		defaults: Searchtools.defaults,
+
+		// Once per form
+		attach(form, options) {
+			form = typeof form === 'string' ? document.querySelector(form) : (form && form.jquery ? form[0] : form);
+
+			if (!form) {
+				return null;
+			}
+
+			if (!searchtoolsForms.get(form)) {
+				const tools = new Searchtools(form, options);
+
+				// Where jQuery.fn.searchtools() kept its instance
+				if (window.jQuery) {
+					window.jQuery.data(form, 'plugin_searchtools', tools);
+				}
+			}
+
+			return searchtoolsForms.get(form);
+		},
+
+		get: (form) => searchtoolsForms.get(form && form.jquery ? form[0] : form) || null,
+	};
+
+	// The forms the page asks for (script options system.searchtools: {formSelector: options}), after the lists are drawn
+	CMS.ready(() => {
+		const start = () => {
+			const forms = CMS.options.get('system.searchtools') || {};
+
+			Object.keys(forms).forEach((selector) => CMS.searchtools.attach(selector, Object.assign({ formSelector: selector }, forms[selector])));
+		};
+
+		if (window.jQuery) {
+			window.jQuery(start);
+
+			if (!window.jQuery.fn.searchtools) {
+				window.jQuery.fn.searchtools = function searchtools(options) {
+					return this.each((index, form) => {
+						CMS.searchtools.attach(form, options);
+					});
+				};
+			}
+		} else {
+			start();
+		}
+	});
+
+	/*
+	 * --- Search suggestions (Smart Search's module and search page; what core used jquery.autocomplete.js for) ---
+	 *
+	 * As the visitor types, terms from the server (url?q=..., an answer {suggestions: [...]}) in a list under the field:
+	 * requests wait for a pause (delay), answers are kept per text, and a text whose start had no suggestions isn't asked
+	 * for; matches in <strong>. The list keeps jQuery Autocomplete's class names (.autocomplete-suggestions,
+	 * .autocomplete-suggestion, .autocomplete-selected), which Smart Search's and templates' styles use. Arrows, Enter,
+	 * Escape and the mouse; the field is a combobox of the listbox for screen readers. jquery.autocomplete.js stays for
+	 * extensions.
+	 */
+	if (!CMS.suggest) {
+		let suggestCount = 0;
+
+		CMS.suggest = {
+			/**
+			 * @param  {HTMLInputElement|string}  input
+			 * @param  {Object}                   options  url, paramName (q), minChars (1), delay (500), maxHeight (400), width
+			 */
+			attach(input, options) {
+				input = typeof input === 'string' ? document.querySelector(input) : input;
+
+				if (!input || input.cmsSuggest) {
+					return;
+				}
+
+				const o = Object.assign({ paramName: 'q', minChars: 1, delay: 500, maxHeight: 400 }, options || {});
+				const box = document.createElement('div');
+				const cache = {};
+				const empty = [];
+				let items = [];
+				let active = -1;
+				let timer = null;
+				let current = '';
+
+				suggestCount += 1;
+				input.cmsSuggest = true;
+				input.setAttribute('autocomplete', 'off');
+				input.setAttribute('role', 'combobox');
+				input.setAttribute('aria-autocomplete', 'list');
+				input.setAttribute('aria-expanded', 'false');
+				box.className = 'autocomplete-suggestions';
+				box.id = 'cms-suggest-' + suggestCount;
+				box.setAttribute('role', 'listbox');
+				box.style.cssText = 'position:absolute;display:none;z-index:9999;max-height:' + parseInt(o.maxHeight, 10) + 'px;';
+				input.setAttribute('aria-controls', box.id);
+				document.body.appendChild(box);
+
+				const escape = (text) => String(text).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+				const place = () => {
+					const rect = input.getBoundingClientRect();
+					const room = document.documentElement.clientWidth;
+					const width = Math.min(o.width ? parseInt(o.width, 10) : rect.width, room);
+
+					// Within the window: a list wider than a field near its edge moves left
+					box.style.left = (Math.max(0, Math.min(rect.left, room - width)) + window.pageXOffset) + 'px';
+					box.style.top = (rect.bottom + window.pageYOffset) + 'px';
+					box.style.width = width + 'px';
+				};
+				const hide = () => {
+					box.style.display = 'none';
+					input.setAttribute('aria-expanded', 'false');
+					input.removeAttribute('aria-activedescendant');
+					active = -1;
+				};
+				const highlight = (index) => {
+					const rows = box.children;
+
+					if (rows[active]) {
+						rows[active].classList.remove('autocomplete-selected');
+						rows[active].setAttribute('aria-selected', 'false');
+					}
+
+					active = index;
+
+					if (rows[active]) {
+						rows[active].classList.add('autocomplete-selected');
+						rows[active].setAttribute('aria-selected', 'true');
+						input.setAttribute('aria-activedescendant', rows[active].id);
+
+						if (rows[active].offsetTop < box.scrollTop) {
+							box.scrollTop = rows[active].offsetTop;
+						} else if (rows[active].offsetTop + rows[active].offsetHeight > box.scrollTop + box.clientHeight) {
+							box.scrollTop = rows[active].offsetTop + rows[active].offsetHeight - box.clientHeight;
+						}
+					} else {
+						input.removeAttribute('aria-activedescendant');
+					}
+				};
+				const choose = (index) => {
+					if (items[index] !== undefined) {
+						input.value = items[index];
+						hide();
+					}
+				};
+				const show = (query, list) => {
+					items = list.map((item) => (typeof item === 'string' ? item : item.value));
+
+					if (!items.length || input.value.trim() !== query || document.activeElement !== input) {
+						hide();
+
+						return;
+					}
+
+					box.innerHTML = items.map((item, index) => '<div class="autocomplete-suggestion" role="option" aria-selected="false" id="' + box.id + '-' + index
+						+ '" data-index="' + index + '">' + escape(item).replace(new RegExp(escape(query).replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'gi'), (m) => '<strong>' + m + '</strong>') + '</div>').join('');
+					active = -1;
+					place();
+					box.style.display = 'block';
+					input.setAttribute('aria-expanded', 'true');
+				};
+				const ask = (query) => {
+					if (cache[query]) {
+						show(query, cache[query]);
+
+						return;
+					}
+
+					// A text whose start had no suggestions has none either
+					if (empty.some((start) => query.indexOf(start) === 0)) {
+						hide();
+
+						return;
+					}
+
+					current = query;
+					fetch(o.url + (o.url.indexOf('?') > -1 ? '&' : '?') + encodeURIComponent(o.paramName) + '=' + encodeURIComponent(query), {
+						credentials: 'same-origin',
+						headers: { 'X-Requested-With': 'XMLHttpRequest' },
+					})
+						.then((response) => response.json())
+						.then((data) => {
+							const list = (data && Array.isArray(data.suggestions) ? data.suggestions : []);
+
+							cache[query] = list;
+
+							if (!list.length) {
+								empty.push(query);
+							}
+
+							if (query === current) {
+								show(query, list);
+							}
+						})
+						.catch(() => hide());
+				};
+
+				input.addEventListener('input', () => {
+					const query = input.value.trim();
+
+					clearTimeout(timer);
+
+					if (query.length < o.minChars) {
+						hide();
+
+						return;
+					}
+
+					timer = setTimeout(() => ask(query), cache[query] ? 0 : parseInt(o.delay, 10));
+				});
+
+				input.addEventListener('keydown', (event) => {
+					const open = box.style.display === 'block';
+
+					if (event.key === 'ArrowDown' && open) {
+						event.preventDefault();
+						highlight(Math.min(active + 1, items.length - 1));
+					} else if (event.key === 'ArrowUp' && open) {
+						event.preventDefault();
+						highlight(Math.max(active - 1, 0));
+					} else if (event.key === 'Enter' && open && active > -1) {
+						// The suggestion goes into the field; the next Enter sends the form
+						event.preventDefault();
+						choose(active);
+					} else if (event.key === 'Escape' && open) {
+						hide();
+					} else if (event.key === 'Tab') {
+						hide();
+					}
+				});
+
+				input.addEventListener('blur', () => setTimeout(hide, 150));
+				box.addEventListener('mousedown', (event) => {
+					const row = event.target.closest ? event.target.closest('.autocomplete-suggestion') : null;
+
+					// The field keeps its focus
+					event.preventDefault();
+
+					if (row) {
+						choose(parseInt(row.getAttribute('data-index'), 10));
+					}
+				});
+				box.addEventListener('mouseover', (event) => {
+					const row = event.target.closest ? event.target.closest('.autocomplete-suggestion') : null;
+
+					if (row) {
+						highlight(parseInt(row.getAttribute('data-index'), 10));
+					}
+				});
+				window.addEventListener('resize', () => {
+					if (box.style.display === 'block') {
+						place();
+					}
+				});
+			},
+		};
+
+		// The fields the page asks for (script options system.suggest: {selector: options})
+		CMS.ready(() => {
+			const fields = CMS.options.get('system.suggest') || {};
+
+			Object.keys(fields).forEach((selector) => CMS.suggest.attach(selector, fields[selector]));
+		});
+	}
+
 	/* --- Cropping: selecting an area of an image (CMS.cropper; the template editor's image tool, what Jcrop was) --- */
 
 	CMS.cropper = {
@@ -8763,6 +9346,8 @@
 		'jQuery.fn.simplecolors() (behavior.simplecolorpicker)': 'the layout joomla.form.field.color.simple (swatches)',
 		'jSelectUser(), jQuery.fn.fieldUser() (fielduser.js)': 'CMS.userField.select(), CMS.userField.open()',
 		'moduleorder.js': 'CMS.moduleOrder.load(), CMS.moduleOrder.write()',
+		'jQuery.fn.autocomplete() for Smart Search (jquery.autocomplete.js, kept for extensions)': 'CMS.suggest.attach()',
+		'jQuery.fn.searchtools() (jquery.searchtools.js, JHtml searchtools.form)': 'CMS.searchtools.attach()',
 		'jQuery.fn.chosen(), jQuery.fn.ajaxChosen() (chosen.jquery.js, ajax-chosen.js; formbehavior.chosen, formbehavior.ajaxchosen)': 'CMS.chosen.attach(), CMS.chosen.update(), CMS.chosen.get()',
 		'jQuery.JSortableList() (sortablelist.js, JHtml sortablelist.sortable)': 'CMS.sortableList.attach()',
 		'treeselectmenu.jquery.js': 'CMS.treeSelect.start(), toggle(), check(), filter()',

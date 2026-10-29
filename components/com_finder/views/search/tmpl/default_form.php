@@ -9,52 +9,32 @@
 
 defined('_JEXEC') or die;
 
-if ($this->params->get('show_advanced', 1) || $this->params->get('show_autosuggest', 1)) {
-    JHtml::_('jquery.framework');
+if ($this->params->get('show_advanced', 1)) {
+    // Select boxes without a value are left out of the address (the same script as mod_finder's, written once)
+    JFactory::getDocument()->addScriptDeclaration(
+        "document.addEventListener('submit', function (event) {\n"
+        . "\tvar selects = event.target.querySelectorAll('#finder-search #advancedSearch select, [id^=\"mod-finder-searchform\"] [id^=\"mod-finder-advanced\"] select');\n\n"
+        . "\tfor (var i = 0; i < selects.length; i++) {\n"
+        . "\t\tif (!selects[i].value) {\n"
+        . "\t\t\tselects[i].disabled = true;\n"
+        . "\t\t}\n"
+        . "\t}\n"
+        . "});"
+    );
+}
 
-    $script = "
-jQuery(function() {";
-
-    if ($this->params->get('show_advanced', 1)) {
-        /*
-        * This segment of code disables select boxes that have no value when the
-        * form is submitted so that the URL doesn't get blown up with null values.
-        */
-        $script .= "
-	jQuery('#finder-search').on('submit', function(e){
-		e.stopPropagation();
-		// Disable select boxes with no value selected.
-		jQuery('#advancedSearch').find('select').each(function(index, el) {
-			var el = jQuery(el);
-			if(!el.val()){
-				el.attr('disabled', 'disabled');
-			}
-		});
-	});";
-    }
-
-    /*
-    * This segment of code sets up the autocompleter.
-    */
-    if ($this->params->get('show_autosuggest', 1)) {
-        JHtml::_('script', 'system/jquery.autocomplete.min.js', array('version' => 'auto', 'relative' => true));
-
-        $script .= "
-	var suggest = jQuery('#q').autocomplete({
-		serviceUrl: '" . JRoute::_('index.php?option=com_finder&task=suggestions.suggest&format=json&tmpl=component') . "',
-		paramName: 'q',
-		minChars: 1,
-		maxHeight: 400,
-		width: 300,
-		zIndex: 9999,
-		deferRequestBy: 500
-	});";
-    }
-
-    $script .= "
-});";
-
-    JFactory::getDocument()->addScriptDeclaration($script);
+if ($this->params->get('show_autosuggest', 1)) {
+    JHtml::_('behavior.core');
+    JFactory::getDocument()->addScriptOptions('system.suggest', array(
+        '#q' => array(
+            'url'       => JRoute::_('index.php?option=com_finder&task=suggestions.suggest&format=json&tmpl=component', false),
+            'paramName' => 'q',
+            'minChars'  => 1,
+            'maxHeight' => 400,
+            'width'     => 300,
+            'delay'     => 500,
+        ),
+    ));
 }
 
 ?>

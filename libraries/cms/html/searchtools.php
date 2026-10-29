@@ -36,14 +36,8 @@ abstract class JHtmlSearchtools
     {
         // Only load once
         if (empty(static::$loaded[__METHOD__])) {
-            // Requires jQuery but allows to skip its loading
-            if ($loadJquery = (!isset($options['loadJquery']) || $options['loadJquery'] != 0)) {
-                JHtml::_('jquery.framework');
-            }
-
-            // Load the jQuery plugin && CSS
-            JHtml::_('script', 'system/jquery.searchtools.min.js', array('version' => 'auto', 'relative' => true));
-            JHtml::_('stylesheet', 'system/jquery.searchtools.css', array('version' => 'auto', 'relative' => true));
+            // global.js (CMS.searchtools) and its styles in global.css; no jQuery
+            JHtml::_('behavior.cms');
 
             static::$loaded[__METHOD__] = true;
         }
@@ -76,17 +70,8 @@ abstract class JHtmlSearchtools
             // Generate options with default values
             $options = static::optionsToRegistry($options);
 
-            $doc = JFactory::getDocument();
-            $script = "
-				(function($){
-					$(document).ready(function() {
-						$('" . $selector . "').searchtools(
-							" . $options->toString() . "
-						);
-					});
-				})(jQuery);
-			";
-            $doc->addScriptDeclaration($script);
+            // Started by global.js from these options (by form)
+            JFactory::getDocument()->addScriptOptions('system.searchtools', array($selector => $options->toArray()));
 
             static::$loaded[__METHOD__][$sig] = true;
         }
