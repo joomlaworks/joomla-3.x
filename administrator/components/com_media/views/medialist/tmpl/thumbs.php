@@ -92,7 +92,14 @@ $doc->addScriptDeclaration(
 );
 ?>
 <form target="_parent" action="index.php?option=com_media&amp;tmpl=index&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>" method="post" id="mediamanager-form" name="mediamanager-form">
-	<div class="muted breadcrumbs">
+	<div class="muted breadcrumbs media-path">
+		<?php // The folder above (in the thumbnails' place until 3.18)?>
+		<?php if ($this->state->folder != '') : ?>
+			<a class="btn btn-small media-back" href="index.php?option=com_media&amp;view=mediaList&amp;tmpl=component&amp;folder=<?php echo rawurlencode((string) $this->state->parent); ?>" target="folderframe">
+				<?php echo JHtml::_('icons.svg', 'arrow-left', '', array('path' => 'media/com_media/images/icons', 'size' => 16)); ?>
+				<?php echo JText::_('JTOOLBAR_BACK'); ?>
+			</a>
+		<?php endif; ?>
 		<p>
 			<span class="icon-folder"></span>
 			<?php
@@ -102,17 +109,9 @@ $doc->addScriptDeclaration(
 		</p>
 	</div>
 
-	<div>
-		<label class="checkbox btn">
-			<?php echo JHtml::_('grid.checkall'); ?>
-			<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>
-		</label>
-	</div>
-
 	<ul class="manager thumbnails thumbnails-media">
 		<?php
-echo $this->loadTemplate('up'),
-$this->loadTemplate('folders'),
+echo $this->loadTemplate('folders'),
 $this->loadTemplate('docs'),
 $this->loadTemplate('videos'),
 $this->loadTemplate('audios'),

@@ -109,7 +109,6 @@
 .manager:not(.media-picker) > .imgOutline {position:relative;}
 .manager:not(.media-picker) > .imgOutline > :is(.small:not(.imgPreview), .imgTotal) a {position:static;text-decoration:none;}
 .manager:not(.media-picker) > .imgOutline > :is(.small:not(.imgPreview), .imgTotal) a::after {content:"";position:absolute;inset:0;z-index:1;}
-.manager:not(.media-picker) > .imgOutline > .close {position:relative;z-index:2;}
 /* Every tile's checkbox, larger, in its top corner: only the box selects, the rest of the tile opens the file */
 .manager:not(.media-picker) > .imgOutline input[type="checkbox"] {display:block;position:absolute;top:3px;left:3px;z-index:2;width:20px;height:20px;margin:0;opacity:1;cursor:pointer;}
 :where([dir="rtl"]) .manager:not(.media-picker) > .imgOutline input[type="checkbox"] {left:auto;right:3px;}
@@ -162,49 +161,54 @@
 .media-rename-form {display:inline-flex;align-items:center;gap:2px;max-width:100%;vertical-align:middle;}
 .media-rename-form.is-busy {opacity:0.6;}
 .media-rename-input {flex:1 1 auto;width:12em;min-width:0;height:24px;margin:0;padding:0 4px;box-sizing:border-box;font-size:13px;line-height:22px;}
-/* Tiles: the name (clamped as before) and the pencil side by side, the field across the tile */
-:is(.small, .imgPreview).media-rename {display:flex;align-items:center;justify-content:center;gap:2px;}
-:is(.small, .imgPreview).media-rename > .media-rename-label {min-width:0;overflow:hidden;}
-/* Names of other tiles: the two-line clamp on the name itself, so the row shows the buttons above it */
-.manager:not(.media-picker) > .imgOutline > .small.media-rename:not(.imgPreview) {display:flex;align-items:center;justify-content:center;gap:2px;overflow:visible;}
-.manager:not(.media-picker) > .imgOutline > .small.media-rename:not(.imgPreview) > .media-rename-label:not([hidden]) {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
-.imgOutline .media-rename-form {display:flex;width:100%;}
+/* Tiles: the name (clamped to two lines) and the field fill the name bar; the pencil, and then saving and cancelling, sit on
+   the bar's top edge, flush with the tile's side, as the checkbox and the delete button are at its top */
+.manager:not(.media-picker) > .imgOutline > :is(.small, .imgPreview).media-rename {display:block;padding:0;overflow:visible;}
+.manager:not(.media-picker) > .imgOutline > .media-rename > .media-rename-label:not([hidden]) {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
+.manager:not(.media-picker) > .imgOutline > .small.media-rename:not(.imgPreview) > .media-rename-label {padding:3px 6px;}
+.manager:not(.media-picker) > .imgOutline > .imgPreview.media-rename a {position:relative;left:auto;bottom:auto;}
+.imgOutline .media-rename-form {display:flex;width:100%;box-sizing:border-box;min-height:26px;padding:1px 2px;background:rgba(0, 0, 0, 0.55);color:#fff;}
 .imgOutline .media-rename-input {width:auto;}
 .media-rename-actions {display:inline-flex;flex:none;gap:2px;}
-/* Tiles: save and cancel above the name, at its end, on a plate over the picture */
-.imgOutline .media-rename-actions {position:absolute;bottom:100%;inset-inline-end:6px;margin-bottom:3px;padding:2px;border:1px solid rgba(255, 255, 255, 0.3);border-radius:5px;background:rgba(0, 0, 0, 0.6);color:#fff;}
+.imgOutline > .media-rename > .media-rename-pencil,.imgOutline > .media-rename .media-rename-actions {position:absolute;bottom:100%;inset-inline-end:0;width:auto;height:auto;margin:0;padding:2px;border:0;border-radius:0;border-start-start-radius:5px;background:rgba(0, 0, 0, 0.55);color:#fff;opacity:1;}
+.imgOutline > .media-rename > .media-rename-pencil {width:28px;height:28px;}
+.imgOutline > .media-rename > .media-rename-pencil:hover,.imgOutline > .media-rename > .media-rename-pencil:focus-visible {background:rgba(0, 0, 0, 0.8);}
 .imgOutline .media-rename-actions button:hover {background:rgba(255, 255, 255, 0.25);}
 td.media-rename .media-rename-pencil {margin-inline-start:4px;}
-/* Tiles: the pencil above the name at its end, on the plate saving and cancelling then have */
-.imgOutline .media-rename-pencil {width:26px;height:26px;border:1px solid rgba(255, 255, 255, 0.3);border-radius:5px;background:rgba(0, 0, 0, 0.6);color:#fff;opacity:1;}
-.imgOutline .media-rename-pencil:hover,.imgOutline .media-rename-pencil:focus-visible {background:rgba(0, 0, 0, 0.8);}
-/* Folders and documents: the pencil is an item of the tile's column, right above the name row */
-.imgOutline > .media-rename-pencil {flex:none;align-self:flex-end;margin:auto 8px 3px;}
-.manager:not(.media-picker) > .imgOutline > .media-rename-pencil:not([hidden]) + .small:not(.imgPreview) {margin-top:0;}
-/* Images: their name is a bar over the tile's foot (Isis, Prothero); the bar's box holds the pencil above it and the field */
-.manager:not(.media-picker) > .imgOutline > .imgPreview.media-rename {position:absolute;left:0;right:0;bottom:0;z-index:2;}
-.manager:not(.media-picker) > .imgOutline > .imgPreview.media-rename a {position:relative;left:auto;bottom:auto;}
-.manager:not(.media-picker) > .imgOutline > .imgPreview.media-rename > .media-rename-label {flex:1 1 auto;}
-/* The pencil (and then saving and cancelling) on the bar's top edge, flush with the tile's side, as the checkbox and the
-   delete button are at its top */
-.imgOutline > .imgPreview.media-rename > .media-rename-pencil,.imgOutline > .imgPreview.media-rename .media-rename-actions {position:absolute;bottom:100%;inset-inline-end:0;margin:0;border:0;border-radius:0;border-start-start-radius:5px;background:rgba(0, 0, 0, 0.55);}
-.imgOutline > .imgPreview.media-rename > .media-rename-form {position:absolute;bottom:0;left:0;right:0;z-index:2;box-sizing:border-box;min-height:26px;padding:1px 2px;background:rgba(0, 0, 0, 0.55);color:#fff;}
 
-/* --- Thumbnail sizes (--media-tile, set by the size buttons next to the views' buttons; the tiles are a little taller than wide, for the renaming buttons above the name) --- */
-#mediamanager-form .manager:not(.media-picker) > .imgOutline.thumbnail {width:var(--media-tile, 163px);height:calc(var(--media-tile, 163px) + 24px);}
-#mediamanager-form .manager:not(.media-picker) > .imgOutline .imgThumb > a.img-preview,#mediamanager-form .manager:not(.media-picker) > .imgOutline .imgTotal {line-height:var(--media-tile, 163px);}
-#mediamanager-form .manager:not(.media-picker) > .imgOutline .height-50 {display:flex;align-items:center;justify-content:center;height:calc(var(--media-tile, 163px) - 59px);}
-#mediamanager-form .manager:not(.media-picker) > .imgOutline .height-50 a,#mediamanager-form .manager:not(.media-picker) > .imgOutline .height-50 .icon-folder-2 {line-height:calc(var(--media-tile, 163px) - 61px);}
-/* Folder and document tiles: a column with the name (and renaming) at the foot, as image tiles have theirs */
-#mediamanager-form .manager:not(.media-picker) > .imgOutline:has(> .small:not(.imgPreview)) {display:flex;flex-direction:column;}
-.manager:not(.media-picker) > .imgOutline:has(> .small:not(.imgPreview)) > .close {align-self:flex-end;}
-/* Their icon's area takes what the pencil and a name of two lines leave */
-#mediamanager-form .manager:not(.media-picker) > .imgOutline:has(> .small:not(.imgPreview)) > .height-50 {flex:1 1 auto;height:auto;min-height:0;}
-.manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview) {flex:none;margin-top:auto;padding-bottom:6px;}
-/* Image tiles (Isis, Prothero): the picture fills the tile, cropped to it, under the name bar; the checkbox and the delete
-   button float over it (the preview shows it whole) */
+/* --- Thumbnail sizes and tiles (--media-tile, set by the size buttons next to the views' buttons; tiles are square) --- */
+#mediamanager-form .manager:not(.media-picker) > .imgOutline.thumbnail {width:var(--media-tile, 163px);height:var(--media-tile, 163px);overflow:hidden;}
+/* Every tile is its picture or icon, with the name on a see-through bar over its foot (the checkbox and the delete button
+   float over its top corners) */
+.manager:not(.media-picker) > .imgOutline > :is(.small, .imgPreview) {position:absolute;left:0;right:0;bottom:0;z-index:2;}
+.manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview) {background:rgba(0, 0, 0, 0.55);color:#fff;text-align:center;}
+.manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview, .media-rename) {padding:3px 6px;}
+.manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview) a {color:inherit;}
+/* The name's link still opens the item from anywhere on the tile (the tile clips the cover) */
+.manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview) a::after {inset:-1000px 0 0;}
+.manager:not(.media-picker) > .imgOutline > .close {position:absolute;top:0;inset-inline-end:0;z-index:3;}
+.manager:not(.media-picker) > .imgOutline:has(> .small:not(.imgPreview)) input[type="checkbox"] {z-index:3;}
+/* Folders, documents, videos and audio: the icon (larger) or cover fills the tile */
+#mediamanager-form .manager:not(.media-picker) > .imgOutline > .height-50 {position:absolute;inset:0;display:grid;place-content:center;box-sizing:border-box;width:auto;height:auto;padding-bottom:22px;}
+#mediamanager-form .manager:not(.media-picker) > .imgOutline > .height-50 a {display:grid;place-content:center;width:100%;height:100%;margin:0;line-height:1;}
+#mediamanager-form .manager:not(.media-picker) > .imgOutline > .height-50 a::after {box-shadow:none;}
+#mediamanager-form .manager:not(.media-picker) > .imgOutline > .height-50 .icon-folder-2 {width:auto;height:auto;margin:0;font-size:calc(var(--media-tile, 163px) * 0.36);line-height:1;}
+#mediamanager-form .manager:not(.media-picker) > .imgOutline > .height-50 .media-type-icon {width:calc(var(--media-tile, 163px) * 0.28);height:calc(var(--media-tile, 163px) * 0.28);}
+/* A video's or audio file's cover (sized inline by the layout) as the picture */
+#mediamanager-form .manager:not(.media-picker) > .imgOutline > .height-50 > img {position:absolute;inset:0;width:100%;height:100%;max-width:none !important;max-height:none !important;object-fit:cover;}
+/* Image tiles (Isis, Prothero): the picture fills the tile, cropped to it (the preview shows it whole) */
 #mediamanager-form .manager:not(.media-picker) > .imgOutline > .imgThumb:has(> a.img-preview) {position:absolute;inset:0;display:block;}
 #mediamanager-form .manager:not(.media-picker) > .imgOutline > .imgThumb > a.img-preview {position:absolute;inset:0;line-height:0;}
 #mediamanager-form .manager:not(.media-picker) > .imgOutline > .imgThumb > a.img-preview > img {width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;}
+/* Check All Items, the sizes and the views in one row at the right (the page's bar above the list) */
+.media-bar {display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px;}
+.media-bar > .btn-group,.media-bar > .checkbox {margin:0;}
+.media-bar > .media-check-all {display:inline-flex;align-items:center;gap:6px;padding-inline-start:12px;}
+.media-bar > label.media-check-all > input[type="checkbox"] {position:static;float:none;margin:0;}
+.media-bar > [hidden] {display:none;}
+/* The folder above, a Back button over the thumbnails */
+.media-path {display:flex;align-items:center;gap:10px;}
+.media-path > p {margin:0;}
+.media-back .cms-icon {display:inline-block;margin-inline-end:4px;vertical-align:-3px;}
 .media-tile-size .cms-icon {display:block;}
 .media-tile-size[hidden] {display:none;}

@@ -4761,6 +4761,8 @@ class JoomlaInstallerScript
             '/media/system/js/jquery.searchtools.js',
             '/media/system/js/jquery.searchtools.min.js',
             '/media/system/css/jquery.searchtools.css',
+            // The Media Manager's "up" tile (a Back button above the thumbnails since 3.18)
+            '/administrator/components/com_media/views/medialist/tmpl/thumbs_up.php',
             // jQuery UI's sortable and Ajax Autocomplete for jQuery (now stand-ins in jquery.compat.js)
             '/media/system/js/jquery.ui.sortable.js',
             '/media/system/js/jquery.ui.sortable.min.js',

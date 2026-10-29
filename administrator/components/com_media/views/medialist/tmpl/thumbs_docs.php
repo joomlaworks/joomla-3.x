@@ -27,7 +27,7 @@ $dispatcher = JEventDispatcher::getInstance();
 		<?php endif; ?>
 
 		<div class="height-50">
-			<a style="display: block; width: 100%; height: 100%" title="<?php echo $this->escape($doc->name); ?>" >
+			<a title="<?php echo $this->escape($doc->name); ?>" >
 				<?php echo MediaHelper::typeIcon($doc->icon, 32, $doc->name); ?>
 			</a>
 		</div>

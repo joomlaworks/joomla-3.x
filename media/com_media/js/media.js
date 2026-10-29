@@ -1656,13 +1656,8 @@ function jMediaRefreshImgpathTip(tip, els)
 			place.classList.add('media-rename');
 			place.appendChild(label);
 
-			// Tiles: the pencil above the name, where saving and cancelling then are (folders' and documents' name rows
-			// are in the tile's column, image tiles' name bar holds it); in the details view after the name
-			if (place.classList.contains('small') && !place.classList.contains('imgPreview') && place.parentNode === item) {
-				item.insertBefore(pencil, place);
-			} else {
-				place.appendChild(pencil);
-			}
+			// Tiles: on the name bar's edge (CSS), where saving and cancelling then are; in the details view after the name
+			place.appendChild(pencil);
 
 			pencil.addEventListener('click', (event) => {
 				event.preventDefault();
@@ -1679,7 +1674,7 @@ function jMediaRefreshImgpathTip(tip, els)
 	}
 })();
 
-/* --- Thumbnail sizes (the buttons next to the views' buttons) --- */
+/* --- The bar above the list: thumbnail sizes, Check All Items (next to the views' buttons) --- */
 /*
  * The size of the list's tiles, in steps (data-sizes; data-default the size without a choice), set as --media-tile on the
  * list's frame and kept for the session (the frame sets it from there before drawing, view medialist). Shown with the
@@ -1748,19 +1743,92 @@ function jMediaRefreshImgpathTip(tip, els)
 			apply();
 		});
 
-		// The views' buttons (MediaManager.setViewType()): the sizes go with the thumbnails
+		// Check All Items: the list's checkboxes from the page's one, which follows them (all, some, none); with the
+		// thumbnails only (the details table has one in its head), and only when the list has checkboxes
+		const all = document.getElementById('media-check-all');
+		const allLabel = all ? all.closest('label') : null;
+		let thumbs = !group.hidden;
+		const boxes = () => {
+			try {
+				return Array.prototype.slice.call(frame.contentDocument.querySelectorAll('input[name="rm[]"]'));
+			} catch (error) {
+				return [];
+			}
+		};
+		const follow = () => {
+			const list = boxes();
+			const checked = list.filter((box) => box.checked).length;
+
+			if (all) {
+				allLabel.hidden = !thumbs || !list.length;
+				all.checked = list.length > 0 && checked === list.length;
+				all.indeterminate = checked > 0 && checked < list.length;
+			}
+		};
+
+		if (all) {
+			all.addEventListener('change', () => {
+				// Every box first, then their events (which make the page's box follow)
+				const on = all.checked;
+				const changed = boxes().filter((box) => box.checked !== on);
+				const form = frame.contentDocument.getElementById('mediamanager-form');
+
+				changed.forEach((box) => {
+					box.checked = on;
+				});
+
+				if (form && form.boxchecked) {
+					form.boxchecked.value = on ? boxes().length : 0;
+				}
+
+				changed.forEach((box) => box.dispatchEvent(new Event('change', { bubbles: true })));
+			});
+		}
+
+		// The views' buttons (MediaManager.setViewType()): the sizes and Check All Items go with the thumbnails
 		['thumbs', 'details'].forEach((id) => {
 			const view = document.getElementById(id);
 
 			if (view) {
 				view.addEventListener('click', () => {
-					group.hidden = id !== 'thumbs';
+					thumbs = id === 'thumbs';
+					group.hidden = !thumbs;
+					follow();
 				});
 			}
 		});
 
-		frame.addEventListener('load', apply);
+		// The list's frame as tall as the window allows below its top (it was 500 pixels), less a status bar fixed at the
+		// window's foot (Prothero's)
+		const fitFrame = () => {
+			const status = document.getElementById('status');
+			const fixed = status && window.getComputedStyle(status).position === 'fixed' ? status.offsetHeight : 0;
+			const top = frame.getBoundingClientRect().top + window.pageYOffset;
+
+			frame.style.height = Math.max(300, window.innerHeight - top - fixed - 16) + 'px';
+		};
+
+		window.addEventListener('resize', fitFrame);
+		fitFrame();
+
+		frame.addEventListener('load', () => {
+			apply();
+			follow();
+
+			try {
+				frame.contentDocument.addEventListener('change', follow);
+			} catch (error) {
+				// Another page in the frame
+			}
+		});
 		apply();
+		follow();
+
+		try {
+			frame.contentDocument.addEventListener('change', follow);
+		} catch (error) {
+			// Not loaded yet: the load listener adds it
+		}
 	};
 
 	if (document.readyState === 'loading') {
