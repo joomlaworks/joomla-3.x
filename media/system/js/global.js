@@ -3245,6 +3245,865 @@
 		});
 	});
 
+	/*
+	 * --- Sorting rows by dragging a handle (subforms and the Repeatable field; what jQuery UI's sortable did for them) ---
+	 *
+	 * Pointer events, so mouse, pen and touch; a line shows where the row will go and the row moves once, when released
+	 * (moving it while dragging reloaded the iframes in it, an editor's, every time it passed a row). A focused handle moves
+	 * its row with the arrow keys. jQuery UI's "sortstop" goes out through jQuery when it's there (TinyMCE 4 restarts the
+	 * editors of a moved row on it).
+	 */
+	const sortRows = (container, rowSelector, handleSelector, onMove) => {
+		const isRow = (element) => element.nodeType === 1 && element.matches(rowSelector) && !element.classList.contains('cms-sort-placeholder');
+		const siblings = (row) => Array.prototype.filter.call(row.parentNode.children, (item) => item !== row && isRow(item));
+		const moved = (row) => {
+			if (window.jQuery) {
+				window.jQuery(row).trigger('sortstop', [{ item: window.jQuery(row) }]);
+			}
+
+			if (onMove) {
+				onMove(row);
+			}
+		};
+		const ownRow = (target) => {
+			const handle = target.closest ? target.closest(handleSelector) : null;
+			const row = handle ? handle.closest(rowSelector) : null;
+
+			return row && container.contains(row) ? { handle, row } : null;
+		};
+
+		container.addEventListener('pointerdown', (event) => {
+			const found = event.button > 0 ? null : ownRow(event.target);
+
+			if (!found) {
+				return;
+			}
+
+			const { handle, row } = found;
+			const placeholder = document.createElement(row.tagName === 'TR' ? 'tr' : 'div');
+			let started = false;
+
+			if (row.tagName === 'TR') {
+				const cell = document.createElement('td');
+
+				cell.colSpan = row.cells.length;
+				placeholder.appendChild(cell);
+			}
+
+			placeholder.className = 'cms-sort-placeholder';
+			event.preventDefault();
+			handle.setPointerCapture(event.pointerId);
+
+			const move = (moveEvent) => {
+				const y = moveEvent.clientY;
+				let before = null;
+
+				if (!started) {
+					started = true;
+					row.classList.add('cms-sort-dragging');
+				}
+
+				const others = siblings(row);
+
+				for (const item of others) {
+					const box = item.getBoundingClientRect();
+
+					if (y < box.top + box.height / 2) {
+						before = item;
+						break;
+					}
+				}
+
+				// Below the last row: right after it (a subform's <template> may follow the rows)
+				if (!before) {
+					const last = others.length ? others[others.length - 1] : row;
+
+					before = last === row ? row.nextSibling : last.nextSibling;
+				}
+
+				row.parentNode.insertBefore(placeholder, before);
+
+				// Near the window's edges the page scrolls
+				if (y < 40) {
+					window.scrollBy(0, -20);
+				} else if (y > window.innerHeight - 40) {
+					window.scrollBy(0, 20);
+				}
+			};
+
+			const stop = () => {
+				handle.removeEventListener('pointermove', move);
+				handle.removeEventListener('pointerup', stop);
+				handle.removeEventListener('pointercancel', stop);
+				row.classList.remove('cms-sort-dragging');
+
+				if (placeholder.parentNode) {
+					const changed = placeholder.nextSibling !== row && placeholder.previousSibling !== row;
+
+					if (changed) {
+						placeholder.parentNode.insertBefore(row, placeholder);
+					}
+
+					placeholder.remove();
+
+					if (changed) {
+						moved(row);
+					}
+				}
+			};
+
+			handle.addEventListener('pointermove', move);
+			handle.addEventListener('pointerup', stop);
+			handle.addEventListener('pointercancel', stop);
+		});
+
+		container.addEventListener('keydown', (event) => {
+			const found = event.key === 'ArrowUp' || event.key === 'ArrowDown' ? ownRow(event.target) : null;
+
+			if (!found) {
+				return;
+			}
+
+			const { handle, row } = found;
+			const others = siblings(row);
+			const all = Array.prototype.filter.call(row.parentNode.children, isRow);
+			const index = all.indexOf(row);
+
+			event.preventDefault();
+
+			if (event.key === 'ArrowUp' && index > 0) {
+				row.parentNode.insertBefore(row, all[index - 1]);
+			} else if (event.key === 'ArrowDown' && index < others.length) {
+				row.parentNode.insertBefore(row, all[index + 1].nextSibling);
+			} else {
+				return;
+			}
+
+			handle.focus();
+			moved(row);
+		});
+	};
+
+	// Handles written as links without an address can't be focused: they get a tab stop
+	const focusableHandles = (root, handleSelector) => {
+		root.querySelectorAll(handleSelector).forEach((handle) => {
+			if (!handle.hasAttribute('href') && !handle.hasAttribute('tabindex')) {
+				handle.tabIndex = 0;
+				handle.setAttribute('role', 'button');
+			}
+		});
+	};
+
+	/*
+	 * Events of the subform and the Repeatable field: through jQuery when it's there, with the row as its argument
+	 * (Chosen, tooltips, the editors and extensions listen so), natively otherwise (detail.row); and always natively as
+	 * cms:<type>, for listeners which don't want to depend on jQuery.
+	 */
+	const emitRowEvent = (target, type, row) => {
+		if (window.jQuery) {
+			window.jQuery(target).trigger(type, row ? [row] : []);
+		} else {
+			target.dispatchEvent(new CustomEvent(type, { bubbles: true, detail: { row } }));
+		}
+
+		target.dispatchEvent(new CustomEvent('cms:' + type, { bubbles: true, detail: { row } }));
+	};
+
+	// A selector's value inside quotes
+	const quoted = (value) => String(value).replace(/["\\]/g, '\\$&');
+
+	// The old media field (a link calling jInsertFieldValue()) names its input: a copied row's must name the new one
+	const fixOldMediaFields = (row) => {
+		row.querySelectorAll('a[onclick*="jInsertFieldValue"]').forEach((clear) => {
+			const input = Array.prototype.find.call(clear.parentNode.children, (item) => item.matches('input[type="text"]'));
+			const select = clear.previousElementSibling;
+
+			if (!input) {
+				return;
+			}
+
+			clear.setAttribute('onclick', "jInsertFieldValue('', '" + input.id + "');return false;");
+
+			if (select && select.getAttribute('href')) {
+				select.setAttribute('href', select.getAttribute('href').replace(/&fieldid=(.+)&/, '&fieldid=' + input.id + '&'));
+			}
+		});
+	};
+
+	/* --- Subforms (layouts joomla.form.field.subform.repeatable and repeatable-table; what subform-repeatable.js was) --- */
+
+	const subforms = new WeakMap();
+
+	class Subform {
+		/**
+		 * @param  {HTMLElement}  container  div.subform-repeatable
+		 * @param  {Object}       options    btAdd, btRemove, btMove, minimum, maximum, repeatableElement,
+		 *                                   rowTemplateSelector, rowsContainer; the element's data-* attributes win
+		 */
+		constructor(container, options) {
+			const data = container.dataset;
+
+			this.container = container;
+			this.options = Object.assign({}, Subform.defaults, options || {});
+
+			['btAdd', 'btRemove', 'btMove', 'repeatableElement', 'rowTemplateSelector', 'rowsContainer'].forEach((name) => {
+				if (data[name] !== undefined) {
+					this.options[name] = data[name];
+				}
+			});
+
+			['minimum', 'maximum'].forEach((name) => {
+				if (data[name] !== undefined && data[name] !== '') {
+					this.options[name] = Number(data[name]);
+				}
+			});
+
+			subforms.set(container, this);
+
+			if (window.jQuery) {
+				window.jQuery(container).data('subformRepeatable', this);
+			}
+
+			this.prepareTemplate();
+			this.rows = this.options.rowsContainer ? container.querySelector(this.options.rowsContainer) || container : container;
+			this.lastRowNum = this.rows.querySelectorAll(this.options.repeatableElement).length;
+
+			container.addEventListener('click', (event) => {
+				const add = event.target.closest ? event.target.closest(this.options.btAdd) : null;
+				const remove = !add && event.target.closest ? event.target.closest(this.options.btRemove) : null;
+
+				if (add && container.contains(add)) {
+					event.preventDefault();
+					this.addRow(add.closest(this.options.repeatableElement));
+				} else if (remove && container.contains(remove)) {
+					event.preventDefault();
+					this.removeRow(remove.closest(this.options.repeatableElement));
+				}
+			});
+
+			if (this.options.btMove) {
+				focusableHandles(container, this.options.btMove);
+				sortRows(this.rows, this.options.repeatableElement, this.options.btMove, (row) => emitRowEvent(container, 'subform-row-move', row));
+			}
+
+			emitRowEvent(container, 'subform-ready');
+		}
+
+		// The row's HTML: the container's own <template> (its last; earlier ones belong to nested subforms), else a copy of the first row
+		prepareTemplate() {
+			const templates = this.options.rowTemplateSelector ? this.container.querySelectorAll(this.options.rowTemplateSelector) : [];
+
+			if (templates.length) {
+				const template = templates[templates.length - 1];
+
+				// Layouts write < and > as SUBFORMLT and SUBFORMGT (for browsers without <template>)
+				template.style.display = 'none';
+				this.template = template.innerHTML.trim().replace(/SUBFORMLT|SUBFORMGT/g, (match) => (match === 'SUBFORMLT' ? '<' : '>'));
+			} else {
+				const first = this.container.querySelector(this.options.repeatableElement);
+				const row = first ? first.cloneNode(true) : null;
+
+				if (row) {
+					this.clearScripts(row);
+				}
+
+				this.template = row ? row.outerHTML : '';
+			}
+		}
+
+		/**
+		 * Adds a row after another (or at the end)
+		 *
+		 * @param   {HTMLElement|null}  after
+		 *
+		 * @return  {HTMLElement|null}  The row, null at the maximum
+		 */
+		addRow(after) {
+			const count = this.rows.querySelectorAll(this.options.repeatableElement).length;
+			const holder = document.createElement('template');
+
+			after = after && after.jquery ? after[0] : after;
+
+			if (count >= this.options.maximum) {
+				return null;
+			}
+
+			holder.innerHTML = this.template;
+
+			// As jQuery.parseHTML() did: scripts of the template don't come along
+			holder.content.querySelectorAll('script').forEach((script) => script.remove());
+
+			const row = holder.content.firstElementChild;
+
+			if (!row) {
+				return null;
+			}
+
+			if (after && after.parentNode) {
+				after.parentNode.insertBefore(row, after.nextSibling);
+			} else {
+				this.rows.appendChild(row);
+			}
+
+			row.setAttribute('data-new', 'true');
+			this.fixUniqueAttributes(row, count);
+			this.fixScripts(row);
+
+			if (this.options.btMove) {
+				focusableHandles(row, this.options.btMove);
+			}
+
+			// Subforms inside the new row
+			row.querySelectorAll('div.subform-repeatable').forEach((nested) => CMS.subform.attach(nested));
+
+			emitRowEvent(this.container, 'subform-row-add', row);
+
+			return row;
+		}
+
+		removeRow(row) {
+			row = row && row.jquery ? row[0] : row;
+
+			if (!row || this.rows.querySelectorAll(this.options.repeatableElement).length <= this.options.minimum) {
+				return;
+			}
+
+			emitRowEvent(this.container, 'subform-row-remove', row);
+			row.remove();
+		}
+
+		/**
+		 * Gives a new row's fields names and ids of their own: [base][baseX][field] becomes [base][base4][field]
+		 *
+		 * @param  {HTMLElement|DocumentFragment}  row
+		 * @param  {number}   count     Rows there were
+		 * @param  {string}   group     The row's group, e.g. optionsX (nested templates: the outer row's)
+		 * @param  {string}   basename  Without the count, e.g. options
+		 * @param  {boolean}  nested    A nested subform's template: the row counter stays
+		 */
+		fixUniqueAttributes(row, count, group, basename, nested) {
+			group = group === undefined ? row.getAttribute('data-group') : group;
+			basename = basename === undefined ? row.getAttribute('data-base-name') : basename;
+			count = count || 0;
+
+			const countNew = Math.max(this.lastRowNum, count);
+			const groupNew = basename + countNew;
+			const ids = {};
+			const relabel = (from, to) => row.querySelectorAll('label[for="' + quoted(from) + '"]').forEach((label) => {
+				label.setAttribute('for', to);
+				label.id = to + '-lbl';
+			});
+
+			if (row.setAttribute) {
+				row.setAttribute('data-group', groupNew);
+			}
+
+			row.querySelectorAll('[name]').forEach((element) => {
+				const name = element.getAttribute('name');
+				const id = name.replace(/(\[\]$)/g, '').replace(/(\]\[)/g, '__').replace(/\[/g, '_').replace(/\]/g, '');
+				const nameNew = name.replace('[' + group + '][', '[' + groupNew + '][');
+				let idNew = id.replace(group, groupNew).replace(/\W/g, '_');
+				let forOld = id;
+				const multiple = (element.type === 'checkbox' && /\[\]$/.test(name)) || element.type === 'radio';
+
+				// Checkboxes of a list (name[]) and radios: one id each, the group's fieldset and label take the base id
+				if (multiple) {
+					const index = ids[id] || 0;
+
+					if (!index) {
+						const fieldset = element.closest(element.type === 'radio' ? 'fieldset.radio' : 'fieldset.checkboxes');
+
+						if (fieldset) {
+							fieldset.id = idNew;
+						}
+
+						relabel(id, idNew);
+					}
+
+					forOld += index;
+					idNew += index;
+				}
+
+				ids[id] = (ids[id] || 0) + 1;
+				element.setAttribute('name', nameNew);
+				element.id = idNew;
+				relabel(forOld, idNew);
+			});
+
+			// Other elements whose ids carry the group (the media field's modal: imageModal_jform_..._optionsX_image)
+			row.querySelectorAll('[id*="_' + quoted(group) + '_"]').forEach((element) => {
+				element.id = element.id.replace('_' + group + '_', '_' + groupNew + '_');
+			});
+
+			// Nested subforms' templates hold the old group too
+			if (this.options.rowTemplateSelector) {
+				row.querySelectorAll(this.options.rowTemplateSelector).forEach((template) => {
+					this.fixUniqueAttributes(template.content, count, group, basename, true);
+				});
+			}
+
+			if (!nested) {
+				this.lastRowNum = countNew + 1;
+			}
+		}
+
+		// A copy of a row whose lists Chosen had drawn: the plain lists, which fixScripts() lets Chosen draw again
+		clearScripts(row) {
+			row.querySelectorAll('select.chzn-done').forEach((select) => {
+				const chosen = select.nextElementSibling;
+
+				if (chosen && chosen.classList.contains('chzn-container')) {
+					chosen.remove();
+				}
+
+				select.style.display = '';
+				select.classList.add('fix-chosen');
+			});
+		}
+
+		// Scripts of fields which don't start themselves in new rows (most listen to subform-row-add)
+		fixScripts(row) {
+			fixOldMediaFields(row);
+		}
+	}
+
+	Subform.defaults = {
+		// Selectors of the buttons, unique per subform (nested ones have their own)
+		btAdd: '.group-add',
+		btRemove: '.group-remove',
+		btMove: '.group-move',
+		minimum: 0,
+		maximum: 10,
+		// The rows, unique per subform
+		repeatableElement: '.subform-repeatable-group',
+		// The row's template, the same class in nested subforms
+		rowTemplateSelector: 'template.subform-repeatable-template-section',
+		// The rows' parent, the container by default
+		rowsContainer: null,
+	};
+
+	CMS.subform = {
+		Subform,
+		defaults: Subform.defaults,
+
+		/**
+		 * Starts a subform (once)
+		 *
+		 * @param   {HTMLElement}  container  div.subform-repeatable
+		 * @param   {Object}       options
+		 *
+		 * @return  {Subform}
+		 */
+		attach(container, options) {
+			container = container && container.jquery ? container[0] : container;
+
+			return subforms.get(container) || new Subform(container, options);
+		},
+
+		get: (container) => subforms.get(container && container.jquery ? container[0] : container) || null,
+	};
+
+	CMS.ready(() => {
+		document.querySelectorAll('div.subform-repeatable').forEach((container) => CMS.subform.attach(container));
+
+		// subform-repeatable.js' jQuery names, for extensions which start subforms they add themselves
+		if (window.jQuery && !window.jQuery.fn.subformRepeatable) {
+			window.jQuery.subformRepeatable = function subformRepeatable(container, options) {
+				return CMS.subform.attach(container, options);
+			};
+			window.jQuery.subformRepeatable.defaults = Subform.defaults;
+			window.jQuery.fn.subformRepeatable = function subformRepeatable(options) {
+				return this.each((index, container) => {
+					CMS.subform.attach(container, options);
+				});
+			};
+		}
+	});
+
+	/*
+	 * --- The Repeatable field (JFormFieldRepeatable, deprecated since Joomla 3.6 for the subform; no core form uses it;
+	 * what repeatable.js was) ---
+	 *
+	 * A table of rows in the CMS's modal, kept as JSON ({"field": ["row 1", "row 2"]}) in a hidden input: Apply writes it,
+	 * Cancel goes back to what it holds. The table lives outside the form (its fields aren't posted).
+	 */
+
+	const repeatables = new WeakMap();
+
+	class Repeatable {
+		/**
+		 * @param  {HTMLInputElement}  input    input.form-field-repeatable
+		 * @param  {Object}            options  container, modalElement, btModalOpen, btModalClose, btModalSaveData, btAdd,
+		 *                                      btRemove, maximum, repeatableElement; the input's data-* attributes win
+		 */
+		constructor(input, options) {
+			const data = input.dataset;
+
+			this.input = input;
+			this.options = Object.assign({}, Repeatable.defaults, options || {});
+
+			['container', 'modalElement', 'btModalOpen', 'btModalClose', 'btModalSaveData', 'btAdd', 'btRemove', 'repeatableElement', 'textApply', 'textCancel'].forEach((name) => {
+				if (data[name] !== undefined) {
+					this.options[name] = data[name];
+				}
+			});
+
+			if (data.maximum) {
+				this.options.maximum = Number(data.maximum);
+			}
+
+			repeatables.set(input, this);
+
+			if (window.jQuery) {
+				window.jQuery(input).data('JRepeatable', this);
+			}
+
+			this.container = document.querySelector(this.options.container);
+			this.modal = document.querySelector(this.options.modalElement);
+
+			if (!this.container || !this.modal) {
+				return;
+			}
+
+			document.body.appendChild(this.container);
+			this.container.hidden = true;
+			this.rows = this.container.querySelector(this.options.repeatableElement).parentNode;
+			this.inputs = [];
+			this.values = {};
+			this.prepareModal();
+			this.prepareTemplate();
+			this.readValue();
+			this.buildRows();
+
+			document.addEventListener('click', (event) => {
+				if (event.target.closest && event.target.closest(this.options.btModalOpen)) {
+					event.preventDefault();
+					this.open();
+				}
+			});
+
+			// The table's own element: it's in the CMS's modal while open
+			this.modal.addEventListener('click', (event) => {
+				const target = event.target.closest ? event.target : null;
+				const add = target ? target.closest(this.options.btAdd) : null;
+				const remove = !add && target ? target.closest(this.options.btRemove) : null;
+
+				if (add) {
+					event.preventDefault();
+					this.addRow(add.closest(this.options.repeatableElement));
+				} else if (remove) {
+					event.preventDefault();
+					this.removeRow(remove.closest(this.options.repeatableElement));
+				} else if (target && target.closest(this.options.btModalSaveData)) {
+					event.preventDefault();
+					this.apply();
+				} else if (target && target.closest(this.options.btModalClose)) {
+					event.preventDefault();
+					this.cancel();
+				}
+			});
+
+			focusableHandles(this.rows, '.sortable-handler');
+			sortRows(this.rows, this.options.repeatableElement, '.sortable-handler');
+			this.emit('weready');
+		}
+
+		emit(type, detail) {
+			if (window.jQuery) {
+				window.jQuery(this.input).trigger(type, detail === undefined ? [] : [detail]);
+			}
+
+			this.input.dispatchEvent(new CustomEvent('cms:repeatable-' + type, { bubbles: true, detail }));
+		}
+
+		// The Bootstrap modal's markup of extensions' copies of the field: its footer's buttons are the CMS modal's
+		prepareModal() {
+			const footer = this.modal.querySelector('.modal-footer');
+			const text = (selector, fallback) => {
+				const button = footer ? footer.querySelector(selector) : null;
+
+				return button ? button.textContent.trim() : fallback;
+			};
+
+			this.texts = {
+				apply: this.options.textApply || text(this.options.btModalSaveData, 'Apply'),
+				cancel: this.options.textCancel || text(this.options.btModalClose, 'Cancel'),
+			};
+
+			if (footer) {
+				footer.hidden = true;
+			}
+
+			this.modal.classList.remove('modal', 'hide', 'fade');
+			this.emit('prepare-modal', this.modal);
+		}
+
+		prepareTemplate() {
+			const rows = this.container.querySelectorAll(this.options.repeatableElement);
+			const first = rows[0];
+
+			this.clearScripts(first);
+
+			first.querySelectorAll('[name]').forEach((element) => {
+				const name = element.getAttribute('name');
+
+				// Radios: one name for several
+				if (this.values[name]) {
+					return;
+				}
+
+				this.inputs.push({ name, type: element.getAttribute('type') || element.tagName.toLowerCase() });
+				this.values[name] = [];
+			});
+
+			this.template = first.outerHTML;
+			rows.forEach((row) => row.remove());
+			this.emit('prepare-template', this.template);
+		}
+
+		// The stored JSON (older values may have single quotes)
+		readValue() {
+			const value = this.input.value;
+
+			if (!value) {
+				return;
+			}
+
+			try {
+				this.values = JSON.parse(value);
+			} catch (error) {
+				try {
+					this.values = JSON.parse(value.replace(/'/g, '"').replace(/\\"/g, "'"));
+				} catch (error2) {
+					window.console.log(error2);
+				}
+			}
+		}
+
+		open() {
+			this.modal.hidden = false;
+
+			CMS.modal.open(this.modal, {
+				handler: 'adopt',
+				size: { x: Math.min(1400, window.innerWidth - 80), y: Math.min(900, window.innerHeight - 140) },
+				title: (document.querySelector(this.options.btModalOpen) || {}).textContent || '',
+				closable: false,
+				closeBtn: false,
+				buttons: [
+					{ text: this.texts.cancel, className: 'btn', onClick: () => this.cancel() },
+					{ text: this.texts.apply, className: 'btn btn-primary', onClick: () => this.apply() },
+				],
+			});
+		}
+
+		// Keeps the changes
+		apply() {
+			this.refreshValue();
+			CMS.modal.close();
+		}
+
+		// Back to what the input holds
+		cancel() {
+			CMS.modal.close();
+			this.buildRows();
+		}
+
+		buildRows() {
+			Array.prototype.slice.call(this.rows.children).forEach((row) => this.removeRow(row));
+
+			const first = this.values[Object.keys(this.values)[0]];
+			const count = (first && first.length) || 1;
+			let row = null;
+
+			for (let i = 0; i < count; i++) {
+				row = this.addRow(row, i);
+			}
+		}
+
+		addRow(after, valueKey) {
+			// The table's element (in the CMS's modal while open, outside the container)
+			const count = this.modal.querySelectorAll(this.options.repeatableElement).length;
+			const holder = document.createElement('template');
+
+			after = after && after.jquery ? after[0] : after;
+
+			if (count >= this.options.maximum) {
+				return null;
+			}
+
+			holder.innerHTML = this.template;
+			holder.content.querySelectorAll('script').forEach((script) => script.remove());
+
+			const row = holder.content.firstElementChild;
+
+			if (after && after.parentNode) {
+				after.parentNode.insertBefore(row, after.nextSibling);
+			} else {
+				this.rows.appendChild(row);
+			}
+
+			this.fixUniqueAttributes(row, count + 1);
+
+			if (valueKey !== null && valueKey !== undefined) {
+				this.inputs.forEach(({ name, type }) => {
+					const value = this.values[name] ? this.values[name][valueKey] : null;
+					const matching = (wanted) => row.querySelectorAll('[name*="' + quoted(name) + '"]' + (wanted === undefined ? '' : '[value="' + quoted(wanted) + '"]'));
+
+					if (value === null || value === undefined) {
+						return;
+					}
+
+					if (type === 'radio') {
+						matching(value).forEach((element) => element.setAttribute('checked', 'checked'));
+					} else if (type === 'checkbox') {
+						(Array.isArray(value) ? value : [value]).forEach((item) => matching(item).forEach((element) => element.setAttribute('checked', 'checked')));
+					} else {
+						matching().forEach((element) => {
+							if (element.multiple && Array.isArray(value)) {
+								Array.prototype.forEach.call(element.options, (option) => {
+									option.selected = value.indexOf(option.value) > -1;
+								});
+							} else {
+								element.value = value;
+							}
+						});
+					}
+				});
+			}
+
+			this.fixScripts(row);
+			focusableHandles(row, '.sortable-handler');
+			this.emit('row-add', row);
+
+			return row;
+		}
+
+		removeRow(row) {
+			row = row && row.jquery ? row[0] : row;
+			this.emit('row-remove', row);
+			row.remove();
+		}
+
+		// count-name for every id, for and name in the row
+		fixUniqueAttributes(row, count) {
+			[['[id]', 'id'], ['label[for]', 'for'], ['[name]', 'name']].forEach(([selector, attribute]) => {
+				row.querySelectorAll(selector).forEach((element) => element.setAttribute(attribute, count + '-' + element.getAttribute(attribute)));
+			});
+		}
+
+		// The values of every row, as JSON in the input
+		refreshValue() {
+			const rows = this.modal.querySelectorAll(this.options.repeatableElement);
+
+			this.values = {};
+
+			this.inputs.forEach(({ name, type }) => {
+				this.values[name] = Array.prototype.map.call(rows, (row) => {
+					const all = row.querySelectorAll('[name*="' + quoted(name) + '"]');
+					const checked = Array.prototype.filter.call(all, (element) => element.checked);
+					let value;
+
+					if (type === 'radio') {
+						value = checked.length ? checked[0].value : undefined;
+					} else if (type === 'checkbox') {
+						value = checked.length > 1 ? checked.map((element) => element.value) : (checked.length ? checked[0].value : undefined);
+					} else if (all.length && all[0].multiple) {
+						value = Array.prototype.filter.call(all[0].options, (option) => option.selected).map((option) => option.value);
+					} else {
+						value = all.length ? all[0].value : undefined;
+					}
+
+					return value === null || value === undefined ? '' : value;
+				});
+			});
+
+			this.input.value = JSON.stringify(this.values);
+			this.emit('value-update', this.values);
+		}
+
+		// The template's lists without Chosen (drawn again in each row)
+		clearScripts(row) {
+			if (!window.jQuery || !window.jQuery.fn.chosen) {
+				return;
+			}
+
+			row.querySelectorAll('select').forEach((select) => {
+				if (window.jQuery(select).data('chosen')) {
+					window.jQuery(select).chosen('destroy');
+					select.classList.add('here-was-chosen');
+				}
+			});
+		}
+
+		fixScripts(row) {
+			if (window.jQuery && window.jQuery.fn.chosen) {
+				window.jQuery(row.querySelectorAll('select.here-was-chosen')).removeClass('here-was-chosen').chosen();
+			}
+
+			fixOldMediaFields(row);
+			row.querySelectorAll('a[onclick*="jInsertFieldValue"]').forEach((clear) => {
+				const input = Array.prototype.find.call(clear.parentNode.children, (item) => item.matches('input[type="text"]'));
+
+				if (input && window.jMediaRefreshPreview) {
+					window.jMediaRefreshPreview(input.id);
+				}
+			});
+
+			// The administrator templates' media field
+			if (window.jQuery && window.jQuery.fn.fieldMedia) {
+				window.jQuery(row.querySelectorAll('.field-media-wrapper')).fieldMedia();
+			}
+
+			// Links opening in the modal
+			CMS.modal.assign(row.querySelectorAll('a.modal'), { parse: 'rel' });
+		}
+	}
+
+	Repeatable.defaults = {
+		modalElement: '#modal-container',
+		btModalOpen: '#open-modal',
+		btModalClose: '.close-modal',
+		btModalSaveData: '.save-modal-data',
+		btAdd: 'a.add',
+		btRemove: 'a.remove',
+		maximum: 10,
+		repeatableElement: 'table tbody tr',
+	};
+
+	CMS.repeatable = {
+		Repeatable,
+		defaults: Repeatable.defaults,
+
+		attach(input, options) {
+			input = input && input.jquery ? input[0] : input;
+
+			return repeatables.get(input) || new Repeatable(input, options);
+		},
+	};
+
+	// After the page's other scripts, as repeatable.js did (window load), so the fields' own scripts have run
+	const startRepeatables = () => {
+		document.querySelectorAll('input.form-field-repeatable').forEach((input) => CMS.repeatable.attach(input));
+
+		if (window.jQuery && !window.jQuery.fn.JRepeatable) {
+			window.jQuery.JRepeatable = function JRepeatable(input, options) {
+				return CMS.repeatable.attach(input, options);
+			};
+			window.jQuery.JRepeatable.defaults = Repeatable.defaults;
+			window.jQuery.fn.JRepeatable = function JRepeatableEach(options) {
+				return this.each((index, input) => {
+					CMS.repeatable.attach(input, options);
+				});
+			};
+		}
+	};
+
+	if (document.readyState === 'complete') {
+		CMS.ready(startRepeatables);
+	} else {
+		window.addEventListener('load', startRepeatables);
+	}
+
 	/* --- Cropping: selecting an area of an image (CMS.cropper; the template editor's image tool, what Jcrop was) --- */
 
 	CMS.cropper = {
@@ -5955,6 +6814,8 @@
 		'jQuery.fn.simplecolors() (behavior.simplecolorpicker)': 'the layout joomla.form.field.color.simple (swatches)',
 		'jSelectUser(), jQuery.fn.fieldUser() (fielduser.js)': 'CMS.userField.select(), CMS.userField.open()',
 		'moduleorder.js': 'CMS.moduleOrder.load(), CMS.moduleOrder.write()',
+		'jQuery.fn.subformRepeatable() (subform-repeatable.js)': 'CMS.subform.attach(), CMS.subform.get()',
+		'jQuery.fn.JRepeatable() (repeatable.js)': 'CMS.repeatable.attach()',
 		'processModalParent(), processModalSelect(), processModalEdit() (modal-fields.js)': 'CMS.modalField.set(), CMS.modalField.select(), CMS.modalField.submit()',
 		'tabs-state.js (behavior.tabstate), jQuery.urlParam(), jQuery.getXpath(), jQuery.findXpath()': 'CMS.tabState.init()',
 		'new JCaption()': 'CMS.caption.attach()',

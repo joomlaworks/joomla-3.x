@@ -119,6 +119,14 @@ div.mod-languages a {text-decoration:none;}
 .cms-date.is-text .cms-date-input {position:absolute;top:0;left:0;width:100%;height:100%;padding:0;border:0;opacity:0;pointer-events:none;}
 .cms-date .cms-date-pick {display:inline-flex;align-items:center;justify-content:center;margin:0;padding:0 9px;}
 
+/* --- Sorting rows (subforms, the Repeatable field) --- */
+/* none: a touch on a handle drags the row instead of scrolling the page */
+.group-move,.sortable-handler {cursor:move;touch-action:none;}
+.cms-sort-dragging {opacity:0.4;}
+/* Where the row will go */
+div.cms-sort-placeholder {height:4px;margin:4px 0;background:var(--c-primary, #2a6fb5);border-radius:2px;}
+tr.cms-sort-placeholder > td {height:4px;padding:0;background:var(--c-primary, #2a6fb5);border:0;}
+
 /* --- Administrator error page without a template's own (layout joomla.system.admin.error, body.tmpl-error) --- */
 body.tmpl-error {margin:15px;padding:0;background:#fff;color:#333;font:11px/1.4 Arial, Helvetica, sans-serif;}
 body.tmpl-error .outline {max-width:550px;margin:0 auto;padding:2px;border:1px solid #ccc;background:#fff;}

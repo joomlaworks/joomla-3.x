@@ -27,6 +27,7 @@ For commands of your own on the command line, see [CLI-GUIDE.md](CLI-GUIDE.md). 
   - [The old names](#the-old-names)
   - [The modal](#the-modal)
   - [Item pickers (Article, Category, Contact, Menu Item, News Feed)](#item-pickers-article-category-contact-menu-item-news-feed)
+  - [Subforms](#subforms)
   - [Tooltips, tabs, sliders, tree, password meter](#tooltips-tabs-sliders-tree-password-meter)
 - [Other additions](#other-additions)
 - [Compatibility with stock Joomla 3, Joomla 4 and later](#compatibility-with-stock-joomla-3-joomla-4-and-later)
@@ -384,6 +385,8 @@ Every name `core.js` and the MooTools behaviours offered still works and calls t
 | `sendPermissions()`, `getUrlParam()` (the Permissions field) | `CMS.permissions.send()`, `CMS.permissions.urlParam()` |
 | `frontediting.js` | `CMS.frontEditing.showModule()`, `CMS.frontEditing.showMenuItem()` |
 | `moduleorder.js` (the module ordering field) | `CMS.moduleOrder.load()`, `CMS.moduleOrder.write()` |
+| `jQuery.fn.subformRepeatable()`, `$.subformRepeatable` (`subform-repeatable.js`) | `CMS.subform.attach()`, `CMS.subform.get()` |
+| `jQuery.fn.JRepeatable()`, `$.JRepeatable` (`repeatable.js`, the deprecated Repeatable field) | `CMS.repeatable.attach()` |
 | `processModalParent()`, `processModalSelect()`, `processModalEdit()` (`modal-fields.js`) | `CMS.modalField.set()`, `CMS.modalField.select()`, `CMS.modalField.submit()` |
 
 `Joomla.request()` (`CMS.request()`) sends with `fetch()` now. It takes the same options (`url`, `method`, `data`, `headers`, `perform`, `onBefore`, `onSuccess`, `onError`) and returns an object with what callers read of the XMLHttpRequest it used to return: `status`, `statusText`, `responseText`, `readyState`, `getResponseHeader()`, `getAllResponseHeaders()`, `setRequestHeader()` (in `onBefore`, or before `send()` with `perform: false`), `send()` and `abort()` (`onError` then gets status 0). An exception thrown in `onSuccess` is reported as an error of its own and doesn't call `onError`. Code that set `xhr.onreadystatechange` or `xhr.timeout` itself needs `fetch()` or its own XMLHttpRequest.
@@ -431,6 +434,24 @@ The fields `modal_article`, `modal_category`, `modal_contact`, `modal_menu` and 
 The markup keeps the old ids (`<id>_name`, `<id>_select`, `<id>_new`, `<id>_edit`, `<id>_clear`, `<id>_propagate`, `<id>_id`), and the lists still call the field's function by name (`function=jSelectArticle_<id>` in the list's address), which the script defines for each field. A field of your own can use the layout with the same data the core fields pass (see `administrator/components/com_content/models/fields/modal/article.php`): the urls (`{id}` in the edit address is replaced with the field's value), titles, tooltips, the buttons allowed, the form's task prefix (`article`), its id and its id and title fields.
 
 `processModalParent()`, `processModalSelect()` and `processModalEdit()` still work, also from fields that write their own Bootstrap modals: `processModalEdit()` runs the form in the modal its button is in.
+
+### Subforms
+
+Repeatable subforms (`type="subform" multiple="true"`) are started by `global.js` (`CMS.subform`); `subform-repeatable.js` and jQuery UI are no longer loaded for them. The markup, its data attributes and the stored values are the same. Their events keep their names and arguments: with jQuery on the page they go out through jQuery, with the row as the handler's second argument, as before:
+
+```js
+jQuery(document).on('subform-row-add', (event, row) => { /* start your field in row */ });
+```
+
+Without jQuery they're native events with the row in `event.detail.row`. Each also goes out natively as `cms:subform-ready`, `cms:subform-row-add`, `cms:subform-row-remove` and `cms:subform-row-move`, whether jQuery is there or not, for code that doesn't want to depend on it:
+
+```js
+document.addEventListener('cms:subform-row-add', (event) => { /* event.detail.row */ });
+```
+
+Rows are moved by dragging their move button (mouse, touch or pen) or, with the button focused, with the up and down arrow keys. A moved row also sends jQuery UI's `sortstop` through jQuery (`ui.item` is the row), as before. A subform added to the page later is started with `CMS.subform.attach(container)` (or `jQuery(container).subformRepeatable()`); `CMS.subform.get(container)` returns its object (`addRow(after)`, `removeRow(row)`).
+
+The deprecated Repeatable field (`type="repeatable"`) opens its table in the CMS's modal; its events (`row-add`, `value-update` and the rest, on the hidden input) go out through jQuery as before, and natively as `cms:repeatable-<name>`.
 
 ### Tooltips, tabs, sliders, tree, password meter
 

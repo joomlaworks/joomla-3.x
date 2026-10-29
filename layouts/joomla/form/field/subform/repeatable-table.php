@@ -26,10 +26,9 @@ defined('_JEXEC') or die;
  */
 extract($displayData);
 
-// Add script
+// Adding, removing and moving rows: global.js (CMS.subform)
 if ($multiple) {
-    JHtml::_('jquery.ui', array('core', 'sortable'));
-    JHtml::_('script', 'system/subform-repeatable.js', array('version' => 'auto', 'relative' => true));
+    JHtml::_('behavior.cms');
 }
 
 // Build heading

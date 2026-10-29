@@ -138,6 +138,7 @@ Summary of changes:
 - Image cropping (template editor) is the CMS's own `CMS.cropper`, with touch and keyboard; Jcrop removed
 - The Article, Category, Contact, Menu Item and News Feed pickers open in the CMS's own modal (Create and Edit with their buttons below the form); `modal-fields.js` removed
 - The module ordering list is plain JavaScript in `global.js` (`moduleorder.js` removed), and `Joomla.request()` uses `fetch()` with the same callbacks
+- Subforms and the old Repeatable field are part of `global.js` (no jQuery UI): rows move by dragging with mouse, touch or pen, or with the arrow keys
 - Administrator menu: Media at the top level after Content, no Help menu; Prothero's phone menu in two columns without gaps
 - Inline Editing (front-end editing of modules and menus) is off by default
 - The distribution's PHP code follows PSR-12 (third-party libraries keep their own style)

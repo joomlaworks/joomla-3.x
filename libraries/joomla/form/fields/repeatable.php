@@ -92,15 +92,9 @@ class JFormFieldRepeatable extends JFormField
         $str = array();
         $str[] = '<div id="' . $this->id . '_container">';
 
-        // Add the table to modal
-        $str[] = '<div id="' . $this->id . '_modal" class="modal hide">';
+        // The table, shown in the CMS's modal (global.js: CMS.repeatable), whose buttons are Cancel and Apply
+        $str[] = '<div id="' . $this->id . '_modal" class="field-repeatable-modal" hidden="hidden">';
         $str[] = $table;
-        $str[] = '<div class="modal-footer">';
-        $str[] = '<button class="close-modal btn button btn-link">' . JText::_('JCANCEL') . '</button>';
-        $str[] = '<button class="save-modal-data btn button btn-primary">' . JText::_('JAPPLY') . '</button>';
-        $str[] = '</div>';
-
-        // Close modal container
         $str[] = '</div>';
 
         // Close main container
@@ -109,7 +103,7 @@ class JFormFieldRepeatable extends JFormField
         // Button for display the modal window
         $select = (string) $this->element['select'] ? JText::_((string) $this->element['select']) : JText::_('JLIB_FORM_BUTTON_SELECT');
         $icon = $this->element['icon'] ? '<span class="icon-' . $this->element['icon'] . '"></span> ' : '';
-        $str[] = '<button class="open-modal btn" id="' . $this->id . '_button" >' . $icon . $select . '</button>';
+        $str[] = '<button type="button" class="open-modal btn" id="' . $this->id . '_button">' . $icon . $select . '</button>';
 
         if (is_array($this->value)) {
             $this->value = array_shift($this->value);
@@ -127,27 +121,16 @@ class JFormFieldRepeatable extends JFormField
         $data[] = 'data-bt-modal-save-data="button.save-modal-data"';
         $data[] = 'data-maximum="' . $maximum . '"';
         $data[] = 'data-input="#' . $this->id . '"';
+        $data[] = 'data-text-apply="' . htmlspecialchars(JText::_('JAPPLY'), ENT_COMPAT, 'UTF-8') . '"';
+        $data[] = 'data-text-cancel="' . htmlspecialchars(JText::_('JCANCEL'), ENT_COMPAT, 'UTF-8') . '"';
 
         // Hidden input, where the main value is
         $value = htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8');
         $str[] = '<input type="hidden" name="' . $this->name . '" id="' . $this->id . '" value="' . $value
                 . '"  class="form-field-repeatable" ' . implode(' ', $data) . ' />';
 
-        // Add scripts
-        JHtml::_('bootstrap.framework');
-
-        // Depends on jQuery UI
-        JHtml::_('jquery.ui', array('core', 'sortable'));
-
-        JHtml::_('script', 'system/sortablelist.js', array('version' => 'auto', 'relative' => true));
-        JHtml::_('stylesheet', 'system/sortablelist.css', array('version' => 'auto', 'relative' => true));
-        // global.js gives its modals' links SqueezeBox's names
+        // The modal, adding, removing and sorting rows: global.js (CMS.repeatable)
         JHtml::_('behavior.cms');
-        JHtml::_('script', 'system/repeatable.js', array('version' => 'auto', 'relative' => true));
-
-        $javascript = 'jQuery(document).ready(function($) { $("#' . $this->id . '_table tbody").sortable(); });';
-
-        JFactory::getDocument()->addScriptDeclaration($javascript);
 
         return implode("\n", $str);
     }

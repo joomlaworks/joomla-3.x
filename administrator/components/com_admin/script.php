@@ -4741,6 +4741,11 @@ class JoomlaInstallerScript
             '/media/system/js/modal-fields-uncompressed.js',
             // The module ordering field's script (now global.js' CMS.moduleOrder)
             '/media/system/js/moduleorder.js',
+            // The subform's and the Repeatable field's scripts (now global.js' CMS.subform and CMS.repeatable)
+            '/media/system/js/subform-repeatable.js',
+            '/media/system/js/subform-repeatable-uncompressed.js',
+            '/media/system/js/repeatable.js',
+            '/media/system/js/repeatable-uncompressed.js',
             // Show-on (cms.js), part of global.js and frontend.js
             '/media/system/js/cms.js',
             '/media/system/js/cms-uncompressed.js',
