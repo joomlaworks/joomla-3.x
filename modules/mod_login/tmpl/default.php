@@ -11,8 +11,7 @@ defined('_JEXEC') or die;
 
 JLoader::register('UsersHelperRoute', JPATH_SITE . '/components/com_users/helpers/route.php');
 
-JHtml::_('behavior.keepalive');
-JHtml::_('bootstrap.tooltip');
+// No scripts: the labels and placeholders say what the icons show, and nothing needs keeping alive before a login
 
 ?>
 <form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure', 0)); ?>" method="post" id="login-form" class="form-inline">
@@ -27,7 +26,7 @@ JHtml::_('bootstrap.tooltip');
 				<?php if (!$params->get('usetext', 0)) : ?>
 					<div class="input-prepend">
 						<span class="add-on">
-							<span class="icon-user hasTooltip" title="<?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>"></span>
+							<span class="icon-user" aria-hidden="true"></span>
 							<label for="modlgn-username" class="element-invisible"><?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?></label>
 						</span>
 						<input id="modlgn-username" type="text" name="username" class="input-small" tabindex="0" size="18" placeholder="<?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>" />
@@ -43,8 +42,7 @@ JHtml::_('bootstrap.tooltip');
 				<?php if (!$params->get('usetext', 0)) : ?>
 					<div class="input-prepend">
 						<span class="add-on">
-							<span class="icon-lock hasTooltip" title="<?php echo JText::_('JGLOBAL_PASSWORD'); ?>">
-							</span>
+							<span class="icon-lock" aria-hidden="true"></span>
 								<label for="modlgn-passwd" class="element-invisible"><?php echo JText::_('JGLOBAL_PASSWORD'); ?>
 							</label>
 						</span>
@@ -60,24 +58,19 @@ JHtml::_('bootstrap.tooltip');
 		<div id="form-login-secretkey" class="control-group">
 			<div class="controls">
 				<?php if (!$params->get('usetext', 0)) : ?>
-					<div class="input-prepend input-append">
+					<div class="input-prepend">
 						<span class="add-on">
-							<span class="icon-star hasTooltip" title="<?php echo JText::_('JGLOBAL_SECRETKEY'); ?>">
-							</span>
+							<span class="icon-star" aria-hidden="true"></span>
 								<label for="modlgn-secretkey" class="element-invisible"><?php echo JText::_('JGLOBAL_SECRETKEY'); ?>
 							</label>
 						</span>
-						<input id="modlgn-secretkey" autocomplete="one-time-code" type="text" name="secretkey" class="input-small" tabindex="0" size="18" placeholder="<?php echo JText::_('JGLOBAL_SECRETKEY'); ?>" />
-						<span class="btn width-auto hasTooltip" title="<?php echo JText::_('JGLOBAL_SECRETKEY_HELP'); ?>">
-							<span class="icon-help"></span>
-						</span>
+						<input id="modlgn-secretkey" autocomplete="one-time-code" type="text" name="secretkey" class="input-small" tabindex="0" size="18" placeholder="<?php echo JText::_('JGLOBAL_SECRETKEY'); ?>" aria-describedby="modlgn-secretkey-help" />
 				</div>
+				<p id="modlgn-secretkey-help" class="help-block small"><?php echo JText::_('JGLOBAL_SECRETKEY_HELP'); ?></p>
 				<?php else : ?>
 					<label for="modlgn-secretkey"><?php echo JText::_('JGLOBAL_SECRETKEY'); ?></label>
-					<input id="modlgn-secretkey" autocomplete="one-time-code" type="text" name="secretkey" class="input-small" tabindex="0" size="18" placeholder="<?php echo JText::_('JGLOBAL_SECRETKEY'); ?>" />
-					<span class="btn width-auto hasTooltip" title="<?php echo JText::_('JGLOBAL_SECRETKEY_HELP'); ?>">
-						<span class="icon-help"></span>
-					</span>
+					<input id="modlgn-secretkey" autocomplete="one-time-code" type="text" name="secretkey" class="input-small" tabindex="0" size="18" placeholder="<?php echo JText::_('JGLOBAL_SECRETKEY'); ?>" aria-describedby="modlgn-secretkey-help" />
+					<p id="modlgn-secretkey-help" class="help-block small"><?php echo JText::_('JGLOBAL_SECRETKEY_HELP'); ?></p>
 				<?php endif; ?>
 
 			</div>

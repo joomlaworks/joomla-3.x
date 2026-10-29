@@ -11,7 +11,6 @@ defined('_JEXEC') or die;
 
 /** @var PrivacyViewConfirm $this */
 
-JHtml::_('behavior.keepalive');
 JHtml::_('behavior.formvalidator');
 
 ?>

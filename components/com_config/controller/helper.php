@@ -85,6 +85,16 @@ class ConfigControllerHelper
             }
         }
 
+        // The site's views called without a controller (index.php?option=com_config&view=config): their own display
+        // controller, which loads the form (the generic one rendered them without it, a fatal error)
+        if ($option === 'com_config' && empty($tasks) && $app->isClient('site')) {
+            $named = ucfirst(strtolower((string) $app->input->getWord('view', 'config')));
+
+            if (class_exists('ConfigController' . $named . 'Display')) {
+                $view = $named;
+            }
+        }
+
         $controllerName = $location . 'Controller' . $view . $activity;
 
         if (!class_exists($controllerName)) {

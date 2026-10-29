@@ -10,7 +10,6 @@
 defined('_JEXEC') or die;
 
 JHtml::_('behavior.core');
-JHtml::_('behavior.keepalive');
 
 ?>
 <div id="mailto-window">

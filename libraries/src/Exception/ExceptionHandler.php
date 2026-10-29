@@ -97,7 +97,9 @@ class ExceptionHandler
                 // This is needed to ensure the test suite can still get the output buffer
                 ob_start();
 
-                $document->setTitle(Text::_('ERROR') . ': ' . $error->getCode());
+                // The code the page is sent with: PHP's errors and some exceptions have none (0), as ErrorDocument does
+                $code = (int) $error->getCode();
+                $document->setTitle(Text::_('ERROR') . ': ' . ($code >= 400 && $code <= 599 ? $code : 500));
 
                 $data = $document->render(
                     false,

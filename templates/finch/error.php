@@ -19,6 +19,11 @@ class_exists('FinchHelper', false) || require_once __DIR__ . '/helper.php';
  * @var JDocumentError $this
  */
 $code = (int) $this->error->getCode();
+
+// The status the page is sent with: PHP's errors and some exceptions have no HTTP code (0, or a database's own)
+if ($code < 400 || $code > 599) {
+    $code = 500;
+}
 $tpl  = $this->baseurl . '/templates/' . $this->template;
 ?>
 <!DOCTYPE html>
