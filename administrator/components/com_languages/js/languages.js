@@ -4,233 +4,210 @@
  */
 
 /**
- * Some state variables for the overrider
+ * The language override form's search: finds known language strings (refreshing their cache first when it expired) and
+ * copies the chosen one into the form. Results are shown and copied as text, exactly as the language files have them.
+ * Requests carry the form token (X-CSRF-Token, the page's csrf.token option).
  */
-Joomla.overrider = {
-	states: {
-		refreshing  : false,
-		refreshed   : false,
-		counter     : 0,
-		searchstring: '',
-		searchtype  : 'value'
-	}
-};
+(function (window, document, Joomla) {
+	'use strict';
 
-/**
- * Method for refreshing the database cache of known language strings via Ajax
- *
- * @return  void
- *
- * @since   2.5
- */
-Joomla.overrider.refreshCache = function()
-{
-	var $ = jQuery.noConflict(), self = this;
-	this.states.refreshing = true;
+	const byId = (id) => document.getElementById(id);
+	const show = (element, shown) => {
+		if (element) {
+			element.style.display = shown ? 'block' : 'none';
+		}
+	};
 
-	$('#refresh-status').slideDown().css('display', 'block');
+	const post = (task, data) => fetch('index.php?option=com_languages&task=strings.' + task + '&format=json', {
+		method: 'POST',
+		credentials: 'same-origin',
+		headers: {
+			'X-Requested-With': 'XMLHttpRequest',
+			'X-CSRF-Token': Joomla.getOptions('csrf.token', ''),
+			'Content-Type': 'application/x-www-form-urlencoded',
+		},
+		body: new URLSearchParams(data || {}).toString(),
+	}).then((response) => (response.ok ? response.json() : Promise.reject(response)));
 
-	$.ajax(
-	{
-		type: "POST",
-		url: 'index.php?option=com_languages&task=strings.refresh&format=json',
-		dataType: 'json'
-	}).done(function (r)
-	{
-		if (r.error && r.message)
-		{
-			alert(r.message);
+	// The answer's own messages and error
+	const report = (answer) => {
+		if (answer.error && answer.message) {
+			window.alert(answer.message);
 		}
 
-		if (r.messages)
-		{
-			Joomla.renderMessages(r.messages);
+		if (answer.messages) {
+			Joomla.renderMessages(answer.messages);
 		}
+	};
 
-		$('#refresh-status').slideUp().hide();
-		self.states.refreshing = false;
-	}).fail(function (xhr)
-	{
-		alert(Joomla.JText._('COM_LANGUAGES_VIEW_OVERRIDE_REQUEST_ERROR'));
-		$('#refresh-status').slideUp().hide();
-	});
-};
+	const failed = () => window.alert(Joomla.JText._('COM_LANGUAGES_VIEW_OVERRIDE_REQUEST_ERROR'));
 
-/**
- * Method for searching known language strings via Ajax
- *
- * @param   more  Determines the limit start of the results
- *
- * @return  void
- *
- * @since   2.5
- */
-Joomla.overrider.searchStrings = function(more)
-{
-	var $ = jQuery.noConflict(), self = this;
+	Joomla.overrider = {
+		states: {
+			refreshing: false,
+			refreshed: false,
+			counter: 0,
+			searchstring: '',
+			searchtype: 'value',
+		},
 
-	// Prevent searching if the cache is refreshed at the moment
-	if (this.states.refreshing)
-	{
-		return;
-	}
+		// The results shown, by id (counter + index)
+		results: {},
 
-	// Only update the used searchstring and searchtype if the search button
-	// was used to start the search (that will be the case if 'more' is null)
-	if (!more)
-	{
-		this.states.searchstring = $('#jform_searchstring').val();
-		this.states.searchtype   = $('#jform_searchtype') !== null ? $('#jform_searchtype').val() : 'value';
-	}
+		// Refreshes the database cache of known language strings
+		refreshCache() {
+			const status = byId('refresh-status');
 
-	if (!this.states.searchstring)
-	{
-		$('#jform_searchstring').addClass('invalid');
+			this.states.refreshing = true;
+			show(status, true);
 
-		return;
-	}
+			return post('refresh')
+				.then(report, failed)
+				.then(() => {
+					show(status, false);
+					this.states.refreshing = false;
+				});
+		},
 
+		/**
+		 * Searches the known language strings
+		 *
+		 * @param  {number}  more  The limit start of further results (none: a new search)
+		 */
+		searchStrings(more) {
+			const field = byId('jform_searchstring');
+			const type = byId('jform_searchtype');
+			const container = byId('results-container');
+			const moreLink = byId('more-results');
 
-	if (more)
-	{
-		// If 'more' is greater than 0 we have already displayed some results for
-		// the current searchstring, so display the spinner at the more link
-		$('#more-results').addClass('overrider-spinner');
-	}
-	else
-	{
-		// Otherwise it is a new searchstring and we have to remove all previous results first
-		$('#more-results').hide();
-		var $children = $('#results-container div.language-results');
-		$children.remove();
-		$('#results-container').addClass('overrider-spinner').slideDown().css('display', 'block');
-	}
-
-	$.ajax(
-	{
-		type: "POST",
-		url: 'index.php?option=com_languages&task=strings.search&format=json',
-		data: 'searchstring=' + self.states.searchstring + '&searchtype=' + self.states.searchtype + '&more=' + more,
-		dataType: 'json'
-	}).done(function (r)
-	{
-		if (r.error && r.message)
-		{
-			alert(r.message);
-		}
-
-		if (r.messages)
-		{
-			Joomla.renderMessages(r.messages);
-		}
-
-		if (r.data)
-		{
-			if (r.data.results)
-			{
-				self.insertResults(r.data.results);
+			if (this.states.refreshing) {
+				return;
 			}
 
-			if (r.data.more)
-			{
-				// If there are more results than the sent ones
-				// display the more link
-				self.states.more = r.data.more;
-				$('#more-results').slideDown().css('display', 'block');
+			// A new search takes the form's values; "more" goes on with the last search
+			if (!more) {
+				this.states.searchstring = field ? field.value : '';
+				this.states.searchtype = type ? type.value : 'value';
 			}
-			else
-			{
-				$('#more-results').hide();
+
+			if (!this.states.searchstring) {
+				if (field) {
+					field.classList.add('invalid');
+				}
+
+				return;
 			}
+
+			if (more) {
+				moreLink.classList.add('overrider-spinner');
+			} else {
+				show(moreLink, false);
+				container.querySelectorAll('div.language-results').forEach((results) => results.remove());
+				container.classList.add('overrider-spinner');
+				show(container, true);
+			}
+
+			post('search', { searchstring: this.states.searchstring, searchtype: this.states.searchtype, more: more || '' })
+				.then((answer) => {
+					report(answer);
+
+					if (answer.data) {
+						if (answer.data.results) {
+							this.insertResults(answer.data.results);
+						}
+
+						this.states.more = answer.data.more;
+						show(moreLink, Boolean(answer.data.more));
+					}
+				}, failed)
+				.then(() => {
+					container.classList.remove('overrider-spinner');
+					moreLink.classList.remove('overrider-spinner');
+				});
+		},
+
+		/**
+		 * Shows results before the "more" link
+		 *
+		 * @param  {Array}  results  {constant, string, file}
+		 */
+		insertResults(results) {
+			const list = document.createElement('div');
+
+			this.states.counter += 1;
+			list.id = 'language-results' + this.states.counter;
+			list.className = 'language-results';
+
+			results.forEach((item, index) => {
+				const id = String(this.states.counter) + index;
+				const row = document.createElement('div');
+				const key = document.createElement('div');
+				const string = document.createElement('div');
+
+				this.results[id] = item;
+				row.className = 'result row' + (index % 2);
+				row.setAttribute('role', 'button');
+				row.tabIndex = 0;
+				row.setAttribute('data-result', id);
+				key.id = 'override_key' + id;
+				key.className = 'result-key';
+				key.textContent = item.constant;
+				key.title = item.file || '';
+				string.id = 'override_string' + id;
+				string.className = 'result-string';
+				string.textContent = item.string;
+				row.appendChild(key);
+				row.appendChild(string);
+				list.appendChild(row);
+			});
+
+			if (!results.length) {
+				const none = document.createElement('div');
+
+				none.textContent = Joomla.JText._('COM_LANGUAGES_VIEW_OVERRIDE_NO_RESULTS');
+				list.appendChild(none);
+			}
+
+			byId('more-results').before(list);
+		},
+
+		// Copies a result into the form
+		selectString(id) {
+			const item = this.results[id];
+
+			if (item) {
+				byId('jform_key').value = item.constant;
+				byId('jform_override').value = item.string;
+				window.scrollTo(0, 0);
+			}
+		},
+	};
+
+	document.addEventListener('DOMContentLoaded', () => {
+		const field = byId('jform_searchstring');
+		const expired = (Joomla.getOptions('com_languages.override') || {}).expired;
+		const choose = (event) => {
+			const row = event.target.closest ? event.target.closest('[data-result]') : null;
+
+			if (row && (event.type === 'click' || event.key === 'Enter' || event.key === ' ')) {
+				event.preventDefault();
+				Joomla.overrider.selectString(row.getAttribute('data-result'));
+			}
+		};
+
+		// The cache of known strings is refreshed once, when the search field is first used, if it expired
+		if (field) {
+			field.addEventListener('focus', () => {
+				if (!Joomla.overrider.states.refreshed && expired) {
+					Joomla.overrider.states.refreshed = true;
+					Joomla.overrider.refreshCache();
+				}
+
+				field.classList.remove('invalid');
+			});
 		}
 
-		$('#results-container').removeClass('overrider-spinner');
-		$('#more-results').removeClass('overrider-spinner');
-	}).fail(function (xhr)
-	{
-		alert(Joomla.JText._('COM_LANGUAGES_VIEW_OVERRIDE_REQUEST_ERROR'));
-		$('#results-container').removeClass('overrider-spinner');
-		$('#more-results').removeClass('overrider-spinner');
+		document.addEventListener('click', choose);
+		document.addEventListener('keydown', choose);
 	});
-};
-
-/**
- * Method inserting the received results into the results container
- *
- * @param   results  An array of search result objects
- *
- * @return  void
- *
- * @since   2.5
- */
-Joomla.overrider.insertResults = function(results)
-{
-	var $ = jQuery.noConflict(), self = this;
-
-	// For creating an individual ID for each result we use a counter
-	this.states.counter = this.states.counter + 1;
-
-	// Create a container into which all the results will be inserted
-	var $results_div = $('<div>', {
-		id : 'language-results' + self.states.counter,
-		class : 'language-results',
-		style : 'display:none;'
-	});
-
-	// Create some elements for each result and insert it into the container
-	$.each(results, function(index, item) {
-
-		var $div = $('<div>', {
-			class: 'result row' + index % 2,
-			onclick: 'Joomla.overrider.selectString(' + self.states.counter + index + ');'
-		});
-
-		var $key = $('<div>', {
-			id:  'override_key' + self.states.counter + index,
-			class: 'result-key',
-			html: item.constant,
-			title: item.file
-		});
-
-		var $string = $('<div>',{
-			id: 'override_string' + self.states.counter + index,
-			class:	'result-string',
-			html: item.string
-		});
-
-		$key.appendTo($div);
-		$string.appendTo($div);
-		$div.appendTo($results_div);
-
-	});
-
-	// If there aren't any results display an appropriate message
-	if (!results.length)
-	{
-		var $noresult = $('<div>',{
-			html: Joomla.JText._('COM_LANGUAGES_VIEW_OVERRIDE_NO_RESULTS')
-		});
-		$noresult.appendTo($results_div);
-	}
-
-	// Finally insert the container afore the more link and reveal it
-	$('#more-results').before($results_div);
-	$('#language-results' + this.states.counter).slideDown().css('display','block');
-};
-
-/**
- * Inserts a specific constant/value pair into the form and scrolls the page back to the top
- *
- * @param   id  The ID of the element which was selected for insertion
- *
- * @return  void
- *
- * @since   2.5
- */
-Joomla.overrider.selectString = function(id)
-{
-	var $ = jQuery.noConflict();
-	$('#jform_key').val($('#override_key' + id).html());
-	$('#jform_override').val($('#override_string' + id).html());
-	$(window).scrollTop(0);
-};
+})(window, document, window.Joomla);

@@ -3,51 +3,43 @@
  * @license		GNU General Public License version 2 or later; see LICENSE.md
  */
 
-var plg_quickicon_jupdatecheck_ajax_structure = {};
+// The Joomla Update quick icon: asks for a newer release two seconds after the page loads, then says what it found on the icon
+// and, for an update, in a message with a button to Joomla Update (options: plg_quickicon_joomlaupdate)
+document.addEventListener('DOMContentLoaded', () => {
+	const options = Joomla.getOptions('plg_quickicon_joomlaupdate') || {};
+	const text = options.text || {};
+	const link = document.querySelector('#plg_quickicon_joomlaupdate span.j-links-link');
 
-jQuery(document).ready(function() {
-	plg_quickicon_jupdatecheck_ajax_structure = {
-		success: function(data, textStatus, jqXHR) {
-			var link = jQuery('#plg_quickicon_joomlaupdate').find('span.j-links-link');
+	if (!link || !options.ajaxUrl) {
+		return;
+	}
 
-			try {
-				var updateInfoList = jQuery.parseJSON(data);
-			} catch (e) {
-				// An error occurred
-				link.html(plg_quickicon_joomlaupdate_text.ERROR);
-			}
+	const say = (html) => {
+		link.innerHTML = html;
+	};
 
-			if (updateInfoList instanceof Array) {
-				if (updateInfoList.length < 1) {
-					// No updates
-					link.replaceWith(plg_quickicon_joomlaupdate_text.UPTODATE);
+	window.setTimeout(() => {
+		fetch(options.ajaxUrl, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+			.then((response) => (response.ok ? response.json() : Promise.reject(response)))
+			.then((updates) => {
+				if (!Array.isArray(updates)) {
+					say(text.ERROR);
+				} else if (!updates.length || updates[0].version === options.version) {
+					say(text.UPTODATE);
 				} else {
-					var updateInfo = updateInfoList.shift();
-					if (updateInfo.version != plg_quickicon_jupdatecheck_jversion) {
-						var updateString = plg_quickicon_joomlaupdate_text.UPDATEFOUND.replace("%s", '\u200E' + updateInfo.version + "");
-						jQuery('#plg_quickicon_joomlaupdate').find('.j-links-link').html(updateString);
-						var updateString = plg_quickicon_joomlaupdate_text.UPDATEFOUND_MESSAGE.replace("%s", '\u200E' + updateInfo.version + "");
-						jQuery('#system-message-container').prepend(
-							'<div class="alert alert-error alert-joomlaupdate">'
-							+ updateString
-							+ ' <button class="btn btn-primary" onclick="document.location=\'' + plg_quickicon_joomlaupdate_url + '\'">'
-							+ plg_quickicon_joomlaupdate_text.UPDATEFOUND_BUTTON + '</button>'
-							+ '</div>'
-						);
-					} else {
-						link.html(plg_quickicon_joomlaupdate_text.UPTODATE);
+					// ‎ keeps the version left to right in right to left languages
+					const version = '‎' + updates[0].version;
+					const container = document.getElementById('system-message-container');
+
+					say(text.UPDATEFOUND.replace('%s', version));
+
+					if (container) {
+						container.insertAdjacentHTML('afterbegin', '<div class="alert alert-error alert-joomlaupdate">'
+							+ text.UPDATEFOUND_MESSAGE.replace('%s', version)
+							+ ' <a class="btn btn-primary" href="' + options.url + '">' + text.UPDATEFOUND_BUTTON + '</a></div>');
 					}
 				}
-			} else {
-				// An error occurred
-				link.html(plg_quickicon_joomlaupdate_text.ERROR);
-			}
-		},
-		error: function(jqXHR, textStatus, errorThrown) {
-			// An error occurred
-			jQuery('#plg_quickicon_joomlaupdate').find('span.j-links-link').html(plg_quickicon_joomlaupdate_text.ERROR);
-		},
-		url: plg_quickicon_joomlaupdate_ajax_url
-	};
-	setTimeout("ajax_object = new jQuery.ajax(plg_quickicon_jupdatecheck_ajax_structure);", 2000);
+			})
+			.catch(() => say(text.ERROR));
+	}, 2000);
 });

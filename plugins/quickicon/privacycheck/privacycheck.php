@@ -45,7 +45,8 @@ class PlgQuickiconPrivacyCheck extends JPlugin
             return;
         }
 
-        JHtml::_('jquery.framework');
+        // The check runs in js/privacycheck.js, from the options below
+        JHtml::_('behavior.core');
 
         $token    = Session::getFormToken() . '=' . 1;
         $privacy  = 'index.php?option=com_privacy';

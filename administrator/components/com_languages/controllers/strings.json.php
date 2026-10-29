@@ -26,6 +26,13 @@ class LanguagesControllerStrings extends JControllerAdmin
      */
     public function refresh()
     {
+        // The form token (the override form's script sends it as X-CSRF-Token)
+        if (!JSession::checkToken('post')) {
+            echo new JResponseJson(null, JText::_('JINVALID_TOKEN'), true);
+
+            return;
+        }
+
         echo new JResponseJson($this->getModel('strings')->refresh());
     }
 
@@ -38,6 +45,13 @@ class LanguagesControllerStrings extends JControllerAdmin
      */
     public function search()
     {
+        // The form token (the override form's script sends it as X-CSRF-Token)
+        if (!JSession::checkToken('post')) {
+            echo new JResponseJson(null, JText::_('JINVALID_TOKEN'), true);
+
+            return;
+        }
+
         echo new JResponseJson($this->getModel('strings')->search());
     }
 }

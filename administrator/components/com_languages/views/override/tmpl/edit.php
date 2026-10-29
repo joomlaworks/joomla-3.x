@@ -15,30 +15,15 @@ JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 JHtml::_('formbehavior.chosen', 'select');
 
-$expired = ($this->state->get('cache_expired') == 1) ? '1' : '';
-
 JHtml::_('stylesheet', 'administrator/components/com_languages/css/languages.css', array('version' => 'auto'));
 
+// The search (js/languages.js): the cache of known strings is refreshed first when it expired; requests send the form token
 JHtml::_('behavior.core');
-JHtml::_('jquery.framework');
+JHtml::_('form.csrf');
+JFactory::getDocument()->addScriptOptions('com_languages.override', array('expired' => $this->state->get('cache_expired') == 1));
 JHtml::_('script', 'administrator/components/com_languages/js/languages.min.js', array('version' => 'auto'));
 
 JFactory::getDocument()->addScriptDeclaration('
-	jQuery(document).ready(function($) {
-		$("#jform_searchstring").on("focus", function() {
-			if (!Joomla.overrider.states.refreshed)
-			{
-				var expired = "' . $expired . '";
-				if (expired)
-				{
-					Joomla.overrider.refreshCache();
-					Joomla.overrider.states.refreshed = true;
-				}
-			}
-			$(this).removeClass("invalid");
-		});
-	});
-
 	Joomla.submitbutton = function(task) {
 		if (task == "override.cancel" || document.formvalidator.isValid(document.getElementById("override-form")))
 		{

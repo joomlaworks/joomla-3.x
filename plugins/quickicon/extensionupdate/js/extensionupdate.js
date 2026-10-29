@@ -3,44 +3,39 @@
  * @license		GNU General Public License version 2 or later; see LICENSE.md
  */
 
-jQuery(document).ready(function() {
-	var ajax_structure = {
-		success: function(data, textStatus, jqXHR) {
-			var link = jQuery('#plg_quickicon_extensionupdate').find('span.j-links-link');
+// The Extension Updates quick icon: asks how many extensions have updates (Joomla itself, 700, aside), then says it on the icon
+// and, when there are some, in a message with a button to the Update page (options: plg_quickicon_extensionupdate)
+document.addEventListener('DOMContentLoaded', () => {
+	const options = Joomla.getOptions('plg_quickicon_extensionupdate') || {};
+	const text = options.text || {};
+	const link = document.querySelector('#plg_quickicon_extensionupdate span.j-links-link');
 
-			try {
-				var updateInfoList = jQuery.parseJSON(data);
-			} catch (e) {
-				// An error occurred
-				link.html(plg_quickicon_extensionupdate_text.ERROR);
-			}
+	if (!link || !options.ajaxUrl) {
+		return;
+	}
 
-			if (updateInfoList instanceof Array) {
-				if (updateInfoList.length == 0) {
-					// No updates
-					link.html(plg_quickicon_extensionupdate_text.UPTODATE);
-				} else {
-					var updateString = plg_quickicon_extensionupdate_text.UPDATEFOUND_MESSAGE.replace("%s", updateInfoList.length);
-					jQuery('#system-message-container').prepend(
-						'<div class="alert alert-error alert-joomlaupdate">'
-						+ updateString
-						+ ' <button class="btn btn-primary" onclick="document.location=\'' + plg_quickicon_extensionupdate_url + '\'">'
-						+ plg_quickicon_extensionupdate_text.UPDATEFOUND_BUTTON + '</button>'
-						+ '</div>'
-					);
-					var updateString = plg_quickicon_extensionupdate_text.UPDATEFOUND.replace("%s", updateInfoList.length);
-					link.html(updateString);
-				}
-			} else {
-				// An error occurred
-				link.html(plg_quickicon_extensionupdate_text.ERROR);
-			}
-		},
-		error: function(jqXHR, textStatus, errorThrown) {
-			// An error occurred
-			jQuery('#plg_quickicon_extensionupdate').find('span.j-links-link').html(plg_quickicon_extensionupdate_text.ERROR);
-		},
-		url: plg_quickicon_extensionupdate_ajax_url + '&eid=0&skip=700'
+	const say = (html) => {
+		link.innerHTML = html;
 	};
-	ajax_object = new jQuery.ajax(ajax_structure);
+
+	fetch(options.ajaxUrl + '&eid=0&skip=700', { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+		.then((response) => (response.ok ? response.json() : Promise.reject(response)))
+		.then((updates) => {
+			const container = document.getElementById('system-message-container');
+
+			if (!Array.isArray(updates)) {
+				say(text.ERROR);
+			} else if (!updates.length) {
+				say(text.UPTODATE);
+			} else {
+				say(text.UPDATEFOUND.replace('%s', updates.length));
+
+				if (container) {
+					container.insertAdjacentHTML('afterbegin', '<div class="alert alert-error alert-joomlaupdate">'
+						+ text.UPDATEFOUND_MESSAGE.replace('%s', updates.length)
+						+ ' <a class="btn btn-primary" href="' + options.url + '">' + text.UPDATEFOUND_BUTTON + '</a></div>');
+				}
+			}
+		})
+		.catch(() => say(text.ERROR));
 });

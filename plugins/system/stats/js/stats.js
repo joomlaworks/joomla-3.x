@@ -4,90 +4,81 @@
  */
 
 /**
- * stats javascript behavior
+ * The statistics message: sends the statistics when the site's choice says so, or asks (always, once, never) in the system
+ * messages. The plugin answers only requests with X-Requested-With (com_ajax, group system).
  *
- * To allow users to accept & configure stats sending
- *
- * @package     Joomla
- * @since       3.5.0
- * @version  1.0
+ * @since  3.5.0
  */
+document.addEventListener('DOMContentLoaded', () => {
+	const container = document.getElementById('system-message-container');
+	const ask = (plugin) => fetch('index.php?' + new URLSearchParams({ option: 'com_ajax', group: 'system', plugin, format: 'raw' }).toString(), {
+		credentials: 'same-origin',
+		headers: { 'X-Requested-With': 'XMLHttpRequest' },
+	}).then((response) => response.json());
 
-(function ($) {
-	$(document).ready(function () {
-		var ajaxData = {
-			'option' : 'com_ajax',
-			'group'  : 'system',
-			'plugin' : 'renderStatsMessage',
-			'format' : 'raw'
-			},
-			messageContainer = $('#system-message-container');
+	if (!container) {
+		return;
+	}
 
-		/**
-		 * Initialise events for the message container
-		 *
-		 * @return  void
-		 */
-		function initStatsEvents()
-		{
-			var globalContainer = messageContainer.find('.js-pstats-alert'),
-				detailsContainer = messageContainer.find('.js-pstats-data-details');
-
-			// Show details about the information being sent
-			messageContainer.on('click', '.js-pstats-btn-details', function(e){
-				detailsContainer.toggle(200);
-				e.preventDefault();
-			});
-
-			// Always allow
-			messageContainer.on('click', '.js-pstats-btn-allow-always', function(e){
-
-				// Remove message
-				globalContainer.hide(200);
-				detailsContainer.remove();
-				ajaxData.plugin = 'sendAlways';
-
-				$.getJSON('index.php', ajaxData, function(response){});
-				e.preventDefault();
-			});
-
-			// Allow once
-			messageContainer.on('click', '.js-pstats-btn-allow-once', function(e){
-
-				// Remove message
-				globalContainer.hide(200);
-				detailsContainer.remove();
-
-				ajaxData.plugin = 'sendOnce';
-
-				$.getJSON('index.php', ajaxData, function(response){});
-				e.preventDefault();
-			});
-
-			// Never allow
-			messageContainer.on('click', '.js-pstats-btn-allow-never', function(e){
-
-				// Remove message
-				globalContainer.hide(200);
-				detailsContainer.remove();
-
-				ajaxData.plugin = 'sendNever';
-
-				$.getJSON('index.php', ajaxData, function(response){});
-				e.preventDefault();
-			});
-		}
-
-		ajaxData.plugin = 'sendStats';
-
-		$.getJSON('index.php', ajaxData, function(response){
-			if (response && response.html) {
-				messageContainer
-					.append(response.html)
-					.find('.js-pstats-alert').show(200);
-
-				initStatsEvents();
+	ask('sendStats')
+		.then((response) => {
+			if (!response || !response.html) {
+				return;
 			}
-		});
-	});
-})(jQuery);
+
+			container.insertAdjacentHTML('beforeend', response.html);
+
+			const alert = container.querySelector('.js-pstats-alert');
+			const details = container.querySelector('.js-pstats-data-details');
+			const answer = (plugin) => {
+				alert.style.display = 'none';
+
+				if (details) {
+					details.remove();
+				}
+
+				ask(plugin).catch(() => {});
+			};
+
+			if (!alert) {
+				return;
+			}
+
+			alert.style.display = '';
+
+			alert.addEventListener('click', (event) => {
+				const target = event.target.closest ? event.target.closest('a, button') : null;
+				const choices = { 'js-pstats-btn-allow-always': 'sendAlways', 'js-pstats-btn-allow-once': 'sendOnce', 'js-pstats-btn-allow-never': 'sendNever' };
+
+				if (!target) {
+					return;
+				}
+
+				if (target.classList.contains('js-pstats-btn-details')) {
+					event.preventDefault();
+
+					if (details) {
+						details.style.display = details.style.display === 'none' ? '' : 'none';
+					}
+
+					return;
+				}
+
+				// The close button (Bootstrap's alert plugin did this): the question comes back next time
+				if (target.classList.contains('close')) {
+					event.preventDefault();
+					alert.remove();
+
+					return;
+				}
+
+				Object.keys(choices).forEach((name) => {
+					if (target.classList.contains(name)) {
+						event.preventDefault();
+						answer(choices[name]);
+					}
+				});
+			});
+		})
+		.catch(() => {});
+});
