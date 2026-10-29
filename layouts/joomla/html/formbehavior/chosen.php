@@ -21,25 +21,7 @@ defined('_JEXEC') or die;
 
 extract($displayData);
 
-// Include jQuery
-JHtml::_('jquery.framework');
-JHtml::_('script', 'system/chosen.jquery.min.js', array('version' => 'auto', 'relative' => true, 'detectDebug' => $debug));
+// The list is drawn by global.js (CMS.chosen), in Chosen's markup and styles, from these options (by selector)
+JHtml::_('behavior.cms');
 JHtml::_('stylesheet', 'system/chosen.css', array('version' => 'auto', 'relative' => true));
-
-// Options array to json options string
-$options_str = json_encode($options, ($debug && defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : false));
-
-JFactory::getDocument()->addScriptDeclaration(
-    '
-	jQuery(function ($) {
-		initChosen();
-		$("body").on("subform-row-add", initChosen);
-
-		function initChosen(event, container)
-		{
-			container = container || document;
-			$(container).find(' . json_encode($selector) . ').chosen(' . $options_str . ');
-		}
-	});
-	'
-);
+JFactory::getDocument()->addScriptOptions('system.chosen', array($selector => (object) $options));

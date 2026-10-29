@@ -30,29 +30,13 @@ extract($displayData);
 JText::script('JGLOBAL_KEEP_TYPING');
 JText::script('JGLOBAL_LOOKING_FOR');
 
-// Include jQuery
-JHtml::_('jquery.framework');
-JHtml::_('script', 'system/ajax-chosen.min.js', array('version' => 'auto', 'relative' => true, 'detectDebug' => $debug));
-
-JFactory::getDocument()->addScriptDeclaration(
-    "
-		jQuery(document).ready(function ($) {
-			$('" . $selector . "').ajaxChosen({
-				type: '" . $type . "',
-				url: '" . $url . "',
-				dataType: '" . $dataType . "',
-				jsonTermKey: '" . $jsonTermKey . "',
-				afterTypeDelay: '" . $afterTypeDelay . "',
-				minTermLength: '" . $minTermLength . "'
-			}, function (data) {
-				var results = [];
-
-				$.each(data, function (i, val) {
-					results.push({ value: val.value, text: val.text });
-				});
-
-				return results;
-			});
-		});
-	"
-);
+// The server lookup of global.js' searchable list (CMS.chosen), by selector; the answer is a list of {value, text}
+JHtml::_('behavior.cms');
+JFactory::getDocument()->addScriptOptions('system.ajaxchosen', array($selector => array(
+    'type'           => $type,
+    'url'            => $url,
+    'dataType'       => $dataType,
+    'jsonTermKey'    => $jsonTermKey,
+    'afterTypeDelay' => (int) $afterTypeDelay,
+    'minTermLength'  => (int) $minTermLength,
+)));

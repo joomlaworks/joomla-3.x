@@ -4752,6 +4752,11 @@ class JoomlaInstallerScript
             // Lists reordered by dragging (now global.js' CMS.sortableList, no jQuery UI)
             '/media/system/js/sortablelist.js',
             '/media/system/css/sortablelist.css',
+            // Chosen's and Ajax Chosen's scripts (now global.js' CMS.chosen; chosen.css stays)
+            '/media/system/js/chosen.jquery.js',
+            '/media/system/js/chosen.jquery.min.js',
+            '/media/system/js/ajax-chosen.js',
+            '/media/system/js/ajax-chosen.min.js',
             // Show-on (cms.js), part of global.js and frontend.js
             '/media/system/js/cms.js',
             '/media/system/js/cms-uncompressed.js',

@@ -4582,6 +4582,1477 @@
 		});
 	});
 
+	/*
+	 * --- Searchable select lists (JHtml formbehavior.chosen and formbehavior.ajaxchosen; what Chosen 1.6.2, in Joomla's
+	 * chzn version, and Ajax Chosen were) ---
+	 *
+	 * The same markup as Joomla's Chosen (div.chzn-container#<id>_chzn, a.chzn-single, ul.chzn-choices, div.chzn-drop,
+	 * ul.chzn-results with li.active-result, .highlighted, .result-selected, .group-result...), so templates' styles and
+	 * scripts reading it keep working, the same options (placeholder_text_*, no_results_text, disable_search_threshold,
+	 * search_contains, allow_single_deselect, max_selected_options, width...) and Joomla's custom values. Events go out as
+	 * Chosen's did (liszt:ready, liszt:showing_dropdown, liszt:hiding_dropdown, liszt:no_results, liszt:maxselected,
+	 * change with {selected} or {deselected}): through jQuery when it's there, natively otherwise. liszt:updated and
+	 * chosen:updated redraw a list after a script changed it. The native select stays the field the form posts. On phones
+	 * the browser's own list is kept, as Chosen did. Added: listbox and option roles, aria-expanded and
+	 * aria-activedescendant on the search field, which is labelled as the select is.
+	 */
+	const chosens = new WeakMap();
+	const chosenEscape = (text) => String(text).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+	let chosenCount = 0;
+
+	// Through jQuery when it's there (handlers get the parameters as their second argument), natively otherwise
+	const chosenEmit = (select, type, params) => {
+		if (window.jQuery) {
+			window.jQuery(select).trigger(type, params === undefined ? [] : [params]);
+		} else if (type === 'change') {
+			select.dispatchEvent(new Event('change', { bubbles: true }));
+		} else {
+			select.dispatchEvent(new CustomEvent(type, { bubbles: true, detail: params }));
+		}
+	};
+
+	class Chosen {
+		constructor(select, options) {
+			const o = options || {};
+			const label = select.id ? document.querySelector('label[for="' + quoted(select.id) + '"]') : null;
+
+			this.form_field = select;
+			this.options = o;
+			this.is_multiple = select.multiple;
+			this.id = 'cms-chzn-' + (chosenCount += 1);
+			this.allow_single_deselect = o.allow_single_deselect != null && select.options[0] != null && select.options[0].text === '' ? o.allow_single_deselect : false;
+			this.disable_search_threshold = o.disable_search_threshold || 0;
+			this.disable_search = o.disable_search || false;
+			this.enable_split_word_search = o.enable_split_word_search != null ? o.enable_split_word_search : true;
+			this.group_search = o.group_search != null ? o.group_search : true;
+			this.search_contains = o.search_contains || false;
+			this.single_backstroke_delete = o.single_backstroke_delete != null ? o.single_backstroke_delete : true;
+			this.max_selected_options = o.max_selected_options || Infinity;
+			this.inherit_select_classes = o.inherit_select_classes || false;
+			this.display_selected_options = o.display_selected_options != null ? o.display_selected_options : true;
+			this.display_disabled_options = o.display_disabled_options != null ? o.display_disabled_options : true;
+			this.include_group_label_in_selected = o.include_group_label_in_selected || false;
+			this.max_shown_results = o.max_shown_results || Infinity;
+			this.case_sensitive_search = o.case_sensitive_search || false;
+			this.allow_custom_value = select.classList.contains('chzn-custom-value') || o.allow_custom_value || false;
+			this.custom_value_prefix = select.getAttribute('data-custom_value_prefix') || '';
+			this.is_rtl = select.classList.contains('chzn-rtl');
+			this.active_field = false;
+			this.mouse_on_container = false;
+			this.results_showing = false;
+			this.result_highlight = null;
+			this.remote = o.remote || null;
+			this.custom_tags = o.custom_tags || null;
+			this.set_default_text();
+
+			// The markup
+			const container = document.createElement('div');
+
+			container.className = ['chzn-container', 'chzn-container-' + (this.is_multiple ? 'multi' : 'single')]
+				.concat(this.inherit_select_classes && select.className ? [select.className] : [], this.is_rtl ? ['chzn-rtl'] : []).join(' ');
+			container.style.width = this.container_width();
+
+			if (select.title) {
+				container.title = select.title;
+			}
+
+			if (select.id) {
+				container.id = select.id.replace(/[^\w]/g, '_') + '_chzn';
+			}
+
+			if (this.is_multiple) {
+				container.innerHTML = '<ul class="chzn-choices"><li class="search-field"><input type="text" class="default" autocomplete="off" style="width:25px;" /></li></ul><div class="chzn-drop"><ul class="chzn-results"></ul></div>';
+			} else {
+				container.innerHTML = '<a class="chzn-single chzn-default"><span></span><div><b></b></div></a><div class="chzn-drop"><div class="chzn-search"><input type="text" autocomplete="off" /></div><ul class="chzn-results"></ul></div>';
+			}
+
+			select.style.display = 'none';
+			select.classList.add('chzn-done');
+			select.parentNode.insertBefore(container, select.nextSibling);
+
+			this.container_el = container;
+			this.dropdown = container.querySelector('div.chzn-drop');
+			this.search_field_el = container.querySelector('input');
+			this.search_results_el = container.querySelector('ul.chzn-results');
+
+			if (this.is_multiple) {
+				this.search_choices = container.querySelector('ul.chzn-choices');
+				this.search_container = container.querySelector('li.search-field');
+			} else {
+				this.search_container = container.querySelector('div.chzn-search');
+				this.selected_item = container.querySelector('.chzn-single');
+			}
+
+			// Accessibility: the search field is the combobox, the results its listbox, labelled as the select is
+			this.search_results_el.id = this.id + '-results';
+			this.search_results_el.setAttribute('role', 'listbox');
+
+			if (this.is_multiple) {
+				this.search_results_el.setAttribute('aria-multiselectable', 'true');
+			}
+
+			this.search_field_el.setAttribute('role', 'combobox');
+			this.search_field_el.setAttribute('aria-autocomplete', 'list');
+			this.search_field_el.setAttribute('aria-expanded', 'false');
+			this.search_field_el.setAttribute('aria-controls', this.search_results_el.id);
+
+			if (label || select.getAttribute('aria-label')) {
+				this.search_field_el.setAttribute('aria-label', select.getAttribute('aria-label') || label.textContent.trim());
+			}
+
+			// Chosen's API used jQuery objects
+			if (window.jQuery) {
+				this.form_field_jq = window.jQuery(select);
+				this.container = window.jQuery(container);
+				this.search_field = window.jQuery(this.search_field_el);
+				this.search_results = window.jQuery(this.search_results_el);
+			} else {
+				this.container = container;
+				this.search_field = this.search_field_el;
+				this.search_results = this.search_results_el;
+			}
+
+			this.current_selectedIndex = select.selectedIndex;
+			this.results_build();
+
+			if (select.tabIndex && select.getAttribute('tabindex') !== null) {
+				this.search_field_el.tabIndex = select.tabIndex;
+				select.tabIndex = -1;
+			}
+
+			this.register_observers(label);
+			chosenEmit(select, 'liszt:ready', { chosen: this });
+		}
+
+		set_default_text() {
+			const select = this.form_field;
+			const o = this.options;
+
+			if (select.getAttribute('data-placeholder')) {
+				this.default_text = select.getAttribute('data-placeholder');
+			} else if (this.is_multiple) {
+				this.default_text = o.placeholder_text_multiple || o.placeholder_text || 'Select Some Options';
+			} else {
+				this.default_text = o.placeholder_text_single || o.placeholder_text || 'Select an Option';
+			}
+
+			this.custom_group_text = select.getAttribute('data-custom_group_text') || o.custom_group_text || 'Custom Value';
+			this.results_none_found = select.getAttribute('data-no_results_text') || o.no_results_text || 'No results match';
+		}
+
+		container_width() {
+			if (this.options.width != null) {
+				return this.options.width;
+			}
+
+			const width = window.getComputedStyle(this.form_field).width;
+
+			return width && width !== '0px' ? width : this.form_field.offsetWidth + 'px';
+		}
+
+		register_observers(label) {
+			const container = this.container_el;
+			const field = this.search_field_el;
+			const select = this.form_field;
+			const results = this.search_results_el;
+			const update = () => this.results_update_field();
+
+			this.click_test_action = (event) => this.test_active_click(event);
+
+			container.addEventListener('mousedown', (event) => this.container_mousedown(event));
+			container.addEventListener('mouseup', (event) => this.container_mouseup(event));
+			container.addEventListener('mouseenter', () => {
+				this.mouse_on_container = true;
+			});
+			container.addEventListener('mouseleave', () => {
+				this.mouse_on_container = false;
+			});
+			// A touch opens or closes once (the mouse events browsers emulate after it are cancelled), the results still scroll
+			container.addEventListener('touchstart', (event) => {
+				this.mouse_on_container = true;
+				this.touch_started = true;
+
+				if (!event.target.closest('.chzn-results')) {
+					this.container_mousedown(event);
+					event.preventDefault();
+				}
+			}, { passive: false });
+			container.addEventListener('touchend', (event) => {
+				if (!event.target.closest('.chzn-results')) {
+					this.container_mouseup(event);
+				}
+			});
+
+			if (!this.is_multiple) {
+				container.addEventListener('click', (event) => event.preventDefault());
+			} else {
+				this.search_choices.addEventListener('click', (event) => this.choices_click(event));
+			}
+
+			results.addEventListener('mouseup', (event) => this.search_results_mouseup(event));
+			results.addEventListener('mouseover', (event) => this.search_results_mouseover(event));
+			results.addEventListener('mouseout', (event) => this.search_results_mouseout(event));
+			results.addEventListener('touchmove', () => {
+				this.touch_started = false;
+			}, { passive: true });
+			results.addEventListener('touchend', (event) => {
+				if (this.touch_started) {
+					this.search_results_mouseover(event);
+					this.search_results_mouseup(event);
+					event.preventDefault();
+				}
+			});
+
+			field.addEventListener('blur', (event) => this.input_blur(event));
+			field.addEventListener('keyup', (event) => this.keyup_checker(event));
+			field.addEventListener('keydown', (event) => this.keydown_checker(event));
+			field.addEventListener('focus', (event) => this.input_focus(event));
+			field.addEventListener('cut', () => setTimeout(() => this.results_search(), 50));
+			field.addEventListener('paste', () => setTimeout(() => this.results_search(), 50));
+
+			// Scripts changing the list: through jQuery's trigger (most), natively (CustomEvent)
+			const incoming = {
+				'liszt:updated': update,
+				'chosen:updated': update,
+				'liszt:activate': () => this.activate_field(),
+				'chosen:activate': () => this.activate_field(),
+				'liszt:open': (event) => this.container_mousedown(event),
+				'chosen:open': (event) => this.container_mousedown(event),
+				'liszt:close': (event) => this.input_blur(event),
+				'chosen:close': (event) => this.input_blur(event),
+			};
+
+			Object.keys(incoming).forEach((type) => select.addEventListener(type, incoming[type]));
+
+			if (window.jQuery) {
+				this.jquery_handlers = incoming;
+				Object.keys(incoming).forEach((type) => window.jQuery(select).on(type, incoming[type]));
+			}
+
+			if (label) {
+				this.form_field_label = label;
+				this.label_action = (event) => (this.is_multiple ? this.container_mousedown(event) : this.activate_field());
+				label.addEventListener('click', this.label_action);
+			}
+
+			if (this.remote) {
+				this.remote_observer();
+			}
+		}
+
+		destroy() {
+			document.removeEventListener('click', this.click_test_action);
+
+			if (this.search_field_el.tabIndex > 0) {
+				this.form_field.tabIndex = this.search_field_el.tabIndex;
+			}
+
+			if (this.form_field_label) {
+				this.form_field_label.removeEventListener('click', this.label_action);
+			}
+
+			if (this.jquery_handlers && window.jQuery) {
+				Object.keys(this.jquery_handlers).forEach((type) => window.jQuery(this.form_field).off(type, this.jquery_handlers[type]));
+			}
+
+			this.container_el.remove();
+			this.form_field.style.display = '';
+			this.form_field.classList.remove('chzn-done');
+			chosens.delete(this.form_field);
+
+			if (window.jQuery) {
+				window.jQuery(this.form_field).removeData('chosen');
+			}
+		}
+
+		search_field_disabled() {
+			this.is_disabled = this.form_field.disabled;
+			this.container_el.classList.toggle('chzn-disabled', this.is_disabled);
+			this.search_field_el.disabled = this.is_disabled;
+
+			if (this.is_disabled) {
+				this.close_field();
+			}
+		}
+
+		input_focus() {
+			if (this.is_multiple) {
+				if (!this.active_field) {
+					setTimeout(() => this.container_mousedown(), 50);
+				}
+			} else if (!this.active_field) {
+				this.activate_field();
+			}
+		}
+
+		input_blur() {
+			if (!this.mouse_on_container) {
+				this.active_field = false;
+				setTimeout(() => this.blur_test(), 100);
+			}
+		}
+
+		container_mousedown(event) {
+			if (this.is_disabled) {
+				return;
+			}
+
+			if (event && event.type === 'mousedown' && !this.results_showing) {
+				event.preventDefault();
+			}
+
+			if (event && event.target && event.target.classList && event.target.classList.contains('search-choice-close')) {
+				return;
+			}
+
+			if (!this.active_field) {
+				if (this.is_multiple) {
+					this.search_field_el.value = '';
+				}
+
+				document.addEventListener('click', this.click_test_action);
+				this.results_show();
+			} else if (!this.is_multiple && event && event.target && event.target.closest && event.target.closest('a.chzn-single')) {
+				event.preventDefault();
+				this.results_toggle();
+			}
+
+			this.activate_field();
+		}
+
+		container_mouseup(event) {
+			if (event.target.nodeName === 'ABBR' && !this.is_disabled) {
+				this.results_reset();
+			}
+		}
+
+		blur_test() {
+			if (!this.active_field && this.container_el.classList.contains('chzn-container-active')) {
+				this.close_field();
+			}
+		}
+
+		close_field() {
+			document.removeEventListener('click', this.click_test_action);
+			this.active_field = false;
+			this.results_hide();
+			this.container_el.classList.remove('chzn-container-active');
+			this.clear_backstroke();
+			this.show_search_field_default();
+			this.search_field_scale();
+		}
+
+		activate_field() {
+			this.container_el.classList.add('chzn-container-active');
+			this.active_field = true;
+			this.search_field_el.focus();
+		}
+
+		test_active_click(event) {
+			const active = event.target.closest ? event.target.closest('.chzn-container') : null;
+
+			if (active === this.container_el) {
+				this.active_field = true;
+			} else {
+				this.close_field();
+			}
+		}
+
+		// The options as Chosen read them: groups, then their options (empty options are kept, unshown, for the indexes)
+		parse() {
+			const parsed = [];
+			let optionsIndex = 0;
+			const addOption = (option, group, groupDisabled) => {
+				if (option.nodeName !== 'OPTION') {
+					return;
+				}
+
+				if (option.text !== '') {
+					if (group != null) {
+						parsed[group].children += 1;
+					}
+
+					parsed.push({
+						array_index: parsed.length,
+						options_index: optionsIndex,
+						value: option.value,
+						text: option.text,
+						title: option.title || undefined,
+						selected: option.selected,
+						disabled: groupDisabled === true ? true : option.disabled,
+						group_array_index: group,
+						group_label: group != null ? parsed[group].label : null,
+						classes: option.className,
+						style: option.style.cssText,
+					});
+				} else {
+					parsed.push({ array_index: parsed.length, options_index: optionsIndex, empty: true });
+				}
+
+				optionsIndex += 1;
+			};
+
+			Array.prototype.forEach.call(this.form_field.childNodes, (node) => {
+				if (node.nodeName === 'OPTGROUP') {
+					const position = parsed.length;
+
+					parsed.push({
+						array_index: position,
+						group: true,
+						label: node.label,
+						title: node.title || undefined,
+						children: 0,
+						disabled: node.disabled,
+						classes: node.className,
+					});
+					Array.prototype.forEach.call(node.childNodes, (child) => addOption(child, position, node.disabled));
+				} else {
+					addOption(node);
+				}
+			});
+
+			return parsed;
+		}
+
+		results_build() {
+			this.selected_option_count = null;
+			this.results_data = this.parse();
+
+			if (this.is_multiple) {
+				this.search_choices.querySelectorAll('li.search-choice').forEach((choice) => choice.remove());
+			} else {
+				this.single_set_selected_text();
+
+				const noSearch = this.disable_search || this.form_field.options.length <= this.disable_search_threshold;
+
+				this.search_field_el.readOnly = noSearch;
+				this.container_el.classList.toggle('chzn-container-single-nosearch', noSearch);
+			}
+
+			this.results_data.forEach((item) => {
+				if (item.selected && !item.group && !item.empty) {
+					if (this.is_multiple) {
+						this.choice_build(item);
+					} else {
+						this.single_set_selected_text(this.choice_label(item));
+					}
+				}
+			});
+			this.update_results_content(this.results_option_build());
+			this.search_field_disabled();
+			this.show_search_field_default();
+			this.search_field_scale();
+		}
+
+		results_update_field() {
+			this.set_default_text();
+
+			if (!this.is_multiple) {
+				this.results_reset_cleanup();
+			}
+
+			this.result_clear_highlight();
+			this.results_build();
+
+			if (this.results_showing) {
+				this.winnow_results();
+			}
+		}
+
+		include_option_in_results(option) {
+			if (this.is_multiple && !this.display_selected_options && option.selected) {
+				return false;
+			}
+
+			if (!this.display_disabled_options && option.disabled) {
+				return false;
+			}
+
+			return !option.empty;
+		}
+
+		choice_label(item) {
+			return (this.include_group_label_in_selected && item.group_label != null ? '<b class="group-name">' + chosenEscape(item.group_label) + '</b>' : '') + chosenEscape(item.text);
+		}
+
+		results_option_build() {
+			let content = '';
+			let shown = 0;
+
+			for (const data of this.results_data) {
+				const html = data.group ? this.result_add_group(data) : this.result_add_option(data);
+
+				if (html !== '') {
+					shown += 1;
+					content += html;
+				}
+
+				if (shown >= this.max_shown_results) {
+					break;
+				}
+			}
+
+			return content;
+		}
+
+		result_add_option(option) {
+			if (!option.search_match || !this.include_option_in_results(option)) {
+				return '';
+			}
+
+			const classes = [];
+
+			if (!option.disabled && !(option.selected && this.is_multiple)) {
+				classes.push('active-result');
+			}
+
+			if (option.disabled && !(option.selected && this.is_multiple)) {
+				classes.push('disabled-result');
+			}
+
+			if (option.selected) {
+				classes.push('result-selected');
+			}
+
+			if (option.group_array_index != null) {
+				classes.push('group-option');
+			}
+
+			if (option.classes) {
+				classes.push(option.classes);
+			}
+
+			return '<li id="' + this.id + '-o' + option.array_index + '" role="option" aria-selected="' + (option.selected ? 'true' : 'false') + '"'
+				+ (option.disabled ? ' aria-disabled="true"' : '') + ' class="' + chosenEscape(classes.join(' ')) + '"'
+				+ (option.style ? ' style="' + chosenEscape(option.style) + '"' : '') + ' data-option-array-index="' + option.array_index + '"'
+				+ (option.title ? ' title="' + chosenEscape(option.title) + '"' : '') + '>' + option.search_text + '</li>';
+		}
+
+		result_add_group(group) {
+			if (!(group.search_match || group.group_match) || !(group.active_options > 0)) {
+				return '';
+			}
+
+			return '<li role="presentation" class="' + chosenEscape(['group-result'].concat(group.classes ? [group.classes] : []).join(' ')) + '"'
+				+ (group.title ? ' title="' + chosenEscape(group.title) + '"' : '') + '>' + group.search_text + '</li>';
+		}
+
+		update_results_content(html) {
+			this.search_results_el.innerHTML = html;
+		}
+
+		get_search_text() {
+			return this.search_field_el.value.trim();
+		}
+
+		search_string_match(text, regex) {
+			if (regex.test(text)) {
+				return true;
+			}
+
+			if (this.enable_split_word_search && (text.indexOf(' ') >= 0 || text.indexOf('[') === 0)) {
+				return text.replace(/\[|\]/g, '').split(' ').some((part) => regex.test(part));
+			}
+
+			return false;
+		}
+
+		// The options matching the search text, the match emphasised
+		winnow_results() {
+			const searchText = this.get_search_text();
+			const escaped = searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+			const flags = this.case_sensitive_search ? '' : 'i';
+			const regex = new RegExp((this.search_contains ? '' : '^') + escaped, flags);
+			const firstMatch = new RegExp(escaped, flags);
+			let results = 0;
+
+			this.no_results_clear();
+
+			for (const option of this.results_data) {
+				let group = null;
+
+				option.search_match = false;
+
+				if (!this.include_option_in_results(option)) {
+					continue;
+				}
+
+				if (option.group) {
+					option.group_match = false;
+					option.active_options = 0;
+				}
+
+				if (option.group_array_index != null && this.results_data[option.group_array_index]) {
+					group = this.results_data[option.group_array_index];
+
+					if (group.active_options === 0 && group.search_match) {
+						results += 1;
+					}
+
+					group.active_options += 1;
+				}
+
+				const text = option.group ? option.label : option.text;
+
+				option.search_text = chosenEscape(text);
+
+				if (option.group && !this.group_search) {
+					continue;
+				}
+
+				option.search_match = this.search_string_match(text, regex);
+
+				if (option.search_match && !option.group) {
+					results += 1;
+				}
+
+				if (option.search_match) {
+					if (searchText.length) {
+						const start = text.search(firstMatch);
+
+						if (start >= 0) {
+							option.search_text = chosenEscape(text.substr(0, start)) + '<em>' + chosenEscape(text.substr(start, searchText.length)) + '</em>'
+								+ chosenEscape(text.substr(start + searchText.length));
+						}
+					}
+
+					if (group) {
+						group.group_match = true;
+					}
+				} else if (option.group_array_index != null && this.results_data[option.group_array_index].search_match) {
+					option.search_match = true;
+				}
+			}
+
+			this.result_clear_highlight();
+
+			if (results < 1 && searchText.length) {
+				this.update_results_content('');
+				this.no_results(searchText);
+			} else {
+				this.update_results_content(this.results_option_build());
+				this.winnow_results_set_highlight();
+			}
+		}
+
+		winnow_results_set_highlight() {
+			const selected = !this.is_multiple ? this.search_results_el.querySelector('.result-selected.active-result') : null;
+			const target = selected || this.search_results_el.querySelector('.active-result');
+
+			if (target) {
+				this.result_do_highlight(target);
+			}
+		}
+
+		result_do_highlight(item) {
+			if (!item) {
+				return;
+			}
+
+			this.result_clear_highlight();
+			this.result_highlight = item;
+			item.classList.add('highlighted');
+			this.search_field_el.setAttribute('aria-activedescendant', item.id);
+
+			const list = this.search_results_el;
+			const maxHeight = parseInt(window.getComputedStyle(list).maxHeight, 10) || list.clientHeight;
+			const top = item.offsetTop - list.offsetTop;
+			const bottom = top + item.offsetHeight;
+
+			if (bottom >= list.scrollTop + maxHeight) {
+				list.scrollTop = Math.max(bottom - maxHeight, 0);
+			} else if (top < list.scrollTop) {
+				list.scrollTop = top;
+			}
+		}
+
+		result_clear_highlight() {
+			if (this.result_highlight) {
+				this.result_highlight.classList.remove('highlighted');
+			}
+
+			this.result_highlight = null;
+			this.search_field_el.removeAttribute('aria-activedescendant');
+		}
+
+		results_toggle() {
+			if (this.results_showing) {
+				this.results_hide();
+			} else {
+				this.results_show();
+			}
+		}
+
+		results_search() {
+			if (this.results_showing) {
+				this.winnow_results();
+			} else {
+				this.results_show();
+			}
+		}
+
+		results_show() {
+			if (this.is_multiple && this.max_selected_options <= this.choices_count()) {
+				chosenEmit(this.form_field, 'liszt:maxselected', { chosen: this });
+
+				return false;
+			}
+
+			this.container_el.classList.add('chzn-with-drop');
+			this.results_showing = true;
+			this.search_field_el.setAttribute('aria-expanded', 'true');
+			this.search_field_el.focus();
+			this.winnow_results();
+			chosenEmit(this.form_field, 'liszt:showing_dropdown', { chosen: this });
+
+			return true;
+		}
+
+		results_hide() {
+			if (this.results_showing) {
+				this.result_clear_highlight();
+				this.container_el.classList.remove('chzn-with-drop');
+				this.search_field_el.setAttribute('aria-expanded', 'false');
+				chosenEmit(this.form_field, 'liszt:hiding_dropdown', { chosen: this });
+			}
+
+			this.results_showing = false;
+		}
+
+		show_search_field_default() {
+			if (this.is_multiple && this.choices_count() < 1 && !this.active_field) {
+				this.search_field_el.value = '';
+				this.search_field_el.placeholder = this.default_text;
+				this.search_field_el.classList.add('default');
+			} else {
+				this.search_field_el.value = '';
+				this.search_field_el.placeholder = '';
+				this.search_field_el.classList.remove('default');
+			}
+		}
+
+		choices_count() {
+			if (this.selected_option_count == null) {
+				this.selected_option_count = Array.prototype.filter.call(this.form_field.options, (option) => option.selected).length;
+			}
+
+			return this.selected_option_count;
+		}
+
+		choices_click(event) {
+			event.preventDefault();
+
+			if (!this.results_showing && !this.is_disabled) {
+				this.results_show();
+			}
+		}
+
+		search_results_mouseup(event) {
+			const target = event.target.closest ? event.target.closest('.active-result') : null;
+
+			if (target) {
+				this.result_highlight = target;
+				this.result_select(event);
+				this.search_field_el.focus();
+			}
+		}
+
+		search_results_mouseover(event) {
+			const target = event.target.closest ? event.target.closest('.active-result') : null;
+
+			if (target) {
+				this.result_do_highlight(target);
+			}
+		}
+
+		search_results_mouseout(event) {
+			if (event.target.classList && event.target.classList.contains('active-result')) {
+				this.result_clear_highlight();
+			}
+		}
+
+		choice_build(item) {
+			const choice = document.createElement('li');
+
+			choice.className = 'search-choice';
+			choice.innerHTML = '<span>' + this.choice_label(item) + '</span>';
+
+			if (item.disabled) {
+				choice.classList.add('search-choice-disabled');
+			} else {
+				const close = document.createElement('a');
+
+				close.className = 'search-choice-close';
+				close.setAttribute('data-option-array-index', item.array_index);
+				close.setAttribute('role', 'button');
+				close.setAttribute('aria-label', (CMS.text.get('JLIB_HTML_BEHAVIOR_CLOSE', '') || '×') + ': ' + item.text);
+				close.addEventListener('click', (event) => {
+					event.preventDefault();
+					event.stopPropagation();
+
+					if (!this.is_disabled) {
+						this.choice_destroy(close);
+					}
+				});
+				choice.appendChild(close);
+			}
+
+			this.search_container.parentNode.insertBefore(choice, this.search_container);
+		}
+
+		choice_destroy(link) {
+			if (this.result_deselect(link.getAttribute('data-option-array-index'))) {
+				this.show_search_field_default();
+
+				if (this.is_multiple && this.choices_count() > 0 && this.search_field_el.value.length < 1) {
+					this.results_hide();
+				}
+
+				link.closest('li').remove();
+				this.search_field_scale();
+			}
+		}
+
+		results_reset() {
+			this.results_data.forEach((item) => {
+				item.selected = false;
+			});
+			this.form_field.options[0].selected = true;
+			this.single_set_selected_text();
+			this.show_search_field_default();
+			this.results_reset_cleanup();
+			chosenEmit(this.form_field, 'change');
+
+			if (this.active_field) {
+				this.results_hide();
+			}
+		}
+
+		results_reset_cleanup() {
+			this.current_selectedIndex = this.form_field.selectedIndex;
+
+			const abbr = this.selected_item ? this.selected_item.querySelector('abbr') : null;
+
+			if (abbr) {
+				abbr.remove();
+			}
+		}
+
+		result_select(event) {
+			if (this.result_highlight) {
+				const high = this.result_highlight;
+
+				this.result_clear_highlight();
+
+				if (this.is_multiple && this.max_selected_options <= this.choices_count()) {
+					chosenEmit(this.form_field, 'liszt:maxselected', { chosen: this });
+
+					return false;
+				}
+
+				if (this.is_multiple) {
+					high.classList.remove('active-result');
+				} else {
+					this.results_data.forEach((item) => {
+						item.selected = false;
+					});
+				}
+
+				high.classList.add('result-selected');
+
+				const item = this.results_data[high.getAttribute('data-option-array-index')];
+
+				item.selected = true;
+				this.form_field.options[item.options_index].selected = true;
+				this.selected_option_count = null;
+
+				if (this.is_multiple) {
+					this.choice_build(item);
+				} else {
+					this.single_set_selected_text(this.choice_label(item));
+				}
+
+				if (!((event.metaKey || event.ctrlKey) && this.is_multiple)) {
+					this.results_hide();
+				}
+
+				this.show_search_field_default();
+
+				if (this.is_multiple || this.form_field.selectedIndex !== this.current_selectedIndex) {
+					chosenEmit(this.form_field, 'change', { selected: this.form_field.options[item.options_index].value });
+				}
+
+				this.current_selectedIndex = this.form_field.selectedIndex;
+				event.preventDefault();
+				this.search_field_scale();
+
+				return true;
+			}
+
+			// Joomla: a value typed into a single list allowing custom values (a module's position) is added to it
+			if (!this.is_multiple && this.allow_custom_value && this.get_search_text() !== '') {
+				const value = this.get_search_text();
+				let group = Array.prototype.find.call(this.form_field.querySelectorAll('optgroup'), (item) => item.getAttribute('label') === this.custom_group_text);
+				const option = document.createElement('option');
+
+				if (!group) {
+					group = document.createElement('optgroup');
+					group.setAttribute('label', this.custom_group_text);
+					this.form_field.appendChild(group);
+				}
+
+				option.value = this.custom_value_prefix + value;
+				option.textContent = value;
+				group.appendChild(option);
+				option.selected = true;
+
+				if (!event.metaKey) {
+					this.results_hide();
+				}
+
+				this.results_build();
+				chosenEmit(this.form_field, 'change', { selected: option.value });
+			}
+
+			return false;
+		}
+
+		// A tag typed into a multiple list allowing them (custom_tags: {prefix, minLength}): an existing option of that text, else a new one
+		add_custom_tag() {
+			const text = this.get_search_text();
+			const tags = this.custom_tags;
+
+			if (text.length < (tags.minLength || 1)) {
+				return false;
+			}
+
+			let option = Array.prototype.find.call(this.form_field.options, (item) => item.text === text);
+
+			if (!option) {
+				option = document.createElement('option');
+				option.value = (tags.prefix || '') + text;
+				option.textContent = text;
+				this.form_field.appendChild(option);
+			}
+
+			option.selected = true;
+			this.search_field_el.value = '';
+			this.results_update_field();
+			chosenEmit(this.form_field, 'change', { selected: option.value });
+
+			return true;
+		}
+
+		single_set_selected_text(text) {
+			const span = this.selected_item.querySelector('span');
+
+			if (text == null || text === chosenEscape(this.default_text)) {
+				this.selected_item.classList.add('chzn-default');
+				span.textContent = this.default_text;
+			} else {
+				this.single_deselect_control_build();
+				this.selected_item.classList.remove('chzn-default');
+				span.innerHTML = text;
+			}
+		}
+
+		result_deselect(position) {
+			const data = this.results_data[position];
+
+			if (this.form_field.options[data.options_index].disabled) {
+				return false;
+			}
+
+			data.selected = false;
+			this.form_field.options[data.options_index].selected = false;
+			this.selected_option_count = null;
+			this.result_clear_highlight();
+
+			if (this.results_showing) {
+				this.winnow_results();
+			}
+
+			chosenEmit(this.form_field, 'change', { deselected: this.form_field.options[data.options_index].value });
+			this.search_field_scale();
+
+			return true;
+		}
+
+		single_deselect_control_build() {
+			if (!this.allow_single_deselect) {
+				return;
+			}
+
+			if (!this.selected_item.querySelector('abbr')) {
+				const abbr = document.createElement('abbr');
+
+				abbr.className = 'search-choice-close';
+				this.selected_item.querySelector('span').after(abbr);
+			}
+
+			this.selected_item.classList.add('chzn-single-with-deselect');
+		}
+
+		no_results(terms) {
+			const item = document.createElement('li');
+			const span = document.createElement('span');
+
+			item.className = 'no-results';
+			item.setAttribute('role', 'presentation');
+			item.appendChild(document.createTextNode(this.results_none_found + ' "'));
+			span.textContent = terms;
+			item.appendChild(span);
+			item.appendChild(document.createTextNode('"'));
+			this.search_results_el.appendChild(item);
+			chosenEmit(this.form_field, 'liszt:no_results', { chosen: this });
+		}
+
+		no_results_clear() {
+			this.search_results_el.querySelectorAll('.no-results').forEach((item) => item.remove());
+		}
+
+		keydown_arrow() {
+			if (this.results_showing && this.result_highlight) {
+				let next = this.result_highlight.nextElementSibling;
+
+				while (next && !next.classList.contains('active-result')) {
+					next = next.nextElementSibling;
+				}
+
+				if (next) {
+					this.result_do_highlight(next);
+				}
+			} else {
+				this.results_show();
+			}
+		}
+
+		keyup_arrow() {
+			if (!this.results_showing && !this.is_multiple) {
+				this.results_show();
+			} else if (this.result_highlight) {
+				let previous = this.result_highlight.previousElementSibling;
+
+				while (previous && !previous.classList.contains('active-result')) {
+					previous = previous.previousElementSibling;
+				}
+
+				if (previous) {
+					this.result_do_highlight(previous);
+				} else {
+					if (this.choices_count() > 0) {
+						this.results_hide();
+					}
+
+					this.result_clear_highlight();
+				}
+			}
+		}
+
+		keydown_backstroke() {
+			if (this.pending_backstroke) {
+				this.choice_destroy(this.pending_backstroke.querySelector('a'));
+				this.clear_backstroke();
+			} else {
+				const choices = this.search_choices.querySelectorAll('li.search-choice');
+				const last = choices[choices.length - 1];
+
+				if (last && !last.classList.contains('search-choice-disabled')) {
+					this.pending_backstroke = last;
+
+					if (this.single_backstroke_delete) {
+						this.keydown_backstroke();
+					} else {
+						last.classList.add('search-choice-focus');
+					}
+				}
+			}
+		}
+
+		clear_backstroke() {
+			if (this.pending_backstroke) {
+				this.pending_backstroke.classList.remove('search-choice-focus');
+			}
+
+			this.pending_backstroke = null;
+		}
+
+		keydown_checker(event) {
+			const key = event.keyCode;
+
+			this.search_field_scale();
+
+			if (key !== 8 && this.pending_backstroke) {
+				this.clear_backstroke();
+			}
+
+			// Tags: a comma ends one
+			if (this.custom_tags && event.key === ',') {
+				event.preventDefault();
+				this.add_custom_tag();
+
+				return;
+			}
+
+			switch (key) {
+				case 8:
+					this.backstroke_length = this.search_field_el.value.length;
+					break;
+				case 9:
+					if (this.results_showing && !this.is_multiple) {
+						this.result_select(event);
+					}
+
+					this.mouse_on_container = false;
+					break;
+				case 13:
+					if (this.results_showing || this.custom_tags) {
+						event.preventDefault();
+					}
+
+					break;
+				case 32:
+					if (this.disable_search) {
+						event.preventDefault();
+					}
+
+					break;
+				case 38:
+					event.preventDefault();
+					this.keyup_arrow();
+					break;
+				case 40:
+					event.preventDefault();
+					this.keydown_arrow();
+					break;
+				default:
+					break;
+			}
+		}
+
+		keyup_checker(event) {
+			const key = event.keyCode;
+
+			this.search_field_scale();
+
+			switch (key) {
+				case 8:
+					if (this.is_multiple && this.backstroke_length < 1 && this.choices_count() > 0) {
+						this.keydown_backstroke();
+					} else if (!this.pending_backstroke) {
+						this.result_clear_highlight();
+						this.results_search();
+					}
+
+					break;
+				case 13:
+					event.preventDefault();
+
+					if (this.custom_tags && !this.result_highlight) {
+						this.add_custom_tag();
+					} else if (this.results_showing) {
+						this.result_select(event);
+					}
+
+					break;
+				case 27:
+					if (this.results_showing) {
+						this.results_hide();
+					}
+
+					break;
+				case 9:
+				case 16:
+				case 17:
+				case 18:
+				case 38:
+				case 40:
+				case 91:
+					break;
+				default:
+					this.results_search();
+			}
+		}
+
+		// A multiple list's search field as wide as its text
+		search_field_scale() {
+			if (!this.is_multiple) {
+				return;
+			}
+
+			const field = this.search_field_el;
+			const style = window.getComputedStyle(field);
+			const measure = document.createElement('span');
+
+			measure.style.cssText = 'position:absolute;left:-1000px;top:-1000px;white-space:pre;visibility:hidden;';
+			['fontSize', 'fontStyle', 'fontWeight', 'fontFamily', 'lineHeight', 'textTransform', 'letterSpacing'].forEach((name) => {
+				measure.style[name] = style[name];
+			});
+			measure.textContent = field.value || field.placeholder;
+			document.body.appendChild(measure);
+
+			let width = measure.offsetWidth + 25;
+			const max = this.container_el.offsetWidth - 10;
+
+			measure.remove();
+
+			if (max > 0 && width > max) {
+				width = max;
+			}
+
+			field.style.width = width + 'px';
+		}
+
+		// Options asked of the server as the search text changes (what Ajax Chosen did): the selected ones are kept
+		remote_observer() {
+			const remote = this.remote;
+			const field = this.search_field_el;
+			const keepTyping = remote.keepTypingMsg || CMS.text.get('JGLOBAL_KEEP_TYPING', '');
+			const lookingFor = remote.lookingForMsg || CMS.text.get('JGLOBAL_LOOKING_FOR', '');
+			const minimum = parseInt(remote.minTermLength, 10) || 3;
+			let previous = '';
+			let timer = null;
+			let controller = null;
+
+			field.addEventListener('keyup', () => {
+				const typed = field.value;
+				const value = typed.trim();
+				const notice = this.search_results_el.querySelector('.no-results');
+
+				if (notice) {
+					notice.textContent = value.length < minimum ? keepTyping : lookingFor + " '" + value + "'";
+				}
+
+				if (value === previous) {
+					return;
+				}
+
+				previous = value;
+				clearTimeout(timer);
+
+				if (value.length < minimum) {
+					return;
+				}
+
+				timer = setTimeout(() => {
+					const params = new URLSearchParams(Object.assign({}, remote.data || {}, { [remote.jsonTermKey || 'term']: value }));
+					const post = String(remote.type || 'GET').toUpperCase() === 'POST';
+					const url = remote.url + (post ? '' : (remote.url.indexOf('?') > -1 ? '&' : '?') + params.toString());
+
+					if (controller) {
+						controller.abort();
+					}
+
+					controller = typeof AbortController === 'function' ? new AbortController() : null;
+
+					fetch(url, {
+						method: post ? 'POST' : 'GET',
+						body: post ? params : undefined,
+						credentials: 'same-origin',
+						headers: { 'X-Requested-With': 'XMLHttpRequest' },
+						signal: controller ? controller.signal : undefined,
+					})
+						.then((response) => response.json())
+						.then((data) => {
+							const items = remote.map ? remote.map(data) : data;
+							const keep = Array.prototype.filter.call(this.form_field.options, (option) => option.selected).map((option) => option.value + '-' + option.text);
+
+							Array.prototype.slice.call(this.form_field.options).forEach((option) => {
+								if (!option.selected) {
+									option.remove();
+								}
+							});
+							this.form_field.querySelectorAll('optgroup').forEach((group) => {
+								if (!group.children.length) {
+									group.remove();
+								}
+							});
+
+							const add = (parent, value, text) => {
+								if (keep.indexOf(value + '-' + text) < 0) {
+									const option = document.createElement('option');
+
+									option.value = value;
+									option.textContent = text;
+									parent.appendChild(option);
+								}
+							};
+
+							(items || []).forEach((item, index) => {
+								if (item && item.group) {
+									let group = Array.prototype.find.call(this.form_field.querySelectorAll('optgroup'), (g) => g.label === item.text);
+
+									if (!group) {
+										group = document.createElement('optgroup');
+										group.label = item.text;
+										this.form_field.appendChild(group);
+									}
+
+									Object.keys(item.items || {}).forEach((key) => {
+										const child = item.items[key];
+
+										add(group, typeof child === 'string' ? key : child.value, typeof child === 'string' ? child : child.text);
+									});
+								} else if (typeof item === 'string') {
+									add(this.form_field, index, item);
+								} else if (item) {
+									add(this.form_field, item.value, item.text);
+								}
+							});
+
+							if (items && items.length) {
+								this.results_update_field();
+								this.results_show();
+							} else {
+								this.no_results_clear();
+								this.no_results(field.value);
+							}
+
+							field.value = typed;
+							this.search_field_scale();
+						})
+						.catch(() => {});
+				}, parseInt(remote.afterTypeDelay, 10) || 500);
+			});
+		}
+	}
+
+	// On phones the browser's own list, as Chosen did
+	const chosenSupported = () => !/iP(od|hone)|IEMobile|Windows Phone|BlackBerry|BB10|Android.*Mobile/i.test(window.navigator.userAgent);
+
+	CMS.chosen = {
+		Chosen,
+
+		/**
+		 * Searchable lists for selects (a selector, an element or a list), once each; data-chosen (true) on a select
+		 * leaves it alone, as Joomla's Chosen did
+		 *
+		 * @param   {string|Element|NodeList|Array}  selects
+		 * @param   {Object}                         options  Chosen's options; remote {url, type, jsonTermKey,
+		 *                                                    minTermLength, afterTypeDelay, map(data)}; custom_tags
+		 *                                                    {prefix, minLength}
+		 * @param   {Element}                        root     Where a selector is looked for (subform rows)
+		 *
+		 * @return  {Chosen[]}
+		 */
+		attach(selects, options, root) {
+			const elements = typeof selects === 'string' ? list((root || document).querySelectorAll(selects)) : list(selects && selects.jquery ? selects.get() : selects);
+
+			if (!chosenSupported()) {
+				return [];
+			}
+
+			return elements.filter((select) => select.nodeName === 'SELECT').map((select) => {
+				const flag = select.getAttribute('data-chosen');
+
+				if (chosens.has(select) || (flag && flag !== 'false' && flag !== '0')) {
+					return chosens.get(select);
+				}
+
+				const chosen = new Chosen(select, options);
+
+				chosens.set(select, chosen);
+
+				if (window.jQuery) {
+					window.jQuery(select).data('chosen', chosen);
+				}
+
+				return chosen;
+			}).filter(Boolean);
+		},
+
+		get: (select) => chosens.get(select && select.jquery ? select[0] : select) || null,
+
+		// Redraws a list after a script changed its options or value (liszt:updated)
+		update(select) {
+			const chosen = CMS.chosen.get(select);
+
+			if (chosen) {
+				chosen.results_update_field();
+			}
+		},
+
+		// The lists the page asks for (script options system.chosen: {selector: options}; system.ajaxchosen and
+		// system.chosentags by selector add the server lookup and typed tags), in a container (a new subform row)
+		start(root) {
+			const lists = CMS.options.get('system.chosen') || {};
+			const remote = CMS.options.get('system.ajaxchosen') || {};
+			const tags = CMS.options.get('system.chosentags') || {};
+			const special = Object.keys(remote).concat(Object.keys(tags));
+
+			// Lists with a server lookup or tags first: a general selector ('select') would take them without
+			special.concat(Object.keys(lists).filter((selector) => special.indexOf(selector) < 0)).forEach((selector) => {
+				const options = Object.assign({}, lists[selector] || {});
+
+				if (remote[selector]) {
+					options.remote = remote[selector];
+				}
+
+				if (tags[selector]) {
+					options.custom_tags = tags[selector];
+				}
+
+				CMS.chosen.attach(selector, options, root);
+			});
+		},
+	};
+
+	// Chosen's and Ajax Chosen's jQuery names, as soon as jQuery is there (before any ready handler runs)
+	const chosenJquery = () => {
+		const jq = window.jQuery;
+
+		if (!jq || jq.fn.chosen) {
+			return Boolean(jq);
+		}
+
+		jq.fn.chosen = function chosen(options) {
+			if (options === 'destroy') {
+				this.each((index, select) => {
+					const instance = chosens.get(select);
+
+					if (instance) {
+						instance.destroy();
+					}
+				});
+			} else {
+				CMS.chosen.attach(this.get(), options);
+			}
+
+			return this;
+		};
+
+		jq.fn.ajaxChosen = function ajaxChosen(settings, callback, chosenOptions) {
+			const remote = Object.assign({}, settings || {});
+
+			if (typeof callback === 'function') {
+				remote.map = callback;
+			}
+
+			CMS.chosen.attach(this.get(), Object.assign({}, typeof chosenOptions === 'object' ? chosenOptions : {}, { remote }));
+
+			return this;
+		};
+
+		return true;
+	};
+
+	if (!chosenJquery()) {
+		document.addEventListener('readystatechange', chosenJquery);
+	}
+
+	// Started in jQuery's ready queue when it's there, as Chosen was (templates bind liszt:ready listeners at ready)
+	CMS.ready(() => {
+		chosenJquery();
+
+		if (window.jQuery) {
+			window.jQuery(() => CMS.chosen.start(document));
+			window.jQuery(document).on('subform-row-add', (event, row) => CMS.chosen.start(row && row.jquery ? row[0] : row || document));
+		} else {
+			CMS.chosen.start(document);
+			document.addEventListener('subform-row-add', (event) => CMS.chosen.start((event.detail && event.detail.row) || document));
+		}
+	});
+
 	/* --- Cropping: selecting an area of an image (CMS.cropper; the template editor's image tool, what Jcrop was) --- */
 
 	CMS.cropper = {
@@ -7292,6 +8763,7 @@
 		'jQuery.fn.simplecolors() (behavior.simplecolorpicker)': 'the layout joomla.form.field.color.simple (swatches)',
 		'jSelectUser(), jQuery.fn.fieldUser() (fielduser.js)': 'CMS.userField.select(), CMS.userField.open()',
 		'moduleorder.js': 'CMS.moduleOrder.load(), CMS.moduleOrder.write()',
+		'jQuery.fn.chosen(), jQuery.fn.ajaxChosen() (chosen.jquery.js, ajax-chosen.js; formbehavior.chosen, formbehavior.ajaxchosen)': 'CMS.chosen.attach(), CMS.chosen.update(), CMS.chosen.get()',
 		'jQuery.JSortableList() (sortablelist.js, JHtml sortablelist.sortable)': 'CMS.sortableList.attach()',
 		'treeselectmenu.jquery.js': 'CMS.treeSelect.start(), toggle(), check(), filter()',
 		'jQuery.fn.subformRepeatable() (subform-repeatable.js)': 'CMS.subform.attach(), CMS.subform.get()',
