@@ -4,12 +4,20 @@
  * @subpackage  Layout
  *
  * @copyright   (C) 2006 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright   (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
 
-/** @var JDocumentError $this */
+/**
+ * The error page of a template without error.php: what went wrong in plain words, a search form and the way home, the
+ * technical detail only in debug mode. It may be shown because the database or the language failed, so nothing here
+ * depends on them: texts fall back to English, the search form is offered only when a search component is known to be
+ * enabled.
+ *
+ * @var  JDocumentError  $this
+ */
 
 if (!isset($this->error))
 {
@@ -17,73 +25,156 @@ if (!isset($this->error))
 	$this->debug = false;
 }
 
-$app = JFactory::getApplication();
+$text = function ($key, $english)
+{
+	try
+	{
+		$string = JText::_($key);
+	}
+	catch (Throwable $e)
+	{
+		return $english;
+	}
+
+	return $string === $key ? $english : $string;
+};
+
+$escape = function ($value)
+{
+	return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+};
+
+$code = (int) $this->error->getCode();
+$root = JUri::root(true) . '/';
+
+try
+{
+	$siteName = (string) JFactory::getConfig()->get('sitename');
+}
+catch (Throwable $e)
+{
+	$siteName = '';
+}
+
+// What went wrong, by kind
+if ($code === 404)
+{
+	$title   = $text('JERROR_LAYOUT_NOT_FOUND_TITLE', 'Page not found');
+	$message = $text('JERROR_LAYOUT_NOT_FOUND_TEXT', 'The page you are looking for doesn\'t exist, or has moved. Check the address, search the site or go to the home page.');
+}
+elseif ($code === 401 || $code === 403)
+{
+	$title   = $text('JERROR_LAYOUT_NO_ACCESS_TITLE', 'Access denied');
+	$message = $text('JERROR_LAYOUT_NO_ACCESS_TEXT', 'You don\'t have permission to view this page. Logging in may give you access.');
+}
+else
+{
+	$title   = $text('JERROR_LAYOUT_SERVER_ERROR_TITLE', 'Something went wrong');
+	$message = $text('JERROR_LAYOUT_SERVER_ERROR_TEXT', 'The site couldn\'t complete your request. Please try again in a few minutes. If it keeps happening, let the site\'s administrator know.');
+}
+
+// The search form, when a search component is enabled (Smart Search first)
+$search = null;
+
+try
+{
+	if (JComponentHelper::isEnabled('com_finder'))
+	{
+		$search = array('option' => 'com_finder', 'view' => 'search', 'field' => 'q');
+	}
+	elseif (JComponentHelper::isEnabled('com_search'))
+	{
+		$search = array('option' => 'com_search', 'view' => 'search', 'field' => 'searchword');
+	}
+}
+catch (Throwable $e)
+{
+	$search = null;
+}
+
+// A guest denied access may log in
+try
+{
+	$login = ($code === 401 || $code === 403) && JFactory::getUser()->guest && JComponentHelper::isEnabled('com_users');
+}
+catch (Throwable $e)
+{
+	$login = false;
+}
+
+try
+{
+	$debugStyles = JFactory::getApplication()->get('debug_lang', '0') == '1' || JFactory::getApplication()->get('debug', '0') == '1';
+}
+catch (Throwable $e)
+{
+	$debugStyles = false;
+}
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
+<html lang="<?php echo $escape($this->language); ?>" dir="<?php echo $escape($this->direction); ?>">
 <head>
 	<meta charset="utf-8" />
-	<title><?php echo $this->error->getCode(); ?> - <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<link href="<?php echo JUri::root(true); ?>/media/system/css/frontend.min.css" rel="stylesheet" />
-	<?php if ($app->get('debug_lang', '0') == '1' || $app->get('debug', '0') == '1') : ?>
-		<link href="<?php echo JUri::root(true); ?>/media/system/css/debug.css" rel="stylesheet" />
+	<meta name="robots" content="noindex" />
+	<title><?php echo $code; ?> - <?php echo $escape($title); ?><?php echo $siteName !== '' ? ' | ' . $escape($siteName) : ''; ?></title>
+	<link href="<?php echo $root; ?>media/system/css/frontend.min.css" rel="stylesheet" />
+	<?php if ($debugStyles) : ?>
+		<link href="<?php echo $root; ?>media/system/css/debug.css" rel="stylesheet" />
 	<?php endif; ?>
 </head>
 <body class="tmpl-error">
-	<div class="error">
-		<div id="outline">
-		<div id="errorboxoutline">
-			<div id="errorboxheader"><?php echo $this->error->getCode(); ?> - <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></div>
-			<div id="errorboxbody">
-			<p><strong><?php echo JText::_('JERROR_LAYOUT_NOT_ABLE_TO_VISIT'); ?></strong></p>
-			<ol>
-				<li><?php echo JText::_('JERROR_LAYOUT_AN_OUT_OF_DATE_BOOKMARK_FAVOURITE'); ?></li>
-				<li><?php echo JText::_('JERROR_LAYOUT_SEARCH_ENGINE_OUT_OF_DATE_LISTING'); ?></li>
-				<li><?php echo JText::_('JERROR_LAYOUT_MIS_TYPED_ADDRESS'); ?></li>
-				<li><?php echo JText::_('JERROR_LAYOUT_YOU_HAVE_NO_ACCESS_TO_THIS_PAGE'); ?></li>
-				<li><?php echo JText::_('JERROR_LAYOUT_REQUESTED_RESOURCE_WAS_NOT_FOUND'); ?></li>
-				<li><?php echo JText::_('JERROR_LAYOUT_ERROR_HAS_OCCURRED_WHILE_PROCESSING_YOUR_REQUEST'); ?></li>
-			</ol>
-			<p><strong><?php echo JText::_('JERROR_LAYOUT_PLEASE_TRY_ONE_OF_THE_FOLLOWING_PAGES'); ?></strong></p>
-			<ul>
-				<li><a href="<?php echo JUri::root(true); ?>/index.php" title="<?php echo JText::_('JERROR_LAYOUT_GO_TO_THE_HOME_PAGE'); ?>"><?php echo JText::_('JERROR_LAYOUT_HOME_PAGE'); ?></a></li>
-			</ul>
-			<p><?php echo JText::_('JERROR_LAYOUT_PLEASE_CONTACT_THE_SYSTEM_ADMINISTRATOR'); ?></p>
-			<div id="techinfo">
-			<p>
-				<?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?>
-				<?php if ($this->debug) : ?>
-					<br/><?php echo htmlspecialchars((string) $this->error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->error->getLine(); ?>
+	<main class="sys-page">
+		<div class="sys-card">
+			<?php if ($siteName !== '') : ?>
+				<p class="sys-site"><a href="<?php echo $root; ?>"><?php echo $escape($siteName); ?></a></p>
+			<?php endif; ?>
+			<p class="sys-code"><?php echo $code; ?></p>
+			<h1 class="sys-title"><?php echo $escape($title); ?></h1>
+			<p class="sys-text"><?php echo $escape($message); ?></p>
+
+			<?php if ($search) : ?>
+				<form class="sys-search" action="<?php echo $root; ?>index.php" method="get" role="search">
+					<label for="sys-search-field"><?php echo $escape($text('JERROR_LAYOUT_SEARCH_PAGE', 'Search this site')); ?></label>
+					<div class="sys-search-row">
+						<input type="search" id="sys-search-field" name="<?php echo $search['field']; ?>" required />
+						<input type="hidden" name="option" value="<?php echo $search['option']; ?>" />
+						<input type="hidden" name="view" value="<?php echo $search['view']; ?>" />
+						<button type="submit" class="sys-button"><?php echo $escape($text('JERROR_LAYOUT_SEARCH_BUTTON', 'Search')); ?></button>
+					</div>
+				</form>
+			<?php endif; ?>
+
+			<p class="sys-actions">
+				<a class="sys-button sys-button-primary" href="<?php echo $root; ?>"><?php echo $escape($text('JERROR_LAYOUT_HOME_PAGE', 'Home Page')); ?></a>
+				<?php if ($login) : ?>
+					<a class="sys-button" href="<?php echo $root; ?>index.php?option=com_users&amp;view=login"><?php echo $escape($text('JLOGIN', 'Log in')); ?></a>
 				<?php endif; ?>
 			</p>
+
 			<?php if ($this->debug) : ?>
-				<div>
+				<details class="sys-details" open>
+					<summary><?php echo $escape($text('JERROR_LAYOUT_TECHNICAL_DETAILS', 'Technical details')); ?></summary>
+					<p><?php echo $escape($this->error->getMessage()); ?><br /><?php echo $escape($this->error->getFile()); ?>:<?php echo $this->error->getLine(); ?></p>
 					<?php echo $this->renderBacktrace(); ?>
-					<?php // Check if there are more Exceptions and render their data as well ?>
+					<?php // Earlier exceptions, each with its data and backtrace ?>
 					<?php if ($this->error->getPrevious()) : ?>
 						<?php $loop = true; ?>
-						<?php // Reference $this->_error here and in the loop as setError() assigns errors to this property and we need this for the backtrace to work correctly ?>
-						<?php // Make the first assignment to setError() outside the loop so the loop does not skip Exceptions ?>
+						<?php // setError() assigns to $this->_error, which the backtrace reads; the first assignment outside the loop so none is skipped ?>
 						<?php $this->setError($this->_error->getPrevious()); ?>
 						<?php while ($loop === true) : ?>
-							<p><strong><?php echo JText::_('JERROR_LAYOUT_PREVIOUS_ERROR'); ?></strong></p>
-							<p>
-								<?php echo htmlspecialchars((string) $this->_error->getMessage(), ENT_QUOTES, 'UTF-8'); ?>
-								<br/><?php echo htmlspecialchars((string) $this->_error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->_error->getLine(); ?>
-							</p>
+							<p><strong><?php echo $escape($text('JERROR_LAYOUT_PREVIOUS_ERROR', 'Previous Error')); ?></strong></p>
+							<p><?php echo $escape($this->_error->getMessage()); ?><br /><?php echo $escape($this->_error->getFile()); ?>:<?php echo $this->_error->getLine(); ?></p>
 							<?php echo $this->renderBacktrace(); ?>
 							<?php $loop = $this->setError($this->_error->getPrevious()); ?>
 						<?php endwhile; ?>
-						<?php // Reset the main error object to the base error ?>
 						<?php $this->setError($this->error); ?>
 					<?php endif; ?>
-				</div>
+				</details>
+			<?php else : ?>
+				<p class="sys-reference"><?php echo $escape($this->error->getMessage()); ?></p>
 			<?php endif; ?>
-			</div>
-			</div>
 		</div>
-		</div>
-	</div>
+	</main>
 </body>
 </html>
