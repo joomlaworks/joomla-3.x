@@ -148,3 +148,26 @@
 .media-crop-stage {display:flex;flex:1 1 auto;align-items:center;justify-content:center;min-height:0;overflow:hidden;background:repeating-conic-gradient(rgba(128, 128, 128, 0.18) 0% 25%, transparent 0% 50%) 50% / 20px 20px;}
 .media-crop-stage .cms-crop > img {max-width:100%;width:auto;height:auto;}
 .media-crop-size {flex:none;margin:0;min-height:20px;line-height:20px;font-variant-numeric:tabular-nums;}
+
+/* --- Renaming (the pencil next to names in the lists) --- */
+.media-rename-pencil,.media-rename-save,.media-rename-cancel {display:inline-flex;flex:none;align-items:center;justify-content:center;width:22px;height:22px;margin:0;padding:0;border:0;border-radius:4px;background:none;color:inherit;line-height:1;vertical-align:middle;cursor:pointer;}
+/* Above the name link's cover of the tile */
+.media-rename-pencil,.media-rename-form {position:relative;z-index:2;}
+.media-rename-pencil {opacity:0.55;}
+.media-rename-pencil:hover,.media-rename-pencil:focus-visible,.media-rename-save:hover,.media-rename-cancel:hover {opacity:1;background:rgba(128, 128, 128, 0.2);}
+.media-rename-pencil[hidden],.media-rename-label[hidden] {display:none;}
+.media-rename-icon {display:block;}
+.media-rename-form {display:inline-flex;align-items:center;gap:2px;max-width:100%;vertical-align:middle;}
+.media-rename-form.is-busy {opacity:0.6;}
+.media-rename-input {flex:1 1 auto;width:12em;min-width:0;height:24px;margin:0;padding:0 4px;box-sizing:border-box;font-size:13px;line-height:22px;}
+.media-rename-extension {flex:none;font-size:12px;opacity:0.75;}
+/* Tiles: the name (clamped as before) and the pencil side by side, the field across the tile */
+:is(.small, .imgPreview).media-rename {display:flex;align-items:center;justify-content:center;gap:2px;}
+:is(.small, .imgPreview).media-rename > .media-rename-label {min-width:0;overflow:hidden;}
+.imgOutline .media-rename-form {display:flex;width:100%;}
+.imgOutline .media-rename-input {width:auto;}
+td.media-rename .media-rename-pencil {margin-inline-start:4px;}
+/* Image tiles: their name is a bar over the tile's foot (Isis, Prothero), which the pencil and the field sit in */
+.imgPreview.media-rename > .media-rename-pencil {position:absolute;bottom:2px;inset-inline-end:3px;z-index:2;}
+.manager:not(.media-picker) > .imgOutline .imgPreview.media-rename a {padding-inline-end:28px;}
+.imgOutline > .imgPreview.media-rename > .media-rename-form {position:absolute;bottom:0;left:0;right:0;z-index:2;box-sizing:border-box;min-height:26px;padding:1px 2px;background:var(--c-card, #fff);}

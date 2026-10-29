@@ -1449,3 +1449,227 @@ function jMediaRefreshImgpathTip(tip, els)
 		start();
 	}
 })();
+
+/* --- Renaming (the pencil next to each name in the Media Manager's lists) --- */
+/*
+ * Runs in the list's frame. Every item with a checkbox (its value is the item's name) gets a pencil after its name; the
+ * pencil turns the name into a field (a file's extension stays, shown after it) with save and cancel buttons, Enter and
+ * Escape. Saved through com_media's rename task, then the list reloads; a renamed folder is renamed in the folder tree too.
+ */
+(() => {
+	'use strict';
+
+	const start = () => {
+		const CMS = window.CMS;
+		const options = CMS && CMS.options.get('com_media.rename');
+
+		if (!options) {
+			return;
+		}
+
+		const text = options.text || {};
+		const top = window.parent && window.parent !== window ? window.parent : window;
+		const message = (type, value) => {
+			const joomla = top.Joomla || window.Joomla;
+
+			if (value && joomla && joomla.renderMessages) {
+				joomla.renderMessages({ [type]: [value] });
+			}
+		};
+		const button = (kind, label) => {
+			const element = document.createElement('button');
+
+			element.type = 'button';
+			element.className = 'media-rename-' + kind;
+			element.title = label;
+			element.setAttribute('aria-label', label);
+			element.innerHTML = options.icons[kind];
+
+			return element;
+		};
+
+		// The folder tree of the page around the list: the renamed folder's name, and its and its subfolders' links
+		const renameInTree = (oldPath, newPath, newName) => {
+			let doc;
+
+			try {
+				doc = top.document;
+			} catch (error) {
+				return;
+			}
+
+			doc.querySelectorAll('a.folder-url').forEach((link) => {
+				const url = new URL(link.getAttribute('href'), doc.baseURI);
+				const path = url.searchParams.get('folder') || '';
+
+				if (path !== oldPath && path.indexOf(oldPath + '/') !== 0) {
+					return;
+				}
+
+				url.searchParams.set('folder', newPath + path.slice(oldPath.length));
+				link.setAttribute('href', 'index.php' + url.search);
+
+				if (path === oldPath) {
+					const label = Array.prototype.filter.call(link.childNodes, (node) => node.nodeType === 3 && node.textContent.trim()).pop();
+
+					if (label) {
+						label.textContent = ' ' + newName + ' ';
+					}
+				}
+			});
+		};
+
+		const edit = (box, label, pencil) => {
+			const isFolder = /^cb-folder/.test(box.id);
+			const name = box.value;
+			const dot = isFolder ? -1 : name.lastIndexOf('.');
+			const base = dot > 0 ? name.slice(0, dot) : name;
+			const extension = dot > 0 ? name.slice(dot) : '';
+			const form = document.createElement('span');
+			const input = document.createElement('input');
+			const save = button('save', text.save);
+			const cancel = button('cancel', text.cancel);
+			let busy = false;
+
+			form.className = 'media-rename-form';
+			input.type = 'text';
+			input.className = 'media-rename-input';
+			input.value = base;
+			input.setAttribute('aria-label', text.name + ': ' + name);
+			input.spellcheck = false;
+			form.appendChild(input);
+
+			if (extension) {
+				const suffix = document.createElement('span');
+
+				suffix.className = 'media-rename-extension';
+				suffix.textContent = extension;
+				form.appendChild(suffix);
+			}
+
+			form.appendChild(save);
+			form.appendChild(cancel);
+			label.hidden = true;
+			pencil.hidden = true;
+			label.parentNode.insertBefore(form, pencil);
+			input.focus();
+			input.select();
+
+			const close = () => {
+				form.remove();
+				label.hidden = false;
+				pencil.hidden = false;
+				pencil.focus();
+			};
+
+			const submit = () => {
+				const wanted = input.value.trim();
+
+				if (busy) {
+					return;
+				}
+
+				if (!wanted || wanted === base) {
+					close();
+
+					return;
+				}
+
+				const data = new FormData();
+
+				data.append(CMS.options.get('csrf.token', ''), '1');
+				data.append('folder', options.folder || '');
+				data.append('name', name);
+				data.append('type', isFolder ? 'folder' : 'file');
+				data.append('newname', wanted);
+
+				busy = true;
+				form.classList.add('is-busy');
+				[input, save, cancel].forEach((element) => {
+					element.disabled = true;
+				});
+
+				fetch(options.url, { method: 'POST', body: data, credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+					.then((response) => response.json())
+					.then((answer) => {
+						if (!answer || answer.status !== '1') {
+							throw new Error(answer && answer.message ? answer.message : '');
+						}
+
+						if (!answer.message) {
+							close();
+
+							return;
+						}
+
+						if (isFolder) {
+							const parent = options.folder ? options.folder + '/' : '';
+
+							renameInTree(parent + name, parent + answer.name, answer.name);
+						}
+
+						message('message', answer.message);
+						window.location.reload();
+					})
+					.catch((error) => {
+						busy = false;
+						form.classList.remove('is-busy');
+						[input, save, cancel].forEach((element) => {
+							element.disabled = false;
+						});
+						message('error', error && error.message && !(error instanceof SyntaxError) ? error.message : (text.failed || '').replace('%s', name));
+						input.focus();
+					});
+			};
+
+			input.addEventListener('keydown', (event) => {
+				if (event.key === 'Enter') {
+					event.preventDefault();
+					submit();
+				} else if (event.key === 'Escape') {
+					event.preventDefault();
+					close();
+				}
+			});
+			save.addEventListener('click', submit);
+			cancel.addEventListener('click', close);
+
+			// Clicks in the field don't reach the tile (which opens the file) or select it
+			form.addEventListener('click', (event) => event.stopPropagation());
+		};
+
+		document.querySelectorAll('input[name="rm[]"]').forEach((box) => {
+			const item = box.closest('li.imgOutline, tr');
+			const place = item ? item.querySelector('td.description') || item.querySelector('.imgPreview') || item.querySelector('.small') : null;
+
+			if (!place || place.querySelector('.media-rename-pencil')) {
+				return;
+			}
+
+			// The name as it was, kept whole (links, text), hidden while editing
+			const label = document.createElement('span');
+			const pencil = button('pencil', text.rename);
+
+			label.className = 'media-rename-label';
+
+			while (place.firstChild) {
+				label.appendChild(place.firstChild);
+			}
+
+			place.classList.add('media-rename');
+			place.appendChild(label);
+			place.appendChild(pencil);
+			pencil.addEventListener('click', (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				edit(box, label, pencil);
+			});
+		});
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', start);
+	} else {
+		start();
+	}
+})();

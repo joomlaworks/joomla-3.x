@@ -385,4 +385,86 @@ class MediaControllerFile extends JControllerLegacy
             'height'  => $height,
         ));
     }
+
+    /**
+     * Renames a file or a folder of the Media Manager's list (the pencil next to its name): posted are the list's folder,
+     * the item's name, its type (file or folder) and the new name, made safe by MediaHelper::safeFileName() (a file keeps its
+     * extension). Never over another file or folder; links to it in content aren't changed.
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    public function rename()
+    {
+        $user  = JFactory::getUser();
+        $error = function ($key, $name = '') {
+            $message = $name !== '' ? JText::sprintf($key, $name) : str_replace(' %s', '', JText::_($key));
+
+            echo json_encode(array('status' => '0', 'message' => $message, 'error' => $message));
+        };
+
+        if (!JSession::checkToken('post')) {
+            $error('JINVALID_TOKEN');
+
+            return;
+        }
+
+        if (!$user->authorise('core.create', 'com_media') || !$user->authorise('core.delete', 'com_media')) {
+            $error('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN');
+
+            return;
+        }
+
+        $isFolder = $this->input->post->getCmd('type') === 'folder';
+        $folder   = (string) $this->input->post->get('folder', '', 'path');
+        $name     = (string) $this->input->post->get('name', '', 'string');
+        $base     = realpath(COM_MEDIA_BASE);
+        $path     = realpath(JPath::clean(COM_MEDIA_BASE . '/' . ($folder !== '' ? $folder . '/' : '') . $name));
+
+        // An item of the media folder (never the folder itself), named as the list names it
+        if ($name === '' || $name !== basename($name) || !$base || !$path || strpos($path, $base . DIRECTORY_SEPARATOR) !== 0
+            || ($isFolder ? !is_dir($path) : !is_file($path))) {
+            $error('COM_MEDIA_ERROR_UNABLE_TO_RENAME', $name);
+
+            return;
+        }
+
+        // Cleaned as uploads' names are; a file keeps its extension
+        $mediaHelper = new JHelperMedia();
+        $extension   = $isFolder ? '' : pathinfo($path, PATHINFO_EXTENSION);
+        $wanted      = $mediaHelper->safeFileName((string) $this->input->post->get('newname', '', 'string'));
+        $newName   = $wanted . ($extension !== '' ? '.' . $extension : '');
+
+        if (!preg_match('/[a-zA-Z0-9]/', $wanted)) {
+            $error('COM_MEDIA_ERROR_RENAME_NAME');
+
+            return;
+        }
+
+        if ($newName === basename($path)) {
+            echo json_encode(array('status' => '1', 'message' => '', 'name' => $newName));
+
+            return;
+        }
+
+        $target = dirname($path) . DIRECTORY_SEPARATOR . $newName;
+
+        // Another item of that name (also one differing in case only, on file systems which don't tell them apart)
+        if (file_exists($target) && realpath($target) !== $path) {
+            $error('COM_MEDIA_ERROR_RENAME_EXISTS', $newName);
+
+            return;
+        }
+
+        if (!@rename($path, $target)) {
+            $error('COM_MEDIA_ERROR_UNABLE_TO_RENAME', basename($path));
+
+            return;
+        }
+
+        $message = JText::sprintf('COM_MEDIA_RENAMED', basename($path), $newName);
+
+        echo json_encode(array('status' => '1', 'message' => $message, 'name' => $newName));
+    }
 }

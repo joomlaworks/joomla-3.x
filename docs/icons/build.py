@@ -18,9 +18,9 @@ FOLDERS = {
         'calendar3', 'chevron-left', 'chevron-right', 'envelope', 'file-earmark-plus', 'info-circle-fill', 'lock-fill', 'pencil-square',
         'printer', 'rss-fill', 'star', 'star-fill', 'translate', 'x-lg',
     ],
-    # The Media Manager's file types (administrator/components/com_media/models/list.php)
+    # The Media Manager's file types (administrator/components/com_media/models/list.php), and renaming in its lists
     'media/com_media/images/icons': [
-        'file-earmark', 'file-earmark-code', 'file-earmark-excel', 'file-earmark-image', 'file-earmark-music',
+        'check-lg', 'pencil', 'x-lg', 'file-earmark', 'file-earmark-code', 'file-earmark-excel', 'file-earmark-image', 'file-earmark-music',
         'file-earmark-pdf', 'file-earmark-play', 'file-earmark-ppt', 'file-earmark-richtext', 'file-earmark-spreadsheet',
         'file-earmark-text', 'file-earmark-word', 'file-earmark-zip',
     ],

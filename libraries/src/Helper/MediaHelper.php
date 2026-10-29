@@ -12,6 +12,7 @@ namespace Joomla\CMS\Helper;
 defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\String\PunycodeHelper;
 
 /**
  * Media helper class
@@ -727,6 +728,33 @@ class MediaHelper
         }
 
         return $candidate;
+    }
+
+    /**
+     * A file or folder name (without its extension) made safe for addresses (renaming in the Media Manager): words with
+     * international letters in punycode (Café becomes xn--caf-dma), each space an underscore, nothing but letters, digits,
+     * hyphens and underscores. Each word is converted on its own, as the punycode converter refuses a text with spaces.
+     *
+     * @param   string  $name  The name
+     *
+     * @return  string  Possibly empty
+     *
+     * @since   3.18.0
+     */
+    public function safeFileName($name)
+    {
+        $parts = preg_split('/([\s_])/u', (string) $name, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) ?: array();
+
+        foreach ($parts as &$part) {
+            if (preg_match('/^[\s_]$/u', $part)) {
+                $part = '_';
+            } elseif (preg_match('/[^\x00-\x7F]/', $part)) {
+                $encoded = PunycodeHelper::toPunycode($part);
+                $part    = is_string($encoded) && $encoded !== '' ? $encoded : $part;
+            }
+        }
+
+        return preg_replace('/[^a-zA-Z0-9_\-]/', '', implode('', $parts));
     }
 
     /**

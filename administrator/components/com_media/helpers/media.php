@@ -261,6 +261,48 @@ abstract class MediaHelper
     }
 
     /**
+     * Renaming in the Media Manager's list (media.js adds a pencil next to the name of every item with a checkbox), for
+     * users who may upload and delete
+     *
+     * @param   string  $folder  The folder shown, relative to the media folder
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    public static function renaming($folder)
+    {
+        $user = JFactory::getUser();
+
+        if (!$user->authorise('core.create', 'com_media') || !$user->authorise('core.delete', 'com_media')) {
+            return;
+        }
+
+        $icon = function ($name) {
+            return JHtml::_('icons.svg', $name, '', array('path' => 'media/com_media/images/icons', 'size' => 14, 'class' => 'media-rename-icon'));
+        };
+
+        JHtml::_('behavior.core');
+        JFactory::getDocument()->addScriptOptions(
+            'com_media.rename',
+            array(
+                'url'    => JUri::base(true) . '/index.php?option=com_media&task=file.rename&format=json',
+                'folder' => (string) $folder,
+                'icons'  => array('pencil' => $icon('pencil'), 'save' => $icon('check-lg'), 'cancel' => $icon('x-lg')),
+                'text'   => array(
+                    'rename' => JText::_('COM_MEDIA_RENAME_TIP'),
+                    'name'   => JText::_('COM_MEDIA_RENAME_NAME'),
+                    'save'   => JText::_('COM_MEDIA_RENAME_SAVE'),
+                    'cancel' => JText::_('JCANCEL'),
+                    'failed' => JText::_('COM_MEDIA_ERROR_UNABLE_TO_RENAME'),
+                ),
+            )
+        );
+        JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
+        JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));
+    }
+
+    /**
      * A file type's icon (media/com_media/images/icons), drawn in the text colour
      *
      * @param   string   $icon   The icon's name (the list model's $file->icon)
