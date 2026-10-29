@@ -4721,6 +4721,10 @@ class JoomlaInstallerScript
             '/templates/system/images/j_button2_readmore.png',
             '/templates/system/images/j_button2_right.png',
             '/templates/system/images/selector-arrow.png',
+            // Jcrop, replaced by global.js' CMS.cropper (the template editor's image tool)
+            '/media/system/js/jquery.Jcrop.js',
+            '/media/system/js/jquery.Jcrop.min.js',
+            '/media/system/css/jquery.Jcrop.min.css',
             // Bootstrap Tooltip Extended (corner placements of Bootstrap's tooltip; the CMS's tooltips keep inside the window)
             '/media/system/js/bootstrap-tooltip-extended.js',
             '/media/system/js/bootstrap-tooltip-extended.min.js',

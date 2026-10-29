@@ -2788,6 +2788,231 @@
 		window.jSelectUser = (link) => CMS.userField.select(link);
 	}
 
+	/* --- Cropping: selecting an area of an image (CMS.cropper; the template editor's image tool, what Jcrop was) --- */
+
+	CMS.cropper = {
+		/**
+		 * Lets an area of an image be selected: drawn by dragging, moved, resized from its corners and edges, nudged
+		 * with the arrow keys (Shift: 10 pixels), cleared with Escape or a click outside it. Coordinates are in the
+		 * image's own pixels (options.trueSize, as the image may be shown smaller), as Jcrop gave them.
+		 *
+		 * @param  {HTMLImageElement}  image
+		 * @param  {Object}            options  trueSize [width, height]; onChange(c), onSelect(c), onRelease(); c is
+		 *                                      {x, y, x2, y2, w, h}
+		 *
+		 * @return  {Object}  release(), setSelect([x, y, x2, y2]), getSelection(), destroy()
+		 */
+		attach(image, options) {
+			options = options || {};
+
+			const wrapper = document.createElement('div');
+			const box = document.createElement('div');
+			const directions = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+			let area = null;
+			let drag = null;
+
+			wrapper.className = 'cms-crop';
+			wrapper.tabIndex = 0;
+			box.className = 'cms-crop-selection';
+			box.hidden = true;
+			box.innerHTML = directions.map((dir) => '<span class="cms-crop-handle" data-dir="' + dir + '"></span>').join('');
+			image.parentNode.insertBefore(wrapper, image);
+			wrapper.appendChild(image);
+			wrapper.appendChild(box);
+			image.draggable = false;
+
+			// The image's own size, and the scale of what's shown
+			const size = () => ({
+				width: (options.trueSize && options.trueSize[0]) || image.naturalWidth || image.clientWidth,
+				height: (options.trueSize && options.trueSize[1]) || image.naturalHeight || image.clientHeight,
+			});
+			const scale = () => size().width / (image.clientWidth || 1);
+
+			const coords = () => {
+				const s = scale();
+				const c = {
+					x: Math.round(area.x * s), y: Math.round(area.y * s), x2: Math.round((area.x + area.w) * s), y2: Math.round((area.y + area.h) * s),
+				};
+
+				c.w = c.x2 - c.x;
+				c.h = c.y2 - c.y;
+
+				return c;
+			};
+
+			const draw = () => {
+				box.hidden = !area;
+
+				if (area) {
+					Object.assign(box.style, { left: area.x + 'px', top: area.y + 'px', width: area.w + 'px', height: area.h + 'px' });
+				}
+
+				wrapper.classList.toggle('has-selection', !!area);
+			};
+
+			const release = () => {
+				area = null;
+				draw();
+
+				if (options.onRelease) {
+					options.onRelease.call(api);
+				}
+			};
+
+			const changed = (selected) => {
+				draw();
+
+				const callback = selected ? options.onSelect : options.onChange;
+
+				if (callback) {
+					callback.call(api, coords());
+				}
+			};
+
+			// A point of the pointer in the shown image, inside it
+			const point = (event) => {
+				const rect = image.getBoundingClientRect();
+
+				return {
+					x: Math.max(0, Math.min(rect.width, event.clientX - rect.left)),
+					y: Math.max(0, Math.min(rect.height, event.clientY - rect.top)),
+				};
+			};
+
+			wrapper.addEventListener('pointerdown', (event) => {
+				if (event.button !== 0) {
+					return;
+				}
+
+				const p = point(event);
+				const handle = event.target.closest('.cms-crop-handle');
+
+				event.preventDefault();
+				// Focused for the keys (Escape, arrows), without the ring keyboard focus shows
+				wrapper.focus({ preventScroll: true, focusVisible: false });
+				wrapper.setPointerCapture(event.pointerId);
+
+				if (handle && area) {
+					drag = { mode: 'resize', dir: handle.getAttribute('data-dir'), start: p, from: Object.assign({}, area) };
+				} else if (area && event.target.closest('.cms-crop-selection')) {
+					drag = { mode: 'move', start: p, from: Object.assign({}, area) };
+				} else {
+					drag = { mode: 'draw', start: p, from: null };
+				}
+			});
+
+			wrapper.addEventListener('pointermove', (event) => {
+				if (!drag) {
+					return;
+				}
+
+				const p = point(event);
+				const width = image.clientWidth;
+				const height = image.clientHeight;
+
+				if (drag.mode === 'draw') {
+					area = { x: Math.min(drag.start.x, p.x), y: Math.min(drag.start.y, p.y), w: Math.abs(p.x - drag.start.x), h: Math.abs(p.y - drag.start.y) };
+				} else if (drag.mode === 'move') {
+					area.x = Math.max(0, Math.min(width - drag.from.w, drag.from.x + p.x - drag.start.x));
+					area.y = Math.max(0, Math.min(height - drag.from.h, drag.from.y + p.y - drag.start.y));
+				} else {
+					// Resizing: the edges the handle carries follow the pointer, the others stay
+					let left = drag.from.x;
+					let top = drag.from.y;
+					let right = drag.from.x + drag.from.w;
+					let bottom = drag.from.y + drag.from.h;
+
+					if (drag.dir.indexOf('w') !== -1) {
+						left = p.x;
+					}
+
+					if (drag.dir.indexOf('e') !== -1) {
+						right = p.x;
+					}
+
+					if (drag.dir.indexOf('n') !== -1) {
+						top = p.y;
+					}
+
+					if (drag.dir.indexOf('s') !== -1) {
+						bottom = p.y;
+					}
+
+					area = { x: Math.min(left, right), y: Math.min(top, bottom), w: Math.abs(right - left), h: Math.abs(bottom - top) };
+				}
+
+				changed(false);
+			});
+
+			const end = () => {
+				if (!drag) {
+					return;
+				}
+
+				const mode = drag.mode;
+
+				drag = null;
+
+				// A click without dragging clears the selection
+				if (!area || area.w < 3 || area.h < 3) {
+					if (mode !== 'move') {
+						release();
+					}
+
+					return;
+				}
+
+				changed(true);
+			};
+
+			wrapper.addEventListener('pointerup', end);
+			wrapper.addEventListener('pointercancel', end);
+
+			wrapper.addEventListener('keydown', (event) => {
+				if (event.key === 'Escape' && area) {
+					event.preventDefault();
+					release();
+
+					return;
+				}
+
+				const moves = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+
+				if (!area || !moves[event.key]) {
+					return;
+				}
+
+				const step = event.shiftKey ? 10 : 1;
+
+				event.preventDefault();
+				area.x = Math.max(0, Math.min(image.clientWidth - area.w, area.x + moves[event.key][0] * step));
+				area.y = Math.max(0, Math.min(image.clientHeight - area.h, area.y + moves[event.key][1] * step));
+				changed(true);
+			});
+
+			const api = {
+				release,
+
+				// Selects an area given in the image's own pixels
+				setSelect(c) {
+					const s = scale();
+
+					area = { x: c[0] / s, y: c[1] / s, w: (c[2] - c[0]) / s, h: (c[3] - c[1]) / s };
+					changed(true);
+				},
+
+				getSelection: () => (area ? coords() : null),
+
+				destroy() {
+					wrapper.parentNode.insertBefore(image, wrapper);
+					wrapper.remove();
+				},
+			};
+
+			return api;
+		},
+	};
+
 	/* --- The colour field (layout joomla.form.field.color: the browser's colour picker, the value as text, a Clear button) --- */
 
 	CMS.colorField = {

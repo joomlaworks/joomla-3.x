@@ -281,22 +281,6 @@
             "seriesLatest": ""
         },
         {
-            "name": "Jcrop",
-            "version": "2.0.4",
-            "date": "2015.11.18",
-            "dateSource": "GitHub tag v2.0.4 (commit date)",
-            "license": "MIT",
-            "url": "https://github.com/tapmodo/Jcrop",
-            "path": "media/system/js/jquery.Jcrop.js",
-            "note": "",
-            "latest": "3.0.1",
-            "isLatest": false,
-            "checked": "2026.10.27",
-            "use": "core",
-            "series": "",
-            "seriesLatest": ""
-        },
-        {
             "name": "jQuery",
             "version": "1.12.4",
             "date": "2016.05.20",

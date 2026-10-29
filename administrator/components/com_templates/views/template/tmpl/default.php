@@ -25,9 +25,9 @@ if (!JFactory::getUser()->authorise('core.admin')) {
     JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
 }
 
+// Images: an area to crop is selected with global.js' CMS.cropper (Jcrop until 3.18)
 if ($this->type == 'image') {
-    JHtml::_('script', 'system/jquery.Jcrop.min.js', array('version' => 'auto', 'relative' => true));
-    JHtml::_('stylesheet', 'system/jquery.Jcrop.min.css', array('version' => 'auto', 'relative' => true));
+    JHtml::_('behavior.cms');
 }
 
 JFactory::getDocument()->addScriptDeclaration("
@@ -107,34 +107,20 @@ jQuery(document).ready(function($){
 });");
 
 if ($this->type == 'image') {
+    // The selected area, in the image's own pixels, goes to the form's x, y, w and h (only those: clearing every input
+    // of the form also emptied its token)
     JFactory::getDocument()->addScriptDeclaration("
-		jQuery(document).ready(function($) {
-			var jcrop_api;
+		CMS.ready(() => {
+			const fields = ['x', 'y', 'w', 'h'].map((name) => document.getElementById(name));
+			const showCoords = (c) => fields.forEach((field) => { field.value = c[field.id]; });
+			const clearCoords = () => fields.forEach((field) => { field.value = ''; });
 
-			// Configuration for image cropping
-			$('#image-crop').Jcrop({
-				onChange:   showCoords,
-				onSelect:   showCoords,
-				onRelease:  clearCoords,
-				trueSize:   [" . $this->image['width'] . ',' . $this->image['height'] . "]
-			},function(){
-				jcrop_api = this;
+			CMS.cropper.attach(document.getElementById('image-crop'), {
+				onChange: showCoords,
+				onSelect: showCoords,
+				onRelease: clearCoords,
+				trueSize: [" . (int) $this->image['width'] . ',' . (int) $this->image['height'] . "]
 			});
-
-			// Function for calculating the crop coordinates
-			function showCoords(c)
-			{
-				$('#x').val(c.x);
-				$('#y').val(c.y);
-				$('#w').val(c.w);
-				$('#h').val(c.h);
-			};
-
-			// Function for clearing the coordinates
-			function clearCoords()
-			{
-				$('#adminForm input').val('');
-			};
 		});");
 }
 
@@ -421,7 +407,7 @@ if ($this->type == 'font') {
 					<?php foreach ($value as $layout) : ?>
 						<li>
 							<?php
-                            $overrideLinkUrl = 'index.php?option=com_templates&view=template&task=template.overrides&folder=' . $layout->path
+						    $overrideLinkUrl = 'index.php?option=com_templates&view=template&task=template.overrides&folder=' . $layout->path
 						        . '&id=' . $input->getInt('id') . '&file=' . $this->file . '&' . $token;
 					    ?>
 							<a href="<?php echo JRoute::_($overrideLinkUrl); ?>">
