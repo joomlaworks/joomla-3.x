@@ -60,7 +60,7 @@ Summary of changes:
 - System Information has a Third-party Software tab: the libraries, frameworks, editors, fonts and PHP libraries included, with version, date, licence and home page; Folder Permissions is sorted alphabetically (folders inside the site without the server's full path) and PHP Settings sits next to PHP Information
 - Media Manager: drag and drop files onto the list to upload them into the folder shown, with progress for each (also in the image picker, which selects a dropped image), using the Media Manager's optimisation settings
 - Media Manager: crop an image (free, or 21:9, 16:9, 14:9, 4:3, 3:2 or 1:1) and save it as a new file or over the original
-- Media Manager: rename files and folders in place, from a pencil next to their name; larger thumbnails, with buttons to make them smaller or larger
+- Media Manager: rename files and folders in place, from a pencil next to their name; larger thumbnails, with buttons to make them smaller or larger; images preview in a large window
 - The debug console opens from a button at the bottom right, showing the page's time, memory, queries and errors, as a panel with tabs instead of a block at the end of every page; redesigned, light and dark
 - Prothero, a new administrator template next to Isis: Isis' markup (so extensions made for Isis work with it), with a minimal black and white look in the style of shadcn/ui and Vercel, light and dark colour schemes (automatic by default), a choice of colours for the top menu bar and a matching login page. It's the default administrator template of new sites; existing sites keep Isis and can switch in System > Templates
 - PostgreSQL understands MySQL-style backtick-quoted names in queries, so many third-party extensions' SQL works on it unchanged

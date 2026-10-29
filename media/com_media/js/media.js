@@ -1519,7 +1519,7 @@ function jMediaRefreshImgpathTip(tip, els)
 			});
 		};
 
-		const edit = (box, label, pencil) => {
+		const edit = (box, label, pencil, place) => {
 			const isFolder = /^cb-folder/.test(box.id);
 			const name = box.value;
 			const dot = isFolder ? -1 : name.lastIndexOf('.');
@@ -1556,7 +1556,7 @@ function jMediaRefreshImgpathTip(tip, els)
 			form.appendChild(actions);
 			label.hidden = true;
 			pencil.hidden = true;
-			label.parentNode.insertBefore(form, pencil);
+			place.appendChild(form);
 			input.focus();
 			input.select();
 
@@ -1647,7 +1647,7 @@ function jMediaRefreshImgpathTip(tip, els)
 			const item = box.closest('li.imgOutline, tr');
 			const place = item ? item.querySelector('td.description') || item.querySelector('.imgPreview') || item.querySelector('.small') : null;
 
-			if (!place || place.querySelector('.media-rename-pencil')) {
+			if (!place || place.classList.contains('media-rename')) {
 				return;
 			}
 
@@ -1663,11 +1663,19 @@ function jMediaRefreshImgpathTip(tip, els)
 
 			place.classList.add('media-rename');
 			place.appendChild(label);
-			place.appendChild(pencil);
+
+			// Tiles: the pencil above the name, where saving and cancelling then are (folders' and documents' name rows
+			// are in the tile's column, image tiles' name bar holds it); in the details view after the name
+			if (place.classList.contains('small') && !place.classList.contains('imgPreview') && place.parentNode === item) {
+				item.insertBefore(pencil, place);
+			} else {
+				place.appendChild(pencil);
+			}
+
 			pencil.addEventListener('click', (event) => {
 				event.preventDefault();
 				event.stopPropagation();
-				edit(box, label, pencil);
+				edit(box, label, pencil, place);
 			});
 		});
 	};

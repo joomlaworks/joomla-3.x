@@ -30,9 +30,11 @@ JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relativ
 JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));
 JHtml::_('behavior.styles');
 
+// The CMS's modal: image previews (the list's links), cropping
+JHtml::_('behavior.cms');
+
 // The Crop button's window (media.js, global.js' cropper)
 if ($user->authorise('core.create', 'com_media') && $user->authorise('core.delete', 'com_media')) {
-    JHtml::_('behavior.cms');
     JFactory::getDocument()->addScriptOptions('com_media.crop', array(
         'url'  => JUri::base(true) . '/index.php?option=com_media&task=file.crop&format=json',
         'base' => COM_MEDIA_BASEURL,
@@ -124,17 +126,6 @@ if ($user->authorise('core.create', 'com_media') && $user->authorise('core.delet
 		</form>
 	</div>
 <?php // Pre render all the bootstrap modals on the parent window
-
-echo JHtml::_(
-    'bootstrap.renderModal',
-    'imagePreview',
-    array(
-        'title'  => JText::_('COM_MEDIA_PREVIEW'),
-        'footer' => '<button type="button" class="btn" data-dismiss="modal">'
-            . JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>',
-    ),
-    '<div id="image" style="text-align:center;"><img id="imagePreviewSrc" src="../media/system/images/alpha.png" alt="preview" style="max-width:100%; max-height:300px;"/></div>'
-);
 
 echo JHtml::_(
     'bootstrap.renderModal',
