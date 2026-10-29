@@ -1453,7 +1453,7 @@ function jMediaRefreshImgpathTip(tip, els)
 /* --- Renaming (the pencil next to each name in the Media Manager's lists) --- */
 /*
  * Runs in the list's frame. Every item with a checkbox (its value is the item's name) gets a pencil after its name; the
- * pencil turns the name into a field (a file's extension stays, shown after it) with save and cancel buttons, Enter and
+ * pencil turns the name into a field (a file's extension stays and isn't shown) with save and cancel buttons, Enter and
  * Escape. Saved through com_media's rename task, then the list reloads; a renamed folder is renamed in the folder tree too.
  */
 (() => {
@@ -1523,8 +1523,8 @@ function jMediaRefreshImgpathTip(tip, els)
 			const isFolder = /^cb-folder/.test(box.id);
 			const name = box.value;
 			const dot = isFolder ? -1 : name.lastIndexOf('.');
+			// The extension stays as it is (the server keeps it), so the field holds the name before it
 			const base = dot > 0 ? name.slice(0, dot) : name;
-			const extension = dot > 0 ? name.slice(dot) : '';
 			const form = document.createElement('span');
 			const input = document.createElement('input');
 			const save = button('save', text.save);
@@ -1538,14 +1538,6 @@ function jMediaRefreshImgpathTip(tip, els)
 			input.setAttribute('aria-label', text.name + ': ' + name);
 			input.spellcheck = false;
 			form.appendChild(input);
-
-			if (extension) {
-				const suffix = document.createElement('span');
-
-				suffix.className = 'media-rename-extension';
-				suffix.textContent = extension;
-				form.appendChild(suffix);
-			}
 
 			// In tiles they sit above the name, so the field has the tile's width
 			const actions = document.createElement('span');

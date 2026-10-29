@@ -162,7 +162,6 @@
 .media-rename-form {display:inline-flex;align-items:center;gap:2px;max-width:100%;vertical-align:middle;}
 .media-rename-form.is-busy {opacity:0.6;}
 .media-rename-input {flex:1 1 auto;width:12em;min-width:0;height:24px;margin:0;padding:0 4px;box-sizing:border-box;font-size:13px;line-height:22px;}
-.media-rename-extension {flex:none;font-size:12px;opacity:0.75;}
 /* Tiles: the name (clamped as before) and the pencil side by side, the field across the tile */
 :is(.small, .imgPreview).media-rename {display:flex;align-items:center;justify-content:center;gap:2px;}
 :is(.small, .imgPreview).media-rename > .media-rename-label {min-width:0;overflow:hidden;}
