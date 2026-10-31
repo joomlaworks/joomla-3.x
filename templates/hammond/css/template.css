@@ -500,6 +500,14 @@ body.megaOpen {overflow:hidden;}
 .shareLinks a:hover,
 .shareLinks button:hover {background:var(--c-ink);border-color:var(--c-ink);color:var(--c-white);}
 .shareLinks .icon {width:17px;height:17px;}
+/* Edit links (users who may edit the article): small in lists, a pill beside the byline, under an info page's title */
+.editLink {position:relative;z-index:2;display:inline-flex;align-items:center;gap:5px;font-family:var(--fh);font-weight:700;color:inherit;}
+.editLink .icon {width:1.1em;height:1.1em;}
+a.editLink:hover {color:var(--c-accent);}
+.editLink.isLocked {cursor:help;}
+.articleByline .editLink {padding:8px 14px;border:1px solid var(--c-line-d);border-radius:999px;font-size:.82rem;line-height:1.3;color:var(--c-ink);}
+.articleByline a.editLink:hover {border-color:var(--c-ink);background:var(--c-ink);color:var(--c-white);}
+.pageView > .editLink {display:flex;width:max-content;margin:-28px auto 32px;font-size:.85rem;color:var(--c-muted);}
 .copyLink.copied {background:var(--c-world);border-color:var(--c-world);color:var(--c-white);}
 .articleImage {margin:0 0 32px;}
 .articleImage img {display:block;width:100%;border-radius:var(--radius);aspect-ratio:16/9;object-fit:cover;}
@@ -575,6 +583,9 @@ h3.page-header {margin-bottom:12px;padding-bottom:8px;}
 .clearfix::after {content:"";display:table;clear:both;}
 .clr {clear:both;}
 .hide {display:none;}
+.show {display:block;}
+/* Bootstrap's, which extensions use to hide elements (e.g. a loading layer over a whole page) */
+.hidden {display:none;visibility:hidden;}
 .center,
 .text-center {text-align:center;}
 span[class^="icon-"]:empty,
@@ -812,6 +823,9 @@ dl.stats-module dd {margin:0;overflow-wrap:anywhere;}
     .dl-horizontal dd {margin-bottom:10px;}
     .pull-left,
     .pull-right {float:none;margin:0 0 12px;}
+    /* Wide stock tables (e.g. Featured Contacts' seven columns) scroll sideways instead of widening the page */
+    .table,
+    table.category {display:block;max-width:100%;overflow-x:auto;}
 }
 
 
@@ -859,7 +873,7 @@ dl.stats-module dd {margin:0;overflow-wrap:anywhere;}
     .grid.frontpage .moduleContainer[class*=grid-row-span-] {grid-row-end:span 1;}
     .layout-opinion {grid-template-columns:repeat(2, 1fr);gap:28px 0;}
     .layout-opinion .item:nth-child(3) {padding-left:0;border-left:0;}
-    .contentLayout.withSidebar {grid-template-columns:1fr;}
+    .contentLayout.withSidebar {grid-template-columns:minmax(0, 1fr);}
     .sidebarSticky {position:static;}
     .mainNav > .container ul.menu {justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;}
     .megaMenu .container {grid-template-columns:1fr;}

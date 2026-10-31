@@ -51,6 +51,7 @@ if (RookwoodHelper::isPage()) : ?>
 		<?php endif; ?>
 		<div class="container">
 			<h1 class="pageTitle"><?php echo RookwoodHelper::e($item->title); ?></h1>
+			<?php echo RookwoodHelper::editLink($item); ?>
 			<?php echo $item->event->afterDisplayTitle; ?>
 		</div>
 	</header>
@@ -64,6 +65,7 @@ if (RookwoodHelper::isPage()) : ?>
 		<div class="articleLabels">
 			<?php echo RookwoodHelper::category((object) array('category_title' => $item->category_title)); ?>
 			<?php echo RookwoodHelper::tags($item, 3); ?>
+			<?php echo RookwoodHelper::editLink($item); ?>
 		</div>
 		<h1 class="articleTitle"><?php echo RookwoodHelper::e($item->title); ?></h1>
 		<?php echo $item->event->afterDisplayTitle; ?>

@@ -532,6 +532,40 @@ abstract class HammondHelper
     }
 
     /**
+     * A link to edit the article on the site, for users who may edit it (Joomla's own layouts show an Edit icon there), or a
+     * note while another user has it checked out. Plain markup: JHtml's icon.edit would load Bootstrap's tooltips.
+     *
+     * @param   object  $item  The article
+     *
+     * @return  string  Empty for everyone else
+     *
+     * @since   3.18.0
+     */
+    public static function editLink($item)
+    {
+        if (empty($item->id) || !isset($item->params) || !($item->params instanceof \Joomla\Registry\Registry)
+            || !$item->params->get('access-edit') || (isset($item->state) && $item->state < 0)
+            || JFactory::getApplication()->input->getBool('print')) {
+            return '';
+        }
+
+        if (!empty($item->checked_out) && (int) $item->checked_out !== (int) JFactory::getUser()->get('id')) {
+            $title = JText::_('JLIB_HTML_CHECKED_OUT') . ': ' . JFactory::getUser($item->checked_out)->name;
+
+            return '<span class="editLink isLocked" title="' . static::e($title) . '">' . static::icon('lock')
+                . '<span>' . JText::_('JLIB_HTML_CHECKED_OUT') . '</span></span>';
+        }
+
+        $slug  = $item->slug ?? ($item->id . ':' . ($item->alias ?? ''));
+        $url   = ContentHelperRoute::getArticleRoute($slug, $item->catid, $item->language ?? '*')
+            . '&task=article.edit&a_id=' . (int) $item->id . '&return=' . base64_encode((string) JUri::getInstance());
+        $title = JText::_('JGLOBAL_EDIT_TITLE') . (isset($item->state) && (int) $item->state === 0 ? ' (' . JText::_('JUNPUBLISHED') . ')' : '');
+
+        return '<a class="editLink" href="' . JRoute::_($url) . '" title="' . static::e($title) . '" rel="nofollow">' . static::icon('edit')
+            . '<span>' . JText::_('JGLOBAL_EDIT') . '</span></a>';
+    }
+
+    /**
      * The category label, linked to the category.
      *
      * @param   object  $item  The article
@@ -752,7 +786,7 @@ abstract class HammondHelper
             . '<div class="itemBody">' . static::category($item)
             . '<h' . ($lead ? 2 : 3) . ' class="itemTitle"><a href="' . $link . '">' . static::e($item->title) . '</a></h' . ($lead ? 2 : 3) . '>'
             . '<p class="itemIntroText">' . static::excerpt($item, $lead ? 260 : 170) . '</p>'
-            . '<div class="itemMeta">' . ($author !== '' ? '<span class="itemAuthor">' . static::e($author) . '</span>' : '') . static::date($item) . '</div>'
+            . '<div class="itemMeta">' . ($author !== '' ? '<span class="itemAuthor">' . static::e($author) . '</span>' : '') . static::date($item) . static::editLink($item) . '</div>'
             . '</div></article>';
     }
 

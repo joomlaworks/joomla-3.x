@@ -56,6 +56,7 @@ if (!HammondHelper::isPage()) {
 if (HammondHelper::isPage()) : ?>
 <article class="pageView">
 	<h1 class="pageTitle"><?php echo HammondHelper::e($item->title); ?></h1>
+	<?php echo HammondHelper::editLink($item); ?>
 	<div class="itemFullText"><?php echo HammondHelper::lazyImages($text, true) . $login; ?></div>
 </article>
 <?php return; endif; ?>
@@ -75,6 +76,7 @@ if (HammondHelper::isPage()) : ?>
 				<span class="bylineMeta"><?php echo HammondHelper::date($item); ?> · <?php echo JText::sprintf('TPL_HAMMOND_READING_TIME', HammondHelper::readingTime($item)); ?></span>
 			</span>
 			<?php endif; ?>
+			<?php echo HammondHelper::editLink($item); ?>
 			<ul class="shareLinks" aria-label="<?php echo JText::_('TPL_HAMMOND_SHARE'); ?>">
 				<?php foreach ($share as $network => $link) : ?>
 				<li><a href="<?php echo HammondHelper::e($link[1]); ?>"<?php echo $network !== 'mail' ? ' class="sharePopup" target="_blank" rel="noopener"' : ''; ?> aria-label="<?php echo JText::sprintf('TPL_HAMMOND_SHARE_ON', $link[0]); ?>"><?php echo HammondHelper::icon($network); ?></a></li>

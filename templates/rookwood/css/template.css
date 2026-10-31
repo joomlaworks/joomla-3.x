@@ -341,6 +341,18 @@ ul.menu.buttons {display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;ma
 .itemCategory {align-self:flex-start;border-color:var(--c-accent);color:var(--c-accent);}
 .cardBody > .itemTags,
 .cardBody > .itemCategory {position:relative;z-index:2;}
+/* Edit links (users who may edit the article): above the card's and panel's link, beside the labels, under a page's title */
+.editLink {position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;font-weight:700;color:inherit;}
+.editLink .icon {width:1.05em;height:1.05em;}
+a.editLink:hover {color:var(--c-accent);}
+.editLink.isLocked {cursor:help;}
+.articleLabels .editLink {padding:3px 11px;border:1.5px dashed var(--c-line-d);border-radius:999px;font-family:var(--fm);font-size:.8rem;font-weight:600;line-height:1.5;color:var(--c-text);}
+.articleLabels a.editLink:hover {border-color:var(--c-accent);color:var(--c-accent);}
+.panelBody > .editLink {justify-self:start;color:rgba(255,255,255,.88);}
+.panel:nth-child(even) .panelBody > .editLink {justify-self:end;}
+.panelBody > a.editLink:hover {color:var(--c-lime);}
+.pageHero .editLink {margin-top:20px;font-size:.95rem;}
+.pageHero.hasImage .editLink {color:rgba(255,255,255,.9);}
 
 /* --- Lists --- */
 .listView {padding-bottom:var(--section);}
@@ -591,6 +603,9 @@ h3.page-header {margin-bottom:12px;padding-bottom:8px;}
 .clearfix::after {content:"";display:table;clear:both;}
 .clr {clear:both;}
 .hide {display:none;}
+.show {display:block;}
+/* Bootstrap's, which extensions use to hide elements (e.g. a loading layer over a whole page) */
+.hidden {display:none;visibility:hidden;}
 .center,
 .text-center {text-align:center;}
 span[class^="icon-"]:empty,
@@ -642,9 +657,38 @@ fieldset.checkboxes label {display:inline-flex;align-items:center;gap:6px;}
 .input-prepend .add-on {border-right:0;border-radius:var(--radius) 0 0 var(--radius);}
 .invalid {border-color:var(--c-pink)!important;}
 label.invalid {color:var(--c-pink);}
-.chzn-container {font-size:inherit;}
-.chzn-container-single .chzn-single {height:auto;padding:.65em 1em;border:2px solid var(--c-line-d);border-radius:var(--radius);background:var(--c-surface);box-shadow:none;font-size:inherit;line-height:1.5;color:inherit;}
-.chzn-container .chzn-drop {border-color:var(--c-line-d);background:var(--c-surface);}
+/* Searchable lists (Chosen): every part in the template's colours, as its own stylesheet's are for a light page */
+.chzn-container {font-size:inherit;color:var(--c-text);}
+.chzn-container-single .chzn-single {height:auto;padding:.65em 1em;border:2px solid var(--c-line-d);border-radius:var(--radius);background:var(--c-surface);box-shadow:none;font-size:inherit;line-height:1.5;color:var(--c-ink);}
+.chzn-container-single .chzn-single div {top:50%;right:6px;height:18px;transform:translateY(-50%);}
+.chzn-container-single .chzn-default,
+.chzn-container .chzn-single .group-name,
+.chzn-container .search-choice .group-name {color:var(--c-muted);}
+.chzn-container-active .chzn-single,
+.chzn-container-active .chzn-choices {border:2px solid var(--c-accent);box-shadow:none;}
+.chzn-container-active.chzn-with-drop .chzn-single {border:2px solid var(--c-line-d);background:var(--c-surface);}
+.chzn-container .chzn-drop {border:2px solid var(--c-line-d);border-top:0;background:var(--c-surface);border-radius:0 0 var(--radius) var(--radius);box-shadow:0 8px 20px rgba(0,0,0,.18);}
+.chzn-container-multi .chzn-drop {border-top:2px solid var(--c-line-d);}
+.chzn-container .chzn-search input[type="text"] {margin:4px 0;padding:.5em 2em .5em .75em;border:2px solid var(--c-line-d);border-radius:calc(var(--radius) / 2);background-color:var(--c-bg);font-family:inherit;color:var(--c-ink);}
+.chzn-container .chzn-results {margin:0;padding:0 0 6px;color:var(--c-text);}
+.chzn-container .chzn-results li {padding:7px 12px;line-height:1.35;}
+.chzn-container .chzn-results li.group-result {color:var(--c-ink);}
+.chzn-container .chzn-results li.group-option {padding-left:24px;}
+.chzn-container .chzn-results li.disabled-result,
+.chzn-container-multi .chzn-drop .result-selected {color:var(--c-muted);opacity:.65;}
+.chzn-container .chzn-results li.highlighted {background:var(--c-accent);color:var(--c-on-accent);}
+.chzn-container .chzn-results li.no-results {background:var(--c-raised);color:var(--c-muted);}
+.chzn-container-multi .chzn-choices {padding:3px 6px;border:2px solid var(--c-line-d);border-radius:var(--radius);background:var(--c-surface);}
+.chzn-container-multi .chzn-choices li.search-field input[type="text"] {height:30px;font-family:inherit;color:var(--c-muted);}
+.chzn-container-active .chzn-choices li.search-field input[type="text"] {color:var(--c-ink)!important;}
+.chzn-container-multi .chzn-choices li.search-choice {padding:4px 22px 4px 10px;border:1px solid var(--c-line-d);border-radius:999px;background:var(--c-raised);box-shadow:none;color:var(--c-ink);}
+.chzn-container-multi .chzn-choices li.search-choice .search-choice-close {top:50%;right:5px;transform:translateY(-50%);}
+.chzn-container-multi .chzn-choices li.search-choice-focus {background:var(--c-line);}
+.chzn-container-multi .chzn-choices li.search-choice-disabled {border-color:var(--c-line);background:var(--c-raised);color:var(--c-muted);}
+/* The close buttons' dark hover icon is lost on the dark theme */
+:root:not([data-theme="light"]) .chzn-container-single .chzn-single abbr:hover,
+:root:not([data-theme="light"]) .chzn-container-multi .chzn-choices li.search-choice .search-choice-close:hover,
+:root:not([data-theme="light"]) .chzn-container-multi .chzn-choices li.search-choice-focus .search-choice-close {background-image:url("../../../media/system/images/chosen/x.svg");}
 .btn-small,
 .btn-mini {padding:.45em 1em;font-size:.85rem;}
 .btn-link {padding:0;border:0;background:none;color:var(--c-ink);text-decoration:underline;box-shadow:none;}
@@ -864,6 +908,7 @@ body.contentpane {padding:24px 0;}
     .panel:nth-child(even) .panelBody {margin-left:0;text-align:left;}
     .panel:nth-child(even) .itemTags {justify-content:flex-start;}
     .panel:nth-child(even) .btn {justify-self:start;}
+    .panel:nth-child(even) .panelBody > .editLink {justify-self:start;}
     .panel .btn {display:none;}
     .postNavLink {max-width:100%;}
     .searchResult {padding-left:0;}
@@ -880,6 +925,9 @@ body.contentpane {padding:24px 0;}
     .dl-horizontal dd {grid-column:auto;}
     .pull-left,
     .pull-right {float:none;margin:0 0 12px;}
+    /* Wide stock tables (e.g. Featured Contacts' seven columns) scroll sideways instead of widening the page */
+    .table,
+    table.category {display:block;max-width:100%;overflow-x:auto;}
     .footerBottom {flex-direction:column;align-items:flex-start;}
     .copyright {flex:none;}
 }

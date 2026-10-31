@@ -42,6 +42,7 @@ FinchHelper::embedHints($text);
 if (FinchHelper::isPage()) : ?>
 <article class="pageView">
 	<h1 class="pageTitle"><?php echo FinchHelper::e($item->title); ?></h1>
+	<?php echo FinchHelper::editLink($item); ?>
 	<?php echo $item->event->beforeDisplayContent; ?>
 	<div class="postContent"><?php echo FinchHelper::lazyImages($text, true) . $login; ?></div>
 	<?php echo $item->event->afterDisplayContent; ?>
@@ -81,6 +82,7 @@ FinchHelper::preloadImage($image);
 			<span class="bylineName"><?php echo FinchHelper::e($author); ?></span>
 			<?php endif; ?>
 			<span class="bylineMeta"><?php echo FinchHelper::date($item); ?><span class="postReading"><?php echo JText::sprintf('TPL_FINCH_READING_TIME', FinchHelper::readingTime($item)); ?></span></span>
+			<?php echo FinchHelper::editLink($item); ?>
 		</div>
 	</header>
 

@@ -528,6 +528,40 @@ abstract class FinchHelper
     }
 
     /**
+     * A link to edit the article on the site, for users who may edit it (Joomla's own layouts show an Edit icon there), or a
+     * note while another user has it checked out. Plain markup: JHtml's icon.edit would load Bootstrap's tooltips.
+     *
+     * @param   object  $item  The article
+     *
+     * @return  string  Empty for everyone else
+     *
+     * @since   3.18.0
+     */
+    public static function editLink($item)
+    {
+        if (empty($item->id) || !isset($item->params) || !($item->params instanceof \Joomla\Registry\Registry)
+            || !$item->params->get('access-edit') || (isset($item->state) && $item->state < 0)
+            || JFactory::getApplication()->input->getBool('print')) {
+            return '';
+        }
+
+        if (!empty($item->checked_out) && (int) $item->checked_out !== (int) JFactory::getUser()->get('id')) {
+            $title = JText::_('JLIB_HTML_CHECKED_OUT') . ': ' . JFactory::getUser($item->checked_out)->name;
+
+            return '<span class="editLink isLocked" title="' . static::e($title) . '">' . static::icon('lock')
+                . '<span>' . JText::_('JLIB_HTML_CHECKED_OUT') . '</span></span>';
+        }
+
+        $slug  = $item->slug ?? ($item->id . ':' . ($item->alias ?? ''));
+        $url   = ContentHelperRoute::getArticleRoute($slug, $item->catid, $item->language ?? '*')
+            . '&task=article.edit&a_id=' . (int) $item->id . '&return=' . base64_encode((string) JUri::getInstance());
+        $title = JText::_('JGLOBAL_EDIT_TITLE') . (isset($item->state) && (int) $item->state === 0 ? ' (' . JText::_('JUNPUBLISHED') . ')' : '');
+
+        return '<a class="editLink" href="' . JRoute::_($url) . '" title="' . static::e($title) . '" rel="nofollow">' . static::icon('edit')
+            . '<span>' . JText::_('JGLOBAL_EDIT') . '</span></a>';
+    }
+
+    /**
      * The category, linked to its page.
      *
      * @param   object  $item  The post
@@ -795,6 +829,7 @@ abstract class FinchHelper
     {
         $link    = static::link($item);
         $minutes = isset($item->fulltext) || isset($item->text) ? JText::sprintf('TPL_FINCH_READING_TIME', static::readingTime($item)) : '';
+        $edit    = static::editLink($item);
         $h       = $lead ? 2 : 3;
 
         return '<article class="post ' . static::tone($item) . ($lead ? ' postLead' : '') . '"><div class="postInner">'
@@ -802,7 +837,7 @@ abstract class FinchHelper
             . '<div class="postBody">' . static::category($item)
             . '<h' . $h . ' class="postTitle"><a href="' . $link . '">' . static::e($item->title) . '</a></h' . $h . '>'
             . '<p class="postExcerpt">' . static::excerpt($item, $lead ? 260 : 190) . '</p>'
-            . ($minutes !== '' ? '<p class="postMeta"><span class="postReading">' . $minutes . '</span></p>' : '')
+            . ($minutes !== '' || $edit !== '' ? '<p class="postMeta">' . ($minutes !== '' ? '<span class="postReading">' . $minutes . '</span>' : '') . $edit . '</p>' : '')
             . '</div>'
             . static::figure($item, $link, 'postImage', !$lead && !$eager)
             . '</div></article>';

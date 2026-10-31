@@ -391,6 +391,14 @@ body:not(.isHome) .mainNav ul.menu > li.default > a:hover {background:var(--c-so
 .byline {display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:.95rem;font-weight:600;color:var(--c-on-tone);}
 .bylineName {font-weight:800;color:var(--c-on-tone);}
 .bylineMeta {display:inline-flex;flex-wrap:wrap;gap:4px 14px;}
+/* Edit links (users who may edit the post): in a list's meta line, in the byline, under a page's title */
+.editLink {position:relative;z-index:2;display:inline-flex;align-items:center;gap:5px;font-weight:800;color:inherit;}
+.editLink .icon {width:1.05em;height:1.05em;}
+a.editLink:hover {text-decoration:underline;text-underline-offset:3px;}
+.editLink.isLocked {cursor:help;}
+.byline .editLink {padding:3px 10px;border:2px solid currentColor;font-size:.85rem;}
+.byline a.editLink:hover {background:var(--c-on-tone);color:var(--tone);text-decoration:none;}
+.pageView > .editLink {margin:-20px 0 28px;font-size:.9rem;color:var(--c-muted);}
 .avatar {display:inline-grid;place-items:center;width:42px;height:42px;flex:none;background:var(--c-on-tone);color:#fff;font-weight:800;font-size:.9rem;}
 .avatarLarge {width:64px;height:64px;font-size:1.25rem;background:var(--tone);color:var(--c-on-tone);}
 
@@ -485,6 +493,9 @@ h3.page-header {margin-bottom:12px;padding-bottom:8px;}
 .clearfix::after {content:"";display:table;clear:both;}
 .clr {clear:both;}
 .hide {display:none;}
+.show {display:block;}
+/* Bootstrap's, which extensions use to hide elements (e.g. a loading layer over a whole page) */
+.hidden {display:none;visibility:hidden;}
 .center,
 .text-center {text-align:center;}
 span[class^="icon-"]:empty,
@@ -543,10 +554,45 @@ fieldset.checkboxes label {display:inline-flex;align-items:center;gap:6px;}
 .input-prepend .add-on {border-right:0;border-radius:0;}
 .invalid {border-color:var(--c-accent)!important;}
 /* Chosen (enhanced select boxes, e.g. in the profile form): like the other fields */
-.chzn-container {font-size:inherit;}
-.chzn-container-single .chzn-single {height:auto;padding:.6em .9em;border:1px solid var(--c-line-d);border-radius:0;background:var(--c-paper);box-shadow:none;font-size:inherit;line-height:1.5;color:inherit;}
-.chzn-container-single .chzn-single div {top:50%;height:18px;transform:translateY(-50%);}
-.chzn-container .chzn-drop {border-color:var(--c-line-d);}
+/* Searchable lists (Chosen): every part in the template's colours, as its own stylesheet's are for a light page */
+.chzn-container {font-size:inherit;color:var(--c-text);}
+.chzn-container-single .chzn-single {height:auto;padding:.6em .9em;border:1px solid var(--c-line-d);border-radius:0;background:var(--c-paper);box-shadow:none;font-size:inherit;line-height:1.5;color:var(--c-ink);}
+.chzn-container-single .chzn-single div {top:50%;right:6px;height:18px;transform:translateY(-50%);}
+.chzn-container-single .chzn-default,
+.chzn-container .chzn-single .group-name,
+.chzn-container .search-choice .group-name {color:var(--c-muted);}
+.chzn-container-active .chzn-single,
+.chzn-container-active .chzn-choices {border:1px solid var(--c-ink);box-shadow:none;}
+.chzn-container-active.chzn-with-drop .chzn-single {border:1px solid var(--c-line-d);background:var(--c-paper);}
+.chzn-container .chzn-drop {border:1px solid var(--c-line-d);border-top:0;background:var(--c-soft);border-radius:0;box-shadow:0 8px 20px rgba(0,0,0,.18);}
+.chzn-container-multi .chzn-drop {border-top:1px solid var(--c-line-d);}
+.chzn-container .chzn-search input[type="text"] {margin:4px 0;padding:.5em 2em .5em .75em;border:1px solid var(--c-line-d);border-radius:0;background-color:var(--c-paper);font-family:inherit;color:var(--c-ink);}
+.chzn-container .chzn-results {margin:0;padding:0 0 6px;color:var(--c-text);}
+.chzn-container .chzn-results li {padding:7px 12px;line-height:1.35;}
+.chzn-container .chzn-results li.group-result {color:var(--c-ink);}
+.chzn-container .chzn-results li.group-option {padding-left:24px;}
+.chzn-container .chzn-results li.disabled-result,
+.chzn-container-multi .chzn-drop .result-selected {color:var(--c-muted);opacity:.65;}
+.chzn-container .chzn-results li.highlighted {background:var(--c-ink);color:var(--c-paper);}
+.chzn-container .chzn-results li.no-results {background:var(--c-paper);color:var(--c-muted);}
+.chzn-container-multi .chzn-choices {padding:3px 6px;border:1px solid var(--c-line-d);border-radius:0;background:var(--c-paper);}
+.chzn-container-multi .chzn-choices li.search-field input[type="text"] {height:30px;font-family:inherit;color:var(--c-muted);}
+.chzn-container-active .chzn-choices li.search-field input[type="text"] {color:var(--c-ink)!important;}
+.chzn-container-multi .chzn-choices li.search-choice {padding:4px 22px 4px 10px;border:1px solid var(--c-line-d);border-radius:0;background:var(--c-soft);box-shadow:none;color:var(--c-ink);}
+.chzn-container-multi .chzn-choices li.search-choice .search-choice-close {top:50%;right:5px;transform:translateY(-50%);}
+.chzn-container-multi .chzn-choices li.search-choice-focus {background:var(--c-line);}
+.chzn-container-multi .chzn-choices li.search-choice-disabled {border-color:var(--c-line);background:var(--c-soft);color:var(--c-muted);}
+/* The close buttons' dark hover icon is lost on the dark scheme */
+:root[data-scheme="dark"] .chzn-container-single .chzn-single abbr:hover,
+:root[data-scheme="dark"] .chzn-container-multi .chzn-choices li.search-choice .search-choice-close:hover,
+:root[data-scheme="dark"] .chzn-container-multi .chzn-choices li.search-choice-focus .search-choice-close {background-image:url("../../../media/system/images/chosen/x.svg");}
+
+@media (prefers-color-scheme:dark) {
+    :root[data-scheme="auto"] .chzn-container-single .chzn-single abbr:hover,
+    :root[data-scheme="auto"] .chzn-container-multi .chzn-choices li.search-choice .search-choice-close:hover,
+    :root[data-scheme="auto"] .chzn-container-multi .chzn-choices li.search-choice-focus .search-choice-close {background-image:url("../../../media/system/images/chosen/x.svg");}
+}
+
 label.invalid {color:var(--c-accent);}
 .btn-small,
 .btn-mini {padding:.45em 1em;font-size:.85rem;}
@@ -716,6 +762,9 @@ dl.stats-module dd {margin:0;overflow-wrap:anywhere;}
     .dl-horizontal dd {margin-bottom:10px;}
     .pull-left,
     .pull-right {float:none;margin:0 0 12px;}
+    /* Wide stock tables (e.g. Featured Contacts' seven columns) scroll sideways instead of widening the page */
+    .table,
+    table.category {display:block;max-width:100%;overflow-x:auto;}
 }
 
 /* --- Footer --- */
