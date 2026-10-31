@@ -49,7 +49,11 @@
 
 /* --- Image picker: list --- */
 .contentpane:where(:has(.media-picker)) {padding:0 !important;overflow-x:hidden;}
-.thumbnails.thumbnails-media:where(.media-picker) {margin:0 -8px;}
+.thumbnails.thumbnails-media:where(.media-picker) {display:flex;flex-wrap:wrap;margin:0 -8px;padding:0;list-style:none;}
+/* Tiles in their own colours: the site's templates may be dark, and don't load Bootstrap's floats or the icon font */
+.thumbnails-media:where(.media-picker) > li {float:none;color:#333;}
+.thumbnails-media:where(.media-picker) .height-50 {display:grid;place-items:center;height:60px;color:#8a8a8a;}
+.thumbnails-media:where(.media-picker) .small {color:#333;font-size:12px;line-height:1.3;}
 .thumbnails-media:where(.media-picker) .thumbnail {background-color:#f4f4f4;border-radius:3px;border:0;box-shadow:0 0 0 1px rgba(0, 0, 0, 0.05) inset;padding:0;height:100px;width:100px;margin:8px;position:relative;text-align:center;overflow:hidden;}
 .thumbnails-media:where(.media-picker) .thumbnail .close {background-color:#ccc;border-left:1px solid rgba(0, 0, 0, 0.1);height:22px;line-height:22px;opacity:0.3;text-align:center;width:22px;top:0;right:0;}
 .thumbnails-media:where(.media-picker) .thumbnail .close:hover {background-color:#bbb;}

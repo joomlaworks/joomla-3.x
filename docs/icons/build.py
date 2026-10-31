@@ -23,7 +23,7 @@ FOLDERS = {
     ],
     # The Media Manager's file types (administrator/components/com_media/models/list.php), renaming and thumbnail sizes
     'media/com_media/images/icons': [
-        'arrow-left', 'check-lg', 'pencil', 'x-lg', 'zoom-in', 'zoom-out', 'file-earmark', 'file-earmark-code',
+        'arrow-left', 'check-lg', 'pencil', 'x-lg', 'zoom-in', 'zoom-out', 'folder-fill', 'file-earmark', 'file-earmark-code',
         'file-earmark-excel', 'file-earmark-image', 'file-earmark-music',
         'file-earmark-pdf', 'file-earmark-play', 'file-earmark-ppt', 'file-earmark-richtext', 'file-earmark-spreadsheet',
         'file-earmark-text', 'file-earmark-word', 'file-earmark-zip',
