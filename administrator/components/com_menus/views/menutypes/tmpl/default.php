@@ -20,7 +20,7 @@ JFactory::getDocument()->addScriptDeclaration('
 			if (tmpl)
 			{
 				window.parent.Joomla.submitbutton("item.setType", type);
-				window.parent.jQuery("#menuTypeModal").modal("hide");
+				window.parent.CMS.bootstrap.call("modal", "#menuTypeModal", "hide");
 			}
 			else
 			{

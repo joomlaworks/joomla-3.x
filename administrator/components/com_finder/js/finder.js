@@ -43,8 +43,8 @@ window.FinderIndexer = function FinderIndexer() {
 			return;
 		}
 
-		if (parent.jQuery && parent.jQuery.fn.modal && parent.document.getElementById('modal-archive')) {
-			parent.jQuery('#modal-archive').modal('hide');
+		if (parent.CMS && parent.CMS.bootstrap && parent.document.getElementById('modal-archive')) {
+			parent.CMS.bootstrap.call('modal', '#modal-archive', 'hide');
 		} else if (parent.CMS && parent.CMS.modal) {
 			parent.CMS.modal.close();
 		}
@@ -118,6 +118,11 @@ window.FinderIndexer = function FinderIndexer() {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+	// Only on the indexer's page (the filter form loads this file too)
+	if (!document.getElementById('finder-progress-header')) {
+		return;
+	}
+
 	window.Indexer = new window.FinderIndexer();
 
 	// In the CMS's modal (SqueezeBox's names), its page reloads when it closes
@@ -125,3 +130,39 @@ document.addEventListener('DOMContentLoaded', () => {
 		window.parent.CMS.modal.on('close', () => window.parent.location.reload());
 	}
 });
+
+/*
+ * The search filter form (view filter): Show All / Hide All (#rightbtn) opens or closes every branch, Select All clicks every
+ * branch's box, and the hidden count (jform_map_count) follows the chosen boxes.
+ */
+(() => {
+	const toggle = document.getElementById('rightbtn');
+
+	if (!toggle || !window.CMS) {
+		return;
+	}
+
+	const text = (key) => window.CMS.text._(key);
+
+	toggle.addEventListener('click', (event) => {
+		const showAll = toggle.textContent.trim() === text('COM_FINDER_FILTER_SHOW_ALL');
+
+		event.preventDefault();
+		document.querySelectorAll(showAll ? '.collapse:not(.in)' : '.collapse.in').forEach((branch) => window.CMS.bootstrap.call('collapse', branch, 'toggle'));
+		toggle.textContent = text(showAll ? 'COM_FINDER_FILTER_HIDE_ALL' : 'COM_FINDER_FILTER_SHOW_ALL');
+	});
+
+	const selectAll = document.querySelector('[data-finder-select-all]');
+
+	if (selectAll) {
+		selectAll.addEventListener('click', () => document.querySelectorAll('.filter-node').forEach((node) => node.click()));
+	}
+
+	document.addEventListener('change', (event) => {
+		const count = document.getElementById('jform_map_count');
+
+		if (count && event.target.classList && event.target.classList.contains('filter-node')) {
+			count.value = document.querySelectorAll('input[type="checkbox"]:checked').length;
+		}
+	});
+})();

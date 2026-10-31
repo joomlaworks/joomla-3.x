@@ -13,43 +13,13 @@ foreach ($this->levels as $key => $value) {
     $allLevels[$value->id] = $value->title;
 }
 
-JFactory::getDocument()->addScriptDeclaration('
-	var viewLevels = ' . json_encode($allLevels) . ',
-		menuId = parseInt(' . (int) $this->item->id . ');
-
-	jQuery(function($) {
-		var baseLink = "index.php?option=com_modules&amp;client_id=0&amp;task=module.edit&amp;tmpl=component&amp;view=module&amp;layout=modal&amp;id=",
-			iFrameAttr = "class=\"iframe jviewport-height70\"";
-
-		$(document)
-			.on("click", "input:radio[id^=\'jform_toggle_modules_assigned1\']", function (event) {
-				$(".table tr.no").hide();
-			})
-			.on("click", "input:radio[id^=\'jform_toggle_modules_assigned0\']", function (event) {
-				$(".table tr.no").show();
-			})
-			.on("click", "input:radio[id^=\'jform_toggle_modules_published1\']", function (event) {
-				$(".table tr.unpublished").hide();
-			})
-			.on("click", "input:radio[id^=\'jform_toggle_modules_published0\']", function (event) {
-				$(".table tr.unpublished").show();
-			})
-			.on("click", ".module-edit-link", function () {
-				var link = baseLink + $(this).data("moduleId"),
-					iFrame = $("<iframe src=\"" + link + "\" " + iFrameAttr + "></iframe>");
-
-				$("#moduleEditModal").modal()
-					.find(".modal-body").empty().prepend(iFrame);
-			})
-			.on("click", "#moduleEditModal .modal-footer .btn", function () {
-				var target = $(this).data("target");
-
-				if (target) {
-					$("#moduleEditModal iframe").contents().find(target).click();
-				}
-			});
-	});
-');
+// The tab's script (js/menus.js, loaded by the form): its filters and the module form in a modal, which updates the
+// rows from the level names and the menu item's ID
+JFactory::getDocument()->addScriptOptions('com_menus.modules', array(
+    'levels'  => $allLevels,
+    'menuId'  => (int) $this->item->id,
+    'editUrl' => 'index.php?option=com_modules&client_id=0&task=module.edit&tmpl=component&view=module&layout=modal&id=',
+));
 
 JFactory::getDocument()->addStyleDeclaration('
 ul.horizontal-buttons li {
@@ -69,11 +39,11 @@ echo JHtml::_(
         'closeButton' => false,
         'bodyHeight'  => '70',
         'modalWidth'  => '80',
-        'footer'      => '<button type="button" class="btn" data-dismiss="modal" data-target="#closeBtn">'
+        'footer'      => '<button type="button" class="btn" data-dismiss="modal" data-frame-click="#closeBtn">'
                 . JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>'
-                . '<button type="button" class="btn btn-primary" data-dismiss="modal" data-target="#saveBtn">'
+                . '<button type="button" class="btn btn-primary" data-dismiss="modal" data-frame-click="#saveBtn">'
                 . JText::_('JSAVE') . '</button>'
-                . '<button type="button" class="btn btn-success" data-target="#applyBtn">'
+                . '<button type="button" class="btn btn-success" data-frame-click="#applyBtn">'
                 . JText::_('JAPPLY') . '</button>',
     )
 );

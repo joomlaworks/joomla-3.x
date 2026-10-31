@@ -11,11 +11,22 @@ defined('_JEXEC') or die;
 
 // This code is needed for proper check out in case of modal close
 JFactory::getDocument()->addScriptDeclaration('
-	window.parent.jQuery(".modal").on("hidden", function () {
-	if (typeof window.parent.jQuery("#plugin' . $this->item->extension_id . 'Modal iframe").contents().find("#closeBtn") !== "undefined") {
-		window.parent.jQuery("#plugin' . $this->item->extension_id . 'Modal iframe").contents().find("#closeBtn").click();
+	(function (parent) {
+		var modal = parent.document.getElementById("plugin' . (int) $this->item->extension_id . 'Modal");
+		var close = function () {
+			var button = document.getElementById("closeBtn");
+
+			if (button) {
+				button.click();
+			}
+		};
+
+		if (modal && parent.jQuery) {
+			parent.jQuery(modal).one("hidden", close);
+		} else if (modal) {
+			modal.addEventListener("cms:modal-hidden", close, {once: true});
 		}
-	});
+	})(window.parent);
 ');
 ?>
 <button id="applyBtn" type="button" class="hidden" onclick="Joomla.submitbutton('plugin.apply');"></button>

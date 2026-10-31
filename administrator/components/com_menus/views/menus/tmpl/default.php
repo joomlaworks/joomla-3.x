@@ -21,36 +21,9 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $modMenuId = (int) $this->get('ModMenuId');
 
-$script = array();
-$script[] = 'jQuery(document).ready(function() {';
-
-foreach ($this->items as $item) :
-    if ($user->authorise('core.edit', 'com_menus')) :
-        $script[] = '	function jSelectPosition_' . $item->id . '(name) {';
-        $script[] = '		document.getElementById("' . $item->id . '").value = name;';
-        $script[] = '		jQuery(".modal").modal("hide");';
-        $script[] = '	};';
-    endif;
-endforeach;
-
-$script[] = '	jQuery(".modal").on("hidden", function () {';
-$script[] = '		setTimeout(function(){';
-$script[] = '			window.parent.location.reload();';
-$script[] = '		},1000);';
-$script[] = '	});';
-$script[] = '});';
-$script[] = '
-	(function (originalFn) {
-		Joomla.submitform = function(task, form) {
-		 	originalFn(task, form);
-		 	if (task == "menu.exportXml") {
-		 		document.adminForm.task.value = "";
-		 	}
-		};
-	})(Joomla.submitform);
-';
-
-JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
+// The page's script (js/menus.js): it reloads when a module modal closes, and the XML export's task is reset
+JFactory::getDocument()->addScriptOptions('com_menus.menus', array('list' => true));
+JHtml::_('script', 'administrator/components/com_menus/js/menus.min.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_menus&view=menus'); ?>" method="post" name="adminForm" id="adminForm">
 <?php if (!empty($this->sidebar)) : ?>
@@ -208,14 +181,11 @@ JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
 										        'width'       => '800px',
 										        'bodyHeight'  => '70',
 										        'modalWidth'  => '80',
-										        'footer'      => '<button type="button" class="btn" data-dismiss="modal"'
-										                . ' onclick="jQuery(\'#moduleEdit' . $module->id . 'Modal iframe\').contents().find(\'#closeBtn\').click();">'
+										        'footer'      => '<button type="button" class="btn" data-dismiss="modal" data-frame-click="#closeBtn">'
 										                . JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>'
-										                . '<button type="button" class="btn btn-primary"'
-										                . ' onclick="jQuery(\'#moduleEdit' . $module->id . 'Modal iframe\').contents().find(\'#saveBtn\').click();">'
+										                . '<button type="button" class="btn btn-primary" data-frame-click="#saveBtn">'
 										                . JText::_('JSAVE') . '</button>'
-										                . '<button type="button" class="btn btn-success"'
-										                . ' onclick="jQuery(\'#moduleEdit' . $module->id . 'Modal iframe\').contents().find(\'#applyBtn\').click();">'
+										                . '<button type="button" class="btn btn-success" data-frame-click="#applyBtn">'
 										                . JText::_('JAPPLY') . '</button>',
 										    )
 										); ?>
@@ -237,14 +207,11 @@ JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
 								        'width'       => '800px',
 								        'bodyHeight'  => '70',
 								        'modalWidth'  => '80',
-								        'footer'      => '<button type="button" class="btn" data-dismiss="modal"'
-								                . ' onclick="jQuery(\'#moduleAddModal iframe\').contents().find(\'#closeBtn\').click();">'
+								        'footer'      => '<button type="button" class="btn" data-dismiss="modal" data-frame-click="#closeBtn">'
 								                . JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>'
-								                . '<button type="button" class="btn btn-primary"'
-								                . ' onclick="jQuery(\'#moduleAddModal iframe\').contents().find(\'#saveBtn\').click();">'
+								                . '<button type="button" class="btn btn-primary" data-frame-click="#saveBtn">'
 								                . JText::_('JSAVE') . '</button>'
-								                . '<button type="button" class="btn btn-success"'
-								                . ' onclick="jQuery(\'#moduleAddModal iframe\').contents().find(\'#applyBtn\').click();">'
+								                . '<button type="button" class="btn btn-success" data-frame-click="#applyBtn">'
 								                . JText::_('JAPPLY') . '</button>',
 								    )
 								); ?>

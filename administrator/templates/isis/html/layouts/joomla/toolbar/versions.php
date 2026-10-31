@@ -38,6 +38,6 @@ echo JHtml::_(
     )
 );
 ?>
-<button type="button" onclick="jQuery('#versionsModal').modal('show')" class="btn btn-small" data-toggle="modal">
+<button type="button" class="btn btn-small" data-toggle="modal" data-target="#versionsModal">
 	<span class="icon-archive" aria-hidden="true"></span><?php echo $title; ?>
 </button>

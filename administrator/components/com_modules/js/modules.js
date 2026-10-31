@@ -113,9 +113,9 @@
 			updateParent();
 		}
 
-		// The parent's Bootstrap modal around this frame (extensions' pages)
-		if (task !== 'module.apply' && window.parent !== window && window.parent.jQuery) {
-			window.parent.jQuery('#module' + (id ? 'Edit' + id : 'Add') + 'Modal').modal('hide');
+		// The parent's modal around this frame (the Menus pages' module modals)
+		if (task !== 'module.apply' && window.parent !== window && window.parent.CMS && window.parent.CMS.bootstrap) {
+			window.parent.CMS.bootstrap.call('modal', '#module' + (id ? 'Edit' + id : 'Add') + 'Modal', 'hide');
 		}
 	};
 })();

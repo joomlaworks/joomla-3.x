@@ -69,7 +69,7 @@ $tmpl     = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=
 							<p><?php echo $short_description; ?></p>
 							<?php if ($long_description) : ?>
 								<p class="readmore">
-									<a href="#" onclick="jQuery('.nav-tabs a[href=\'#description\']').tab('show');">
+									<a href="#" onclick="CMS.bootstrap.call('tab', '.nav-tabs a[href=\'#description\']', 'show'); return false;">
 										<?php echo JText::_('JGLOBAL_SHOW_FULL_DESCRIPTION'); ?>
 									</a>
 								</p>

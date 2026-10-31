@@ -41,5 +41,8 @@ if ($bodyHeight && $bodyHeight >= 20 && $bodyHeight < 90) {
 }
 ?>
 <div class="<?php echo $bodyClass; ?>">
+	<?php if (isset($params['url'])) : ?>
+	<template class="modal-iframe"><?php echo trim(JLayoutHelper::render('joomla.modal.iframe', $displayData)); ?></template>
+	<?php endif; ?>
 	<?php echo $body; ?>
 </div>

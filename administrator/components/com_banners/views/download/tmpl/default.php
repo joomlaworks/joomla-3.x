@@ -26,12 +26,12 @@ JHtml::_('bootstrap.tooltip', '.hasTooltip', array('placement' => 'bottom'));
 		<button class="hidden"
 			id="closeBtn"
 			type="button"
-			onclick="window.parent.jQuery('#modal-download').modal('hide');">
+			onclick="window.parent.CMS.bootstrap.call('modal', '#downloadModal', 'hide');">
 		</button>
 		<button class="hidden"
 			id="exportBtn"
 			type="button"
-			onclick="this.form.submit();window.top.setTimeout('window.parent.jQuery(\'#downloadModal\').modal(\'hide\')', 700);">
+			onclick="this.form.submit();window.top.setTimeout(function () { window.top.CMS.bootstrap.call('modal', '#downloadModal', 'hide'); }, 700);">
 		</button>
 	</form>
 </div>

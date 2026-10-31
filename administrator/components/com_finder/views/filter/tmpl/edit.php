@@ -11,29 +11,10 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.tabstate');
 
-JFactory::getDocument()->addScriptDeclaration('
-	jQuery(document).ready(function($) {
-		$("#rightbtn").on("click", function() {
-			if($(this).text() == "' . JText::_('COM_FINDER_FILTER_SHOW_ALL') . '") {
-				$(".collapse:not(.in)").each(function (index) {
-					$(this).collapse("toggle");
-				});
-				$(this).text("' . JText::_('COM_FINDER_FILTER_HIDE_ALL') . '");
-			} else {
-				$(this).text("' . JText::_('COM_FINDER_FILTER_SHOW_ALL') . '");
-				$(".collapse.in").each(function (index) {
-				$(this).collapse("toggle");
-			});
-		}
-		return false;
-		});
-
-		$(".filter-node").change(function() {
-			$(\'input[id="jform_map_count"]\').val(document.querySelectorAll(\'input[type="checkbox"]:checked\').length);
-		});
-
-	});
-');
+// The form's script (js/finder.js): Show All / Hide All, Select All, and the count of chosen branches
+JText::script('COM_FINDER_FILTER_SHOW_ALL');
+JText::script('COM_FINDER_FILTER_HIDE_ALL');
+JHtml::_('script', 'administrator/components/com_finder/js/finder.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
 
 JFactory::getDocument()->addStyleDeclaration('
 	.accordion-inner .control-group .controls {
@@ -59,7 +40,7 @@ JFactory::getDocument()->addStyleDeclaration('
 					<div class="well">
 						<?php echo $this->form->renderField('map_count'); ?>
 					</div>
-					<button class="btn jform-rightbtn" type="button" onclick="jQuery('.filter-node').each(function () { this.click(); });">
+					<button class="btn jform-rightbtn" type="button" data-finder-select-all>
 						<span class="icon-checkbox-partial" aria-hidden="true"></span> <?php echo JText::_('JGLOBAL_SELECTION_INVERT'); ?></button>
 
 					<button class="btn pull-right" type="button" id="rightbtn" ><?php echo JText::_('COM_FINDER_FILTER_SHOW_ALL'); ?></button>

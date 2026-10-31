@@ -5138,6 +5138,12 @@ class JoomlaInstallerScript
             '/templates/finch/helper.php',
             '/templates/hammond/helper.php',
             '/templates/protostar/helper.php',
+            // Bootstrap's tab scripts written by the tab helpers (3.18: the lists come from the panes, global.js) and Isis' unused
+            // stock scripts
+            '/layouts/libraries/cms/html/bootstrap/addtabscript.php',
+            '/layouts/libraries/cms/html/bootstrap/starttabsetscript.php',
+            '/administrator/templates/isis/js/application.js',
+            '/administrator/templates/isis/js/classes.js',
             '/templates/rookwood/helper.php',
             '/templates/finch/images/favicon.svg',
             '/templates/hammond/images/favicon.svg',

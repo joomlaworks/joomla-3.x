@@ -3317,8 +3317,10 @@
 			const text = (html) => new DOMParser().parseFromString(html, 'text/html').documentElement.textContent;
 
 			if (previous) {
-				if (window.jQuery && window.jQuery(previous).data('chosen')) {
-					window.jQuery(previous).chosen('destroy');
+				const chosen = CMS.chosen ? CMS.chosen.get(previous) : null;
+
+				if (chosen) {
+					chosen.destroy();
 				}
 
 				previous.remove();
@@ -3339,8 +3341,9 @@
 
 			field.appendChild(select);
 
-			if (window.jQuery && window.jQuery.fn.chosen) {
-				window.jQuery(select).chosen();
+			// Searchable as the page's other lists (the administrator's every list: script options system.chosen)
+			if (CMS.chosen) {
+				CMS.chosen.attach(select, (CMS.options.get('system.chosen') || {}).select || {});
 			}
 		},
 	};
@@ -8231,6 +8234,71 @@
 		shown: new Map(),
 		counter: 0,
 
+		// Elements given their own options (attach(): jQuery's .tooltip() and .popover() where Bootstrap's script isn't loaded)
+		elements: new WeakMap(),
+
+		/**
+		 * An element's own tooltip or popover, as Bootstrap's jQuery plugins made one: options as Bootstrap's (its defaults,
+		 * then the element's data-placement, data-trigger, data-html, data-delay, then the given ones; title and content may be
+		 * functions, content an element), or a method: show, hide, toggle, destroy. With a selector option, the elements it
+		 * matches get them.
+		 *
+		 * @param  {Element}        element
+		 * @param  {string}         type     tooltip or popover
+		 * @param  {Object|string}  option
+		 */
+		attach(element, type, option) {
+			if (typeof option === 'string') {
+				const options = CMS.tip.elements.get(element);
+
+				if (option === 'destroy') {
+					CMS.tip.hide(element);
+					CMS.tip.elements.delete(element);
+					element.removeAttribute('data-cms-tip');
+				} else if (option === 'hide' || (option === 'toggle' && CMS.tip.shown.has(element))) {
+					CMS.tip.hide(element);
+				} else if (options && (option === 'show' || option === 'toggle')) {
+					CMS.tip.show({ element, type, options });
+				}
+
+				return;
+			}
+
+			const data = element.dataset;
+			const own = {};
+
+			if (data.placement) {
+				own.placement = data.placement;
+			}
+
+			if (data.trigger) {
+				own.trigger = data.trigger;
+			}
+
+			if (data.html) {
+				own.html = data.html !== 'false';
+			}
+
+			if (data.delay) {
+				own.delay = parseInt(data.delay, 10) || 0;
+			}
+
+			const options = Object.assign({
+				html: false,
+				placement: type === 'popover' ? 'right' : 'top',
+				trigger: type === 'popover' ? 'click' : 'hover focus',
+			}, own, option || {});
+
+			if (options.selector) {
+				CMS.tip.register(options.selector, options, type);
+
+				return;
+			}
+
+			element.setAttribute('data-cms-tip', type);
+			CMS.tip.elements.set(element, options);
+		},
+
 		/**
 		 * Elements of a selector get tooltips or popovers
 		 *
@@ -8252,6 +8320,12 @@
 		find(target) {
 			if (!target || !target.closest) {
 				return null;
+			}
+
+			const own = target.closest('[data-cms-tip]');
+
+			if (own && CMS.tip.elements.has(own)) {
+				return { element: own, type: own.getAttribute('data-cms-tip') === 'popover' ? 'popover' : 'tooltip', options: CMS.tip.elements.get(own) };
 			}
 
 			for (const type of ['popover', 'tooltip']) {
@@ -8291,7 +8365,7 @@
 				element.removeAttribute('title');
 			}
 
-			return element.getAttribute('data-original-title') || options.title || '';
+			return element.getAttribute('data-original-title') || (typeof options.title === 'function' ? options.title.call(element) : options.title) || '';
 		},
 
 		show(found) {
@@ -8302,7 +8376,9 @@
 			}
 
 			const title = CMS.tip.title(element, options);
-			const content = type === 'popover' ? element.getAttribute('data-content') || options.content || '' : '';
+			const content = type === 'popover'
+				? element.getAttribute('data-content') || (typeof options.content === 'function' ? options.content.call(element) : options.content) || ''
+				: '';
 
 			if (!title && !content) {
 				return;
@@ -8311,7 +8387,10 @@
 			const tip = document.createElement('div');
 			const html = options.html !== false;
 			const fill = (node, text) => {
-				if (html) {
+				if (text && text.nodeType) {
+					node.textContent = '';
+					node.appendChild(text);
+				} else if (html) {
 					node.innerHTML = text;
 				} else {
 					node.textContent = text;
@@ -9147,6 +9226,921 @@
 		},
 	};
 
+	/* --- Bootstrap 2's plugins: dropdowns, collapse, tabs, modals and alerts (CMS.bootstrap; what bootstrap.js did) --- */
+
+	/*
+	 * Bootstrap 2.3's markup and data attributes (data-toggle="dropdown|collapse|tab|pill|modal", data-dismiss="modal|alert",
+	 * data-target, data-parent, data-backdrop, data-keyboard) and classes (.open, .in, .collapsed, .active), so templates,
+	 * layouts and extensions' markup work unchanged. Events go out through jQuery when it's on the page, with the names
+	 * Bootstrap fired there (show, shown, hide, hidden; "hideme" for collapse, as Joomla's copy had it; close and closed for
+	 * alerts: handlers bound to "show.bs.modal" get them too), and natively as cms:<plugin>-<name> (detail.relatedTarget);
+	 * a cancelled show, hide or close stops it. When Bootstrap's own script is on the page (an extension asked for it), it
+	 * does all of this and these stand aside: its plugins have a Constructor. jQuery.fn.dropdown, collapse, tab, modal, alert,
+	 * tooltip and popover (on CMS.tip) are stand-ins, defined only where Bootstrap's aren't.
+	 */
+	const bootstrapLoaded = (name) => {
+		const jq = window.jQuery;
+
+		return Boolean(jq && jq.fn && jq.fn[name] && jq.fn[name].Constructor);
+	};
+
+	const bsEmit = (element, plugin, name, related, cancelable) => {
+		const jq = window.jQuery;
+		let prevented = false;
+
+		if (jq && jq.Event) {
+			const event = jq.Event(name, related ? { relatedTarget: related } : {});
+
+			jq(element).trigger(event);
+			prevented = event.isDefaultPrevented();
+		}
+
+		const native = new CustomEvent('cms:' + plugin + '-' + (name === 'hideme' ? 'hide' : name), {
+			bubbles: true,
+			cancelable: Boolean(cancelable),
+			detail: { relatedTarget: related || null },
+		});
+
+		return !element.dispatchEvent(native) || prevented ? false : true;
+	};
+
+	// The callback once the element's CSS transition has run (at once without one)
+	const afterTransition = (element, callback) => {
+		const style = window.getComputedStyle(element);
+		const seconds = (list) => Math.max(0, ...String(list).split(',').map((value) => parseFloat(value) || 0));
+		const duration = (seconds(style.transitionDuration) + seconds(style.transitionDelay)) * 1000;
+		let done = false;
+
+		const finish = () => {
+			if (!done) {
+				done = true;
+				element.removeEventListener('transitionend', onEnd); // eslint-disable-line no-use-before-define
+				callback();
+			}
+		};
+		const onEnd = (event) => {
+			if (event.target === element) {
+				finish();
+			}
+		};
+
+		if (!duration) {
+			finish();
+
+			return;
+		}
+
+		element.addEventListener('transitionend', onEnd);
+		window.setTimeout(finish, duration + 50);
+	};
+
+	// What a link or button acts on: its data-target, else the #id its href ends with
+	const bsTarget = (link) => {
+		let selector = link.getAttribute('data-target');
+
+		if (!selector) {
+			const href = link.getAttribute('href');
+
+			selector = href && /#[^\s]+$/.test(href) ? href.replace(/.*(?=#[^\s]+$)/, '') : '';
+		}
+
+		try {
+			return selector && selector !== '#' ? document.querySelector(selector) : null;
+		} catch (error) {
+			return null;
+		}
+	};
+
+	const bsDisabled = (element) => element.classList.contains('disabled') || element.disabled === true;
+
+	const bsVisible = (element) => Boolean(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
+
+	CMS.bootstrap = {
+		/* Dropdowns: .open on the toggle's parent (or its data-target); a click elsewhere closes them, arrow keys move */
+		dropdown: {
+			toggles: '[data-toggle="dropdown"]',
+
+			parent(toggle) {
+				return bsTarget(toggle) || toggle.parentNode;
+			},
+
+			clear() {
+				Array.prototype.forEach.call(document.querySelectorAll('.dropdown-backdrop'), (backdrop) => backdrop.remove());
+				Array.prototype.forEach.call(document.querySelectorAll(CMS.bootstrap.dropdown.toggles), (toggle) => {
+					const parent = CMS.bootstrap.dropdown.parent(toggle);
+
+					if (parent && parent.classList) {
+						parent.classList.remove('open');
+					}
+				});
+			},
+
+			toggle(toggle) {
+				if (bsDisabled(toggle)) {
+					return;
+				}
+
+				const parent = CMS.bootstrap.dropdown.parent(toggle);
+				const active = parent.classList.contains('open');
+
+				CMS.bootstrap.dropdown.clear();
+
+				if (!active) {
+					// On touch screens a layer under the menu takes the tap that closes it (as Bootstrap 2.3)
+					if ('ontouchstart' in document.documentElement) {
+						const backdrop = document.createElement('div');
+
+						backdrop.className = 'dropdown-backdrop';
+						backdrop.addEventListener('click', () => CMS.bootstrap.dropdown.clear());
+						toggle.parentNode.insertBefore(backdrop, toggle);
+					}
+
+					parent.classList.add('open');
+				}
+
+				toggle.focus();
+			},
+
+			keydown(event, element) {
+				if ([27, 38, 40].indexOf(event.keyCode) < 0) {
+					return;
+				}
+
+				event.preventDefault();
+				event.stopPropagation();
+
+				if (bsDisabled(element)) {
+					return;
+				}
+
+				const parent = CMS.bootstrap.dropdown.parent(element);
+				const active = parent.classList.contains('open');
+
+				if (!active || event.keyCode === 27) {
+					const toggle = element.matches(CMS.bootstrap.dropdown.toggles) ? element : parent.querySelector(CMS.bootstrap.dropdown.toggles);
+
+					if (event.keyCode === 27 && toggle) {
+						toggle.focus();
+					}
+
+					if (toggle && (!active || event.keyCode === 27)) {
+						CMS.bootstrap.dropdown.toggle(toggle);
+					}
+
+					return;
+				}
+
+				const items = Array.prototype.filter.call(parent.querySelectorAll('[role="menu"] li:not(.divider) a'), bsVisible);
+
+				if (!items.length) {
+					return;
+				}
+
+				let index = items.indexOf(document.activeElement);
+
+				if (event.keyCode === 38 && index > 0) {
+					index -= 1;
+				}
+
+				if (event.keyCode === 40 && index < items.length - 1) {
+					index += 1;
+				}
+
+				items[Math.max(0, index)].focus();
+			},
+		},
+
+		/* Collapse: .in shown, its height animated (.collapse's transition); data-parent keeps one open in an accordion */
+		collapse: {
+			states: new WeakMap(),
+
+			state(element, options) {
+				if (!CMS.bootstrap.collapse.states.has(element)) {
+					CMS.bootstrap.collapse.states.set(element, {
+						parent: element.getAttribute('data-parent') || null,
+						transitioning: false,
+					});
+				}
+
+				const state = CMS.bootstrap.collapse.states.get(element);
+
+				if (options && typeof options === 'object' && options.parent) {
+					state.parent = options.parent;
+				}
+
+				return state;
+			},
+
+			dimension: (element) => (element.classList.contains('width') ? 'width' : 'height'),
+
+			// The toggles of an element (a[href="#id"], [data-target="#id"]): .collapsed while it's hidden
+			mark(element, collapsed) {
+				if (!element.id) {
+					return;
+				}
+
+				const id = CSS.escape(element.id);
+
+				Array.prototype.forEach.call(
+					document.querySelectorAll('[data-toggle="collapse"][href$="#' + id + '"], [data-toggle="collapse"][data-target="#' + id + '"]'),
+					(toggle) => toggle.classList.toggle('collapsed', collapsed)
+				);
+			},
+
+			show(element) {
+				const state = CMS.bootstrap.collapse.state(element);
+
+				if (state.transitioning || element.classList.contains('in')) {
+					return;
+				}
+
+				const parent = state.parent ? document.querySelector(state.parent) : null;
+
+				if (parent) {
+					const actives = parent.querySelectorAll(':scope > .accordion-group > .in');
+
+					for (const active of actives) {
+						if (CMS.bootstrap.collapse.state(active).transitioning) {
+							return;
+						}
+					}
+
+					Array.prototype.forEach.call(actives, (active) => CMS.bootstrap.collapse.hide(active));
+				}
+
+				const dimension = CMS.bootstrap.collapse.dimension(element);
+
+				element.style[dimension] = '0px';
+
+				if (!bsEmit(element, 'collapse', 'show', null, true)) {
+					return;
+				}
+
+				state.transitioning = true;
+				element.classList.add('in');
+				CMS.bootstrap.collapse.mark(element, false);
+				element.style[dimension] = element[dimension === 'width' ? 'scrollWidth' : 'scrollHeight'] + 'px';
+
+				afterTransition(element, () => {
+					element.style[dimension] = '';
+					state.transitioning = false;
+					bsEmit(element, 'collapse', 'shown');
+				});
+			},
+
+			hide(element) {
+				const state = CMS.bootstrap.collapse.state(element);
+
+				if (state.transitioning || !element.classList.contains('in')) {
+					return;
+				}
+
+				const dimension = CMS.bootstrap.collapse.dimension(element);
+
+				// From its own size, not "auto" (which doesn't animate)
+				element.classList.remove('collapse');
+				element.style[dimension] = element.getBoundingClientRect()[dimension] + 'px';
+				element.offsetWidth; // eslint-disable-line no-unused-expressions
+				element.classList.add('collapse');
+
+				if (!bsEmit(element, 'collapse', 'hideme', null, true)) {
+					return;
+				}
+
+				state.transitioning = true;
+				element.classList.remove('in');
+				CMS.bootstrap.collapse.mark(element, true);
+				element.style[dimension] = '0px';
+
+				afterTransition(element, () => {
+					state.transitioning = false;
+					bsEmit(element, 'collapse', 'hidden');
+				});
+			},
+
+			toggle(element) {
+				CMS.bootstrap.collapse[element.classList.contains('in') ? 'hide' : 'show'](element);
+			},
+		},
+
+		/* Tabs: a[data-toggle="tab|pill"] makes its li and the pane its href or data-target names .active */
+		tab: {
+			toggles: '[data-toggle="tab"], [data-toggle="pill"]',
+
+			show(link) {
+				const list = link.closest('ul:not(.dropdown-menu)');
+				const item = link.closest('li');
+
+				if (!item || item.classList.contains('active')) {
+					return;
+				}
+
+				const actives = list ? list.querySelectorAll('.active') : [];
+				const previous = actives.length ? actives[actives.length - 1].querySelector('a') : null;
+
+				if (!bsEmit(link, 'tab', 'show', previous, true)) {
+					return;
+				}
+
+				const pane = bsTarget(link);
+
+				CMS.bootstrap.tab.activate(item, list);
+
+				if (pane) {
+					CMS.bootstrap.tab.activate(pane, pane.parentNode, () => bsEmit(link, 'tab', 'shown', previous));
+				} else {
+					bsEmit(link, 'tab', 'shown', previous);
+				}
+			},
+
+			activate(element, container, callback) {
+				const active = container ? container.querySelector(':scope > .active') : null;
+				const transition = Boolean(callback && active && active.classList.contains('fade'));
+
+				const next = () => {
+					if (active) {
+						active.classList.remove('active');
+						Array.prototype.forEach.call(active.querySelectorAll(':scope > .dropdown-menu > .active'), (item) => item.classList.remove('active'));
+					}
+
+					element.classList.add('active');
+
+					if (transition) {
+						element.offsetWidth; // eslint-disable-line no-unused-expressions
+						element.classList.add('in');
+					} else {
+						element.classList.remove('fade');
+					}
+
+					if (element.parentNode && element.parentNode.classList && element.parentNode.classList.contains('dropdown-menu')) {
+						const dropdown = element.closest('li.dropdown');
+
+						if (dropdown) {
+							dropdown.classList.add('active');
+						}
+					}
+
+					if (callback) {
+						callback();
+					}
+				};
+
+				if (transition) {
+					afterTransition(active, next);
+					active.classList.remove('in');
+				} else {
+					next();
+				}
+			},
+		},
+
+		/* Modals: div.modal shown over a .modal-backdrop; Escape and the backdrop close it (data-keyboard, data-backdrop) */
+		modal: {
+			states: new WeakMap(),
+
+			state(element, options) {
+				if (!CMS.bootstrap.modal.states.has(element)) {
+					const backdrop = element.getAttribute('data-backdrop');
+
+					CMS.bootstrap.modal.states.set(element, {
+						shown: false,
+						backdrop: backdrop === 'static' ? 'static' : backdrop !== 'false',
+						keyboard: element.getAttribute('data-keyboard') !== 'false',
+						element: null,
+					});
+				}
+
+				const state = CMS.bootstrap.modal.states.get(element);
+
+				if (options && typeof options === 'object') {
+					['backdrop', 'keyboard'].forEach((name) => {
+						if (typeof options[name] !== 'undefined') {
+							state[name] = options[name];
+						}
+					});
+
+					if (options.remote && !state.remote) {
+						state.remote = options.remote;
+						CMS.bootstrap.modal.load(element, options.remote);
+					}
+				}
+
+				return state;
+			},
+
+			// A remote page into .modal-body (data-toggle="modal" on a link to a page, as Bootstrap 2 loaded it)
+			load(element, url) {
+				const body = element.querySelector('.modal-body');
+
+				if (body) {
+					fetch(url, { credentials: 'same-origin' }).then((response) => response.text()).then((html) => {
+						body.innerHTML = html;
+					}).catch(() => {});
+				}
+			},
+
+			toggle(element, options) {
+				CMS.bootstrap.modal[CMS.bootstrap.modal.state(element, options).shown ? 'hide' : 'show'](element, options);
+			},
+
+			show(element, options) {
+				const state = CMS.bootstrap.modal.state(element, options);
+
+				if (state.shown || !bsEmit(element, 'modal', 'show', null, true)) {
+					return;
+				}
+
+				state.shown = true;
+				document.body.classList.add('modal-open');
+				CMS.bootstrap.modal.prepare(element);
+
+				state.onKey = (event) => {
+					if (event.keyCode === 27 && state.keyboard) {
+						CMS.bootstrap.modal.hide(element);
+					}
+				};
+				state.onFocus = (event) => {
+					if (event.target !== element && !element.contains(event.target)) {
+						element.focus();
+					}
+				};
+				element.addEventListener('keyup', state.onKey);
+
+				CMS.bootstrap.modal.backdrop(element, state, () => {
+					const transition = element.classList.contains('fade');
+
+					if (!element.parentNode) {
+						document.body.appendChild(element);
+					}
+
+					element.style.display = 'block';
+
+					if (transition) {
+						element.offsetWidth; // eslint-disable-line no-unused-expressions
+					}
+
+					element.classList.add('in');
+					element.setAttribute('aria-hidden', 'false');
+					document.addEventListener('focusin', state.onFocus);
+
+					const done = () => {
+						element.focus();
+						CMS.bootstrap.modal.fit(element);
+						bsEmit(element, 'modal', 'shown');
+					};
+
+					if (transition) {
+						afterTransition(element, done);
+					} else {
+						done();
+					}
+				});
+			},
+
+			hide(element) {
+				const state = CMS.bootstrap.modal.state(element);
+
+				if (!state.shown || !bsEmit(element, 'modal', 'hide', null, true)) {
+					return;
+				}
+
+				state.shown = false;
+				element.removeEventListener('keyup', state.onKey);
+				document.removeEventListener('focusin', state.onFocus);
+				element.classList.remove('in');
+				element.setAttribute('aria-hidden', 'true');
+
+				if (CMS.tip && CMS.tip.hideAll) {
+					CMS.tip.hideAll();
+				}
+
+				const done = () => {
+					element.style.display = 'none';
+					CMS.bootstrap.modal.backdrop(element, state, () => {
+						if (!document.querySelector('.modal.in')) {
+							document.body.classList.remove('modal-open');
+						}
+
+						Array.prototype.forEach.call(element.querySelectorAll('.modal-body'), (body) => {
+							body.style.maxHeight = '';
+							body.style.overflowY = '';
+						});
+						bsEmit(element, 'modal', 'hidden');
+					});
+				};
+
+				if (element.classList.contains('fade')) {
+					afterTransition(element, done);
+				} else {
+					done();
+				}
+			},
+
+			// The backdrop shown with the modal (a click on it closes the modal, unless data-backdrop="static"), and removed
+			backdrop(element, state, callback) {
+				const animate = element.classList.contains('fade');
+
+				if (state.shown && state.backdrop) {
+					const backdrop = document.createElement('div');
+
+					backdrop.className = 'modal-backdrop' + (animate ? ' fade' : '');
+					backdrop.addEventListener('click', () => {
+						if (state.backdrop === 'static') {
+							element.focus();
+						} else {
+							CMS.bootstrap.modal.hide(element);
+						}
+					});
+					document.body.appendChild(backdrop);
+					state.element = backdrop;
+					backdrop.offsetWidth; // eslint-disable-line no-unused-expressions
+					backdrop.classList.add('in');
+
+					if (animate) {
+						afterTransition(backdrop, callback);
+					} else {
+						callback();
+					}
+				} else if (!state.shown && state.element) {
+					const backdrop = state.element;
+
+					state.element = null;
+					backdrop.classList.remove('in');
+
+					const remove = () => {
+						backdrop.remove();
+						callback();
+					};
+
+					if (animate) {
+						afterTransition(backdrop, remove);
+					} else {
+						remove();
+					}
+				} else {
+					callback();
+				}
+			},
+
+			// Joomla's modals (layout joomla.modal.main): the page of their url in a new iframe each time they open
+			prepare(element) {
+				const template = element.querySelector(':scope > .modal-body > template.modal-iframe');
+
+				if (template) {
+					const body = template.parentNode;
+
+					Array.prototype.forEach.call(body.querySelectorAll(':scope > iframe'), (frame) => frame.remove());
+					body.insertBefore(template.content.cloneNode(true), body.firstChild);
+				}
+			},
+
+			// Joomla's modals: a body which would leave the window scrolls instead
+			fit(element) {
+				if (!element.hasAttribute('data-cms-modal')) {
+					return;
+				}
+
+				const body = element.querySelector(':scope > .modal-body');
+
+				if (!body) {
+					return;
+				}
+
+				const header = element.querySelector(':scope > .modal-header');
+				const footer = element.querySelector(':scope > .modal-footer');
+				const outer = (part) => (part ? part.getBoundingClientRect().height : 0);
+				const bodyStyle = window.getComputedStyle(body);
+				const padding = (parseFloat(bodyStyle.paddingTop) || 0) + (parseFloat(bodyStyle.paddingBottom) || 0);
+				const top = element.offsetTop;
+				const maxBody = window.innerHeight - top * 2 - outer(header) - outer(footer) - padding;
+				const frame = body.querySelector('.iframe');
+
+				if (frame ? frame.getBoundingClientRect().height > maxBody : element.getBoundingClientRect().height > window.innerHeight - top * 2) {
+					body.style.maxHeight = maxBody + 'px';
+					body.style.overflowY = 'auto';
+
+					if (frame) {
+						frame.style.maxHeight = (maxBody - padding) + 'px';
+					}
+				}
+			},
+		},
+
+		/* Alerts: [data-dismiss="alert"] removes its .alert (faded out with .fade) */
+		alert: {
+			close(element) {
+				const box = element.classList.contains('alert') ? element : bsTarget(element) || element.closest('.alert');
+
+				if (!box || !bsEmit(box, 'alert', 'close', null, true)) {
+					return;
+				}
+
+				box.classList.remove('in');
+
+				const remove = () => {
+					bsEmit(box, 'alert', 'closed');
+					box.remove();
+				};
+
+				if (box.classList.contains('fade')) {
+					afterTransition(box, remove);
+				} else {
+					remove();
+				}
+			},
+		},
+	};
+
+	// The data attributes, delegated, unless Bootstrap's own script is on the page
+	document.addEventListener('click', (event) => {
+		const target = event.target;
+
+		if (!target || !target.closest) {
+			return;
+		}
+
+		// A button of a modal clicking one in the modal's frame (data-frame-click="#saveBtn"), before it closes the modal
+		const frameButton = target.closest('[data-frame-click]');
+
+		if (frameButton) {
+			const holder = frameButton.closest('.modal');
+			const frame = holder && holder.querySelector('iframe');
+			let inner = null;
+
+			try {
+				inner = frame && frame.contentDocument ? frame.contentDocument.querySelector(frameButton.getAttribute('data-frame-click')) : null;
+			} catch (error) {
+				inner = null;
+			}
+
+			if (inner) {
+				inner.click();
+			}
+		}
+
+		if (!bootstrapLoaded('dropdown')) {
+			const toggle = target.closest(CMS.bootstrap.dropdown.toggles);
+
+			if (toggle) {
+				event.preventDefault();
+				CMS.bootstrap.dropdown.toggle(toggle);
+			} else if (!target.closest('.dropdown form')) {
+				CMS.bootstrap.dropdown.clear();
+			}
+		}
+
+		const collapseToggle = !bootstrapLoaded('collapse') && target.closest('[data-toggle="collapse"]');
+
+		if (collapseToggle) {
+			const element = bsTarget(collapseToggle);
+
+			event.preventDefault();
+
+			if (element) {
+				const parent = collapseToggle.getAttribute('data-parent');
+
+				CMS.bootstrap.collapse.state(element, { parent });
+
+				// The other toggles of an accordion are marked closed, as Joomla's accordion script did
+				if (parent && !element.classList.contains('in')) {
+					Array.prototype.forEach.call(
+						document.querySelectorAll('[data-toggle="collapse"][data-parent="' + parent + '"]'),
+						(other) => other !== collapseToggle && other.classList.add('collapsed')
+					);
+				}
+
+				CMS.bootstrap.collapse.toggle(element);
+			}
+		}
+
+		const tabLink = !bootstrapLoaded('tab') && target.closest(CMS.bootstrap.tab.toggles);
+
+		if (tabLink) {
+			event.preventDefault();
+			CMS.bootstrap.tab.show(tabLink);
+		}
+
+		if (!bootstrapLoaded('modal')) {
+			const opener = target.closest('[data-toggle="modal"]');
+
+			if (opener) {
+				const element = bsTarget(opener);
+				const href = opener.getAttribute('href');
+
+				event.preventDefault();
+
+				if (element) {
+					const restore = () => {
+						element.removeEventListener('cms:modal-hidden', restore);
+						opener.focus();
+					};
+
+					element.addEventListener('cms:modal-hidden', restore);
+					CMS.bootstrap.modal.toggle(element, {
+						remote: href && !/^#/.test(href) && !/#[^\s]+$/.test(href) ? href : false,
+						backdrop: opener.hasAttribute('data-backdrop') ? (opener.getAttribute('data-backdrop') === 'static' ? 'static' : opener.getAttribute('data-backdrop') !== 'false') : undefined,
+						keyboard: opener.hasAttribute('data-keyboard') ? opener.getAttribute('data-keyboard') !== 'false' : undefined,
+					});
+				}
+			} else {
+				const dismiss = target.closest('[data-dismiss="modal"]');
+				const element = dismiss && dismiss.closest('.modal');
+
+				if (element) {
+					event.preventDefault();
+					CMS.bootstrap.modal.hide(element);
+				}
+			}
+		}
+
+		if (!bootstrapLoaded('alert')) {
+			const dismiss = target.closest('[data-dismiss="alert"]');
+
+			if (dismiss) {
+				event.preventDefault();
+				CMS.bootstrap.alert.close(dismiss);
+			}
+		}
+	});
+
+	document.addEventListener('keydown', (event) => {
+		const element = !bootstrapLoaded('dropdown') && event.target && event.target.closest
+			&& event.target.closest(CMS.bootstrap.dropdown.toggles + ', [role="menu"]');
+
+		if (element) {
+			CMS.bootstrap.dropdown.keydown(event, element);
+		}
+	});
+
+	// What jQuery's plugin names do with an element and an option (Bootstrap 2's calls: .modal('show'), .collapse({...}), ...)
+	const bootstrapRunners = {
+		dropdown(element, option) {
+			if (option === 'toggle') {
+				CMS.bootstrap.dropdown.toggle(element);
+			}
+		},
+
+		collapse(element, option) {
+			const known = CMS.bootstrap.collapse.states.has(element);
+			const options = option && typeof option === 'object' ? option : {};
+
+			CMS.bootstrap.collapse.state(element, options);
+
+			if (typeof option === 'string') {
+				if (['show', 'hide', 'toggle'].indexOf(option) >= 0) {
+					CMS.bootstrap.collapse[option](element);
+				}
+			} else if (!known && options.toggle !== false) {
+				CMS.bootstrap.collapse.toggle(element);
+			}
+		},
+
+		tab(element, option) {
+			if (option === 'show') {
+				CMS.bootstrap.tab.show(element);
+			}
+		},
+
+		modal(element, option) {
+			if (typeof option === 'string') {
+				if (['show', 'hide', 'toggle'].indexOf(option) >= 0) {
+					CMS.bootstrap.modal[option](element);
+				}
+			} else if (!option || option.show !== false) {
+				CMS.bootstrap.modal.show(element, option);
+			} else {
+				CMS.bootstrap.modal.state(element, option);
+			}
+		},
+
+		alert(element, option) {
+			if (option === 'close') {
+				CMS.bootstrap.alert.close(element);
+			}
+		},
+
+		tooltip(element, option) {
+			CMS.tip.attach(element, 'tooltip', option);
+		},
+
+		popover(element, option) {
+			CMS.tip.attach(element, 'popover', option);
+		},
+	};
+
+	/**
+	 * A plugin's call on elements (a selector, an element or a list), by Bootstrap's script when it's on the page,
+	 * otherwise by these: what JHtml's Bootstrap helpers start pages with
+	 *
+	 * @param  {string}                 name      dropdown, collapse, tab, modal, alert, tooltip or popover
+	 * @param  {string|Element|Array}   elements
+	 * @param  {string|Object}          option    A method's name, or options
+	 */
+	CMS.bootstrap.call = (name, elements, option) => {
+		const list = typeof elements === 'string' ? document.querySelectorAll(elements) : (elements && elements.length !== undefined ? elements : [elements]);
+
+		if (bootstrapLoaded(name)) {
+			window.jQuery(list)[name](option);
+		} else if (bootstrapRunners[name]) {
+			Array.prototype.forEach.call(list, (element) => element && bootstrapRunners[name](element, option));
+		}
+	};
+
+	/*
+	 * Tab sets of JHtml bootstrap.startTabSet: their list (ul[data-tabs-for]) filled from the panes' titles (data-tab-title),
+	 * as the tab helpers' inline scripts did, before other scripts look for the tabs (in jQuery's ready queue when it's on
+	 * the page)
+	 */
+	CMS.bootstrap.buildTabs = (root) => {
+		Array.prototype.forEach.call((root || document).querySelectorAll('ul.nav-tabs[data-tabs-for]'), (list) => {
+			const content = document.getElementById(list.getAttribute('data-tabs-for'));
+
+			if (!content || list.children.length) {
+				return;
+			}
+
+			Array.prototype.forEach.call(content.children, (pane) => {
+				if (!pane.classList.contains('tab-pane') || !pane.hasAttribute('data-tab-title')) {
+					return;
+				}
+
+				const item = document.createElement('li');
+				const link = document.createElement('a');
+
+				item.className = pane.classList.contains('active') ? 'active' : '';
+				link.href = '#' + pane.id;
+				link.setAttribute('data-toggle', 'tab');
+				link.innerHTML = pane.getAttribute('data-tab-title');
+				item.appendChild(link);
+				list.appendChild(item);
+			});
+		});
+	};
+
+	if (window.jQuery) {
+		window.jQuery(() => CMS.bootstrap.buildTabs());
+	} else {
+		CMS.ready(() => CMS.bootstrap.buildTabs());
+	}
+
+	// Joomla's modals opened by Bootstrap's own script (an extension loaded it): their iframe, body.modal-open and fitting
+	CMS.ready(() => {
+		const jq = window.jQuery;
+
+		if (!jq) {
+			return;
+		}
+
+		const own = (event) => bootstrapLoaded('modal') && event.target.hasAttribute && event.target.hasAttribute('data-cms-modal');
+
+		jq(document).on('show', '[data-cms-modal]', (event) => {
+			if (own(event)) {
+				document.body.classList.add('modal-open');
+				CMS.bootstrap.modal.prepare(event.target);
+			}
+		}).on('shown', '[data-cms-modal]', (event) => {
+			if (own(event)) {
+				CMS.bootstrap.modal.fit(event.target);
+			}
+		}).on('hide', '[data-cms-modal]', (event) => {
+			if (own(event)) {
+				document.body.classList.remove('modal-open');
+				Array.prototype.forEach.call(event.target.querySelectorAll('.modal-body'), (body) => {
+					body.style.maxHeight = '';
+					body.style.overflowY = '';
+				});
+
+				if (CMS.tip && CMS.tip.hideAll) {
+					CMS.tip.hideAll();
+				}
+			}
+		});
+	});
+
+	// jQuery's names for them, for extensions' scripts, where Bootstrap's script isn't on the page
+	const bootstrapJquery = () => {
+		const jq = window.jQuery;
+
+		if (!jq || !jq.fn) {
+			return false;
+		}
+
+		Object.keys(bootstrapRunners).forEach((name) => {
+			if (!jq.fn[name]) {
+				jq.fn[name] = function plugin(option) {
+					return this.each((index, element) => bootstrapRunners[name](element, option));
+				};
+				jq.fn[name].cms = true;
+			}
+		});
+
+		return true;
+	};
+
+	if (!bootstrapJquery()) {
+		document.addEventListener('readystatechange', bootstrapJquery);
+	}
+
 	/* --- The open tab of Bootstrap tab sets, kept while browsing (behavior.tabstate) --- */
 
 	/*
@@ -9297,6 +10291,9 @@
 			}
 
 			tabState.started = true;
+
+			// The tab helpers' lists first: tabs are opened by clicking them
+			CMS.bootstrap.buildTabs();
 
 			// What tabs-state.js added to jQuery
 			const $ = window.jQuery;

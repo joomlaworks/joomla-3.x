@@ -91,11 +91,9 @@ $listDirn   = $this->escape($this->state->get('list.direction'));
 		        'height'      => '370px',
 		        'width'       => '300px',
 		        'modalWidth'  => '40',
-		        'footer'      => '<button type="button" class="btn" data-dismiss="modal"'
-		                . ' onclick="jQuery(\'#downloadModal iframe\').contents().find(\'#closeBtn\').click();">'
+		        'footer'      => '<button type="button" class="btn" data-dismiss="modal" data-frame-click="#closeBtn">'
 		                . JText::_('COM_BANNERS_CANCEL') . '</button>'
-		                . '<button type="button" class="btn btn-success"'
-		                . ' onclick="jQuery(\'#downloadModal iframe\').contents().find(\'#exportBtn\').click();">'
+		                . '<button type="button" class="btn btn-success" data-frame-click="#exportBtn">'
 		                . JText::_('COM_BANNERS_TRACKS_EXPORT') . '</button>',
 		    )
 		); ?>

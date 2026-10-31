@@ -11,6 +11,9 @@ defined('_JEXEC') or die;
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
+// The Menus Assignment's buttons (js/templates.js): data-check-toggle
+JHtml::_('script', 'administrator/components/com_templates/js/templates.min.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
+
 $user = JFactory::getUser();
 
 ?>
@@ -42,7 +45,7 @@ $description = JLayoutHelper::render('joomla.edit.fieldset', $this);
 ?>
 					<?php if ($description) : ?>
 						<p class="readmore">
-							<a href="#" onclick="jQuery('.nav-tabs a[href=\'#description\']').tab('show');">
+							<a href="#" onclick="CMS.bootstrap.call('tab', '.nav-tabs a[href=\'#description\']', 'show'); return false;">
 								<?php echo JText::_('JGLOBAL_SHOW_FULL_DESCRIPTION'); ?>
 							</a>
 						</p>

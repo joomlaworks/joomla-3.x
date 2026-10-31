@@ -76,8 +76,9 @@ if (!class_exists('IsisHelper', false)) {
             // No legacy markup: no scripts and stylesheets for old Internet Explorer versions
             static::dropConditionalAssets($document);
 
-            // Add JavaScript Frameworks
-            JHtml::_('bootstrap.framework');
+            // The CMS's script (global.js: Bootstrap's dropdowns, collapse, tabs, modals and alerts, without jQuery or Bootstrap's
+            // own script, which pages and extensions still get by asking for them)
+            JHtml::_('behavior.cms');
 
             // Add template js
             JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));
@@ -173,8 +174,9 @@ if (!class_exists('IsisHelper', false)) {
             // No legacy markup: no scripts and stylesheets for old Internet Explorer versions
             static::dropConditionalAssets($document);
 
-            // Add JavaScript Frameworks
-            JHtml::_('bootstrap.framework');
+            // The CMS's script (global.js: Bootstrap's dropdowns, collapse, tabs, modals and alerts, without jQuery or Bootstrap's
+            // own script, which pages and extensions still get by asking for them)
+            JHtml::_('behavior.cms');
 
             // Add template js
             JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));

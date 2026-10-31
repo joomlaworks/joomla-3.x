@@ -62,81 +62,12 @@ if (isset($params['keyboard'])) {
     $modalAttributes['data-keyboard'] = (is_bool($params['keyboard']) ? ($params['keyboard'] ? 'true' : 'false') : 'true');
 }
 
-/**
- * These lines below are for disabling scrolling of parent window.
- * $('body').addClass('modal-open');
- * $('body').removeClass('modal-open')
- *
- * Scrolling inside bootstrap modals on small screens (adapt to window viewport and avoid modal off screen).
- *      - max-height    .modal-body     Max-height for the modal body
- *                                      When height of the modal is too high for the window viewport height.
- *      - max-height    .iframe         Max-height for the iframe (Deducting the padding of the modal-body)
- *                                      When URL option is set and height of the iframe is higher than max-height of the modal body.
- *
- * Fix iOS scrolling inside bootstrap modals
- *      - overflow-y    .modal-body     When max-height is set for modal-body
- *
- * Specific hack for Bootstrap 2.3.x
+/*
+ * The CMS's modal (CMS.bootstrap.modal, global.js) acts on data-cms-modal: body.modal-open while it's open, the url's page
+ * in a new iframe each time it opens (the body layout's <template class="modal-iframe">), and a body which would leave the
+ * window scrolling instead; tooltips hidden when it closes.
  */
-$script[] = "jQuery(document).ready(function($) {";
-$script[] = "   $('#" . $selector . "').on('show.bs.modal', function() {";
-
-$script[] = "       $('body').addClass('modal-open');";
-
-if (isset($params['url'])) {
-    $iframeHtml = JLayoutHelper::render('joomla.modal.iframe', $displayData);
-
-    // Script for destroying and reloading the iframe
-    $script[] = "       var modalBody = $(this).find('.modal-body');";
-    $script[] = "       modalBody.find('iframe').remove();";
-    $script[] = "       modalBody.prepend('" . trim($iframeHtml) . "');";
-} else {
-    // Tooltips of .modalTooltip: CMS.tip (JHtml bootstrap.tooltip above), nothing to start here
-    $script[] = "       return;";
-}
-
-// Adapt modal body max-height to window viewport if needed, when the modal has been made visible to the user.
-$script[] = "   }).on('shown.bs.modal', function() {";
-
-// Get height of the modal elements.
-$script[] = "       var modalHeight = $('div.modal:visible').outerHeight(true),";
-$script[] = "           modalHeaderHeight = $('div.modal-header:visible').outerHeight(true),";
-$script[] = "           modalBodyHeightOuter = $('div.modal-body:visible').outerHeight(true),";
-$script[] = "           modalBodyHeight = $('div.modal-body:visible').height(),";
-$script[] = "           modalFooterHeight = $('div.modal-footer:visible').outerHeight(true),";
-
-// Get padding top (jQuery position().top not working on iOS devices and webkit browsers, so use of Javascript instead)
-$script[] = "           padding = document.getElementById('" . $selector . "').offsetTop,";
-
-// Calculate max-height of the modal, adapted to window viewport height.
-$script[] = "           maxModalHeight = ($(window).height()-(padding*2)),";
-
-// Calculate max-height for modal-body.
-$script[] = "           modalBodyPadding = (modalBodyHeightOuter-modalBodyHeight),";
-$script[] = "           maxModalBodyHeight = maxModalHeight-(modalHeaderHeight+modalFooterHeight+modalBodyPadding);";
-
-if (isset($params['url'])) {
-    // Set max-height for iframe if needed, to adapt to viewport height.
-    $script[] = "       var iframeHeight = $('.iframe').height();";
-    $script[] = "       if (iframeHeight > maxModalBodyHeight){;";
-    $script[] = "           $('.modal-body').css({'max-height': maxModalBodyHeight, 'overflow-y': 'auto'});";
-    $script[] = "           $('.iframe').css('max-height', maxModalBodyHeight-modalBodyPadding);";
-    $script[] = "       }";
-} else {
-    // Set max-height for modal-body if needed, to adapt to viewport height.
-    $script[] = "       if (modalHeight > maxModalHeight){;";
-    $script[] = "           $('.modal-body').css({'max-height': maxModalBodyHeight, 'overflow-y': 'auto'});";
-    $script[] = "       }";
-}
-
-$script[] = "   }).on('hide.bs.modal', function () {";
-$script[] = "       $('body').removeClass('modal-open');";
-$script[] = "       $('.modal-body').css({'max-height': 'initial', 'overflow-y': 'initial'});";
-$script[] = "       window.CMS && CMS.tip && CMS.tip.hideAll();";
-$script[] = "   });";
-$script[] = "});";
-
-JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
+$modalAttributes['data-cms-modal'] = '';
 ?>
 <div id="<?php echo $selector; ?>" <?php echo ArrayHelper::toString($modalAttributes); ?>>
 	<?php

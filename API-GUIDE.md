@@ -32,6 +32,7 @@ For commands of your own on the command line, see [CLI-GUIDE.md](CLI-GUIDE.md). 
   - [Item pickers (Article, Category, Contact, Menu Item, News Feed)](#item-pickers-article-category-contact-menu-item-news-feed)
   - [Subforms](#subforms)
   - [Tooltips, tabs, sliders, tree, password meter](#tooltips-tabs-sliders-tree-password-meter)
+  - [Bootstrap's plugins without Bootstrap's script, and jQuery](#bootstraps-plugins-without-bootstraps-script-and-jquery)
 - [Other additions](#other-additions)
 - [Compatibility with stock Joomla 3, Joomla 4 and later](#compatibility-with-stock-joomla-3-joomla-4-and-later)
 
@@ -560,6 +561,24 @@ The deprecated Repeatable field (`type="repeatable"`) opens its table in the CMS
 - **Password fields with `strengthmeter="true"`:** `CMS.password.meter(input, {threshold: 66})` draws the bar and sets `data-passwordstrength` on the field.
 
 `behavior.modal` and `behavior.tooltip` no longer load jQuery or MooTools. Code which relied on them for that must ask for `jquery.framework` or `behavior.framework` itself.
+
+### Bootstrap's plugins without Bootstrap's script, and jQuery
+
+**Since 3.18 Isis and Prothero load neither jQuery nor Bootstrap's script on every page.** An administrator page of yours that uses jQuery must ask for it, as Joomla always documented: `JHtml::_('jquery.framework')`, or `JHtml::_('bootstrap.framework')` for Bootstrap's plugins too. Pages that ask get them as before.
+
+You often don't need them. `global.js` (on every administrator page) does Bootstrap 2.3's dropdowns, collapse (accordions), tabs and pills, modals and alerts on Bootstrap's own markup and data attributes, so this works with no script of yours:
+
+```html
+<a href="#notes" data-toggle="tab">Notes</a>
+<button type="button" class="btn" data-toggle="modal" data-target="#help">Help</button>
+<div id="help" class="modal hide fade" tabindex="-1">...<button type="button" class="close" data-dismiss="modal">&times;</button>...</div>
+```
+
+From a script, `CMS.bootstrap.call(name, elements, option)` does what Bootstrap's jQuery calls did (`CMS.bootstrap.call('modal', '#help', 'show')`, `('tab', link, 'show')`, `('collapse', '#panel', 'toggle')`), through Bootstrap's script when the page has it. Where jQuery is on the page without Bootstrap's script, `jQuery(...).modal()`, `.tab()`, `.collapse()`, `.dropdown()`, `.alert()`, `.tooltip()` and `.popover()` are stand-ins on the same code; Bootstrap's other jQuery plugins (button, typeahead, affix, scrollspy, carousel) need `bootstrap.framework`.
+
+Events: through jQuery when it's on the page, with Bootstrap's names (`show`, `shown`, `hide`, `hidden`; `hideme` for collapse, as Joomla's copy of Bootstrap had it; `close`, `closed` for alerts; `.on('show.bs.modal')` gets them too), and natively as `cms:modal-show`, `cms:tab-shown`, `cms:collapse-hidden` and so on (`event.detail.relatedTarget`). A `show` or `hide` whose event is cancelled doesn't happen. Listen through jQuery when it's there, natively otherwise, not both.
+
+`JHtml::_('bootstrap.renderModal')`, the tab helpers (`startTabSet`, `addTab`), `startAccordion` and the `modal()`, `alert()` and `dropdown()` helpers no longer load Bootstrap's script. A modal of `renderModal` with a `url` opens that page in a new iframe each time. A button in a modal can click one in the modal's frame: `<button type="button" class="btn btn-primary" data-frame-click="#saveBtn">`.
 
 ## OTHER ADDITIONS
 

@@ -95,10 +95,13 @@ class PopupButton extends ToolbarButton
 
         $html[] = \JHtml::_('bootstrap.renderModal', 'modal-' . $name, $params);
 
-        // If an $onClose event is passed, add it to the modal JS object
+        // If an $onClose event is passed, run it when the modal closes: its "hide" event through jQuery when the page has it
+        // (the CMS's modal and Bootstrap's both send it there), else the CMS's native one
         if ($onClose !== '') {
             $html[] = '<script>'
-                . 'jQuery(\'#modal-' . $name . '\').on(\'hide\', function () {' . $onClose . ';});'
+                . '(function (modal) { var close = function () {' . $onClose . ';};'
+                . ' if (window.jQuery) { window.jQuery(modal).on("hide", close); } else if (modal) { modal.addEventListener("cms:modal-hide", close); } })'
+                . '(document.getElementById(' . json_encode('modal-' . $name, JSON_HEX_TAG | JSON_HEX_AMP) . '));'
                 . '</script>';
         }
 

@@ -83,13 +83,8 @@ abstract class JHtmlBootstrap
             return;
         }
 
-        // Include Bootstrap framework
-        JHtml::_('bootstrap.framework');
-
-        // Attach the alerts to the document
-        JFactory::getDocument()->addScriptDeclaration(
-            'jQuery(function($){ $(' . json_encode('.' . $selector) . ').alert(); });'
-        );
+        // The CMS's alerts (global.js) act on their data attributes (data-dismiss="alert"), as Bootstrap's did
+        JHtml::_('behavior.cms');
 
         static::$loaded[__METHOD__][$selector] = true;
 
@@ -182,13 +177,8 @@ abstract class JHtmlBootstrap
             return;
         }
 
-        // Include Bootstrap framework
-        JHtml::_('bootstrap.framework');
-
-        // Attach the dropdown to the document
-        JFactory::getDocument()->addScriptDeclaration(
-            'jQuery(function($){ $(' . json_encode('.' . $selector) . ').dropdown(); });'
-        );
+        // The CMS's dropdowns (global.js) act on their data attributes (data-toggle="dropdown"), as Bootstrap's did
+        JHtml::_('behavior.cms');
 
         static::$loaded[__METHOD__][$selector] = true;
 
@@ -250,8 +240,8 @@ abstract class JHtmlBootstrap
         $sig = md5(serialize(array($selector, $params)));
 
         if (!isset(static::$loaded[__METHOD__][$sig])) {
-            // Include Bootstrap framework
-            JHtml::_('bootstrap.framework');
+            // The CMS's Bootstrap plugins (global.js), or Bootstrap's own when an extension loaded it
+            JHtml::_('behavior.cms');
 
             // Setup options object
             $opt['backdrop'] = isset($params['backdrop']) ? (bool) $params['backdrop'] : true;
@@ -259,11 +249,8 @@ abstract class JHtmlBootstrap
             $opt['show']     = isset($params['show']) ? (bool) $params['show'] : false;
             $opt['remote']   = isset($params['remote']) ? $params['remote'] : '';
 
-            $options = JHtml::getJSObject($opt);
-
-            // Attach the modal to document
-            JFactory::getDocument()->addScriptDeclaration(
-                'jQuery(function($){ $(' . json_encode('#' . $selector) . ').modal(' . $options . '); });'
+            JFactory::getDocument()->addReadyScript(
+                'CMS.bootstrap.call("modal", ' . json_encode('#' . $selector, JSON_HEX_TAG | JSON_HEX_AMP) . ', ' . json_encode($opt, JSON_HEX_TAG | JSON_HEX_AMP) . ');'
             );
 
             // Set static array
@@ -297,8 +284,8 @@ abstract class JHtmlBootstrap
      */
     public static function renderModal($selector = 'modal', $params = array(), $body = '')
     {
-        // Include Bootstrap framework
-        JHtml::_('bootstrap.framework');
+        // The CMS's Bootstrap plugins (global.js): the layout's markup and data attributes need nothing else
+        JHtml::_('behavior.cms');
 
         $layoutData = array(
             'selector' => $selector,
@@ -653,9 +640,6 @@ abstract class JHtmlBootstrap
     public static function startAccordion($selector = 'myAccordian', $params = array())
     {
         if (!isset(static::$loaded[__METHOD__][$selector])) {
-            // Include Bootstrap framework
-            JHtml::_('bootstrap.framework');
-
             // Setup options object
             $opt['parent'] = isset($params['parent']) ? ($params['parent'] == true ? '#' . $selector : $params['parent']) : false;
             $opt['toggle'] = isset($params['toggle']) ? (bool) $params['toggle'] : !($opt['parent'] === false || isset($params['active']));
@@ -664,48 +648,39 @@ abstract class JHtmlBootstrap
             $onHide = isset($params['onHide']) ? (string) $params['onHide'] : null;
             $onHidden = isset($params['onHidden']) ? (string) $params['onHidden'] : null;
 
-            $options = JHtml::getJSObject($opt);
+            // The slides' markup (data-toggle, data-parent, .in) is all the CMS's collapse (global.js) needs; callbacks, which
+            // expect jQuery's events, keep Bootstrap's script
+            if ($onShow || $onShown || $onHide || $onHidden) {
+                JHtml::_('bootstrap.framework');
+
+                $script   = array();
+                $script[] = "jQuery(function($){";
+                $script[] = "\t$('#" . $selector . "')";
+
+                if ($onShow) {
+                    $script[] = "\t.on('show', " . $onShow . ")";
+                }
+
+                if ($onShown) {
+                    $script[] = "\t.on('shown', " . $onShown . ")";
+                }
+
+                if ($onHide) {
+                    $script[] = "\t.on('hideme', " . $onHide . ")";
+                }
+
+                if ($onHidden) {
+                    $script[] = "\t.on('hidden', " . $onHidden . ")";
+                }
+
+                $script[] = "});";
+
+                JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
+            } else {
+                JHtml::_('behavior.cms');
+            }
 
             $opt['active'] = isset($params['active']) ? (string) $params['active'] : '';
-
-            // Build the script.
-            $script = array();
-            $script[] = "jQuery(function($){";
-            $script[] = "\t$('#" . $selector . "').collapse(" . $options . ")";
-
-            if ($onShow) {
-                $script[] = "\t.on('show', " . $onShow . ")";
-            }
-
-            if ($onShown) {
-                $script[] = "\t.on('shown', " . $onShown . ")";
-            }
-
-            if ($onHide) {
-                $script[] = "\t.on('hideme', " . $onHide . ")";
-            }
-
-            if ($onHidden) {
-                $script[] = "\t.on('hidden', " . $onHidden . ")";
-            }
-
-            $parents = array_key_exists(__METHOD__, static::$loaded) ? array_filter(array_column(static::$loaded[__METHOD__], 'parent')) : array();
-
-            if ($opt['parent'] && empty($parents)) {
-                $script[] = "
-					$(document).on('click.collapse.data-api', '[data-toggle=collapse]', function (e) {
-						var \$this   = $(this), href
-						var parent  = \$this.attr('data-parent')
-						var \$parent = parent && $(parent)
-
-						if (\$parent) \$parent.find('[data-toggle=collapse][data-parent=' + parent + ']').not(\$this).addClass('collapsed')
-					})";
-            }
-
-            $script[] = "});";
-
-            // Attach accordion to document
-            JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
 
             // Set static array
             static::$loaded[__METHOD__][$selector] = $opt;
@@ -785,15 +760,11 @@ abstract class JHtmlBootstrap
         $sig = md5(serialize(array($selector, $params)));
 
         if (!isset(static::$loaded[__METHOD__][$sig])) {
-            // Include Bootstrap framework
-            JHtml::_('bootstrap.framework');
+            // The CMS's tabs (global.js): it fills the set's list from the panes' titles and opens a tab on a click
+            JHtml::_('behavior.cms');
 
             // Setup options object
             $opt['active'] = (isset($params['active']) && $params['active']) ? (string) $params['active'] : '';
-
-            // Attach tabs to document
-            JFactory::getDocument()
-                ->addScriptDeclaration(JLayoutHelper::render('libraries.cms.html.bootstrap.starttabsetscript', array('selector' => $selector)));
 
             // Set static array
             static::$loaded[__METHOD__][$sig] = true;
@@ -828,19 +799,14 @@ abstract class JHtmlBootstrap
      */
     public static function addTab($selector, $id, $title)
     {
-        static $tabScriptLayout = null;
         static $tabLayout = null;
 
-        $tabScriptLayout = $tabScriptLayout === null ? new JLayoutFile('libraries.cms.html.bootstrap.addtabscript') : $tabScriptLayout;
         $tabLayout = $tabLayout === null ? new JLayoutFile('libraries.cms.html.bootstrap.addtab') : $tabLayout;
 
         $active = (static::$loaded['JHtmlBootstrap::startTabSet'][$selector]['active'] == $id) ? ' active' : '';
 
-        // Inject tab into UL
-        JFactory::getDocument()
-            ->addScriptDeclaration($tabScriptLayout->render(array('selector' => $selector, 'id' => $id, 'active' => $active, 'title' => $title)));
-
-        return $tabLayout->render(array('id' => $id, 'active' => $active));
+        // The tab's title goes with its pane: global.js writes the set's list from them
+        return $tabLayout->render(array('id' => $id, 'active' => $active, 'title' => $title, 'selector' => $selector));
     }
 
     /**

@@ -16,7 +16,7 @@ $user      = JFactory::getUser();
 ?>
 <label id="jform_menuselect-lbl" for="jform_menuselect"><?php echo JText::_('JGLOBAL_MENU_SELECTION'); ?></label>
 <div class="btn-toolbar">
-	<button class="btn jform-rightbtn" type="button" onclick="jQuery('.chk-menulink').attr('checked', !jQuery('.chk-menulink').attr('checked'));">
+	<button class="btn jform-rightbtn" type="button" data-check-toggle=".chk-menulink">
 		<span class="icon-checkbox-partial" aria-hidden="true"></span> <?php echo JText::_('JGLOBAL_SELECTION_INVERT_ALL'); ?>
 	</button>
 </div>
@@ -26,7 +26,7 @@ $user      = JFactory::getUser();
 		<?php foreach ($menuTypes as &$type) : ?>
 			<li>
 				<div class="menu-links-block">
-					<button class="btn jform-rightbtn" type="button" onclick="jQuery('.menutype-<?php echo $type->menutype; ?>').attr('checked', !jQuery('.menutype-<?php echo $type->menutype; ?>').attr('checked'));">
+					<button class="btn jform-rightbtn" type="button" data-check-toggle=".menutype-<?php echo $this->escape($type->menutype); ?>">
 						<span class="icon-checkbox-partial" aria-hidden="true"></span> <?php echo JText::_('JGLOBAL_SELECTION_INVERT'); ?>
 					</button>
 					<h5><?php echo $type->title ?: $type->menutype; ?></h5>

@@ -2069,8 +2069,8 @@ function jMediaRefreshImgpathTip(tip, els)
 			if (link.classList.contains('audio-preview') || link.classList.contains('video-preview')) {
 				const audio = link.classList.contains('audio-preview');
 
-				if (parent.jQuery) {
-					parent.jQuery(audio ? '#audioPreview' : '#videoPreview').modal('show');
+				if (parent.CMS && parent.CMS.bootstrap) {
+					parent.CMS.bootstrap.call('modal', audio ? '#audioPreview' : '#videoPreview', 'show');
 				}
 
 				parent.MediaManager[audio ? 'playAudio' : 'playVideo'](href, cover);

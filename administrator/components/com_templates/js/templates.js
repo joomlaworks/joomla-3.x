@@ -10,6 +10,8 @@
  * - the open file and its folders are marked in the tree;
  * - an image's crop area (#image-crop, its own size in data-width and data-height) goes to the form's x, y, w and h.
  *
+ * The style's Menus Assignment: the buttons of data-check-toggle check or clear their group of menu items.
+ *
  * The preview of a template (its thumbnail's button, data-template-preview: the image's address) opens in CMS.modal, as
  * wide as the image or the window allows, scrolling when the image is taller than the window.
  */
@@ -41,6 +43,21 @@
 		}, { once: true });
 		image.src = button.getAttribute('data-template-preview');
 	};
+
+	// A button turning a group of checkboxes on or off (data-check-toggle: their selector; the opposite of the first's state),
+	// the template style's Menus Assignment
+	document.addEventListener('click', (event) => {
+		const toggle = event.target.closest && event.target.closest('[data-check-toggle]');
+
+		if (toggle) {
+			const boxes = document.querySelectorAll(toggle.getAttribute('data-check-toggle'));
+			const checked = !(boxes[0] && boxes[0].checked);
+
+			boxes.forEach((box) => {
+				box.checked = checked;
+			});
+		}
+	});
 
 	document.addEventListener('click', (event) => {
 		const button = event.target.closest && event.target.closest('[data-template-preview]');

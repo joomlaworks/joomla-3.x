@@ -55,6 +55,7 @@ Summary of changes:
 - **Redirects for any address:** Redirects can send any address of the site to a new one, on the site or elsewhere (301 or 302), quickly and before cached pages are served; collected errors (404 and others, off by default) have a list of their own with a "Create Redirect" button, and bulk import checks every line
 
 **New features:**
+- No jQuery or Bootstrap script on administrator pages that don't need them: `global.js` does Bootstrap's dropdowns, collapse, tabs, modals and alerts; Isis' script is plain JavaScript. Extensions using jQuery or Bootstrap in the administrator must ask for them (`JHtml::_('jquery.framework')`)
 - Font stacks instead of web fonts: a font field previewing the 15 stacks of Modern Font Stacks; Protostar's Google Font options replaced by it (System UI by default), Hammond, Finch and Rookwood get font options too
 - Behaviour from markup: forms validate, tooltips and searchable lists work from data attributes (`data-validate`, `data-tooltip`, `data-searchable`, ...) or Joomla's classes, without a call in the view; the administrator keeps the session alive on every page
 - `<jdoc:include type="footer" />`: the CMS's own scripts load at the end of the page (marked files, `addReadyScript()` code, and `global.js`/`frontend.js` where nothing else needs them earlier); framework files and extensions' scripts stay in the head; email cloaking without an inline script per address

@@ -38,12 +38,11 @@ $page = require __DIR__ . '/includes/helper.php';
 	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template-rtl.css" rel="stylesheet" />
 	<?php endif; ?>
 	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
-	<script src="<?php echo JUri::root(true); ?>/media/system/js/jquery.js"></script>
-	<script src="<?php echo JUri::root(true); ?>/media/system/js/jquery-noconflict.js"></script>
-	<script src="<?php echo JUri::root(true); ?>/media/system/js/bootstrap.js"></script>
+	<?php // The CMS's script (its dropdowns and collapse for the menu; no jQuery or Bootstrap's script)?>
+	<script src="<?php echo JUri::root(true); ?>/media/system/js/global.min.js"></script>
 	<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/template.js"></script>
 </head>
-<body class="admin <?php echo $page->option . ' view-' . $page->view . ' layout-' . $page->layout . ' task-' . $page->task; ?>" data-spy="scroll" data-target=".subhead" data-offset="87">
+<body class="admin <?php echo $page->option . ' view-' . $page->view . ' layout-' . $page->layout . ' task-' . $page->task; ?>">
 	<!-- Top Navigation -->
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
@@ -162,38 +161,5 @@ $page = require __DIR__ . '/includes/helper.php';
 		</section>
 		<hr />
 	</div>
-	<script>
-		(function($){
-			// fix sub nav on scroll
-			var $win    = $(window)
-			  , $nav    = $('.subhead')
-			  , navTop  = $('.subhead').length && $('.subhead').offset().top - 40
-			  , isFixed = 0
-
-			processScroll()
-
-			// hack sad times - holdover until rewrite for 2.1
-			$nav.on('click', function ()
-			{
-				if (!isFixed) setTimeout(function () {  $win.scrollTop($win.scrollTop() - 47) }, 10)
-			})
-
-			$win.on('scroll', processScroll)
-
-			function processScroll()
-			{
-				var i, scrollTop = $win.scrollTop()
-				if (scrollTop >= navTop && !isFixed)
-				{
-					isFixed = 1
-					$nav.addClass('subhead-fixed')
-				} else if (scrollTop <= navTop && isFixed)
-				{
-					isFixed = 0
-					$nav.removeClass('subhead-fixed')
-				}
-			}
-		})(jQuery);
-	</script>
 </body>
 </html>

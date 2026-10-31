@@ -45,7 +45,7 @@ class JFormFieldModalAssociation extends JFormField
         $script[] = '   target = document.getElementById("target-association");';
         $script[] = '   document.getElementById("target-association").src = target.getAttribute("data-editurl") + '
                         . '"&task=" + target.getAttribute("data-item") + ".edit" + "&id=" + id';
-        $script[] = '	jQuery("#associationSelect' . $this->id . 'Modal").modal("hide");';
+        $script[] = '	CMS.bootstrap.call("modal", "#associationSelect' . $this->id . 'Modal", "hide");';
         $script[] = '}';
 
         // Add the script to the document head.

@@ -45,7 +45,7 @@ JFactory::getDocument()->addScriptOptions(
  */
 if (!empty($fieldInput)) { // Media Form Field
     if ($isMoo) {
-        $onClick = "window.parent.jInsertFieldValue(document.getElementById('f_url').value, '" . $fieldInput . "');window.parent.jModalClose();window.parent.jQuery('.modal.in').modal('hide');";
+        $onClick = "window.parent.jInsertFieldValue(document.getElementById('f_url').value, '" . $fieldInput . "');window.parent.jModalClose();window.parent.CMS.bootstrap.call('modal', '.modal.in', 'hide');";
     }
 } else { // XTD Image plugin
     $onClick = 'ImageManager.onok();window.parent.jModalClose();';
@@ -74,7 +74,7 @@ if (!empty($fieldInput)) { // Media Form Field
 					<div class="pull-right">
 						<button class="btn btn-success button-save-selected" type="button" <?php if (!empty($onClick)) :
 						    // This is for Mootools compatibility?>onclick="<?php echo $onClick; ?>"<?php endif; ?> data-dismiss="modal"><?php echo JText::_('COM_MEDIA_INSERT'); ?></button>
-						<button class="btn button-cancel" type="button" onclick="window.parent.jQuery('.modal.in').modal('hide');<?php if (!empty($onClick)) :
+						<button class="btn button-cancel" type="button" onclick="window.parent.CMS.bootstrap.call('modal', '.modal.in', 'hide');<?php if (!empty($onClick)) :
 						    // This is for Mootools compatibility?>parent.jModalClose();<?php endif ?>" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
 					</div>
 				</div>

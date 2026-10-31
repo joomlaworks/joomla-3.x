@@ -91,8 +91,7 @@ class MessagesViewMessages extends JViewLegacy
             '<button type="button" class="btn" data-dismiss="modal">'
             . JText::_('JCANCEL')
             . '</button>'
-            . '<button type="button" class="btn btn-success" data-dismiss="modal"'
-            . ' onclick="jQuery(\'#modal-cog iframe\').contents().find(\'#saveBtn\').click();">'
+            . '<button type="button" class="btn btn-success" data-dismiss="modal" data-frame-click="#saveBtn">'
             . JText::_('JSAVE')
             . '</button>'
         );
