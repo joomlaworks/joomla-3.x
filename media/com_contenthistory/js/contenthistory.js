@@ -125,6 +125,33 @@ this.diff_match_patch=diff_match_patch;this.DIFF_DELETE=-1;this.DIFF_INSERT=1;th
 			table.querySelectorAll('tr').forEach((row) => window.ContentHistoryDiff.compare(row));
 		}
 
+		// The comparison's buttons (data-history-show): all rows or the changed ones only, the text or its HTML source
+		const views = {
+			'all-rows': [['.items-equal', '#toolbar-changed-rows'], ['#toolbar-all-rows']],
+			'changed-rows': [['#toolbar-all-rows'], ['.items-equal', '#toolbar-changed-rows']],
+			html: [['.diffhtml', '.diffhtml-header'], ['.diff', '.diff-header']],
+			text: [['.diff', '.diff-header'], ['.diffhtml', '.diffhtml-header']],
+		};
+		const showView = (name) => {
+			views[name].forEach((selectors, hide) => {
+				document.querySelectorAll(selectors.join(', ')).forEach((element) => {
+					element.style.display = hide ? 'none' : '';
+				});
+			});
+		};
+
+		if (document.querySelector('[data-history-show]')) {
+			showView('text');
+			document.addEventListener('click', (event) => {
+				const button = event.target.closest ? event.target.closest('[data-history-show]') : null;
+
+				if (button && views[button.getAttribute('data-history-show')]) {
+					event.preventDefault();
+					showView(button.getAttribute('data-history-show'));
+				}
+			});
+		}
+
 		// The list of versions: Load (one version, into the item's form), Preview (one), Compare (two), in their windows
 		const load = document.getElementById('toolbar-load');
 

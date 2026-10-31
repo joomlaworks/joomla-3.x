@@ -43,7 +43,7 @@ $extension = $this->escape($this->state->get('filter.extension'));
 						</select>
 					</div>
 				</div>
-				<div id="batch-copy-move" class="control-group radio">
+				<div id="batch-copy-move" class="control-group radio" data-showon="<?php echo htmlspecialchars(json_encode(array(array('field' => 'batch[category_id]', 'values' => array(''), 'sign' => '!=', 'op' => ''))), ENT_QUOTES, 'UTF-8'); ?>">
 					<?php echo JText::_('JLIB_HTML_BATCH_MOVE_QUESTION'); ?>
 					<?php echo JHtml::_('select.radiolist', $options, 'batch[move_copy]', '', 'value', 'text', 'm'); ?>
 				</div>

@@ -20,29 +20,14 @@ JHtml::_('formbehavior.chosen', 'select');
 $app = JFactory::getApplication();
 $input = $app->input;
 
-JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbutton = function(task)
-	{
-		if (task == "field.cancel" || document.formvalidator.isValid(document.getElementById("item-form")))
-		{
-			Joomla.submitform(task, document.getElementById("item-form"));
-		}
-	};
-	jQuery(document).ready(function() {
-		jQuery("#jform_title").data("dp-old-value", jQuery("#jform_title").val());
-		jQuery("#jform_title").change(function(data, handler) {
-			if(jQuery("#jform_title").data("dp-old-value") == jQuery("#jform_label").val()) {
-				jQuery("#jform_label").val(jQuery("#jform_title").val());
-			}
+// The label follows the title while they're the same (media/com_fields/js/fields.js)
+JFactory::getDocument()->addScriptOptions('com_fields.label', array('title' => 'jform_title', 'label' => 'jform_label'));
+JHtml::_('script', 'com_fields/fields.min.js', array('version' => 'auto', 'relative' => true));
 
-			jQuery("#jform_title").data("dp-old-value", jQuery("#jform_title").val());
-		});
-	});
-');
 
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_fields&context=' . $input->getCmd('context', 'com_content') . '&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_fields&context=' . $input->getCmd('context', 'com_content') . '&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" data-submit-validate id="item-form" class="form-validate">
 	<?php echo JLayoutHelper::render('joomla.edit.title_alias', $this); ?>
 	<div class="form-horizontal">
 		<?php echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'general')); ?>

@@ -23,24 +23,7 @@ $debugGroups = $this->state->get('params')->get('debugGroups', 1);
 
 JText::script('COM_USERS_GROUPS_CONFIRM_DELETE');
 
-JFactory::getDocument()->addScriptDeclaration('
-		Joomla.submitbutton = function(task) {
-			if (task == "groups.delete") {
-				var i, cids = document.getElementsByName("cid[]");
-				for (i = 0; i < cids.length; i++) {
-					if (cids[i].checked && cids[i].parentNode.getAttribute("data-usercount") != 0) {
-						if (confirm(Joomla.JText._("COM_USERS_GROUPS_CONFIRM_DELETE"))) {
-							Joomla.submitform(task);
-						}
-						return false;
-					}
-				}
-			}
-
-			Joomla.submitform(task);
-			return false;
-		};
-');
+JHtml::_('script', 'administrator/components/com_users/js/users.min.js', array('version' => 'auto'), array('defer' => true));
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_users&view=groups'); ?>" method="post" name="adminForm" id="adminForm">
 <?php if (!empty($this->sidebar)) : ?>

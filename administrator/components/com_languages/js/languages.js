@@ -211,3 +211,63 @@
 		document.addEventListener('keydown', choose);
 	});
 })(window, document, window.Joomla);
+
+/*
+ * The content language form: the flag beside the image list follows the chosen image (a language pack may bring its own
+ * flag as a GIF, also in the flags' old folder). Chosen's changes reach jQuery's handlers only: heard through jQuery when
+ * the page has it.
+ */
+(function (window, document, Joomla) {
+	'use strict';
+
+	const start = () => {
+		const list = document.getElementById('jform_image');
+		const holder = document.getElementById('flag');
+
+		if (!list || !holder) {
+			return;
+		}
+
+		const root = ((Joomla && Joomla.getOptions && Joomla.getOptions('system.paths')) || {}).root || '';
+		let tries = [];
+
+		const update = () => {
+			const flag = list.value.toLowerCase();
+			let image = holder.querySelector('img');
+
+			if (!flag) {
+				if (image) {
+					image.removeAttribute('src');
+					image.removeAttribute('alt');
+				}
+
+				return;
+			}
+
+			if (!image) {
+				image = holder.appendChild(document.createElement('img'));
+			}
+
+			tries = [root + '/media/system/images/flags/' + flag + '.gif', root + '/media/mod_languages/images/' + flag + '.gif'];
+			image.onerror = () => {
+				if (tries.length) {
+					image.src = tries.shift();
+				}
+			};
+			image.alt = flag;
+			image.src = root + '/media/system/images/flags/' + flag + '.webp';
+		};
+
+		if (window.jQuery) {
+			window.jQuery(list).on('change', update);
+		} else {
+			list.addEventListener('change', update);
+		}
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', start);
+	} else {
+		start();
+	}
+})(window, document, window.Joomla);

@@ -298,28 +298,11 @@ class FieldsHelper
          * is changed
          */
         if ($form->getField('catid') && $parts[0] != 'com_fields') {
-            /*
-             * Setting the onchange event to reload the page when the category
-             * has changed
-            */
-            $form->setFieldAttribute('catid', 'onchange', 'categoryHasChanged(this);');
-
-            // Preload spindle-wheel when we need to submit form due to category selector changed
-            JFactory::getDocument()->addScriptDeclaration(
-                "
-			function categoryHasChanged(element) {
-				var cat = jQuery(element);
-				if (cat.val() == '" . $assignedCatids . "')return;
-				Joomla.loadingLayer('show');
-				jQuery('input[name=task]').val('" . $section . ".reload');
-				Joomla.submitform('" . $section . ".reload', element.form);
-			}
-			jQuery( document ).ready(function() {
-				Joomla.loadingLayer('load');
-				var formControl = '#" . $form->getFormControl() . "_catid';
-				if (!jQuery(formControl).val() != '" . $assignedCatids . "'){jQuery(formControl).val('" . $assignedCatids . "');}
-			});"
-            );
+            // The page reloads when the category changes, as the fields depend on it (media/com_fields/js/fields.js)
+            JFactory::getDocument()->addScriptOptions('com_fields.reload', array(
+                $form->getFormControl() . '_catid' => array('task' => $section . '.reload', 'unless' => (string) $assignedCatids),
+            ));
+            JHtml::_('script', 'com_fields/fields.min.js', array('version' => 'auto', 'relative' => true));
         }
 
         // Getting the fields

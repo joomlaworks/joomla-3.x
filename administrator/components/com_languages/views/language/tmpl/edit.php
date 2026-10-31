@@ -14,36 +14,11 @@ JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('behavior.formvalidator');
 JHtml::_('formbehavior.chosen', 'select');
 
-JFactory::getDocument()->addScriptDeclaration(
-    '
-	Joomla.submitbutton = function(task)
-	{
-		if (task == "language.cancel" || document.formvalidator.isValid(document.getElementById("language-form")))
-		{
-			Joomla.submitform(task, document.getElementById("language-form"));
-		}
-	};
-
-	jQuery(document).ready(function() {
-		jQuery("#jform_image").on("change", function() {
-			var flag = this.value.toLowerCase();
-			if (flag) {
-				// The flag (a language pack may bring its own as a GIF, also in the flags\' old folder)
-				var root = "' . JUri::root(true) . '";
-				var tries = [root + "/media/system/images/flags/" + flag + ".gif", root + "/media/mod_languages/images/" + flag + ".gif"];
-				jQuery("#flag img").off("error.flag").on("error.flag", function () { if (tries.length) { this.src = tries.shift(); } })
-					.attr("src", root + "/media/system/images/flags/" + flag + ".webp").attr("alt", flag);
-			}
-			else
-			{
-				jQuery("#flag img").removeAttr("src").removeAttr("alt");
-			}
-	});
-});'
-);
+JHtml::_('behavior.core');
+JHtml::_('script', 'administrator/components/com_languages/js/languages.min.js', array('version' => 'auto'));
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_languages&view=language&layout=edit&lang_id=' . (int) $this->item->lang_id); ?>" method="post" name="adminForm" id="language-form" class="form-validate form-horizontal">
+<form action="<?php echo JRoute::_('index.php?option=com_languages&view=language&layout=edit&lang_id=' . (int) $this->item->lang_id); ?>" method="post" name="adminForm" data-submit-validate id="language-form" class="form-validate form-horizontal">
 
 	<?php echo JLayoutHelper::render('joomla.edit.item_title', $this); ?>
 

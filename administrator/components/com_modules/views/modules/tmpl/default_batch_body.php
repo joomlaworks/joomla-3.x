@@ -61,7 +61,7 @@ $attr = array(
 					</label>
 					<div id="batch-choose-action" class="control-group">
 						<?php echo JHtml::_('select.groupedlist', $positions, 'batch[position_id]', $attr); ?>
-						<div id="batch-copy-move" class="control-group radio">
+						<div id="batch-copy-move" class="control-group radio" data-showon="<?php echo htmlspecialchars(json_encode(array(array('field' => 'batch[position_id]', 'values' => array('', 'nochange'), 'sign' => '!=', 'op' => ''))), ENT_QUOTES, 'UTF-8'); ?>">
 							<?php echo JHtml::_('modules.batchOptions'); ?>
 						</div>
 					</div>

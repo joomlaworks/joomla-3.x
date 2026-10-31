@@ -18,6 +18,7 @@
             <file>controller.php</file>
             <folder>controllers</folder>
             <folder>helpers</folder>
+            <folder>js</folder>
             <folder>models</folder>
             <folder>views</folder>
         </files>

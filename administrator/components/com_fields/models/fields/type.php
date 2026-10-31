@@ -37,7 +37,9 @@ class JFormFieldType extends JFormFieldList
     {
         $return = parent::setup($element, $value, $group);
 
-        $this->onchange = 'typeHasChanged(this);';
+        // The form reloads when the type changes (media/com_fields/js/fields.js)
+        JFactory::getDocument()->addScriptOptions('com_fields.reload', array($this->id => array('task' => 'field.reload')));
+        JHtml::_('script', 'com_fields/fields.min.js', array('version' => 'auto', 'relative' => true));
 
         return $return;
     }
@@ -65,20 +67,6 @@ class JFormFieldType extends JFormFieldList
             function ($a, $b) {
                 return strcmp((string) $a->text, (string) $b->text);
             }
-        );
-
-        JFactory::getDocument()->addScriptDeclaration(
-            "
-			jQuery( document ).ready(function() {
-				Joomla.loadingLayer('load');
-			});
-			function typeHasChanged(element){
-				Joomla.loadingLayer('show');
-				var cat = jQuery(element);
-				jQuery('input[name=task]').val('field.reload');
-				element.form.submit();
-			}
-		"
         );
 
         return $options;

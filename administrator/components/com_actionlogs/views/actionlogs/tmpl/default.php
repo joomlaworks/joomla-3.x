@@ -26,34 +26,7 @@ HTMLHelper::_('formbehavior.chosen', 'select');
 $listOrder  = $this->escape($this->state->get('list.ordering'));
 $listDirn   = $this->escape($this->state->get('list.direction'));
 
-Factory::getDocument()->addScriptDeclaration('
-	Joomla.submitbutton = function(task)
-	{
-		if (task == "actionlogs.exportLogs")
-		{
-			Joomla.submitform(task, document.getElementById("exportForm"));
-
-			return;
-		}
-
-		if (task == "actionlogs.exportSelectedLogs")
-		{
-			// Get id of selected action logs item and pass it to export form hidden input
-			var cids = [];
-
-			jQuery("input[name=\'cid[]\']:checked").each(function() {
-					cids.push(jQuery(this).val());
-			});
-
-			document.exportForm.cids.value = cids.join(",");
-			Joomla.submitform(task, document.getElementById("exportForm"));
-
-			return;
-		}
-
-		Joomla.submitform(task);
-	};
-');
+HTMLHelper::_('script', 'administrator/components/com_actionlogs/js/actionlogs.min.js', array('version' => 'auto'), array('defer' => true));
 ?>
 <form action="<?php echo Route::_('index.php?option=com_actionlogs&view=actionlogs'); ?>" method="post" name="adminForm" id="adminForm">
 	<div id="j-main-container">
