@@ -38,12 +38,6 @@ if ($bsspans < 1) {
 $bscolumns = min($columns, floor(12 / $bsspans));
 $n         = count($this->items);
 
-JFactory::getDocument()->addScriptDeclaration("
-		var resetFilter = function() {
-		document.getElementById('filter-search').value = '';
-	}
-");
-
 ?>
 <form action="<?php echo htmlspecialchars((string) JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if ($this->params->get('filter_field') || $this->params->get('show_pagination_limit')) : ?>
@@ -57,7 +51,7 @@ JFactory::getDocument()->addScriptDeclaration("
 					<button type="button" name="filter-search-button" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" onclick="document.adminForm.submit();" class="btn">
 						<span class="icon-search"></span>
 					</button>
-					<button type="reset" name="filter-clear-button" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" class="btn" onclick="resetFilter(); document.adminForm.submit();">
+					<button type="reset" name="filter-clear-button" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" class="btn" onclick="document.getElementById('filter-search').value = ''; this.form.submit();">
 						<span class="icon-remove"></span>
 					</button>
 				</div>

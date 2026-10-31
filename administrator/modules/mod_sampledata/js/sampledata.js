@@ -8,6 +8,7 @@
 	'use strict';
 
 	let inProgress = false;
+	const settings = () => (window.Joomla && window.Joomla.getOptions && window.Joomla.getOptions('mod_sampledata')) || {};
 
 	const message = (list, text, type) => {
 		const item = document.createElement('li');
@@ -41,7 +42,7 @@
 
 		const loader = document.createElement('li');
 
-		loader.innerHTML = `<img src="${window.modSampledataIconProgress}" width="30" height="30" alt="">`;
+		loader.innerHTML = `<img src="${settings().progress}" width="30" height="30" alt="">`;
 		list.appendChild(loader);
 
 		const body = new FormData();
@@ -49,9 +50,9 @@
 		body.append('type', type);
 		body.append('plugin', `SampledataApplyStep${step}`);
 		body.append('step', step);
-		body.append(window.modSampledataToken, '1');
+		body.append(settings().token, '1');
 
-		fetch(window.modSampledataUrl, { method: 'POST', body, credentials: 'same-origin' })
+		fetch(settings().url, { method: 'POST', body, credentials: 'same-origin' })
 			.then((response) => response.json())
 			.then((response) => {
 				loader.remove();

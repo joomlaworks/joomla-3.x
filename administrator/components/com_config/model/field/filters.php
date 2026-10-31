@@ -39,42 +39,8 @@ class JFormFieldFilters extends JFormField
         // Add translation string for notification
         JText::script('COM_CONFIG_TEXT_FILTERS_NOTE');
 
-        // A group set to No Filtering whose parent or child groups filter: a note (lists drawn by Chosen change through jQuery)
-        $doc = JFactory::getDocument();
-        $doc->addScriptDeclaration('
-			document.addEventListener("DOMContentLoaded", function () {
-				var lists = function (attribute, value) {
-					return document.querySelector("#filter-config select[" + attribute + "=\\"" + value + "\\"]");
-				};
-				var check = function (event) {
-					var select = event.target, other, attribute, next;
-
-					if (!select.closest || !select.closest("#filter-config") || select.tagName !== "SELECT") {
-						return;
-					}
-
-					// No Filtering: the groups below must not filter; anything else: the groups above must
-					attribute = select.value === "NONE" ? "data-parent" : "data-id";
-					next = select.value === "NONE" ? "data-id" : "data-parent";
-					other = lists(attribute, select.getAttribute(next));
-
-					while (other) {
-						if ((select.value === "NONE") === (other.value !== "NONE")) {
-							alert(Joomla.JText._("COM_CONFIG_TEXT_FILTERS_NOTE"));
-							break;
-						}
-
-						other = lists(attribute, other.getAttribute(next));
-					}
-				};
-
-				if (window.jQuery) {
-					window.jQuery(document).on("change", "#filter-config select", check);
-				} else {
-					document.addEventListener("change", check);
-				}
-			});
-		');
+        // A group set to No Filtering whose parent or child groups filter: a note (js/config.js)
+        JHtml::_('script', 'administrator/components/com_config/js/config.js', array('version' => 'auto'), array('defer' => true));
 
         // Get the available user groups.
         $groups = $this->getUserGroups();

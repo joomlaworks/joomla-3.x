@@ -12,30 +12,8 @@ defined('_JEXEC') or die;
 $expanded = (bool) $this->params->get('expand_advanced', 0);
 
 if ($this->params->get('show_advanced', 1)) {
-    // The Advanced Search button shows and hides its panel (it was Bootstrap's collapse, which not every template loads)
-    JFactory::getDocument()->addScriptDeclaration(
-        "document.addEventListener('click', function (event) {\n"
-        . "\tvar toggle = event.target.closest ? event.target.closest('[data-finder-toggle]') : null;\n"
-        . "\tvar panel = toggle ? document.getElementById(toggle.getAttribute('data-finder-toggle')) : null;\n\n"
-        . "\tif (panel) {\n"
-        . "\t\tpanel.hidden = !panel.hidden;\n"
-        . "\t\tpanel.classList.toggle('in', !panel.hidden);\n"
-        . "\t\ttoggle.setAttribute('aria-expanded', panel.hidden ? 'false' : 'true');\n"
-        . "\t}\n"
-        . "});"
-    );
-
-    // Select boxes without a value are left out of the address (the same script as mod_finder's, written once)
-    JFactory::getDocument()->addScriptDeclaration(
-        "document.addEventListener('submit', function (event) {\n"
-        . "\tvar selects = event.target.querySelectorAll('#finder-search #advancedSearch select, [id^=\"mod-finder-searchform\"] [id^=\"mod-finder-advanced\"] select');\n\n"
-        . "\tfor (var i = 0; i < selects.length; i++) {\n"
-        . "\t\tif (!selects[i].value) {\n"
-        . "\t\t\tselects[i].disabled = true;\n"
-        . "\t\t}\n"
-        . "\t}\n"
-        . "});"
-    );
+    // The Advanced Search button, and lists without a value left out of the address (finder.js, as mod_finder)
+    JHtml::_('script', 'com_finder/finder.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
 }
 
 if ($this->params->get('show_autosuggest', 1)) {

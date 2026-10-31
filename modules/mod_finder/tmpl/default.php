@@ -79,17 +79,8 @@ if ($params->get('show_button', 0)) {
 JHtml::_('stylesheet', 'com_finder/finder.css', array('version' => 'auto', 'relative' => true));
 
 if ($show_advanced == 1) {
-    // Select boxes without a value are left out of the address (the same script as the search page's, written once)
-    JFactory::getDocument()->addScriptDeclaration(
-        "document.addEventListener('submit', function (event) {\n"
-        . "\tvar selects = event.target.querySelectorAll('#finder-search #advancedSearch select, [id^=\"mod-finder-searchform\"] [id^=\"mod-finder-advanced\"] select');\n\n"
-        . "\tfor (var i = 0; i < selects.length; i++) {\n"
-        . "\t\tif (!selects[i].value) {\n"
-        . "\t\t\tselects[i].disabled = true;\n"
-        . "\t\t}\n"
-        . "\t}\n"
-        . "});"
-    );
+    // Select boxes without a value are left out of the address (com_finder's finder.js, as the search page)
+    JHtml::_('script', 'com_finder/finder.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
 }
 
 if ($params->get('show_autosuggest', 1)) {

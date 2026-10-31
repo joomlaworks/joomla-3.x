@@ -9,6 +9,15 @@
 (function () {
 	'use strict';
 
+	// The sections' headings (onclick, written by the plugin) open and close them
+	window.toggleContainer = function (name) {
+		var element = document.getElementById(name);
+
+		if (element) {
+			element.style.display = element.style.display === 'none' ? 'block' : 'none';
+		}
+	};
+
 	var KEY = 'joomla-debug-console';
 
 	var load = function () {

@@ -20,8 +20,9 @@
         <folder>views</folder>
     </files>
     <media destination="com_finder" folder="media">
-        <folder>js</folder>
         <folder>css</folder>
+        <folder>images</folder>
+        <folder>js</folder>
     </media>
     <install>
         <sql>

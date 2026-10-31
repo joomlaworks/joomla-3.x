@@ -1734,6 +1734,54 @@
 		},
 	};
 
+	// The list's sidebar (layout joomla.sidebars.submenu): set up by the template's toggleSidebar() (Isis, Prothero); without
+	// one its toggle is hidden
+	CMS.ready(() => {
+		if (!document.getElementById('j-toggle-sidebar-wrapper')) {
+			return;
+		}
+
+		if (typeof window.toggleSidebar === 'function') {
+			window.toggleSidebar(true);
+		} else {
+			['j-toggle-sidebar-header', 'j-toggle-button-wrapper'].forEach((id) => {
+				const element = byId(id);
+
+				if (element) {
+					element.style.display = 'none';
+				}
+			});
+		}
+	});
+
+	// The password field's layout: a meter (data-password-meter, its threshold) and a lock (a button with
+	// data-password-lock, the field's id: Modify enables the field, Cancel empties and locks it again)
+	CMS.ready(() => {
+		document.querySelectorAll('input[data-password-meter]').forEach((input) => {
+			CMS.password.meter(input, { threshold: Number(input.getAttribute('data-password-meter')) || 66 });
+		});
+	});
+
+	document.addEventListener('click', (event) => {
+		const button = event.target.closest ? event.target.closest('[data-password-lock]') : null;
+		const input = button ? byId(button.getAttribute('data-password-lock')) : null;
+
+		if (!input) {
+			return;
+		}
+
+		const unlock = input.disabled;
+
+		button.textContent = button.getAttribute(unlock ? 'data-text-cancel' : 'data-text-modify');
+		button.classList.toggle('active', unlock);
+		button.setAttribute('aria-pressed', unlock ? 'true' : 'false');
+		input.disabled = !unlock;
+
+		if (!unlock) {
+			input.value = '';
+		}
+	});
+
 	/* --- Tree (behavior.tree, what MooTree was) --- */
 
 	// The icons' order in the theme's sprite (media/system/images/mootree.gif), 18px each

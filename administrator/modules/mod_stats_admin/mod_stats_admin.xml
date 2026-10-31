@@ -11,8 +11,9 @@
     <description>MOD_STATS_XML_DESCRIPTION</description>
     <files>
         <filename module="mod_stats_admin">mod_stats_admin.php</filename>
-        <folder>tmpl</folder>
+        <folder>js</folder>
         <folder>language</folder>
+        <folder>tmpl</folder>
         <filename>helper.php</filename>
     </files>
     <languages>

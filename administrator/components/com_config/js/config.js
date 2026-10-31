@@ -73,3 +73,54 @@
 		}
 	});
 })();
+
+/*
+ * Global Configuration's Text Filters: a group set to No Filtering while its parent or child groups filter (or the other
+ * way round) gets a note. Lists drawn by Chosen change through jQuery: heard through it when the page has it.
+ */
+(() => {
+	'use strict';
+
+	const list = (attribute, value) => document.querySelector('#filter-config select[' + attribute + '="' + value + '"]');
+
+	const check = (event) => {
+		const select = event.target;
+
+		if (!select.closest || !select.closest('#filter-config') || select.tagName !== 'SELECT') {
+			return;
+		}
+
+		// No Filtering: the groups below must not filter; anything else: the groups above must
+		const none = select.value === 'NONE';
+		const attribute = none ? 'data-parent' : 'data-id';
+		const next = none ? 'data-id' : 'data-parent';
+		let other = list(attribute, select.getAttribute(next));
+
+		while (other) {
+			if (none === (other.value !== 'NONE')) {
+				window.alert(window.Joomla.JText._('COM_CONFIG_TEXT_FILTERS_NOTE'));
+				break;
+			}
+
+			other = list(attribute, other.getAttribute(next));
+		}
+	};
+
+	const start = () => {
+		if (!document.getElementById('filter-config')) {
+			return;
+		}
+
+		if (window.jQuery) {
+			window.jQuery(document).on('change', '#filter-config select', check);
+		} else {
+			document.addEventListener('change', check);
+		}
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', start);
+	} else {
+		start();
+	}
+})();

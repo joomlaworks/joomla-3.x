@@ -3604,7 +3604,6 @@ class JoomlaInstallerScript
             '/libraries/joomla/registry/format/xml.php',
             '/libraries/joomla/registry/index.html',
             '/libraries/joomla/registry/registry.php',
-            '/media/com_finder/js/finder.js',
             '/media/com_finder/js/highlighter.js',
             '/plugins/user/joomla/postinstall/actions.php',
             '/plugins/user/joomla/postinstall/index.html',
@@ -5127,7 +5126,6 @@ class JoomlaInstallerScript
         $folders = array(
             '/administrator/components/com_admin/sql/updates/sqlsrv',
             '/media/com_finder/images/mime',
-            '/media/com_finder/images',
             '/components/com_media/helpers',
             // Joomla 3.0
             '/administrator/components/com_contact/elements',

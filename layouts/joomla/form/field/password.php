@@ -45,40 +45,13 @@ extract($displayData);
  * @var   boolean  $lock            Is this field locked.
  */
 
-if ($meter) {
-    // CMS.password (global.js): the bar under the field, and data-passwordstrength on it
+// CMS.password (global.js): the meter under the field (data-password-meter, the threshold), and the lock's button (Modify
+// enables the field, Cancel empties and locks it again; the stored password stays)
+if ($meter || $lock) {
     JHtml::_('behavior.cms');
-    JFactory::getDocument()->addScriptDeclaration(
-        'CMS.ready(function () { CMS.password.meter(' . json_encode($id, JSON_HEX_TAG | JSON_HEX_AMP) . ', {threshold: ' . (int) $threshold . '}); });'
-    );
 }
 
 if ($lock) {
-    // The lock's button: Modify enables the field, Cancel empties and locks it again (the stored password stays)
-    JFactory::getDocument()->addScriptDeclaration(
-        'document.addEventListener("DOMContentLoaded", function () {
-			var button = document.getElementById(' . json_encode($id . '_lock', JSON_HEX_TAG | JSON_HEX_AMP) . ');
-			var input = document.getElementById(' . json_encode($id, JSON_HEX_TAG | JSON_HEX_AMP) . ');
-
-			if (!button || !input) {
-				return;
-			}
-
-			button.addEventListener("click", function () {
-				var unlock = input.disabled;
-
-				button.textContent = unlock ? ' . json_encode(JText::_('JCANCEL'), JSON_HEX_TAG | JSON_HEX_AMP) . ' : ' . json_encode(JText::_('JMODIFY'), JSON_HEX_TAG | JSON_HEX_AMP) . ';
-				button.classList.toggle("active", unlock);
-				button.setAttribute("aria-pressed", unlock ? "true" : "false");
-				input.disabled = !unlock;
-
-				if (!unlock) {
-					input.value = "";
-				}
-			});
-		});'
-    );
-
     $disabled = true;
     $hint = str_repeat('*', strlen($value));
     $value = '';
@@ -94,6 +67,7 @@ $attributes = array(
     !empty($maxLength) ? 'maxlength="' . $maxLength . '"' : '',
     $required ? 'required aria-required="true"' : '',
     $autofocus ? 'autofocus' : '',
+    $meter ? 'data-password-meter="' . (int) $threshold . '"' : '',
 );
 
 ?>
@@ -108,6 +82,7 @@ $attributes = array(
 	<?php echo implode(' ', $attributes); ?>
 />
 <?php if ($lock): ?>
-	<button type="button" id="<?php echo $id; ?>_lock" class="btn btn-info" aria-pressed="false"><?php echo JText::_('JMODIFY'); ?></button>
+	<button type="button" id="<?php echo $id; ?>_lock" class="btn btn-info" aria-pressed="false" data-password-lock="<?php echo $id; ?>"
+		data-text-modify="<?php echo htmlspecialchars(JText::_('JMODIFY'), ENT_COMPAT, 'UTF-8'); ?>" data-text-cancel="<?php echo htmlspecialchars(JText::_('JCANCEL'), ENT_COMPAT, 'UTF-8'); ?>"><?php echo JText::_('JMODIFY'); ?></button>
 	</span>
 <?php endif; ?>

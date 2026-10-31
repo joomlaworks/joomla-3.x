@@ -316,3 +316,21 @@ document.addEventListener('DOMContentLoaded', () => {
 		Joomla.loadingLayer('hide');
 	});
 });
+
+/*
+ * The list of items to associate (layout modal, in a frame): a chosen item goes to the function of the page that opened the
+ * list, named by the form's data-function.
+ */
+(function () {
+	'use strict';
+
+	document.addEventListener('click', function (event) {
+		var link = event.target.closest ? event.target.closest('.select-link') : null;
+		var form = document.getElementById('adminForm');
+		var name = form ? form.getAttribute('data-function') : '';
+
+		if (link && name && window.self !== window.top && typeof window.parent[name] === 'function') {
+			window.parent[name](link.getAttribute('data-id'));
+		}
+	});
+})();

@@ -27,11 +27,11 @@ $others = array_filter(JPluginHelper::getPlugin('sampledata'), function ($plugin
     return $plugin->name !== 'blog';
 });
 
-JFactory::getDocument()->addScriptDeclaration('
-	var modSampledataUrl = "index.php?option=com_ajax&format=json&group=sampledata' . ($others ? '&' . Session::getFormToken() . '=1' : '') . '",
-		modSampledataToken = "' . Session::getFormToken() . '",
-		modSampledataIconProgress = "' . JUri::root(true) . '/media/system/images/ajax-loader.gif";
-');
+JFactory::getDocument()->addScriptOptions('mod_sampledata', array(
+    'url'      => 'index.php?option=com_ajax&format=json&group=sampledata' . ($others ? '&' . Session::getFormToken() . '=1' : ''),
+    'token'    => Session::getFormToken(),
+    'progress' => JUri::root(true) . '/media/system/images/ajax-loader.gif',
+));
 
 JFactory::getDocument()->addStyleDeclaration('
 	.sampledata-set { padding: 12px 0; border-bottom: 1px solid rgba(128, 128, 128, 0.25); }

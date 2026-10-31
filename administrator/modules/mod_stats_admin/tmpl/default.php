@@ -9,26 +9,8 @@
 
 defined('_JEXEC') or die;
 
-// A link opens its page on the tab named after # (the tab state, as the page's own tabs keep it)
-JFactory::getDocument()->addScriptDeclaration('
-	document.addEventListener("click", function (event) {
-		var link = event.target.closest ? event.target.closest("a.js-revert") : null;
-
-		if (!link) {
-			return;
-		}
-
-		event.preventDefault();
-		event.stopPropagation();
-
-		var href = link.href;
-		var path = window.location.pathname;
-
-		localStorage.removeItem(href.replace(/&return=[a-zA-Z0-9%]+/, "").replace(/&[a-zA-Z-_]+=[0-9]+/, ""));
-		localStorage.setItem(path + href.split("index.php")[1].split("#")[0], JSON.stringify(["#" + href.split("#")[1]]));
-		window.location.href = href.split("#")[0];
-	});
-');
+// A link opens its page on the tab named after # (js/stats_admin.js)
+JHtml::_('script', 'administrator/modules/mod_stats_admin/js/stats_admin.min.js', array('version' => 'auto'), array('defer' => true));
 ?>
 <?php // The Control Panel shows the icon position's modules without their titles: Quick Icons has headings of its own?>
 <?php if ($module->position === 'icon' && $module->showtitle) : ?>

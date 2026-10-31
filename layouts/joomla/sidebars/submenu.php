@@ -11,22 +11,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.core');
 
-// The template's toggleSidebar() (Isis, Prothero) sets the sidebar up; without one its toggle is hidden
-JFactory::getDocument()->addScriptDeclaration('
-	document.addEventListener("DOMContentLoaded", function () {
-		if (window.toggleSidebar) {
-			toggleSidebar(true);
-		} else {
-			["j-toggle-sidebar-header", "j-toggle-button-wrapper"].forEach(function (id) {
-				var element = document.getElementById(id);
-
-				if (element) {
-					element.style.display = "none";
-				}
-			});
-		}
-	});
-');
+// The template's toggleSidebar() (Isis, Prothero) sets the sidebar up; without one its toggle is hidden (global.js)
 ?>
 
 <div id="j-toggle-sidebar-wrapper">

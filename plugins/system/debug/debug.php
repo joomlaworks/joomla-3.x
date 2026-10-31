@@ -260,12 +260,7 @@ class PlgSystemDebug extends JPlugin
 
         $html = array();
 
-        // Some "mousewheel protecting" JS.
-        $html[] = "<script>function toggleContainer(name)
-		{
-			var e = document.getElementById(name);// MooTools might not be available ;)
-			e.style.display = e.style.display === 'none' ? 'block' : 'none';
-		}</script>";
+        // The sections' toggleContainer() is in debug.js
 
         // For the console's button: the page's time and memory, its queries, and what went wrong (counted before the sections, as
         // showing the errors empties their stack and the profile closes the database connection)
