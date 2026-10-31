@@ -53,8 +53,11 @@ class JDatabaseQueryMysqli extends JDatabaseQuery implements JDatabaseQueryLimit
                     $this->offset = $tmpOffset;
                     $this->limit  = $tmpLimit;
 
-                    // Add support for second order by, offset and limit
-                    $query = PHP_EOL . 'SELECT * FROM (' . $query . PHP_EOL . "ORDER BY $orderBy" . PHP_EOL . ') w';
+                    // Add support for second order by, offset and limit. With the @rownum variable (servers without window
+                    // functions) the derived table's ORDER BY decides the numbers, and MariaDB drops an ORDER BY in a derived
+                    // table without LIMIT (reorder() then renumbered rows by ID)
+                    $limit = $this->hasWindowFunctions() ? '' : ' LIMIT 18446744073709551615';
+                    $query = PHP_EOL . 'SELECT * FROM (' . $query . PHP_EOL . "ORDER BY $orderBy" . $limit . PHP_EOL . ') w';
 
                     if ($this->order) {
                         $query .= (string) $this->order;
@@ -192,9 +195,38 @@ class JDatabaseQueryMysqli extends JDatabaseQuery implements JDatabaseQueryLimit
     public function selectRowNumber($orderBy, $orderColumnAlias)
     {
         $this->validateRowNumber($orderBy, $orderColumnAlias);
-        $this->select("(SELECT @rownum := @rownum + 1 FROM (SELECT @rownum := 0) AS r) AS $orderColumnAlias");
+
+        if ($this->hasWindowFunctions()) {
+            $this->select("ROW_NUMBER() OVER (ORDER BY $orderBy) AS $orderColumnAlias");
+        } else {
+            $this->select("(SELECT @rownum := @rownum + 1 FROM (SELECT @rownum := 0) AS r) AS $orderColumnAlias");
+        }
 
         return $this;
+    }
+
+    /**
+     * Whether the server has window functions (ROW_NUMBER() OVER ...): MySQL 8.0 and MariaDB 10.2 and newer
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    protected function hasWindowFunctions()
+    {
+        if (!$this->db || !method_exists($this->db, 'getVersion')) {
+            return false;
+        }
+
+        try {
+            $version = (string) $this->db->getVersion();
+        } catch (Exception $e) {
+            return false;
+        }
+
+        $mariadb = stripos($version, 'mariadb') !== false || (method_exists($this->db, 'isMariaDb') && $this->db->isMariaDb());
+
+        return version_compare(preg_replace('/[^0-9.].*$/', '', $version), $mariadb ? '10.2' : '8.0', '>=');
     }
 
     /**

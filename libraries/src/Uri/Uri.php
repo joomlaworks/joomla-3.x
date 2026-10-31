@@ -255,7 +255,7 @@ class Uri extends \Joomla\Uri\Uri
      */
     public static function isInternal($url)
     {
-        $url = str_replace('\\', '/', $url);
+        $url = str_replace('\\', '/', (string) $url);
 
         // XSS-related plausibility check, no legitimate internal URL contains these unencoded
         if (preg_match('/["\' <>]/', (string) $url)) {

@@ -46,7 +46,7 @@ defined('_JEXEC') or die;
 <br id="highlighter-start" />
 <ul class="search-results<?php echo $this->pageclass_sfx; ?> list-striped">
 	<?php $this->baseUrl = JUri::getInstance()->toString(array('scheme', 'host', 'port')); ?>
-	<?php foreach ($this->results as $result) : ?>
+	<?php foreach ((array) $this->results as $result) : ?>
 		<?php $this->result = &$result; ?>
 		<?php $layout = $this->getLayoutFile($this->result->layout); ?>
 		<?php echo $this->loadTemplate($layout); ?>

@@ -139,7 +139,7 @@ class Category extends Nested
             return false;
         }
 
-        $this->alias = trim($this->alias);
+        $this->alias = trim((string) $this->alias);
 
         if (empty($this->alias)) {
             $this->alias = $this->title;

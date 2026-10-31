@@ -567,8 +567,16 @@ abstract class FinderIndexerAdapter extends JPlugin
     {
         $items = array();
 
-        // Get the content items to index.
-        $this->db->setQuery($this->getListQuery($query), $offset, $limit);
+        // Get the content items to index, in a fixed order: batches are taken by offset, and without one a database may return
+        // an item in two batches and another in none (SQL Server pages by ROW_NUMBER() OVER (ORDER BY (SELECT 0)))
+        $listQuery = $this->getListQuery($query);
+
+        if ($listQuery instanceof JDatabaseQuery && empty($listQuery->order)
+            && preg_match('/\bAS\s+[`"\[]?a[`"\]]?(?:\s|$)/i', (string) $listQuery->from)) {
+            $listQuery->order('a.id');
+        }
+
+        $this->db->setQuery($listQuery, $offset, $limit);
         $rows = $this->db->loadAssocList();
 
         // Convert the items to result objects.

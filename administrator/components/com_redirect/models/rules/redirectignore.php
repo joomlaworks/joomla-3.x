@@ -32,7 +32,7 @@ class JFormRuleRedirectignore extends JFormRule
      *
      * @since   3.18.0
      */
-    public function test(SimpleXMLElement $element, $value, $group = null, Registry $input = null, JForm $form = null)
+    public function test(SimpleXMLElement $element, $value, $group = null, ?Registry $input = null, ?JForm $form = null)
     {
         JLoader::register('RedirectHelper', JPATH_ADMINISTRATOR . '/components/com_redirect/helpers/redirect.php');
 

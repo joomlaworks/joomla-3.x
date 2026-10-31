@@ -66,6 +66,7 @@ class RedirectControllerErrors extends JControllerLegacy
             return;
         }
 
+        JLoader::register('RedirectHelper', JPATH_ADMINISTRATOR . '/components/com_redirect/helpers/redirect.php');
         $this->setMessage(JText::plural('COM_REDIRECT_N_ERRORS_DELETED', RedirectHelper::purgeErrors()));
     }
 

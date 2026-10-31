@@ -112,7 +112,7 @@ class ActionlogsControllerActionlogs extends JControllerAdmin
             $output = fopen("php://output", "w");
 
             foreach ($rows as $row) {
-                fputcsv($output, $row, $csvDelimiter, escape: '\\');
+                fputcsv($output, $row, $csvDelimiter, '"', '\\');
             }
 
             fclose($output);

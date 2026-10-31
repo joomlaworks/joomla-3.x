@@ -8,7 +8,7 @@ CREATE TABLE "#__messages" (
   "folder_id" tinyint NOT NULL DEFAULT 0,
   "date_time" datetime2(0) NOT NULL DEFAULT '1900-01-01 00:00:00',
   "state" smallint NOT NULL DEFAULT 0,
-  "priority" tinyint NOT NULL,
+  "priority" tinyint NOT NULL DEFAULT 0,
   "subject" nvarchar(255) NOT NULL DEFAULT '',
   "message" nvarchar(max) NOT NULL,
  CONSTRAINT "PK_#__messages_message_id" PRIMARY KEY CLUSTERED

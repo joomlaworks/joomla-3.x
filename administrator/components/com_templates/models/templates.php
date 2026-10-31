@@ -93,7 +93,7 @@ class TemplatesModelTemplates extends JModelList
         // Filter by search in title.
         if ($search = $this->getState('filter.search')) {
             if (stripos($search, 'id:') === 0) {
-                $query->where($db->quoteName('a.id') . ' = ' . (int) substr($search, 3));
+                $query->where($db->quoteName('a.extension_id') . ' = ' . (int) substr($search, 3));
             } else {
                 $search = $db->quote('%' . StringHelper::strtolower($search) . '%');
                 $query->where('(' . ' LOWER(a.element) LIKE ' . $search . ' OR LOWER(a.name) LIKE ' . $search . ')');
@@ -101,7 +101,14 @@ class TemplatesModelTemplates extends JModelList
         }
 
         // Add the list ordering clause.
-        $query->order($db->escape($this->getState('list.ordering', 'a.element')) . ' ' . $db->escape($this->getState('list.direction', 'ASC')));
+        $listOrdering = $this->getState('list.ordering', 'a.element');
+        $listDirn     = $db->escape($this->getState('list.direction', 'ASC'));
+        $query->order($db->escape($listOrdering) . ' ' . $listDirn);
+
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!in_array($listOrdering, array('a.extension_id', 'extension_id'), true)) {
+            $query->order('a.extension_id ' . $listDirn);
+        }
 
         return $query;
     }
