@@ -321,8 +321,9 @@ class MediaControllerFile extends JControllerLegacy
         $base   = realpath(COM_MEDIA_BASE);
         $path   = realpath(JPath::clean(COM_MEDIA_BASE . '/' . ($folder !== '' ? $folder . '/' : '') . $name));
 
-        // A file of the media folder, named as the list names it (no folder in the name)
-        if ($name === '' || $name !== basename($name) || !$base || !$path || strpos($path, $base . DIRECTORY_SEPARATOR) !== 0 || !is_file($path)) {
+        // A file of the media folder, named as the list names it (no folder in the name, not hidden: see isHidden())
+        if ($name === '' || $name !== basename($name) || !$base || !$path || strpos($path, $base . DIRECTORY_SEPARATOR) !== 0 || !is_file($path)
+            || $this->isHidden($name, $path)) {
             $error('COM_MEDIA_ERROR_UNABLE_TO_CROP');
 
             return;
@@ -422,9 +423,9 @@ class MediaControllerFile extends JControllerLegacy
         $base     = realpath(COM_MEDIA_BASE);
         $path     = realpath(JPath::clean(COM_MEDIA_BASE . '/' . ($folder !== '' ? $folder . '/' : '') . $name));
 
-        // An item of the media folder (never the folder itself), named as the list names it
+        // An item of the media folder (never the folder itself), named as the list names it, not hidden (see isHidden())
         if ($name === '' || $name !== basename($name) || !$base || !$path || strpos($path, $base . DIRECTORY_SEPARATOR) !== 0
-            || ($isFolder ? !is_dir($path) : !is_file($path))) {
+            || ($isFolder ? !is_dir($path) : !is_file($path)) || $this->isHidden($name, $path)) {
             $error('COM_MEDIA_ERROR_UNABLE_TO_RENAME', $name);
 
             return;
@@ -466,5 +467,22 @@ class MediaControllerFile extends JControllerLegacy
         $message = JText::sprintf('COM_MEDIA_RENAMED', basename($path), $newName);
 
         echo json_encode(array('status' => '1', 'message' => $message, 'name' => $newName));
+    }
+
+    /**
+     * Whether an item is hidden: its name, or the name of what it leads to (a link), starts with a dot. The list never shows
+     * those, and they include the media folder's protection (images/.htaccess, which stops scripts running there): renaming
+     * one turned that off.
+     *
+     * @param   string  $name  The name asked for
+     * @param   string  $path  Its real path
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    protected function isHidden($name, $path)
+    {
+        return strpos($name, '.') === 0 || strpos(basename($path), '.') === 0;
     }
 }
