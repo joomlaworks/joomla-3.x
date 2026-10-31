@@ -156,7 +156,7 @@ class PlgEditorTinymce extends JPlugin
 
         if ($this->params->exists('mode') && $this->params->exists('alignment')) {
             if ($app->isClient('administrator') && $config_warn_count < 2) {
-                $link = JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $this->getPluginId());
+                $link = JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $this->getPluginId() . '&return=' . urlencode(base64_encode(JUri::getInstance()->toString())));
                 $app->enqueueMessage(JText::sprintf('PLG_TINY_LEGACY_WARNING', $link), 'warning');
                 $app->setUserState('plg_editors_tinymce.config_legacy_warn_count', ++$config_warn_count);
             }

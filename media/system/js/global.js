@@ -9443,7 +9443,22 @@
 
 				Array.prototype.forEach.call(
 					document.querySelectorAll('[data-toggle="collapse"][href$="#' + id + '"], [data-toggle="collapse"][data-target="#' + id + '"]'),
-					(toggle) => toggle.classList.toggle('collapsed', collapsed)
+					(toggle) => {
+						toggle.classList.toggle('collapsed', collapsed);
+						toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+
+						// Expand buttons with labels for both states (the categories' subcategories): the label and a plus or minus icon
+						if (toggle.hasAttribute('data-expand-label')) {
+							const icon = toggle.querySelector('.icon-plus, .icon-minus');
+
+							toggle.setAttribute('aria-label', toggle.getAttribute(collapsed ? 'data-expand-label' : 'data-collapse-label') || '');
+
+							if (icon) {
+								icon.classList.toggle('icon-plus', collapsed);
+								icon.classList.toggle('icon-minus', !collapsed);
+							}
+						}
+					}
 				);
 			},
 
@@ -10092,6 +10107,13 @@
 		}
 
 		const own = (event) => bootstrapLoaded('modal') && event.target.hasAttribute && event.target.hasAttribute('data-cms-modal');
+
+		// Collapses opened and closed by Bootstrap's own script: their toggles' state, as ours mark it
+		jq(document).on('show hideme', '.collapse', (event) => {
+			if (bootstrapLoaded('collapse') && event.target.classList && event.target.classList.contains('collapse')) {
+				CMS.bootstrap.collapse.mark(event.target, event.type === 'hideme');
+			}
+		});
 
 		jq(document).on('show', '[data-cms-modal]', (event) => {
 			if (own(event)) {

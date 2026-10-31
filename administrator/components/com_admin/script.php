@@ -5144,6 +5144,7 @@ class JoomlaInstallerScript
             '/layouts/libraries/cms/html/bootstrap/starttabsetscript.php',
             '/administrator/templates/isis/js/application.js',
             '/administrator/templates/isis/js/classes.js',
+            '/templates/protostar/js/application.js',
             '/templates/rookwood/helper.php',
             '/templates/finch/images/favicon.svg',
             '/templates/hammond/images/favicon.svg',

@@ -219,7 +219,7 @@ class InstallerModelUpdatesites extends InstallerModel
 
             $pluginId = (int) $db->loadResult();
 
-            $link = JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $pluginId);
+            $link = JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $pluginId . '&return=' . urlencode(base64_encode(JUri::getInstance()->toString())));
             $app->enqueueMessage(JText::sprintf('COM_INSTALLER_MSG_UPDATESITES_REBUILD_EXTENSION_PLUGIN_NOT_ENABLED', $link), 'error');
 
             return;

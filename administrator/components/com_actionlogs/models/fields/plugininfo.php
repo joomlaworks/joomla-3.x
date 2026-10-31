@@ -51,7 +51,7 @@ class JFormFieldPluginInfo extends JFormField
 
         $link = JHtml::_(
             'link',
-            JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $result),
+            JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $result . '&return=' . urlencode(base64_encode(JUri::getInstance()->toString()))),
             JText::_('PLG_SYSTEM_ACTIONLOGS_JOOMLA_ACTIONLOG_DISABLED'),
             array('class' => 'alert-link')
         );

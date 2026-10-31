@@ -32,7 +32,7 @@ if ($this->maxLevelcat != 0 && count($this->items[$this->parent->id]) > 0) :
 					<?php endif; ?>
 					<?php if ($this->maxLevelcat > 1 && count($item->getChildren()) > 0) : ?>
 						<a id="category-btn-<?php echo $item->id; ?>" href="#category-<?php echo $item->id; ?>"
-							data-toggle="collapse" data-toggle="button" class="btn btn-mini pull-right" aria-label="<?php echo JText::_('JGLOBAL_EXPAND_CATEGORIES'); ?>"><span class="icon-plus" aria-hidden="true"></span></a>
+							data-toggle="collapse" data-toggle="button" class="btn btn-mini pull-right" aria-label="<?php echo JText::_('JGLOBAL_EXPAND_CATEGORIES'); ?>" aria-expanded="false" data-expand-label="<?php echo JText::_('JGLOBAL_EXPAND_CATEGORIES'); ?>" data-collapse-label="<?php echo JText::_('JGLOBAL_COLLAPSE_CATEGORIES'); ?>"><span class="icon-plus" aria-hidden="true"></span></a>
 					<?php endif; ?>
 				</h3>
 				<?php if ($this->params->get('show_subcat_desc_cat') == 1) : ?>

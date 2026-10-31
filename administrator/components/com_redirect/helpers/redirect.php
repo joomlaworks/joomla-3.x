@@ -139,7 +139,7 @@ class RedirectHelper
         $id   = static::getRedirectPluginId();
 
         if ($id && JFactory::getUser()->authorise('core.edit.state', 'com_plugins')) {
-            $name = '<a class="alert-link" href="' . JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $id) . '">' . $name . '</a>';
+            $name = '<a class="alert-link" href="' . JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $id . '&return=' . urlencode(base64_encode(JUri::getInstance()->toString()))) . '">' . $name . '</a>';
         }
 
         JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_REDIRECT_PLUGIN_MODAL_DISABLED', $name), 'error');

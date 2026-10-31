@@ -101,7 +101,7 @@ $activeRequests = 0;
 							<?php if ($this->privacyPolicyInfo['editLink'] !== '') : ?>
 								<small><a href="<?php echo $this->privacyPolicyInfo['editLink']; ?>"><?php echo Text::_('COM_PRIVACY_EDIT_PRIVACY_POLICY'); ?></a></small>
 							<?php else : ?>
-								<?php $link = Route::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $this->privacyConsentPluginId); ?>
+								<?php $link = Route::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . $this->privacyConsentPluginId . '&return=' . urlencode(base64_encode(JUri::getInstance()->toString()))); ?>
 								<small><a href="<?php echo $link; ?>"><?php echo Text::_('COM_PRIVACY_EDIT_PRIVACY_CONSENT_PLUGIN'); ?></a></small>
 							<?php endif; ?>
 						</div>

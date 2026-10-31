@@ -134,5 +134,6 @@ echo JLayoutHelper::render('joomla.edit.params', $this);
 	</div>
 
 	<input type="hidden" name="task" value="" />
+	<input type="hidden" name="return" value="<?php echo $this->escape(JFactory::getApplication()->input->get('return', '', 'base64')); ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

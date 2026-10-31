@@ -69,7 +69,7 @@ class AssociationsViewAssociations extends JViewLegacy
         $this->activeFilters = $this->get('ActiveFilters');
 
         if (!JLanguageAssociations::isEnabled()) {
-            $link = JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . AssociationsHelper::getLanguagefilterPluginId());
+            $link = JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . AssociationsHelper::getLanguagefilterPluginId() . '&return=' . urlencode(base64_encode(JUri::getInstance()->toString())));
             JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_ASSOCIATIONS_ERROR_NO_ASSOC', $link), 'warning');
         } elseif ($this->state->get('itemtype') == '' || $this->state->get('language') == '') {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_ASSOCIATIONS_NOTICE_NO_SELECTORS'), 'notice');

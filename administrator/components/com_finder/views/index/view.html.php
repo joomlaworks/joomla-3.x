@@ -105,7 +105,7 @@ class FinderViewIndex extends JViewLegacy
         }
 
         if (!$this->pluginState['plg_content_finder']->enabled) {
-            $link = JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . FinderHelper::getFinderPluginId());
+            $link = JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . FinderHelper::getFinderPluginId() . '&return=' . urlencode(base64_encode(JUri::getInstance()->toString())));
             JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_FINDER_INDEX_PLUGIN_CONTENT_NOT_ENABLED', $link), 'warning');
         } elseif ($this->get('TotalIndexed') === 0) {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_FINDER_INDEX_NO_DATA') . '  ' . JText::_('COM_FINDER_INDEX_TIP'), 'notice');

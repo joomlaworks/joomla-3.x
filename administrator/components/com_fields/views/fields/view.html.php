@@ -83,7 +83,7 @@ class FieldsViewFields extends JViewLegacy
 
         // Display a warning if the fields system plugin is disabled
         if (!JPluginHelper::isEnabled('system', 'fields')) {
-            $link = JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . FieldsHelper::getFieldsPluginId());
+            $link = JRoute::_('index.php?option=com_plugins&task=plugin.edit&extension_id=' . FieldsHelper::getFieldsPluginId() . '&return=' . urlencode(base64_encode(JUri::getInstance()->toString())));
             JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_FIELDS_SYSTEM_PLUGIN_NOT_ENABLED', $link), 'warning');
         }
 

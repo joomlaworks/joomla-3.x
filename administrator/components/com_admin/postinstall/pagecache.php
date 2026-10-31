@@ -44,6 +44,6 @@ function admin_postinstall_pagecache_action()
     )->loadResult();
 
     JFactory::getApplication()->redirect(
-        JRoute::_($id ? 'index.php?option=com_plugins&task=plugin.edit&extension_id=' . $id : 'index.php?option=com_plugins&view=plugins', false)
+        JRoute::_($id ? 'index.php?option=com_plugins&task=plugin.edit&extension_id=' . $id . '&return=' . urlencode(base64_encode('index.php?option=com_postinstall&eid=700')) : 'index.php?option=com_plugins&view=plugins', false)
     );
 }
