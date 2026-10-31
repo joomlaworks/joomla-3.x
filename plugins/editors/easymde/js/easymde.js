@@ -105,24 +105,23 @@
 		return `[${file.name.replace(/[[\]]/g, '')}](${path})`;
 	};
 
-	const send = (upload, file, name) => new Promise((resolve) => {
+	const send = (upload, file, name) => {
 		const data = new FormData();
-		const xhr = new XMLHttpRequest();
 
 		data.append('Filedata', file, name);
 		data.append('folder', upload.folder);
 		data.append(upload.token, '1');
-		xhr.open('POST', upload.url);
-		xhr.onerror = () => resolve(null);
-		xhr.onload = () => {
-			try {
-				resolve({ http: xhr.status, response: JSON.parse(xhr.responseText) });
-			} catch (error) {
-				resolve({ http: xhr.status, response: null });
-			}
-		};
-		xhr.send(data);
-	});
+
+		return fetch(upload.url, { method: 'POST', body: data, credentials: 'same-origin' })
+			.then((response) => response.text().then((body) => {
+				try {
+					return { http: response.status, response: JSON.parse(body) };
+				} catch (error) {
+					return { http: response.status, response: null };
+				}
+			}))
+			.catch(() => null);
+	};
 
 	// One file: a placeholder at the cursor ("![Uploading photo.jpg…]()"), then its link, image or player
 	const uploadFile = (cm, upload, file, after, sources) => {
