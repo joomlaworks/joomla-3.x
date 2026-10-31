@@ -29,7 +29,8 @@ defined('_JEXEC') or die;
 			</thead>
 			<tbody>
 				<?php foreach ($entries as $entry) : ?>
-					<tr<?php echo !empty($entry['isLatest']) ? ' class="success"' : ''; ?>>
+					<?php $current = !empty($entry['isLatest']) || !empty($entry['series']); ?>
+					<tr<?php echo $current ? ' class="success"' : ''; ?>>
 						<td>
 							<a href="<?php echo $this->escape($entry['url']); ?>" target="_blank" rel="noopener noreferrer"><?php echo $this->escape($entry['name']); ?></a>
 							<?php if (!empty($entry['note'])) : ?>
@@ -38,7 +39,6 @@ defined('_JEXEC') or die;
 						</td>
 						<?php
                         // Versions in bold, green when current (the latest release, or the latest of a series still maintained)
-                        $current = !empty($entry['isLatest']) || !empty($entry['series']);
 				    $version = '<strong' . ($current ? ' class="text-success"' : '') . '>' . ($entry['version'] !== '' ? $this->escape($entry['version']) : '&#8212;') . '</strong>';
 				    $title   = '';
 

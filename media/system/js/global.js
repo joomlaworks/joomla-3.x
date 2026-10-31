@@ -1,7 +1,7 @@
 /**
  * @copyright  (C) 2009 Open Source Matters, Inc. <https://www.joomla.org>
  * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
- * @copyright  Portions: SqueezeBox 1.3 (C) Harald Kirschner, Rouven Weßling; MooTree (C) Rasmus Schultz; Form.PasswordStrength (C) Al Kent; MIT License
+ * @copyright  Portions: SqueezeBox 1.3 (C) Harald Kirschner, Rouven Weßling; MooTree (C) Rasmus Schultz; Form.PasswordStrength (C) Al Kent; Chosen 1.6.2 (C) Harvest; MIT License
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
