@@ -224,67 +224,22 @@ class HeadRenderer extends DocumentRenderer
             $buffer .= '</script>' . $lnEnd;
         }
 
-        $defaultJsMimes         = array('text/javascript', 'application/javascript', 'text/x-javascript', 'application/x-javascript');
-        $html5NoValueAttributes = array('defer', 'async');
+        $defaultJsMimes = array('text/javascript', 'application/javascript', 'text/x-javascript', 'application/x-javascript');
 
-        // Generate script file links
+        // Generate script file links (those of the footer, when the template has one, are left for it)
+        $footer = $document instanceof HtmlDocument ? $document->getFooterScripts() : array();
+
+        $written = array();
+
         foreach ($document->_scripts as $src => $attribs) {
-            // Check if script uses IE conditional statements.
-            $conditional = isset($attribs['options']) && isset($attribs['options']['conditional']) ? $attribs['options']['conditional'] : null;
-
-            // Check if script uses media version.
-            if (isset($attribs['options']['version']) && $attribs['options']['version'] && strpos((string) $src, '?') === false
-                && ($mediaVersion || $attribs['options']['version'] !== 'auto')) {
-                $src .= '?' . ($attribs['options']['version'] === 'auto' ? $mediaVersion : $attribs['options']['version']);
+            if (!in_array($src, $footer, true)) {
+                $buffer   .= $this->renderScript($document, $src, $attribs, $mediaVersion);
+                $written[] = $src;
             }
+        }
 
-            $buffer .= $tab;
-
-            // This is for IE conditional statements support.
-            if (!is_null($conditional)) {
-                $buffer .= '<!--[if ' . $conditional . ']>';
-            }
-
-            $buffer .= '<script src="' . $this->escapeAttribute($src) . '"';
-
-            // Add script tag attributes.
-            foreach ($attribs as $attrib => $value) {
-                // Don't add the 'options' attribute. This attribute is for internal use (version, conditional, etc).
-                if ($attrib === 'options') {
-                    continue;
-                }
-
-                // Don't add type attribute if document is HTML5 and it's a default mime type. 'mime' is for B/C.
-                if (in_array($attrib, array('type', 'mime')) && $document->isHtml5() && in_array($value, $defaultJsMimes)) {
-                    continue;
-                }
-
-                // B/C: If defer and async is false or empty don't render the attribute.
-                if (in_array($attrib, array('defer', 'async')) && !$value) {
-                    continue;
-                }
-
-                // Don't add type attribute if document is HTML5 and it's a default mime type. 'mime' is for B/C.
-                if ($attrib === 'mime') {
-                    $attrib = 'type';
-                }
-                // B/C defer and async can be set to yes when using the old method: any non-empty value turns them on
-                elseif (in_array($attrib, $html5NoValueAttributes)) {
-                    $value = true;
-                }
-
-                // Add attribute to script tag output.
-                $buffer .= $this->elementAttribute($attrib, $value, $document->isHtml5());
-            }
-
-            $buffer .= '></script>';
-
-            // This is for IE conditional statements support.
-            if (!is_null($conditional)) {
-                $buffer .= '<![endif]-->';
-            }
-
-            $buffer .= $lnEnd;
+        if ($document instanceof HtmlDocument) {
+            $document->setHeadScripts($written);
         }
 
         // Generate script declarations
@@ -312,12 +267,133 @@ class HeadRenderer extends DocumentRenderer
             $buffer .= $tab . '</script>' . $lnEnd;
         }
 
+        // The code of addReadyScript(), when the template has no footer to write it
+        if (!($document instanceof HtmlDocument && $document->hasFooter())) {
+            $buffer .= $this->renderReadyScripts($document);
+        }
+
         // Output the custom tags - array_unique makes sure that we don't output the same tags twice
         foreach (array_unique($document->_custom) as $custom) {
             $buffer .= $tab . $custom . $lnEnd;
         }
 
         return ltrim($buffer, $tab);
+    }
+
+    /**
+     * A script file's tag
+     *
+     * @param   Document  $document      The document
+     * @param   string    $src           The script's address
+     * @param   array     $attribs       Its attributes and options
+     * @param   string    $mediaVersion  The media version
+     * @param   boolean   $footer        Written in the footer: without defer (the end of the page already)
+     *
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    public function renderScript($document, $src, array $attribs, $mediaVersion, $footer = false)
+    {
+        $lnEnd                  = $document->_getLineEnd();
+        $tab                    = $document->_getTab();
+        $defaultJsMimes         = array('text/javascript', 'application/javascript', 'text/x-javascript', 'application/x-javascript');
+        $html5NoValueAttributes = array('defer', 'async');
+        $buffer                 = '';
+
+        if ($footer) {
+            unset($attribs['defer']);
+        }
+
+        // Check if script uses IE conditional statements.
+        $conditional = isset($attribs['options']) && isset($attribs['options']['conditional']) ? $attribs['options']['conditional'] : null;
+
+        // Check if script uses media version.
+        if (isset($attribs['options']['version']) && $attribs['options']['version'] && strpos((string) $src, '?') === false
+            && ($mediaVersion || $attribs['options']['version'] !== 'auto')) {
+            $src .= '?' . ($attribs['options']['version'] === 'auto' ? $mediaVersion : $attribs['options']['version']);
+        }
+
+        $buffer .= $tab;
+
+        // This is for IE conditional statements support.
+        if (!is_null($conditional)) {
+            $buffer .= '<!--[if ' . $conditional . ']>';
+        }
+
+        $buffer .= '<script src="' . $this->escapeAttribute($src) . '"';
+
+        // Add script tag attributes.
+        foreach ($attribs as $attrib => $value) {
+            // Don't add the 'options' attribute. This attribute is for internal use (version, conditional, etc).
+            if ($attrib === 'options') {
+                continue;
+            }
+
+            // Don't add type attribute if document is HTML5 and it's a default mime type. 'mime' is for B/C.
+            if (in_array($attrib, array('type', 'mime')) && $document->isHtml5() && in_array($value, $defaultJsMimes)) {
+                continue;
+            }
+
+            // B/C: If defer and async is false or empty don't render the attribute.
+            if (in_array($attrib, array('defer', 'async')) && !$value) {
+                continue;
+            }
+
+            // Don't add type attribute if document is HTML5 and it's a default mime type. 'mime' is for B/C.
+            if ($attrib === 'mime') {
+                $attrib = 'type';
+            }
+            // B/C defer and async can be set to yes when using the old method: any non-empty value turns them on
+            elseif (in_array($attrib, $html5NoValueAttributes)) {
+                $value = true;
+            }
+
+            // Add attribute to script tag output.
+            $buffer .= $this->elementAttribute($attrib, $value, $document->isHtml5());
+        }
+
+        $buffer .= '></script>';
+
+        // This is for IE conditional statements support.
+        if (!is_null($conditional)) {
+            $buffer .= '<![endif]-->';
+        }
+
+        $buffer .= $lnEnd;
+
+        return $buffer;
+    }
+
+    /**
+     * The code of addReadyScript() in one script, each piece started with CMS.ready() (or at DOMContentLoaded without
+     * global.js and frontend.js)
+     *
+     * @param   Document  $document  The document
+     *
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    public function renderReadyScripts($document)
+    {
+        $scripts = method_exists($document, 'getReadyScripts') ? $document->getReadyScripts() : array();
+
+        if (!$scripts) {
+            return '';
+        }
+
+        $lnEnd  = $document->_getLineEnd();
+        $tab    = $document->_getTab();
+        $buffer = $tab . '<script>' . $lnEnd . '(function (ready) {' . $lnEnd;
+
+        foreach ($scripts as $content) {
+            $buffer .= 'ready(function () {' . $lnEnd . $content . $lnEnd . '});' . $lnEnd;
+        }
+
+        return $buffer . '})(window.CMS && window.CMS.ready ? window.CMS.ready : function (callback) {' . $lnEnd
+            . 'if (document.readyState === \'loading\') { document.addEventListener(\'DOMContentLoaded\', callback); } else { callback(); }' . $lnEnd
+            . '});' . $lnEnd . $tab . '</script>' . $lnEnd;
     }
 
     /**

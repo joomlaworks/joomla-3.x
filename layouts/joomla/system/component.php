@@ -27,5 +27,6 @@ JHtml::_('stylesheet', 'system/frontend.min.css', array('version' => 'auto', 're
 	<body class="contentpane tmpl-component">
 		<jdoc:include type="message" />
 		<jdoc:include type="component" />
+		<jdoc:include type="footer" />
 	</body>
 </html>

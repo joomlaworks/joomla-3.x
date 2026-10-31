@@ -102,5 +102,6 @@ $page = FinchHelper::prepare($this);
 		</div>
 	</footer>
 	<jdoc:include type="modules" name="debug" style="none" />
+	<jdoc:include type="footer" />
 </body>
 </html>

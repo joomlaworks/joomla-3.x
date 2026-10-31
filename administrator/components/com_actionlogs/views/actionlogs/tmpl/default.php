@@ -26,7 +26,7 @@ HTMLHelper::_('formbehavior.chosen', 'select');
 $listOrder  = $this->escape($this->state->get('list.ordering'));
 $listDirn   = $this->escape($this->state->get('list.direction'));
 
-HTMLHelper::_('script', 'administrator/components/com_actionlogs/js/actionlogs.min.js', array('version' => 'auto'), array('defer' => true));
+HTMLHelper::_('script', 'administrator/components/com_actionlogs/js/actionlogs.min.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
 ?>
 <form action="<?php echo Route::_('index.php?option=com_actionlogs&view=actionlogs'); ?>" method="post" name="adminForm" id="adminForm">
 	<div id="j-main-container">

@@ -156,6 +156,15 @@ class Document
     protected $scriptOptions = array();
 
     /**
+     * Code run when the page is ready (CMS.ready()), keyed by its hash: written in the footer when the template has one
+     * (<jdoc:include type="footer" />), else at the end of the head
+     *
+     * @var    array
+     * @since  3.18.0
+     */
+    protected $readyScripts = array();
+
+    /**
      * Array of linked style sheets
      *
      * @var    array
@@ -595,6 +604,56 @@ class Document
         } else {
             return $this->scriptOptions;
         }
+    }
+
+    /**
+     * Adds code run when the page is ready (CMS.ready()): the way for core and extensions' scripts written into the page,
+     * which then go to the footer with the scripts marked for it ('position' => 'footer') where the template has one. The
+     * code may use global.js or frontend.js (CMS, Joomla) and every script of the page; each piece is added once.
+     *
+     * @param   string  $content  The code, without a CMS.ready() of its own
+     *
+     * @return  Document instance of $this to allow chaining
+     *
+     * @since   3.18.0
+     */
+    public function addReadyScript($content)
+    {
+        $content = trim((string) $content);
+
+        if ($content !== '') {
+            $this->readyScripts[md5($content)] = $content;
+        }
+
+        return $this;
+    }
+
+    /**
+     * The code added with addReadyScript()
+     *
+     * @return  array
+     *
+     * @since   3.18.0
+     */
+    public function getReadyScripts()
+    {
+        return $this->readyScripts;
+    }
+
+    /**
+     * Replaces the code added with addReadyScript() (cached head data)
+     *
+     * @param   array  $scripts  The code, keyed by its hash
+     *
+     * @return  Document instance of $this to allow chaining
+     *
+     * @since   3.18.0
+     */
+    public function setReadyScripts(array $scripts)
+    {
+        $this->readyScripts = $scripts;
+
+        return $this;
     }
 
     /**

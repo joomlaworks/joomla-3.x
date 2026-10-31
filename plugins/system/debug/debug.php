@@ -201,7 +201,7 @@ class PlgSystemDebug extends JPlugin
             JHtml::_('stylesheet', 'system/debug.css', array('version' => 'auto', 'relative' => true));
 
             // The console as a panel opened from a button (without it, it stays at the end of the page)
-            JHtml::_('script', 'system/debug.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
+            JHtml::_('script', 'system/debug.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'), array('defer' => true));
         }
 
         // Disable asset media version if needed.

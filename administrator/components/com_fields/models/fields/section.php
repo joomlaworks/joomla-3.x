@@ -40,7 +40,7 @@ class JFormFieldSection extends JFormFieldList
         // Choosing a context opens the list of its fields (media/com_fields/js/fields.js), whatever the XML's onchange says
         $this->onchange = '';
         JFactory::getDocument()->addScriptOptions('com_fields.context', $this->id);
-        JHtml::_('script', 'com_fields/fields.min.js', array('version' => 'auto', 'relative' => true));
+        JHtml::_('script', 'com_fields/fields.min.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));
 
         return $return;
     }

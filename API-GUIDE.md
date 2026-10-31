@@ -12,6 +12,7 @@ For commands of your own on the command line, see [CLI-GUIDE.md](CLI-GUIDE.md). 
   - [Other links](#other-links)
   - [Scripts and stylesheets](#scripts-and-stylesheets)
   - [Order of output](#order-of-output)
+  - [Scripts at the end of the page: the footer](#scripts-at-the-end-of-the-page-the-footer)
   - [Duplicates](#duplicates)
   - [Reading the document's links](#reading-the-documents-links)
 - [Blocks: layouts and the renderer](#blocks-layouts-and-the-renderer)
@@ -156,6 +157,31 @@ What `<jdoc:include type="header" />` writes, from top to bottom (`type="header"
 12. Custom tags (`addCustomTag()`)
 
 Each group keeps the order its items were added in. So the hints come right after the title, before every stylesheet and script, whichever extension added them and when. Custom tags come last, after every script, so don't use `addCustomTag()` for resource hints: use the methods above. Anything the template writes itself, before or after the `<jdoc:include>` tag, stays where it is.
+
+### Scripts at the end of the page: the footer
+
+Templates write the end of the page with `<jdoc:include type="footer" />`, right before `</body>` (every core template since 3.18 except Protostar). What goes there:
+
+- script files added with the option `'position' => 'footer'`, in their order and without `defer` (the end of the page is later than `defer` would run them anyway):
+
+```php
+JHtml::_('script', 'com_example/example.min.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));
+$doc->addScript(JUri::root(true) . '/media/com_example/js/example.js', array('position' => 'footer'));
+```
+
+- code added with `$doc->addReadyScript($js)`: run when the page is ready (`CMS.ready()`, or `DOMContentLoaded` on a page without `global.js` or `frontend.js`), each piece once. Pass the code without a `CMS.ready()` of its own:
+
+```php
+$doc->addReadyScript('CMS.tooltip.attach(' . json_encode('.example-tip') . ', {});');
+```
+
+- the shared script (`global.js` in the administrator, `frontend.js` on the site), but only on pages where nothing else could use it while the page loads: no script file without the mark (jQuery, jQuery UI, Bootstrap and MooTools don't count), no `addScriptDeclaration()` of JavaScript, no `<script>` in a custom tag, and no inline `<script>` in the component's or the modules' HTML (JSON and templates don't count). Otherwise it stays in the head, where those can use it.
+
+Everything else stays in the head as before: framework files always, and every script without the mark, so an extension written for the head keeps working, whatever its code expects to be there. Mark a file only when it runs nothing other scripts need while the page loads (it may define functions called later, on a click, a change, or when the page is ready) and it doesn't need the page's own inline scripts first. A script which sets things up the moment it loads, and which other code relies on at once, stays unmarked.
+
+A template without the footer tag writes all of it in the head, ready code after the other scripts: the marks change nothing there. Code in the template's own HTML isn't looked at: a template with the footer tag keeps its own inline scripts free of `global.js`/`frontend.js` (Rookwood writes its theme script, which depends on nothing, into its page files' `<head>`).
+
+`<jdoc:include type="header" />` is the name of the head's tag since 3.18; `type="head"` does the same.
 
 ### Duplicates
 

@@ -38,7 +38,7 @@ JText::script('JALL');
 JText::script('JYES');
 JText::script('JNO');
 JText::script('JTRASHED');
-JHtml::_('script', 'administrator/components/com_modules/js/modules.min.js', array('version' => 'auto'), array('defer' => true));
+JHtml::_('script', 'administrator/components/com_modules/js/modules.min.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
 
 $input = JFactory::getApplication()->input;
 

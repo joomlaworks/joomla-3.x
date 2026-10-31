@@ -85,5 +85,6 @@ if ($app->get('display_offline_message', 1) == 1 && str_replace(' ', '', $app->g
 				</div>
 			</main>
 		</div>
+		<jdoc:include type="footer" />
 	</body>
 </html>

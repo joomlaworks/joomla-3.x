@@ -107,10 +107,10 @@ abstract class JHtmlSliders
             $options = JHtml::getJSObject($opt);
             $panes   = 'div#' . $group . '.pane-sliders > .panel > ';
 
-            $js = 'CMS.ready(function () { CMS.sliders.create(' . json_encode($panes . 'h3.pane-toggler', JSON_HEX_TAG | JSON_HEX_AMP) . ', '
-                . json_encode($panes . 'div.pane-slider', JSON_HEX_TAG | JSON_HEX_AMP) . ', ' . $options . '); });';
+            $js = 'CMS.sliders.create(' . json_encode($panes . 'h3.pane-toggler', JSON_HEX_TAG | JSON_HEX_AMP) . ', '
+                . json_encode($panes . 'div.pane-slider', JSON_HEX_TAG | JSON_HEX_AMP) . ', ' . $options . ');';
 
-            JFactory::getDocument()->addScriptDeclaration($js);
+            JFactory::getDocument()->addReadyScript($js);
         }
     }
 }

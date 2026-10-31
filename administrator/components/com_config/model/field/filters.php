@@ -40,7 +40,7 @@ class JFormFieldFilters extends JFormField
         JText::script('COM_CONFIG_TEXT_FILTERS_NOTE');
 
         // A group set to No Filtering whose parent or child groups filter: a note (js/config.js)
-        JHtml::_('script', 'administrator/components/com_config/js/config.js', array('version' => 'auto'), array('defer' => true));
+        JHtml::_('script', 'administrator/components/com_config/js/config.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
 
         // Get the available user groups.
         $groups = $this->getUserGroups();

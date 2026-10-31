@@ -302,7 +302,7 @@ class FieldsHelper
             JFactory::getDocument()->addScriptOptions('com_fields.reload', array(
                 $form->getFormControl() . '_catid' => array('task' => $section . '.reload', 'unless' => (string) $assignedCatids),
             ));
-            JHtml::_('script', 'com_fields/fields.min.js', array('version' => 'auto', 'relative' => true));
+            JHtml::_('script', 'com_fields/fields.min.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));
         }
 
         // Getting the fields

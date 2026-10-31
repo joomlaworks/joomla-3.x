@@ -33,7 +33,7 @@ protheroDropConditionalAssets($this);
 JHtml::_('bootstrap.framework');
 
 // Add template js
-JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));
 
 // For the lists' Reorder button on phones (js/template.js)
 JText::script('TPL_PROTHERO_REORDER');
@@ -256,5 +256,6 @@ if ($stickyToolbar) {
 	<!-- End Status Module -->
 <?php endif; ?>
 <jdoc:include type="modules" name="debug" style="none" />
+<jdoc:include type="footer" />
 </body>
 </html>

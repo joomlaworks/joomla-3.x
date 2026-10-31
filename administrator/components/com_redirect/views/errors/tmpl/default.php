@@ -22,7 +22,7 @@ $root      = $this->escape(JUri::root());
 if ($canCreate) {
     JHtml::_('behavior.cms');
     JHtml::_('stylesheet', 'administrator/components/com_redirect/css/redirect.css', array('version' => 'auto'));
-    JHtml::_('script', 'administrator/components/com_redirect/js/redirect.js', array('version' => 'auto'), array('defer' => true));
+    JHtml::_('script', 'administrator/components/com_redirect/js/redirect.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
     JText::script('COM_REDIRECT_CREATE_REDIRECT');
     JText::script('JCANCEL');
     JText::script('JAPPLY');

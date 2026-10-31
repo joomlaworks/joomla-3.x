@@ -19,6 +19,8 @@ $page = RookwoodHelper::prepare($this);
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-theme="<?php echo $page->theme === 'light' ? 'light' : 'dark'; ?>">
 <head>
 	<jdoc:include type="header" />
+	<?php // The visitor's choice (or the template's default) before anything is drawn, so the page never flashes the other theme; written here, not through the document, as it depends on nothing?>
+	<script><?php echo RookwoodHelper::themeScript(); ?></script>
 </head>
 <body id="top" class="<?php echo RookwoodHelper::e($page->bodyClass); ?>">
 	<a class="skipLink" href="#content"><?php echo JText::_('TPL_ROOKWOOD_SKIP_TO_CONTENT'); ?></a>
@@ -101,5 +103,6 @@ $page = RookwoodHelper::prepare($this);
 		</div>
 	</footer>
 	<jdoc:include type="modules" name="debug" style="none" />
+	<jdoc:include type="footer" />
 </body>
 </html>

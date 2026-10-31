@@ -57,7 +57,7 @@ class PlgQuickiconExtensionupdate extends JPlugin
                 'ERROR'               => JText::_('PLG_QUICKICON_EXTENSIONUPDATE_ERROR'),
             ),
         ));
-        JHtml::_('script', 'plugins/quickicon/extensionupdate/js/extensionupdate.js', array('version' => 'auto'));
+        JHtml::_('script', 'plugins/quickicon/extensionupdate/js/extensionupdate.js', array('version' => 'auto', 'position' => 'footer'));
 
         return array(
             array(

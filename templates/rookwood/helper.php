@@ -68,9 +68,6 @@ abstract class RookwoodHelper
         $document->setMetaData('viewport', 'width=device-width, initial-scale=1');
         $document->setMetaData('color-scheme', 'dark light');
 
-        // The visitor's choice (or the template's default) before anything is drawn, so the page never flashes the other theme
-        $document->addScriptDeclaration(static::themeScript());
-
         foreach (static::stylesheets() as $stylesheet) {
             $document->addStyleSheet($stylesheet);
             static::preload($stylesheet, 'style');
@@ -83,7 +80,7 @@ abstract class RookwoodHelper
         }
 
         $script = $base . '/js/template.js?t=' . date('Ymd_Hi', filemtime(__DIR__ . '/js/template.js'));
-        $document->addScript($script, array(), array('defer' => true));
+        $document->addScript($script, array('position' => 'footer'), array('defer' => true));
         static::preload($script, 'script');
 
         $app    = JFactory::getApplication();

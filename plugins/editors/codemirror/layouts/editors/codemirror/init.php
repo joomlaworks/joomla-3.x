@@ -29,4 +29,4 @@ $modePath        = JUri::root(true) . '/' . $modePath . $extJS;
 
 // The editors start in js/codemirror.js
 JFactory::getDocument()->addScriptOptions('plg_editors_codemirror', array('fullScreen' => $fullScreenCombo, 'modeURL' => $modePath));
-JHtml::_('script', 'plugins/editors/codemirror/js/codemirror' . $extJS, array('version' => 'auto'));
+JHtml::_('script', 'plugins/editors/codemirror/js/codemirror' . $extJS, array('version' => 'auto', 'position' => 'footer'));

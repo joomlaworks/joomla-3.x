@@ -57,7 +57,7 @@ class PlgQuickiconJoomlaupdate extends JPlugin
                 'ERROR'               => JText::_('PLG_QUICKICON_JOOMLAUPDATE_ERROR'),
             ),
         ));
-        JHtml::_('script', 'plugins/quickicon/joomlaupdate/js/joomlaupdate.js', array('version' => 'auto'));
+        JHtml::_('script', 'plugins/quickicon/joomlaupdate/js/joomlaupdate.js', array('version' => 'auto', 'position' => 'footer'));
 
         return array(
             array(

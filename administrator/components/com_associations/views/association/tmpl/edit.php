@@ -13,7 +13,7 @@ JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 JHtml::_('formbehavior.chosen', 'select');
 
-JHtml::_('script', 'administrator/components/com_associations/js/associations.min.js', array('version' => 'auto'));
+JHtml::_('script', 'administrator/components/com_associations/js/associations.min.js', array('version' => 'auto', 'position' => 'footer'));
 JHtml::_('stylesheet', 'administrator/components/com_associations/css/associations.css', array('version' => 'auto'));
 
 $options = array(

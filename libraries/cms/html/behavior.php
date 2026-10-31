@@ -358,9 +358,7 @@ abstract class JHtmlBehavior
         $options = JHtml::getJSObject($opt);
 
         // Attach tooltips to document (once the page's scripts are there: onShow and onHide may name their functions)
-        JFactory::getDocument()->addScriptDeclaration(
-            'CMS.ready(function () { CMS.tooltip.attach(' . json_encode($selector, JSON_HEX_TAG | JSON_HEX_AMP) . ', ' . $options . '); });'
-        );
+        JFactory::getDocument()->addReadyScript('CMS.tooltip.attach(' . json_encode($selector, JSON_HEX_TAG | JSON_HEX_AMP) . ', ' . $options . ');');
 
         // Set static array
         static::$loaded[__METHOD__][$sig] = true;
@@ -435,9 +433,7 @@ abstract class JHtmlBehavior
         $options = JHtml::getJSObject($opt);
 
         // Links matching the selector open in the box, also ones added later (subform rows); each link's rel adds its own options
-        $document->addScriptDeclaration(
-            'CMS.ready(function () { CMS.modal.assign(' . json_encode($selector, JSON_HEX_TAG | JSON_HEX_AMP) . ', ' . $options . '); });'
-        );
+        $document->addReadyScript('CMS.modal.assign(' . json_encode($selector, JSON_HEX_TAG | JSON_HEX_AMP) . ', ' . $options . ');');
 
         // Set static array
         static::$loaded[__METHOD__][$sig] = true;
@@ -519,12 +515,10 @@ abstract class JHtmlBehavior
 
         $treeName = array_key_exists('treeName', $params) ? $params['treeName'] : '';
 
-        $js = 'CMS.ready(function () { window.tree' . $treeName . ' = CMS.tree.create(' . $options . ', ' . $rootNode . '); window.tree'
-            . $treeName . '.adopt(' . json_encode($id, JSON_HEX_TAG | JSON_HEX_AMP) . '); });';
+        $js = 'window.tree' . $treeName . ' = CMS.tree.create(' . $options . ', ' . $rootNode . '); window.tree'
+            . $treeName . '.adopt(' . json_encode($id, JSON_HEX_TAG | JSON_HEX_AMP) . ');';
 
-        // Attach tooltips to document
-        $document = JFactory::getDocument();
-        $document->addScriptDeclaration($js);
+        JFactory::getDocument()->addReadyScript($js);
 
         // Set static array
         static::$loaded[__METHOD__][$id] = true;

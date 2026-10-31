@@ -80,7 +80,7 @@ JHtml::_('stylesheet', 'com_finder/finder.css', array('version' => 'auto', 'rela
 
 if ($show_advanced == 1) {
     // Select boxes without a value are left out of the address (com_finder's finder.js, as the search page)
-    JHtml::_('script', 'com_finder/finder.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
+    JHtml::_('script', 'com_finder/finder.min.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'), array('defer' => true));
 }
 
 if ($params->get('show_autosuggest', 1)) {

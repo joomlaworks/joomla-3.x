@@ -25,7 +25,7 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 $assoc = JLanguageAssociations::isEnabled();
 
 // The form's script (js/menus.js): parent items by menu, the type picker, the Login Form's redirects
-JHtml::_('script', 'administrator/components/com_menus/js/menus.min.js', array('version' => 'auto'), array('defer' => true));
+JHtml::_('script', 'administrator/components/com_menus/js/menus.min.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
 
 $input = JFactory::getApplication()->input;
 

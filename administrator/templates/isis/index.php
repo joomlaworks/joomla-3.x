@@ -33,7 +33,7 @@ isisDropConditionalAssets($this);
 JHtml::_('bootstrap.framework');
 
 // Add template js
-JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));
 
 // Add Stylesheets
 JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
@@ -297,5 +297,6 @@ if ($optionColors['properties'] !== '') {
 	<!-- End Status Module -->
 <?php endif; ?>
 <jdoc:include type="modules" name="debug" style="none" />
+<jdoc:include type="footer" />
 </body>
 </html>

@@ -22,7 +22,7 @@ $input = $app->input;
 
 // The label follows the title while they're the same (media/com_fields/js/fields.js)
 JFactory::getDocument()->addScriptOptions('com_fields.label', array('title' => 'jform_title', 'label' => 'jform_label'));
-JHtml::_('script', 'com_fields/fields.min.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'com_fields/fields.min.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));
 
 
 ?>

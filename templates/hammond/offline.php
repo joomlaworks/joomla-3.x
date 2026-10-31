@@ -55,5 +55,6 @@ $page = HammondHelper::prepare($this, 'offline');
 			</form>
 		</div>
 	</main>
+	<jdoc:include type="footer" />
 </body>
 </html>

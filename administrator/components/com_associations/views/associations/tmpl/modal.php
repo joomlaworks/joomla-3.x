@@ -33,7 +33,7 @@ $iconStates = array(
 );
 
 // A chosen item goes to the function of the page that opened the list (the form's data-function, js/associations.js)
-JHtml::_('script', 'administrator/components/com_associations/js/associations.js', array('version' => 'auto'), array('defer' => true));
+JHtml::_('script', 'administrator/components/com_associations/js/associations.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_associations&view=associations&layout=modal&tmpl=component&function='
 . $function . '&' . JSession::getFormToken() . '=1'); ?>" method="post" name="adminForm" id="adminForm" data-function="<?php echo $this->escape($function); ?>">

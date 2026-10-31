@@ -15,7 +15,7 @@ JHtml::_('behavior.formvalidator');
 JHtml::_('formbehavior.chosen', 'select');
 
 JHtml::_('behavior.core');
-JHtml::_('script', 'administrator/components/com_languages/js/languages.min.js', array('version' => 'auto'));
+JHtml::_('script', 'administrator/components/com_languages/js/languages.min.js', array('version' => 'auto', 'position' => 'footer'));
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_languages&view=language&layout=edit&lang_id=' . (int) $this->item->lang_id); ?>" method="post" name="adminForm" data-submit-validate id="language-form" class="form-validate form-horizontal">

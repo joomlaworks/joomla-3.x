@@ -33,7 +33,7 @@ $formUrl = 'index.php?option=com_contenthistory&view=history&layout=modal&tmpl=c
 
 // Load, Preview and Compare: media/com_contenthistory/js/contenthistory.js (also on the site, for front-end editing)
 JHtml::_('behavior.core');
-JHtml::_('script', 'com_contenthistory/contenthistory.min.js', array('version' => 'auto', 'relative' => true));
+JHtml::_('script', 'com_contenthistory/contenthistory.min.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));
 JFactory::getDocument()->addScriptOptions('com_contenthistory.history', array(
     'selectOne' => JText::_('COM_CONTENTHISTORY_BUTTON_SELECT_ONE'),
     'selectTwo' => JText::_('COM_CONTENTHISTORY_BUTTON_SELECT_TWO'),

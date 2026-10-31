@@ -19,7 +19,7 @@ JText::script('COM_INSTALLER_MSG_WARNINGS_UPLOADFILETOOBIG');
 
 // The drop area and Joomla.submitbuttonpackage() (js/packageinstaller.js)
 $return = JFactory::getApplication()->input->getBase64('return');
-JHtml::_('script', 'plugins/installer/packageinstaller/js/packageinstaller.min.js', array('version' => 'auto'), array('defer' => true));
+JHtml::_('script', 'plugins/installer/packageinstaller/js/packageinstaller.min.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
 
 JFactory::getDocument()->addStyleDeclaration(
     <<<CSS

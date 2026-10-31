@@ -25,5 +25,6 @@ HammondHelper::prepare($this, 'component');
 		<jdoc:include type="message" />
 		<jdoc:include type="component" />
 	</div>
+	<jdoc:include type="footer" />
 </body>
 </html>

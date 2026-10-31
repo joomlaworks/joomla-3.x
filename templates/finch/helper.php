@@ -88,7 +88,7 @@ abstract class FinchHelper
         }
 
         $script = $base . '/js/template.js?t=' . date('Ymd_Hi', filemtime(__DIR__ . '/js/template.js'));
-        $document->addScript($script, array(), array('defer' => true));
+        $document->addScript($script, array('position' => 'footer'), array('defer' => true));
         static::preload($script, 'script');
 
         $app    = JFactory::getApplication();

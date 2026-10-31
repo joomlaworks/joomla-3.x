@@ -39,7 +39,7 @@ class JFormFieldType extends JFormFieldList
 
         // The form reloads when the type changes (media/com_fields/js/fields.js)
         JFactory::getDocument()->addScriptOptions('com_fields.reload', array($this->id => array('task' => 'field.reload')));
-        JHtml::_('script', 'com_fields/fields.min.js', array('version' => 'auto', 'relative' => true));
+        JHtml::_('script', 'com_fields/fields.min.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));
 
         return $return;
     }

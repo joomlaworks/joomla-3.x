@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\HTML\HTMLHelper;
 
 HTMLHelper::_('script', 'plugins/twofactorauth/totp/js/qrcode.min.js', array('version' => 'auto'));
-HTMLHelper::_('script', 'plugins/twofactorauth/totp/js/totp.min.js', array('version' => 'auto'));
+HTMLHelper::_('script', 'plugins/twofactorauth/totp/js/totp.min.js', array('version' => 'auto', 'position' => 'footer'));
 ?>
 <input type="hidden" name="jform[twofactor][totp][key]" value="<?php echo $secret ?>" />
 

@@ -13,7 +13,7 @@ $expanded = (bool) $this->params->get('expand_advanced', 0);
 
 if ($this->params->get('show_advanced', 1)) {
     // The Advanced Search button, and lists without a value left out of the address (finder.js, as mod_finder)
-    JHtml::_('script', 'com_finder/finder.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
+    JHtml::_('script', 'com_finder/finder.min.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'), array('defer' => true));
 }
 
 if ($this->params->get('show_autosuggest', 1)) {

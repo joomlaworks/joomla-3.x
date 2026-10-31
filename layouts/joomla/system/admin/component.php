@@ -24,5 +24,6 @@ $this->setHtml5(true);
 	<body class="contentpane tmpl-component">
 		<jdoc:include type="message" />
 		<jdoc:include type="component" />
+		<jdoc:include type="footer" />
 	</body>
 </html>

@@ -95,10 +95,10 @@ abstract class JHtmlTabs
 
             $options = JHtml::getJSObject($opt);
 
-            $js = 'CMS.ready(function () { var lists = document.querySelectorAll(' . json_encode('dl#' . $group . '.tabs', JSON_HEX_TAG | JSON_HEX_AMP)
-                . '); for (var i = 0; i < lists.length; i++) { CMS.tabs.create(lists[i], ' . $options . '); } });';
+            $js = 'var lists = document.querySelectorAll(' . json_encode('dl#' . $group . '.tabs', JSON_HEX_TAG | JSON_HEX_AMP)
+                . '); for (var i = 0; i < lists.length; i++) { CMS.tabs.create(lists[i], ' . $options . '); }';
 
-            JFactory::getDocument()->addScriptDeclaration($js);
+            JFactory::getDocument()->addReadyScript($js);
 
             $loaded[(string) $group] = true;
         }

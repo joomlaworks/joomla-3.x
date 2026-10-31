@@ -23,7 +23,7 @@ $debugGroups = $this->state->get('params')->get('debugGroups', 1);
 
 JText::script('COM_USERS_GROUPS_CONFIRM_DELETE');
 
-JHtml::_('script', 'administrator/components/com_users/js/users.min.js', array('version' => 'auto'), array('defer' => true));
+JHtml::_('script', 'administrator/components/com_users/js/users.min.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_users&view=groups'); ?>" method="post" name="adminForm" id="adminForm">
 <?php if (!empty($this->sidebar)) : ?>

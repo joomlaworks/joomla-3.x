@@ -111,6 +111,48 @@ class HtmlDocument extends Document
     protected $_template_tags = array();
 
     /**
+     * Whether the template has a <jdoc:include type="footer" />, and the scripts the head left for it
+     *
+     * @var    boolean
+     * @since  3.18.0
+     */
+    protected $hasFooter = false;
+
+    /**
+     * The scripts going to the footer (their addresses), decided once by getFooterScripts()
+     *
+     * @var    array|null
+     * @since  3.18.0
+     */
+    protected $footerScripts;
+
+    /**
+     * The script files the head wrote (their addresses), so that the footer writes those added after it
+     *
+     * @var    array
+     * @since  3.18.0
+     */
+    protected $headScripts = array();
+
+    /**
+     * Script files every page may load in the head as before, whatever is moved to the footer: jQuery (and noConflict,
+     * Migrate), jQuery UI, Bootstrap, MooTools
+     *
+     * @var    string
+     * @since  3.18.0
+     */
+    public const FRAMEWORK_SCRIPTS = '#/media/(?:system|jui)/js/(?:jquery(?:-noconflict|-migrate)?|jquery\\.ui\\.[a-z.]+|bootstrap|mootools-(?:core|more))(?:-uncompressed|\\.min)?\\.js$#';
+
+    /**
+     * The shared script (global.js in the administrator, frontend.js on the site): moved to the footer only on a page with
+     * nothing else in the head which could use it
+     *
+     * @var    string
+     * @since  3.18.0
+     */
+    public const SHARED_SCRIPTS = '#/media/system/js/(?:global|frontend)(?:\\.min)?\\.js$#';
+
+    /**
      * Integer with caching setting
      *
      * @var    integer
@@ -171,6 +213,7 @@ class HtmlDocument extends Document
         $data['scriptText']    = \JText::getScriptStrings();
 
         $data['scriptOptions'] = $this->scriptOptions;
+        $data['readyScripts']  = $this->readyScripts;
 
         return $data;
     }
@@ -198,6 +241,7 @@ class HtmlDocument extends Document
             $this->_script       = array();
             $this->_custom       = array();
             $this->scriptOptions = array();
+            $this->readyScripts  = array();
         }
 
         if (is_array($types)) {
@@ -243,6 +287,7 @@ class HtmlDocument extends Document
                 break;
 
             case 'scriptOptions':
+            case 'readyScripts':
                 $this->{$type} = array();
                 break;
         }
@@ -274,6 +319,7 @@ class HtmlDocument extends Document
         $this->_script       = (isset($data['script']) && !empty($data['script'])) ? $data['script'] : $this->_script;
         $this->_custom       = (isset($data['custom']) && !empty($data['custom'])) ? $data['custom'] : $this->_custom;
         $this->scriptOptions = (isset($data['scriptOptions']) && !empty($data['scriptOptions'])) ? $data['scriptOptions'] : $this->scriptOptions;
+        $this->readyScripts  = (isset($data['readyScripts']) && !empty($data['readyScripts'])) ? $data['readyScripts'] : $this->readyScripts;
 
         return $this;
     }
@@ -345,6 +391,12 @@ class HtmlDocument extends Document
         if (!empty($data['scriptOptions'])) {
             foreach ($data['scriptOptions'] as $key => $scriptOptions) {
                 $this->addScriptOptions($key, $scriptOptions, true);
+            }
+        }
+
+        if (!empty($data['readyScripts']) && is_array($data['readyScripts'])) {
+            foreach ($data['readyScripts'] as $content) {
+                $this->addReadyScript($content);
             }
         }
 
@@ -923,6 +975,143 @@ class HtmlDocument extends Document
     }
 
     /**
+     * Whether the template writes a footer (<jdoc:include type="footer" />)
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    public function hasFooter()
+    {
+        return $this->hasFooter;
+    }
+
+    /**
+     * The script files written in the footer, in their order, when the template has one (none otherwise). Framework files
+     * (jQuery, Bootstrap, MooTools) always stay in the head. Files added with 'position' => 'footer' go down, without their
+     * defer (the footer is the end of the page already). The shared script (global.js, frontend.js) goes down first, and
+     * only when nothing else might use it while the page loads: no other script file without the mark, no script written
+     * into the head (addScriptDeclaration(), a custom tag), and no inline script in the component's or the modules' HTML.
+     * The code of addReadyScript() goes down with them.
+     *
+     * @return  array  The scripts' addresses (keys of $_scripts)
+     *
+     * @since   3.18.0
+     */
+    public function getFooterScripts()
+    {
+        if ($this->footerScripts !== null) {
+            return $this->footerScripts;
+        }
+
+        if (!$this->hasFooter) {
+            return $this->footerScripts = array();
+        }
+
+        $shared = array();
+        $marked = array();
+        $clean  = true;
+
+        foreach ($this->_scripts as $src => $attribs) {
+            $path = parse_url((string) $src, PHP_URL_PATH);
+
+            if (isset($attribs['options']['position']) && $attribs['options']['position'] === 'footer') {
+                $marked[] = $src;
+            } elseif (preg_match(static::SHARED_SCRIPTS, (string) $path)) {
+                $shared[] = $src;
+            } elseif (!preg_match(static::FRAMEWORK_SCRIPTS, (string) $path)) {
+                $clean = false;
+            }
+        }
+
+        if ($clean) {
+            $clean = !$this->hasInlineScripts();
+        }
+
+        return $this->footerScripts = array_merge($clean ? $shared : array(), $marked);
+    }
+
+    /**
+     * Records the script files the head wrote
+     *
+     * @param   array  $scripts  Their addresses
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    public function setHeadScripts(array $scripts)
+    {
+        $this->headScripts = $scripts;
+    }
+
+    /**
+     * The script files the head wrote
+     *
+     * @return  array  Their addresses
+     *
+     * @since   3.18.0
+     */
+    public function getHeadScripts()
+    {
+        return $this->headScripts;
+    }
+
+    /**
+     * Whether something on the page might run code while it loads, using the shared script: a script declaration, a custom
+     * tag with a script, or an inline script in the HTML of the component or a module (data scripts, JSON-LD for example,
+     * don't count)
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    protected function hasInlineScripts()
+    {
+        $data = array('application/json', 'application/ld+json', 'importmap', 'text/template', 'text/html', 'text/x-template');
+
+        foreach ($this->_script as $type => $content) {
+            if (!in_array(strtolower((string) $type), $data, true) && trim((string) $content) !== '') {
+                return true;
+            }
+        }
+
+        $html = $this->_custom;
+
+        foreach ((array) parent::$_buffer as $type => $buffers) {
+            if (in_array($type, array('head', 'header', 'footer'), true) || !is_array($buffers)) {
+                continue;
+            }
+
+            array_walk_recursive($buffers, function ($value) use (&$html) {
+                if (is_string($value)) {
+                    $html[] = $value;
+                }
+            });
+        }
+
+        foreach ($html as $chunk) {
+            if (!preg_match_all('#<script\\b([^>]*)>#i', (string) $chunk, $tags)) {
+                continue;
+            }
+
+            foreach ($tags[1] as $attributes) {
+                if (preg_match('#\\bsrc\\s*=#i', $attributes)) {
+                    continue;
+                }
+
+                if (preg_match('#\\btype\\s*=\\s*["\']?([^"\'\\s>]+)#i', $attributes, $type) && in_array(strtolower($type[1]), $data, true)) {
+                    continue;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Parse a document template
      *
      * @return  HtmlDocument  instance of $this to allow chaining
@@ -955,6 +1144,8 @@ class HtmlDocument extends Document
             $template_tags_last = array_reverse($template_tags_last);
 
             $this->_template_tags = $template_tags_first + $template_tags_last;
+            $this->hasFooter      = in_array('footer', array_map('strtolower', $matches[1]), true);
+            $this->footerScripts  = null;
         }
 
         return $this;

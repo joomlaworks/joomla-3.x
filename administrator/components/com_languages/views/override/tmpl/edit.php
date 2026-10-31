@@ -21,7 +21,7 @@ JHtml::_('stylesheet', 'administrator/components/com_languages/css/languages.css
 JHtml::_('behavior.core');
 JHtml::_('form.csrf');
 JFactory::getDocument()->addScriptOptions('com_languages.override', array('expired' => $this->state->get('cache_expired') == 1));
-JHtml::_('script', 'administrator/components/com_languages/js/languages.min.js', array('version' => 'auto'));
+JHtml::_('script', 'administrator/components/com_languages/js/languages.min.js', array('version' => 'auto', 'position' => 'footer'));
 
 ?>
 

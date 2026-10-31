@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 // A link opens its page on the tab named after # (js/stats_admin.js)
-JHtml::_('script', 'administrator/modules/mod_stats_admin/js/stats_admin.min.js', array('version' => 'auto'), array('defer' => true));
+JHtml::_('script', 'administrator/modules/mod_stats_admin/js/stats_admin.min.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
 ?>
 <?php // The Control Panel shows the icon position's modules without their titles: Quick Icons has headings of its own?>
 <?php if ($module->position === 'icon' && $module->showtitle) : ?>

@@ -43,7 +43,7 @@ abstract class JHtmlTextdiff
 
         // The rows of the table are compared by media/com_contenthistory/js/contenthistory.js (diff-match-patch)
         JHtml::_('behavior.core');
-        JHtml::_('script', 'com_contenthistory/contenthistory.min.js', array('version' => 'auto', 'relative' => true));
+        JHtml::_('script', 'com_contenthistory/contenthistory.min.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));
         JHtml::_('stylesheet', 'com_contenthistory/contenthistory.css', array('version' => 'auto', 'relative' => true));
         JFactory::getDocument()->addScriptOptions('com_contenthistory.diff', array('container' => $containerId));
 

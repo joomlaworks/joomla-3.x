@@ -31,7 +31,7 @@ if ($this->type == 'image') {
 }
 
 // The trees of files and folders, the crop area of an image (js/templates.js)
-JHtml::_('script', 'administrator/components/com_templates/js/templates.min.js', array('version' => 'auto'), array('defer' => true));
+JHtml::_('script', 'administrator/components/com_templates/js/templates.min.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
 
 JFactory::getDocument()->addStyleDeclaration('
 	/* Styles for modals */
