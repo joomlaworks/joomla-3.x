@@ -30,99 +30,8 @@ if ($this->type == 'image') {
     JHtml::_('behavior.cms');
 }
 
-JFactory::getDocument()->addScriptDeclaration("
-jQuery(document).ready(function($){
-
-	// Hide all the folder when the page loads
-	$('.folder ul, .component-folder ul, .plugin-folder ul, .layout-folder ul').hide();
-
-	// Display the tree after loading
-	$('.directory-tree').removeClass('directory-tree');
-
-	// Show all the lists in the path of an open file
-	$('.show > ul').show();
-
-	// Stop the default action of anchor tag on a click event
-	$('.folder-url, .component-folder-url, .plugin-folder-url, .layout-folder-url').click(function(event){
-		event.preventDefault();
-	});
-
-	// Prevent the click event from proliferating
-	$('.file, .component-file-url, .plugin-file-url').bind('click',function(e){
-		e.stopPropagation();
-	});
-
-	// Toggle the child indented list on a click event
-	$('.folder, .component-folder, .plugin-folder, .layout-folder').bind('click',function(e){
-		$(this).children('ul').toggle();
-		e.stopPropagation();
-	});
-
-	// New file tree
-	$('#fileModal .folder-url').bind('click',function(e){
-		$('.folder-url').removeClass('selected');
-		e.stopPropagation();
-		$('#fileModal input.address').val($(this).attr('data-id'));
-		$(this).addClass('selected');
-	});
-
-	// Folder manager tree
-	$('#folderModal .folder-url').bind('click',function(e){
-		$('.folder-url').removeClass('selected');
-		e.stopPropagation();
-		$('#folderModal input.address').val($(this).attr('data-id'));
-		$(this).addClass('selected');
-	});
-
-	var containerDiv = document.querySelector('.span3.tree-holder'),
-		treeContainer = containerDiv.querySelector('.nav.nav-list'),
-		liEls = treeContainer.querySelectorAll('.folder.show'),
-		filePathEl = document.querySelector('p.lead.hidden.path');
-
-	if(filePathEl)
-		var filePathTmp = document.querySelector('p.lead.hidden.path').innerText;
-
-	 if(filePathTmp && filePathTmp.charAt( 0 ) === '/' ) {
-			filePathTmp = filePathTmp.slice( 1 );
-			filePathTmp = filePathTmp.split('/');
-			filePathTmp = filePathTmp[filePathTmp.length - 1];
-
-		for (var i = 0, l = liEls.length; i < l; i++) {
-			liEls[i].querySelector('a').classList.add('active');
-			if (i === liEls.length - 1) {
-				var parentUl = liEls[i].querySelector('ul'),
-					allLi = parentUl.querySelectorAll('li');
-
-				for (var i = 0, l = allLi.length; i < l; i++) {
-					aEl = allLi[i].querySelector('a'),
-					spanEl = aEl.querySelector('span');
-
-					if (spanEl && filePathTmp === $.trim(spanEl.innerText)) {
-						aEl.classList.add('active');
-					}
-				}
-			}
-		}
-	}
-});");
-
-if ($this->type == 'image') {
-    // The selected area, in the image's own pixels, goes to the form's x, y, w and h (only those: clearing every input
-    // of the form also emptied its token)
-    JFactory::getDocument()->addScriptDeclaration("
-		CMS.ready(() => {
-			const fields = ['x', 'y', 'w', 'h'].map((name) => document.getElementById(name));
-			const showCoords = (c) => fields.forEach((field) => { field.value = c[field.id]; });
-			const clearCoords = () => fields.forEach((field) => { field.value = ''; });
-
-			CMS.cropper.attach(document.getElementById('image-crop'), {
-				onChange: showCoords,
-				onSelect: showCoords,
-				onRelease: clearCoords,
-				trueSize: [" . (int) $this->image['width'] . ',' . (int) $this->image['height'] . "]
-			});
-		});");
-}
+// The trees of files and folders, the crop area of an image (js/templates.js)
+JHtml::_('script', 'administrator/components/com_templates/js/templates.min.js', array('version' => 'auto'), array('defer' => true));
 
 JFactory::getDocument()->addStyleDeclaration('
 	/* Styles for modals */
@@ -253,7 +162,7 @@ if ($this->type == 'font') {
 			</form>
 		<?php endif; ?>
 		<?php if ($this->type == 'image') : ?>
-			<img id="image-crop" src="<?php echo $this->image['address'] . '?' . time(); ?>" />
+			<img id="image-crop" src="<?php echo $this->image['address'] . '?' . time(); ?>" data-width="<?php echo (int) $this->image['width']; ?>" data-height="<?php echo (int) $this->image['height']; ?>" />
 			<form action="<?php echo JRoute::_('index.php?option=com_templates&view=template&id=' . $input->getInt('id') . '&file=' . $this->file); ?>" method="post" name="adminForm" id="adminForm" class="form-horizontal">
 				<fieldset class="adminform">
 					<input type ="hidden" id="x" name="x" />
