@@ -137,7 +137,7 @@ Summary of changes:
 - `configuration.php` lists its settings alphabetically, so they're easier to find
 - Hammond, Finch and Rookwood preload their stylesheets, script and the article's main image, and connect early to X and YouTube when an article embeds them, also through HTTP `Link:` headers (103 Early Hints behind Cloudflare and similar CDNs)
 - CodeMirror 5.65.21 (was 5.60.0, from 2021), with fixes for scrolling and clicks in current browsers
-- Media Manager: WebP, AVIF, MP4, WebM, MOV, MP3, M4A, WAV, CSV, RTF and current Office files can be uploaded by default (SVG deliberately not), the type lists are easy-to-edit textareas, and every file type gets an icon
+- Media Manager: WebP, AVIF, MP4, WebM, MOV, OGV, M4V, MP3, M4A, AAC, OGG, Opus, WAV, FLAC, CSV, RTF and current Office files can be uploaded by default (SVG deliberately not), the type lists are easy-to-edit textareas, and every file type gets an icon
 - Media Manager: an upload with a name already taken is saved with the time added to its name instead of failing
 - Media Manager: every thumbnail works the same way: the whole tile opens the image, video, audio file or folder (with a hover tint), a larger checkbox in its corner selects it, and names show in full on up to two lines on slightly larger tiles
 - Unused files removed from `media/system` (IcoMoon's design sources and Internet Explorer files, old colour picker images), about 315 KB

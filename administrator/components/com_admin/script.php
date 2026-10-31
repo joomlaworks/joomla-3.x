@@ -85,6 +85,7 @@ class JoomlaInstallerScript
         $this->runDataMigrations();
         $this->updateMediaUploadDefaults();
         $this->updateMediaUploadMaxSize();
+        $this->addMediaUploadAvTypes();
         $this->updateCodeMirrorTheme();
         $this->enableLittleWaf();
         $this->useProtheroAsAdminTemplate();
@@ -1897,6 +1898,69 @@ class JoomlaInstallerScript
             }
         } catch (Exception $e) {
             // Not worth failing the update for: the site keeps its editor
+        }
+    }
+
+    /**
+     * Adds the audio and video types the Media Manager plays to the upload lists, once: ogv, m4v, aac, oga, opus and flac,
+     * with the MIME types servers report for them. Sites updating from 3.17 already get them from config.xml's defaults
+     * (updateMediaUploadDefaults()); this is for sites past that step. Only missing entries are added, at the end: what an
+     * administrator set stays, other types included.
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    protected function addMediaUploadAvTypes()
+    {
+        if ($this->isUpdateStepDone('media-upload-av-types')) {
+            return;
+        }
+
+        $add = array(
+            'upload_extensions' => array('ogv', 'm4v', 'aac', 'oga', 'opus', 'flac'),
+            'upload_mime'       => array('video/ogg', 'video/x-m4v', 'audio/aac', 'audio/x-aac', 'audio/x-hx-aac-adts', 'audio/flac', 'audio/x-flac'),
+        );
+
+        try {
+            $db  = JFactory::getDbo();
+            $row = $db->setQuery(
+                $db->getQuery(true)
+                    ->select($db->quoteName(array('extension_id', 'params')))
+                    ->from($db->quoteName('#__extensions'))
+                    ->where($db->quoteName('type') . ' = ' . $db->quote('component'))
+                    ->where($db->quoteName('element') . ' = ' . $db->quote('com_media'))
+            )->loadObject();
+
+            if (!$row) {
+                return;
+            }
+
+            $params = new JRegistry($row->params);
+
+            foreach ($add as $name => $values) {
+                $list    = (string) $params->get($name, '');
+                $current = array_map('strtolower', array_map('trim', explode(',', $list)));
+                $missing = array_values(array_diff($values, $current));
+
+                // An empty list keeps its meaning (the defaults of config.xml)
+                if ($list === '' || !$missing) {
+                    continue;
+                }
+
+                $params->set($name, rtrim($list, ", \r\n\t") . ',' . implode(',', $missing));
+            }
+
+            $db->setQuery(
+                $db->getQuery(true)
+                    ->update($db->quoteName('#__extensions'))
+                    ->set($db->quoteName('params') . ' = ' . $db->quote($params->toString()))
+                    ->where($db->quoteName('extension_id') . ' = ' . (int) $row->extension_id)
+            )->execute();
+
+            $this->markUpdateStepDone('media-upload-av-types');
+        } catch (Exception $e) {
+            // Not worth failing the update for: the lists stay as they were
         }
     }
 

@@ -210,6 +210,7 @@ class MediaModelList extends JModelLegacy
                         case 'webm':
                         case 'mov':
                         case 'ogv':
+                        case 'm4v':
                             $tmp->icon    = $this->getTypeIcon(strtolower(JFile::getExt($file)));
                             $tmp->icon_32 = '';
                             $tmp->icon_16 = '';
@@ -340,7 +341,7 @@ class MediaModelList extends JModelLegacy
             'txt'  => 'file-earmark-text', 'rtf' => 'file-earmark-richtext',
             'zip'  => 'file-earmark-zip', 'rar' => 'file-earmark-zip', '7z' => 'file-earmark-zip', 'tar' => 'file-earmark-zip',
             'tgz'  => 'file-earmark-zip', 'gz' => 'file-earmark-zip',
-            'mp4'  => 'file-earmark-play', 'webm' => 'file-earmark-play', 'ogv' => 'file-earmark-play', 'mov' => 'file-earmark-play',
+            'mp4'  => 'file-earmark-play', 'webm' => 'file-earmark-play', 'ogv' => 'file-earmark-play', 'mov' => 'file-earmark-play', 'm4v' => 'file-earmark-play',
             'avi'  => 'file-earmark-play', 'wmv' => 'file-earmark-play',
             'mp3'  => 'file-earmark-music', 'm4a' => 'file-earmark-music', 'aac' => 'file-earmark-music', 'ogg' => 'file-earmark-music',
             'oga'  => 'file-earmark-music', 'opus' => 'file-earmark-music', 'wav' => 'file-earmark-music', 'flac' => 'file-earmark-music',
