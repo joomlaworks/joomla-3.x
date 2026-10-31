@@ -2067,7 +2067,7 @@ div.modal.jviewport-width100 {width:100vw;margin-left:-50vw;}
 }
 
 /* --- Joomla modals --- */
-@font-face {font-family:"bootstrap-icons";src:url("../../../../media/system/fonts/bootstrap-icons.woff2") format("woff2"),url("../../../../media/system/fonts/bootstrap-icons.woff") format("woff");font-weight:normal;font-style:normal;font-display:block;}
+@font-face {font-family:"bootstrap-icons";src:url("../../../../media/system/fonts/bootstrap-icons.woff2") format("woff2"),url("../../../../media/system/fonts/bootstrap-icons.woff") format("woff");font-weight:normal;font-style:normal;font-display:block;font-display:block;}
 
 /* --- Icons (Bootstrap Icons) --- */
 [data-icon]:before {font-family:"bootstrap-icons";content:attr(data-icon);}

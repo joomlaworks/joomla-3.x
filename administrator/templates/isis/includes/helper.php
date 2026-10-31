@@ -85,6 +85,7 @@ if (!class_exists('IsisHelper', false)) {
 
             // Add Stylesheets
             JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
+            static::preloadIconFont($document);
 
             if ($document->direction === 'rtl') {
                 JHtml::_('stylesheet', 'template-rtl.css', array('version' => 'auto', 'relative' => true));
@@ -183,6 +184,7 @@ if (!class_exists('IsisHelper', false)) {
 
             // Add Stylesheets
             JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
+            static::preloadIconFont($document);
 
             if ($document->direction === 'rtl') {
                 JHtml::_('stylesheet', 'template-rtl.css', array('version' => 'auto', 'relative' => true));
@@ -386,6 +388,24 @@ if (!class_exists('IsisHelper', false)) {
             }
 
             return array('properties' => $properties, 'classes' => $classes);
+        }
+
+        /**
+         * Preloads the icon font (css/template.css draws the .icon-* classes with it): without the hint the browser asks for
+         * it only once the stylesheet is parsed and an icon is styled, and the icons appear a moment after the page. The
+         * address must be the one the stylesheet's @font-face asks for, or the font is downloaded twice.
+         *
+         * @param   JDocument  $document  The page
+         *
+         * @return  void
+         *
+         * @since   3.18.0
+         */
+        public static function preloadIconFont($document)
+        {
+            if (method_exists($document, 'addPreload')) {
+                $document->addPreload(JUri::root(true) . '/media/system/fonts/bootstrap-icons.woff2', 'font', array('type' => 'font/woff2'));
+            }
         }
 
         /**
