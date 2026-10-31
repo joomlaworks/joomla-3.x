@@ -17,7 +17,7 @@ JFactory::getDocument()->addScriptDeclaration(
 	var title = form.title.value;
 	var alltext = window.top.' . $this->editor->getContent('text') . ';
 
-	jQuery(document).ready(function() {
+	document.addEventListener("DOMContentLoaded", function () {
 		document.getElementById("td-title").innerHTML = title;
 		document.getElementById("td-text").innerHTML = alltext;
 	});'
