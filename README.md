@@ -76,6 +76,7 @@ Summary of changes:
 - MooTools is gone from the core: one shared script, `global.js` (namespace `CMS`), replaces `core.js` (removed; `JHtml` requests for it load `global.js`) and does what MooTools did (modals, tooltips, tabs, sliders, tree, password meter) in plain JavaScript; old names keep working, and MooTools stays available for extensions that ask for it. Polyfills for old browsers are gone too
 
 **Improvements:**
+- Page scripts of the administrator (menus, modules, fields, templates, installer, Joomla Update, Media Manager, CodeMirror and more) moved into their extensions' own files in plain JavaScript, mostly without jQuery; pages carry data instead of code
 - Edit forms validate before saving without a script of their own (attributes on the form; 30 page scripts and their jQuery removed); two-factor settings and banner types switch with show-on, Smart Search and Associations confirm through the toolbar
 - Templates write the document head with `<jdoc:include type="header" />` (`type="head"` keeps working)
 - Wrapper: cached pages follow the `load` query parameter (letters, digits, `_` and `-`), for template overrides and plugins using it
@@ -177,6 +178,7 @@ Summary of changes:
 - Media uploads compare executable extensions in any case (`x.SHTML.png` got through), and the "Illegal MIME Types" option is actually checked
 
 **Bug fixes:**
+- Updates deleted Smart Search's PDF icon; installs from the upload, URL or folder tab ignored their return address
 - Associations' Propagate fills the other languages' items correctly on SQLite and PostgreSQL
 - Module forms' Ordering list shows titles with commas and `&` correctly
 - Language overrides: searching for text with `&` or `+` works, and the search requests check the form token
