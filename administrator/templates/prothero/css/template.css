@@ -2753,6 +2753,8 @@ fieldset.checkboxes li {list-style:none;}
 .controls .chzn-container input[type="text"],
 .row-fluid .controls input[class*="span"],
 .row-fluid .controls textarea[class*="span"] {max-width:100%;}
+#filter-config select,
+#filter-config input {box-sizing:border-box;width:100%;max-width:none;min-height:var(--control-h, 28px);}
 .controls .btn-group > .btn {min-width:50px;margin-left:-1px;}
 .controls .btn-group.btn-group-yesno {width:220px;max-width:100%;}
 .controls .btn-group.btn-group-yesno > .btn {width:50%;min-width:40px;padding:5px 0;}
