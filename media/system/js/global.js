@@ -9894,11 +9894,16 @@
 
 		if (!bootstrapLoaded('dropdown')) {
 			const toggle = target.closest(CMS.bootstrap.dropdown.toggles);
+			const href = toggle && toggle.tagName === 'A' ? (toggle.getAttribute('href') || '').trim() : '';
 
-			if (toggle) {
+			// A toggle with an address of its own (the administrator menu's items with a submenu) is a link: Joomla's Bootstrap
+			// followed it on a click
+			const link = href && href.charAt(0) !== '#' && !/^javascript:/i.test(href);
+
+			if (toggle && !link) {
 				event.preventDefault();
 				CMS.bootstrap.dropdown.toggle(toggle);
-			} else if (!target.closest('.dropdown form')) {
+			} else if (!link && !target.closest('.dropdown form')) {
 				CMS.bootstrap.dropdown.clear();
 			}
 		}

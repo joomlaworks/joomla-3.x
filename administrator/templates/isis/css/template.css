@@ -5,6 +5,9 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
+/* --- Page transitions --- */
+@view-transition {navigation:auto;}
+
 /* --- Colours --- */
 :root {
     --c-text:          #333333;  /* body text */
@@ -23,9 +26,6 @@
     --c-warning:       #8a6d3b;
     --c-error:         #a94442;
 }
-
-/* --- Page transitions --- */
-@view-transition {navigation:auto;}
 
 /* --- Bootstrap: Reset --- */
 article,

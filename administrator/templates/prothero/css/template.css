@@ -5,6 +5,9 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
+/* --- Page transitions --- */
+@view-transition {navigation:auto;}
+
 /* --- Colours --- */
 :root {
     color-scheme:      light;
@@ -216,9 +219,6 @@
     --control-h:       calc(var(--lh-base) + 12px);
     --control-inner-h: calc(var(--lh-base) + 10px);
 }
-
-/* --- Page transitions --- */
-@view-transition {navigation:auto;}
 
 /* --- Bootstrap: Reset --- */
 article,
