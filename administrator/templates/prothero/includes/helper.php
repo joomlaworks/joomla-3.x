@@ -101,8 +101,6 @@ if (!class_exists('ProtheroHelper', false)) {
             // Load custom.css
             JHtml::_('stylesheet', 'custom.css', array('version' => 'auto', 'relative' => true));
 
-            JHtml::_('stylesheet', 'responsive.css', array('version' => 'auto', 'relative' => true));
-
             // Detecting Active Variables
             $page->option   = $input->get('option', '');
             $page->view     = $input->get('view', '');
