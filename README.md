@@ -83,6 +83,8 @@ Summary of changes:
 - MooTools is gone from the core: one shared script, `global.js` (namespace `CMS`), replaces `core.js` (removed; `JHtml` requests for it load `global.js`) and does what MooTools did (modals, tooltips, tabs, sliders, tree, password meter) in plain JavaScript; old names keep working, and MooTools stays available for extensions that ask for it. Polyfills for old browsers are gone too
 
 **Improvements:**
+- Wider form fields in the administrator (550 pixels instead of about 220, never wider than their column), lined up: inputs and lists have the same width
+- Prothero becomes the administrator's template when updating a site that uses Isis (once; Isis stays available)
 - Page scripts of the administrator (menus, modules, fields, templates, installer, Joomla Update, Media Manager, CodeMirror and more) moved into their extensions' own files in plain JavaScript, mostly without jQuery; pages carry data instead of code
 - Edit forms validate before saving without a script of their own (attributes on the form; 30 page scripts and their jQuery removed); two-factor settings and banner types switch with show-on, Smart Search and Associations confirm through the toolbar
 - Templates write the document head with `<jdoc:include type="header" />` (`type="head"` keeps working)

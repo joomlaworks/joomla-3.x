@@ -87,6 +87,7 @@ class JoomlaInstallerScript
         $this->updateMediaUploadMaxSize();
         $this->updateCodeMirrorTheme();
         $this->enableLittleWaf();
+        $this->useProtheroAsAdminTemplate();
         $this->enableIconCaptcha();
         $this->updateLatestActionsCount();
         $this->addSystemInformationModule();
@@ -1141,6 +1142,67 @@ class JoomlaInstallerScript
             $this->markUpdateStepDone('littlewaf-enabled');
         } catch (Exception $e) {
             // Not worth failing the update for: the plugin stays as it was
+        }
+    }
+
+    /**
+     * Makes Prothero the administrator's default template, once, on sites whose default is an Isis style (3.17 and older, and
+     * 3.18 development builds, added Prothero without making it the default). A third-party administrator template is kept,
+     * as is Isis when an administrator chooses it again afterwards, or for users who chose it in their own settings.
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    protected function useProtheroAsAdminTemplate()
+    {
+        if ($this->isUpdateStepDone('prothero-default')) {
+            return;
+        }
+
+        try {
+            $db = JFactory::getDbo();
+
+            $default = $db->setQuery(
+                $db->getQuery(true)
+                    ->select($db->quoteName('template'))
+                    ->from($db->quoteName('#__template_styles'))
+                    ->where($db->quoteName('client_id') . ' = 1')
+                    ->where($db->quoteName('home') . ' = ' . $db->quote('1')),
+                0,
+                1
+            )->loadResult();
+
+            // Prothero's first style, when the template is installed and enabled (it can be uninstalled)
+            $prothero = (int) $db->setQuery(
+                $db->getQuery(true)
+                    ->select($db->quoteName('s.id'))
+                    ->from($db->quoteName('#__template_styles', 's'))
+                    ->join('INNER', $db->quoteName('#__extensions', 'e') . ' ON ' . $db->quoteName('e.element') . ' = ' . $db->quoteName('s.template')
+                        . ' AND ' . $db->quoteName('e.client_id') . ' = ' . $db->quoteName('s.client_id'))
+                    ->where($db->quoteName('s.client_id') . ' = 1')
+                    ->where($db->quoteName('s.template') . ' = ' . $db->quote('prothero'))
+                    ->where($db->quoteName('e.type') . ' = ' . $db->quote('template'))
+                    ->where($db->quoteName('e.enabled') . ' = 1')
+                    ->where($db->quoteName('e.state') . ' <> -1')
+                    ->order($db->quoteName('s.id')),
+                0,
+                1
+            )->loadResult();
+
+            if ($default === 'isis' && $prothero) {
+                $db->setQuery(
+                    $db->getQuery(true)
+                        ->update($db->quoteName('#__template_styles'))
+                        ->set($db->quoteName('home') . ' = CASE WHEN ' . $db->quoteName('id') . ' = ' . $prothero . ' THEN ' . $db->quote('1')
+                            . ' ELSE ' . $db->quote('0') . ' END')
+                        ->where($db->quoteName('client_id') . ' = 1')
+                )->execute();
+            }
+
+            $this->markUpdateStepDone('prothero-default');
+        } catch (Exception $e) {
+            // Not worth failing the update for: the administrator's template stays as it was
         }
     }
 

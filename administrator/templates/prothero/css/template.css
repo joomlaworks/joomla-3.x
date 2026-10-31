@@ -534,7 +534,7 @@ input[type="color"],
 .uneditable-input {display:inline-block;height:var(--lh-base);padding:5px 10px;margin-bottom:9px;font-size:var(--fs-base);line-height:var(--lh-base);color:var(--c-fg);border-radius:var(--radius);vertical-align:middle;}
 input,
 textarea,
-.uneditable-input {width:206px;}
+.uneditable-input {width:528px;max-width:calc(100% - 22px);}
 textarea {height:auto;}
 textarea,
 input[type="text"],
@@ -579,7 +579,7 @@ input[type="radio"],
 input[type="checkbox"] {width:auto;}
 select,
 input[type="file"] {height:var(--control-h);line-height:var(--control-h);}
-select {width:220px;padding:5px 8px;border:1px solid var(--c-input);background-color:var(--c-card);color:var(--c-fg);}
+select {width:550px;max-width:100%;padding:5px 8px;border:1px solid var(--c-input);background-color:var(--c-card);color:var(--c-fg);}
 select[multiple],
 select[size] {height:auto;}
 select:focus,
@@ -2745,11 +2745,14 @@ fieldset.checkboxes input {float:left;}
 fieldset.checkboxes li {list-style:none;}
 .control-group,
 .controls,
+.controls select {max-width:100%;}
 .controls input[type="text"],
 .controls input[type="number"],
 .controls input[type="email"],
-.controls select,
-.controls textarea {max-width:100%;}
+.controls textarea {max-width:calc(100% - 22px);}
+.controls .chzn-container input[type="text"],
+.row-fluid .controls input[class*="span"],
+.row-fluid .controls textarea[class*="span"] {max-width:100%;}
 .controls .btn-group > .btn {min-width:50px;margin-left:-1px;}
 .controls .btn-group.btn-group-yesno {width:220px;max-width:100%;}
 .controls .btn-group.btn-group-yesno > .btn {width:50%;min-width:40px;padding:5px 0;}
