@@ -25,7 +25,7 @@ abstract class JHtmlIcon
      * @param   object    $category  The category information
      * @param   Registry  $params    The item parameters
      * @param   array     $attribs   Optional attributes for the link
-     * @param   boolean   $legacy    True to use legacy images, false to use icomoon based graphic
+     * @param   boolean   $legacy    True to use legacy images, false to use the icon font
      *
      * @return  string  The HTML markup for the create item link
      */
@@ -57,7 +57,7 @@ abstract class JHtmlIcon
      * @param   object    $article  The article information
      * @param   Registry  $params   The item parameters
      * @param   array     $attribs  Optional attributes for the link
-     * @param   boolean   $legacy   True to use legacy images, false to use icomoon based graphic
+     * @param   boolean   $legacy   True to use legacy images, false to use the icon font
      *
      * @return  string  The HTML markup for the email item link
      *
@@ -94,7 +94,7 @@ abstract class JHtmlIcon
      * @param   object    $article  The article information
      * @param   Registry  $params   The item parameters
      * @param   array     $attribs  Optional attributes for the link
-     * @param   boolean   $legacy   True to use legacy images, false to use icomoon based graphic
+     * @param   boolean   $legacy   True to use legacy images, false to use the icon font
      *
      * @return  string	The HTML for the article edit icon.
      *
@@ -163,7 +163,7 @@ abstract class JHtmlIcon
      * @param   object    $article  The article information
      * @param   Registry  $params   The item parameters
      * @param   array     $attribs  Optional attributes for the link
-     * @param   boolean   $legacy   True to use legacy images, false to use icomoon based graphic
+     * @param   boolean   $legacy   True to use legacy images, false to use the icon font
      *
      * @return  string  The HTML markup for the popup link
      */
@@ -189,7 +189,7 @@ abstract class JHtmlIcon
      * @param   object    $article  Not used, @deprecated for 4.0
      * @param   Registry  $params   The item parameters
      * @param   array     $attribs  Not used, @deprecated for 4.0
-     * @param   boolean   $legacy   True to use legacy images, false to use icomoon based graphic
+     * @param   boolean   $legacy   True to use legacy images, false to use the icon font
      *
      * @return  string  The HTML markup for the popup link
      */

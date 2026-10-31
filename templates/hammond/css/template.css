@@ -579,7 +579,7 @@ h3.page-header {margin-bottom:12px;padding-bottom:8px;}
 .text-center {text-align:center;}
 span[class^="icon-"]:empty,
 span[class*=" icon-"]:empty,
-i[class^="icon-"]:empty {display:none;} /* IcoMoon's font isn't loaded */
+i[class^="icon-"]:empty {display:none;} /* The icon font isn't loaded */
 
 /* Labels, badges, wells, alerts */
 .label,

@@ -79,11 +79,7 @@ $groups = array(
         array('name' => 'Modern Font Stacks', 'use' => 'shared', 'upstream' => 'current', 'version' => '', 'date' => '2026-03-10', 'dateSource' => 'GitHub, the last change of README.md (the stacks)', 'license' => 'CC0-1.0', 'url' => 'https://modernfontstacks.com', 'path' => 'libraries/src/Helper/FontStackHelper.php',
             'note' => 'The stacks of the Font field (type fontstack): fonts already on visitors\' devices'),
         array('name' => 'Bootstrap Icons', 'use' => 'shared', 'upstream' => 'npm:bootstrap-icons', 'version' => '1.13.2', 'date' => '2026-10-08', 'dateSource' => 'npm release 1.13.2', 'license' => 'MIT', 'url' => 'https://icons.getbootstrap.com', 'path' => 'media/system/images/icons',
-            'note' => 'One SVG file per icon (JHtml::_(\'icons.svg\')), also the Media Manager\'s, Contacts\', Smart Search\'s and the legacy administrator images, and EasyMDE\'s buttons', 'check' => array('docs/icons/build.py', '/npm bootstrap-icons ([0-9.]+)/')),
-        array('name' => 'IcoMoon (Joomla icon font)', 'use' => 'shared', 'version' => '', 'date' => '2013-10-02', 'dateSource' => 'Joomla\'s last change to the font (joomla-cms 48e2895, "Added new IcoMoon icon font set")', 'license' => 'Royalty-free', 'url' => 'https://icomoon.io', 'path' => 'media/system/fonts'),
-    ),
-    // Not bundled: services the CAPTCHA plugins connect to, with the API version they use
-    'External Services' => array(
+            'note' => 'Its font (media/system/fonts) draws the .icon-* classes (icomoon.css, the administrator templates and Protostar; IcoMoon until 3.18); one SVG file per icon (JHtml::_(\'icons.svg\')), also the Media Manager\'s, Contacts\', Smart Search\'s, the tree\'s, Chosen\'s and the legacy administrator images, and EasyMDE\'s buttons', 'check' => array('docs/icons/build.py', '/npm bootstrap-icons ([0-9.]+)/')),
         array('name' => 'Google reCAPTCHA', 'use' => 'core', 'upstream' => 'current', 'version' => 'v2, v3', 'license' => 'Google\'s terms of service', 'url' => 'https://developers.google.com/recaptcha', 'path' => 'plugins/captcha/recaptcha',
             'note' => 'Service by Google; used by "CAPTCHA - Google reCAPTCHA"'),
         array('name' => 'Cloudflare Turnstile', 'use' => 'core', 'upstream' => 'current', 'version' => 'v0', 'license' => 'Cloudflare\'s terms of service', 'url' => 'https://developers.cloudflare.com/turnstile/', 'path' => 'plugins/captcha/turnstile',

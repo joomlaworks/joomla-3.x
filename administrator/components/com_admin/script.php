@@ -5253,6 +5253,11 @@ class JoomlaInstallerScript
             '/media/system/images/modal/bg_sw.png',
             '/media/system/images/modal/bg_w.png',
             // Raster images replaced by SVGs or unused (3.18)
+            '/media/system/fonts/IcoMoon.ttf',
+            '/media/system/fonts/IcoMoon.woff',
+            '/media/system/fonts/icomoon-license.txt',
+            '/media/system/images/glyphicons-halflings.png',
+            '/media/system/images/glyphicons-halflings-white.png',
             '/media/system/images/alpha.png',
             '/media/system/images/bg-overlay.png',
             '/media/system/images/blank.png',
