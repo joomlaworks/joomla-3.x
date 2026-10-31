@@ -17,24 +17,27 @@ document.addEventListener('DOMContentLoaded', () => {
 		link.innerHTML = html;
 	};
 
-	fetch(options.ajaxUrl + '&eid=0&skip=700', { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-		.then((response) => (response.ok ? response.json() : Promise.reject(response)))
-		.then((updates) => {
-			const container = document.getElementById('system-message-container');
+	// After the page, so it doesn't compete with it (the Joomla update check runs at 2 seconds)
+	window.setTimeout(() => {
+		fetch(options.ajaxUrl + '&eid=0&skip=700', { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+			.then((response) => (response.ok ? response.json() : Promise.reject(response)))
+			.then((updates) => {
+				const container = document.getElementById('system-message-container');
 
-			if (!Array.isArray(updates)) {
-				say(text.ERROR);
-			} else if (!updates.length) {
-				say(text.UPTODATE);
-			} else {
-				say(text.UPDATEFOUND.replace('%s', updates.length));
+				if (!Array.isArray(updates)) {
+					say(text.ERROR);
+				} else if (!updates.length) {
+					say(text.UPTODATE);
+				} else {
+					say(text.UPDATEFOUND.replace('%s', updates.length));
 
-				if (container) {
-					container.insertAdjacentHTML('afterbegin', '<div class="alert alert-error alert-joomlaupdate">'
-						+ text.UPDATEFOUND_MESSAGE.replace('%s', updates.length)
-						+ ' <a class="btn btn-primary" href="' + options.url + '">' + text.UPDATEFOUND_BUTTON + '</a></div>');
+					if (container) {
+						container.insertAdjacentHTML('afterbegin', '<div class="alert alert-error alert-joomlaupdate">'
+							+ text.UPDATEFOUND_MESSAGE.replace('%s', updates.length)
+							+ ' <a class="btn btn-primary" href="' + options.url + '">' + text.UPDATEFOUND_BUTTON + '</a></div>');
+					}
 				}
-			}
-		})
-		.catch(() => say(text.ERROR));
+			})
+			.catch(() => say(text.ERROR));
+	}, 3000);
 });

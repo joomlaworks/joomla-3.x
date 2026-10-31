@@ -146,7 +146,7 @@
             "license": "MIT",
             "url": "https://icons.getbootstrap.com",
             "path": "media/system/images/icons",
-            "note": "Its font (media/system/fonts) draws the .icon-* classes (icomoon.css, the administrator templates and Protostar; IcoMoon until 3.18); one SVG file per icon (JHtml::_('icons.svg')), also the Media Manager's, Contacts', Smart Search's, the tree's, Chosen's and the legacy administrator images, and EasyMDE's buttons",
+            "note": "Its font (media/system/fonts, cut down to the glyphs the classes use by docs/icons/font_subset.py) draws the .icon-* classes (icomoon.css, the administrator templates and Protostar; IcoMoon until 3.18); one SVG file per icon (JHtml::_('icons.svg')), also the Media Manager's, Contacts', Smart Search's, the tree's, Chosen's and the legacy administrator images, and EasyMDE's buttons",
             "latest": "1.13.2",
             "isLatest": true,
             "checked": "2026.10.31",

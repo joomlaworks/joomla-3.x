@@ -70,7 +70,7 @@ abstract class HTMLHelper
             'system/mootree_rtl' => 'styles', 'mod_languages/languages' => 'styles', 'system/jquery.minicolors' => 'styles',
             'system/jquery.simplecolors' => 'styles', 'system/calendar-jos' => 'styles', 'system/calendar-field' => 'styles',
             'system/calendar-field-rtl' => 'styles', 'system/fields/calendar' => 'styles', 'system/fields/calendar-rtl' => 'styles',
-            'system/sortablelist' => 'styles', 'system/jquery.searchtools' => 'styles',
+            'system/sortablelist' => 'styles', 'system/jquery.searchtools' => 'styles', 'system/chosen' => 'styles',
         ),
     );
 

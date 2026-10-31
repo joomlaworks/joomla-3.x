@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-// Load chosen.css
+// Searchable lists
 JHtml::_('formbehavior.chosen', 'select');
 
 ?>

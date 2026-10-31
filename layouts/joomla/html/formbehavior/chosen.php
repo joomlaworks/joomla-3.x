@@ -21,7 +21,7 @@ defined('_JEXEC') or die;
 
 extract($displayData);
 
-// The list is drawn by global.js (CMS.chosen), in Chosen's markup and styles, from these options (by selector)
+// The list is drawn by global.js (CMS.chosen), in Chosen's markup, from these options (by selector); its styles are in
+// global.css, which behavior.cms loads
 JHtml::_('behavior.cms');
-JHtml::_('stylesheet', 'system/chosen.css', array('version' => 'auto', 'relative' => true));
 JFactory::getDocument()->addScriptOptions('system.chosen', array($selector => (object) $options));

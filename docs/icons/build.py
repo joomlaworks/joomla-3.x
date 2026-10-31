@@ -76,7 +76,7 @@ COLOURED = {
     'media/system/images/tree/_closed.svg': ('folder-fill', '#e0b04e'),
     'media/system/images/tree/_open.svg': ('folder2-open', '#d4a03c'),
     'media/system/images/tree/_doc.svg': ('file-earmark-text', '#8a8a8a'),
-    # Chosen's stylesheet (media/system/css/chosen.css; its sprite until 3.18)
+    # Searchable lists (Chosen's styles in media/system/css/global.css; its sprite until 3.18)
     'media/system/images/chosen/caret-down.svg': ('caret-down-fill', '#888888'),
     'media/system/images/chosen/caret-up.svg': ('caret-up-fill', '#888888'),
     'media/system/images/chosen/x.svg': ('x-lg', '#888888'),

@@ -17,26 +17,29 @@ document.addEventListener('DOMContentLoaded', () => {
 		link.innerHTML = html;
 	};
 
-	fetch(options.plg_quickicon_privacycheck_ajax_url, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-		.then((response) => (response.ok ? response.json() : Promise.reject(response)))
-		.then((result) => {
-			const count = parseInt(result && result.data ? result.data.number_urgent_requests : NaN, 10);
-			const badge = '<span class="label label-important">' + count + '</span>';
-			const container = document.getElementById('system-message-container');
+	// After the page, so it doesn't compete with it (the Joomla update check runs at 2 seconds)
+	window.setTimeout(() => {
+		fetch(options.plg_quickicon_privacycheck_ajax_url, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+			.then((response) => (response.ok ? response.json() : Promise.reject(response)))
+			.then((result) => {
+				const count = parseInt(result && result.data ? result.data.number_urgent_requests : NaN, 10);
+				const badge = '<span class="label label-important">' + count + '</span>';
+				const container = document.getElementById('system-message-container');
 
-			if (isNaN(count)) {
-				say(text.ERROR);
-			} else if (!count) {
-				say(text.NOREQUEST);
-			} else {
-				say(text.REQUESTFOUND + '&nbsp;' + badge);
+				if (isNaN(count)) {
+					say(text.ERROR);
+				} else if (!count) {
+					say(text.NOREQUEST);
+				} else {
+					say(text.REQUESTFOUND + '&nbsp;' + badge);
 
-				if (container) {
-					container.insertAdjacentHTML('afterbegin', '<div class="alert alert-error alert-joomlaupdate">'
-						+ badge + '&nbsp;' + text.REQUESTFOUND_MESSAGE
-						+ ' <a class="btn btn-primary" href="' + options.plg_quickicon_privacycheck_url + '">' + text.REQUESTFOUND_BUTTON + '</a></div>');
+					if (container) {
+						container.insertAdjacentHTML('afterbegin', '<div class="alert alert-error alert-joomlaupdate">'
+							+ badge + '&nbsp;' + text.REQUESTFOUND_MESSAGE
+							+ ' <a class="btn btn-primary" href="' + options.plg_quickicon_privacycheck_url + '">' + text.REQUESTFOUND_BUTTON + '</a></div>');
+					}
 				}
-			}
-		})
-		.catch(() => say(text.ERROR));
+			})
+			.catch(() => say(text.ERROR));
+	}, 2500);
 });

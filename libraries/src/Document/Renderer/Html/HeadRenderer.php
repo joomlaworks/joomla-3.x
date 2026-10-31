@@ -132,10 +132,6 @@ class HeadRenderer extends DocumentRenderer
                 . $this->escapeAttribute($link['relation']) . '"' . $this->linkAttributes($link['attribs']) . ' />' . $lnEnd;
         }
 
-        if ($document instanceof HtmlDocument && $document->getLinkHeaders()) {
-            $this->sendLinkHeaders($links);
-        }
-
         $defaultCssMimes = array('text/css');
 
         // Generate stylesheet links
@@ -143,11 +139,7 @@ class HeadRenderer extends DocumentRenderer
             // Check if stylesheet uses IE conditional statements.
             $conditional = isset($attribs['options']) && isset($attribs['options']['conditional']) ? $attribs['options']['conditional'] : null;
 
-            // Check if script uses media version.
-            if (isset($attribs['options']['version']) && $attribs['options']['version'] && strpos((string) $src, '?') === false
-                && ($mediaVersion || $attribs['options']['version'] !== 'auto')) {
-                $src .= '?' . ($attribs['options']['version'] === 'auto' ? $mediaVersion : $attribs['options']['version']);
-            }
+            $src = $this->versioned($src, $attribs, $mediaVersion);
 
             $buffer .= $tab;
 
@@ -246,6 +238,10 @@ class HeadRenderer extends DocumentRenderer
 
         if ($document instanceof HtmlDocument) {
             $document->setHeadScripts($written);
+
+            if ($document->getLinkHeaders()) {
+                $this->sendLinkHeaders(array_merge($links, $this->filePreloads($document, $mediaVersion, $footer)));
+            }
         }
 
         // Generate script declarations
@@ -314,11 +310,7 @@ class HeadRenderer extends DocumentRenderer
         // Check if script uses IE conditional statements.
         $conditional = isset($attribs['options']) && isset($attribs['options']['conditional']) ? $attribs['options']['conditional'] : null;
 
-        // Check if script uses media version.
-        if (isset($attribs['options']['version']) && $attribs['options']['version'] && strpos((string) $src, '?') === false
-            && ($mediaVersion || $attribs['options']['version'] !== 'auto')) {
-            $src .= '?' . ($attribs['options']['version'] === 'auto' ? $mediaVersion : $attribs['options']['version']);
-        }
+        $src = $this->versioned($src, $attribs, $mediaVersion);
 
         $buffer .= $tab;
 
@@ -369,6 +361,99 @@ class HeadRenderer extends DocumentRenderer
         $buffer .= $lnEnd;
 
         return $buffer;
+    }
+
+    /**
+     * A stylesheet's or script's address with its version (the media version for 'auto'), as its tag writes it
+     *
+     * @param   string  $src           The address
+     * @param   array   $attribs       Its attributes and options
+     * @param   string  $mediaVersion  The media version
+     *
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    protected function versioned($src, array $attribs, $mediaVersion)
+    {
+        if (isset($attribs['options']['version']) && $attribs['options']['version'] && strpos((string) $src, '?') === false
+            && ($mediaVersion || $attribs['options']['version'] !== 'auto')) {
+            $src .= '?' . ($attribs['options']['version'] === 'auto' ? $mediaVersion : $attribs['options']['version']);
+        }
+
+        return $src;
+    }
+
+    /**
+     * Preloads of the page's stylesheets, then its scripts (the head's, then the footer's), for the `Link:` headers only:
+     * the page's own tags already ask for them as soon as the HTML is read, but a proxy sending the headers early (Cloudflare's
+     * Early Hints, HTTP 103) lets the browser fetch them while the page is still being made. Each preload must match the
+     * request its tag makes (address, CORS mode), or the browser downloads the file twice. Left out: conditional (old IE)
+     * files, alternate stylesheets, nomodule scripts and scripts of types that aren't JavaScript.
+     *
+     * @param   Document  $document      The document
+     * @param   string    $mediaVersion  The media version
+     * @param   array     $footer        The addresses of the scripts written in the footer
+     *
+     * @return  array  Links as sortLinks() gives them
+     *
+     * @since   3.18.0
+     */
+    protected function filePreloads($document, $mediaVersion, array $footer)
+    {
+        $preloads = array();
+        $jsMimes  = array('', 'text/javascript', 'application/javascript', 'text/x-javascript', 'application/x-javascript');
+        $preload  = function ($href, $relation, array $attribs) {
+            return array('href' => $href, 'relation' => $relation, 'relType' => 'rel', 'attribs' => $attribs);
+        };
+
+        foreach ($document->_styleSheets as $src => $attribs) {
+            $relation = isset($attribs['rel']) ? strtolower(trim((string) $attribs['rel'])) : 'stylesheet';
+
+            if (!empty($attribs['options']['conditional']) || $relation !== 'stylesheet') {
+                continue;
+            }
+
+            $hint = array('as' => 'style');
+
+            if (!empty($attribs['media']) && is_scalar($attribs['media']) && strtolower((string) $attribs['media']) !== 'all') {
+                $hint['media'] = (string) $attribs['media'];
+            }
+
+            if (isset($attribs['crossorigin']) && $attribs['crossorigin'] !== false) {
+                $hint['crossorigin'] = $attribs['crossorigin'];
+            }
+
+            $preloads[] = $preload($this->versioned($src, $attribs, $mediaVersion), 'preload', $hint);
+        }
+
+        $scripts = array();
+
+        foreach ($document->_scripts as $src => $attribs) {
+            $scripts[in_array($src, $footer, true) ? 1 : 0][$src] = $attribs;
+        }
+
+        foreach (array(0, 1) as $part) {
+            foreach (isset($scripts[$part]) ? $scripts[$part] : array() as $src => $attribs) {
+                $type = isset($attribs['type']) ? $attribs['type'] : (isset($attribs['mime']) ? $attribs['mime'] : '');
+                $type = strtolower(trim((string) $type));
+
+                if (!empty($attribs['options']['conditional']) || !empty($attribs['nomodule'])
+                    || ($type !== 'module' && !in_array($type, $jsMimes, true))) {
+                    continue;
+                }
+
+                $hint = $type === 'module' ? array() : array('as' => 'script');
+
+                if (isset($attribs['crossorigin']) && $attribs['crossorigin'] !== false) {
+                    $hint['crossorigin'] = $attribs['crossorigin'];
+                }
+
+                $preloads[] = $preload($this->versioned($src, $attribs, $mediaVersion), $type === 'module' ? 'modulepreload' : 'preload', $hint);
+            }
+        }
+
+        return $preloads;
     }
 
     /**
@@ -524,7 +609,8 @@ class HeadRenderer extends DocumentRenderer
     /**
      * Sends the resource hints among the links as HTTP `Link:` headers (one value each; the application joins them), at most
      * 2,000 bytes of Link headers in all, as servers and proxies refuse responses with large headers (nginx answers 502).
-     * Addresses with characters a header can't carry, and hints the response already has, are left out.
+     * Addresses with characters a header can't carry, hints the response already has and a second hint of the same kind for
+     * the same address (a template's own preload of its stylesheet, then the stylesheet's from filePreloads()) are left out.
      *
      * @param   array  $links  The links, from sortLinks()
      *
@@ -542,6 +628,7 @@ class HeadRenderer extends DocumentRenderer
 
         // What this response already has (e.g. the head rendered twice)
         $sent   = array();
+        $hinted = array();
         $length = 0;
 
         foreach ((array) $app->getHeaders() as $header) {
@@ -563,7 +650,13 @@ class HeadRenderer extends DocumentRenderer
                 continue;
             }
 
-            $value = '<' . $href . '>; rel=' . strtolower(trim((string) $link['relation']));
+            $relation = strtolower(trim((string) $link['relation']));
+
+            if (isset($hinted[$relation . ' ' . $href])) {
+                continue;
+            }
+
+            $value = '<' . $href . '>; rel=' . $relation;
 
             foreach (array('as', 'type', 'crossorigin', 'media', 'fetchpriority', 'imagesrcset', 'imagesizes') as $name) {
                 if (!isset($link['attribs'][$name]) || $link['attribs'][$name] === false || !is_scalar($link['attribs'][$name])) {
@@ -587,6 +680,7 @@ class HeadRenderer extends DocumentRenderer
 
             $app->setHeader('Link', $value);
             $sent[] = $value;
+            $hinted[$relation . ' ' . $href] = true;
             $length += strlen($value) + 2;
         }
     }
