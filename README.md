@@ -74,6 +74,7 @@ Summary of changes:
 - MooTools is gone from the core: one shared script, `global.js` (namespace `CMS`), replaces `core.js` (removed; `JHtml` requests for it load `global.js`) and does what MooTools did (modals, tooltips, tabs, sliders, tree, password meter) in plain JavaScript; old names keep working, and MooTools stays available for extensions that ask for it. Polyfills for old browsers are gone too
 
 **Improvements:**
+- Wrapper: cached pages follow the `load` query parameter (letters, digits, `_` and `-`), for template overrides and plugins using it
 - Library updates: jQuery UI 1.14.2 (with the 1.9 helpers kept for extensions), SimplePie 1.9.0 (needs PHP 7.2; core doesn't use it), sodium_compat 1.24.2
 - SQLite driver: MySQL on SQLite 3.1.1 (temporary tables, transactions and date arithmetic fixed upstream), Joomla's patches kept
 - Three unused libraries removed: HTML5 Shiv (for Internet Explorer 8), Google's reCAPTCHA PHP client and a duplicate copy of PHP UTF-8

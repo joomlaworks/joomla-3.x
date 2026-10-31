@@ -35,6 +35,13 @@ class WrapperController extends JControllerLegacy
         $vName = $this->input->get('view', 'wrapper');
         $this->input->set('view', $vName);
 
-        return parent::display($cachable, array('Itemid' => 'INT'));
+        // "load" (read by template overrides and plugins) keys the cached page too, reduced to letters, digits, _ and -
+        $load = $this->input->getString('load', null);
+
+        if ($load !== null) {
+            $this->input->set('load', preg_replace('/[^A-Za-z0-9_-]/', '', $load));
+        }
+
+        return parent::display($cachable, array('Itemid' => 'INT', 'load' => 'CMD'));
     }
 }
