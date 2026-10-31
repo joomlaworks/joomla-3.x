@@ -170,10 +170,7 @@ class PlgEditorCodemirror extends JPlugin
 
         $done = true;
 
-        JFactory::getDocument()->addScriptDeclaration("
-		;function jInsertEditorText(text, editor) { Joomla.editors.instances[editor].replaceSelection(text); }
-		");
-
+        // jInsertEditorText() is defined in js/codemirror.js
         return true;
     }
 

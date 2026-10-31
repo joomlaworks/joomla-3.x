@@ -12,6 +12,7 @@
     <files>
         <filename plugin="codemirror">codemirror.php</filename>
         <folder>addon</folder>
+        <folder>js</folder>
         <filename>fonts.json</filename>
         <filename>fonts.php</filename>
         <folder>keymap</folder>
