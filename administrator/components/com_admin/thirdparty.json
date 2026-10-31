@@ -361,6 +361,22 @@
             "seriesLatest": ""
         },
         {
+            "name": "PDF.js",
+            "version": "6.4.299",
+            "date": "2026.10.03",
+            "dateSource": "npm release 6.4.299",
+            "license": "Apache-2.0",
+            "url": "https://mozilla.github.io/pdf.js/",
+            "path": "media/system/pdfjs",
+            "note": "The PDF viewer (JHtml behavior.pdf: Content - PDF, the Media Manager, the editors): library, worker, fonts, character maps and image decoders, unchanged (.mjs files saved as .js)",
+            "latest": "6.4.299",
+            "isLatest": true,
+            "checked": "2026.10.31",
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
+        },
+        {
             "name": "QR Code Generator",
             "version": "1.4.3",
             "date": "",

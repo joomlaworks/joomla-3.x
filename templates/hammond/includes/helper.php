@@ -639,7 +639,8 @@ abstract class HammondHelper
      */
     public static function excerpt($item, $length = 0)
     {
-        $text = trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string) ($item->introtext ?? '')), ENT_QUOTES, 'UTF-8')));
+        // Without the core plugins' shortcodes ({pdf ...}, {loadposition ...}): the intro text isn't prepared here
+        $text = trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string) preg_replace('/\{(?:pdf|loadposition|loadmodule|loadmoduleid|emailcloak)\b[^{}]*\}/i', ' ', (string) ($item->introtext ?? ''))), ENT_QUOTES, 'UTF-8')));
 
         if ($length && mb_strlen($text) > $length) {
             $text = rtrim(mb_substr($text, 0, mb_strrpos(mb_substr($text, 0, $length), ' ') ?: $length), ' ,.;:') . '…';

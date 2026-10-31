@@ -579,6 +579,58 @@ abstract class JHtmlBehavior
     }
 
     /**
+     * The PDF viewer (media/system/js/pdf-viewer.js, pdf.js 6 in media/system/pdfjs): elements .cms-pdf[data-pdf] become
+     * viewers, elements with data-pdf-thumb get the file's first page; CMS.pdfViewer for scripts. pdf.js itself is loaded only
+     * when a PDF is shown.
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    public static function pdf()
+    {
+        if (isset(static::$loaded[__METHOD__])) {
+            return;
+        }
+
+        static::core();
+
+        $document = JFactory::getDocument();
+        $base     = JUri::root() . 'media/system/pdfjs/';
+        $version  = $document->getMediaVersion();
+        $icons    = array();
+
+        $names = array(
+            'previous' => 'chevron-left', 'next' => 'chevron-right', 'zoom-in' => 'zoom-in', 'zoom-out' => 'zoom-out', 'fit' => 'arrow-left-right',
+            'fullscreen' => 'fullscreen', 'fullscreen-exit' => 'fullscreen-exit', 'download' => 'download',
+        );
+
+        foreach ($names as $name => $file) {
+            $icons[$name] = JHtml::_('icons.svg', $file, '', array('path' => 'media/system/images/icons', 'size' => 16));
+        }
+
+        $document->addScriptOptions('system.pdfviewer', array(
+            'lib'    => $base . 'pdf.min.js?' . $version,
+            'worker' => $base . 'pdf.worker.min.js?' . $version,
+            'cmaps'  => $base . 'cmaps/',
+            'fonts'  => $base . 'standard_fonts/',
+            'wasm'   => $base . 'wasm/',
+            'iccs'   => $base . 'iccs/',
+            'root'   => JUri::root(true) . '/',
+            'icons'  => $icons,
+        ));
+
+        foreach (array('PREVIOUS', 'NEXT', 'PAGE', 'ZOOM_IN', 'ZOOM_OUT', 'FIT', 'FULLSCREEN', 'EXIT_FULLSCREEN', 'DOWNLOAD', 'LOADING', 'ERROR') as $key) {
+            JText::script('JLIB_HTML_BEHAVIOR_PDF_' . $key);
+        }
+
+        JHtml::_('stylesheet', 'system/pdf-viewer.min.css', array('version' => 'auto', 'relative' => true));
+        JHtml::_('script', 'system/pdf-viewer.min.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'), array('defer' => true));
+
+        static::$loaded[__METHOD__] = true;
+    }
+
+    /**
      * Add unobtrusive JavaScript support for a simple color picker.
      *
      * @return  void

@@ -131,6 +131,15 @@
         },
         "checked": "2026-10-31"
     },
+    "npm:pdfjs-dist": {
+        "version": "6.4.299",
+        "series": {
+            "major": "6",
+            "version": "6.4.299",
+            "date": "2026-10-03"
+        },
+        "checked": "2026-10-31"
+    },
     "npm:polyfill-service": {
         "version": "3.25.3",
         "series": {

@@ -17,6 +17,7 @@ $fieldInput = $this->state->get('field.id');
 $isMoo      = $input->getInt('ismoo', 1);
 $author     = $input->getCmd('author');
 $asset      = $input->getCmd('asset');
+$type       = $input->getCmd('type') === 'pdf' && !$fieldInput ? 'pdf' : '';
 
 // Load tooltip instance without HTML support because we have a HTML tag in the tip
 JHtml::_('bootstrap.tooltip', '.noHtmlTip', array('html' => false));
@@ -31,9 +32,15 @@ JFactory::getDocument()->addScriptOptions(
     array(
         'base'   => $params->get('image_path', 'images') . '/',
         'asset'  => $asset,
-        'author' => $author
+        'author' => $author,
+        'type'   => $type,
     )
 );
+
+// The PDF picker: the list's first pages
+if ($type === 'pdf') {
+    JHtml::_('behavior.pdf');
+}
 
 /**
  * Mootools compatibility
@@ -81,13 +88,13 @@ if (!empty($fieldInput)) { // Media Form Field
 			</div>
 		</div>
 
-		<iframe id="imageframe" name="imageframe" src="index.php?option=com_media&amp;view=imagesList&amp;tmpl=component&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>&amp;asset=<?php echo $asset; ?>&amp;author=<?php echo $author; ?>"></iframe>
+		<iframe id="imageframe" name="imageframe" src="index.php?option=com_media&amp;view=imagesList&amp;tmpl=component<?php echo $type ? '&amp;type=' . $type : ''; ?>&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>&amp;asset=<?php echo $asset; ?>&amp;author=<?php echo $author; ?>"></iframe>
 
 		<div class="well">
 			<div class="row-fluid">
 				<div class="span12 control-group">
 					<div class="control-label">
-						<label for="f_url"><?php echo JText::_('COM_MEDIA_IMAGE_URL'); ?></label>
+						<label for="f_url"><?php echo JText::_($type ? 'COM_MEDIA_PDF_URL' : 'COM_MEDIA_IMAGE_URL'); ?></label>
 					</div>
 					<div class="controls">
 						<input type="text" id="f_url" value="" />
@@ -96,7 +103,7 @@ if (!empty($fieldInput)) { // Media Form Field
 			</div>
 		</div>
 
-		<?php if (!$this->state->get('field.id')) : ?>
+		<?php if (!$this->state->get('field.id') && !$type) : ?>
 			<div class="well">
 				<div class="row-fluid">
 					<div class="span6 control-group">

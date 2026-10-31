@@ -39,6 +39,15 @@ class MediaViewMediaList extends JViewLegacy
 
         $this->images    = $this->get('images');
         $this->documents = $this->get('documents');
+
+        // PDF files: their first pages as the tiles' pictures, a click shows them (JHtml behavior.pdf)
+        foreach ($this->documents as $document) {
+            if (strtolower(JFile::getExt($document->name)) === 'pdf') {
+                JHtml::_('behavior.pdf');
+
+                break;
+            }
+        }
         $this->folders   = $this->get('folders');
         $this->videos    = $this->get('videos');
         $this->audios    = $this->get('audios');

@@ -21,6 +21,9 @@ JFactory::getDocument()->addScriptOptions('com_media.manager', array('basepath' 
 
 // The Media Manager (media.js) and its modals (the CMS's, global.js)
 JHtml::_('behavior.cms');
+
+// The PDF previews open here (the list's frame calls MediaPreview.openPdf())
+JHtml::_('behavior.pdf');
 JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true));
 JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));
 JHtml::_('behavior.styles');

@@ -381,6 +381,8 @@ class JoomlaInstallerScript
             '3.18.0-2026-10-27.sql' => '3.18.0',
             // The CAPTCHA plugins Akismet, Cloudflare Turnstile, hCaptcha and IconCaptcha
             '3.18.0-2026-10-28.sql' => '3.18.0',
+            // Content - PDF and Button - PDF
+            '3.18.0-2026-10-31.sql' => '3.18.0',
         );
 
         foreach ($dataMigrationFiles as $file => $addedIn) {
@@ -761,6 +763,10 @@ class JoomlaInstallerScript
         'Custom Blocks' => array(
             array('module', 'mod_customblocks', ''),
             array('module', 'mod_customblocks', '', 1),
+        ),
+        'PDF' => array(
+            array('plugin', 'pdf', 'content'),
+            array('plugin', 'pdf', 'editors-xtd'),
         ),
         'Other site modules' => array(
             array('module', 'mod_breadcrumbs', ''),

@@ -150,6 +150,12 @@ class BlockRenderer
 
         $layout->setIncludePaths($paths);
 
+        // PDF files ({pdf ...}) as links to them: the preview page has no viewer
+        if (strpos((string) $html, '{pdf') !== false && \JPluginHelper::isEnabled('content', 'pdf')) {
+            \JLoader::register('PlgContentPdf', JPATH_PLUGINS . '/content/pdf/pdf.php');
+            $html = \PlgContentPdf::replace((string) $html, true);
+        }
+
         return $layout->render(array(
             'html'      => (string) $html,
             'template'  => $this->template,

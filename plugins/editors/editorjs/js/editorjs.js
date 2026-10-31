@@ -81,6 +81,14 @@
 	const escapeHtml = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 	// An address which may be used: http(s), mailto, tel, paths and anchors
+	// A PDF file of the site ({pdf images/x.pdf}, "Content - PDF"): a path, no scheme, no "..", ending in .pdf
+	const PDF_SHORTCODE = /^\s*\{pdf\s+([^{}<>"]+?)\s*\}\s*$/i;
+	const safePdf = (path) => {
+		const value = String(path || '').trim();
+
+		return /^[^\0\\{}<>"]+\.pdf$/i.test(value) && !/^[a-z][a-z0-9+.-]*:/i.test(value) && value.split('/').indexOf('..') === -1 ? value : '';
+	};
+
 	const safeUrl = (url) => {
 		const value = String(url || '').trim();
 
@@ -322,6 +330,8 @@
 			case 'delimiter':
 			case 'readmore':
 				return { type: block.type, data: {} };
+			case 'pdf':
+				return safePdf(data.file) === '' ? null : { type: 'pdf', data: { file: safePdf(data.file) } };
 			case 'template': {
 				const template = String(data.template || '');
 				const name = String(data.block || '');
@@ -467,7 +477,9 @@
 
 			const only = node.children.length === 1 && node.textContent.trim() === '' ? node.children[0] : null;
 
-			if (name === 'P' && hasNoAttributes(node) && only && only.nodeName === 'IMG') {
+			if (name === 'P' && node.children.length === 0 && PDF_SHORTCODE.test(node.textContent) && safePdf(PDF_SHORTCODE.exec(node.textContent)[1]) !== '') {
+				blocks.push({ type: 'pdf', data: { file: safePdf(PDF_SHORTCODE.exec(node.textContent)[1]) } });
+			} else if (name === 'P' && hasNoAttributes(node) && only && only.nodeName === 'IMG') {
 				blocks.push(imageBlock(only));
 			} else if (name === 'P' && hasNoAttributes(node) && isInlineOnly(node)) {
 				if (node.innerHTML.trim() !== '' && node.innerHTML.trim() !== '&nbsp;') {
@@ -916,8 +928,50 @@
 		}
 	};
 
+	/*
+	 * A PDF block ({pdf ...} in the content): the file's first page and name. It has no menu entry: the PDF button (an editor
+	 * button) adds them.
+	 */
+	class PdfTool {
+		static get isReadOnlySupported() {
+			return true;
+		}
+
+		constructor({ data }) {
+			this.file = safePdf(data && data.file);
+		}
+
+		render() {
+			const box = document.createElement('div');
+			const name = document.createElement('span');
+
+			box.className = 'editorjs-pdf';
+			name.className = 'editorjs-pdf-name';
+			name.textContent = this.file.split('/').pop();
+			box.appendChild(name);
+
+			if (window.CMS && window.CMS.pdfViewer && this.file !== '') {
+				window.CMS.pdfViewer.thumbnail(this.file, 240).then((result) => {
+					result.canvas.className = 'editorjs-pdf-page';
+					box.insertBefore(result.canvas, name);
+				}).catch(() => {});
+			}
+
+			return box;
+		}
+
+		save() {
+			return { file: this.file };
+		}
+
+		validate(data) {
+			return safePdf(data.file) !== '';
+		}
+	}
+
 	const tools = (options) => {
 		const list = {
+			pdf: { class: PdfTool },
 			header: { class: window.Header, inlineToolbar: true, config: { levels: [2, 3, 4, 5, 6], defaultLevel: 2 } },
 			list: { class: window.EditorjsList, inlineToolbar: true, config: { defaultStyle: 'unordered' } },
 			image: { class: window.ImageTool, config: { uploader: uploader(options), features: { border: true, background: true, caption: 'optional', stretch: true } } },

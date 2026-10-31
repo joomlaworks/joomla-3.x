@@ -30,7 +30,11 @@ $dispatcher = JEventDispatcher::getInstance();
 		</td>
 
 		<td class="description"  title="<?php echo $this->escape($doc->name); ?>">
+			<?php if (strtolower(JFile::getExt($doc->name)) === 'pdf') : ?>
+			<a class="pdf-preview" href="<?php echo $this->escape(COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $doc->path_relative))); ?>"><?php echo $this->escape($doc->title); ?></a>
+			<?php else : ?>
 			<?php echo $this->escape($doc->title); ?>
+			<?php endif; ?>
 		</td>
 
 		<td>&#160;</td>

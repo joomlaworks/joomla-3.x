@@ -149,6 +149,8 @@ class ExtensionHelper
         array('plugin', 'akismet', 'captcha', 0),
         array('plugin', 'hcaptcha', 'captcha', 0),
         array('plugin', 'iconcaptcha', 'captcha', 0),
+        array('plugin', 'pdf', 'content', 0),
+        array('plugin', 'pdf', 'editors-xtd', 0),
         array('plugin', 'recaptcha', 'captcha', 0),
         array('plugin', 'turnstile', 'captcha', 0),
 

@@ -870,6 +870,7 @@ function jMediaRefreshImgpathTip(tip, element) {
 			this.author = options.author;
 			this.base = options.base;
 			this.asset = options.asset;
+			this.type = options.type || '';
 			this.editor = new URLSearchParams(window.self.location.search).get('e_name');
 
 			// Setup image manager fields object
@@ -901,6 +902,13 @@ function jMediaRefreshImgpathTip(tip, element) {
 			const folder = this.getImageFolder();
 			const form = doc.getElementById('uploadForm');
 
+			// A folder link without the picker's type (a template's own list layout): that folder again, with it
+			if (this.type && new URLSearchParams(this.frame.location.search).get('type') !== this.type) {
+				this.setFrameUrl(folder, this.asset, this.author);
+
+				return;
+			}
+
 			// Update the frame url
 			this.frameurl = this.frame.location.href;
 			this.setFolder(folder);
@@ -925,16 +933,21 @@ function jMediaRefreshImgpathTip(tip, element) {
 		 * @return  {boolean}  Always true
 		 */
 		onok() {
-			const url = this.fields.url.value;
-			const alt = this.fields.alt.value;
-			const align = this.fields.align.value;
-			const title = this.fields.title.value;
-			const caption = this.fields.caption.value;
-			const captionClass = this.fields.c_class.value;
+			// The PDF picker has the address only
+			const value = (field) => (field ? field.value : '');
+			const url = value(this.fields.url);
+			const alt = value(this.fields.alt);
+			const align = value(this.fields.align);
+			const title = value(this.fields.title);
+			const caption = value(this.fields.caption);
+			const captionClass = value(this.fields.c_class);
 			const attr = [];
 			let tag = '';
 
-			if (url) {
+			// A PDF: the shortcode Content - PDF shows as a viewer
+			if (this.type === 'pdf') {
+				tag = url ? '<p>{pdf ' + url.replace(/[{}<>"]/g, '') + '}</p>' : '';
+			} else if (url) {
 				// Set alt attribute
 				attr.push('alt="' + alt + '"');
 
@@ -1060,6 +1073,7 @@ function jMediaRefreshImgpathTip(tip, element) {
 				option: 'com_media',
 				view: 'imagesList',
 				tmpl: 'component',
+				type: this.type,
 				asset,
 				author,
 				folder,
@@ -1914,6 +1928,35 @@ function jMediaRefreshImgpathTip(tip, element) {
 
 			show();
 		},
+
+		/**
+		 * A PDF in the CMS's modal, in the PDF viewer (JHtml behavior.pdf); without it, the file in a new window
+		 *
+		 * @param   {string}  href  The file's address
+		 */
+		openPdf(href) {
+			if (!CMS.pdfViewer || !CMS.modal) {
+				window.open(href, '_blank', 'noopener');
+
+				return;
+			}
+
+			const box = document.createElement('div');
+
+			box.className = 'cms-pdf media-pdf-preview';
+			box.setAttribute('data-pdf', href);
+
+			CMS.modal.open(box, {
+				handler: 'adopt',
+				size: { x: Math.min(1200, window.innerWidth - 80), y: window.innerHeight - 100 },
+				classWindow: 'media-preview-window',
+				onClose() {
+					CMS.pdfViewer.detach(box);
+				},
+			});
+
+			CMS.pdfViewer.attach(box);
+		},
 	};
 })();
 
@@ -1950,7 +1993,7 @@ function jMediaRefreshImgpathTip(tip, element) {
 		}
 
 		document.addEventListener('click', (event) => {
-			const link = event.target.closest ? event.target.closest('.audio-preview, .video-preview, .img-preview, .preview') : null;
+			const link = event.target.closest ? event.target.closest('.audio-preview, .video-preview, .pdf-preview, .img-preview, .preview') : null;
 
 			if (!link) {
 				return;
@@ -1960,6 +2003,16 @@ function jMediaRefreshImgpathTip(tip, element) {
 
 			const href = link.getAttribute('href');
 			const cover = link.getAttribute('data-cover') || '';
+
+			if (link.classList.contains('pdf-preview')) {
+				if (parent.MediaPreview) {
+					parent.MediaPreview.openPdf(link.href);
+				} else {
+					window.open(link.href, '_blank', 'noopener');
+				}
+
+				return;
+			}
 
 			if (link.classList.contains('audio-preview') || link.classList.contains('video-preview')) {
 				const audio = link.classList.contains('audio-preview');

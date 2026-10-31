@@ -1,21 +1,15 @@
 -- Joomla 3.x UTD 3.18.0 migration — October 31, 2026
--- Redirects: a hash of the normalised source URL for indexed lookups, and a table of their own for the errors the
--- plugin collects. The update script's "redirect-scheme" step fills the hashes and moves the data.
+-- Adds "Content - PDF" (PDF files in a viewer, {pdf images/x.pdf}) and "Button - PDF" (the editors' PDF button), both enabled.
+-- Listed in runDataMigrations() with 3.18.0, so what an administrator uninstalled stays uninstalled.
 
-ALTER TABLE "#__redirect_links" ADD COLUMN "old_url_hash" char(32) DEFAULT '' NOT NULL;
-CREATE INDEX "#__redirect_links_idx_old_url_hash" ON "#__redirect_links" USING btree ("old_url_hash");
-
-CREATE TABLE "#__redirect_errors" (
-  "id" serial NOT NULL,
-  "url" varchar(2048) NOT NULL,
-  "url_hash" char(32) DEFAULT '' NOT NULL,
-  "code" smallint DEFAULT 404 NOT NULL,
-  "referer" varchar(2048) DEFAULT '' NOT NULL,
-  "hits" bigint DEFAULT 0 NOT NULL,
-  "created_date" timestamp without time zone DEFAULT '1970-01-01 00:00:00' NOT NULL,
-  "last_hit" timestamp without time zone DEFAULT '1970-01-01 00:00:00' NOT NULL,
-  PRIMARY KEY ("id")
+INSERT INTO "#__extensions" ("package_id", "name", "type", "element", "folder", "client_id", "enabled", "access", "protected", "manifest_cache", "params", "custom_data", "system_data", "checked_out", "checked_out_time", "ordering", "state")
+SELECT 0, 'plg_content_pdf', 'plugin', 'pdf', 'content', 0, 1, 1, 0, '', '{"height":"","download":"1"}', '', '', 0, '1970-01-01 00:00:00', 0, 0
+WHERE NOT EXISTS (
+	SELECT 1 FROM "#__extensions" WHERE "type" = 'plugin' AND "element" = 'pdf' AND "folder" = 'content'
 );
-CREATE UNIQUE INDEX "#__redirect_errors_idx_url_hash" ON "#__redirect_errors" USING btree ("url_hash");
-CREATE INDEX "#__redirect_errors_idx_code" ON "#__redirect_errors" USING btree ("code");
-CREATE INDEX "#__redirect_errors_idx_last_hit" ON "#__redirect_errors" USING btree ("last_hit");
+
+INSERT INTO "#__extensions" ("package_id", "name", "type", "element", "folder", "client_id", "enabled", "access", "protected", "manifest_cache", "params", "custom_data", "system_data", "checked_out", "checked_out_time", "ordering", "state")
+SELECT 0, 'plg_editors-xtd_pdf', 'plugin', 'pdf', 'editors-xtd', 0, 1, 1, 0, '', '', '', '', 0, '1970-01-01 00:00:00', 2, 0
+WHERE NOT EXISTS (
+	SELECT 1 FROM "#__extensions" WHERE "type" = 'plugin' AND "element" = 'pdf' AND "folder" = 'editors-xtd'
+);

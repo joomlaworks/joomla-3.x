@@ -55,6 +55,7 @@ Summary of changes:
 - **Redirects for any address:** Redirects can send any address of the site to a new one, on the site or elsewhere (301 or 302), quickly and before cached pages are served; collected errors (404 and others, off by default) have a list of their own with a "Create Redirect" button, and bulk import checks every line
 
 **New features:**
+- PDF files: a viewer on the site (`{pdf images/file.pdf}`, "Content - PDF", pdf.js), a PDF button in the editors with previews in TinyMCE and the Blocks editor, and PDF previews in the Media Manager
 - The installer asks which administrator template to use, Prothero (the default) or Isis, with their thumbnails; `core:install --admin-template=isis` likewise
 - A plugin's options opened from a component's notice (Redirects, Smart Search, Fields...) return to it when saved or closed
 - The Media Manager, the image field and Joomla Update in plain JavaScript (no jQuery on their pages); uploads in the Media Manager go to the folder shown

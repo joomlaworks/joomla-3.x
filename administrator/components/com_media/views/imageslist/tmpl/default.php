@@ -46,11 +46,11 @@ if ($lang->isRtl()) {
 
 		<?php for ($i = 0, $n = count($this->images); $i < $n; $i++) :
 		    $this->setImage($i);
-		    echo $this->loadTemplate('image');
+		    echo $this->loadTemplate($this->type === 'pdf' ? 'pdf' : 'image');
 		endfor; ?>
 	</ul>
 <?php else : ?>
 	<div id="media-noimages">
-		<div class="alert alert-info"><?php echo JText::_('COM_MEDIA_NO_IMAGES_FOUND'); ?></div>
+		<div class="alert alert-info"><?php echo JText::_($this->type === 'pdf' ? 'COM_MEDIA_NO_PDFS_FOUND' : 'COM_MEDIA_NO_IMAGES_FOUND'); ?></div>
 	</div>
 <?php endif; ?>

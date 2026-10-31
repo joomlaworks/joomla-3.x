@@ -1,21 +1,17 @@
 -- Joomla 3.x UTD 3.18.0 migration — October 31, 2026
--- Redirects: a hash of the normalised source URL for indexed lookups, and a table of their own for the errors the
--- plugin collects. The update script's "redirect-scheme" step fills the hashes and moves the data.
+-- Adds "Content - PDF" (PDF files in a viewer, {pdf images/x.pdf}) and "Button - PDF" (the editors' PDF button), both enabled.
+-- Listed in runDataMigrations() with 3.18.0, so what an administrator uninstalled stays uninstalled.
 
-ALTER TABLE `#__redirect_links` ADD COLUMN `old_url_hash` char(32) NOT NULL DEFAULT '' AFTER `old_url`;
-ALTER TABLE `#__redirect_links` ADD INDEX `idx_old_url_hash` (`old_url_hash`);
+INSERT INTO `#__extensions` (`package_id`, `name`, `type`, `element`, `folder`, `client_id`, `enabled`, `access`, `protected`, `manifest_cache`, `params`, `custom_data`, `system_data`, `checked_out`, `checked_out_time`, `ordering`, `state`)
+SELECT 0, 'plg_content_pdf', 'plugin', 'pdf', 'content', 0, 1, 1, 0, '', '{"height":"","download":"1"}', '', '', 0, '0000-00-00 00:00:00', 0, 0
+FROM DUAL
+WHERE NOT EXISTS (
+	SELECT 1 FROM `#__extensions` WHERE `type` = 'plugin' AND `element` = 'pdf' AND `folder` = 'content'
+);
 
-CREATE TABLE IF NOT EXISTS `#__redirect_errors` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `url` varchar(2048) NOT NULL,
-  `url_hash` char(32) NOT NULL DEFAULT '',
-  `code` smallint NOT NULL DEFAULT 404,
-  `referer` varchar(2048) NOT NULL DEFAULT '',
-  `hits` int unsigned NOT NULL DEFAULT 0,
-  `created_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `last_hit` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_url_hash` (`url_hash`),
-  KEY `idx_code` (`code`),
-  KEY `idx_last_hit` (`last_hit`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `#__extensions` (`package_id`, `name`, `type`, `element`, `folder`, `client_id`, `enabled`, `access`, `protected`, `manifest_cache`, `params`, `custom_data`, `system_data`, `checked_out`, `checked_out_time`, `ordering`, `state`)
+SELECT 0, 'plg_editors-xtd_pdf', 'plugin', 'pdf', 'editors-xtd', 0, 1, 1, 0, '', '', '', '', 0, '0000-00-00 00:00:00', 2, 0
+FROM DUAL
+WHERE NOT EXISTS (
+	SELECT 1 FROM `#__extensions` WHERE `type` = 'plugin' AND `element` = 'pdf' AND `folder` = 'editors-xtd'
+);

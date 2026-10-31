@@ -31,7 +31,12 @@ class MediaViewImagesList extends JViewLegacy
         // Do not allow cache
         JFactory::getApplication()->allowCache(false);
 
-        $images  = $this->get('images');
+        $this->type = JFactory::getApplication()->input->getCmd('type') === 'pdf' ? 'pdf' : '';
+
+        // The PDF picker lists the folder's PDF files instead of its images
+        $images = $this->type === 'pdf' ? array_values(array_filter($this->get('documents'), function ($document) {
+            return strtolower(JFile::getExt($document->name)) === 'pdf';
+        })) : $this->get('images');
         $folders = $this->get('folders');
         $state   = $this->get('state');
 
@@ -42,6 +47,10 @@ class MediaViewImagesList extends JViewLegacy
 
         // Files dropped on the list upload into its folder; a single image is then selected
         MediaHelper::dropUpload((string) $this->state->folder, true);
+
+        if ($this->type === 'pdf') {
+            JHtml::_('behavior.pdf');
+        }
 
         parent::display($tpl);
     }

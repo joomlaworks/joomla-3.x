@@ -912,6 +912,8 @@ INSERT INTO "#__extensions" ("extension_id", "package_id", "name", "type", "elem
 (521, 0, 'plg_captcha_turnstile', 'plugin', 'turnstile', 'captcha', 0, 0, 1, 0, '', '{"public_key":"","private_key":"","theme":"auto","size":"normal","appearance":"always"}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (522, 0, 'plg_captcha_hcaptcha', 'plugin', 'hcaptcha', 'captcha', 0, 0, 1, 0, '', '{"public_key":"","private_key":"","theme":"light","size":"normal"}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (523, 0, 'plg_captcha_iconcaptcha', 'plugin', 'iconcaptcha', 'captcha', 0, 1, 1, 0, '', '{"theme":"auto","attempts":"5","credits":"1"}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
+(524, 0, 'plg_content_pdf', 'plugin', 'pdf', 'content', 0, 1, 1, 0, '', '{"height":"","download":"1"}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
+(525, 0, 'plg_editors-xtd_pdf', 'plugin', 'pdf', 'editors-xtd', 0, 1, 1, 0, '', '', '', '', 0, '1900-01-01 00:00:00', 2, 0),
 (600, 802, 'English (en-GB)', 'language', 'en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (601, 802, 'English (en-GB)', 'language', 'en-GB', '', 1, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '{"updateSteps":["media-upload-av-types","prothero-default","media-upload-defaults","default-editor","media-upload-maxsize","codemirror-theme","littlewaf-enabled","latest-actions-count","system-information-module","system-plugin-order","iconcaptcha-enabled","redirect-scheme"]}', '', 0, '1900-01-01 00:00:00', 0, 0),

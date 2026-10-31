@@ -17,6 +17,8 @@ $dispatcher = JEventDispatcher::getInstance();
 
 <?php foreach ($this->documents as $i => $doc) : ?>
 	<?php $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$doc, &$params, 0)); ?>
+	<?php $pdf = strtolower(JFile::getExt($doc->name)) === 'pdf'; ?>
+	<?php $url = COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $doc->path_relative)); ?>
 	<li class="imgOutline thumbnail height-80 width-80 center">
 		<?php if ($this->canDelete) : ?>
 			<a class="close delete-item" target="_top" href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($doc->name); ?>" rel="<?php echo $this->escape($doc->name); ?>" title="<?php echo JText::_('JACTION_DELETE'); ?>">&#215;</a>
@@ -26,14 +28,18 @@ $dispatcher = JEventDispatcher::getInstance();
 			<div class="clearfix"></div>
 		<?php endif; ?>
 
-		<div class="height-50">
+		<div class="height-50"<?php echo $pdf ? ' data-pdf-thumb="' . $this->escape($url) . '" data-pdf-width="260"' : ''; ?>>
 			<a title="<?php echo $this->escape($doc->name); ?>" >
 				<?php echo MediaHelper::typeIcon($doc->icon, 32, $doc->name); ?>
 			</a>
 		</div>
 
 		<div class="small" title="<?php echo $this->escape($doc->name); ?>" >
+			<?php if ($pdf) : ?>
+			<a class="pdf-preview" href="<?php echo $this->escape($url); ?>"><?php echo $this->escape($doc->name); ?></a>
+			<?php else : ?>
 			<?php echo $this->escape($doc->name); ?>
+			<?php endif; ?>
 		</div>
 	</li>
 	<?php $dispatcher->trigger('onContentAfterDisplay', array('com_media.file', &$doc, &$params, 0)); ?>

@@ -114,3 +114,8 @@ html.editorjs-fullscreen-open body {overflow:hidden;}
     :root[data-scheme="auto"] .js-editor-editorjs .ce-inline-tool,
     :root[data-scheme="auto"] .js-editor-editorjs .ce-inline-toolbar__dropdown {color:var(--c-fg);background:transparent;box-shadow:none;}
 }
+
+/* --- PDF blocks --- */
+.editorjs-pdf {display:inline-flex;flex-direction:column;gap:6px;max-width:240px;margin:8px 0;padding:8px;border:1px solid rgba(128, 128, 128, 0.4);border-radius:6px;}
+.editorjs-pdf-page {display:block;max-width:100%;height:auto;background:#fff;box-shadow:0 1px 3px rgba(0, 0, 0, 0.3);}
+.editorjs-pdf-name {font-size:0.875rem;overflow-wrap:anywhere;}

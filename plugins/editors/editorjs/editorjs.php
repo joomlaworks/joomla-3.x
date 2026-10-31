@@ -72,6 +72,11 @@ class PlgEditorEditorjs extends JPlugin
 
         JHtml::_('behavior.core');
 
+        // PDF blocks ({pdf ...}, "Content - PDF") show the file's first page
+        if (JPluginHelper::isEnabled('content', 'pdf')) {
+            JHtml::_('behavior.pdf');
+        }
+
         foreach (static::VENDOR as $name) {
             JHtml::_('script', self::MEDIA . '/vendor/' . $name . '/' . $name . '.umd.js', array('version' => 'auto'));
         }

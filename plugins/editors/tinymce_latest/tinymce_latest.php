@@ -50,6 +50,12 @@ class PlgEditorTinymce_latest extends JPlugin
     public function onInit()
     {
         JHtml::_('behavior.core');
+
+        // PDF files in the content ("Content - PDF") are shown with their first page
+        if (JPluginHelper::isEnabled('content', 'pdf')) {
+            JHtml::_('behavior.pdf');
+        }
+
         JHtml::_('script', self::MEDIA . '/tinymce.min.js', array('version' => 'auto'));
         JHtml::_('script', self::MEDIA . '/js/tinymce.min.js', array('version' => 'auto'));
     }

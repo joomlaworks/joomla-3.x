@@ -217,6 +217,51 @@
 	 * When TinyMCE's iframe is moved in the page (e.g. by sorting subform rows) the browser reloads it empty: start the editor
 	 * again. The iframe's first load can come before or after TinyMCE's "init", so the listener goes on after both.
 	 */
+	/*
+	 * PDF files ({pdf images/x.pdf}, shown by "Content - PDF"): a block with the file's first page in the editing area, the
+	 * shortcode in the content. The page is a background, not an <img>: TinyMCE uploads data: images in the content.
+	 */
+	const PDF_PARAGRAPH = /<p>\s*(?:&nbsp;\s*)*\{pdf\s+([^{}<>"]+?)\s*\}\s*(?:&nbsp;\s*)*<\/p>/gi;
+	const PDF_ALONE = /^\s*\{pdf\s+([^{}<>"]+?)\s*\}\s*$/i;
+	const PDF_BLOCK = /<div\b[^>]*\bcms-pdf-editor\b[^>]*>[\s\S]*?<\/div>/gi;
+	const PDF_CSS = '.cms-pdf-editor {position:relative;display:block;box-sizing:border-box;max-width:320px;min-height:140px;margin:1em 0;border:1px solid rgba(128, 128, 128, 0.5);'
+		+ 'border-radius:4px;background:#fff center top / 100% auto no-repeat;cursor:default;}'
+		+ '.cms-pdf-editor[data-mce-selected] {outline:2px solid #3b82f6;}'
+		+ '.cms-pdf-editor-name {position:absolute;right:0;bottom:0;left:0;padding:4px 8px;background:rgba(0, 0, 0, 0.65);color:#fff;font:12px/1.4 system-ui, sans-serif;}';
+
+	const escapeAttribute = (value) => String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+	const pdfBlock = (path) => '<div class="cms-pdf-editor mceNonEditable" contenteditable="false" data-pdf="' + escapeAttribute(path) + '">'
+		+ '<span class="cms-pdf-editor-name">' + escapeAttribute(path.split('/').pop()) + '</span></div>';
+
+	const toPdfBlocks = (html) => {
+		const alone = PDF_ALONE.exec(html);
+
+		return alone ? pdfBlock(alone[1]) : html.replace(PDF_PARAGRAPH, (all, path) => pdfBlock(path));
+	};
+
+	const toPdfShortcodes = (html) => (html.indexOf('cms-pdf-editor') === -1 ? html : html.replace(PDF_BLOCK, (block) => {
+		const path = /\bdata-pdf="([^"]*)"/.exec(block);
+		const value = path ? path[1].replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&') : '';
+
+		return value === '' ? '' : '<p>{pdf ' + escapeAttribute(value).replace(/&quot;/g, '') + '}</p>';
+	}));
+
+	const drawPdfBlocks = (editor) => {
+		if (!window.CMS || !window.CMS.pdfViewer || !editor.getBody()) {
+			return;
+		}
+
+		editor.getBody().querySelectorAll('div.cms-pdf-editor[data-pdf]:not([data-pdf-drawn])').forEach((block) => {
+			block.setAttribute('data-pdf-drawn', '1');
+
+			window.CMS.pdfViewer.thumbnail(block.getAttribute('data-pdf'), 320).then((result) => {
+				block.style.backgroundImage = 'url(' + result.canvas.toDataURL('image/png') + ')';
+				block.style.aspectRatio = result.canvas.width + ' / ' + result.canvas.height;
+			}).catch(() => {});
+		});
+	};
+
 	const watchIframe = (editor, element) => {
 		let pending = 2;
 		let timer = null;
@@ -314,6 +359,21 @@
 				editor.on('init', () => {
 					if (joomla.readonly) {
 						editor.mode.set('readonly');
+					}
+
+					editor.dom.addStyle(PDF_CSS);
+					drawPdfBlocks(editor);
+				});
+
+				editor.on('BeforeSetContent', (event) => {
+					if (typeof event.content === 'string' && event.content.indexOf('{pdf') !== -1) {
+						event.content = toPdfBlocks(event.content);
+					}
+				});
+				editor.on('SetContent', () => drawPdfBlocks(editor));
+				editor.on('PostProcess', (event) => {
+					if (typeof event.content === 'string') {
+						event.content = toPdfShortcodes(event.content);
 					}
 				});
 

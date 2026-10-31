@@ -18,6 +18,8 @@ FOLDERS = {
     'media/system/images/icons': [
         'calendar3', 'chevron-left', 'chevron-right', 'envelope', 'file-earmark-plus', 'info-circle-fill', 'lock-fill', 'pencil-square', 'person',
         'printer', 'rss-fill', 'star', 'star-fill', 'translate', 'x-lg',
+        # The PDF viewer's toolbar (media/system/js/pdf-viewer.js, through JHtml behavior.pdf's script options)
+        'zoom-in', 'zoom-out', 'arrow-left-right', 'fullscreen', 'fullscreen-exit', 'download',
     ],
     # The Media Manager's file types (administrator/components/com_media/models/list.php), renaming and thumbnail sizes
     'media/com_media/images/icons': [
@@ -26,6 +28,8 @@ FOLDERS = {
         'file-earmark-pdf', 'file-earmark-play', 'file-earmark-ppt', 'file-earmark-richtext', 'file-earmark-spreadsheet',
         'file-earmark-text', 'file-earmark-word', 'file-earmark-zip',
     ],
+    # The editors' PDF button (plugins/editors-xtd/pdf)
+    'plugins/editors-xtd/pdf/images': ['file-earmark-pdf-fill'],
     # Contacts' markers (components/com_contact/views/contact/view.html.php)
     'media/com_contact/images/icons': ['envelope', 'geo-alt', 'info-circle', 'phone', 'printer', 'telephone'],
 }

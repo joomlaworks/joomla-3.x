@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.8" type="plugin" group="content" method="upgrade">
+    <name>plg_content_pdf</name>
+    <author>Joomla 3.x UTD Contributors</author>
+    <creationDate>October 2026</creationDate>
+    <copyright>(C) 2026 JoomlaWorks Ltd. and this project's contributors</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.md</license>
+    <authorUrl>https://github.com/joomlaworks/joomla-3.x</authorUrl>
+    <version>1.0.0</version>
+    <description>PLG_CONTENT_PDF_XML_DESCRIPTION</description>
+    <files>
+        <filename plugin="pdf">pdf.php</filename>
+    </files>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_content_pdf.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_content_pdf.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="height" type="number" label="PLG_CONTENT_PDF_FIELD_HEIGHT_LABEL" description="PLG_CONTENT_PDF_FIELD_HEIGHT_DESC" default="" min="200" max="3000" step="10" filter="integer" />
+                <field name="download" type="radio" label="PLG_CONTENT_PDF_FIELD_DOWNLOAD_LABEL" description="PLG_CONTENT_PDF_FIELD_DOWNLOAD_DESC" class="btn-group btn-group-yesno" default="1" filter="integer">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>
