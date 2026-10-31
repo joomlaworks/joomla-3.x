@@ -5643,6 +5643,8 @@ class JoomlaInstallerScript
             '/libraries/vendor/symfony/polyfill-ctype',
             '/libraries/vendor/joomla/di',
             '/libraries/vendor/psr/container',
+            // MySQL on SQLite 3.1.2 dropped its optional native (Rust) parser
+            '/libraries/vendor/wordpress/mysql-on-sqlite/src/mysql/native',
             '/libraries/phputf8',
             '/libraries/src/Captcha/Google',
             '/libraries/src/Mail/language',

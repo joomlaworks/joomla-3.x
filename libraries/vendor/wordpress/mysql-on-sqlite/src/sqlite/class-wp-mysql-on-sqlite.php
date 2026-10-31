@@ -795,11 +795,13 @@ class WP_MySQL_On_SQLite extends PDO {
 	 *
 	 *     @type int             $mysql_version       Optional. MySQL version to emulate. Default 80038.
 	 *     @type PDO|null        $sqlite_pdo          Optional. Existing PDO SQLite connection.
+	 *     @type int|null        $sqlite_busy_timeout Optional. SQLite busy timeout in milliseconds.
+	 *                                                Default 10000.
 	 *     @type string|null     $sqlite_journal_mode Optional. SQLite journal mode. Default 'WAL'.
 	 *     @type string|int|null $sqlite_synchronous  Optional. SQLite synchronous setting.
 	 * }
 	 *
-	 * @throws InvalidArgumentException     When the MySQL version is invalid.
+	 * @throws InvalidArgumentException     When the MySQL version or an SQLite option is invalid.
 	 * @throws WP_MySQL_On_SQLite_Exception When the driver initialization fails.
 	 */
 	public function __construct(
@@ -876,6 +878,7 @@ class WP_MySQL_On_SQLite extends PDO {
 		}
 
 		$connection_options = array(
+			'busy_timeout' => $options['sqlite_busy_timeout'] ?? null,
 			'journal_mode' => $options['sqlite_journal_mode'] ?? null,
 			'synchronous'  => $options['sqlite_synchronous'] ?? null,
 			'pdo_options'  => $connection_pdo_options,
@@ -1210,16 +1213,18 @@ class WP_MySQL_On_SQLite extends PDO {
 			$this->error_info = array( '00000', null, null );
 			return $stmt;
 		} catch ( Throwable $e ) {
-			// MySQL error 1305 reports a missing savepoint without ending the transaction.
-			$preserves_transaction = $e instanceof WP_MySQL_On_SQLite_Exception
-				&& 1305 === ( $e->errorInfo[1] ?? null );
-			if ( ! $preserves_transaction ) {
-				try {
-					$this->rollback_user_transaction();
-					$this->table_lock_active = false;
-				} catch ( Throwable $rollback_exception ) {
-					// Ignore rollback errors.
-				}
+			/*
+			 * Undo the failed statement. Like MySQL, keep an active user
+			 * transaction open, so the caller can decide whether to commit
+			 * or roll back the rest of it.
+			 */
+			try {
+				$this->rollback_wrapper_transaction();
+			} catch ( Throwable $rollback_exception ) {
+				// Ignore rollback errors.
+			}
+			if ( ! $this->inTransaction() ) {
+				$this->table_lock_active = false;
 			}
 			if ( $e instanceof WP_SQLite_Information_Schema_Exception ) {
 				$e = $this->convert_information_schema_exception( $e );
@@ -1396,7 +1401,12 @@ class WP_MySQL_On_SQLite extends PDO {
 			throw $this->new_driver_exception( 'There is no active transaction' );
 		}
 		$this->flush();
-		$this->commit_user_transaction();
+
+		// Unlike a COMMIT statement, PDO::commit() doesn't roll back on failure,
+		// so the caller can still call PDO::rollBack(), as with PDO MySQL.
+		$this->connection->query( 'COMMIT' );
+		$this->in_transaction  = false;
+		$this->savepoint_names = array();
 		return true;
 	}
 
@@ -1612,20 +1622,10 @@ class WP_MySQL_On_SQLite extends PDO {
 			$this->mysql_version,
 			$this->get_active_sql_mode_names()
 		);
-		$tokens = $lexer instanceof WP_MySQL_Native_Lexer
-			? $lexer->native_token_stream()
-			: $lexer->remaining_tokens();
-		return $this->reset_or_create_parser( $tokens );
-	}
+		$tokens = $lexer->remaining_tokens();
 
-	/**
-	 * Reset the reusable parser with new tokens or create it on first use.
-	 *
-	 * @param  array<WP_Parser_Token>|object $tokens Parser tokens.
-	 * @return WP_MySQL_Parser                       A parser initialized for the token stream.
-	 */
-	private function reset_or_create_parser( $tokens ): WP_MySQL_Parser {
-		if ( null === $this->mysql_parser || ! method_exists( $this->mysql_parser, 'reset_tokens' ) ) {
+		// Reset the reusable parser with new tokens or create it on first use.
+		if ( null === $this->mysql_parser ) {
 			$this->mysql_parser = new WP_MySQL_Parser( self::$mysql_grammar, $tokens );
 		} else {
 			$this->mysql_parser->reset_tokens( $tokens );
@@ -2106,6 +2106,33 @@ class WP_MySQL_On_SQLite extends PDO {
 	}
 
 	/**
+	 * Roll back a wrapper transaction.
+	 *
+	 * This undoes all changes of a failed statement. When the wrapper is
+	 * a savepoint, the user transaction around it stays active.
+	 */
+	private function rollback_wrapper_transaction(): void {
+		if ( 'transaction' === $this->wrapper_transaction_type ) {
+			$this->rollback_user_transaction();
+		} elseif ( 'savepoint' === $this->wrapper_transaction_type ) {
+			$savepoint_name = $this->get_internal_savepoint_name( 'wrapper' );
+			try {
+				$this->connection->query( sprintf( 'ROLLBACK TO SAVEPOINT %s', $savepoint_name ) );
+			} catch ( PDOException $e ) {
+				/*
+				 * Some SQLite errors roll back the whole transaction automatically,
+				 * which also removes the savepoint. In that case, end the transaction.
+				 *
+				 * @see https://www.sqlite.org/lang_transaction.html#response_to_errors_within_a_transaction
+				 */
+				$this->rollback_user_transaction();
+				return;
+			}
+			$this->connection->query( sprintf( 'RELEASE SAVEPOINT %s', $savepoint_name ) );
+		}
+	}
+
+	/**
 	 * Execute the "BEGIN" or "START TRANSACTION" MySQL statement in SQLite.
 	 */
 	private function begin_user_transaction(): void {
@@ -2137,7 +2164,17 @@ class WP_MySQL_On_SQLite extends PDO {
 		if ( ! $this->inTransaction() ) {
 			return;
 		}
-		$this->connection->query( 'COMMIT' );
+		try {
+			$this->connection->query( 'COMMIT' );
+		} catch ( PDOException $e ) {
+			// Like MySQL, roll back a transaction that fails to commit.
+			try {
+				$this->rollback_user_transaction();
+			} catch ( PDOException $rollback_exception ) {
+				// SQLite has already rolled back the transaction.
+			}
+			throw $e;
+		}
 		$this->in_transaction  = false;
 		$this->savepoint_names = array();
 	}
@@ -2146,13 +2183,16 @@ class WP_MySQL_On_SQLite extends PDO {
 	 * Execute the "ROLLBACK" MySQL statement in SQLite.
 	 */
 	private function rollback_user_transaction(): void {
-		// MySQL doesn't throw an error if there is no active transaction.
-		if ( ! $this->inTransaction() ) {
-			return;
+		try {
+			// MySQL doesn't throw an error if there is no active transaction.
+			if ( $this->inTransaction() ) {
+				$this->connection->query( 'ROLLBACK' );
+			}
+		} finally {
+			// A ROLLBACK always ends the transaction, even when it fails.
+			$this->in_transaction  = false;
+			$this->savepoint_names = array();
 		}
-		$this->connection->query( 'ROLLBACK' );
-		$this->in_transaction  = false;
-		$this->savepoint_names = array();
 	}
 
 	/**
@@ -2724,7 +2764,7 @@ class WP_MySQL_On_SQLite extends PDO {
 		}
 
 		// Translate UPDATE list, applying relevant type casting and IMPLICIT DEFAULT values.
-		$update_list = $this->translate_update_list( $update_target_table, $node );
+		$update_list = $this->translate_update_list( $update_target_table, $node, $update_target );
 
 		// Translate WHERE, ORDER BY, and LIMIT clauses.
 		if ( $where_subquery ) {
@@ -3011,6 +3051,10 @@ class WP_MySQL_On_SQLite extends PDO {
 			),
 			array( $this->get_saved_db_name( $database ), $table_name )
 		)->fetchAll( PDO::FETCH_ASSOC );
+
+		if ( 0 === count( $column_names ) ) {
+			throw $this->new_table_not_found_exception( sprintf( '%s.%s', $database, $table_name ) );
+		}
 
 		// Track column renames and removals.
 		$column_map = array_combine(
@@ -4103,6 +4147,7 @@ class WP_MySQL_On_SQLite extends PDO {
 	private function execute_administration_statement( WP_Parser_Node $node ): void {
 		$first_token    = $node->get_first_child_token();
 		$table_ref_list = $node->get_first_child_node( 'tableRefList' );
+		$savepoint_name = $this->get_internal_savepoint_name( 'table_administration' );
 		$results        = array();
 		foreach ( $table_ref_list->get_child_nodes( 'tableRef' ) as $table_ref ) {
 			$database = $this->get_database_name( $table_ref );
@@ -4112,6 +4157,9 @@ class WP_MySQL_On_SQLite extends PDO {
 
 			$table_name        = $this->unquote_sqlite_identifier( $this->translate( $table_ref ) );
 			$quoted_table_name = $this->quote_sqlite_identifier( $table_name );
+
+			// Each table must be atomic because failures are reported as result rows.
+			$this->execute_sqlite_query( sprintf( 'SAVEPOINT %s', $savepoint_name ) );
 			try {
 				switch ( $first_token->id ) {
 					case WP_MySQL_Lexer::ANALYZE_SYMBOL:
@@ -4149,14 +4197,20 @@ class WP_MySQL_On_SQLite extends PDO {
 						);
 				}
 			} catch ( PDOException $e ) {
+				$this->execute_sqlite_query( sprintf( 'ROLLBACK TO SAVEPOINT %s', $savepoint_name ) );
 				if ( '42S02' === $e->getCode() && isset( $e->errorInfo[2] ) ) {
 					$errors = array( $e->errorInfo[2] );
-				} elseif ( 'HY000' === $e->getCode() ) {
+				} elseif (
+					// SQLite reports a missing table as a general error.
+					'HY000' === $e->getCode()
+					&& str_starts_with( $e->errorInfo[2] ?? '', 'no such table' )
+				) {
 					$errors = array( "Table '$table_name' doesn't exist" );
 				} else {
 					$errors = array( $e->getMessage() );
 				}
 			}
+			$this->execute_sqlite_query( sprintf( 'RELEASE SAVEPOINT %s', $savepoint_name ) );
 
 			$operation = strtolower( $first_token->get_value() );
 			foreach ( $errors as $error ) {
@@ -4578,7 +4632,13 @@ class WP_MySQL_On_SQLite extends PDO {
 				 */
 				$value = $token->get_value();
 				if ( '0' === $value[0] && 'x' === $value[1] ) {
-					return sprintf( "x'%s'", substr( $value, 2 ) );
+					$hex = substr( $value, 2 );
+
+					// MySQL pads odd-length 0x literals with a leading zero.
+					if ( 1 === strlen( $hex ) % 2 ) {
+						$hex = '0' . $hex;
+					}
+					return sprintf( "x'%s'", $hex );
 				}
 				return $value;
 			case WP_MySQL_Lexer::AUTO_INCREMENT_SYMBOL:
@@ -5809,22 +5869,37 @@ class WP_MySQL_On_SQLite extends PDO {
 		string $table_name,
 		?array $column_map = null
 	): void {
+		$columns_table = $this->information_schema_builder->get_table_name( $table_is_temporary, 'columns' );
+		$column_types  = $this->execute_sqlite_query(
+			sprintf(
+				'SELECT COLUMN_NAME, DATA_TYPE FROM %s WHERE table_schema = ? AND table_name = ?',
+				$this->quote_sqlite_identifier( $columns_table )
+			),
+			array( $this->get_saved_db_name( $this->main_db_name ), $table_name )
+		)->fetchAll( PDO::FETCH_KEY_PAIR );
+
 		if ( null === $column_map ) {
-			$columns_table = $this->information_schema_builder->get_table_name( $table_is_temporary, 'columns' );
-			$column_names  = $this->execute_sqlite_query(
-				sprintf(
-					'SELECT COLUMN_NAME FROM %s WHERE table_schema = ? AND table_name = ?',
-					$this->quote_sqlite_identifier( $columns_table )
-				),
-				array( $this->get_saved_db_name(), $table_name )
-			)->fetchAll( PDO::FETCH_COLUMN );
-			$column_map    = array_combine( $column_names, $column_names );
+			$column_names = array_keys( $column_types );
+			$column_map   = array_combine( $column_names, $column_names );
 		}
+		$column_types = array_change_key_case( $column_types, CASE_LOWER );
 
 		// Preserve ROWIDs.
 		// This also addresses a special case when all original columns are dropped
 		// and there is nothing to copy. We'll always have at least the ROWID column.
 		$column_map = array( 'rowid' => 'rowid' ) + $column_map;
+
+		$select_list = array();
+		foreach ( $column_map as $old_name => $new_name ) {
+			$value       = $this->quote_sqlite_identifier( $old_name );
+			$mysql_type  = $column_types[ strtolower( $new_name ) ] ?? '';
+			$sqlite_type = self::DATA_TYPE_STRING_MAP[ $mysql_type ] ?? null;
+			// Legacy tables may store text and binary values with a different storage class.
+			if ( 'TEXT' === $sqlite_type || 'BLOB' === $sqlite_type ) {
+				$value = sprintf( 'CAST(%s AS %s)', $value, $sqlite_type );
+			}
+			$select_list[] = $value;
+		}
 
 		/*
 		 * See:
@@ -5853,13 +5928,31 @@ class WP_MySQL_On_SQLite extends PDO {
 					', ',
 					array_map( array( $this, 'quote_sqlite_identifier' ), $column_map )
 				),
-				implode(
-					', ',
-					array_map( array( $this, 'quote_sqlite_identifier' ), array_keys( $column_map ) )
-				),
+				implode( ', ', $select_list ),
 				$quoted_table_name
 			)
 		);
+
+		// Preserve the AUTO_INCREMENT counter from the original table.
+		$schema             = $table_is_temporary ? 'temp' : 'main';
+		$has_sequence_table = (bool) $this->execute_sqlite_query(
+			sprintf( "SELECT 1 FROM %s.sqlite_master WHERE type = 'table' AND name = 'sqlite_sequence'", $schema )
+		)->fetchColumn();
+		if ( $has_sequence_table ) {
+			$this->execute_sqlite_query(
+				sprintf(
+					'UPDATE %s.sqlite_sequence
+					SET seq = MAX(seq, COALESCE((
+						SELECT seq FROM %s.sqlite_sequence
+						WHERE name = ? COLLATE NOCASE -- $table_name: original table
+					), 0))
+					WHERE name = ? -- $tmp_table_name: update only the replacement\'s row.',
+					$schema,
+					$schema
+				),
+				array( $table_name, $tmp_table_name )
+			);
+		}
 
 		// 4. Drop the original table.
 		$this->execute_sqlite_query( sprintf( 'DROP TABLE %s', $quoted_table_name ) );
@@ -6142,7 +6235,7 @@ class WP_MySQL_On_SQLite extends PDO {
 						return false;
 					}
 					$is_nullable  = 'YES' === $column['IS_NULLABLE'];
-					$has_default  = $column['COLUMN_DEFAULT'];
+					$has_default  = null !== $column['COLUMN_DEFAULT'];
 					$is_generated = str_contains( $column['EXTRA'], 'auto_increment' );
 					return ! ( $is_nullable || $has_default || $is_generated );
 				}
@@ -6370,11 +6463,19 @@ class WP_MySQL_On_SQLite extends PDO {
 	 * For more information about IMPLICIT DEFAULT values in MySQL, see:
 	 *   https://dev.mysql.com/doc/refman/8.4/en/data-type-defaults.html#data-type-defaults-implicit
 	 *
+	 * Additionally, this method emulates "ON UPDATE CURRENT_TIMESTAMP" columns.
+	 * In MySQL, such a column is set to the current timestamp when any other
+	 * column in the row changes, unless the statement assigns it explicitly.
+	 *
+	 * For more information about ON UPDATE CURRENT_TIMESTAMP in MySQL, see:
+	 *   https://dev.mysql.com/doc/refman/8.4/en/timestamp-initialization.html
+	 *
 	 * @param  string         $table_name  The name of the target table.
 	 * @param  WP_Parser_Node $parent_node The "updateList" AST node parent node.
+	 * @param  string|null    $table_alias Optional. The target table alias. Defaults to the table name.
 	 * @return string                      The translated UPDATE list.
 	 */
-	private function translate_update_list( string $table_name, WP_Parser_Node $parent_node ): string {
+	private function translate_update_list( string $table_name, WP_Parser_Node $parent_node, ?string $table_alias = null ): string {
 		$node = $parent_node->get_first_child_node( 'updateList' );
 
 		// This method is always used with the main database.
@@ -6391,7 +6492,7 @@ class WP_MySQL_On_SQLite extends PDO {
 		$columns_table = $this->information_schema_builder->get_table_name( $is_temporary, 'columns' );
 		$columns       = $this->execute_sqlite_query(
 			'
-				SELECT LOWER(column_name) AS COLUMN_NAME, is_nullable, data_type, column_default
+				SELECT LOWER(column_name) AS COLUMN_NAME, is_nullable, data_type, column_default, extra
 				FROM ' . $this->quote_sqlite_identifier( $columns_table ) . '
 				WHERE table_schema = ?
 				AND table_name = ?
@@ -6407,7 +6508,8 @@ class WP_MySQL_On_SQLite extends PDO {
 		$column_map = array_combine( array_column( $columns, 'COLUMN_NAME' ), $columns );
 
 		// Translate the UPDATE list, emulating IMPLICIT DEFAULTs for NULL values.
-		$fragment = '';
+		$fragment        = '';
+		$assigned_values = array();
 		foreach ( $node->get_child_nodes() as $i => $update_element ) {
 			$column_ref       = $update_element->get_first_child_node( 'columnRef' );
 			$column_ref_parts = $column_ref->get_descendant_nodes( 'identifier' );
@@ -6459,8 +6561,80 @@ class WP_MySQL_On_SQLite extends PDO {
 			$fragment .= $this->translate( end( $column_ref_parts ) );
 			$fragment .= ' = ';
 			$fragment .= $value;
+
+			$assigned_values[ strtolower( $column_name ) ] = $value;
 		}
-		return $fragment;
+
+		// Collect unassigned ON UPDATE CURRENT_TIMESTAMP columns for automatic updates.
+		$on_update_columns = array();
+		foreach ( $column_map as $column_name => $column_info ) {
+			if (
+				isset( $assigned_values[ $column_name ] )
+				|| ! str_contains( $column_info['EXTRA'], 'on update CURRENT_TIMESTAMP' )
+			) {
+				continue;
+			}
+
+			$on_update_columns[] = $this->quote_sqlite_identifier( $column_name );
+		}
+		if ( 0 === count( $on_update_columns ) ) {
+			return $fragment;
+		}
+
+		/*
+		 * Emulate ON UPDATE CURRENT_TIMESTAMP for columns that are not assigned.
+		 *
+		 * Evaluate assigned expressions once per row and reuse their values to
+		 * detect changes and determine whether to use the current timestamp.
+		 *
+		 * With "updated_at ... ON UPDATE CURRENT_TIMESTAMP", this MySQL query:
+		 *
+		 *   UPDATE items SET score = FLOOR(RAND(1) * 10);
+		 *
+		 * Becomes the following SQLite query (simplified):
+		 *
+		 *   UPDATE items SET (score, updated_at) = (
+		 *     SELECT
+		 *       score,
+		 *       CASE WHEN items.score IS NOT score THEN CURRENT_TIMESTAMP ELSE items.updated_at END
+		 *     FROM (SELECT FLOOR(RAND(1) * 10) AS score)
+		 *   );
+		 *
+		 * Here, items.score is the stored value and score is the new value.
+		 * The inner SELECT has no FROM clause, so SQLite cannot flatten it
+		 * and repeat the assigned expressions when checking for changes.
+		 * See: https://www.sqlite.org/optoverview.html#flattening
+		 */
+		$quoted_table      = $this->quote_sqlite_identifier( $table_alias ?? $table_name );
+		$assigned_columns  = array();
+		$value_expressions = array();
+		$changes           = array();
+		foreach ( $assigned_values as $column_name => $value ) {
+			$quoted_column       = $this->quote_sqlite_identifier( $column_name );
+			$assigned_columns[]  = $quoted_column;
+			$value_expressions[] = sprintf( '(%s) COLLATE BINARY AS %s', $value, $quoted_column );
+
+			// Compare row data using binary collation, qualifying the old values.
+			$changes[] = sprintf( '%s.%s IS NOT %s COLLATE BINARY', $quoted_table, $quoted_column, $quoted_column );
+		}
+		$is_row_changed = implode( ' OR ', $changes );
+		$row_values     = $assigned_columns;
+		foreach ( $on_update_columns as $quoted_column ) {
+			$assigned_columns[] = $quoted_column;
+			$row_values[]       = sprintf(
+				'CASE WHEN %s THEN CURRENT_TIMESTAMP ELSE %s.%s END',
+				$is_row_changed,
+				$quoted_table,
+				$quoted_column
+			);
+		}
+
+		return sprintf(
+			'(%s) = (SELECT %s FROM (SELECT %s))',
+			implode( ', ', $assigned_columns ),
+			implode( ', ', $row_values ),
+			implode( ', ', $value_expressions )
+		);
 	}
 
 	/**
@@ -7254,7 +7428,6 @@ class WP_MySQL_On_SQLite extends PDO {
 
 		// 6. Generate CREATE TABLE statement columns.
 		$rows              = array();
-		$on_update_queries = array();
 		$has_autoincrement = false;
 		foreach ( $column_info as $column ) {
 			$query  = '  ';
@@ -7325,13 +7498,6 @@ class WP_MySQL_On_SQLite extends PDO {
 				}
 			}
 			$rows[] = $query;
-
-			if ( 'on update CURRENT_TIMESTAMP' === $column['EXTRA'] ) {
-				$on_update_queries[] = $this->get_column_on_update_trigger_query(
-					$table_name,
-					$column['COLUMN_NAME']
-				);
-			}
 		}
 
 		// 6. Generate CREATE TABLE statement constraints, collect indexes.
@@ -7467,7 +7633,7 @@ class WP_MySQL_On_SQLite extends PDO {
 			$create_table_query .= ' STRICT';
 		}
 
-		return array_merge( array( $create_table_query ), $create_index_queries, $on_update_queries );
+		return array_merge( array( $create_table_query ), $create_index_queries );
 	}
 
 	/**
@@ -7804,36 +7970,6 @@ class WP_MySQL_On_SQLite extends PDO {
 	 */
 	private function get_internal_savepoint_name( string $name ): string {
 		return sprintf( '%ssavepoint_%s', self::RESERVED_PREFIX, $name );
-	}
-
-	/**
-	 * Get an SQLite query to emulate MySQL "ON UPDATE CURRENT_TIMESTAMP".
-	 *
-	 * In SQLite, "ON UPDATE CURRENT_TIMESTAMP" is not supported. We need to
-	 * create a trigger to emulate this behavior.
-	 *
-	 * @param string $table  The table name.
-	 * @param string $column The column name.
-	 */
-	private function get_column_on_update_trigger_query( string $table, string $column ): string {
-		// The trigger wouldn't work for virtual and "WITHOUT ROWID" tables,
-		// but currently that can't happen as we're not creating such tables.
-		// See: https://www.sqlite.org/rowidtable.html
-		$trigger_name = self::RESERVED_PREFIX . "{$table}_{$column}_on_update";
-		return sprintf(
-			'
-				CREATE TRIGGER %s
-				AFTER UPDATE ON %s
-				FOR EACH ROW
-				BEGIN
-				  UPDATE %s SET %s = CURRENT_TIMESTAMP WHERE rowid = NEW.rowid;
-				END
-			',
-			$this->quote_sqlite_identifier( $trigger_name ),
-			$this->quote_sqlite_identifier( $table ),
-			$this->quote_sqlite_identifier( $table ),
-			$this->quote_sqlite_identifier( $column )
-		);
 	}
 
 	/**
@@ -8218,6 +8354,14 @@ class WP_MySQL_On_SQLite extends PDO {
 					'42S21',
 					null,
 					array( '42S21', 1060, $driver_message )
+				);
+			case WP_SQLite_Information_Schema_Exception::TYPE_COLUMN_NOT_FOUND:
+				$driver_message = sprintf( "Unknown column '%s' in '%s'", $e->get_data()['column_name'], $e->get_data()['table_name'] );
+				return $this->new_driver_exception(
+					'SQLSTATE[42S22]: Column not found: 1054 ' . $driver_message,
+					'42S22',
+					null,
+					array( '42S22', 1054, $driver_message )
 				);
 			case WP_SQLite_Information_Schema_Exception::TYPE_DUPLICATE_KEY_NAME:
 				$driver_message = sprintf( "Duplicate key name '%s'", $e->get_data()['key_name'] );
