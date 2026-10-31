@@ -33,31 +33,13 @@ $input = $app->input;
 
 $assoc = JLanguageAssociations::isEnabled();
 
-JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbutton = function(task)
-	{
-		if (task == "article.cancel" || document.formvalidator.isValid(document.getElementById("item-form")))
-		{
-			jQuery("#permissions-sliders select").attr("disabled", "disabled");
-			' . $this->form->getField('articletext')->save() . '
-			Joomla.submitform(task, document.getElementById("item-form"));
-
-			// @deprecated 4.0  The following js is not needed since 3.7.0.
-			if (task !== "article.apply")
-			{
-				window.parent.jQuery("#articleEdit' . (int) $this->item->id . 'Modal").modal("hide");
-			}
-		}
-	};
-');
-
 // In case of modal
 $isModal = $input->get('layout') == 'modal' ? true : false;
 $layout  = $isModal ? 'modal' : 'edit';
 $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_content&layout=' . $layout . $tmpl . '&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_content&layout=' . $layout . $tmpl . '&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" data-submit-validate data-submit-disable="#permissions-sliders select" id="item-form" class="form-validate">
 
 	<?php echo JLayoutHelper::render('joomla.edit.title_alias', $this); ?>
 

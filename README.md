@@ -76,6 +76,7 @@ Summary of changes:
 - MooTools is gone from the core: one shared script, `global.js` (namespace `CMS`), replaces `core.js` (removed; `JHtml` requests for it load `global.js`) and does what MooTools did (modals, tooltips, tabs, sliders, tree, password meter) in plain JavaScript; old names keep working, and MooTools stays available for extensions that ask for it. Polyfills for old browsers are gone too
 
 **Improvements:**
+- Edit forms validate before saving without a script of their own (attributes on the form; 30 page scripts and their jQuery removed); two-factor settings and banner types switch with show-on, Smart Search and Associations confirm through the toolbar
 - Templates write the document head with `<jdoc:include type="header" />` (`type="head"` keeps working)
 - Wrapper: cached pages follow the `load` query parameter (letters, digits, `_` and `-`), for template overrides and plugins using it
 - Library updates: jQuery UI 1.14.2 (with the 1.9 helpers kept for extensions), SimplePie 1.9.0 (needs PHP 7.2; core doesn't use it), sodium_compat 1.24.2

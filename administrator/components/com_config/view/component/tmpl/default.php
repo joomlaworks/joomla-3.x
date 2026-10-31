@@ -25,31 +25,9 @@ JText::script('WARNING');
 JText::script('NOTICE');
 JText::script('MESSAGE');
 
-JFactory::getDocument()->addScriptDeclaration(
-    '
-	Joomla.submitbutton = function(task)
-	{
-		if (task === "config.cancel.component" || document.formvalidator.isValid(document.getElementById("component-form")))
-		{
-			document.querySelectorAll("#permissions-sliders select").forEach(function (select) {
-				select.disabled = true;
-			});
-			Joomla.submitform(task, document.getElementById("component-form"));
-		}
-	};
-
-	// The first tab (a native click reaches Bootstrap\'s tab handler)
-	document.addEventListener("DOMContentLoaded", function () {
-		var tab = document.querySelector("#configTabs a");
-
-		if (tab) {
-			tab.click();
-		}
-	});'
-);
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_config'); ?>" id="component-form" method="post" name="adminForm" autocomplete="off" class="form-validate form-horizontal">
+<form action="<?php echo JRoute::_('index.php?option=com_config'); ?>" id="component-form" method="post" name="adminForm" data-submit-validate data-submit-disable="#permissions-sliders select" autocomplete="off" class="form-validate form-horizontal">
 	<div class="row-fluid">
 
 		<!-- Begin Sidebar -->
@@ -63,6 +41,7 @@ JFactory::getDocument()->addScriptDeclaration(
 
 			<?php if ($this->fieldsets): ?>
 			<ul class="nav nav-tabs" id="configTabs">
+				<?php $first = true; ?>
 				<?php foreach ($this->fieldsets as $name => $fieldSet) : ?>
 					<?php $dataShowOn = ''; ?>
 					<?php if (!empty($fieldSet->showon)) : ?>
@@ -70,13 +49,16 @@ JFactory::getDocument()->addScriptDeclaration(
 						<?php $dataShowOn = ' data-showon=\'' . json_encode(JFormHelper::parseShowOnConditions($fieldSet->showon, $this->formControl)) . '\''; ?>
 					<?php endif; ?>
 					<?php $label = empty($fieldSet->label) ? 'COM_CONFIG_' . $name . '_FIELDSET_LABEL' : $fieldSet->label; ?>
-					<li<?php echo $dataShowOn; ?>><a data-toggle="tab" href="#<?php echo $name; ?>"><?php echo JText::_($label); ?></a></li>
+					<li<?php echo $first ? ' class="active"' : ''; ?><?php echo $dataShowOn; ?>><a data-toggle="tab" href="#<?php echo $name; ?>"><?php echo JText::_($label); ?></a></li>
+					<?php $first = false; ?>
 				<?php endforeach; ?>
 			</ul><!-- /configTabs -->
 
 			<div class="tab-content" id="configContent">
+				<?php $first = true; ?>
 				<?php foreach ($this->fieldsets as $name => $fieldSet) : ?>
-					<div class="tab-pane" id="<?php echo $name; ?>">
+					<div class="tab-pane<?php echo $first ? ' active' : ''; ?>" id="<?php echo $name; ?>">
+					<?php $first = false; ?>
 						<?php if (isset($fieldSet->description) && !empty($fieldSet->description)) : ?>
 							<div class="tab-description alert alert-info">
 								<span class="icon-info" aria-hidden="true"></span> <?php echo JText::_($fieldSet->description); ?>

@@ -172,9 +172,33 @@
 			form.removeChild(button);
 		},
 
-		// Joomla.submitbutton(), which pages replace with their own (validation first)
+		// Joomla.submitbutton(), which pages may replace with their own. The page's form (name adminForm) with
+		// data-submit-validate is validated first, except for tasks with a "cancel" part (article.cancel,
+		// config.cancel.application); data-submit-disable is a selector of fields left out of the post
 		button(task) {
-			Joomla.submitform(task);
+			const form = document.getElementById('adminForm') || document.querySelector('form[name="adminForm"]');
+
+			if (!form) {
+				Joomla.submitform(task);
+
+				return;
+			}
+
+			const cancel = String(task || '').split('.').indexOf('cancel') !== -1;
+
+			if (!cancel && form.hasAttribute('data-submit-validate') && document.formvalidator && !document.formvalidator.isValid(form)) {
+				return;
+			}
+
+			const disable = form.getAttribute('data-submit-disable');
+
+			if (disable && !cancel) {
+				for (const field of document.querySelectorAll(disable)) {
+					field.disabled = true;
+				}
+			}
+
+			Joomla.submitform(task, form);
 		},
 
 		// Every form token on the page (the installer)

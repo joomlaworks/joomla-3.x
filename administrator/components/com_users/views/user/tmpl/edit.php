@@ -15,37 +15,11 @@ JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('behavior.formvalidator');
 JHtml::_('formbehavior.chosen', 'select');
 
-JFactory::getDocument()->addScriptDeclaration("
-	Joomla.submitbutton = function(task)
-	{
-		if (task == 'user.cancel' || document.formvalidator.isValid(document.getElementById('user-form')))
-		{
-			Joomla.submitform(task, document.getElementById('user-form'));
-		}
-	};
-
-	Joomla.twoFactorMethodChange = function(e)
-	{
-		var selectedPane = 'com_users_twofactor_' + jQuery('#jform_twofactor_method').val();
-
-		jQuery.each(jQuery('#com_users_twofactor_forms_container>div'), function(i, el) {
-			if (el.id != selectedPane)
-			{
-				jQuery('#' + el.id).hide(0);
-			}
-			else
-			{
-				jQuery('#' + el.id).show(0);
-			}
-		});
-	};
-");
-
 // Get the form fieldsets.
 $fieldsets = $this->form->getFieldsets();
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_users&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="user-form" class="form-validate form-horizontal" enctype="multipart/form-data">
+<form action="<?php echo JRoute::_('index.php?option=com_users&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" data-submit-validate id="user-form" class="form-validate form-horizontal" enctype="multipart/form-data">
 
 	<?php echo JLayoutHelper::render('joomla.edit.item_title', $this); ?>
 
@@ -89,13 +63,13 @@ echo JLayoutHelper::render('joomla.edit.params', $this);
 				</label>
 			</div>
 			<div class="controls">
-				<?php echo JHtml::_('select.genericlist', Usershelper::getTwoFactorMethods(), 'jform[twofactor][method]', array('onchange' => 'Joomla.twoFactorMethodChange()'), 'value', 'text', $this->otpConfig->method, 'jform_twofactor_method', false); ?>
+				<?php echo JHtml::_('select.genericlist', Usershelper::getTwoFactorMethods(), 'jform[twofactor][method]', array(), 'value', 'text', $this->otpConfig->method, 'jform_twofactor_method', false); ?>
 			</div>
 		</div>
 		<div id="com_users_twofactor_forms_container">
 			<?php foreach ($this->tfaform as $form) : ?>
 			<?php $style = $form['method'] == $this->otpConfig->method ? 'display: block' : 'display: none'; ?>
-			<div id="com_users_twofactor_<?php echo $form['method'] ?>" style="<?php echo $style; ?>">
+			<div id="com_users_twofactor_<?php echo $form['method'] ?>" style="<?php echo $style; ?>" data-showon="<?php echo htmlspecialchars(json_encode(JFormHelper::parseShowOnConditions('method:' . $form['method'], 'jform', 'twofactor')), ENT_QUOTES, 'UTF-8'); ?>">
 				<?php echo $form['form'] ?>
 			</div>
 			<?php endforeach; ?>

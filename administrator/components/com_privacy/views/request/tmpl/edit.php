@@ -15,18 +15,9 @@ JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 JHtml::_('formbehavior.chosen', 'select');
 
-$js = <<< JS
-Joomla.submitbutton = function(task) {
-	if (task === 'request.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
-		Joomla.submitform(task, document.getElementById('item-form'));
-	}
-};
-JS;
-
-JFactory::getDocument()->addScriptDeclaration($js);
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_privacy&view=request&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_privacy&view=request&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" data-submit-validate id="item-form" class="form-validate">
 	<div class="form-horizontal">
 		<div class="row-fluid">
 			<div class="span9">

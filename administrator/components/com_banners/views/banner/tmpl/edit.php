@@ -14,48 +14,9 @@ JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('behavior.formvalidator');
 JHtml::_('formbehavior.chosen', '#jform_catid', null, array('disable_search_threshold' => 0 ));
 JHtml::_('formbehavior.chosen', 'select');
-
-JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbutton = function(task)
-	{
-		if (task == "banner.cancel" || document.formvalidator.isValid(document.getElementById("banner-form")))
-		{
-			Joomla.submitform(task, document.getElementById("banner-form"));
-		}
-	};
-	// The type shows the image and link fields, or the custom code (the list is drawn by Chosen, which changes through jQuery)
-	document.addEventListener("DOMContentLoaded", function () {
-		var type = document.getElementById("jform_type");
-		var update = function () {
-			["image", "url"].forEach(function (id) {
-				var element = document.getElementById(id);
-
-				if (element) {
-					element.style.display = type.value === "0" ? "" : "none";
-				}
-			});
-
-			if (document.getElementById("custom")) {
-				document.getElementById("custom").style.display = type.value === "1" ? "" : "none";
-			}
-		};
-
-		if (!type) {
-			return;
-		}
-
-		update();
-
-		if (window.jQuery) {
-			window.jQuery(type).on("change", update);
-		} else {
-			type.addEventListener("change", update);
-		}
-	});
-');
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_banners&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="banner-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_banners&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" data-submit-validate id="banner-form" class="form-validate">
 
 	<?php echo JLayoutHelper::render('joomla.edit.title_alias', $this); ?>
 
@@ -66,10 +27,10 @@ JFactory::getDocument()->addScriptDeclaration('
 		<div class="row-fluid">
 			<div class="span9">
 				<?php echo $this->form->renderField('type'); ?>
-				<div id="image">
+				<div id="image" data-showon="<?php echo htmlspecialchars(json_encode(JFormHelper::parseShowOnConditions('type:0', 'jform')), ENT_QUOTES, 'UTF-8'); ?>">
 					<?php echo $this->form->renderFieldset('image'); ?>
 				</div>
-				<div id="custom">
+				<div id="custom" data-showon="<?php echo htmlspecialchars(json_encode(JFormHelper::parseShowOnConditions('type:1', 'jform')), ENT_QUOTES, 'UTF-8'); ?>">
 					<?php echo $this->form->renderField('custombannercode'); ?>
 				</div>
 				<?php

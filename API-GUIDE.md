@@ -25,6 +25,7 @@ For commands of your own on the command line, see [CLI-GUIDE.md](CLI-GUIDE.md). 
   - [Switching without losing unsaved changes](#switching-without-losing-unsaved-changes)
 - [JavaScript: global.js and the CMS namespace](#javascript-globaljs-and-the-cms-namespace)
   - [The old names](#the-old-names)
+  - [Submitting forms: validation without a script](#submitting-forms-validation-without-a-script)
   - [The modal](#the-modal)
   - [Item pickers (Article, Category, Contact, Menu Item, News Feed)](#item-pickers-article-category-contact-menu-item-news-feed)
   - [Subforms](#subforms)
@@ -411,6 +412,34 @@ CMS.sortable.attach('#gallery', {
 `CMS.suggest.attach(input, options)` shows suggestions under a text field: from the server (`url`, a string or a function of the text, answering `{suggestions: [...]}`, each a text or `{value, data}`; `paramName`, default `q`; `params`; `type` GET or POST) or from the page (`lookup`, a list or a function `(query, done)`), with `minChars`, `delay`, `width`, `maxHeight`, `transformResult(responseText, query)`, `formatResult(suggestion, query)` (HTML), `onSelect(suggestion)`, `onSearchStart(params)`, `onSearchComplete(query, suggestions)`, `onSearchError(query, error)`, `autoSelectFirst`, `noCache`, `preventBadQueries`. It returns an object with `setOptions()`, `disable()`, `enable()`, `clear()`, `hide()` and `dispose()`. The list uses jQuery Autocomplete's class names (`.autocomplete-suggestions`, `.autocomplete-suggestion`, `.autocomplete-selected`).
 
 jQuery UI's sortable plugin and Ajax Autocomplete for jQuery are no longer shipped. For extensions that still call them, `media/system/js/jquery.compat.js` provides `jQuery.fn.sortable()` on `CMS.sortable` and `jQuery.fn.autocomplete()`/`devbridgeAutocomplete()` on `CMS.suggest`, with the plugins' option names, events, callbacks and methods (see the file's header for the list). It's loaded by `JHtml::_('jquery.ui', array('sortable'))`, by requests for either plugin's file under any of its names, and by `JHtml::_('behavior.jquerycompat')`. Not covered: dragging between lists (`connectWith`), helpers, containment and revert animations; options it doesn't know are ignored. New code should use `CMS.sortable` and `CMS.suggest` directly.
+
+### Submitting forms: validation without a script
+
+Toolbar buttons call `Joomla.submitbutton(task)`, and an edit form used to replace it with a script of its own to validate first. The default one does that now, from attributes on the page's form (the one named `adminForm`), so such forms need no script:
+
+```html
+<form action="..." method="post" name="adminForm" id="item-form" class="form-validate"
+    data-submit-validate data-submit-disable="#permissions-sliders select">
+```
+
+- `data-submit-validate`: the form is validated (`document.formvalidator`, which `JHtml::_('behavior.formvalidator')` loads) before it's sent, except for tasks with a `cancel` part (`article.cancel`, `config.cancel.application`). Opt-in, so forms whose other buttons mustn't validate ("Close", "Back") keep working.
+- `data-submit-disable`: a selector of fields disabled just before a save, so they aren't posted (the permissions of Articles and Global Configuration, saved as they change).
+
+Editors need nothing either: every core editor writes its text into its field when the form's `submit` event fires, which the default `Joomla.submitform()` triggers, so `$form->getField('text')->save()` in a page script is no longer needed. A page may still set its own `Joomla.submitbutton`; to add to the default rather than replace it, keep the old one and call it:
+
+```js
+const submit = Joomla.submitbutton;
+
+Joomla.submitbutton = (task) => {
+    if (task === 'groups.delete' && !confirm('...')) {
+        return;
+    }
+
+    submit(task);
+};
+```
+
+For a confirmation on a toolbar button, use the toolbar's own: `JToolbarHelper::deleteList('COM_X_CONFIRM_DELETE', 'items.delete')`, or `JToolbar::getInstance('toolbar')->appendButton('Confirm', 'COM_X_CONFIRM_PURGE', 'trash', 'COM_X_PURGE', 'items.purge', false)`.
 
 ### The modal
 

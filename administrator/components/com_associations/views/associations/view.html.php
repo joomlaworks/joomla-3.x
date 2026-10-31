@@ -210,7 +210,7 @@ class AssociationsViewAssociations extends JViewLegacy
 
         if ($user->authorise('core.admin', 'com_associations') || $user->authorise('core.options', 'com_associations')) {
             if (!isset($this->typeName)) {
-                JToolbarHelper::custom('associations.purge', 'purge', 'purge', 'COM_ASSOCIATIONS_PURGE', false, false);
+                JToolbar::getInstance('toolbar')->appendButton('Confirm', 'COM_ASSOCIATIONS_PURGE_CONFIRM_PROMPT', 'purge', 'COM_ASSOCIATIONS_PURGE', 'associations.purge', false);
                 JToolbarHelper::custom('associations.clean', 'refresh', 'refresh', 'COM_ASSOCIATIONS_DELETE_ORPHANS', false, false);
             }
 

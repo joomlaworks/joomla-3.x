@@ -10,25 +10,9 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Factory;
 
 HTMLHelper::_('script', 'plugins/twofactorauth/totp/js/qrcode.min.js', array('version' => 'auto'));
-
-$js = "
-(function(document)
-{
-	document.addEventListener('DOMContentLoaded', function()
-	{
-		var qr = qrcode(0, 'H');
-		qr.addData('" . $url . "');
-		qr.make();
-
-		document.getElementById('totp-qrcode').innerHTML = qr.createImgTag(4);
-	});
-})(document);
-";
-
-Factory::getDocument()->addScriptDeclaration($js);
+HTMLHelper::_('script', 'plugins/twofactorauth/totp/js/totp.min.js', array('version' => 'auto'));
 ?>
 <input type="hidden" name="jform[twofactor][totp][key]" value="<?php echo $secret ?>" />
 
@@ -93,7 +77,7 @@ Factory::getDocument()->addScriptDeclaration($js);
 		<p>
 			<?php echo JText::_('PLG_TWOFACTORAUTH_TOTP_STEP2_ALTTEXT') ?>
 			<br />
-			<div id="totp-qrcode"></div>
+			<div id="totp-qrcode" data-totp-qrcode="<?php echo htmlspecialchars($url, ENT_QUOTES, 'UTF-8'); ?>"></div>
 		</p>
 	</div>
 

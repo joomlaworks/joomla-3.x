@@ -14,32 +14,6 @@ JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
 JHtml::_('behavior.formvalidator');
 
-JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbutton = function(task)
-	{
-		if (task == "profile.cancel" || document.formvalidator.isValid(document.getElementById("profile-form")))
-		{
-			Joomla.submitform(task, document.getElementById("profile-form"));
-		}
-	};
-	Joomla.twoFactorMethodChange = function(e)
-	{
-		var selectedPane = "com_admin_twofactor_" + jQuery("#jform_twofactor_method").val();
-
-		jQuery.each(jQuery("#com_admin_twofactor_forms_container>div"), function(i, el)
-		{
-			if (el.id != selectedPane)
-			{
-				jQuery("#" + el.id).hide(0);
-			}
-			else
-			{
-				jQuery("#" + el.id).show(0);
-			}
-		});
-	}
-');
-
 // Load chosen.css
 JHtml::_('formbehavior.chosen', 'select');
 
@@ -47,7 +21,7 @@ JHtml::_('formbehavior.chosen', 'select');
 $this->ignore_fieldsets = array('user_details');
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_admin&view=profile&layout=edit&id=' . $this->item->id); ?>" method="post" name="adminForm" id="profile-form" class="form-validate form-horizontal" enctype="multipart/form-data">
+<form action="<?php echo JRoute::_('index.php?option=com_admin&view=profile&layout=edit&id=' . $this->item->id); ?>" method="post" name="adminForm" data-submit-validate id="profile-form" class="form-validate form-horizontal" enctype="multipart/form-data">
 	<?php echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'account')); ?>
 	<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'account', JText::_('COM_ADMIN_USER_ACCOUNT_DETAILS')); ?>
 	<?php foreach ($this->form->getFieldset('user_details') as $field) : ?>
@@ -69,13 +43,13 @@ $this->ignore_fieldsets = array('user_details');
 					</label>
 				</div>
 				<div class="controls">
-					<?php echo JHtml::_('select.genericlist', $this->twofactormethods, 'jform[twofactor][method]', array('onchange' => 'Joomla.twoFactorMethodChange()'), 'value', 'text', $this->otpConfig->method, 'jform_twofactor_method', false); ?>
+					<?php echo JHtml::_('select.genericlist', $this->twofactormethods, 'jform[twofactor][method]', array(), 'value', 'text', $this->otpConfig->method, 'jform_twofactor_method', false); ?>
 				</div>
 			</div>
 			<div id="com_admin_twofactor_forms_container">
 				<?php foreach ($this->twofactorform as $form) : ?>
 					<?php $style = $form['method'] == $this->otpConfig->method ? 'display: block' : 'display: none'; ?>
-					<div id="com_admin_twofactor_<?php echo $form['method']; ?>" style="<?php echo $style; ?>">
+					<div id="com_admin_twofactor_<?php echo $form['method']; ?>" style="<?php echo $style; ?>" data-showon="<?php echo htmlspecialchars(json_encode(JFormHelper::parseShowOnConditions('method:' . $form['method'], 'jform', 'twofactor')), ENT_QUOTES, 'UTF-8'); ?>">
 						<?php echo $form['form']; ?>
 					</div>
 				<?php endforeach; ?>

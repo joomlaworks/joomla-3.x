@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.formvalidator');
+JHtml::_('behavior.core');
 JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('bootstrap.tooltip');
 
@@ -28,24 +29,6 @@ $lang->load('plg_user_profile', JPATH_ADMINISTRATOR);
 			</h1>
 		</div>
 	<?php endif; ?>
-	<script type="text/javascript">
-		Joomla.twoFactorMethodChange = function(e)
-		{
-			var selectedPane = 'com_users_twofactor_' + jQuery('#jform_twofactor_method').val();
-
-			jQuery.each(jQuery('#com_users_twofactor_forms_container>div'), function(i, el)
-			{
-				if (el.id != selectedPane)
-				{
-					jQuery('#' + el.id).hide(0);
-				}
-				else
-				{
-					jQuery('#' + el.id).show(0);
-				}
-			});
-		}
-	</script>
 	<form id="member-profile" action="<?php echo JRoute::_('index.php?option=com_users&task=profile.save'); ?>" method="post" class="form-validate form-horizontal well" enctype="multipart/form-data">
 		<?php // Iterate through the form fieldsets and display each one.?>
 		<?php foreach ($this->form->getFieldsets() as $group => $fieldset) : ?>
@@ -102,13 +85,13 @@ $lang->load('plg_user_profile', JPATH_ADMINISTRATOR);
 						</label>
 					</div>
 					<div class="controls">
-						<?php echo JHtml::_('select.genericlist', $this->twofactormethods, 'jform[twofactor][method]', array('onchange' => 'Joomla.twoFactorMethodChange()'), 'value', 'text', $this->otpConfig->method, 'jform_twofactor_method', false); ?>
+						<?php echo JHtml::_('select.genericlist', $this->twofactormethods, 'jform[twofactor][method]', array(), 'value', 'text', $this->otpConfig->method, 'jform_twofactor_method', false); ?>
 					</div>
 				</div>
 				<div id="com_users_twofactor_forms_container">
 					<?php foreach ($this->twofactorform as $form) : ?>
 						<?php $style = $form['method'] == $this->otpConfig->method ? 'display: block' : 'display: none'; ?>
-						<div id="com_users_twofactor_<?php echo $form['method']; ?>" style="<?php echo $style; ?>">
+						<div id="com_users_twofactor_<?php echo $form['method']; ?>" style="<?php echo $style; ?>" data-showon="<?php echo htmlspecialchars(json_encode(JFormHelper::parseShowOnConditions('method:' . $form['method'], 'jform', 'twofactor')), ENT_QUOTES, 'UTF-8'); ?>">
 							<?php echo $form['form']; ?>
 						</div>
 					<?php endforeach; ?>

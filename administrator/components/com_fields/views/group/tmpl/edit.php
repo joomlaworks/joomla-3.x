@@ -19,18 +19,9 @@ JHtml::_('formbehavior.chosen', 'select');
 $app = JFactory::getApplication();
 $input = $app->input;
 
-JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbutton = function(task)
-	{
-		if (task == "group.cancel" || document.formvalidator.isValid(document.getElementById("item-form")))
-		{
-			Joomla.submitform(task, document.getElementById("item-form"));
-		}
-	};
-');
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_fields&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_fields&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" data-submit-validate id="item-form" class="form-validate">
 	<?php echo JLayoutHelper::render('joomla.edit.title_alias', $this); ?>
 	<div class="form-horizontal">
 		<?php echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'general')); ?>

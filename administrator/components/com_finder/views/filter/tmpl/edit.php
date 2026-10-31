@@ -15,14 +15,6 @@ JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.tabstate');
 
 JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbutton = function(task)
-	{
-		if (task == "filter.cancel" || document.formvalidator.isValid(document.getElementById("adminForm")))
-		{
-			Joomla.submitform(task, document.getElementById("adminForm"));
-		}
-	};
-
 	jQuery(document).ready(function($) {
 		$("#rightbtn").on("click", function() {
 			if($(this).text() == "' . JText::_('COM_FINDER_FILTER_SHOW_ALL') . '") {
@@ -57,7 +49,7 @@ JFactory::getDocument()->addStyleDeclaration('
 	');
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_finder&view=filter&layout=edit&filter_id=' . (int) $this->item->filter_id); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_finder&view=filter&layout=edit&filter_id=' . (int) $this->item->filter_id); ?>" method="post" name="adminForm" data-submit-validate id="adminForm" class="form-validate">
 
 	<?php echo JLayoutHelper::render('joomla.edit.title_alias', $this); ?>
 

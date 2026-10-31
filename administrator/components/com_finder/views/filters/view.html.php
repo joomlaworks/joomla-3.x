@@ -134,7 +134,7 @@ class FinderViewFilters extends JViewLegacy
         JToolbarHelper::help('JHELP_COMPONENTS_FINDER_MANAGE_SEARCH_FILTERS');
 
         if ($canDo->get('core.delete')) {
-            JToolbarHelper::deleteList('', 'filters.delete');
+            JToolbarHelper::deleteList('COM_FINDER_INDEX_CONFIRM_DELETE_PROMPT', 'filters.delete');
             JToolbarHelper::divider();
         }
     }

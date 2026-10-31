@@ -18,18 +18,8 @@ JHtml::_('formbehavior.chosen', 'select');
 
 JText::script('ERROR');
 
-JFactory::getDocument()->addScriptDeclaration("
-		Joomla.submitbutton = function(task)
-		{
-			var form = document.getElementById('item-form');
-			if (task == 'menu.cancel' || document.formvalidator.isValid(form))
-			{
-				Joomla.submitform(task, form);
-			}
-		};
-");
 ?>
-<form action="<?php echo JRoute::_('index.php?option=com_menus&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="item-form">
+<form action="<?php echo JRoute::_('index.php?option=com_menus&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" data-submit-validate id="item-form">
 
 	<?php echo JLayoutHelper::render('joomla.edit.title_alias', $this); ?>
 

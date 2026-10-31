@@ -23,17 +23,9 @@ JHtml::_('form.csrf');
 JFactory::getDocument()->addScriptOptions('com_languages.override', array('expired' => $this->state->get('cache_expired') == 1));
 JHtml::_('script', 'administrator/components/com_languages/js/languages.min.js', array('version' => 'auto'));
 
-JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbutton = function(task) {
-		if (task == "override.cancel" || document.formvalidator.isValid(document.getElementById("override-form")))
-		{
-			Joomla.submitform(task, document.getElementById("override-form"));
-		}
-	};
-');
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_languages&id=' . $this->item->key); ?>" method="post" name="adminForm" id="override-form" class="form-validate form-horizontal">
+<form action="<?php echo JRoute::_('index.php?option=com_languages&id=' . $this->item->key); ?>" method="post" name="adminForm" data-submit-validate id="override-form" class="form-validate form-horizontal">
 	<div class="row-fluid">
 		<div class="span6">
 			<fieldset>

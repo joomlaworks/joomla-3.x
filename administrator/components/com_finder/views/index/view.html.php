@@ -159,11 +159,11 @@ class FinderViewIndex extends JViewLegacy
         $toolbar->appendButton('Popup', 'bars', 'COM_FINDER_STATISTICS', 'index.php?option=com_finder&view=statistics&tmpl=component', 550, 350);
 
         if ($canDo->get('core.delete')) {
-            JToolbarHelper::deleteList('', 'index.delete');
+            JToolbarHelper::deleteList('COM_FINDER_INDEX_CONFIRM_DELETE_PROMPT', 'index.delete');
         }
 
         if ($canDo->get('core.edit.state')) {
-            JToolbarHelper::trash('index.purge', 'COM_FINDER_INDEX_TOOLBAR_PURGE', false);
+            $toolbar->appendButton('Confirm', 'COM_FINDER_INDEX_CONFIRM_PURGE_PROMPT', 'trash', 'COM_FINDER_INDEX_TOOLBAR_PURGE', 'index.purge', false);
         }
 
         JToolbarHelper::help('JHELP_COMPONENTS_FINDER_MANAGE_INDEXED_CONTENT');

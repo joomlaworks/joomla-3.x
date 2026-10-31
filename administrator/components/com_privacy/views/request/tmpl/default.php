@@ -17,18 +17,9 @@ JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_privacy/helpers/htm
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 
-$js = <<< JS
-Joomla.submitbutton = function(task) {
-	if (task === 'request.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
-		Joomla.submitform(task, document.getElementById('item-form'));
-	}
-};
-JS;
-
-JFactory::getDocument()->addScriptDeclaration($js);
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_privacy&view=request&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_privacy&view=request&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" data-submit-validate id="item-form" class="form-validate">
 	<div class="row-fluid">
 		<div class="span4">
 			<h3><?php echo JText::_('COM_PRIVACY_HEADING_REQUEST_INFORMATION'); ?></h3>
