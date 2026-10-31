@@ -3,8 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* The Article, Page Break and Read More buttons (editors-xtd): the articles modal, the page break form, Read More */
-
 (function() {
 	"use strict";
 	/**

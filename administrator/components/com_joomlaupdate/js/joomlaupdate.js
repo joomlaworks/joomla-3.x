@@ -1,7 +1,7 @@
-/*
- * Joomla Update's scripts: AES (Chris Veness), the update run (Akeeba's CMS Update, GPL 3 or later), then the main page's
- * extraction settings and pre-update check (Joomla), which start only on the main page. Plain JavaScript since 3.18: the
- * update run's requests are fetch() calls, the pre-update check's too.
+/**
+ * @copyright  (C) 2012 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */

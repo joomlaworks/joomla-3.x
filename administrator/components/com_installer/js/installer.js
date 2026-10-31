@@ -3,13 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * Extensions: Install. Install plugins (core and third-party, Install from Web) call these by name:
- * - JoomlaInstaller.showLoading() / hideLoading() / getLoadingOverlay(): the layer over the page while a package installs;
- * - Joomla.submitbutton4(): installs from the address in install_url.
- * Buttons with data-install-type send the form with that install type after their field (data-install-field) is filled
- * (else data-install-message is shown). The first tab opens when tab state hasn't opened another.
- */
 (() => {
 	'use strict';
 

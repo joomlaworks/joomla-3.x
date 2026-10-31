@@ -3,10 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * System Information module: a link (a.js-revert) opens its page on the tab named after its # (written into the tab
- * state, as the page's own tabs keep it).
- */
 (() => {
 	'use strict';
 

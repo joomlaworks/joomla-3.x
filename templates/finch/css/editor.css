@@ -6,11 +6,6 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* The editor's text as the site shows it: TinyMCE (and other editors) load css/editor.css of the site's default template into
-   the editing area. These are the post text rules of template.css (.postContent), written for the editor's bare <body>:
-   change both files together. Light, or dark when the device is, as the site. Plain class selectors also appear in the
-   editor's Formats menu. */
-
 /* --- Variables --- */
 /* The editor can't know a post's topic: the first of the tones (lavender) stands for it */
 :root {

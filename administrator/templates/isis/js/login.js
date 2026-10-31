@@ -4,8 +4,6 @@
  *
  * @copyright   (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license     GNU General Public License version 2 or later; see LICENSE.md
- *
- * The administrator login page: show/hide the password, close messages, and mark the form busy while it's sent.
  */
 (function () {
 	'use strict';

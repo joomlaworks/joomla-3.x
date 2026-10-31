@@ -3,7 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* Sample Data module: installs a set step by step, each step a request to the set's plugin */
 ((document, window) => {
 	'use strict';
 

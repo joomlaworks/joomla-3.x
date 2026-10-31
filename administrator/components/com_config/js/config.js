@@ -4,10 +4,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * Global Configuration's "Send Test Mail" button: sends the mail settings as they are in the form (not yet saved) and shows
- * the answer as system messages. Needs global.js (CMS.request, which sends the form token as a header).
- */
 (() => {
 	'use strict';
 

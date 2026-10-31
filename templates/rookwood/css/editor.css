@@ -6,11 +6,6 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* The editor's text as the site shows it: TinyMCE (and other editors) load css/editor.css of the site's default template into
-   the editing area. These are the article text rules of template.css (.prose), written for the editor's bare <body>: change
-   both files together. The light theme by default, the dark one when the device is set to dark. Plain class selectors
-   (ul.figures, dl.facts, ul.values, ul.team, div.contactCards, .wide) also appear in the editor's Formats menu. */
-
 /* --- Variables --- */
 :root {
     --fh:           ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;

@@ -3,16 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * Menus: Manage (com_menus.menus): the page reloads when a module modal closes; exporting a menu's XML resets the task.
- * The menu item form's Modules tab (com_menus.modules): its filters, and the module form in a modal.
- * The menu item form (#item-form):
- * - choosing another menu reloads the list of parent items (task item.getParentItem);
- * - the menu type picker sends item.setType / item.setMenuType with the chosen type;
- * - when validation stops a save, the item pickers' shown names are marked invalid with their hidden values;
- * - the Login Form type's redirects keep only the field shown (a URL or a menu item), for login and logout.
- * Chosen announces its changes through jQuery only: they're listened to through jQuery when the page has it.
- */
 (() => {
 	'use strict';
 

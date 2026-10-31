@@ -6,10 +6,6 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* The editor's text as the site shows it: TinyMCE (and other editors) load css/editor.css of the site's default template into
-   the editing area. These are the article text rules of template.css (.itemFullText), written for the editor's bare <body>:
-   change both files together. Plain class selectors also appear in the editor's Formats menu. */
-
 /* --- Variables --- */
 :root {
     --fh:           system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;

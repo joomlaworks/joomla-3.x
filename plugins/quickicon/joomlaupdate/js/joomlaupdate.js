@@ -3,7 +3,6 @@
  * @license		GNU General Public License version 2 or later; see LICENSE.md
  */
 
-// The Joomla Update quick icon: asks for a newer release two seconds after the page loads, then says what it found on the icon
 // and, for an update, in a message with a button to Joomla Update (options: plg_quickicon_joomlaupdate)
 document.addEventListener('DOMContentLoaded', () => {
 	const options = Joomla.getOptions('plg_quickicon_joomlaupdate') || {};

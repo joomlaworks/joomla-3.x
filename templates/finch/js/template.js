@@ -3,7 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* Finch: the search panel, share popups, copy link, X posts */
 ((document, window) => {
 	'use strict';
 

@@ -3,11 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/**
- * The language override form's search: finds known language strings (refreshing their cache first when it expired) and
- * copies the chosen one into the form. Results are shown and copied as text, exactly as the language files have them.
- * Requests carry the form token (X-CSRF-Token, the page's csrf.token option).
- */
 (function (window, document, Joomla) {
 	'use strict';
 

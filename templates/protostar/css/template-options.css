@@ -1,7 +1,7 @@
 /**
- * Protostar's template options (Template Colour, and Background Colour with it): loaded after the site's user.css when Template
- * Colour is set. The page sets each colour as a custom property and a class on <body>; :where() keeps the selectors' specificity as
- * without the class.
+ * @copyright  (C) 2012 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 body.site:where(.protostar-template-color) {border-top:3px solid var(--protostar-template-color);}
 body.site:where(.protostar-background-color) {background-color:var(--protostar-background-color);}

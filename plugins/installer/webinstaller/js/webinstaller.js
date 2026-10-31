@@ -3,11 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * The "Install from Web" tab: loads the Joomla! Extensions Directory browser from the remote server and fills the install form.
- * The markup the server sends calls Joomla.loadweb(), Joomla.installfromweb(), Joomla.apps.initiateSearch() and the global
- * apps_base_url in inline handlers, so those names are kept.
- */
 ((window, document, Joomla) => {
 	'use strict';
 

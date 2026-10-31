@@ -1,7 +1,8 @@
 /**
- * Prothero, an administrator template: Isis' markup with a minimal, black and white skin, light or dark (the Colour Scheme option).
- * Bootstrap 2.3.2 (https://getbootstrap.com/2.3.2/, (C) Twitter, Inc., Apache License 2.0) restyled with the template's colours,
- * then the template's own styles. Right to left: css/template-rtl.css is loaded after this file.
+ * @copyright  (C) 2012 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @copyright  Bootstrap 2.3.2: (C) Twitter, Inc.; Apache License 2.0
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
 /* --- Colours --- */
@@ -252,8 +253,6 @@ select,
 textarea {margin:0;font-size:100%;vertical-align:middle;}
 button,
 input {line-height:normal;}
-button::-moz-focus-inner,
-input::-moz-focus-inner {padding:0;border:0;}
 button,
 html input[type="button"],
 input[type="reset"],
@@ -268,7 +267,7 @@ input[type="radio"],
 input[type="checkbox"] {cursor:pointer;}
 input[type="search"] {box-sizing:content-box;appearance:textfield;}
 input[type="search"]::-webkit-search-decoration,
-input[type="search"]::-webkit-search-cancel-button {-webkit-appearance:none;}
+input[type="search"]::-webkit-search-cancel-button {appearance:none;}
 textarea {overflow:auto;vertical-align:top;}
 @media print {
     * {color:var(--c-fg) !important;background:transparent !important;box-shadow:none !important;}
@@ -591,10 +590,8 @@ input[type="checkbox"]:focus {outline:0;}
 .uneditable-textarea {color:var(--c-muted-fg);background-color:var(--c-subtle);border-color:var(--c-input);cursor:not-allowed;}
 .uneditable-input {overflow:hidden;white-space:nowrap;}
 .uneditable-textarea {width:auto;height:auto;}
-input:-moz-placeholder,
-textarea:-moz-placeholder {color:var(--c-muted-fg);}
-input::-webkit-input-placeholder,
-textarea::-webkit-input-placeholder {color:var(--c-muted-fg);}
+input::placeholder,
+textarea::placeholder {color:var(--c-muted-fg);}
 .radio,
 .checkbox {min-height:20px;padding-left:22px;}
 .radio input[type="radio"],
@@ -873,7 +870,7 @@ input.search-query {padding-right:12px;padding-left:12px;margin-bottom:0;border-
 .form-inline .radio input[type="radio"],
 .form-inline .checkbox input[type="checkbox"] {float:left;margin-right:3px;margin-left:0;}
 .control-group {margin-bottom:9px;}
-legend + .control-group {margin-top:18px;-webkit-margin-top-collapse:separate;}
+legend + .control-group {margin-top:18px;}
 .form-horizontal .control-group {margin-bottom:18px;}
 .form-horizontal .control-group:before,
 .form-horizontal .control-group:after {display:table;content:"";line-height:0;}
@@ -1114,8 +1111,6 @@ input[type="button"].btn-block {width:100%;}
 .btn-inverse {border:1px solid var(--c-primary);color:var(--c-on-primary);background-color:var(--c-primary);}
 .btn-inverse:hover,
 .btn-inverse:focus {border-color:var(--c-primary-hover);background-color:var(--c-primary-hover);color:var(--c-on-primary);text-decoration:none;}
-button.btn::-moz-focus-inner,
-input[type="submit"].btn::-moz-focus-inner {padding:0;border:0;}
 .btn-link,
 .btn-link:active,
 .btn-link[disabled] {background-color:transparent;background-image:none;box-shadow:none;}
@@ -1276,7 +1271,7 @@ input[type="submit"].btn::-moz-focus-inner {padding:0;border:0;}
 .tabs-stacked .open > a:focus {border-color:var(--c-muted-fg);}
 /* Tab rows in one line, scrolling sideways when they don't fit; a fade on the side with more tabs (js/template.js marks it, also
    for the toolbar on phones) */
-:not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked) {display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;border-bottom:0;box-shadow:inset 0 -1px 0 var(--c-border);scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+:not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked) {display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;border-bottom:0;box-shadow:inset 0 -1px 0 var(--c-border);scrollbar-width:none;}
 :not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked)::-webkit-scrollbar {display:none;}
 /* A fieldset grows to its content's width (a tab row in one line): not past its column */
 /* The editor's buttons (Article, Image, Read More...): one row scrolling sideways too, beside "Toggle editor" when there's room */
@@ -1290,11 +1285,11 @@ fieldset {min-width:0;}
 :not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked)::after {display:none;}
 :not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked) > li {flex:none;float:none;margin-bottom:0;}
 :not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked) > li > a {white-space:nowrap;}
-.tabs-more-end {-webkit-mask-image:linear-gradient(to right, #000 calc(100% - 48px), transparent);mask-image:linear-gradient(to right, #000 calc(100% - 48px), transparent);}
-.tabs-more-start {-webkit-mask-image:linear-gradient(to left, #000 calc(100% - 48px), transparent);mask-image:linear-gradient(to left, #000 calc(100% - 48px), transparent);}
-.tabs-more-start.tabs-more-end {-webkit-mask-image:linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent);mask-image:linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent);}
-.tabs-rtl.tabs-more-end {-webkit-mask-image:linear-gradient(to left, #000 calc(100% - 48px), transparent);mask-image:linear-gradient(to left, #000 calc(100% - 48px), transparent);}
-.tabs-rtl.tabs-more-start {-webkit-mask-image:linear-gradient(to right, #000 calc(100% - 48px), transparent);mask-image:linear-gradient(to right, #000 calc(100% - 48px), transparent);}
+.tabs-more-end {mask-image:linear-gradient(to right, #000 calc(100% - 48px), transparent);}
+.tabs-more-start {mask-image:linear-gradient(to left, #000 calc(100% - 48px), transparent);}
+.tabs-more-start.tabs-more-end {mask-image:linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent);}
+.tabs-rtl.tabs-more-end {mask-image:linear-gradient(to left, #000 calc(100% - 48px), transparent);}
+.tabs-rtl.tabs-more-start {mask-image:linear-gradient(to right, #000 calc(100% - 48px), transparent);}
 .tabbable:before,
 .tabbable:after {display:table;content:"";line-height:0;}
 .tabbable:after {clear:both;}
@@ -1472,8 +1467,7 @@ fieldset {min-width:0;}
 .navbar-inverse .nav li.dropdown.active > .dropdown-toggle .caret,
 .navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle .caret {border-top-color:currentColor;border-bottom-color:currentColor;}
 .navbar-inverse .navbar-search .search-query {color:var(--c-fg);background-color:var(--c-card);border-color:var(--c-input);transition:none;}
-.navbar-inverse .navbar-search .search-query:-moz-placeholder {color:var(--c-muted-fg);}
-.navbar-inverse .navbar-search .search-query::-webkit-input-placeholder {color:var(--c-muted-fg);}
+.navbar-inverse .navbar-search .search-query::placeholder {color:var(--c-muted-fg);}
 .navbar-inverse .navbar-search .search-query:focus,
 .navbar-inverse .navbar-search .search-query.focused {padding:5px 12px;color:var(--c-fg);background-color:var(--c-card);border-color:var(--c-ring);box-shadow:var(--ring);outline:0;}
 .navbar-inverse .btn-navbar {background-color:var(--c-card);}
@@ -2199,7 +2193,7 @@ hr.hr-condensed {margin:10px 0;}
 .list-bordered,
 .row-bordered {list-style:none;line-height:20px;text-align:left;vertical-align:middle;margin-left:0;border:1px solid var(--c-border);border-radius:var(--radius-lg);}
 .radio.btn-group input[type="radio"] {display:none;}
-.radio.btn-group > label {-webkit-user-select:none;-moz-user-select:none;user-select:none;}
+.radio.btn-group > label {user-select:none;}
 .radio.btn-group > label:first-of-type {margin-left:0;border-bottom-left-radius:var(--radius);border-top-left-radius:var(--radius);}
 fieldset.radio.btn-group {padding-left:0;}
 .iframe-bordered {border:1px solid var(--c-border);}
@@ -2609,7 +2603,7 @@ div.modal.jviewport-width100 {width:100vw;margin-left:-50vw;}
 
 /* --- Prothero: Global --- */
 html {height:100%;}
-body {height:100%;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;box-sizing:border-box;}
+body {height:100%;-webkit-font-smoothing:antialiased;box-sizing:border-box;}
 a:hover,
 a:active,
 a:focus {outline:none;}
@@ -2747,9 +2741,6 @@ h6 {font-size:var(--fs-h6);line-height:var(--lh-h6);}
 .form-inline-header .control-label {width:auto;padding-right:10px;}
 .form-inline-header .controls {padding-right:20px;}
 fieldset[class^="form-"] {min-width:100%;}
-@-moz-document url-prefix() {
-    fieldset[class^="form-"] {display:table-cell;}
-}
 fieldset.checkboxes input {float:left;}
 fieldset.checkboxes li {list-style:none;}
 .control-group,
@@ -2989,8 +2980,8 @@ body .navbar-fixed-top {margin-bottom:0;}
 .navbar .dropdown-menu,
 .navbar .nav-user {font-size:var(--fs-base);}
 .navbar .nav-user .dropdown-menu li > span {display:block;padding:6px 8px;}
-.navbar .nav > li ul {overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;height:auto;max-height:500px;margin:0;}
-.navbar .nav > li ul::-webkit-scrollbar {-webkit-appearance:none;width:7px;}
+.navbar .nav > li ul {overflow-y:auto;overflow-x:hidden;height:auto;max-height:500px;margin:0;}
+.navbar .nav > li ul::-webkit-scrollbar {appearance:none;width:7px;}
 .navbar .nav > li ul::-webkit-scrollbar-thumb {border-radius:4px;background-color:var(--c-input);}
 .navbar .nav > li > .dropdown-menu {margin-top:0;}
 .navbar .nav > li > .dropdown-menu:after {display:none;}
@@ -3223,8 +3214,8 @@ html[dir="rtl"] .quick-icons .nav-list [class*=" icon-"] {margin-left:9px;margin
 #status .badge {margin-right:0.25em;}
 /* Visitors and Messages as icons (images/svg), masks painted in the text colour, so they follow the bar's colours */
 #status .statusIcon {display:inline-block;width:14px;height:14px;margin-right:4px;vertical-align:-2px;background-color:currentColor;}
-#status .statusIconVisitors {-webkit-mask:url('../../../../media/system/images/icons/person.svg') center / contain no-repeat;mask:url('../../../../media/system/images/icons/person.svg') center / contain no-repeat;}
-#status .statusIconMessages {-webkit-mask:url('../../../../media/system/images/icons/envelope.svg') center / contain no-repeat;mask:url('../../../../media/system/images/icons/envelope.svg') center / contain no-repeat;}
+#status .statusIconVisitors {mask:url('../../../../media/system/images/icons/person.svg') center / contain no-repeat;}
+#status .statusIconMessages {mask:url('../../../../media/system/images/icons/envelope.svg') center / contain no-repeat;}
 
 /* --- Prothero: Tables --- */
 @media (max-width:479px) {
@@ -3255,7 +3246,6 @@ td.nowrap.has-context {width:45%;}
 .btn-toolbar .btn-wrapper {display:inline-block;margin:0 0 8px 5px;}
 .subhead-fixed {position:fixed;width:100%;top:44px;z-index:100;box-shadow:var(--shadow-sm);}
 @media (max-width:767px) {
-    body {-webkit-overflow-scrolling:touch;}
     .subhead {margin-left:-20px;margin-right:-20px;padding-left:10px;padding-right:10px;}
 }
 .subhead h1 {font-size:var(--fs-xl);font-weight:600;margin-left:10px;margin-top:6px;}

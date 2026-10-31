@@ -31,11 +31,17 @@ $hiddenFields = $displayData->get('hidden_fields') ?: array();
 foreach ($fields as $field) {
     foreach ((array) $field as $f) {
         if ($form->getField($f)) {
+            // Rendered already by the other edit layout (global made the ID hidden; publishing data rendered it again)
+            if ($form->getFieldAttribute($f, 'rendered') === 'true') {
+                break;
+            }
+
             if (in_array($f, $hiddenFields)) {
                 $form->setFieldAttribute($f, 'type', 'hidden');
             }
 
             echo $form->renderField($f);
+            $form->setFieldAttribute($f, 'rendered', 'true');
             break;
         }
     }

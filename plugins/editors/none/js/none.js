@@ -3,9 +3,6 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/**
- * Editor None
- */
 ;(function(Joomla, window, document){
 
 	function insertAtCursor(myField, myValue) {

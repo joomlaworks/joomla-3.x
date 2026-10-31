@@ -3,12 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * EasyMDE for Joomla 3: a Markdown editor over the form's textarea, which keeps the HTML the form posts. The HTML becomes
- * Markdown when the editor starts and HTML again on every change (convert.js); content nobody changed is posted exactly as
- * it was. Files dropped, pasted or chosen with the upload button are uploaded through the Media Manager, as GitHub does.
- * Connected to Joomla's editor API (Joomla.editors.instances), which the editor buttons below the editor use.
- */
 ((window, document, Joomla) => {
 	'use strict';
 

@@ -3,12 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * The toolbar builder of the TinyMCE editor's options: drag menus and buttons from the source panel into a set's bars,
- * reorder them, drag them out or use their remove button to take them away. Each item in a set's bar carries a hidden
- * input with its name, which is what the form saves.
- */
-
 // TinyMCE's icons and translations register through these; the builder only needs their data, not the editor
 window.tinymce = window.tinymce || {
 	icons: {},

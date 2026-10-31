@@ -3,12 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * HTML ↔ Markdown for the EasyMDE editor. Articles stay HTML in the database (the site, modules, feeds and search read
- * them), so the editor turns the HTML into Markdown when it opens and back when the form is saved. Whatever Markdown can't
- * express (an element it has no syntax for, an attribute it can't write, a comment) stays HTML inside the Markdown, as it
- * was, which Markdown allows: nothing is lost on the way.
- */
 ((window) => {
 	'use strict';
 

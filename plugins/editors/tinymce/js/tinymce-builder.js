@@ -3,11 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * The toolbar builder of the TinyMCE (legacy) options: menus and buttons are dragged from the source panel into a set's
- * bars (copied), reordered within a bar, or dragged out of it to take them away. Each item in a set's bar carries a
- * hidden input with its name. Plain JavaScript with the browser's drag and drop (it was jQuery UI's sortable).
- */
 (() => {
 	'use strict';
 

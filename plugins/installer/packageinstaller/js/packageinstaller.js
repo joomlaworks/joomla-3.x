@@ -3,11 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * "Installer - Install from Upload": a package dropped on the area (or chosen with its button) is uploaded with progress to
- * com_installer's install.ajax_upload, with the form token; the page then shows the result. Joomla.submitbuttonpackage()
- * sends the form with the chosen file the classic way.
- */
 (() => {
 	'use strict';
 

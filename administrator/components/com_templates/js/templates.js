@@ -3,18 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * The template's files (Templates: Customise):
- * - the trees of folders: closed but for the folders of the open file, a click on a folder opens or closes it; in the New
- *   File and Manage Folders windows a click on a folder chooses it instead (its address goes to the window's field);
- * - the open file and its folders are marked in the tree;
- * - an image's crop area (#image-crop, its own size in data-width and data-height) goes to the form's x, y, w and h.
- *
- * The style's Menus Assignment: the buttons of data-check-toggle check or clear their group of menu items.
- *
- * The preview of a template (its thumbnail's button, data-template-preview: the image's address) opens in CMS.modal, as
- * wide as the image or the window allows, scrolling when the image is taller than the window.
- */
 (() => {
 	'use strict';
 

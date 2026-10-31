@@ -1,9 +1,6 @@
 /**
  * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license    GNU General Public License version 2 or later; see LICENSE.md
- *
- * hCaptcha: renders the checkbox, or runs the invisible check when its form is sent and sends the form on once it has
- * passed. A checkbox form sent before it was ticked goes as it is: the site asks for the CAPTCHA.
  */
 (() => {
 	'use strict';

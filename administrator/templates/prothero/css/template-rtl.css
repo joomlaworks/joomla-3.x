@@ -1,5 +1,7 @@
 /**
- * Prothero right to left: loaded after css/template.css when the administrator's language is written right to left.
+ * @copyright  (C) 2012 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 .pull-right {float:left;}
 .pull-left {float:right;}
@@ -114,7 +116,7 @@ body {direction:rtl;}
 .input-append .btn,
 .input-prepend .add-on,
 .input-prepend .btn {margin-left:0;margin-right:-1px;}
-.table-bordered {border-right-width:0;border-left-width:1px;border-right-style:none;border-left-style:solid;border-right-color:-moz-use-text-color;border-left-color:var(--c-border);}
+.table-bordered {border-right-width:0;border-left-width:1px;border-right-style:none;border-left-style:solid;border-left-color:var(--c-border);}
 .chzn-container-single .chzn-single {padding-right:8px;padding-left:0;}
 .chzn-container-single .chzn-single span {margin-left:26px;margin-right:0;}
 .chzn-container-single .chzn-single abbr {left:26px;right:auto;}
@@ -166,8 +168,8 @@ input[type="url"] {text-align:left;direction:ltr;}
 .navbar .brand {float:left;padding:6px 10px;margin:6px 10px 6px 0;}
 .navbar .nav {margin:0 0 0 10px;}
 .navbar .nav > li > a {padding:6px 10px;}
-.navbar .nav > li ul {overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;-moz-overflow-scrolling:touch;-o-overflow-scrolling:touch;height:auto;max-height:500px;margin:0;}
-.navbar .nav > li ul::-webkit-scrollbar {-webkit-appearance:none;width:7px;}
+.navbar .nav > li ul {overflow-y:auto;overflow-x:hidden;height:auto;max-height:500px;margin:0;}
+.navbar .nav > li ul::-webkit-scrollbar {appearance:none;width:7px;}
 .navbar .nav > li ul::-webkit-scrollbar-thumb {border-radius:4px;background-color:var(--c-input);}
 .navbar .nav-user .dropdown-menu li span {padding-left:0;padding-right:10px;}
 .navbar .nav > .dropdown.open:after {right:10px;width:0;}

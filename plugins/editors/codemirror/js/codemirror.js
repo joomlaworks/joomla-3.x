@@ -4,12 +4,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * "Editor - CodeMirror": every textarea.codemirror-source (with its options in data-options, its height in data-height)
- * becomes an editor, at page load and in new subform rows. Full screen with Ctrl-Q or the plugin's key (script option
- * plg_editors_codemirror.fullScreen), Escape to leave it; modes load from plg_editors_codemirror.modeURL; a click in the
- * marker gutter sets or removes a marker. An editor created hidden (a closed tab) redraws when it's shown.
- */
 ((window, document) => {
 	'use strict';
 

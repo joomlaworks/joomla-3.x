@@ -1,9 +1,6 @@
 /**
  * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license    GNU General Public License version 2 or later; see LICENSE.md
- *
- * IconCaptcha: fills in the form token (the page's "csrf.token" option, which the page cache sets for each visitor), picks
- * the light or dark theme ("auto" follows the page's colour scheme, else the device) and starts the widgets.
  */
 (() => {
 	'use strict';

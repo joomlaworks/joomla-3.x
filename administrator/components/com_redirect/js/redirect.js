@@ -3,10 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * Redirects: Errors' "Create Redirect" button opens the form of the page's #redirect-create-form template in CMS.modal,
- * filled with the error's address, and posts it to errors.createRedirect. Needs global.js.
- */
 (() => {
 	'use strict';
 

@@ -3,10 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * User Groups: deleting groups asks first when a chosen group still has users (its cell's data-usercount); groups without
- * users are deleted at once.
- */
 (() => {
 	'use strict';
 

@@ -4,15 +4,6 @@
  *
  * @copyright   (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license     GNU General Public License version 2 or later; see LICENSE.md
- *
- * Isis' script, plain JavaScript, for every page but the login page (js/login.js): button groups, coloured status lists, the
- * admin menu's scrolling submenus, the pinned toolbar and the list sidebar. It does what Isis' jQuery script did (3.18), with
- * the same markup, and is Prothero's script (administrator/templates/prothero/js/template.js) without Prothero's own parts
- * (the phone menu button, scrolling tab rows, the Reorder button, the login page): change both together.
- *
- * Some core scripts announce their events through jQuery only (Chosen's "liszt:ready" and its changes, subforms'
- * "subform-row-add"), which listeners added with addEventListener never receive: those are heard through jQuery when the page
- * has it (it always has where those scripts run). Bootstrap's tooltips are a jQuery plugin too and are set up the same way.
  */
 (function () {
 	'use strict';

@@ -4,12 +4,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * The Media Manager's styles. Each part applies to its own window only: the image picker (the page with #imageForm), its
- * list (the iframe's ul.media-picker; the Media Manager's own list has the same classes), the Media Manager's video and
- * audio previews and the lists' drop upload.
- */
-
 /* --- Image picker --- */
 :where(:root:has(#imageForm)) img {border:0 none;}
 :where(:root:has(#imageForm)) form {padding:0;margin:0 auto;width:100%;}
@@ -159,7 +153,7 @@
 .manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]:focus-visible) > .height-50 {background-image:linear-gradient(rgba(128, 128, 128, 0.16), rgba(128, 128, 128, 0.16));}
 
 /* --- Dropping files on the Media Manager's lists --- */
-.media-drop-overlay {position:fixed;inset:8px;z-index:1050;display:flex;align-items:center;justify-content:center;padding:24px;border:3px dashed currentColor;border-radius:10px;background:rgba(128, 128, 128, 0.18);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:none;}
+.media-drop-overlay {position:fixed;inset:8px;z-index:1050;display:flex;align-items:center;justify-content:center;padding:24px;border:3px dashed currentColor;border-radius:10px;background:rgba(128, 128, 128, 0.18);backdrop-filter:blur(2px);pointer-events:none;}
 .media-drop-overlay[hidden] {display:none;}
 .media-drop-overlay-text {max-width:30em;padding:12px 20px;border-radius:8px;background:var(--c-card, #ffffff);color:var(--c-fg, #1d202b);font-size:18px;font-weight:600;line-height:1.4;text-align:center;box-shadow:0 4px 16px rgba(0, 0, 0, 0.2);}
 .media-drop-panel {position:fixed;right:8px;bottom:8px;z-index:1051;box-sizing:border-box;width:min(380px, calc(100% - 16px));max-height:60vh;overflow:auto;padding:12px 14px;border:1px solid var(--c-border, #d9dbe0);border-radius:8px;background:var(--c-card, #ffffff);color:var(--c-fg, #1d202b);font-size:14px;line-height:1.4;box-shadow:0 4px 16px rgba(0, 0, 0, 0.2);}

@@ -3,7 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* Housekeeping: in the status bar, like its links */
 .housekeeping {position:relative;display:inline-flex;align-items:center;gap:2px;}
 .housekeeping .hkButton {display:inline-flex;align-items:center;gap:4px;margin:0;padding:0 4px;border:0;border-radius:3px;background:none;font:inherit;line-height:20px;color:#626262;cursor:pointer;}
 .housekeeping .hkButton:hover,
@@ -35,7 +34,9 @@
 .hkToastFailure {border-color:#c52827;background:#fdf0f0;}
 .hkToastClose {flex:none;margin:-4px -4px 0 auto;padding:0 4px;border:0;background:none;font-size:18px;line-height:1;color:#555;cursor:pointer;}
 
-@keyframes hkSpin {to {transform:rotate(360deg);}}
+@keyframes hkSpin {
+    to {transform:rotate(360deg);}
+}
 
 @media (prefers-reduced-motion: reduce) {
     .hkToast {transition:none;}

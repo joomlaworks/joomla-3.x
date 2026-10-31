@@ -3,7 +3,6 @@
  * @license		GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* Common CSS for adminlist grids */
 html,
 body {background-color:#F0F0F0;color:ButtonText;font-family:Tahoma, Verdana, sans-serif !important;margin:0 !important;padding:0 !important;}
 table.adminlist {width:99%;border-spacing:1px;background-color:#f3f3f3;color:#666;font-size:11px;}

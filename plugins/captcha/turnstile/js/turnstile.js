@@ -1,8 +1,6 @@
 /**
  * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license    GNU General Public License version 2 or later; see LICENSE.md
- *
- * Cloudflare Turnstile: renders the widget; a form sent before its token is there waits for it, then goes on.
  */
 (() => {
 	'use strict';

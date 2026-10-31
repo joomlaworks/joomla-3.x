@@ -3,10 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * Smart Search's search page and module: the Advanced Search button (data-finder-toggle, the panel's id) shows and hides
- * its panel; lists left on their empty choice stay out of the search's address.
- */
 (() => {
 	'use strict';
 

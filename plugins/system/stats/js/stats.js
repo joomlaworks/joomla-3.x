@@ -3,12 +3,6 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/**
- * The statistics message: sends the statistics when the site's choice says so, or asks (always, once, never) in the system
- * messages. The plugin answers only requests with X-Requested-With (com_ajax, group system).
- *
- * @since  3.5.0
- */
 document.addEventListener('DOMContentLoaded', () => {
 	const container = document.getElementById('system-message-container');
 	const ask = (plugin) => fetch('index.php?' + new URLSearchParams({ option: 'com_ajax', group: 'system', plugin, format: 'raw' }).toString(), {

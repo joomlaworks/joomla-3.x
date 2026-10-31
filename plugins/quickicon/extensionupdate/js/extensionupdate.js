@@ -3,7 +3,6 @@
  * @license		GNU General Public License version 2 or later; see LICENSE.md
  */
 
-// The Extension Updates quick icon: asks how many extensions have updates (Joomla itself, 700, aside), then says it on the icon
 // and, when there are some, in a message with a button to the Update page (options: plg_quickicon_extensionupdate)
 document.addEventListener('DOMContentLoaded', () => {
 	const options = Joomla.getOptions('plg_quickicon_extensionupdate') || {};

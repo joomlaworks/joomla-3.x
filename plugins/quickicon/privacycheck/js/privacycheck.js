@@ -3,7 +3,6 @@
  * @license		GNU General Public License version 2 or later; see LICENSE.md
  */
 
-// The Privacy Requests quick icon: asks how many requests are urgent, then says it on the icon and, when there are some, in a
 // message with a button to the requests (options: js-privacy-check)
 document.addEventListener('DOMContentLoaded', () => {
 	const options = Joomla.getOptions('js-privacy-check') || {};

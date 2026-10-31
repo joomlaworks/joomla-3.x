@@ -3,10 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/**
- * Smart Search's indexer (view indexer, in a modal of the Index page): starts the index, sends batches until every item is
- * done, optimises, and shows the progress; when it's complete it closes the modal, whose page then reloads.
- */
 window.FinderIndexer = function FinderIndexer() {
 	const options = Joomla.getOptions('com_finder.indexer') || {};
 	const token = document.getElementById('finder-indexer-token');

@@ -3,10 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * TinyMCE 8 for Joomla 3: starts the editors and connects them to Joomla's editor API (Joomla.editors.instances), which the
- * editor buttons below the editor use, the HTML templates and image uploads through the Media Manager.
- */
 ((window, document, Joomla) => {
 	'use strict';
 

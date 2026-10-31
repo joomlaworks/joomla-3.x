@@ -3,10 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * "Two Factor Authentication - Google Authenticator": draws the QR code of each element with data-totp-qrcode (the
- * otpauth:// address an authenticator app scans), with qrcode.js
- */
 (() => {
 	'use strict';
 

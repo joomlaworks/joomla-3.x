@@ -180,6 +180,7 @@ Summary of changes:
 - Form validation, edit forms' remembered tabs, the switcher and the combo box without jQuery (part of `global.js`; validation also of the site's `frontend.js`)
 - Every stylesheet of our own and Joomla's is written in one style (one rule per line), without Internet Explorer hacks; administrator-only scripts and styles named after their extension, Joomla Update's three scripts in one; the media player's Flash and Silverlight fallbacks removed
 - The editors, CAPTCHA plugins and two-factor authentication keep their files in their own plugin folders; each extension's folder in `media/` has one stylesheet and one script named after it (`com_x/css/x.css`, `com_x/js/x.js`), the Media Manager's included; unused files removed
+- Script and stylesheet headers hold only copyright and licence lines; old vendor prefixes removed from our stylesheets (only Chrome-only, non-standard ones like `-webkit-font-smoothing` stay); a visible hover on Prothero's Log in button
 
 **Security fixes:**
 - TinyMCE updated to 8.10.0, with 8.9.3's fix for a stored XSS in its media plugin
@@ -226,6 +227,7 @@ Summary of changes:
 - Google reCAPTCHA works again on pages that load MooTools (the front-end article form never sent with the invisible type)
 - Modules dragged to a new place in their position no longer go back on the next page load; failed reordering is reported
 - Smart Search's Advanced Search button works in every template
+- No more "Undefined array key 1" PHP warnings from browsers whose version number has no minor part (e.g. Safari's `Version/18`); edit forms no longer render the item's ID field twice
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:

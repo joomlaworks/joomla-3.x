@@ -4,13 +4,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * The site's slim version of global.js: the namespace window.CMS with only what pages for visitors use (options, strings,
- * forms, form validation, lists, messages, AJAX, keepalive, captions, highlighting) and the old Joomla.* names. JHtml behavior.core loads it
- * on the site; anything needing more (modals, tooltips, front-end editing, the media field) loads global.js, which has
- * all of this too and takes this file's place in the page. A second copy of the same code, kept by hand: change both
- * files together.
- */
 ((window, document) => {
 	'use strict';
 

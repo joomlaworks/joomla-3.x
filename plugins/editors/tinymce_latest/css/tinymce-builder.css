@@ -3,7 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* The toolbar builder of the TinyMCE editor's options */
 .tinymce-latest-builder {--tmb-border:#d9d9d9;--tmb-bg:#fff;--tmb-bar-bg:#f7f7f7;--tmb-item-bg:#fff;--tmb-accent:#1f5d8c;--tmb-target:#e8f1f8;margin-bottom:1.5rem;}
 .tinymce-latest-builder .tmb-panel {border:1px solid var(--tmb-border);border-radius:6px;background:var(--tmb-bg);margin:0 0 1.25rem;overflow:hidden;}
 .tinymce-latest-builder .tmb-bar {display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-height:40px;padding:6px;background:var(--tmb-bar-bg);transition:background-color .15s ease;}

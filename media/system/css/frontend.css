@@ -4,9 +4,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* The site's shared styles: what the system template's stylesheets were (templates/system/css/*.css import this file
-   for templates linking them), the system pages' scoped to their body class (tmpl-component, tmpl-error, tmpl-offline) */
-
 /* Base rules under :where() (no specificity): a template's own styles win, whatever the order the stylesheets load in */
 
 /* --- System messages --- */

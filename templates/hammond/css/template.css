@@ -348,7 +348,11 @@ body.megaOpen {overflow:hidden;}
 .layout-latest .itemDate {font-size:.8rem;font-weight:700;color:var(--c-accent);line-height:1.6;white-space:normal;}
 .layout-latest .itemTitle {font-size:1.05rem;margin-bottom:4px;}
 .layout-latest .itemCategory {margin:0;font-size:.72rem;}
-@keyframes pulse {0% {box-shadow:0 0 0 0 rgba(227,38,28,.6);} 70% {box-shadow:0 0 0 10px rgba(227,38,28,0);} 100% {box-shadow:0 0 0 0 rgba(227,38,28,0);}}
+@keyframes pulse {
+    0% {box-shadow:0 0 0 0 rgba(227,38,28,.6);}
+    70% {box-shadow:0 0 0 10px rgba(227,38,28,0);}
+    100% {box-shadow:0 0 0 0 rgba(227,38,28,0);}
+}
 
 /* Frontpage - Cards */
 .layout-cards {grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));}

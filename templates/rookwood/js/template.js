@@ -3,7 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* Rookwood: the theme switch, the search panel, the menu on small screens, the header's state once the page scrolls */
 ((document, window) => {
 	'use strict';
 

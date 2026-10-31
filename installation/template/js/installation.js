@@ -3,13 +3,6 @@
  * @subpackage  JavaScript
  * @copyright   (C) 2009 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.md
- *
- * The installer's script, without jQuery, Bootstrap or Joomla's core scripts. The views use data attributes:
- *   data-action="next"            submits the step's form (#adminForm)
- *   data-goto="view"              shows another step
- *   data-action="install-languages", "remove-folder", "leave" (removes the folder, then follows the link)
- *   data-show-when="name=value"   shown only while the radio jform[name] has that value
- * Window.Install keeps the methods of the previous script, for markup which still calls them (e.g. onchange="Install.setlanguage()").
  */
 (function () {
 	'use strict';

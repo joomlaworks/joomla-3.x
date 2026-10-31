@@ -4,11 +4,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * The Media Manager's scripts, each starting only where it belongs: the drop upload (the lists, with its script options),
- * the media field (its fields), the Media Manager (its page) and the image picker (its page). Plain JavaScript (3.18), no jQuery.
- */
-
 /* --- Drop upload --- */
 (() => {
 	'use strict';

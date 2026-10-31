@@ -1,10 +1,6 @@
 /**
  * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license    GNU General Public License version 2 or later; see LICENSE.md
- *
- * The debug console (plugins/system/debug) as a panel: a button fixed at the bottom right with the page's time, memory, queries and
- * errors opens it, docked to the bottom of the window, its sections as tabs. Open or closed, the tab and the height are remembered.
- * Without this script the console stays at the end of the page.
  */
 (function () {
 	'use strict';

@@ -3,11 +3,6 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/**
- * The side by side association editor: the reference item and a target language's item in two iframes. Saving, copying and
- * removing go through the iframes' own forms; the association fields of both are kept in step. Lists drawn by Chosen are
- * redrawn through their page's own jQuery (liszt:updated); changes are native events, which jQuery's listeners hear too.
- */
 document.addEventListener('DOMContentLoaded', () => {
 	const byId = (id) => document.getElementById(id);
 	const reference = byId('reference-association');

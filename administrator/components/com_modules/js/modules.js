@@ -3,11 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * The module form (#module-form). Opened in a frame from a menu item's Modules tab (the parent has viewLevels and menuId),
- * a save also updates the module's row there: title, position, access, published state and whether it shows on that menu
- * item. The module's ID is the com_modules.edit script option.
- */
 (() => {
 	'use strict';
 

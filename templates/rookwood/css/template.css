@@ -156,13 +156,13 @@ input[type=submit]:hover {border-color:var(--c-accent);background:var(--c-accent
 .eyebrow::before {content:"";width:28px;height:2px;background:currentColor;}
 :root[data-theme="light"] .eyebrow {color:var(--c-violet);}
 .displayTitle {font-size:var(--display);font-weight:850;line-height:.98;letter-spacing:-0.045em;}
-.highlight {background:linear-gradient(100deg,var(--c-violet),var(--c-pink) 55%,var(--c-lime));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.highlight {background:linear-gradient(100deg,var(--c-violet),var(--c-pink) 55%,var(--c-lime));background-clip:text;color:transparent;}
 .lead {font-size:clamp(1.15rem, 1rem + .6vw, 1.45rem);line-height:1.5;color:var(--c-text);max-width:46ch;}
 .actions {margin:2em 0 0;}
 
 /* --- Header --- */
 .siteHeader {position:sticky;top:0;z-index:100;transition:background-color .2s ease,box-shadow .2s ease,backdrop-filter .2s ease;}
-.siteHeader.isScrolled {background:color-mix(in srgb,var(--c-bg) 82%,transparent);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);box-shadow:0 1px 0 var(--c-line);}
+.siteHeader.isScrolled {background:color-mix(in srgb,var(--c-bg) 82%,transparent);backdrop-filter:blur(14px) saturate(1.4);box-shadow:0 1px 0 var(--c-line);}
 .headerInner {display:flex;align-items:center;gap:24px;min-height:var(--header-h);}
 /* Over the home page's hero the header is transparent and its text white, until the page scrolls */
 .isFrontpage .siteHeader:not(.isScrolled) {--c-ink:#fff;--c-bg:#0e1014;color:#fff;}
@@ -436,7 +436,7 @@ ul.menu.buttons {display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;ma
 .searchResultText {max-width:72ch;margin:0;color:var(--c-muted);}
 .searchResult .cardMeta {margin:0;padding:0;}
 /* com_search marks the searched words with the class of the template's gradient text: a marker here instead */
-.searchResult .highlight {padding:0 3px;border-radius:4px;background:var(--c-lime);-webkit-background-clip:border-box;background-clip:border-box;color:#0e1014;}
+.searchResult .highlight {padding:0 3px;border-radius:4px;background:var(--c-lime);background-clip:border-box;color:#0e1014;}
 .searchError {max-width:760px;padding:20px 24px;border:2px solid var(--c-line);border-radius:var(--radius);background:var(--c-surface);font-size:1.05rem;}
 
 /* --- Article --- */
@@ -789,7 +789,7 @@ ul.category > li {padding:14px 0;border-bottom:1px solid var(--c-line);}
 .errorPage {display:grid;place-items:center;min-height:100vh;padding:48px 0;text-align:center;}
 .errorPage .logo {margin-bottom:32px;}
 .errorCode {margin:0;font-size:clamp(6rem, 4rem + 10vw, 12rem);font-weight:900;line-height:.9;letter-spacing:-0.06em;}
-.errorCode {background:linear-gradient(100deg,var(--c-violet),var(--c-pink) 55%,var(--c-lime));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.errorCode {background:linear-gradient(100deg,var(--c-violet),var(--c-pink) 55%,var(--c-lime));background-clip:text;color:transparent;}
 .errorPage .pageTitle {max-width:none;margin:16px 0 32px;font-size:var(--heading);}
 .errorPage pre {max-width:100%;overflow:auto;text-align:left;font-size:.8rem;}
 .offlineTitle {margin:0 0 16px;font-size:inherit;}

@@ -1,9 +1,6 @@
 /**
  * @copyright  (C) 2016 Open Source Matters, Inc. <https://www.joomla.org>
  * @license    GNU General Public License version 2 or later; see LICENSE.md
- *
- * Google reCAPTCHA: renders the v2 checkbox, and runs the v2 invisible and v3 checks when their form is sent (a token is
- * only valid for two minutes, so it's asked for then, not when the page loads), sending the form on once it's there.
  */
 (() => {
 	'use strict';

@@ -4,8 +4,6 @@
  *
  * @copyright   (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license     GNU General Public License version 2 or later; see LICENSE.md
- *
- * The administrator login page (login.php and html/mod_login): plain CSS, no Bootstrap.
  */
 
 /* --- Tokens: light, dark (the Colour Scheme option, or auto on a device set to dark) --- */
@@ -25,7 +23,7 @@
     --c-field:         #ffffff;
     --c-accent:        #18181b;
     --c-on-accent:     #fafafa;
-    --c-accent-hover:  #27272a;
+    --c-accent-hover:  #3f3f46;
     --c-hover:         #f4f4f5;
     --c-focus:         rgba(161, 161, 170, 0.5);
     --c-error-bg:      #fef2f2;
@@ -53,7 +51,7 @@
     --c-field:         #09090b;
     --c-accent:        #fafafa;
     --c-on-accent:     #18181b;
-    --c-accent-hover:  #e4e4e7;
+    --c-accent-hover:  #d4d4d8;
     --c-hover:         #27272a;
     --c-focus:         rgba(113, 113, 122, 0.5);
     --c-error-bg:      rgba(239, 68, 68, 0.12);
@@ -81,7 +79,7 @@
         --c-field:         #09090b;
         --c-accent:        #fafafa;
         --c-on-accent:     #18181b;
-        --c-accent-hover:  #e4e4e7;
+        --c-accent-hover:  #d4d4d8;
         --c-hover:         #27272a;
         --c-focus:         rgba(113, 113, 122, 0.5);
         --c-error-bg:      rgba(239, 68, 68, 0.12);
@@ -105,10 +103,10 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 
 /* --- Side panel: the site, on a pattern of building blocks --- */
 .loginBrand {display:flex;flex-direction:column;justify-content:center;padding:clamp(2rem, 5vw, 4.5rem);color:var(--c-on-side);background:var(--c-side) var(--blocks) 0 0 / 259.81px 360px repeat;border-right:1px solid var(--c-side-line);}
-.loginBrand-inner {align-self:flex-start;margin-block:auto;max-width:46rem;padding:clamp(1.5rem, 3vw, 2.5rem);background:var(--c-side-plate);border:1px solid var(--c-side-line);border-radius:16px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+.loginBrand-inner {align-self:flex-start;margin-block:auto;max-width:46rem;padding:clamp(1.5rem, 3vw, 2.5rem);background:var(--c-side-plate);border:1px solid var(--c-side-line);border-radius:16px;backdrop-filter:blur(6px);}
 .loginBrand-site {margin:0;font-size:clamp(2rem, 3.4vw, 2.75rem);font-weight:700;line-height:1.15;letter-spacing:-0.03em;overflow-wrap:anywhere;}
 .loginBrand-host {margin:0.75rem 0 2rem;font-size:1rem;color:var(--c-side-muted);overflow-wrap:anywhere;}
-.loginBrand-visit {display:inline-flex;align-items:center;gap:0.5rem;padding:0.55rem 1rem;border:1px solid var(--c-side-line);border-radius:var(--radius);color:var(--c-on-side);background:var(--c-panel);font-size:0.9rem;font-weight:500;text-decoration:none;transition:background-color 0.15s ease;}
+.loginBrand-visit {display:inline-flex;align-items:center;gap:0.5rem;padding:0.55rem 1rem;border:1px solid var(--c-side-line);border-radius:var(--radius);color:var(--c-on-side);background:var(--c-panel);font-size:0.9rem;font-weight:500;text-decoration:none;transition:background-color 0.15s ease,box-shadow 0.15s ease;}
 .loginBrand-visit svg {transition:transform 0.15s ease;}
 .loginBrand-visit:hover,
 .loginBrand-visit:focus-visible {background:var(--c-hover);}
@@ -163,7 +161,7 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 .loginForm input[type="text"],
 .loginForm input[type="password"],
 .loginForm select {width:100%;min-height:2.5rem;margin:0;padding:0.5rem 0.75rem;border:1px solid var(--c-line);border-radius:var(--radius);background:var(--c-field);color:var(--c-text);font:inherit;transition:border-color 0.15s ease, box-shadow 0.15s ease;}
-.loginForm select {-webkit-appearance:none;appearance:none;padding-right:2.5rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-position:right 0.8rem center;background-repeat:no-repeat;background-size:1.1rem;}
+.loginForm select {appearance:none;padding-right:2.5rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-position:right 0.8rem center;background-repeat:no-repeat;background-size:1.1rem;}
 .loginForm input:hover,
 .loginForm select:hover {border-color:var(--c-muted);}
 .loginForm input:focus,
@@ -180,8 +178,8 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 .loginReveal[aria-pressed="true"] .loginReveal-show {display:none;}
 .loginReveal[aria-pressed="true"] .loginReveal-hide {display:block;}
 .loginReveal-label {position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
-.loginSubmit {min-height:2.5rem;margin-top:0.25rem;padding:0.5rem 1rem;border:0;border-radius:var(--radius);background:var(--c-accent);color:var(--c-on-accent);font:inherit;font-weight:500;cursor:pointer;transition:background-color 0.15s ease;}
-.loginSubmit:hover {background:var(--c-accent-hover);}
+.loginSubmit {min-height:2.5rem;margin-top:0.25rem;padding:0.5rem 1rem;border:0;border-radius:var(--radius);background:var(--c-accent);color:var(--c-on-accent);font:inherit;font-weight:500;cursor:pointer;transition:background-color 0.15s ease,box-shadow 0.15s ease;}
+.loginSubmit:hover {background:var(--c-accent-hover);box-shadow:0 0 0 3px var(--c-focus);}
 .loginSubmit:focus-visible {outline:2px solid var(--c-muted);outline-offset:2px;}
 .loginSubmit[aria-busy="true"] {cursor:progress;opacity:0.8;}
 /* Other modules in the "login" position */

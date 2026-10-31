@@ -2,9 +2,6 @@
  * @package     Joomla.Installation
  * @copyright   (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license     GNU General Public License version 2 or later; see LICENSE.md
- *
- * The installer's own styles, without a framework. Logical properties (inset-inline-start, margin-inline-end, ...) keep
- * right-to-left languages right; the colours follow the system's light or dark scheme.
  */
 
 /* ------------------------------------------------------------------ Tokens */
@@ -285,7 +282,7 @@ fieldset.radio input:checked + label {background:linear-gradient(135deg, var(--b
 /* ------------------------------------------------------------------ Installing */
 .install-panel {overflow:hidden;}
 .install-meter {display:grid;gap:.9rem;margin-bottom:1.75rem;}
-.install-percent {font-size:clamp(2.6rem, 6vw, 3.6rem);font-weight:800;line-height:1;letter-spacing:-.04em;background:linear-gradient(135deg, var(--primary), var(--cyan-400));-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums;}
+.install-percent {font-size:clamp(2.6rem, 6vw, 3.6rem);font-weight:800;line-height:1;letter-spacing:-.04em;background:linear-gradient(135deg, var(--primary), var(--cyan-400));background-clip:text;color:transparent;font-variant-numeric:tabular-nums;}
 .progress {height:.75rem;border-radius:999px;background:var(--surface-3);overflow:hidden;}
 .progress-bar {position:relative;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg, var(--blue-500), var(--cyan-400));transition:width .5s var(--ease);overflow:hidden;}
 .progress-bar::after {content:"";position:absolute;inset:0;background:linear-gradient(90deg, transparent, rgba(255, 255, 255, .55), transparent);animation:shimmer 1.4s linear infinite;}

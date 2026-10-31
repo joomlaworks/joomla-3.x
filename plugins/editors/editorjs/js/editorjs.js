@@ -3,13 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * The Blocks editor (Editor.js) for Joomla's editor fields. The form's textarea keeps HTML, which the site, modules, feeds and
- * search read: when the blocks change, they're rendered on the server through layouts (layouts/joomla/blocks/<type>.php,
- * overridable by the site template) and written into the textarea, after a hidden element holding the blocks themselves
- * (base64 JSON), from which the editor opens them again. A fingerprint of the content's text and images tells whether it was
- * changed outside the editor since; then the blocks are made again from the HTML. Content nobody changed is posted as it was.
- */
 ((window, document, Joomla) => {
 	'use strict';
 

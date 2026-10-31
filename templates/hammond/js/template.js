@@ -3,7 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* Hammond: the mega menu (with search), the sticky header, share popups, copy link, X posts */
 ((document, window) => {
 	'use strict';
 

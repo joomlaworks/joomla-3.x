@@ -2,10 +2,6 @@
  * @copyright  (C) 2012 Open Source Matters, Inc. <https://www.joomla.org>
  * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license    GNU General Public License version 2 or later; see LICENSE.md
- *
- * The debug console (plugins/system/debug). With media/system/js/debug.js it's a panel docked to the bottom of the window, opened from
- * a button; without it, a block at the end of the page. Everything is scoped to the console, in its own colours (light or dark, as
- * the page's data-scheme (Prothero, Finch) or data-theme (Rookwood) or the device says), so the page's template doesn't change it and it doesn't change the page.
  */
 
 /* --- Colours --- */
@@ -172,7 +168,7 @@
 #system-debug.dbg-panel,
 #system-debug.dbg-panel.j-toggle-main {float:none !important;width:auto !important;margin:0 !important;}
 #system-debug.dbg-panel [hidden] {display:none !important;}
-#system-debug.dbg-resizing {user-select:none;-webkit-user-select:none;}
+#system-debug.dbg-resizing {user-select:none;}
 #system-debug .dbg-resize {position:absolute;top:-4px;left:0;right:0;height:8px;cursor:ns-resize;touch-action:none;}
 #system-debug .dbg-resize::after {content:"";position:absolute;top:7px;left:50%;width:40px;height:4px;margin-left:-20px;background:var(--dbg-border);border-radius:2px;}
 #system-debug .dbg-bar-top {flex:none;display:flex;align-items:center;gap:12px;min-height:44px;padding:0 8px 0 16px;background:var(--dbg-subtle);border-bottom:1px solid var(--dbg-border);}

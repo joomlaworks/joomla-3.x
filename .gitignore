@@ -31,3 +31,6 @@ Desktop.ini
 /.claude
 AGENTS.md
 AGENTS-HISTORY.md
+
+# Python bytecode (docs/ build and format scripts)
+__pycache__/

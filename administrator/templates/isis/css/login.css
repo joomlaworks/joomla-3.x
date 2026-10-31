@@ -4,8 +4,6 @@
  *
  * @copyright   (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license     GNU General Public License version 2 or later; see LICENSE.md
- *
- * The administrator login page (login.php and html/mod_login): plain CSS, no Bootstrap.
  */
 
 /* --- Tokens --- */
@@ -69,7 +67,10 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 .loginBrand::before {content:"";position:absolute;inset:-30%;z-index:-1;background:radial-gradient(35% 35% at 30% 40%, rgba(255, 255, 255, 0.22), transparent 70%), radial-gradient(30% 30% at 70% 65%, rgba(255, 255, 255, 0.14), transparent 70%);animation:loginDrift 24s ease-in-out infinite alternate;}
 /* Keeps white text readable on every part of the gradient */
 .loginBrand::after {content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg, rgba(14, 10, 50, 0.08) 0%, rgba(14, 10, 50, 0.38) 100%);}
-@keyframes loginDrift {from {transform:translate3d(-4%, -3%, 0) rotate(0deg);} to {transform:translate3d(5%, 4%, 0) rotate(8deg);}}
+@keyframes loginDrift {
+    from {transform:translate3d(-4%, -3%, 0) rotate(0deg);}
+    to {transform:translate3d(5%, 4%, 0) rotate(8deg);}
+}
 .loginBrand-inner {margin-block:auto;max-width:46rem;}
 .loginBrand-site {margin:0;font-size:clamp(2rem, 3.4vw, 2.9rem);font-weight:800;line-height:1.15;letter-spacing:-0.02em;overflow-wrap:anywhere;}
 .loginBrand-host {margin:0.75rem 0 2rem;font-size:1.05rem;opacity:0.9;overflow-wrap:anywhere;}
@@ -113,7 +114,7 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 .loginForm input[type="text"],
 .loginForm input[type="password"],
 .loginForm select {width:100%;min-height:3rem;margin:0;padding:0.7rem 0.9rem;border:1px solid var(--c-line);border-radius:var(--radius);background:var(--c-field);color:var(--c-text);font:inherit;transition:border-color 0.15s ease, box-shadow 0.15s ease;}
-.loginForm select {-webkit-appearance:none;appearance:none;padding-right:2.5rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%237a8099' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-position:right 0.8rem center;background-repeat:no-repeat;background-size:1.1rem;}
+.loginForm select {appearance:none;padding-right:2.5rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%237a8099' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-position:right 0.8rem center;background-repeat:no-repeat;background-size:1.1rem;}
 .loginForm input:hover,
 .loginForm select:hover {border-color:color-mix(in srgb, var(--c-accent) 45%, var(--c-line));}
 .loginForm input:focus,

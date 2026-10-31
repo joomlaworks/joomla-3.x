@@ -4,9 +4,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* The editing area's stylesheet when the site's template has no css/editor.css of its own (TinyMCE 8 and 4): plain,
-   readable text in the system font, light or dark as the device is */
-
 /* --- Page --- */
 :root {
     color-scheme: light dark;

@@ -557,12 +557,7 @@ class Browser
             if (preg_match('|Edge\/([0-9.]+)|', $this->agent, $version)) {
                 $this->setBrowser('edge');
 
-                if (strpos($version[1], '.') !== false) {
-                    list($this->majorVersion, $this->minorVersion) = explode('.', $version[1]);
-                } else {
-                    $this->majorVersion = $version[1];
-                    $this->minorVersion = 0;
-                }
+                $this->setVersion($version[1]);
             }
             /*
              * We have to check for Edge as the first browser, because Edge has something like:
@@ -570,11 +565,11 @@ class Browser
              */ elseif (preg_match('|Edg\/([0-9.]+)|', $this->agent, $version)) {
                 $this->setBrowser('edg');
 
-                list($this->majorVersion, $this->minorVersion) = explode('.', $version[1]);
+                $this->setVersion($version[1]);
             } elseif (preg_match('|Opera[\/ ]([0-9.]+)|', $this->agent, $version)) {
                 $this->setBrowser('opera');
 
-                list($this->majorVersion, $this->minorVersion) = explode('.', $version[1]);
+                $this->setVersion($version[1]);
 
                 /*
                  * Due to changes in Opera UA, we need to check Version/xx.yy,
@@ -589,13 +584,13 @@ class Browser
             elseif (preg_match('/OPR[\/ ]([0-9.]+)/', $this->agent, $version)) {
                 $this->setBrowser('opera');
 
-                list($this->majorVersion, $this->minorVersion) = explode('.', $version[1]);
+                $this->setVersion($version[1]);
             } elseif (preg_match('/Chrome[\/ ]([0-9.]+)/i', $this->agent, $version)
                 || preg_match('/CrMo[\/ ]([0-9.]+)/i', $this->agent, $version)
                 || preg_match('/CriOS[\/ ]([0-9.]+)/i', $this->agent, $version)) {
                 $this->setBrowser('chrome');
 
-                list($this->majorVersion, $this->minorVersion) = explode('.', $version[1]);
+                $this->setVersion($version[1]);
             } elseif (strpos($this->lowerAgent, 'elaine/') !== false
                 || strpos($this->lowerAgent, 'palmsource') !== false
                 || strpos($this->lowerAgent, 'digital paths') !== false) {
@@ -611,12 +606,7 @@ class Browser
                     preg_match('|rv:([0-9.]+)|', $this->agent, $version);
                 }
 
-                if (strpos($version[1], '.') !== false) {
-                    list($this->majorVersion, $this->minorVersion) = explode('.', $version[1]);
-                } else {
-                    $this->majorVersion = $version[1];
-                    $this->minorVersion = 0;
-                }
+                $this->setVersion($version[1]);
             } elseif (preg_match('|amaya\/([0-9.]+)|', $this->agent, $version)) {
                 $this->setBrowser('amaya');
                 $this->majorVersion = $version[1];
@@ -645,7 +635,7 @@ class Browser
             } elseif (preg_match('|Firefox\/([0-9.]+)|', $this->agent, $version)) {
                 $this->setBrowser('firefox');
 
-                list($this->majorVersion, $this->minorVersion) = explode('.', $version[1]);
+                $this->setVersion($version[1]);
             } elseif (preg_match('|Lynx\/([0-9]+)|', $this->agent, $version)) {
                 $this->setBrowser('lynx');
             } elseif (preg_match('|Links \(([0-9]+)|', $this->agent, $version)) {
@@ -675,7 +665,7 @@ class Browser
             } elseif (preg_match('|Mozilla\/([0-9.]+)|', $this->agent, $version)) {
                 $this->setBrowser('mozilla');
 
-                list($this->majorVersion, $this->minorVersion) = explode('.', $version[1]);
+                $this->setVersion($version[1]);
             }
         }
     }
@@ -725,7 +715,7 @@ class Browser
     protected function identifyBrowserVersion()
     {
         if (preg_match('|Version[/ ]([0-9.]+)|', $this->agent, $version)) {
-            list($this->majorVersion, $this->minorVersion) = explode('.', $version[1]);
+            $this->setVersion($version[1]);
 
             return;
         }
@@ -733,6 +723,23 @@ class Browser
         // Can't identify browser version
         $this->majorVersion = 0;
         $this->minorVersion = 0;
+    }
+
+    /**
+     * Sets the major and minor version from a version number, which may have no minor part (e.g. "Version/18")
+     *
+     * @param   string  $version  The version number
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    protected function setVersion($version)
+    {
+        $parts = explode('.', $version);
+
+        $this->majorVersion = $parts[0];
+        $this->minorVersion = isset($parts[1]) ? $parts[1] : 0;
     }
 
     /**
@@ -843,7 +850,7 @@ class Browser
     public function isViewable($mimetype)
     {
         $mimetype = strtolower($mimetype);
-        list($type, $subtype) = explode('/', $mimetype);
+        list($type, $subtype) = array_pad(explode('/', $mimetype, 2), 2, '');
 
         if (!empty($this->accept)) {
             $wildcard_match = false;

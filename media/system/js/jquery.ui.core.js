@@ -1,7 +1,6 @@
 /*! jQuery UI - v1.14.2 - 2026-01-28
 * https://jqueryui.com
 * Includes: widget.js, position.js, data.js, disable-selection.js, focusable.js, form-reset-mixin.js, jquery-patch.js, keycode.js, labels.js, scroll-parent.js, tabbable.js, unique-id.js, widgets/mouse.js
-* Joomla 3.x UTD: these sections of jQuery UI 1.14.2's dist/jquery-ui.js, unchanged, as Joomla's "core" (with widget, mouse and position, as Joomla 3 bundled them), then the 1.9 helpers later versions removed
 * Copyright OpenJS Foundation and other contributors; Licensed MIT */
 
 ( function( factory ) {

@@ -3,10 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * User Actions Log: the export buttons send the separate export form (#exportForm), "Export Selected" with the chosen
- * items' IDs.
- */
 (() => {
 	'use strict';
 

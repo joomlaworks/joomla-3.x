@@ -755,7 +755,7 @@ dl.stats-module dd {margin:0;overflow-wrap:anywhere;}
     .headerBar {flex-wrap:wrap;gap:0 12px;padding-top:10px;}
     .searchToggle {margin-left:auto;}
     .mainNav {order:3;flex:1 1 100%;margin:0 -12px;}
-    .mainNav ul.menu {flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:8px;-webkit-mask-image:linear-gradient(to right, #000 85%, transparent);mask-image:linear-gradient(to right, #000 85%, transparent);}
+    .mainNav ul.menu {flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:8px;mask-image:linear-gradient(to right, #000 85%, transparent);}
     .mainNav ul.menu > li > a {white-space:nowrap;}
     .masthead {padding-top:32px;padding-bottom:28px;}
     .postInner,

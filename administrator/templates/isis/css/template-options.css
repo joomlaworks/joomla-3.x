@@ -1,7 +1,7 @@
 /**
- * Isis' template options (Template Colour, Header Colour, Sidebar Colour, Link Colour): loaded after the site's custom.css when one
- * is set. The page sets each option's colour as a custom property and a class on <body>; :where() keeps the selectors' specificity
- * as without the class.
+ * @copyright  (C) 2012 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 :where(.isis-navbar-color) .navbar-inner,
 :where(.isis-navbar-color) .navbar-inverse .navbar-inner,

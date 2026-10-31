@@ -1,18 +1,10 @@
 /**
  * @copyright  (C) 2009 Open Source Matters, Inc. <https://www.joomla.org>
  * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @copyright  Portions: SqueezeBox 1.3 (C) Harald Kirschner, Rouven Weßling; MooTree (C) Rasmus Schultz; Form.PasswordStrength (C) Al Kent; MIT License
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/*
- * The CMS's shared JavaScript, in one file: the namespace window.CMS (what core.js was, plus vanilla versions of what
- * needed MooTools). Older names stay as aliases of the new code (see LEGACY at the end): Joomla.submitform() is
- * CMS.form.submit(), SqueezeBox.open() is CMS.modal.open(), jModalClose() is CMS.modal.close(), and so on.
- * It runs once however often it's loaded. Its styles are in media/system/css/global.css.
- *
- * Parts are ports of MIT-licensed MooTools code: the modal of SqueezeBox 1.3 (Harald Kirschner, Rouven Weßling), the tree of
- * MooTree (Rasmus Schultz, mindplay.dk), the password meter of Form.PasswordStrength (Al Kent).
- */
 ((window, document) => {
 	'use strict';
 

@@ -3,7 +3,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* Housekeeping (the administrator's status bar): Clean Cache, and the menu with Clean Everything and Global Check-in */
 ((document) => {
 	'use strict';
 
