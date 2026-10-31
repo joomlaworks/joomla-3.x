@@ -27,6 +27,16 @@ class DatabaseImportCommand extends AbstractCommand
     protected $serverPathOptions = array('folder', 'zip');
 
     /**
+     * What may follow the column list of a MySQL create_statement: table options as SHOW CREATE TABLE writes them
+     *
+     * @var    string
+     * @since  3.18.0
+     */
+    public const TABLE_OPTIONS = '/^(?:[\\s,]*(?:(?:DEFAULT\\s+)?(?:ENGINE|TYPE|AUTO_INCREMENT|CHARSET|CHARACTER\\s+SET|COLLATE|ROW_FORMAT|STATS_PERSISTENT'
+        . '|STATS_AUTO_RECALC|STATS_SAMPLE_PAGES|PACK_KEYS|CHECKSUM|DELAY_KEY_WRITE|KEY_BLOCK_SIZE|AVG_ROW_LENGTH|MAX_ROWS|MIN_ROWS)'
+        . '(?:\\s*=\\s*|\\s+)[A-Za-z0-9_]+|COMMENT(?:\\s*=\\s*|\\s+)\'(?:[^\'\\\\]|\\\\.|\'\')*\'))*[\\s;]*$/i';
+
+    /**
      * @var    string
      * @since  3.17.0
      */
@@ -121,6 +131,13 @@ class DatabaseImportCommand extends AbstractCommand
         $folder    = rtrim((string) $io->getOption('folder'), '/\\') ?: '.';
         $zipFile   = (string) $io->getOption('zip');
         $tableName = (string) $io->getOption('table');
+
+        // A table's name, never a path: it names a file of the folder
+        if ($tableName !== '' && !preg_match('/^[A-Za-z0-9_#]+$/', $tableName)) {
+            $io->error('The table name may only hold letters, digits, "_" and "#".');
+
+            return self::INVALID;
+        }
 
         // Over MCP, from the folder database:export writes to there (never a folder the assistant names; a folder another command
         // gives, e.g. database:convert's temporary one, is used as it is)
@@ -265,10 +282,11 @@ class DatabaseImportCommand extends AbstractCommand
             return false;
         }
 
-        $folder = Factory::getConfig()->get('tmp_path') . '/' . uniqid('dbimport_');
+        // Dumps hold password hashes: never in tmp/, which may be served (the site's protected backup folder)
+        $folder = AbstractTemplateCommand::getBackupFolder('database/import-' . bin2hex(random_bytes(12)));
 
-        if (!\JFolder::create($folder)) {
-            $io->error(sprintf('Cannot create the folder %s.', $folder));
+        if ($folder === false || !\JFolder::create($folder)) {
+            $io->error('Cannot create a folder for the archive\'s files in the site\'s backup folder.');
 
             return false;
         }
@@ -454,7 +472,14 @@ class DatabaseImportCommand extends AbstractCommand
 
             if ($out === null) {
                 // Start over, writing the corrected copy
-                $this->compatibleCopy = Factory::getConfig()->get('tmp_path') . '/' . uniqid('dbimport_') . '.xml';
+                // In the site's protected backup folder (a dump holds password hashes), never tmp/
+                $backup = AbstractTemplateCommand::getBackupFolder('database');
+
+                if ($backup === false) {
+                    throw new \RuntimeException('Cannot write a corrected copy of the file in the site\'s backup folder.');
+                }
+
+                $this->compatibleCopy = $backup . '/import-' . bin2hex(random_bytes(12)) . '.xml';
                 $out                  = fopen($this->compatibleCopy, 'wb');
                 rewind($in);
                 $carry = '';
@@ -496,6 +521,51 @@ class DatabaseImportCommand extends AbstractCommand
     }
 
     /**
+     * Where the column list of a CREATE TABLE statement ends: the parenthesis closing the one at $open, skipping quoted
+     * names, strings and comments
+     *
+     * @param   string   $statement  The statement
+     * @param   integer  $open       The position of the opening parenthesis
+     *
+     * @return  integer|null  The position of the closing one, null when there is none
+     *
+     * @since   3.18.0
+     */
+    protected function columnListEnd($statement, $open)
+    {
+        $depth  = 0;
+        $length = strlen($statement);
+
+        for ($i = $open; $i < $length; $i++) {
+            $char = $statement[$i];
+
+            if ($char === '`' || $char === "'" || $char === '"') {
+                // To the closing quote: doubled quotes and (in strings) backslashes escape it
+                for ($i++; $i < $length; $i++) {
+                    if ($char !== '`' && $statement[$i] === '\\') {
+                        $i++;
+                    } elseif ($statement[$i] === $char) {
+                        if ($i + 1 < $length && $statement[$i + 1] === $char) {
+                            $i++;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            } elseif ($char === '#' || ($char === '-' && substr($statement, $i, 3) === '-- ') || substr($statement, $i, 2) === '/*') {
+                // Comments may hide anything: a column list holding one isn't accepted
+                return null;
+            } elseif ($char === '(') {
+                $depth++;
+            } elseif ($char === ')' && --$depth === 0) {
+                return $i;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * The statements which create a table, from its structure in a file: checked, but not run.
      *
      * @param   \SimpleXMLElement  $structure  The table_structure element
@@ -523,8 +593,16 @@ class DatabaseImportCommand extends AbstractCommand
             $statement = trim((string) $structure->create_statement);
 
             // The statement names the table with the #__ prefix, which the driver replaces: it must create this table, nothing else
-            if (!preg_match('/^CREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?`?' . preg_quote($generic, '/') . '`?\\s*\\(/i', $statement)) {
+            if (!preg_match('/^CREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?`?' . preg_quote($generic, '/') . '`?\\s*\\(/i', $statement, $match)) {
                 throw new \RuntimeException(sprintf('The structure of %s doesn\'t create that table.', $generic));
+            }
+
+            // After the column list only table options (what SHOW CREATE TABLE writes): anything else (AS SELECT, CONNECTION,
+            // DATA DIRECTORY, PARTITION...) would run as part of the statement
+            $end = $this->columnListEnd($statement, strlen($match[0]) - 1);
+
+            if ($end === null || !preg_match(self::TABLE_OPTIONS, substr($statement, $end + 1))) {
+                throw new \RuntimeException(sprintf('The structure of %s holds more than a table\'s definition.', $generic));
             }
 
             $statements = array($this->withKnownCollations($statement));

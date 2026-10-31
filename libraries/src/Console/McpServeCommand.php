@@ -428,7 +428,7 @@ class McpServeCommand extends AbstractCommand
 
         if (!$this->allowCode && empty($options['dry-run']) && $command->writesCode($fullOptions, $arguments)) {
             return $this->toolError($id, sprintf('This server does not write code (extension or Joomla packages, configuration.php, a template\'s PHP, '
-                . 'XML and dot files, or a template restore), so %s only runs with "dry_run": true here. The site\'s administrator can start the server with '
+                . 'XML and dot files, a template restore, or an account which may install extensions or edit templates), so %s only runs with "dry_run": true here. The site\'s administrator can start the server with '
                 . '--allow-code to allow it; a template\'s CSS, JavaScript and images can be changed with --allow-write alone.', $command->getName()));
         }
 

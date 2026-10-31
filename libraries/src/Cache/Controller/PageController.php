@@ -165,8 +165,12 @@ class PageController extends CacheController
             $id = $this->_makeId();
         }
 
-        // If the etag matches the page id ... set a no change header and exit : utilize browser cache
-        if (!headers_sent() && isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
+        // If the etag matches the page id ... set a no change header and exit : utilize browser cache. Only for the requests
+        // the page cache serves (a guest's GET or HEAD, with caching on): the ETag names the address, not what a logged-in user
+        // or a POST would get, so they were answered 304 with the guest copy, a POST without being handled
+        $method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper((string) $_SERVER['REQUEST_METHOD']) : 'GET';
+
+        if (!headers_sent() && isset($_SERVER['HTTP_IF_NONE_MATCH']) && in_array($method, array('GET', 'HEAD'), true) && $this->cache->getCaching()) {
             // The ETag is sent quoted (see _setEtag()), and browsers send it back so: "id", W/"id", or several, comma-separated
             $etags = array_map(
                 function ($etag) {

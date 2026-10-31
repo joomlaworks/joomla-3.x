@@ -46,6 +46,21 @@ class UserAddToGroupCommand extends AbstractUserCommand
     protected $dryRun = true;
 
     /**
+     * Adding an account to a group which can put code on the server (isCodeGroup()) is code for the MCP server
+     *
+     * @param   array|null  $options    The options of a run
+     * @param   array|null  $arguments  The arguments of a run
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    public function writesCode(?array $options = null, ?array $arguments = null)
+    {
+        return $options === null || $this->namesCodeGroup(isset($options['group']) ? $options['group'] : '');
+    }
+
+    /**
      * @return  void
      *
      * @since   3.17.0

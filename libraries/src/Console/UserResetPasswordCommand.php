@@ -11,6 +11,7 @@ namespace Joomla\CMS\Console;
 
 defined('JPATH_PLATFORM') or die;
 
+use Joomla\CMS\Access\Access;
 use Joomla\CMS\User\User;
 
 /**
@@ -44,6 +45,27 @@ class UserResetPasswordCommand extends AbstractUserCommand
      * @since  3.17.0
      */
     protected $dryRun = true;
+
+    /**
+     * A new password for an account which can put code on the server (isCodeGroup()) takes it over: code for the MCP server
+     *
+     * @param   array|null  $options    The options of a run
+     * @param   array|null  $arguments  The arguments of a run
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    public function writesCode(?array $options = null, ?array $arguments = null)
+    {
+        if ($options === null) {
+            return true;
+        }
+
+        $userId = $this->getUserId(isset($options['username']) ? (string) $options['username'] : '');
+
+        return $userId > 0 && (bool) array_filter(Access::getGroupsByUser($userId), array($this, 'isCodeGroup'));
+    }
 
     /**
      * @return  void

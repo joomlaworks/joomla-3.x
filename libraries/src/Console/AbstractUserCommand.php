@@ -77,12 +77,12 @@ abstract class AbstractUserCommand extends AbstractCommand
      *
      * @since   3.17.0
      */
-    protected function getGroupIds(CommandIO $io, $titles)
+    protected function getGroupIds(?CommandIO $io, $titles)
     {
         $db  = Factory::getDbo();
         $ids = array();
 
-        foreach (array_filter(array_map('trim', explode(',', $titles)), 'strlen') as $title) {
+        foreach (array_filter(array_map('trim', explode(',', (string) $titles)), 'strlen') as $title) {
             $query = $db->getQuery(true)
                 ->select($db->quoteName('id'))
                 ->from($db->quoteName('#__usergroups'))
@@ -90,7 +90,9 @@ abstract class AbstractUserCommand extends AbstractCommand
             $id = (int) $db->setQuery($query)->loadResult();
 
             if (!$id) {
-                $io->error(sprintf('The user group "%s" doesn\'t exist.', $title));
+                if ($io) {
+                    $io->error(sprintf('The user group "%s" doesn\'t exist.', $title));
+                }
 
                 return false;
             }
@@ -131,6 +133,45 @@ abstract class AbstractUserCommand extends AbstractCommand
     protected function isSuperUserGroup($groupId)
     {
         return (bool) Access::checkGroup((int) $groupId, 'core.admin');
+    }
+
+    /**
+     * Whether a user group can put code on the server: Super Users, and groups which may manage extensions (installing
+     * runs a package's PHP) or templates (the template editor writes PHP files). Handing such a group to an account is
+     * writing code for the MCP server (writesCode(): --allow-code), not only a change (--allow-write).
+     *
+     * @param   integer  $groupId  The group ID
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    protected function isCodeGroup($groupId)
+    {
+        $groupId = (int) $groupId;
+
+        return Access::checkGroup($groupId, 'core.admin') || Access::checkGroup($groupId, 'core.manage', 'com_installer')
+            || Access::checkGroup($groupId, 'core.manage', 'com_templates');
+    }
+
+    /**
+     * Whether any of the groups (titles separated by commas, as the commands take them) can put code on the server
+     *
+     * @param   string  $titles  The group titles
+     *
+     * @return  boolean  True also when they can't be read: the run is judged when it happens
+     *
+     * @since   3.18.0
+     */
+    protected function namesCodeGroup($titles)
+    {
+        try {
+            $ids = $this->getGroupIds(null, $titles);
+        } catch (\Exception $e) {
+            return true;
+        }
+
+        return $ids === false ? false : (bool) array_filter($ids, array($this, 'isCodeGroup'));
     }
 
     /**

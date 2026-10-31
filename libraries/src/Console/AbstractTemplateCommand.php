@@ -229,7 +229,9 @@ abstract class AbstractTemplateCommand extends AbstractCommand
         $name = basename(static::normalisePath($path));
         $bare = rtrim($name, " \t\n\r\0\x0B.");
 
-        return $bare === '' || $name[0] === '.' || (bool) preg_match('/\.(php[0-9]*|pht|phtml|phar|phps|inc|xml|shtml?|cgi|pl|py|sh|asp|aspx|jsp)(?=\.|$)/i', $bare);
+        // web.config is IIS's .htaccess (it can add handlers that run scripts)
+        return $bare === '' || $name[0] === '.' || strtolower($bare) === 'web.config'
+            || (bool) preg_match('/\.(php[0-9]*|pht|phtml|phar|phps|inc|xml|shtml?|cgi|pl|py|sh|asp|aspx|jsp)(?=\.|$)/i', $bare);
     }
 
     /**

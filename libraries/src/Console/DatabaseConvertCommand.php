@@ -205,8 +205,9 @@ SQL;
             return self::INVALID;
         }
 
-        // Connecting creates a new SQLite database file
-        if ($io->isDryRun() && $to === 'sqlite') {
+        // Connecting creates a new SQLite database file; over MCP a dry run doesn't reach the network (the server the client
+        // names), the rest of the time it checks the connection and the new database's tables
+        if ($io->isDryRun() && ($to === 'sqlite' || Factory::getApplication()->getInterface() === 'MCP')) {
             return $this->planConversion($io, $settings, $current);
         }
 

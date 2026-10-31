@@ -134,7 +134,7 @@ You choose this where the server starts, so the assistant can't change it.
 |---|---|
 | *(none)* | **Read-only.** Every command which changes nothing, and dry runs of the others: the assistant can look, check and plan, but not change. |
 | `--allow-write` | Changes allowed too: content, modules, menus, users, configuration of extensions, a template's CSS, JavaScript and images, cache, ... |
-| `--allow-code` | With `--allow-write`: also what puts code on the server. That's installing, reinstalling or updating extensions or Joomla, changing `configuration.php` (`config:set`, `database:convert`), a template's PHP, XML and dot files (e.g. `.htaccess`), and restoring a template backup. |
+| `--allow-code` | With `--allow-write`: also what puts code on the server. That's installing, reinstalling or updating extensions or Joomla, changing `configuration.php` (`config:set`, `database:convert`), a template's PHP, XML and dot files (e.g. `.htaccess`), restoring a template backup, and giving an account the right to install extensions or edit templates (`user:add` or `user:add-to-group` with such a group, like Super Users or Administrator, and `user:reset-password` of such an account): that account could put code on the server through the administrator. |
 | `--allow="..."` | Only these commands, separated by commas, with wildcards: `--allow="article:*,category:*,tag:*,site:*"` |
 | `--deny="..."` | Never these commands: `--deny="user:*,database:*,core:update"` |
 | `--as=username` | Content commands act as this account, whatever the assistant asks, and **its permissions apply** (e.g. an Editor may write and edit articles, but not publish them). Without it they act as the first active Super User. |
