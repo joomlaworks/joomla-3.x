@@ -550,6 +550,33 @@ function jMediaRefreshImgpathTip(tip, els)
 		return;
 	}
 
+	// The page's settings (com_media.manager): the files folder relative to the site, shown in the upload form, and the view
+	var settings = (scope.Joomla && scope.Joomla.getOptions && scope.Joomla.getOptions('com_media.manager')) || {};
+
+	if (scope.basepath === undefined) {
+		scope.basepath = settings.basepath || '';
+	}
+
+	if (scope.viewstyle === undefined) {
+		scope.viewstyle = settings.viewstyle || 'thumbs';
+	}
+
+	// The toolbar's Delete: only with something checked in the list
+	scope.deleteMedia = function() {
+		var frame = document.getElementById('folderframe');
+		var list = frame && frame.contentDocument;
+
+		if (!list || !list.querySelector('input[name="rm[]"]:checked')) {
+			alert(scope.Joomla.JText._('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));
+
+			return false;
+		}
+
+		MediaManager.submit('folder.delete');
+
+		return true;
+	};
+
 	var MediaManager = scope.MediaManager = {
 
 		/**
@@ -1993,4 +2020,82 @@ function jMediaRefreshImgpathTip(tip, els)
 			show();
 		},
 	};
+})();
+
+/* --- The list (the Media Manager's frame) --- */
+/*
+ * Its checkboxes belong to #mediamanager-form, not adminForm; its previews open in the parent's windows: images in the
+ * CMS's modal (MediaPreview, with the folder's other images), audio and video in the Media Manager's players.
+ */
+(() => {
+	'use strict';
+
+	const start = () => {
+		const form = document.getElementById('mediamanager-form');
+
+		if (!form || window.parent === window || !window.Joomla) {
+			return;
+		}
+
+		const parent = window.parent;
+
+		window.Joomla.isChecked = (checked, list) => {
+			const target = list || form;
+			const all = target.elements['checkall-toggle'];
+
+			target.boxchecked.value = Number(target.boxchecked.value) + (checked ? 1 : -1);
+
+			if (all) {
+				all.checked = !Array.prototype.some.call(target.elements, (element) => element.type === 'checkbox' && element !== all && !element.checked);
+			}
+		};
+
+		if (parent.document.updateUploader) {
+			parent.document.updateUploader();
+		}
+
+		document.addEventListener('click', (event) => {
+			const link = event.target.closest ? event.target.closest('.audio-preview, .video-preview, .img-preview, .preview') : null;
+
+			if (!link) {
+				return;
+			}
+
+			event.preventDefault();
+
+			const href = link.getAttribute('href');
+			const cover = link.getAttribute('data-cover') || '';
+
+			if (link.classList.contains('audio-preview') || link.classList.contains('video-preview')) {
+				const audio = link.classList.contains('audio-preview');
+
+				if (parent.jQuery) {
+					parent.jQuery(audio ? '#audioPreview' : '#videoPreview').modal('show');
+				}
+
+				parent.MediaManager[audio ? 'playAudio' : 'playVideo'](href, cover);
+
+				return;
+			}
+
+			if (parent.MediaPreview) {
+				parent.MediaPreview.open(href, document);
+			} else {
+				parent.CMS.modal.open(href, { handler: 'image' });
+			}
+
+			// Focus leaves the list's frame for the modal, so Escape closes it
+			const close = parent.document.getElementById('sbox-btn-close');
+
+			if (close) {
+				close.focus({ focusVisible: false });
+			}
+		});
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', start);
+	} else {
+		start();
+	}
 })();

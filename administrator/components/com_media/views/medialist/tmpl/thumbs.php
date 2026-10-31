@@ -11,89 +11,10 @@ defined('_JEXEC') or die;
 $params = JComponentHelper::getParams('com_media');
 $path   = 'file_path';
 
-JHtml::_('jquery.framework');
 JHtml::_('behavior.core');
+// The list's checkboxes and previews (the last part of media.js)
+JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
 JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));
-
-$doc = JFactory::getDocument();
-
-// Need to override this core function because we use a different form id
-$doc->addScriptDeclaration(
-    "
-		Joomla.isChecked = function( isitchecked, form ) {
-			if ( typeof form  === 'undefined' ) {
-				form = document.getElementById( 'mediamanager-form' );
-			}
-
-			form.boxchecked.value += isitchecked ? 1 : -1;
-
-			// If we don't have a checkall-toggle, done.
-			if ( !form.elements[ 'checkall-toggle' ] ) return;
-
-			// Toggle main toggle checkbox depending on checkbox selection
-			var c = true,
-				i, e, n;
-
-			for ( i = 0, n = form.elements.length; i < n; i++ ) {
-				e = form.elements[ i ];
-
-				if ( e.type == 'checkbox' && e.name != 'checkall-toggle' && !e.checked ) {
-					c = false;
-					break;
-				}
-			}
-
-			form.elements[ 'checkall-toggle' ].checked = c;
-		};
-	"
-);
-
-$doc->addScriptDeclaration(
-    "
-		jQuery(document).ready(function($){
-			window.parent.document.updateUploader();
-			$('.img-preview, .preview').each(function(index, value) {
-				$(this).on('click', function(e) {
-					// The CMS's modal, the image as large as the window allows, with the folder's other images
-					if (window.parent.MediaPreview) {
-						window.parent.MediaPreview.open($(this).attr('href'), document);
-					} else {
-						window.parent.CMS.modal.open($(this).attr('href'), {handler: 'image'});
-					}
-
-					// Focus leaves the list's frame for the modal, so Escape closes it
-					var close = window.parent.document.getElementById('sbox-btn-close');
-
-					if (close) {
-						close.focus({focusVisible: false});
-					}
-
-					return false;
-				});
-			});
-			$('.audio-preview').each(function(index, value) {
-				$(this).unbind('click');
-				$(this).on('click', function(e) {
-					e.preventDefault();
-					window.parent.jQuery('#audioPreview').modal('show');
-					window.parent.MediaManager.playAudio($(this).attr('href'), $(this).attr('data-cover') || '');
-
-					return false;
-				});
-			});
-			$('.video-preview').each(function(index, value) {
-				$(this).unbind('click');
-				$(this).on('click', function(e) {
-					e.preventDefault();
-					window.parent.jQuery('#videoPreview').modal('show');
-					window.parent.MediaManager.playVideo($(this).attr('href'), $(this).attr('data-cover') || '');
-
-					return false;
-				});
-			});
-		});
-	"
-);
 ?>
 <form target="_parent" action="index.php?option=com_media&amp;tmpl=index&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>" method="post" id="mediamanager-form" name="mediamanager-form">
 	<div class="muted breadcrumbs media-path">

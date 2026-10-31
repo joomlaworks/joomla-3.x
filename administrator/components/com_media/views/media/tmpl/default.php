@@ -17,12 +17,7 @@ $style = JFactory::getApplication()->getUserStateFromRequest('media.list.layout'
 // The files folder relative to the site (e.g. "images"), shown before a new folder's name: COM_MEDIA_BASE is the server's path to it
 $base = trim(str_replace('\\', '/', (string) JComponentHelper::getParams('com_media')->get('file_path', 'images')), '/');
 
-JFactory::getDocument()->addScriptDeclaration(
-    "
-		var basepath = " . json_encode($base) . ";
-		var viewstyle = " . json_encode((string) $style) . ";
-	"
-);
+JFactory::getDocument()->addScriptOptions('com_media.manager', array('basepath' => $base, 'viewstyle' => (string) $style));
 
 JHtml::_('behavior.keepalive');
 JHtml::_('bootstrap.framework');
