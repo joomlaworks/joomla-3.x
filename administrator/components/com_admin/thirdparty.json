@@ -1,22 +1,4 @@
 {
-    "CSS and JavaScript Frameworks": [
-        {
-            "name": "Bootstrap",
-            "version": "2.3.2",
-            "date": "2013.05.17",
-            "dateSource": "Bootstrap blog, \"Bootstrap 2.3.2 released\" (its GitHub release record is from July 2013)",
-            "license": "Apache-2.0",
-            "url": "https://getbootstrap.com/2.3.2/",
-            "path": "media/system/js/bootstrap.js",
-            "note": "JavaScript and CSS; the stylesheets' image paths changed by Joomla 3.x UTD",
-            "latest": "5.3.8",
-            "isLatest": false,
-            "checked": "2026.10.31",
-            "use": "shared",
-            "series": "",
-            "seriesLatest": ""
-        }
-    ],
     "Editors": [
         {
             "name": "CodeMirror",
@@ -32,6 +14,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "5.x",
+            "supported": "",
             "seriesLatest": "5.x: 5.65.21 (2026.02.07)"
         },
         {
@@ -48,6 +31,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -64,6 +48,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -80,6 +65,7 @@
             "checked": "2026.10.31",
             "use": "sub:EasyMDE",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -96,6 +82,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": "4.x: 4.9.11 (2020.07.13)"
         },
         {
@@ -112,6 +99,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": "4.x: 4.9.11 (2020.07.13)"
         },
         {
@@ -128,6 +116,7 @@
             "checked": "2026.10.31",
             "use": "sub:EasyMDE",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         }
     ],
@@ -146,6 +135,7 @@
             "checked": "",
             "use": "core",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -162,6 +152,7 @@
             "checked": "",
             "use": "core",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -178,6 +169,7 @@
             "checked": "",
             "use": "core",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -194,6 +186,7 @@
             "checked": "",
             "use": "core",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         }
     ],
@@ -212,6 +205,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -228,6 +222,7 @@
             "checked": "",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -244,24 +239,26 @@
             "checked": "",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         }
     ],
     "JavaScript Libraries": [
         {
-            "name": "diff-match-patch",
-            "version": "",
-            "date": "",
-            "dateSource": "",
+            "name": "Bootstrap",
+            "version": "2.3.2",
+            "date": "2013.05.17",
+            "dateSource": "Bootstrap blog, \"Bootstrap 2.3.2 released\" (its GitHub release record is from July 2013)",
             "license": "Apache-2.0",
-            "url": "https://github.com/google/diff-match-patch",
-            "path": "media/com_contenthistory/js/contenthistory.js",
-            "note": "Google Code release as stock Joomla 3 shipped it (older than the GitHub repository, so without a version); the comparison around it is Joomla's",
-            "latest": "",
+            "url": "https://getbootstrap.com/2.3.2/",
+            "path": "media/system/js/bootstrap.js",
+            "note": "JavaScript and CSS; the stylesheets' image paths changed by Joomla 3.x UTD",
+            "latest": "5.3.8",
             "isLatest": false,
-            "checked": "",
-            "use": "core",
+            "checked": "2026.10.31",
+            "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -278,6 +275,7 @@
             "checked": "2026.10.31",
             "use": "core",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -294,6 +292,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": "1.x: 1.12.4 (2016.05.20)"
         },
         {
@@ -310,6 +309,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": "1.x: 1.4.1 (2016.05.20)"
         },
         {
@@ -326,6 +326,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -342,6 +343,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -358,6 +360,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -374,22 +377,24 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
             "name": "QR Code Generator",
-            "version": "1.4.3",
-            "date": "",
-            "dateSource": "",
+            "version": "2.0.4",
+            "date": "2025.08.07",
+            "dateSource": "npm release 2.0.4",
             "license": "MIT",
             "url": "https://github.com/kazuhikoarase/qrcode-generator",
             "path": "plugins/twofactorauth/totp/js/qrcode.js",
-            "note": "The QR code of \"Two Factor Authentication - Google Authenticator\"; identical to npm release 1.4.3 (the file states no version)",
+            "note": "The QR code of \"Two Factor Authentication - Google Authenticator\"; dist/qrcode.js of npm release 2.0.4, unchanged (the file states no version)",
             "latest": "2.0.4",
-            "isLatest": false,
+            "isLatest": true,
             "checked": "2026.10.31",
             "use": "core",
             "series": "",
+            "supported": "",
             "seriesLatest": "1.x: 1.5.2 (2025.06.26)"
         }
     ],
@@ -408,6 +413,7 @@
             "checked": "2026.10.31",
             "use": "core",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -424,6 +430,7 @@
             "checked": "2026.10.31",
             "use": "core",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -440,6 +447,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -456,6 +464,7 @@
             "checked": "2026.10.31",
             "use": "core",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -472,6 +481,7 @@
             "checked": "2026.10.31",
             "use": "core",
             "series": "",
+            "supported": "",
             "seriesLatest": "1.x: 1.2.1 (2015.03.14)"
         },
         {
@@ -488,6 +498,7 @@
             "checked": "",
             "use": "core",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -504,6 +515,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -519,7 +531,8 @@
             "isLatest": false,
             "checked": "2026.10.31",
             "use": "core",
-            "series": "",
+            "series": "1.x",
+            "supported": "PHP 7.1",
             "seriesLatest": "1.x: 1.1.4 (2021.05.03)"
         },
         {
@@ -536,6 +549,7 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "",
+            "supported": "",
             "seriesLatest": ""
         },
         {
@@ -552,55 +566,42 @@
             "checked": "2026.10.31",
             "use": "shared",
             "series": "1.x",
+            "supported": "",
             "seriesLatest": "1.x: 1.24.2 (2026.08.18)"
         },
         {
-            "name": "Symfony Polyfill (ctype)",
-            "version": "1.19.0",
-            "date": "2020.10.23",
-            "dateSource": "Composer (installed.json)",
-            "license": "MIT",
-            "url": "https://github.com/symfony/polyfill-ctype",
-            "path": "libraries/vendor/symfony/polyfill-ctype",
-            "note": "",
-            "latest": "1.37.0",
-            "isLatest": false,
-            "checked": "2026.10.31",
-            "use": "shared",
-            "series": "",
-            "seriesLatest": ""
-        },
-        {
             "name": "Symfony Yaml",
-            "version": "2.8.52",
-            "date": "2018.11.11",
+            "version": "4.4.45",
+            "date": "2022.08.02",
             "dateSource": "Composer (installed.json)",
             "license": "MIT",
             "url": "https://symfony.com/components/Yaml",
             "path": "libraries/vendor/symfony/yaml",
-            "note": "Patched by Joomla 3.x UTD (PHP 8)",
+            "note": "Patched by Joomla 3.x UTD (PHP 8.4: parameters defaulting to null declared nullable)",
             "latest": "8.1.10",
             "isLatest": false,
             "checked": "2026.10.31",
             "use": "core",
-            "series": "",
-            "seriesLatest": "2.x: 2.8.52 (2018.11.11)"
+            "series": "4.x",
+            "supported": "PHP 7.1",
+            "seriesLatest": "4.x: 4.4.45 (2022.08.02)"
         },
         {
             "name": "TYPO3 PHAR Stream Wrapper",
-            "version": "2.2.2",
-            "date": "2021.09.20",
+            "version": "4.0.0",
+            "date": "2024.12.10",
             "dateSource": "Composer (installed.json)",
             "license": "MIT",
             "url": "https://github.com/TYPO3/phar-stream-wrapper",
             "path": "libraries/vendor/typo3/phar-stream-wrapper",
-            "note": "Patched by Joomla 3.x UTD (PHP 8.4, safe unserialize)",
+            "note": "",
             "latest": "4.0.0",
-            "isLatest": false,
+            "isLatest": true,
             "checked": "2026.10.31",
             "use": "core",
             "series": "",
-            "seriesLatest": "2.x: 2.2.2 (2021.09.20)"
+            "supported": "",
+            "seriesLatest": ""
         }
     ]
 }

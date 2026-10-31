@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+// Joomla 3.x UTD patch: parameters defaulting to null are declared nullable (?type), as PHP 8.4 requires
+
 namespace Symfony\Component\Yaml\Exception;
 
 /**
@@ -24,13 +26,12 @@ class ParseException extends RuntimeException
     private $rawMessage;
 
     /**
-     * @param string          $message    The error message
-     * @param int             $parsedLine The line where the error occurred
-     * @param string|null     $snippet    The snippet of code near the problem
-     * @param string|null     $parsedFile The file name where the error occurred
-     * @param \Exception|null $previous   The previous exception
+     * @param string      $message    The error message
+     * @param int         $parsedLine The line where the error occurred
+     * @param string|null $snippet    The snippet of code near the problem
+     * @param string|null $parsedFile The file name where the error occurred
      */
-    public function __construct($message, $parsedLine = -1, $snippet = null, $parsedFile = null, ?\Exception $previous = null)
+    public function __construct(string $message, int $parsedLine = -1, ?string $snippet = null, ?string $parsedFile = null, ?\Throwable $previous = null)
     {
         $this->parsedFile = $parsedFile;
         $this->parsedLine = $parsedLine;
@@ -121,12 +122,7 @@ class ParseException extends RuntimeException
         }
 
         if (null !== $this->parsedFile) {
-            if (\PHP_VERSION_ID >= 50400) {
-                $jsonOptions = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
-            } else {
-                $jsonOptions = 0;
-            }
-            $this->message .= sprintf(' in %s', json_encode($this->parsedFile, $jsonOptions));
+            $this->message .= sprintf(' in %s', json_encode($this->parsedFile, \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE));
         }
 
         if ($this->parsedLine >= 0) {

@@ -5622,6 +5622,7 @@ class JoomlaInstallerScript
             '/libraries/vendor/symfony/polyfill-util',
             // Unused by core and its libraries (3.18): PHP 7.3 functions for 7.1/7.2, the Framework's DI container and its PSR interfaces
             '/libraries/vendor/symfony/polyfill-php73',
+            '/libraries/vendor/symfony/polyfill-ctype',
             '/libraries/vendor/joomla/di',
             '/libraries/vendor/psr/container',
             '/libraries/phputf8',

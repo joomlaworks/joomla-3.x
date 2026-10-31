@@ -1251,6 +1251,13 @@ ENDDATA;
         $option->notice = null;
         $options[] = $option;
 
+        // The ctype functions: Joomla 3.x UTD 3.18 no longer bundles their polyfill
+        $option = new stdClass();
+        $option->label  = JText::_('INSTL_CTYPE_SUPPORT_AVAILABLE');
+        $option->state  = function_exists('ctype_digit');
+        $option->notice = null;
+        $options[] = $option;
+
         $updateInformation = $this->getUpdateInformation();
 
         // Check if configured database is compatible with Joomla 4

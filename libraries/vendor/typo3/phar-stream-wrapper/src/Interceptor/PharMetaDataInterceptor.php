@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace TYPO3\PharStreamWrapper\Interceptor;
 
 /*
@@ -27,12 +28,9 @@ class PharMetaDataInterceptor implements Assertable
      * Determines whether the according Phar archive contains
      * (potential insecure) serialized objects.
      *
-     * @param string $path
-     * @param string $command
-     * @return bool
      * @throws Exception
      */
-    public function assert($path, $command)
+    public function assert(string $path, string $command): bool
     {
         if ($this->baseFileDoesNotHaveMetaDataIssues($path)) {
             return true;
@@ -46,25 +44,21 @@ class PharMetaDataInterceptor implements Assertable
         );
     }
 
-    /**
-     * @param string $path
-     * @return bool
-     */
-    private function baseFileDoesNotHaveMetaDataIssues($path)
+    private function baseFileDoesNotHaveMetaDataIssues(string $path): bool
     {
         $invocation = Manager::instance()->resolve($path);
         if ($invocation === null) {
             return false;
         }
         // directly return in case invocation was checked before
-        if ($invocation->getVariable(__CLASS__) === true) {
+        if ($invocation->getVariable(self::class) === true) {
             return true;
         }
         // otherwise analyze meta-data
         try {
             $reader = new Reader($invocation->getBaseName());
             $reader->resolveContainer()->getManifest()->deserializeMetaData();
-            $invocation->setVariable(__CLASS__, true);
+            $invocation->setVariable(self::class, true);
         } catch (DeserializationException $exception) {
             return false;
         }

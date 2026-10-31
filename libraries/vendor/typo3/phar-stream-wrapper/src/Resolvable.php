@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace TYPO3\PharStreamWrapper;
 
 /*
@@ -15,10 +16,5 @@ use TYPO3\PharStreamWrapper\Resolver\PharInvocation;
 
 interface Resolvable
 {
-    /**
-     * @param string $path
-     * @param null|int $flags
-     * @return null|PharInvocation
-     */
-    public function resolve($path, $flags = null);
+    public function resolve(string $path, ?int $flags = null): ?PharInvocation;
 }

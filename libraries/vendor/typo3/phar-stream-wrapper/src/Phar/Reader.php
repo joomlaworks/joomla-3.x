@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace TYPO3\PharStreamWrapper\Phar;
 
 /*
@@ -28,10 +29,7 @@ class Reader
      */
     private $fileType;
 
-    /**
-     * @param string $fileName
-     */
-    public function __construct($fileName)
+    public function __construct(string $fileName)
     {
         if (strpos($fileName, '://') !== false) {
             throw new ReaderException(
@@ -44,10 +42,7 @@ class Reader
         $this->fileType = $this->determineFileType();
     }
 
-    /**
-     * @return Container
-     */
-    public function resolveContainer()
+    public function resolveContainer(): Container
     {
         $data = $this->extractData($this->resolveStream() . $this->fileName);
 
@@ -82,9 +77,8 @@ class Reader
 
     /**
      * @param string $fileName e.g. '/path/file.phar' or 'compress.zlib:///path/file.phar'
-     * @return array
      */
-    private function extractData($fileName)
+    private function extractData(string $fileName): array
     {
         $stubContent = null;
         $manifestContent = null;
@@ -134,36 +128,32 @@ class Reader
         }
         fclose($resource);
 
-        return array(
+        return [
             'stubContent' => $stubContent,
             'manifestContent' => $manifestContent,
             'manifestLength' => $manifestLength,
-        );
+        ];
     }
 
     /**
-     * Resolves stream in order to handle compressed Phar archives.
-     *
-     * @return string
+     * Resolves the stream to handle compressed Phar archives.
      */
-    private function resolveStream()
+    private function resolveStream(): string
     {
         if ($this->fileType === 'application/x-gzip' || $this->fileType === 'application/gzip') {
             return 'compress.zlib://';
-        } elseif ($this->fileType === 'application/x-bzip2') {
+        }
+        if ($this->fileType === 'application/x-bzip2') {
             return 'compress.bzip2://';
         }
         return '';
     }
 
-    /**
-     * @return string
-     */
-    private function determineFileType()
+    private function determineFileType(): string
     {
         if (class_exists('\\finfo')) {
             $fileInfo = new \finfo();
-            return $fileInfo->file($this->fileName, FILEINFO_MIME_TYPE);
+            return (string)$fileInfo->file($this->fileName, FILEINFO_MIME_TYPE);
         }
         return $this->determineFileTypeByHeader();
     }
@@ -171,10 +161,8 @@ class Reader
     /**
      * In case ext-fileinfo is not present only the relevant types
      * 'application/x-gzip' and 'application/x-bzip2' are resolved.
-     *
-     * @return string
      */
-    private function determineFileTypeByHeader()
+    private function determineFileTypeByHeader(): string
     {
         $resource = fopen($this->fileName, 'r');
         if (!is_resource($resource)) {
@@ -185,20 +173,16 @@ class Reader
         }
         $header = fgets($resource, 4);
         fclose($resource);
-        $mimeType = '';
         if (strpos($header, "\x42\x5a\x68") === 0) {
-            $mimeType = 'application/x-bzip2';
-        } elseif (strpos($header, "\x1f\x8b") === 0) {
-            $mimeType = 'application/x-gzip';
+            return 'application/x-bzip2';
         }
-        return $mimeType;
+        if (strpos($header, "\x1f\x8b") === 0) {
+            return 'application/x-gzip';
+        }
+        return '';
     }
 
-    /**
-     * @param string $content
-     * @return int|null
-     */
-    private function resolveManifestLength($content)
+    private function resolveManifestLength(string $content): ?int
     {
         if (strlen($content) < 4) {
             return null;
@@ -206,12 +190,7 @@ class Reader
         return static::resolveFourByteLittleEndian($content, 0);
     }
 
-    /**
-     * @param string $content
-     * @param int $start
-     * @return int
-     */
-    public static function resolveFourByteLittleEndian($content, $start)
+    public static function resolveFourByteLittleEndian(string $content, int $start): int
     {
         $payload = substr($content, $start, 4);
         if (!is_string($payload)) {
@@ -231,12 +210,7 @@ class Reader
         return $value[1];
     }
 
-    /**
-     * @param string $content
-     * @param int $start
-     * @return int
-     */
-    public static function resolveTwoByteBigEndian($content, $start)
+    public static function resolveTwoByteBigEndian(string $content, int $start): int
     {
         $payload = substr($content, $start, 2);
         if (!is_string($payload)) {

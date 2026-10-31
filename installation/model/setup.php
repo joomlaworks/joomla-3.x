@@ -310,6 +310,13 @@ class InstallationModelSetup extends JModelBase
         $option->notice = null;
         $options[] = $option;
 
+        // Check for the ctype functions (Joomla's code calls them; the polyfill was removed in 3.18).
+        $option = new stdClass();
+        $option->label  = JText::_('INSTL_CTYPE_SUPPORT_AVAILABLE');
+        $option->state  = function_exists('ctype_digit');
+        $option->notice = null;
+        $options[] = $option;
+
         // Check for configuration file writable.
         $writable = (is_writable(JPATH_CONFIGURATION . '/configuration.php')
             || (!file_exists(JPATH_CONFIGURATION . '/configuration.php') && is_writable(JPATH_ROOT)));

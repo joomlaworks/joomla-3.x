@@ -52,15 +52,11 @@ $groups = array(
             'check' => array('media/system/js/mootools-more.js', '/version:"([0-9.]+)"/')),
         array('name' => 'JalaliDatePicker', 'use' => 'core', 'upstream' => 'npm:@majidh1/jalalidatepicker', 'version' => '1.0.0', 'date' => '2026-07-07', 'dateSource' => 'npm release 1.0.0', 'license' => 'MIT', 'url' => 'https://github.com/majidh1/JalaliDatePicker', 'path' => 'media/system/js/jalalidatepicker.min.js',
             'note' => 'Date fields of languages using the Jalali calendar'),
-        array('name' => 'QR Code Generator', 'use' => 'core', 'upstream' => 'npm:qrcode-generator', 'version' => '1.4.3', 'license' => 'MIT', 'url' => 'https://github.com/kazuhikoarase/qrcode-generator', 'path' => 'plugins/twofactorauth/totp/js/qrcode.js',
-            'note' => 'The QR code of "Two Factor Authentication - Google Authenticator"; identical to npm release 1.4.3 (the file states no version)'),
+        array('name' => 'QR Code Generator', 'use' => 'core', 'upstream' => 'npm:qrcode-generator', 'version' => '2.0.4', 'date' => '2025-08-07', 'dateSource' => 'npm release 2.0.4', 'license' => 'MIT', 'url' => 'https://github.com/kazuhikoarase/qrcode-generator', 'path' => 'plugins/twofactorauth/totp/js/qrcode.js',
+            'note' => 'The QR code of "Two Factor Authentication - Google Authenticator"; dist/qrcode.js of npm release 2.0.4, unchanged (the file states no version)'),
         array('name' => 'PDF.js', 'use' => 'shared', 'upstream' => 'npm:pdfjs-dist', 'version' => '6.4.299', 'date' => '2026-10-03', 'dateSource' => 'npm release 6.4.299', 'license' => 'Apache-2.0', 'url' => 'https://mozilla.github.io/pdf.js/', 'path' => 'media/system/pdfjs',
             'note' => 'The PDF viewer (JHtml behavior.pdf: Content - PDF, the Media Manager, the editors): library, worker, fonts, character maps and image decoders, unchanged (.mjs files saved as .js)',
             'check' => array('media/system/pdfjs/pdf.min.js', '/apiVersion:"([0-9.]+)"/')),
-        array('name' => 'diff-match-patch', 'use' => 'core', 'version' => '', 'license' => 'Apache-2.0', 'url' => 'https://github.com/google/diff-match-patch', 'path' => 'media/com_contenthistory/js/contenthistory.js',
-            'note' => 'Google Code release as stock Joomla 3 shipped it (older than the GitHub repository, so without a version); the comparison around it is Joomla\'s'),
-    ),
-    'CSS and JavaScript Frameworks' => array(
         array('name' => 'Bootstrap', 'use' => 'shared', 'upstream' => 'npm:bootstrap', 'version' => '2.3.2', 'date' => '2013-05-17', 'dateSource' => 'Bootstrap blog, "Bootstrap 2.3.2 released" (its GitHub release record is from July 2013)', 'license' => 'Apache-2.0', 'url' => 'https://getbootstrap.com/2.3.2/', 'path' => 'media/system/js/bootstrap.js',
             'note' => 'JavaScript and CSS; the stylesheets\' image paths changed by Joomla 3.x UTD', 'check' => array('media/system/js/bootstrap.js', '/bootstrap-transition\.js v([0-9.]+)/')),
     ),
@@ -105,11 +101,9 @@ $groups = array(
         array('name' => 'lessphp', 'use' => 'shared', 'upstream' => 'packagist:leafo/lessphp', 'version' => '0.5.0', 'date' => '2014-11-24', 'dateSource' => 'Packagist and GitHub tag v0.5.0', 'license' => 'MIT', 'url' => 'https://github.com/leafo/lessphp', 'path' => 'libraries/vendor/leafo/lessphp',
             'note' => 'Patched by Joomla and by Joomla 3.x UTD (PHP 8)', 'check' => array('libraries/vendor/leafo/lessphp/lessc.inc.php', '/VERSION = "v([0-9.]+)"/')),
         array('name' => 'sodium_compat', 'use' => 'shared', 'upstream' => 'packagist:paragonie/sodium_compat', 'composer' => 'paragonie/sodium_compat', 'license' => 'ISC', 'url' => 'https://github.com/paragonie/sodium_compat', 'note' => 'Patched by Joomla 3.x UTD (PHP 8)', 'path' => 'libraries/vendor/paragonie/sodium_compat'),
-        array('name' => 'Symfony Polyfill (ctype)', 'use' => 'shared', 'upstream' => 'packagist:symfony/polyfill-ctype', 'composer' => 'symfony/polyfill-ctype', 'license' => 'MIT', 'url' => 'https://github.com/symfony/polyfill-ctype', 'path' => 'libraries/vendor/symfony/polyfill-ctype'),
-        array('name' => 'Symfony Yaml', 'use' => 'core', 'upstream' => 'packagist:symfony/yaml', 'composer' => 'symfony/yaml', 'license' => 'MIT', 'url' => 'https://symfony.com/components/Yaml', 'note' => 'Patched by Joomla 3.x UTD (PHP 8)', 'path' => 'libraries/vendor/symfony/yaml'),
-        array('name' => 'PSR Log', 'use' => 'core', 'upstream' => 'packagist:psr/log', 'composer' => 'psr/log', 'license' => 'MIT', 'url' => 'https://www.php-fig.org/psr/psr-3/', 'path' => 'libraries/vendor/psr/log'),
-        array('name' => 'TYPO3 PHAR Stream Wrapper', 'use' => 'core', 'upstream' => 'packagist:typo3/phar-stream-wrapper', 'composer' => 'typo3/phar-stream-wrapper', 'license' => 'MIT', 'url' => 'https://github.com/TYPO3/phar-stream-wrapper', 'path' => 'libraries/vendor/typo3/phar-stream-wrapper',
-            'note' => 'Patched by Joomla 3.x UTD (PHP 8.4, safe unserialize)'),
+        array('name' => 'Symfony Yaml', 'use' => 'core', 'upstream' => 'packagist:symfony/yaml', 'composer' => 'symfony/yaml', 'supported' => 'PHP 7.1', 'license' => 'MIT', 'url' => 'https://symfony.com/components/Yaml', 'note' => 'Patched by Joomla 3.x UTD (PHP 8.4: parameters defaulting to null declared nullable)', 'path' => 'libraries/vendor/symfony/yaml'),
+        array('name' => 'PSR Log', 'use' => 'core', 'upstream' => 'packagist:psr/log', 'composer' => 'psr/log', 'supported' => 'PHP 7.1', 'license' => 'MIT', 'url' => 'https://www.php-fig.org/psr/psr-3/', 'path' => 'libraries/vendor/psr/log'),
+        array('name' => 'TYPO3 PHAR Stream Wrapper', 'use' => 'core', 'upstream' => 'packagist:typo3/phar-stream-wrapper', 'composer' => 'typo3/phar-stream-wrapper', 'license' => 'MIT', 'url' => 'https://github.com/TYPO3/phar-stream-wrapper', 'path' => 'libraries/vendor/typo3/phar-stream-wrapper'),
         array('name' => 'IconCaptcha', 'use' => 'core', 'upstream' => 'packagist:fabianwennink/iconcaptcha', 'version' => '4.0.6', 'license' => 'MIT', 'url' => 'https://github.com/fabianwennink/IconCaptcha-PHP', 'path' => 'plugins/captcha/iconcaptcha/lib',
             'note' => 'With its widget (its css and js folders)', 'date' => '2025-06-16', 'dateSource' => 'CHANGELOG.md ("June 16, 2025")', 'check' => array('plugins/captcha/iconcaptcha/lib/CHANGELOG.md', '/^## ([0-9.]+) - /m')),
         array('name' => 'MySQL on SQLite (WordPress)', 'use' => 'core', 'upstream' => 'github:WordPress/sqlite-database-integration', 'version' => '3.1.1', 'date' => '2026-10-21', 'dateSource' => 'GitHub release v3.1.1', 'license' => 'GPL-2.0-or-later', 'url' => 'https://github.com/WordPress/sqlite-database-integration', 'path' => 'libraries/vendor/wordpress/mysql-on-sqlite',
@@ -334,7 +328,7 @@ foreach ($groups as $group => $entries) {
         if ($known && isset($latest[$upstream]['series']['version']) && $entry['version'] !== ''
             && version_compare(ltrim($entry['version'], 'v'), $latest[$upstream]['version'], '<')
             && version_compare(ltrim($entry['version'], 'v'), $latest[$upstream]['series']['version'], '>=')
-            && strtotime($latest[$upstream]['series']['date']) >= strtotime($latest[$upstream]['checked'] . ' -1 year')) {
+            && (!empty($entry['supported']) || strtotime($latest[$upstream]['series']['date']) >= strtotime($latest[$upstream]['checked'] . ' -1 year'))) {
             $series = $latest[$upstream]['series']['major'] . '.x';
         }
 
@@ -352,6 +346,7 @@ foreach ($groups as $group => $entries) {
             'checked'    => $known ? str_replace('-', '.', $latest[$upstream]['checked']) : '',
             'use'        => isset($entry['use']) ? $entry['use'] : 'core',
             'series'     => $series,
+            'supported'  => $series !== '' && !empty($entry['supported']) ? $entry['supported'] : '',
             'seriesLatest' => $known && isset($latest[$upstream]['series']['version']) && $latest[$upstream]['series']['version'] !== $latest[$upstream]['version']
                 ? $latest[$upstream]['series']['major'] . '.x: ' . $latest[$upstream]['series']['version'] . ' (' . str_replace('-', '.', $latest[$upstream]['series']['date']) . ')' : '',
         );

@@ -84,6 +84,7 @@ Summary of changes:
 - MooTools is gone from the core: one shared script, `global.js` (namespace `CMS`), replaces `core.js` (removed; `JHtml` requests for it load `global.js`) and does what MooTools did (modals, tooltips, tabs, sliders, tree, password meter) in plain JavaScript; old names keep working, and MooTools stays available for extensions that ask for it. Polyfills for old browsers are gone too
 
 **Improvements:**
+- Symfony Yaml 4.4, TYPO3 PHAR Stream Wrapper 4.0 and QR Code Generator 2.0.4; Symfony's ctype polyfill removed (the installer and Joomla Update check for PHP's ctype); the Third-party Software list marks outdated software instead of highlighting current software
 - Third-party Software list: Chosen off (only its stylesheet remains), the two-factor authentication's QR code generator on; CodeMirror 5.x shown as current
 - Wider form fields in the administrator (550 pixels instead of about 220, never wider than their column), lined up: inputs and lists have the same width
 - Prothero becomes the administrator's template when updating a site that uses Isis (once; Isis stays available)

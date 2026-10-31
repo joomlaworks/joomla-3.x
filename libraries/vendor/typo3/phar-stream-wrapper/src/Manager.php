@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace TYPO3\PharStreamWrapper;
 
 /*
@@ -11,9 +12,9 @@ namespace TYPO3\PharStreamWrapper;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\PharStreamWrapper\Resolver\PharInvocationResolver;
 use TYPO3\PharStreamWrapper\Resolver\PharInvocation;
 use TYPO3\PharStreamWrapper\Resolver\PharInvocationCollection;
-use TYPO3\PharStreamWrapper\Resolver\PharInvocationResolver;
 
 class Manager
 {
@@ -37,17 +38,11 @@ class Manager
      */
     private $collection;
 
-    /**
-     * @param Behavior $behaviour
-     * @param Resolvable $resolver
-     * @param Collectable $collection
-     * @return self
-     */
     public static function initialize(
         Behavior $behaviour,
         ?Resolvable $resolver = null,
         ?Collectable $collection = null
-    ) {
+    ): self {
         if (self::$instance === null) {
             self::$instance = new self($behaviour, $resolver, $collection);
             return self::$instance;
@@ -58,10 +53,7 @@ class Manager
         );
     }
 
-    /**
-     * @return self
-     */
-    public static function instance()
+    public static function instance(): self
     {
         if (self::$instance !== null) {
             return self::$instance;
@@ -72,10 +64,7 @@ class Manager
         );
     }
 
-    /**
-     * @return bool
-     */
-    public static function destroy()
+    public static function destroy(): bool
     {
         if (self::$instance === null) {
             return false;
@@ -84,51 +73,27 @@ class Manager
         return true;
     }
 
-    /**
-     * @param Behavior $behaviour
-     * @param Resolvable $resolver
-     * @param Collectable $collection
-     */
     private function __construct(
         Behavior $behaviour,
         ?Resolvable $resolver = null,
         ?Collectable $collection = null
     ) {
-        if ($collection === null) {
-            $collection = new PharInvocationCollection();
-        }
-        if ($resolver === null) {
-            $resolver = new PharInvocationResolver();
-        }
-        $this->collection = $collection;
-        $this->resolver = $resolver;
+        $this->collection = $collection ?? new PharInvocationCollection();
+        $this->resolver = $resolver ?? new PharInvocationResolver();
         $this->behavior = $behaviour;
     }
 
-    /**
-     * @param string $path
-     * @param string $command
-     * @return bool
-     */
-    public function assert($path, $command)
+    public function assert(string $path, string $command): bool
     {
         return $this->behavior->assert($path, $command);
     }
 
-    /**
-     * @param string $path
-     * @param null|int $flags
-     * @return null|PharInvocation
-     */
-    public function resolve($path, $flags = null)
+    public function resolve(string $path, ?int $flags = null): ?PharInvocation
     {
         return $this->resolver->resolve($path, $flags);
     }
 
-    /**
-     * @return Collectable
-     */
-    public function getCollection()
+    public function getCollection(): Collectable
     {
         return $this->collection;
     }

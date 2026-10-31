@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace TYPO3\PharStreamWrapper\Resolver;
 
 /*
@@ -15,20 +16,20 @@ use TYPO3\PharStreamWrapper\Collectable;
 
 class PharInvocationCollection implements Collectable
 {
-    const UNIQUE_INVOCATION = 1;
-    const UNIQUE_BASE_NAME = 2;
-    const DUPLICATE_ALIAS_WARNING = 32;
+    public const UNIQUE_INVOCATION = 1;
+    public const UNIQUE_BASE_NAME = 2;
+    public const DUPLICATE_ALIAS_WARNING = 32;
 
     /**
      * @var PharInvocation[]
      */
-    private $invocations = array();
+    private $invocations = [];
 
     /**
      * @param PharInvocation $invocation
      * @return bool
      */
-    public function has(PharInvocation $invocation)
+    public function has(PharInvocation $invocation): bool
     {
         return in_array($invocation, $this->invocations, true);
     }
@@ -38,7 +39,7 @@ class PharInvocationCollection implements Collectable
      * @param null|int $flags
      * @return bool
      */
-    public function collect(PharInvocation $invocation, $flags = null)
+    public function collect(PharInvocation $invocation, ?int $flags = null): bool
     {
         if ($flags === null) {
             $flags = static::UNIQUE_INVOCATION | static::DUPLICATE_ALIAS_WARNING;
@@ -58,12 +59,7 @@ class PharInvocationCollection implements Collectable
         return true;
     }
 
-    /**
-     * @param callable $callback
-     * @param bool $reverse
-     * @return null|PharInvocation
-     */
-    public function findByCallback($callback, $reverse = false)
+    public function findByCallback(callable $callback, bool $reverse = false): ?PharInvocation
     {
         foreach ($this->getInvocations($reverse) as $invocation) {
             if (call_user_func($callback, $invocation) === true) {
@@ -81,16 +77,16 @@ class PharInvocationCollection implements Collectable
      * @param int $flags
      * @return bool
      */
-    private function assertUniqueBaseName(PharInvocation $invocation, $flags)
+    private function assertUniqueBaseName(PharInvocation $invocation, int $flags): bool
     {
         if (!($flags & static::UNIQUE_BASE_NAME)) {
             return true;
         }
         return $this->findByCallback(
-                function (PharInvocation $candidate) use ($invocation) {
-                    return $candidate->getBaseName() === $invocation->getBaseName();
-                }
-            ) === null;
+            function (PharInvocation $candidate) use ($invocation) {
+                return $candidate->getBaseName() === $invocation->getBaseName();
+            }
+        ) === null;
     }
 
     /**
@@ -101,25 +97,24 @@ class PharInvocationCollection implements Collectable
      * @param int $flags
      * @return bool
      */
-    private function assertUniqueInvocation(PharInvocation $invocation, $flags)
+    private function assertUniqueInvocation(PharInvocation $invocation, int $flags): bool
     {
         if (!($flags & static::UNIQUE_INVOCATION)) {
             return true;
         }
         return $this->findByCallback(
-                function (PharInvocation $candidate) use ($invocation) {
-                    return $candidate->equals($invocation);
-                }
-            ) === null;
+            function (PharInvocation $candidate) use ($invocation) {
+                return $candidate->equals($invocation);
+            }
+        ) === null;
     }
 
     /**
      * Triggers warning for invocations with same alias and same confirmation state.
      *
-     * @param PharInvocation $invocation
      * @see \TYPO3\PharStreamWrapper\PharStreamWrapper::collectInvocation()
      */
-    private function triggerDuplicateAliasWarning(PharInvocation $invocation)
+    private function triggerDuplicateAliasWarning(PharInvocation $invocation): void
     {
         $sameAliasInvocation = $this->findByCallback(
             function (PharInvocation $candidate) use ($invocation) {
@@ -146,7 +141,7 @@ class PharInvocationCollection implements Collectable
      * @param bool $reverse
      * @return PharInvocation[]
      */
-    private function getInvocations($reverse = false)
+    private function getInvocations(bool $reverse = false): array
     {
         if ($reverse) {
             return array_reverse($this->invocations);

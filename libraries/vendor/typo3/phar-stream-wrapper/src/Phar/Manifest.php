@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace TYPO3\PharStreamWrapper\Phar;
 
 /*
@@ -11,15 +12,12 @@ namespace TYPO3\PharStreamWrapper\Phar;
  * The TYPO3 project - inspiring people to share!
  */
 
-
 class Manifest
 {
     /**
-     * @param string $content
-     * @return self
      * @see http://php.net/manual/en/phar.fileformat.phar.php
      */
-    public static function fromContent($content)
+    public static function fromContent(string $content): self
     {
         $target = new static();
         $target->manifestLength = Reader::resolveFourByteLittleEndian($content, 0);
@@ -31,11 +29,11 @@ class Manifest
         $target->metaData = substr($content, 22 + $target->aliasLength, $target->metaDataLength);
 
         $apiVersionNibbles = Reader::resolveTwoByteBigEndian($content, 8);
-        $target->apiVersion = implode('.', array(
+        $target->apiVersion = implode('.', [
             ($apiVersionNibbles & 0xf000) >> 12,
             ($apiVersionNibbles & 0x0f00) >> 8,
             ($apiVersionNibbles & 0x00f0) >> 4,
-        ));
+        ]);
 
         return $target;
     }
@@ -87,66 +85,42 @@ class Manifest
     {
     }
 
-    /**
-     * @return int
-     */
-    public function getManifestLength()
+    public function getManifestLength(): int
     {
         return $this->manifestLength;
     }
 
-    /**
-     * @return int
-     */
-    public function getAmountOfFiles()
+    public function getAmountOfFiles(): int
     {
         return $this->amountOfFiles;
     }
 
-    /**
-     * @return string
-     */
-    public function getApiVersion()
+    public function getApiVersion(): string
     {
         return $this->apiVersion;
     }
 
-    /**
-     * @return int
-     */
-    public function getFlags()
+    public function getFlags(): int
     {
         return $this->flags;
     }
 
-    /**
-     * @return int
-     */
-    public function getAliasLength()
+    public function getAliasLength(): int
     {
         return $this->aliasLength;
     }
 
-    /**
-     * @return string
-     */
-    public function getAlias()
+    public function getAlias(): string
     {
         return $this->alias;
     }
 
-    /**
-     * @return int
-     */
-    public function getMetaDataLength()
+    public function getMetaDataLength(): int
     {
         return $this->metaDataLength;
     }
 
-    /**
-     * @return string
-     */
-    public function getMetaData()
+    public function getMetaData(): string
     {
         return $this->metaData;
     }
@@ -160,8 +134,7 @@ class Manifest
             return null;
         }
 
-        // Joomla 3.x UTD patch: PHP's own unserialize() (its allowed_classes option exists since PHP 7.0) instead of the polyfill
-        $result = unserialize($this->metaData, array('allowed_classes' => false));
+        $result = unserialize($this->metaData, ['allowed_classes' => false]);
 
         $serialized = json_encode($result);
         if (strpos($serialized, '__PHP_Incomplete_Class_Name') !== false) {

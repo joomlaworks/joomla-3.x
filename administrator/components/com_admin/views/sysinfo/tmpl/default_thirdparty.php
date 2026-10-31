@@ -10,6 +10,9 @@
 defined('_JEXEC') or die;
 
 /** @var  AdminViewSysinfo  $this */
+
+// Software with newer releases: a red label (Prothero's danger colours, else Isis' error colour)
+JFactory::getDocument()->addStyleDeclaration('.thirdparty-outdated {display:inline-block;margin-left:6px;padding:0 8px;border:1px solid var(--c-danger-border, currentColor);border-radius:999px;background:var(--c-danger-bg, transparent);color:var(--c-danger-fg, var(--c-error, #b94a48));font-size:0.75em;font-weight:600;line-height:1.6;vertical-align:middle;white-space:nowrap;}');
 ?>
 <fieldset class="adminform">
 	<legend><?php echo JText::_('COM_ADMIN_THIRD_PARTY_SOFTWARE'); ?></legend>
@@ -30,19 +33,22 @@ defined('_JEXEC') or die;
 			<tbody>
 				<?php foreach ($entries as $entry) : ?>
 					<?php $current = !empty($entry['isLatest']) || !empty($entry['series']); ?>
-					<tr<?php echo $current ? ' class="success"' : ''; ?>>
+					<?php $outdated = !$current && !empty($entry['latest']); ?>
+					<tr>
 						<td>
-							<a href="<?php echo $this->escape($entry['url']); ?>" target="_blank" rel="noopener noreferrer"><?php echo $this->escape($entry['name']); ?></a>
+							<a href="<?php echo $this->escape($entry['url']); ?>" target="_blank" rel="noopener noreferrer"><?php echo $this->escape($entry['name']); ?></a><?php echo $outdated ? '<span class="thirdparty-outdated">' . JText::_('COM_ADMIN_THIRD_PARTY_OUTDATED') . '</span>' : ''; ?>
 							<?php if (!empty($entry['note'])) : ?>
 								<br /><small class="muted"><?php echo $this->escape($entry['note']); ?></small>
 							<?php endif; ?>
 						</td>
 						<?php
-                        // Versions in bold, green when current (the latest release, or the latest of a series still maintained)
-				    $version = '<strong' . ($current ? ' class="text-success"' : '') . '>' . ($entry['version'] !== '' ? $this->escape($entry['version']) : '&#8212;') . '</strong>';
+                        // Versions in bold; the tooltip says how they compare with the latest release
+                    $version = '<strong>' . ($entry['version'] !== '' ? $this->escape($entry['version']) : '&#8212;') . '</strong>';
 				    $title   = '';
 
-				    if (!empty($entry['series'])) {
+				    if (!empty($entry['supported'])) {
+				        $title = JText::sprintf('COM_ADMIN_THIRD_PARTY_SUPPORTED', $entry['supported'], $entry['latest'], $entry['checked']);
+				    } elseif (!empty($entry['series'])) {
 				        $title = JText::sprintf('COM_ADMIN_THIRD_PARTY_SERIES', $entry['series'], $entry['latest'], $entry['checked']);
 				    } elseif (empty($entry['isLatest']) && !empty($entry['latest'])) {
 				        $title = JText::sprintf('COM_ADMIN_THIRD_PARTY_LATEST', $entry['latest'], $entry['checked'])
