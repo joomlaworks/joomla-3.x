@@ -142,6 +142,7 @@ abstract class HTMLHelper
         'system/flags' => array('gif' => 'webp', 'webp' => 'gif'), 'system/images/flags' => array('gif' => 'webp', 'webp' => 'gif'),
         'mod_languages' => array('gif' => 'webp', 'webp' => 'gif'), 'mod_languages/images' => array('gif' => 'webp', 'webp' => 'gif'),
         'admin' => array('png' => 'svg'), 'system/images/admin' => array('png' => 'svg'),
+        'system' => array('png' => 'svg'), 'system/images' => array('png' => 'svg'),
     );
 
     /**

@@ -1776,8 +1776,11 @@
 
 	/* --- Tree (behavior.tree, what MooTree was) --- */
 
-	// The icons' order in the theme's sprite (media/system/images/mootree.gif), 18px each
+	// The icons: one file each in a theme that's a folder (media/system/images/tree/<name>.svg), else their order in the theme's
+	// sprite (MooTree's), 18px each
 	const TREE_ICONS = ['I', 'L', 'Lminus', 'Lplus', 'Rminus', 'Rplus', 'T', 'Tminus', 'Tplus', '_closed', '_doc', '_open', 'minus', 'plus'];
+	const TREE_THEME = document.currentScript && /\/js\/global(\.min)?\.js/.test(document.currentScript.src)
+		? document.currentScript.src.replace(/\/js\/global(\.min)?\.js.*$/, '/images/tree/') : '/media/system/images/tree/';
 	const noop = () => {};
 
 	class TreeNode {
@@ -1960,7 +1963,9 @@
 					index = parts.length === 2 ? parseInt(parts[1], 10) - 1 : 0;
 				}
 
-				style = ' style="background-image:url(' + encodeURI(image) + ');background-position:-' + (index * 18) + 'px 0"';
+				style = image === this.control.theme && image.slice(-1) === '/'
+					? ' style="background:url(' + encodeURI(image + name + '.svg') + ') no-repeat center"'
+					: ' style="background-image:url(' + encodeURI(image) + ');background-position:-' + (index * 18) + 'px 0"';
 			}
 
 			return '<div class="mooTree_img"' + style + '></div>';
@@ -2047,7 +2052,8 @@
 
 	class Tree {
 		/**
-		 * @param  {Object}  config   div (where it goes), mode ('folders' or 'files'), grid, theme (the sprite), loader,
+		 * @param  {Object}  config   div (where it goes), mode ('folders' or 'files'), grid, theme (a folder of the icons, ending
+		 *                            in "/", or a sprite), loader,
 		 *                            onExpand(node, state), onSelect(node, state), onClick(node)
 		 * @param  {Object}  options  The root node (text, open, icon, data...)
 		 */
@@ -2056,7 +2062,7 @@
 			options.div = config.div;
 			this.index = {};
 			this.enabled = true;
-			this.theme = config.theme || 'mootree.gif';
+			this.theme = config.theme || TREE_THEME;
 			this.loader = config.loader || { icon: 'mootree_loader.gif', text: 'Loading...', color: '#a0a0a0' };
 			this.selected = null;
 			this.mode = config.mode;

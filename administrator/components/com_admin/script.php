@@ -5252,6 +5252,18 @@ class JoomlaInstallerScript
             '/media/system/images/modal/bg_se.png',
             '/media/system/images/modal/bg_sw.png',
             '/media/system/images/modal/bg_w.png',
+            // Raster images replaced by SVGs or unused (3.18)
+            '/media/system/images/alpha.png',
+            '/media/system/images/bg-overlay.png',
+            '/media/system/images/blank.png',
+            '/media/system/images/chosen-sprite.png',
+            '/media/system/images/joomla.png',
+            '/media/system/images/mootree.gif',
+            '/templates/protostar/images/logo.png',
+            '/templates/protostar/images/system/rating_star.png',
+            '/templates/protostar/images/system/rating_star_blank.png',
+            '/templates/protostar/img/glyphicons-halflings.png',
+            '/templates/protostar/img/glyphicons-halflings-white.png',
             // The administrator templates' page set-up moved to includes/helper.php; the Control Panel uses index.php (3.18)
             '/administrator/templates/isis/cpanel.php',
             '/administrator/templates/isis/helper.php',
@@ -5650,6 +5662,8 @@ class JoomlaInstallerScript
             '/administrator/templates/prothero/img',
             '/administrator/templates/prothero/images/admin',
             '/templates/protostar/less',
+            '/templates/protostar/img',
+            '/templates/protostar/images/system',
         );
 
         jimport('joomla.filesystem.file');

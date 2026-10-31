@@ -72,10 +72,49 @@ COLOURED = {
     'media/system/images/admin/uparrow.svg': ('arrow-up-circle-fill', '#2a6fb5'),
     'media/system/images/admin/uparrow0.svg': ('arrow-up-circle-fill', '#2a6fb5'),
     'media/system/images/admin/uparrow-1.svg': ('caret-up-fill', '#c9302c'),
+    # The tree's folder and document icons (behavior.tree, CMS.tree in global.js; MooTree's sprite until 3.18)
+    'media/system/images/tree/_closed.svg': ('folder-fill', '#e0b04e'),
+    'media/system/images/tree/_open.svg': ('folder2-open', '#d4a03c'),
+    'media/system/images/tree/_doc.svg': ('file-earmark-text', '#8a8a8a'),
+    # Chosen's stylesheet (media/system/css/chosen.css; its sprite until 3.18)
+    'media/system/images/chosen/caret-down.svg': ('caret-down-fill', '#888888'),
+    'media/system/images/chosen/caret-up.svg': ('caret-up-fill', '#888888'),
+    'media/system/images/chosen/x.svg': ('x-lg', '#888888'),
+    'media/system/images/chosen/x-dark.svg': ('x-lg', '#444444'),
+    'media/system/images/chosen/search.svg': ('search', '#888888'),
 }
 
-# Drawn here, not Bootstrap Icons: the legacy set's empty image and menu divider
+# The tree's lines and expand/collapse boxes, 18 pixels square as MooTree's sprite drew them: a vertical line through the
+# middle (up: above the box, down: below it), a line to the right, a box with a minus or a plus
+TREE_LINE = '#c8c8c8'
+
+
+def tree_icon(up=False, down=False, right=False, box=None):
+    parts = []
+    top, bottom = (4 if box else 9), (14 if box else 9)
+    if up:
+        parts.append('<path fill="%s" d="M8 0h1v%dH8z"/>' % (TREE_LINE, top))
+    if down:
+        parts.append('<path fill="%s" d="M8 %dh1v%dH8z"/>' % (TREE_LINE, bottom, 18 - bottom))
+    if right:
+        parts.append('<path fill="%s" d="M%d 8h%dv1H%dz"/>' % (TREE_LINE, 13 if box else 9, 5 if box else 9, 13 if box else 9))
+    if box:
+        parts.append('<rect x="4" y="4" width="9" height="9" rx="1.5" fill="#9a9a9a"/>')
+        parts.append('<path fill="#ffffff" d="M6 8h5v1H6z%s"/>' % ('M8 6h1v5H8z' if box == 'plus' else ''))
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">%s</svg>' % ''.join(parts)
+
+
+TREE = {
+    'I': tree_icon(up=True, down=True), 'L': tree_icon(up=True, right=True), 'T': tree_icon(up=True, down=True, right=True),
+    'Lminus': tree_icon(up=True, right=True, box='minus'), 'Lplus': tree_icon(up=True, right=True, box='plus'),
+    'Rminus': tree_icon(right=True, box='minus'), 'Rplus': tree_icon(right=True, box='plus'),
+    'Tminus': tree_icon(up=True, down=True, right=True, box='minus'), 'Tplus': tree_icon(up=True, down=True, right=True, box='plus'),
+    'minus': tree_icon(box='minus'), 'plus': tree_icon(box='plus'),
+}
+
+# Drawn here, not Bootstrap Icons: the legacy set's empty image and menu divider, the shared empty image, the tree's lines
 DRAWN = {
+    'media/system/images/blank.svg': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"/>',
     'media/system/images/admin/blank.svg': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"/>',
     'media/system/images/admin/menu_divider.svg': '<svg xmlns="http://www.w3.org/2000/svg" width="2" height="28" viewBox="0 0 2 28"><path fill="#cccccc" d="M0 0h1v28H0z"/><path fill="#ffffff" d="M1 0h1v28H1z"/></svg>',
 }
@@ -101,7 +140,10 @@ for target, (name, colour) in COLOURED.items():
     written.append(root + '/' + target)
     print(target, name)
 
+DRAWN.update({'media/system/images/tree/%s.svg' % name: svg for name, svg in TREE.items()})
+
 for target, svg in DRAWN.items():
+    os.makedirs(os.path.dirname(root + '/' + target), exist_ok=True)
     open(root + '/' + target, 'w').write(svg + '\n')
     written.append(root + '/' + target)
 

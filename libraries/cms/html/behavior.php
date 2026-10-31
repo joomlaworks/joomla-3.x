@@ -494,7 +494,7 @@ abstract class JHtmlBehavior
         $opt['div']   = array_key_exists('div', $params) ? $params['div'] : $id . '_tree';
         $opt['mode']  = array_key_exists('mode', $params) ? $params['mode'] : 'folders';
         $opt['grid']  = array_key_exists('grid', $params) ? '\\' . $params['grid'] : true;
-        $opt['theme'] = array_key_exists('theme', $params) ? $params['theme'] : JHtml::_('image', 'system/mootree.gif', '', array(), true, true);
+        $opt['theme'] = array_key_exists('theme', $params) ? $params['theme'] : JUri::root(true) . '/media/system/images/tree/';
 
         // Event handlers
         $opt['onExpand'] = array_key_exists('onExpand', $params) ? '\\' . $params['onExpand'] : null;
