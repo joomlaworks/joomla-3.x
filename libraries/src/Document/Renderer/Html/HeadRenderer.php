@@ -71,6 +71,10 @@ class HeadRenderer extends DocumentRenderer
         $app = \JFactory::getApplication();
         $app->triggerEvent('onBeforeCompileHead');
 
+        if ($document instanceof HtmlDocument) {
+            $document->loadJqueryStandIns();
+        }
+
         // Get line endings
         $lnEnd        = $document->_getLineEnd();
         $tab          = $document->_getTab();

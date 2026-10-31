@@ -86,7 +86,7 @@ class LanguagesModelOverride extends JModelAdmin
     public function getItem($pk = null)
     {
         $input    = JFactory::getApplication()->input;
-        $pk       = !empty($pk) ? $pk : $input->get('id');
+        $pk       = (string) (!empty($pk) ? $pk : $input->get('id'));
         $fileName = constant('JPATH_' . strtoupper($this->getState('filter.client')))
             . '/language/overrides/' . $this->getState('filter.language', 'en-GB') . '.override.ini';
         $strings  = JLanguageHelper::parseIniFile($fileName);
@@ -103,7 +103,7 @@ class LanguagesModelOverride extends JModelAdmin
         $oppositeFileName = constant('JPATH_' . strtoupper($this->getState('filter.client') == 'site' ? 'administrator' : 'site'))
             . '/language/overrides/' . $this->getState('filter.language', 'en-GB') . '.override.ini';
         $oppositeStrings  = JLanguageHelper::parseIniFile($oppositeFileName);
-        $result->both = isset($oppositeStrings[$pk]) && ($oppositeStrings[$pk] == $strings[$pk]);
+        $result->both = isset($oppositeStrings[$pk], $strings[$pk]) && ($oppositeStrings[$pk] == $strings[$pk]);
 
         return $result;
     }

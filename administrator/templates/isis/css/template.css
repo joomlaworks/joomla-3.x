@@ -339,6 +339,16 @@ input[type="color"],
 input,
 textarea,
 .uneditable-input {width:536px;max-width:calc(100% - 14px);}
+/* Not for checkboxes and buttons: Bootstrap sets their width to auto, and the column's limit made list checkboxes 0px wide */
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"],
+input[type="image"],
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+input[type="range"],
+input[type="color"] {max-width:none;}
 textarea {height:auto;}
 textarea,
 input[type="text"],
@@ -567,6 +577,27 @@ select:focus:invalid:focus {border-color:#e9322d;box-shadow:0 0 6px #f8b9b7;}
 .help-inline {display:inline-block;vertical-align:middle;padding-left:5px;}
 .input-append,
 .input-prepend {display:inline-block;margin-bottom:9px;vertical-align:middle;font-size:0;white-space:nowrap;}
+/* A field with buttons stays in its column: the field shrinks, the buttons keep their size (an inline-block box grew with the field's width) */
+.input-append,
+.input-prepend {display:inline-flex;max-width:100%;}
+.input-append > input,
+.input-append > select,
+.input-append > textarea,
+.input-append > .uneditable-input,
+.input-prepend > input,
+.input-prepend > select,
+.input-prepend > textarea,
+.input-prepend > .uneditable-input {flex:1 1 auto;min-width:4em;}
+.input-append > .add-on,
+.input-append > .btn,
+.input-append > .btn-group,
+.input-prepend > .add-on,
+.input-prepend > .btn,
+.input-prepend > .btn-group {flex:none;}
+/* Lists in button groups (Install from Web's ordering) as wide as their options */
+.btn-group > select {width:auto;}
+/* Searchable lists copy their select's width: never wider than their column */
+.chzn-container {max-width:100%;}
 .input-append input,
 .input-append select,
 .input-append .uneditable-input,
@@ -653,7 +684,7 @@ input.search-query {padding-right:14px;padding-left:14px;margin-bottom:0;border-
 .form-horizontal .help-inline,
 .form-horizontal .uneditable-input,
 .form-horizontal .input-prepend,
-.form-horizontal .input-append {display:inline-block;margin-bottom:0;vertical-align:middle;}
+.form-horizontal .input-append {display:inline-flex;margin-bottom:0;vertical-align:middle;}
 .form-search .hide,
 .form-inline .hide,
 .form-horizontal .hide {display:none;}
@@ -2210,6 +2241,7 @@ div.modal.jviewport-width100 {width:100vw;margin-left:-50vw;}
 .icon-folder-remove:before {content:"\f3d6";}
 .icon-file:before {content:"\f392";}
 .icon-file-2:before {content:"\f38b";}
+.icon-pdf:before {content:"\f63d";}
 .icon-file-add:before,
 .icon-file-plus:before {content:"\f37d";}
 .icon-file-minus:before {content:"\f375";}

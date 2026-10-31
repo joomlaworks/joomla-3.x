@@ -1192,6 +1192,35 @@ class HtmlDocument extends Document
     }
 
     /**
+     * On a page with jQuery but without Bootstrap's script, global.js too: its jQuery stand-ins for Bootstrap's plugins
+     * (.tooltip(), .popover(), .collapse(), .modal(), .dropdown(), .tab(), .alert()). Extensions written for Joomla 3 call
+     * them after asking for JHtml bootstrap.tooltip and the like, which loaded Bootstrap's script there; on the site those
+     * helpers now load only frontend.js. Pages without jQuery (the site templates' own) stay as they are.
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    public function loadJqueryStandIns()
+    {
+        $jquery = false;
+
+        foreach (array_keys($this->_scripts) as $src) {
+            $path = (string) parse_url((string) $src, PHP_URL_PATH);
+
+            if (preg_match('#/bootstrap(?:\.min)?\.js$#', $path)) {
+                return;
+            }
+
+            $jquery = $jquery || preg_match('#/jquery(?:\.min)?\.js$#', $path);
+        }
+
+        if ($jquery) {
+            HTMLHelper::_('behavior.cms');
+        }
+    }
+
+    /**
      * Whether something on the page might run code while it loads, using the shared script: a script declaration, a custom
      * tag with a script, or an inline script in the HTML of the component or a module (data scripts, JSON-LD for example,
      * don't count)

@@ -5626,6 +5626,16 @@
 	}
 
 	// On phones the browser's own list, as Chosen did
+	// A list an extension made searchable with its own script (its copy of Chosen, select2): two widgets on one list (and on
+	// Joomla 3 core never added one to every list, so extensions did their own)
+	const chosenElsewhere = (select) => {
+		const data = window.jQuery ? window.jQuery(select).data('chosen') : null;
+		const next = select.nextElementSibling;
+
+		return Boolean((data && !chosens.has(select)) || select.classList.contains('select2-hidden-accessible')
+			|| (next && next.classList && (next.classList.contains('chosen-container') || next.classList.contains('select2'))));
+	};
+
 	const chosenSupported = () => !/iP(od|hone)|IEMobile|Windows Phone|BlackBerry|BB10|Android.*Mobile/i.test(window.navigator.userAgent);
 
 	CMS.chosen = {
@@ -5653,7 +5663,8 @@
 			return elements.filter((select) => select.nodeName === 'SELECT').map((select) => {
 				const flag = select.getAttribute('data-chosen');
 
-				if (chosens.has(select) || (flag && flag !== 'false' && flag !== '0') || select.getAttribute('data-searchable') === 'false') {
+				if (chosens.has(select) || (flag && flag !== 'false' && flag !== '0') || select.getAttribute('data-searchable') === 'false'
+					|| chosenElsewhere(select)) {
 					return chosens.get(select);
 				}
 
@@ -7039,8 +7050,10 @@
 				CMS.bootstrap.collapse.mark(element, false);
 				element.style[dimension] = element[dimension === 'width' ? 'scrollWidth' : 'scrollHeight'] + 'px';
 
+				// Open at its natural size, set on the element as Bootstrap's reset() did: templates' rules giving a collapsed
+				// element no height (Isis' menu and toolbar on phones, .nav-collapse.collapse) would otherwise close it again
 				afterTransition(element, () => {
-					element.style[dimension] = '';
+					element.style[dimension] = 'auto';
 					state.transitioning = false;
 					bsEmit(element, 'collapse', 'shown');
 				});

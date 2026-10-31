@@ -532,6 +532,16 @@ input[type="color"],
 input,
 textarea,
 .uneditable-input {width:528px;max-width:calc(100% - 22px);}
+/* Not for checkboxes and buttons: Bootstrap sets their width to auto, and the column's limit made list checkboxes 0px wide */
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"],
+input[type="image"],
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+input[type="range"],
+input[type="color"] {max-width:none;}
 textarea {height:auto;}
 textarea,
 input[type="text"],
@@ -760,6 +770,27 @@ select:focus:invalid:focus {border-color:var(--c-danger);box-shadow:0 0 0 3px va
 .help-inline {display:inline-block;vertical-align:middle;padding-left:5px;}
 .input-append,
 .input-prepend {display:inline-block;margin-bottom:9px;vertical-align:middle;font-size:0;white-space:nowrap;}
+/* A field with buttons stays in its column: the field shrinks, the buttons keep their size (an inline-block box grew with the field's width) */
+.input-append,
+.input-prepend {display:inline-flex;max-width:100%;}
+.input-append > input,
+.input-append > select,
+.input-append > textarea,
+.input-append > .uneditable-input,
+.input-prepend > input,
+.input-prepend > select,
+.input-prepend > textarea,
+.input-prepend > .uneditable-input {flex:1 1 auto;min-width:4em;}
+.input-append > .add-on,
+.input-append > .btn,
+.input-append > .btn-group,
+.input-prepend > .add-on,
+.input-prepend > .btn,
+.input-prepend > .btn-group {flex:none;}
+/* Lists in button groups (Install from Web's ordering) as wide as their options */
+.btn-group > select {width:auto;}
+/* Searchable lists copy their select's width: never wider than their column */
+.chzn-container {max-width:100%;}
 .input-append input,
 .input-append select,
 .input-append .uneditable-input,
@@ -846,7 +877,7 @@ input.search-query {padding-right:12px;padding-left:12px;margin-bottom:0;border-
 .form-horizontal .help-inline,
 .form-horizontal .uneditable-input,
 .form-horizontal .input-prepend,
-.form-horizontal .input-append {display:inline-block;margin-bottom:0;vertical-align:middle;}
+.form-horizontal .input-append {display:inline-flex;margin-bottom:0;vertical-align:middle;}
 .form-search .hide,
 .form-inline .hide,
 .form-horizontal .hide {display:none;}
@@ -2423,6 +2454,7 @@ div.modal.jviewport-width100 {width:100vw;margin-left:-50vw;}
 .icon-folder-remove:before {content:"\f3d6";}
 .icon-file:before {content:"\f392";}
 .icon-file-2:before {content:"\f38b";}
+.icon-pdf:before {content:"\f63d";}
 .icon-file-add:before,
 .icon-file-plus:before {content:"\f37d";}
 .icon-file-minus:before {content:"\f375";}
@@ -2824,12 +2856,6 @@ input[type="file"]::file-selector-button:hover {background:var(--c-muted);}
 /* Edit forms: the settings column (status, category, access...) as a grey panel */
 .form-validate .span3 > fieldset.form-vertical {box-sizing:border-box;padding:16px;background:var(--c-subtle);border:1px solid var(--c-border);border-radius:var(--radius-lg);}
 .form-validate .span3 > fieldset.form-vertical .control-group:last-child {margin-bottom:0;}
-/* The media field: the path shrinks so the buttons stay in the column */
-.field-media-wrapper > .input-append,
-.field-media-wrapper > .input-prepend {display:inline-flex;max-width:100%;}
-.field-media-wrapper input.field-media-input {flex:1 1 auto;min-width:4em;}
-.field-media-wrapper > div > .add-on,
-.field-media-wrapper > div > .btn {flex:none;}
 
 /* --- Prothero: Header --- */
 .header {background-color:var(--c-bg);border-bottom:1px solid var(--c-border);padding:14px 20px;}

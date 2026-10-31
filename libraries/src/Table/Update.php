@@ -44,7 +44,7 @@ class Update extends Table
     public function check()
     {
         // Check for valid name
-        if (trim($this->name) == '' || trim($this->element) == '') {
+        if (trim((string) $this->name) == '' || trim((string) $this->element) == '') {
             $this->setError(\JText::_('JLIB_DATABASE_ERROR_MUSTCONTAIN_A_TITLE_EXTENSION'));
 
             return false;

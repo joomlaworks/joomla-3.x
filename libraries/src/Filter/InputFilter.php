@@ -141,7 +141,7 @@ class InputFilter extends BaseInputFilter
         }
 
         // Handle the type constraint cases
-        switch (strtoupper($type)) {
+        switch (strtoupper((string) $type)) {
             case 'INT':
             case 'INTEGER':
                 $pattern = '/[-+]?[0-9]+/';

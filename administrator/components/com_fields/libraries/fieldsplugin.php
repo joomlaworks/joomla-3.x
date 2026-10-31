@@ -158,10 +158,10 @@ abstract class FieldsPlugin extends JPlugin
         $node->setAttribute('name', $field->name);
         $node->setAttribute('type', $field->type);
         $node->setAttribute('label', $field->label);
-        $node->setAttribute('labelclass', $field->params->get('label_class'));
+        $node->setAttribute('labelclass', (string) $field->params->get('label_class'));
         $node->setAttribute('description', $field->description);
-        $node->setAttribute('class', $field->params->get('class'));
-        $node->setAttribute('hint', $field->params->get('hint'));
+        $node->setAttribute('class', (string) $field->params->get('class'));
+        $node->setAttribute('hint', (string) $field->params->get('hint'));
         $node->setAttribute('required', $field->required ? 'true' : 'false');
 
         if ($field->default_value !== '') {

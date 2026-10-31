@@ -133,11 +133,13 @@ div.mod-languages a {text-decoration:none;}
 /* Use up caret to hide the search filters */
 .js-stools-container-bar .btn-primary .caret {border-top:0;border-bottom:4px solid #FFF;margin-top:7px;margin-bottom:8px;}
 .js-stools .btn-wrapper {display:inline-block;margin:0 5px 0 0;}
+/* The search field with its buttons: the field shrinks, the buttons stay in the bar */
+.js-stools .btn-wrapper.input-append {display:inline-flex;max-width:100%;}
 
 /* Fixed filter fields (selector) */
-.js-stools .js-stools-container-selector {float:left;margin-right:10px;min-width:220px;}
+.js-stools .js-stools-container-selector {float:left;max-width:100%;margin-right:10px;min-width:220px;}
 html[dir=rtl] .js-stools .js-stools-container-selector {float:right;margin-left:10px;margin-right:0;}
-.js-stools .js-stools-container-bar {float:left;}
+.js-stools .js-stools-container-bar {float:left;max-width:100%;}
 html[dir=rtl] .js-stools .js-stools-container-bar {float:right;}
 .js-stools .js-stools-container-list {float:right;text-align:right;}
 html[dir=rtl] .js-stools .js-stools-container-list {float:left;text-align:left;}
@@ -148,7 +150,7 @@ html[dir=rtl] .js-stools .chzn-container {text-align:right;}
 .js-stools .js-stools-container-filters-visible {display:inline-block;}
 .js-stools .chzn-container-single .chzn-single span {overflow:visible;}
 .js-stools .js-stools-field-list,
-.js-stools .js-stools-field-filter {display:inline-block;margin:0 5px 5px 0;}
+.js-stools .js-stools-field-filter {display:inline-block;max-width:100%;margin:0 5px 5px 0;}
 .js-stools .js-stools-container-list .js-stools-field-list:last-child {margin-right:0;}
 
 @media (max-width: 480px) {

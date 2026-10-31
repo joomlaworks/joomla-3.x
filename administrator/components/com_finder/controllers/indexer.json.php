@@ -317,6 +317,7 @@ class FinderControllerIndexer extends JControllerLegacy
  *
  * @since  2.5
  */
+#[\AllowDynamicProperties]
 class FinderIndexerResponse
 {
     /**

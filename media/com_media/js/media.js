@@ -2004,9 +2004,19 @@ function jMediaRefreshImgpathTip(tip, element) {
 			const href = link.getAttribute('href');
 			const cover = link.getAttribute('data-cover') || '';
 
+			// Focus leaves the list's frame for the modal, so Escape closes it
+			const focusClose = () => {
+				const close = parent.document.getElementById('sbox-btn-close');
+
+				if (close) {
+					close.focus({ focusVisible: false });
+				}
+			};
+
 			if (link.classList.contains('pdf-preview')) {
 				if (parent.MediaPreview) {
 					parent.MediaPreview.openPdf(link.href);
+					focusClose();
 				} else {
 					window.open(link.href, '_blank', 'noopener');
 				}
@@ -2032,12 +2042,7 @@ function jMediaRefreshImgpathTip(tip, element) {
 				parent.CMS.modal.open(href, { handler: 'image' });
 			}
 
-			// Focus leaves the list's frame for the modal, so Escape closes it
-			const close = parent.document.getElementById('sbox-btn-close');
-
-			if (close) {
-				close.focus({ focusVisible: false });
-			}
+			focusClose();
 		});
 	};
 

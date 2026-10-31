@@ -102,7 +102,7 @@ class Menu extends Nested
         }
 
         // Check for params.
-        if (trim($this->params) === '') {
+        if (trim((string) $this->params) === '') {
             $this->params = '{}';
         }
 
