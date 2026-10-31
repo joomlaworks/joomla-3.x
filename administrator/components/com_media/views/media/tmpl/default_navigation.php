@@ -21,7 +21,7 @@ $thumbs = $style === 'thumbs' ? '' : ' hidden="hidden"';
 	<label class="checkbox btn media-check-all" hidden="hidden">
 		<input type="checkbox" id="media-check-all" /> <?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>
 	</label>
-	<div class="media-tile-size" role="group" aria-label="<?php echo JText::_('COM_MEDIA_THUMBNAIL_SIZE'); ?>" data-sizes="136,150,163,180,196" data-default="163"<?php echo $thumbs; ?>>
+	<div class="media-tile-size" role="group" aria-label="<?php echo JText::_('COM_MEDIA_THUMBNAIL_SIZE'); ?>" data-sizes="107,121,135,149,163,177,191,205,219,233,247" data-default="163"<?php echo $thumbs; ?>>
 		<div class="btn-group">
 			<button type="button" class="btn" data-tile-size="-1" title="<?php echo JText::_('COM_MEDIA_THUMBNAIL_SMALLER'); ?>" aria-label="<?php echo JText::_('COM_MEDIA_THUMBNAIL_SMALLER'); ?>"><?php echo $icon('zoom-out'); ?></button>
 			<button type="button" class="btn" data-tile-size="1" title="<?php echo JText::_('COM_MEDIA_THUMBNAIL_LARGER'); ?>" aria-label="<?php echo JText::_('COM_MEDIA_THUMBNAIL_LARGER'); ?>"><?php echo $icon('zoom-in'); ?></button>
