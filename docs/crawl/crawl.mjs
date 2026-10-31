@@ -19,7 +19,7 @@
  * server: php -d error_reporting=-1 -d display_errors=1 -S 127.0.0.1:8080), or PHP's messages can't show up.
  */
 import { spawn } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -45,8 +45,8 @@ const PHP_MESSAGE = /(Fatal error|Warning|Notice|Deprecated|Parse error|Strict S
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const profile = mkdtempSync(join(tmpdir(), 'crawl-'));
-const port = 9300 + Math.floor(Math.random() * 500);
-const chrome = spawn(args.chrome || 'google-chrome', ['--headless=new', `--remote-debugging-port=${port}`, '--no-first-run',
+// Port 0: Chrome picks a free port and writes it into DevToolsActivePort (a fixed or random port can be another run's)
+const chrome = spawn(args.chrome || 'google-chrome', ['--headless=new', '--remote-debugging-port=0', '--no-first-run',
 	'--ignore-certificate-errors', `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' });
 let target;
 
@@ -54,6 +54,8 @@ for (let i = 0; i < 75 && !target; i++) {
 	await sleep(200);
 
 	try {
+		const port = readFileSync(join(profile, 'DevToolsActivePort'), 'utf8').split('\n')[0].trim();
+
 		target = (await (await fetch(`http://127.0.0.1:${port}/json`)).json()).find((t) => t.type === 'page');
 	} catch (error) {
 		// Chrome isn't listening yet
@@ -101,10 +103,18 @@ ws.addEventListener('message', (message) => {
 	}
 });
 
+// A command Chrome doesn't answer within 30 seconds (a page that hangs) gives up, so the crawl goes on
 const send = (method, params = {}) => new Promise((resolve) => {
 	const i = ++id;
+	const timer = setTimeout(() => {
+		pending.delete(i);
+		resolve({ timedOut: true });
+	}, 30000);
 
-	pending.set(i, resolve);
+	pending.set(i, (data) => {
+		clearTimeout(timer);
+		resolve(data);
+	});
 	ws.send(JSON.stringify({ id: i, method, params }));
 });
 const evaluate = async (expression) => {
@@ -126,7 +136,15 @@ await send('Network.enable');
 
 let problems = 0;
 const check = async (url) => {
-	const text = await evaluate(`document.body ? document.body.innerText : ''`) || '';
+	const text = await evaluate(`document.body ? document.body.innerText : ''`);
+
+	if (text === undefined) {
+		problems++;
+		console.log('!! ' + url.replace(base, '') + '\n   the page did not answer');
+
+		return;
+	}
+
 	const php = (text.match(PHP_MESSAGE) || [''])[0];
 	const database = (text.match(/SQLSTATE\[[^\n]{0,160}/) || [''])[0];
 	const found = [];
