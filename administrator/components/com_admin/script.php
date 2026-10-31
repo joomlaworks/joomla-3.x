@@ -1661,6 +1661,7 @@ class JoomlaInstallerScript
             $params->set('collect_errors', 0);
             $params->set('default_code', 301);
             $params->remove('mode');
+            $params->remove('defaultImportState');
 
             $db->setQuery(
                 $db->getQuery(true)

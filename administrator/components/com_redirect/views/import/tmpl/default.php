@@ -30,7 +30,6 @@ $placeholder = implode("\n", array(
 				<li><?php echo JText::_('COM_REDIRECT_IMPORT_HELP_TARGET'); ?></li>
 				<li><?php echo JText::_('COM_REDIRECT_IMPORT_HELP_QUERY'); ?></li>
 				<li><?php echo JText::_('COM_REDIRECT_IMPORT_HELP_EXACT'); ?></li>
-				<li><?php echo JText::sprintf('COM_REDIRECT_IMPORT_HELP_STATE', JText::_($this->state ? 'JENABLED' : 'JDISABLED')); ?></li>
 			</ul>
 		</div>
 
@@ -58,6 +57,12 @@ $placeholder = implode("\n", array(
 
 		<label for="redirects"><strong><?php echo JText::_('COM_REDIRECT_IMPORT_LABEL'); ?></strong></label>
 		<textarea name="redirects" id="redirects" rows="16" class="span12" spellcheck="false" autocomplete="off" placeholder="<?php echo $this->escape($placeholder); ?>"><?php echo $this->escape($this->text); ?></textarea>
+
+		<fieldset class="redirect-import-state">
+			<legend><?php echo JText::_('COM_REDIRECT_IMPORT_STATE_LABEL'); ?></legend>
+			<label class="radio inline"><input type="radio" name="state" value="1"<?php echo $this->state ? ' checked="checked"' : ''; ?> /> <?php echo JText::_('JENABLED'); ?></label>
+			<label class="radio inline"><input type="radio" name="state" value="0"<?php echo $this->state ? '' : ' checked="checked"'; ?> /> <?php echo JText::_('JDISABLED'); ?></label>
+		</fieldset>
 
 		<input type="hidden" name="task" value="" />
 		<?php echo JHtml::_('form.token'); ?>

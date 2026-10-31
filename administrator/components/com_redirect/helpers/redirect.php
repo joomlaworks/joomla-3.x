@@ -25,7 +25,7 @@ class RedirectHelper
      * @var    string
      * @since  3.18.0
      */
-    public const DEFAULT_IGNORE = "mosConfig_\n=http://";
+    public const DEFAULT_IGNORE = "=http://";
 
     /**
      * Configure the Linkbar.
@@ -622,7 +622,7 @@ class RedirectHelper
     public static function purgeErrors()
     {
         $params  = JComponentHelper::getParams('com_redirect');
-        $days    = (int) $params->get('errors_days', 90);
+        $days    = (int) $params->get('errors_days', 30);
         $keep    = (int) $params->get('errors_keep', 10000);
         $db      = JFactory::getDbo();
         $deleted = 0;

@@ -36,16 +36,17 @@ class RedirectModelImport extends JModelLegacy
     /**
      * Imports the lines; blank lines are skipped silently, every other line is imported or reported with its reason.
      *
-     * @param   string  $text  The lines
+     * @param   string   $text   The lines
+     * @param   integer  $state  The imported redirects' state: 1 enabled, 0 disabled
      *
      * @return  array  imported => count, skipped => array of {number, line, reason}
      *
      * @since   3.18.0
      */
-    public function import($text)
+    public function import($text, $state = 1)
     {
         $separator = $this->getSeparator();
-        $state     = (int) JComponentHelper::getParams('com_redirect')->get('defaultImportState', 0) === 1 ? 1 : 0;
+        $state     = (int) $state === 1 ? 1 : 0;
         $report    = array('imported' => 0, 'skipped' => array());
         $seen      = array();
 

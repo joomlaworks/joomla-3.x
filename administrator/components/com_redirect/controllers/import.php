@@ -35,11 +35,12 @@ class RedirectControllerImport extends JControllerLegacy
             return;
         }
 
-        $report = $this->getModel('Import')->import($this->input->post->get('redirects', '', 'raw'));
+        $report = $this->getModel('Import')->import($this->input->post->get('redirects', '', 'raw'), $this->input->post->getInt('state', 1));
         $app    = JFactory::getApplication();
 
         $app->setUserState('com_redirect.import.report', $report);
         $app->setUserState('com_redirect.import.text', implode("\n", array_column($report['skipped'], 'line')));
+        $app->setUserState('com_redirect.import.state', $this->input->post->getInt('state', 1) === 1 ? 1 : 0);
 
         $this->setMessage(
             JText::sprintf('COM_REDIRECT_IMPORT_RESULT', $report['imported'], count($report['skipped'])),

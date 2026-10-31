@@ -44,7 +44,7 @@ class RedirectViewImport extends JViewLegacy
 
         $app             = JFactory::getApplication();
         $this->separator = $this->getModel()->getSeparator();
-        $this->state     = (int) JComponentHelper::getParams('com_redirect')->get('defaultImportState', 0) === 1;
+        $this->state     = (int) $app->getUserState('com_redirect.import.state', 1) === 1;
         $this->report    = $app->getUserState('com_redirect.import.report');
         $this->text      = (string) $app->getUserState('com_redirect.import.text', '');
 
