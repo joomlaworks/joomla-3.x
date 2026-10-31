@@ -11,6 +11,8 @@
     <description>PLG_INSTALLER_PACKAGEINSTALLER_PLUGIN_XML_DESCRIPTION</description>
     <files>
         <filename plugin="packageinstaller">packageinstaller.php</filename>
+        <folder>js</folder>
+        <folder>tmpl</folder>
     </files>
     <languages>
         <language tag="en-GB">en-GB.plg_installer_packageinstaller.ini</language>

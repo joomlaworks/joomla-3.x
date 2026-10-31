@@ -11,50 +11,11 @@ defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
 
-JFactory::getDocument()->addScriptDeclaration(
-    '
-	Joomla.submitbutton4 = function() {
-		var form = document.getElementById("adminForm");
-
-		// do field validation
-		if (form.install_url.value == "" || form.install_url.value == "http://" || form.install_url.value == "https://") {
-			alert("' . JText::_('COM_INSTALLER_MSG_INSTALL_ENTER_A_URL', true) . '");
-		}
-		else
-		{
-			JoomlaInstaller.showLoading();
-
-			form.installtype.value = "url";
-			form.submit();
-		}
-	};
-
-	// Add spindle-wheel for installations:
-	jQuery(document).ready(function($) {
-		var outerDiv = $("#installer-install");
-
-		JoomlaInstaller.getLoadingOverlay()
-			.css("top", outerDiv.position().top - $(window).scrollTop())
-			.css("left", "0")
-			.css("width", "100%")
-			.css("height", "100%")
-			.css("display", "none")
-			.css("margin-top", "-10px");
-	});
-
-	var JoomlaInstaller = {
-		getLoadingOverlay: function () {
-			return jQuery("#loading");
-		},
-		showLoading: function () {
-			this.getLoadingOverlay().css("display", "block");
-		},
-		hideLoading: function () {
-			this.getLoadingOverlay().css("display", "none");
-		}
-	};
-	'
-);
+// JoomlaInstaller, Joomla.submitbutton4() and the install buttons (js/installer.js); install plugins call them by name
+JHtml::_('behavior.core');
+JHtml::_('behavior.tabstate');
+JText::script('COM_INSTALLER_MSG_INSTALL_ENTER_A_URL');
+JHtml::_('script', 'administrator/components/com_installer/js/installer.min.js', array('version' => 'auto'));
 
 JFactory::getDocument()->addStyleDeclaration(
     '
@@ -62,29 +23,12 @@ JFactory::getDocument()->addStyleDeclaration(
 		background: rgba(255, 255, 255, .8) url(\'' . JHtml::_('image', 'system/ajax-loader.gif', '', null, true, true) . '\') 50% 15% no-repeat;
 		position: fixed;
 		opacity: 0.8;
-		-ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity = 80);
-		filter: alpha(opacity = 80);
 		overflow: hidden;
 	}
 	'
 );
 
 ?>
-
-<script type="text/javascript">
-	// Set the first tab to active if there is no other active tab
-	jQuery(document).ready(function($) {
-		var hasTab = function(href){
-			return $('a[data-toggle="tab"]a[href*="' + href + '"]').length;
-		};
-		if (!hasTab(localStorage.getItem('tab-href')))
-		{
-			var tabAnchor = $("#myTabTabs li:first a");
-			window.localStorage.setItem('tab-href', tabAnchor.attr('href'));
-			tabAnchor.click();
-		}
-	});
-</script>
 
 <div id="installer-install" class="clearfix">
 	<form enctype="multipart/form-data" action="<?php echo JRoute::_('index.php?option=com_installer&view=install'); ?>"

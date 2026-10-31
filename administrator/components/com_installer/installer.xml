@@ -16,6 +16,7 @@
             <filename>installer.php</filename>
             <folder>controllers</folder>
             <folder>helpers</folder>
+            <folder>js</folder>
             <folder>models</folder>
             <folder>views</folder>
         </files>

@@ -10,211 +10,16 @@
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
-JHtml::_('jquery.token');
+JHtml::_('form.csrf');
 
+JText::script('PLG_INSTALLER_PACKAGEINSTALLER_NO_PACKAGE');
 JText::script('PLG_INSTALLER_PACKAGEINSTALLER_UPLOAD_ERROR_UNKNOWN');
 JText::script('PLG_INSTALLER_PACKAGEINSTALLER_UPLOAD_ERROR_EMPTY');
 JText::script('COM_INSTALLER_MSG_WARNINGS_UPLOADFILETOOBIG');
 
-JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbuttonpackage = function()
-	{
-		var form = document.getElementById("adminForm");
-
-		// do field validation
-		if (form.install_package.value == "")
-		{
-			alert("' . JText::_('PLG_INSTALLER_PACKAGEINSTALLER_NO_PACKAGE', true) . '");
-		}
-		else if (form.install_package.files[0].size > form.max_upload_size.value)
-		{
-			alert("' . JText::_('COM_INSTALLER_MSG_WARNINGS_UPLOADFILETOOBIG', true) . '");
-		}
-		else
-		{
-			JoomlaInstaller.showLoading();
-			form.installtype.value = "upload"
-			form.submit();
-		}
-	};
-');
-
-// Drag and Drop installation scripts
-$token = JSession::getFormToken();
+// The drop area and Joomla.submitbuttonpackage() (js/packageinstaller.js)
 $return = JFactory::getApplication()->input->getBase64('return');
-
-// Drag-drop installation
-JFactory::getDocument()->addScriptDeclaration(
-    <<<JS
-	jQuery(document).ready(function($) {
-		if (typeof FormData === 'undefined') {
-			$('#legacy-uploader').show();
-			$('#uploader-wrapper').hide();
-			return;
-		}
-
-		var uploading   = false;
-		var dragZone    = $('#dragarea');
-		var fileInput   = $('#install_package');
-		var fileSizeMax = $('#max_upload_size').val();
-		var button      = $('#select-file-button');
-		var url         = 'index.php?option=com_installer&task=install.ajax_upload';
-		var returnUrl   = $('#installer-return').val();
-		var actions     = $('.upload-actions');
-		var progress    = $('.upload-progress');
-		var progressBar = progress.find('.bar');
-		var percentage  = progress.find('.uploading-number');
-
-		if (returnUrl) {
-			url += '&return=' + returnUrl;
-		}
-
-		button.on('click', function(e) {
-			fileInput.click();
-		});
-
-		fileInput.on('change', function (e) {
-			if (uploading) {
-				return;
-			}
-
-			Joomla.submitbuttonpackage();
-		});
-
-		dragZone.on('dragenter', function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			dragZone.addClass('hover');
-
-			return false;
-		});
-
-		// Notify user when file is over the drop area
-		dragZone.on('dragover', function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			dragZone.addClass('hover');
-
-			return false;
-		});
-
-		dragZone.on('dragleave', function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			dragZone.removeClass('hover');
-
-			return false;
-		});
-
-		dragZone.on('drop', function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-
-			dragZone.removeClass('hover');
-
-			if (uploading) {
-				return;
-			}
-
-			var files = e.originalEvent.target.files || e.originalEvent.dataTransfer.files;
-
-			if (!files.length) {
-				return;
-			}
-
-			var file = files[0];
-
-			var data = new FormData;
-
-			if (file.size > fileSizeMax) {
-				alert(Joomla.JText._('COM_INSTALLER_MSG_WARNINGS_UPLOADFILETOOBIG'), true);
-				return;
-			}
-
-			data.append('install_package', file);
-			data.append('installtype', 'upload');
-
-			dragZone.attr('data-state', 'uploading');
-			uploading = true;
-
-			$.ajax({
-				url: url,
-				data: data,
-				type: 'post',
-				processData: false,
-				cache: false,
-				contentType: false,
-				xhr: function () {
-					var xhr = new window.XMLHttpRequest();
-
-					progressBar.css('width', 0);
-					progressBar.attr('aria-valuenow', 0);
-					percentage.text(0);
-
-					// Upload progress
-					xhr.upload.addEventListener("progress", function (evt) {
-						if (evt.lengthComputable) {
-							var percentComplete = evt.loaded / evt.total;
-							var number = Math.round(percentComplete * 100);
-							progressBar.css('width', number + '%');
-							progressBar.attr('aria-valuenow', number);
-							percentage.text(number);
-
-							if (number === 100) {
-								dragZone.attr('data-state', 'installing');
-							}
-						}
-					}, false);
-
-					return xhr;
-				}
-			})
-			.done(function (res) {
-				// Handle extension fatal error
-				if (!res || (!res.success && !res.data)) {
-					showError(res);
-					return;
-				}
-
-				// Always redirect that can show message queue from session
-				if (res.data.redirect) {
-					location.href = res.data.redirect;
-				} else {
-					location.href = 'index.php?option=com_installer&view=install';
-				}
-			}).error(function (error) {
-				uploading = false;
-
-				if (error.status === 200) {
-					var res = error.responseText || error.responseJSON;
-					showError(res);
-				} else {
-					showError(error.statusText);
-				}
-			});
-
-			function showError(res) {
-				dragZone.attr('data-state', 'pending');
-
-				var message = Joomla.JText._('PLG_INSTALLER_PACKAGEINSTALLER_UPLOAD_ERROR_UNKNOWN');
-
-				if (res == null) {
-					message = Joomla.JText._('PLG_INSTALLER_PACKAGEINSTALLER_UPLOAD_ERROR_EMPTY');
-				} else if (typeof res === 'string') {
-					// Let's remove unnecessary HTML
-					message = res.replace(/(<([^>]+)>|\s+)/g, ' ');
-				} else if (res.message) {
-					message = res.message;
-				}
-
-				Joomla.renderMessages({error: [message]});
-			}
-		});
-	});
-JS
-);
+JHtml::_('script', 'plugins/installer/packageinstaller/js/packageinstaller.min.js', array('version' => 'auto'), array('defer' => true));
 
 JFactory::getDocument()->addStyleDeclaration(
     <<<CSS
@@ -258,9 +63,6 @@ JFactory::getDocument()->addStyleDeclaration(
 
 	/* Default transition (.3s) is too slow, progress will not run to 100% */
 	.upload-progress .progress .bar {
-		-webkit-transition: width .1s;
-		-moz-transition: width .1s;
-		-o-transition: width .1s;
 		transition: width .1s;
 	}
 
@@ -362,5 +164,4 @@ $maxSize = JHtml::_('number.bytes', $maxSizeBytes);
 	</div>
 
 	<input id="installer-return" name="return" type="hidden" value="<?php echo $return; ?>" />
-	<input id="installer-token" name="return" type="hidden" value="<?php echo $token; ?>" />
 </div>

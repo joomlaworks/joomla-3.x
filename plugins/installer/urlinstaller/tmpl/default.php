@@ -11,16 +11,6 @@ defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
 
-JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbuttonurl = function()
-	{
-		var form = document.getElementById("adminForm");
-
-		JoomlaInstaller.showLoading();
-		form.installtype.value = "url"
-		form.submit();
-	};
-');
 ?>
 <legend><?php echo JText::_('PLG_INSTALLER_URLINSTALLER_TEXT'); ?></legend>
 <div class="control-group">
@@ -31,5 +21,5 @@ JFactory::getDocument()->addScriptDeclaration('
 </div>
 <div class="form-actions">
 	<input type="button" class="btn btn-primary" id="installbutton_url"
-		value="<?php echo JText::_('PLG_INSTALLER_URLINSTALLER_BUTTON'); ?>" onclick="Joomla.submitbuttonurl()" />
+		value="<?php echo JText::_('PLG_INSTALLER_URLINSTALLER_BUTTON'); ?>" data-install-type="url" data-install-field="install_url" data-install-message="<?php echo JText::_('COM_INSTALLER_MSG_INSTALL_ENTER_A_URL'); ?>" />
 </div>

@@ -11,6 +11,7 @@
     <description>PLG_INSTALLER_URLINSTALLER_PLUGIN_XML_DESCRIPTION</description>
     <files>
         <filename plugin="urlinstaller">urlinstaller.php</filename>
+        <folder>tmpl</folder>
     </files>
     <languages>
         <language tag="en-GB">en-GB.plg_installer_urlinstaller.ini</language>

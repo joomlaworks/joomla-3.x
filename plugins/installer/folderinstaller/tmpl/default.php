@@ -13,24 +13,6 @@ JHtml::_('bootstrap.tooltip');
 
 $app = JFactory::getApplication('administrator');
 
-JFactory::getDocument()->addScriptDeclaration('
-	Joomla.submitbuttonfolder = function()
-	{
-		var form = document.getElementById("adminForm");
-
-		// do field validation
-		if (form.install_directory.value == "")
-		{
-			alert("' . JText::_('PLG_INSTALLER_FOLDERINSTALLER_NO_INSTALL_PATH', true) . '");
-		}
-		else
-		{
-			JoomlaInstaller.showLoading();
-			form.installtype.value = "folder"
-			form.submit();
-		}
-	};
-');
 ?>
 <legend><?php echo JText::_('PLG_INSTALLER_FOLDERINSTALLER_TEXT'); ?></legend>
 <div class="control-group">
@@ -42,5 +24,5 @@ JFactory::getDocument()->addScriptDeclaration('
 </div>
 <div class="form-actions">
 	<input type="button" class="btn btn-primary" id="installbutton_directory"
-		value="<?php echo JText::_('PLG_INSTALLER_FOLDERINSTALLER_BUTTON'); ?>" onclick="Joomla.submitbuttonfolder()" />
+		value="<?php echo JText::_('PLG_INSTALLER_FOLDERINSTALLER_BUTTON'); ?>" data-install-type="folder" data-install-field="install_directory" data-install-message="<?php echo JText::_('PLG_INSTALLER_FOLDERINSTALLER_NO_INSTALL_PATH'); ?>" />
 </div>

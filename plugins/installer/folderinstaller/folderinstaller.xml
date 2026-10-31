@@ -11,6 +11,7 @@
     <description>PLG_INSTALLER_FOLDERINSTALLER_PLUGIN_XML_DESCRIPTION</description>
     <files>
         <filename plugin="folderinstaller">folderinstaller.php</filename>
+        <folder>tmpl</folder>
     </files>
     <languages>
         <language tag="en-GB">en-GB.plg_installer_folderinstaller.ini</language>
