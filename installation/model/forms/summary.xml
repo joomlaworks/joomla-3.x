@@ -11,6 +11,7 @@
         </field>
         <field name="db_type" type="hidden" />
         <field name="sample_file" type="installation.sample" label="INSTL_SITE_INSTALL_SAMPLE_LABEL" class="inputbox" />
+        <field name="admin_template" type="installation.admintemplate" label="INSTL_ADMIN_TEMPLATE_LABEL" default="prothero" filter="cmd" />
     </fieldset>
 </form>
 

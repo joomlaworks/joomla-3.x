@@ -254,6 +254,10 @@ fieldset.radio input:checked + label {background:linear-gradient(135deg, var(--b
 .sample-title {padding-inline-end:1.75rem;font-weight:700;}
 .sample-desc {color:var(--muted);font-size:.85rem;font-weight:400;}
 
+/* Administrator template: the sample data's cards, with the template's thumbnail */
+.template-choices fieldset.radio {grid-template-columns:repeat(2, minmax(0, 260px));}
+.template-thumb {display:block;width:100%;height:auto;aspect-ratio:1;border:1px solid var(--border);border-radius:8px;background:var(--surface);}
+
 /* Language picker */
 .language-picker {display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem;margin-bottom:2rem;padding:.6rem .6rem .6rem 1.1rem;border:1px solid var(--border);border-radius:999px;background:color-mix(in srgb, var(--surface) 75%, transparent);box-shadow:var(--shadow);backdrop-filter:blur(10px);}
 .language-picker label {display:inline-flex;align-items:center;gap:.5rem;font-weight:650;}

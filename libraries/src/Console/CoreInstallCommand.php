@@ -43,7 +43,7 @@ class CoreInstallCommand extends AbstractCommand
         . 'address and username are needed; when they aren\'t given, they\'re asked for one by one. The administrator\'s password is '
         . 'generated (16 letters and digits) and shown at the end, unless --admin-password sets it. --sample-data also installs one of the installer\'s sample data '
         . 'sets (news, blog or studio). The site\'s template is Hammond, with no sample data or the news set, Finch with the '
-        . 'blog set and Rookwood with the studio set. The database file gets an unguessable name in the "database" '
+        . 'blog set and Rookwood with the studio set. The administrator\'s template is Prothero, or Isis with --admin-template=isis. The database file gets an unguessable name in the "database" '
         . 'folder, which is protected from web access, and the "installation" folder is removed afterwards. Like the web installer, '
         . 'it checks that whoever installs can change the site\'s files, by deleting a file it creates in the "installation" folder. '
         . 'Run it as the user the web server runs PHP as, so that the site can write to the files it creates. Needs PHP 7.4 or newer '
@@ -75,6 +75,7 @@ class CoreInstallCommand extends AbstractCommand
         $this->addOption('admin-username', null, self::OPTION_REQUIRED, 'The administrator\'s username');
         $this->addOption('admin-password', null, self::OPTION_REQUIRED, 'The administrator\'s password (generated when not given)');
         $this->addOption('sample-data', null, self::OPTION_OPTIONAL, 'Also install sample data: news, blog or studio (without a name, it asks which)');
+        $this->addOption('admin-template', null, self::OPTION_REQUIRED, 'The administrator\'s template: prothero (the default) or isis');
     }
 
     /**
@@ -168,6 +169,15 @@ class CoreInstallCommand extends AbstractCommand
 
         $sampleSets = $this->getSampleDataSets();
 
+        $adminTemplate = $io->getOption('admin-template');
+        $adminTemplate = $adminTemplate === null ? 'prothero' : strtolower(trim((string) $adminTemplate));
+
+        if (!in_array($adminTemplate, array('prothero', 'isis'), true)) {
+            $io->error('--admin-template is prothero or isis.');
+
+            return self::INVALID;
+        }
+
         if (!is_writable(JPATH_CONFIGURATION)) {
             $io->error(sprintf('The site\'s folder (%s) isn\'t writable, so configuration.php can\'t be written.', JPATH_CONFIGURATION));
 
@@ -198,6 +208,10 @@ class CoreInstallCommand extends AbstractCommand
                 );
             }
 
+            $io->plan(
+                sprintf('Make %s the administrator\'s template', ucfirst($adminTemplate)),
+                array('action' => 'adminTemplate', 'adminTemplate' => $adminTemplate)
+            );
             $io->plan(sprintf('Write configuration.php for "%s"', $siteName), array('action' => 'configuration', 'siteName' => $siteName));
             $io->plan(
                 sprintf('Create the Super User %s (%s) with %s password', $username, $email, $generated ? 'a generated' : 'the given'),
@@ -226,6 +240,7 @@ class CoreInstallCommand extends AbstractCommand
             'db_select'            => true,
             'db_old'               => 'remove',
             'sample_file'          => $sampleData === '' ? '' : $sampleSets[$sampleData]['file'],
+            'admin_template'       => $adminTemplate,
         );
 
         $started = microtime(true);
@@ -253,6 +268,7 @@ class CoreInstallCommand extends AbstractCommand
         $io->setData('database', $database);
         $io->setData('prefix', $prefix);
         $io->setData('sampleData', $sampleData === '' ? null : $sampleData);
+        $io->setData('adminTemplate', $adminTemplate);
         $io->setData('installationFolderRemoved', $removed);
         $io->setData('seconds', $seconds);
 

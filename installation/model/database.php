@@ -884,7 +884,7 @@ class InstallationModelDatabase extends JModelBase
             $this->updateDates($db);
         }
 
-        $this->setDefaultSiteTemplate($db, isset($templates[$sampleFileName]) ? $templates[$sampleFileName] : 'protostar');
+        $this->setDefaultTemplate($db, isset($templates[$sampleFileName]) ? $templates[$sampleFileName] : 'protostar');
 
         // The Sample Data plugin's record of the set, so that installing a set from the Control Panel replaces this one
         $plugin = JPATH_SITE . '/plugins/sampledata/blog/set.php';
@@ -900,23 +900,24 @@ class InstallationModelDatabase extends JModelBase
     }
 
     /**
-     * Make a template's first style the site's default.
+     * Make a template's first style the default of the site or the administrator.
      *
      * @param   JDatabaseDriver  $db        Database connector object $db*.
      * @param   string           $template  The template
+     * @param   integer          $clientId  0 for the site, 1 for the administrator
      *
      * @return  void
      *
      * @since   3.17.0
      */
-    protected function setDefaultSiteTemplate($db, $template)
+    protected function setDefaultTemplate($db, $template, $clientId = 0)
     {
         try {
             $id = (int) $db->setQuery(
                 $db->getQuery(true)
                     ->select($db->quoteName('id'))
                     ->from($db->quoteName('#__template_styles'))
-                    ->where($db->quoteName('client_id') . ' = 0')
+                    ->where($db->quoteName('client_id') . ' = ' . (int) $clientId)
                     ->where($db->quoteName('template') . ' = ' . $db->quote($template))
                     ->order($db->quoteName('id')),
                 0,
@@ -931,7 +932,7 @@ class InstallationModelDatabase extends JModelBase
                 $db->getQuery(true)
                     ->update($db->quoteName('#__template_styles'))
                     ->set($db->quoteName('home') . ' = CASE WHEN ' . $db->quoteName('id') . ' = ' . $id . ' THEN ' . $db->quote('1') . ' ELSE ' . $db->quote('0') . ' END')
-                    ->where($db->quoteName('client_id') . ' = 0')
+                    ->where($db->quoteName('client_id') . ' = ' . (int) $clientId)
             )->execute();
         } catch (RuntimeException $e) {
             JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
@@ -1041,7 +1042,18 @@ class InstallationModelDatabase extends JModelBase
         }
 
         // Run Cms data post install to update user ids.
-        return $this->postInstallCmsData($db);
+        if (!$this->postInstallCmsData($db)) {
+            return false;
+        }
+
+        // The administrator's template chosen on the last step (Prothero, the install SQL's default, when there's no choice)
+        $template = isset($options['admin_template']) ? (string) $options['admin_template'] : '';
+
+        if ($template !== '' && $template !== 'prothero' && isset(InstallationFormFieldAdmintemplate::TEMPLATES[$template])) {
+            $this->setDefaultTemplate($db, $template, 1);
+        }
+
+        return true;
     }
 
     /**

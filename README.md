@@ -55,6 +55,7 @@ Summary of changes:
 - **Redirects for any address:** Redirects can send any address of the site to a new one, on the site or elsewhere (301 or 302), quickly and before cached pages are served; collected errors (404 and others, off by default) have a list of their own with a "Create Redirect" button, and bulk import checks every line
 
 **New features:**
+- The installer asks which administrator template to use, Prothero (the default) or Isis, with their thumbnails; `core:install --admin-template=isis` likewise
 - A plugin's options opened from a component's notice (Redirects, Smart Search, Fields...) return to it when saved or closed
 - The Media Manager, the image field and Joomla Update in plain JavaScript (no jQuery on their pages); uploads in the Media Manager go to the folder shown
 - No jQuery or Bootstrap script on administrator pages that don't need them: `global.js` does Bootstrap's dropdowns, collapse, tabs, modals and alerts; Isis' script is plain JavaScript. Extensions using jQuery or Bootstrap in the administrator must ask for them (`JHtml::_('jquery.framework')`)
@@ -412,6 +413,8 @@ wget -q https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joom
 ```
 
 Add `--sample-data=news`, `--sample-data=blog` or `--sample-data=studio` to start with one of the installer's sample data sets; the news set comes with the Hammond template as the site's template, the blog set with Finch, the studio set with Rookwood, 3 brand new, modern and Core Web Vitals friendly templates, (derived from years of experience building content-heavy sites by the project maintainers).
+
+The administrator's template is Prothero; add `--admin-template=isis` for Isis instead (the web installer offers the same choice on its last step).
 
 Installing sites like this needs PHP 7.4 or newer with the `pdo_sqlite` extension. If you also add the flag `--format=json`, you'll get installation details in JSON format (including the password), which is ideal for scripts (using jq) and LLMs.
 

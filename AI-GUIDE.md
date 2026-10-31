@@ -306,7 +306,7 @@ php cli/joomla.php finder:index                  # rebuild Smart Search's index
 ```
 php cli/joomla.php core:install --site-name="My Site" --admin-email=me@example.com --admin-username=admin --sample-data=blog
 ```
-Installs a new site on SQLite in about a second (PHP 7.4+ with `pdo_sqlite`), with the generated password shown at the end. See the [README](README.md#quick-install-from-the-command-line-sqlite).
+Installs a new site on SQLite in about a second (PHP 7.4+ with `pdo_sqlite`), with the generated password shown at the end. The administrator's template is Prothero, or Isis with `--admin-template=isis`. See the [README](README.md#quick-install-from-the-command-line-sqlite).
 
 ### Scripting with JSON
 

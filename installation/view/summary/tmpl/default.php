@@ -42,6 +42,14 @@ $remove = isset($o['db_old']) && $o['db_old'] === 'remove';
 		</div>
 	</section>
 	<section class="panel">
+		<h2 class="section-title"><?php echo JText::_('INSTL_ADMIN_TEMPLATE_LABEL'); ?></h2>
+		<p class="lead"><?php echo JText::_('INSTL_ADMIN_TEMPLATE_DESC'); ?></p>
+		<div class="sample-choices template-choices">
+<?php echo JHtml::_('InstallationHtml.helper.indent', JHtml::_('InstallationHtml.helper.normalize', $this->form->getInput('admin_template')), 3); ?>
+
+		</div>
+	</section>
+	<section class="panel">
 		<h2 class="section-title"><?php echo JText::_('INSTL_STEP_SUMMARY_LABEL'); ?></h2>
 		<div class="field" id="summary_email">
 			<div class="field-label"><?php echo trim($this->form->getLabel('summary_email')); ?></div>
