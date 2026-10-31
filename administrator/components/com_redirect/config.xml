@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-    <fieldset name="redirect" label="COM_REDIRECT_ADVANCED_OPTIONS">
-        <field name="mode" type="radio" label="COM_REDIRECT_MODE_LABEL" description="COM_REDIRECT_MODE_DESC" class="btn-group btn-group-yesno" default="0">
+    <fieldset name="redirect" label="COM_REDIRECT_OPTIONS" addrulepath="/administrator/components/com_redirect/models/rules">
+        <field name="heading_redirects" type="spacer" label="COM_REDIRECT_HEADING_REDIRECTS" />
+        <field name="default_code" type="list" label="COM_REDIRECT_DEFAULT_CODE_LABEL" description="COM_REDIRECT_DEFAULT_CODE_DESC" default="301" filter="uint" validate="options">
+            <option value="301">COM_REDIRECT_CODE_301</option>
+            <option value="302">COM_REDIRECT_CODE_302</option>
+        </field>
+        <field name="heading_errors" type="spacer" label="COM_REDIRECT_HEADING_ERRORS" />
+        <field name="collect_errors" type="radio" label="COM_REDIRECT_COLLECT_ERRORS_LABEL" description="COM_REDIRECT_COLLECT_ERRORS_DESC" class="btn-group btn-group-yesno" default="0" filter="uint">
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
-        <field name="separator" type="text" label="COM_REDIRECT_BULK_SEPARATOR_LABEL" description="COM_REDIRECT_BULK_SEPARATOR_DESC" default="|" />
-        <field name="defaultImportState" type="radio" label="COM_REDIRECT_DEFAULT_IMPORT_STATE_LABEL" description="COM_REDIRECT_DEFAULT_IMPORT_STATE_DESC" class="btn-group btn-group-yesno" default="0">
+        <field name="ignore" type="textarea" label="COM_REDIRECT_IGNORE_LABEL" description="COM_REDIRECT_IGNORE_DESC" rows="6" class="input-xxlarge" filter="raw" validate="redirectignore" default="mosConfig_&#10;=http://" showon="collect_errors:1" />
+        <field name="errors_keep" type="number" label="COM_REDIRECT_ERRORS_KEEP_LABEL" description="COM_REDIRECT_ERRORS_KEEP_DESC" default="10000" min="0" step="1" filter="uint" showon="collect_errors:1" />
+        <field name="errors_days" type="number" label="COM_REDIRECT_ERRORS_DAYS_LABEL" description="COM_REDIRECT_ERRORS_DAYS_DESC" default="90" min="0" step="1" filter="uint" showon="collect_errors:1" />
+        <field name="heading_import" type="spacer" label="COM_REDIRECT_HEADING_IMPORT" />
+        <field name="separator" type="text" label="COM_REDIRECT_BULK_SEPARATOR_LABEL" description="COM_REDIRECT_BULK_SEPARATOR_DESC" default="|" class="input-mini" />
+        <field name="defaultImportState" type="radio" label="COM_REDIRECT_DEFAULT_IMPORT_STATE_LABEL" description="COM_REDIRECT_DEFAULT_IMPORT_STATE_DESC" class="btn-group btn-group-yesno" default="0" filter="uint">
             <option value="1">JENABLED</option>
             <option value="0">JDISABLED</option>
         </field>
@@ -15,4 +25,3 @@
         <field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" filter="rules" validate="rules" component="com_redirect" section="component" />
     </fieldset>
 </config>
-

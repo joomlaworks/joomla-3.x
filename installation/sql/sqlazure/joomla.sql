@@ -825,7 +825,7 @@ INSERT INTO "#__extensions" ("extension_id", "package_id", "name", "type", "elem
 (424, 0, 'plg_system_cache', 'plugin', 'cache', 'system', 0, 0, 1, 1, '', '{"browsercache":"0"}', '', '', 0, '1900-01-01 00:00:00', -70, 0),
 (425, 0, 'plg_system_debug', 'plugin', 'debug', 'system', 0, 1, 1, 0, '', '{"profile":"1","queries":"1","memory":"1","language_files":"1","language_strings":"1","strip-first":"1","strip-prefix":"","strip-suffix":""}', '', '', 0, '1900-01-01 00:00:00', 1000, 0),
 (426, 0, 'plg_system_log', 'plugin', 'log', 'system', 0, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 2, 0),
-(427, 0, 'plg_system_redirect', 'plugin', 'redirect', 'system', 0, 0, 1, 0, '', '', '', '', 0, '1900-01-01 00:00:00', 1, 0),
+(427, 0, 'plg_system_redirect', 'plugin', 'redirect', 'system', 0, 1, 1, 0, '', '', '', '', 0, '1900-01-01 00:00:00', -95, 0),
 (428, 0, 'plg_system_remember', 'plugin', 'remember', 'system', 0, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', -80, 0),
 (429, 0, 'plg_system_sef', 'plugin', 'sef', 'system', 0, 1, 1, 0, '', '', '', '', 0, '1900-01-01 00:00:00', 4, 0),
 (430, 0, 'plg_system_logout', 'plugin', 'logout', 'system', 0, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 3, 0),
@@ -914,7 +914,7 @@ INSERT INTO "#__extensions" ("extension_id", "package_id", "name", "type", "elem
 (523, 0, 'plg_captcha_iconcaptcha', 'plugin', 'iconcaptcha', 'captcha', 0, 1, 1, 0, '', '{"theme":"auto","attempts":"5","credits":"1"}', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (600, 802, 'English (en-GB)', 'language', 'en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
 (601, 802, 'English (en-GB)', 'language', 'en-GB', '', 1, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0),
-(700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '{"updateSteps":["media-upload-defaults","default-editor","media-upload-maxsize","codemirror-theme","littlewaf-enabled","latest-actions-count","system-information-module","system-plugin-order","iconcaptcha-enabled"]}', '', 0, '1900-01-01 00:00:00', 0, 0),
+(700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '{"updateSteps":["media-upload-defaults","default-editor","media-upload-maxsize","codemirror-theme","littlewaf-enabled","latest-actions-count","system-information-module","system-plugin-order","iconcaptcha-enabled","redirect-scheme"]}', '', 0, '1900-01-01 00:00:00', 0, 0),
 (802, 0, 'English (en-GB) Language Pack', 'package', 'pkg_en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '1900-01-01 00:00:00', 0, 0);
 
 SET IDENTITY_INSERT "#__extensions" OFF;
@@ -2435,6 +2435,7 @@ WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, O
 CREATE TABLE "#__redirect_links" (
   "id" bigint IDENTITY(1,1) NOT NULL,
   "old_url" nvarchar(2048) NOT NULL,
+  "old_url_hash" nchar(32) NOT NULL DEFAULT '',
   "new_url" nvarchar(2048),
   "referer" nvarchar(2048) NOT NULL,
   "comment" nvarchar(255) NOT NULL DEFAULT '',
@@ -2457,6 +2458,45 @@ CREATE NONCLUSTERED INDEX "idx_old_url" ON "#__redirect_links"
 CREATE NONCLUSTERED INDEX "idx_link_modifed2" ON "#__redirect_links"
 (
   "modified_date" ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF);
+
+CREATE NONCLUSTERED INDEX "idx_old_url_hash" ON "#__redirect_links"
+(
+  "old_url_hash" ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF);
+
+--
+-- Table structure for table `#__redirect_errors`
+--
+
+CREATE TABLE "#__redirect_errors" (
+  "id" bigint IDENTITY(1,1) NOT NULL,
+  "url" nvarchar(2048) NOT NULL,
+  "url_hash" nchar(32) NOT NULL DEFAULT '',
+  "code" smallint NOT NULL DEFAULT 404,
+  "referer" nvarchar(2048) NOT NULL DEFAULT '',
+  "hits" bigint NOT NULL DEFAULT 0,
+  "created_date" datetime2(0) NOT NULL DEFAULT '1900-01-01 00:00:00',
+  "last_hit" datetime2(0) NOT NULL DEFAULT '1900-01-01 00:00:00',
+ CONSTRAINT "PK_#__redirect_errors_id" PRIMARY KEY CLUSTERED
+(
+  "id" ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+) ON [PRIMARY];
+
+CREATE UNIQUE NONCLUSTERED INDEX "idx_url_hash" ON "#__redirect_errors"
+(
+  "url_hash" ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF);
+
+CREATE NONCLUSTERED INDEX "idx_code" ON "#__redirect_errors"
+(
+  "code" ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF);
+
+CREATE NONCLUSTERED INDEX "idx_last_hit" ON "#__redirect_errors"
+(
+  "last_hit" ASC
 )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF);
 
 --

@@ -107,6 +107,7 @@ class JoomlaInstallerScript
         $this->updateManifestCaches();
         $this->updateDatabase();
         $this->fixSchemas();
+        $this->updateRedirects();
         $this->clearRadCache();
         $this->updateAssets($installer);
         $this->clearStatsCache();
@@ -863,7 +864,6 @@ class JoomlaInstallerScript
         'plugin:0:content:vote',
         'plugin:0:system:languagecode',
         'plugin:0:system:privacyconsent',
-        'plugin:0:system:redirect',
         'plugin:0:system:stats',
         'plugin:0:twofactorauth:totp',
         'plugin:0:twofactorauth:yubikey',
@@ -903,7 +903,7 @@ class JoomlaInstallerScript
      *
      * Little WAF first (it blocks, redirects and adds headers, so cached pages get all three), then what must run before
      * Page Cache serves a stored page in onAfterInitialise (the Language Filter's language detection and redirects, Remember
-     * Me's login), then Page Cache, ahead of third-party plugins (ordering 0 by default), whose events never run on a cached
+     * Me's login), with the Redirect plugin's redirects between Little WAF and the Language Filter, then Page Cache, ahead of third-party plugins (ordering 0 by default), whose events never run on a cached
      * page. Every other plugin after them, in Joomla's old relative order, and Debug last, so it reports the others' work.
      *
      * @var    array
@@ -914,7 +914,7 @@ class JoomlaInstallerScript
         'languagefilter'     => array(-90, 1),
         'remember'           => array(-80, 7),
         'cache'              => array(-70, 9),
-        'redirect'           => array(1, 3),
+        'redirect'           => array(-95, 3),
         'log'                => array(2, 5),
         'logout'             => array(3, 6),
         'sef'                => array(4, 8),
@@ -1570,6 +1570,196 @@ class JoomlaInstallerScript
         } catch (Exception $e) {
             // Not worth failing the update for: the plugins keep their order
         }
+    }
+
+    /**
+     * Moves Redirects to 3.18's scheme, once, after fixSchemas() (which adds the hash column and the errors table if the
+     * migration missed them): the plugin's options go to the component (its exclusions into the ignore list; collecting
+     * errors starts off), entries without a new address (collected 404s) and with an error code go, the rest get their
+     * addresses relative to the site and their hash (duplicates after that removed), and the plugin is enabled and ordered
+     * right after Little WAF. A site whose plugin was disabled used no redirects: its table is emptied.
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    protected function updateRedirects()
+    {
+        if ($this->isUpdateStepDone('redirect-scheme')) {
+            return;
+        }
+
+        $helper = JPATH_ADMINISTRATOR . '/components/com_redirect/helpers/redirect.php';
+
+        try {
+            $db        = JFactory::getDbo();
+            $component = $db->setQuery(
+                $db->getQuery(true)
+                    ->select($db->quoteName(array('extension_id', 'params')))
+                    ->from($db->quoteName('#__extensions'))
+                    ->where($db->quoteName('type') . ' = ' . $db->quote('component'))
+                    ->where($db->quoteName('element') . ' = ' . $db->quote('com_redirect'))
+                    ->where($db->quoteName('state') . ' <> -1')
+            )->loadObject();
+
+            if (!$component || !is_file($helper)) {
+                // Uninstalled: a restore installs it with the new tables
+                $this->markUpdateStepDone('redirect-scheme');
+
+                return;
+            }
+
+            $prefix  = $db->getPrefix();
+            $tables  = array_map('strtolower', $db->getTableList());
+            $columns = in_array(strtolower($prefix . 'redirect_links'), $tables, true) ? $db->getTableColumns('#__redirect_links') : array();
+
+            if (!isset($columns['old_url_hash']) || !in_array(strtolower($prefix . 'redirect_errors'), $tables, true)) {
+                // Tried again on the next update
+                return;
+            }
+
+            JLoader::register('RedirectHelper', $helper);
+
+            $plugin = $db->setQuery(
+                $db->getQuery(true)
+                    ->select($db->quoteName(array('extension_id', 'enabled', 'params', 'ordering')))
+                    ->from($db->quoteName('#__extensions'))
+                    ->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+                    ->where($db->quoteName('folder') . ' = ' . $db->quote('system'))
+                    ->where($db->quoteName('element') . ' = ' . $db->quote('redirect'))
+                    ->where($db->quoteName('state') . ' <> -1')
+            )->loadObject();
+
+            // Options: the plugin's exclusions join the default ignore list
+            $params        = new JRegistry($component->params);
+            $pluginParams  = new JRegistry($plugin ? $plugin->params : '');
+            $ignore        = RedirectHelper::getIgnoreList(RedirectHelper::DEFAULT_IGNORE);
+
+            foreach ((array) $pluginParams->get('exclude_urls', array()) as $exclude) {
+                $exclude = (object) $exclude;
+                $term    = isset($exclude->term) ? trim((string) $exclude->term) : '';
+
+                if ($term === '') {
+                    continue;
+                }
+
+                if (!empty($exclude->regexp)) {
+                    $term = '/' . str_replace('/', '\\/', $term) . '/i';
+
+                    if (@preg_match($term, '') === false) {
+                        continue;
+                    }
+                } elseif (RedirectHelper::isPattern($term) || strpos($term, '*') !== false) {
+                    // A plain term the new syntax would read as a pattern
+                    $term = '/' . preg_quote($term, '/') . '/i';
+                }
+
+                $ignore[] = $term;
+            }
+
+            $params->set('ignore', implode("\n", array_values(array_unique($ignore))));
+            $params->set('collect_errors', 0);
+            $params->set('default_code', 301);
+            $params->remove('mode');
+
+            $db->setQuery(
+                $db->getQuery(true)
+                    ->update($db->quoteName('#__extensions'))
+                    ->set($db->quoteName('params') . ' = ' . $db->quote($params->toString()))
+                    ->where($db->quoteName('extension_id') . ' = ' . (int) $component->extension_id)
+            )->execute();
+
+            if (!$plugin || !(int) $plugin->enabled) {
+                // Redirects did nothing on this site
+                $db->setQuery($db->getQuery(true)->delete($db->quoteName('#__redirect_links')))->execute();
+            } else {
+                $this->convertRedirectLinks($db);
+            }
+
+            if ($plugin) {
+                $db->setQuery(
+                    $db->getQuery(true)
+                        ->update($db->quoteName('#__extensions'))
+                        ->set($db->quoteName('enabled') . ' = 1')
+                        ->set($db->quoteName('params') . ' = ' . $db->quote('{}'))
+                        ->set($db->quoteName('ordering') . ' = ' . (in_array((int) $plugin->ordering, array(1, 3), true) ? -95 : (int) $plugin->ordering))
+                        ->where($db->quoteName('extension_id') . ' = ' . (int) $plugin->extension_id)
+                )->execute();
+            }
+
+            $this->markUpdateStepDone('redirect-scheme');
+        } catch (Exception $e) {
+            // Not worth failing the update for: tried again on the next update
+        }
+    }
+
+    /**
+     * Keeps the redirects of an enabled Redirect plugin, in 3.18's form: see updateRedirects().
+     *
+     * @param   JDatabaseDriver  $db  The database
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    private function convertRedirectLinks($db)
+    {
+        $db->setQuery(
+            $db->getQuery(true)
+                ->delete($db->quoteName('#__redirect_links'))
+                ->where('(' . $db->quoteName('new_url') . ' IS NULL OR ' . $db->quoteName('new_url') . ' = ' . $db->quote('')
+                    . ' OR ' . $db->quoteName('header') . ' >= 400)')
+        )->execute();
+
+        $seen = array();
+        $last = 0;
+
+        do {
+            $rows = $db->setQuery(
+                $db->getQuery(true)
+                    ->select($db->quoteName(array('id', 'old_url', 'new_url', 'header', 'published')))
+                    ->from($db->quoteName('#__redirect_links'))
+                    ->where($db->quoteName('id') . ' > ' . (int) $last)
+                    ->order($db->quoteName('id')),
+                0,
+                500
+            )->loadObjectList();
+
+            foreach ($rows as $row) {
+                $last = (int) $row->id;
+
+                // Entries were collected on this site, whatever host they were stored with
+                $source = RedirectHelper::normaliseSource(preg_replace('#^(?:[a-z][a-z0-9+.-]*:)?//[^/?\#]*#i', '', trim((string) $row->old_url)));
+                $target = RedirectHelper::normaliseTarget($row->new_url);
+                $hash   = $source === false ? '' : RedirectHelper::hash($source);
+
+                if ($source === false || $source === '' || $target === false || isset($seen[$hash])
+                    || (!RedirectHelper::isExternal($target) && isset(RedirectHelper::getCandidates($target)[$hash]))) {
+                    $db->setQuery(
+                        $db->getQuery(true)
+                            ->delete($db->quoteName('#__redirect_links'))
+                            ->where($db->quoteName('id') . ' = ' . (int) $row->id)
+                    )->execute();
+
+                    continue;
+                }
+
+                $seen[$hash] = true;
+
+                $db->setQuery(
+                    $db->getQuery(true)
+                        ->update($db->quoteName('#__redirect_links'))
+                        ->set($db->quoteName('old_url') . ' = ' . $db->quote($source))
+                        ->set($db->quoteName('old_url_hash') . ' = ' . $db->quote($hash))
+                        ->set($db->quoteName('new_url') . ' = ' . $db->quote($target))
+                        ->set($db->quoteName('header') . ' = ' . ((int) $row->header === 302 ? 302 : 0))
+                        ->set($db->quoteName('referer') . ' = ' . $db->quote(''))
+                        ->where($db->quoteName('id') . ' = ' . (int) $row->id)
+                )->execute();
+            }
+        } while (count($rows) === 500);
+
+        RedirectHelper::cleanCache();
     }
 
     /**
@@ -4763,6 +4953,13 @@ class JoomlaInstallerScript
             '/media/system/css/jquery.searchtools.css',
             // The Media Manager's "up" tile (a Back button above the thumbnails since 3.18)
             '/administrator/components/com_media/views/medialist/tmpl/thumbs_up.php',
+            // Redirects' bulk import modal and "update selected links" form (Import and Errors views since 3.18), the plugin's
+            // exclusions form (the component's ignore list)
+            '/administrator/components/com_redirect/layouts/toolbar/batch.php',
+            '/administrator/components/com_redirect/views/links/tmpl/default_addform.php',
+            '/administrator/components/com_redirect/views/links/tmpl/default_batch_body.php',
+            '/administrator/components/com_redirect/views/links/tmpl/default_batch_footer.php',
+            '/plugins/system/redirect/form/excludes.xml',
             // jQuery UI's sortable and Ajax Autocomplete for jQuery (now stand-ins in jquery.compat.js)
             '/media/system/js/jquery.ui.sortable.js',
             '/media/system/js/jquery.ui.sortable.min.js',
@@ -5215,6 +5412,9 @@ class JoomlaInstallerScript
             '/media/plg_twofactorauth_totp',
             '/media/com_media/images/mime-icon-16',
             '/media/com_media/images/mime-icon-32',
+            '/administrator/components/com_redirect/layouts/toolbar',
+            '/administrator/components/com_redirect/layouts',
+            '/plugins/system/redirect/form',
             // MooTools' colour picker (never used by Joomla 3)
             '/media/system/images/mooRainbow',
             '/libraries/joomla/facebook',

@@ -10,27 +10,10 @@
     <version>3.0.0</version>
     <description>PLG_SYSTEM_REDIRECT_XML_DESCRIPTION</description>
     <files>
-        <folder>form</folder>
         <filename plugin="redirect">redirect.php</filename>
     </files>
     <languages>
         <language tag="en-GB">en-GB.plg_system_redirect.ini</language>
         <language tag="en-GB">en-GB.plg_system_redirect.sys.ini</language>
     </languages>
-    <config>
-        <fields name="params">
-            <fieldset name="basic">
-                <field name="collect_urls" type="radio" label="PLG_SYSTEM_REDIRECT_FIELD_COLLECT_URLS_LABEL" description="PLG_SYSTEM_REDIRECT_FIELD_COLLECT_URLS_DESC" default="1" filter="integer" class="btn-group btn-group-yesno">
-                    <option value="1">JENABLED</option>
-                    <option value="0">JDISABLED</option>
-                </field>
-                <field name="includeUrl" type="radio" label="PLG_SYSTEM_REDIRECT_FIELD_STORE_FULL_URL_LABEL" description="PLG_SYSTEM_REDIRECT_FIELD_STORE_FULL_URL_DESC" default="1" filter="integer" class="btn-group btn-group-yesno">
-                    <option value="1">JYES</option>
-                    <option value="0">JNO</option>
-                </field>
-                <field name="exclude_urls" type="subform" label="PLG_SYSTEM_REDIRECT_FIELD_EXCLUDE_URLS_LABEL" description="PLG_SYSTEM_REDIRECT_FIELD_EXCLUDE_URLS_DESC" multiple="true" formsource="plugins/system/redirect/form/excludes.xml" />
-            </fieldset>
-        </fields>
-    </config>
 </extension>
-

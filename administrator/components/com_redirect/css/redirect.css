@@ -1,0 +1,11 @@
+/**
+ * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
+ * @license    GNU General Public License version 2 or later; see LICENSE.md
+ */
+
+/* --- Addresses after the site's address --- */
+
+/* div: Bootstrap's .form-horizontal .input-prepend has the same specificity and comes later */
+div.input-prepend.redirect-url {display:flex;max-width:100%;}
+div.input-prepend.redirect-url .add-on {flex:none;max-width:50%;overflow:hidden;text-overflow:ellipsis;}
+div.input-prepend.redirect-url input {flex:1 1 auto;width:auto;min-width:0;max-width:530px;}

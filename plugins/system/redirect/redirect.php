@@ -10,11 +10,11 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 
 /**
- * Plugin class for redirect handling.
+ * Plugin class for redirect handling: sends visitors of the Redirects component's addresses on, and collects the addresses
+ * which gave an error when the component's options ask for it.
  *
  * @since  1.6
  */
@@ -29,55 +29,143 @@ class PlgSystemRedirect extends JPlugin
     protected $autoloadLanguage = false;
 
     /**
-     * The global exception handler registered before the plugin was instantiated
+     * The exception handler before this plugin's.
      *
-     * @var    callable
-     * @since  3.6
+     * @var    callable|null
+     * @since  3.6.0
      */
     private static $previousExceptionHandler;
 
     /**
-     * Constructor.
+     * Redirects the request when an enabled entry has its address, and starts collecting errors. Runs early (ordering
+     * -95, after Little WAF), so cached pages are redirected too.
      *
-     * @param   object  &$subject  The object to observe
-     * @param   array   $config    An optional associative array of configuration settings.
+     * @return  void
      *
-     * @since   1.6
+     * @since   3.18.0
      */
-    public function __construct(&$subject, $config)
+    public function onAfterInitialise()
     {
-        parent::__construct($subject, $config);
+        $app = JFactory::getApplication();
 
-        // Set the JError handler for E_ERROR to be the class' handleError method.
-        JError::setErrorHandling(E_ERROR, 'callback', array('PlgSystemRedirect', 'handleError'));
+        if (!$app->isClient('site') || !JComponentHelper::isEnabled('com_redirect')) {
+            return;
+        }
 
-        // Register the previously defined exception handler so we can forward errors to it
-        self::$previousExceptionHandler = set_exception_handler(array('PlgSystemRedirect', 'handleException'));
+        JLoader::register('RedirectHelper', JPATH_ADMINISTRATOR . '/components/com_redirect/helpers/redirect.php');
+
+        if (!class_exists('RedirectHelper')) {
+            return;
+        }
+
+        if (JComponentHelper::getParams('com_redirect')->get('collect_errors', 0)) {
+            JError::setErrorHandling(E_ERROR, 'callback', array('PlgSystemRedirect', 'handleError'));
+            self::$previousExceptionHandler = set_exception_handler(array('PlgSystemRedirect', 'handleException'));
+        }
+
+        $method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET';
+
+        if ($method !== 'GET' && $method !== 'HEAD') {
+            return;
+        }
+
+        try {
+            if (!RedirectHelper::hasEnabledRedirects()) {
+                return;
+            }
+
+            $this->redirect($app);
+        } catch (RuntimeException $e) {
+            // Without the database the page fails anyway; nothing to redirect
+        }
     }
 
     /**
-     * Method to handle an error condition from JError.
+     * Sends the request on when an enabled entry has its address: an entry with the request's query first, then one for
+     * its path alone, which passes the query on.
      *
-     * @param   JException  $error  The JException object to be handled.
+     * @param   JApplicationCms  $app  The application
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    protected function redirect($app)
+    {
+        $query      = isset($_SERVER['QUERY_STRING']) ? (string) $_SERVER['QUERY_STRING'] : '';
+        $candidates = RedirectHelper::getCandidates(JUri::getInstance()->getPath() . ($query === '' ? '' : '?' . $query));
+
+        if (!$candidates) {
+            return;
+        }
+
+        $db     = JFactory::getDbo();
+        $select = $db->getQuery(true)
+            ->select($db->quoteName(array('id', 'old_url_hash', 'new_url', 'header')))
+            ->from($db->quoteName('#__redirect_links'))
+            ->where($db->quoteName('old_url_hash') . ' IN (' . implode(',', array_map(array($db, 'quote'), array_keys($candidates))) . ')')
+            ->where($db->quoteName('published') . ' = 1')
+            ->order($db->quoteName('id'));
+        $rows = $db->setQuery($select)->loadObjectList();
+
+        if (!$rows) {
+            return;
+        }
+
+        $redirect = null;
+
+        foreach ($rows as $row) {
+            if ((string) $row->new_url === '') {
+                continue;
+            }
+
+            if ($redirect === null || ($candidates[$row->old_url_hash] && !$candidates[$redirect->old_url_hash])) {
+                $redirect = $row;
+            }
+        }
+
+        if ($redirect === null) {
+            return;
+        }
+
+        $update = $db->getQuery(true)
+            ->update($db->quoteName('#__redirect_links'))
+            ->set($db->quoteName('hits') . ' = ' . $db->quoteName('hits') . ' + 1')
+            ->where($db->quoteName('id') . ' = ' . (int) $redirect->id);
+
+        try {
+            $db->setQuery($update)->execute();
+        } catch (RuntimeException $e) {
+            // The count isn't worth a failed redirect
+        }
+
+        $destination = RedirectHelper::getDestination($redirect->new_url, $candidates[$redirect->old_url_hash] ? '' : $query);
+
+        $app->redirect($destination, RedirectHelper::getCode($redirect->header));
+    }
+
+    /**
+     * JError's errors (JError::raiseError()): recorded, then Joomla's error page.
+     *
+     * @param   JException  $error  The error
      *
      * @return  void
      *
      * @since   1.6
      */
-    public static function handleError(JException $error)
+    public static function handleError($error)
     {
         self::doErrorHandling($error);
     }
 
     /**
-     * Method to handle an uncaught exception.
+     * Uncaught exceptions: recorded, then the handler before this one.
      *
-     * @param   Exception|Throwable  $exception  The Exception or Throwable object to be handled.
+     * @param   Exception|Throwable  $exception  The exception
      *
      * @return  void
      *
      * @since   3.5
-     * @throws  InvalidArgumentException
      */
     public static function handleException($exception)
     {
@@ -92,9 +180,9 @@ class PlgSystemRedirect extends JPlugin
     }
 
     /**
-     * Internal processor for all error handlers
+     * Records the error and shows the error page.
      *
-     * @param   Exception|Throwable  $error  The Exception or Throwable object to be handled.
+     * @param   Exception|Throwable  $error  The error
      *
      * @return  void
      *
@@ -102,217 +190,10 @@ class PlgSystemRedirect extends JPlugin
      */
     private static function doErrorHandling($error)
     {
-        $app = JFactory::getApplication();
-
-        if ($app->isClient('administrator') || ((int) $error->getCode() !== 404)) {
-            // Proxy to the previous exception handler if available, otherwise just render the error page
-            if (self::$previousExceptionHandler) {
-                call_user_func_array(self::$previousExceptionHandler, array($error));
-            } else {
-                JErrorPage::render($error);
-            }
-        }
-
-        $uri = JUri::getInstance();
-
-        // These are the original URLs
-        $orgurl                = rawurldecode((string) $uri->toString(array('scheme', 'host', 'port', 'path', 'query', 'fragment')));
-        $orgurlRel             = rawurldecode((string) $uri->toString(array('path', 'query', 'fragment')));
-
-        // The above doesn't work for sub directories, so do this
-        $orgurlRootRel         = str_replace(JUri::root(), '', $orgurl);
-
-        // For when users have added / to the url
-        $orgurlRootRelSlash    = str_replace(JUri::root(), '/', $orgurl);
-        $orgurlWithoutQuery    = rawurldecode((string) $uri->toString(array('scheme', 'host', 'port', 'path', 'fragment')));
-        $orgurlRelWithoutQuery = rawurldecode((string) $uri->toString(array('path', 'fragment')));
-
-        // These are the URLs we save and use
-        $url                = StringHelper::strtolower(rawurldecode((string) $uri->toString(array('scheme', 'host', 'port', 'path', 'query', 'fragment'))));
-        $urlRel             = StringHelper::strtolower(rawurldecode((string) $uri->toString(array('path', 'query', 'fragment'))));
-
-        // The above doesn't work for sub directories, so do this
-        $urlRootRel         = str_replace(JUri::root(), '', $url);
-
-        // For when users have added / to the url
-        $urlRootRelSlash    = str_replace(JUri::root(), '/', $url);
-        $urlWithoutQuery    = StringHelper::strtolower(rawurldecode((string) $uri->toString(array('scheme', 'host', 'port', 'path', 'fragment'))));
-        $urlRelWithoutQuery = StringHelper::strtolower(rawurldecode((string) $uri->toString(array('path', 'fragment'))));
-
-        $plugin = JPluginHelper::getPlugin('system', 'redirect');
-
-        $params = new Registry($plugin->params);
-
-        $excludes = (array) $params->get('exclude_urls');
-
-        $skipUrl = false;
-
-        foreach ($excludes as $exclude) {
-            if (empty($exclude->term)) {
-                continue;
-            }
-
-            if (!empty($exclude->regexp)) {
-                // Only check $url, because it includes all other sub urls
-                if (preg_match('/' . $exclude->term . '/i', $orgurlRel)) {
-                    $skipUrl = true;
-                    break;
-                }
-            } else {
-                if (StringHelper::strpos($orgurlRel, $exclude->term) !== false) {
-                    $skipUrl = true;
-                    break;
-                }
-            }
-        }
-
-        // Why is this (still) here?
-        if ($skipUrl || (strpos($url, 'mosConfig_') !== false) || (strpos($url, '=http://') !== false)) {
-            JErrorPage::render($error);
-        }
-
-        $db = JFactory::getDbo();
-
-        $query = $db->getQuery(true);
-
-        $query->select('*')
-            ->from($db->quoteName('#__redirect_links'))
-            ->where(
-                '('
-                . $db->quoteName('old_url') . ' = ' . $db->quote($url)
-                . ' OR '
-                . $db->quoteName('old_url') . ' = ' . $db->quote($urlRel)
-                . ' OR '
-                . $db->quoteName('old_url') . ' = ' . $db->quote($urlRootRel)
-                . ' OR '
-                . $db->quoteName('old_url') . ' = ' . $db->quote($urlRootRelSlash)
-                . ' OR '
-                . $db->quoteName('old_url') . ' = ' . $db->quote($urlWithoutQuery)
-                . ' OR '
-                . $db->quoteName('old_url') . ' = ' . $db->quote($urlRelWithoutQuery)
-                . ' OR '
-                . $db->quoteName('old_url') . ' = ' . $db->quote($orgurl)
-                . ' OR '
-                . $db->quoteName('old_url') . ' = ' . $db->quote($orgurlRel)
-                . ' OR '
-                . $db->quoteName('old_url') . ' = ' . $db->quote($orgurlRootRel)
-                . ' OR '
-                . $db->quoteName('old_url') . ' = ' . $db->quote($orgurlRootRelSlash)
-                . ' OR '
-                . $db->quoteName('old_url') . ' = ' . $db->quote($orgurlWithoutQuery)
-                . ' OR '
-                . $db->quoteName('old_url') . ' = ' . $db->quote($orgurlRelWithoutQuery)
-                . ')'
-            );
-
-        $db->setQuery($query);
-
-        $redirect = null;
-
         try {
-            $redirects = $db->loadAssocList();
-        } catch (Exception $e) {
-            JErrorPage::render(new Exception(JText::_('PLG_SYSTEM_REDIRECT_ERROR_UPDATING_DATABASE'), 500, $e));
-        }
-
-        $possibleMatches = array_unique(
-            array(
-                $url,
-                $urlRel,
-                $urlRootRel,
-                $urlRootRelSlash,
-                $urlWithoutQuery,
-                $urlRelWithoutQuery,
-                $orgurl,
-                $orgurlRel,
-                $orgurlRootRel,
-                $orgurlRootRelSlash,
-                $orgurlWithoutQuery,
-                $orgurlRelWithoutQuery,
-            )
-        );
-
-        foreach ($possibleMatches as $match) {
-            if (($index = array_search($match, array_column($redirects, 'old_url'))) !== false) {
-                $redirect = (object) $redirects[$index];
-
-                if ((int) $redirect->published === 1) {
-                    break;
-                }
-            }
-        }
-
-        // A redirect object was found and, if published, will be used
-        if ($redirect !== null && ((int) $redirect->published === 1)) {
-            if (!$redirect->header || (bool) JComponentHelper::getParams('com_redirect')->get('mode', false) === false) {
-                $redirect->header = 301;
-            }
-
-            if ($redirect->header < 400 && $redirect->header >= 300) {
-                $urlQuery = $uri->getQuery();
-
-                $oldUrlParts = parse_url((string) $redirect->old_url);
-
-                $newUrl = $redirect->new_url;
-
-                if ($urlQuery !== '' && empty($oldUrlParts['query'])) {
-                    $newUrl .= '?' . $urlQuery;
-                }
-
-                $dest = JUri::isInternal($newUrl) || strpos((string) $newUrl, 'http') === false ?
-                    JRoute::_($newUrl) : $newUrl;
-
-                // In case the url contains double // lets remove it
-                $destination = str_replace(JUri::root() . '/', JUri::root(), $dest);
-
-                // Always count redirect hits
-                $redirect->hits++;
-
-                try {
-                    $db->updateObject('#__redirect_links', $redirect, 'id');
-                } catch (Exception $e) {
-                    // We don't log issues for now
-                }
-
-                $app->redirect($destination, (int) $redirect->header);
-            }
-
-            JErrorPage::render(new RuntimeException($error->getMessage(), $redirect->header, $error));
-        }
-        // No redirect object was found so we create an entry in the redirect table
-        elseif ($redirect === null) {
-            $params = new Registry(JPluginHelper::getPlugin('system', 'redirect')->params);
-
-            if ((bool) $params->get('collect_urls', 1)) {
-                if (!$params->get('includeUrl', 1)) {
-                    $url = $urlRel;
-                }
-
-                $data = (object) array(
-                    'id' => 0,
-                    'old_url' => $url,
-                    'referer' => $app->input->server->getString('HTTP_REFERER', ''),
-                    'hits' => 1,
-                    'published' => 0,
-                    'created_date' => JFactory::getDate()->toSql()
-                );
-
-                try {
-                    $db->insertObject('#__redirect_links', $data, 'id');
-                } catch (Exception $e) {
-                    JErrorPage::render(new Exception(JText::_('PLG_SYSTEM_REDIRECT_ERROR_UPDATING_DATABASE'), 500, $e));
-                }
-            }
-        }
-        // We have an unpublished redirect object, increment the hit counter
-        else {
-            $redirect->hits++;
-
-            try {
-                $db->updateObject('#__redirect_links', $redirect, 'id');
-            } catch (Exception $e) {
-                JErrorPage::render(new Exception(JText::_('PLG_SYSTEM_REDIRECT_ERROR_UPDATING_DATABASE'), 500, $e));
-            }
+            self::recordError($error);
+        } catch (Throwable $e) {
+            // An error which comes from the database (or a failing log) can't be recorded
         }
 
         // Proxy to the previous exception handler if available, otherwise just render the error page
@@ -320,6 +201,78 @@ class PlgSystemRedirect extends JPlugin
             call_user_func_array(self::$previousExceptionHandler, array($error));
         } else {
             JErrorPage::render($error);
+        }
+    }
+
+    /**
+     * Counts the error against its address in the collected errors (a new entry for an address not seen before), unless
+     * the address is on the ignore list. One new entry in a hundred also deletes what the component's limits leave out.
+     *
+     * @param   Exception|Throwable  $error  The error
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    private static function recordError($error)
+    {
+        $code = (int) $error->getCode();
+
+        if ($code === 0) {
+            $code = 500;
+        }
+
+        if ($code < 400 || $code > 599 || $error instanceof JDatabaseExceptionConnecting) {
+            return;
+        }
+
+        $query = isset($_SERVER['QUERY_STRING']) ? (string) $_SERVER['QUERY_STRING'] : '';
+        $url   = RedirectHelper::normaliseSource(JUri::getInstance()->getPath() . ($query === '' ? '' : '?' . $query));
+
+        if ($url === false || RedirectHelper::isIgnored('/' . $url, RedirectHelper::getIgnoreList())) {
+            return;
+        }
+
+        $db      = JFactory::getDbo();
+        $hash    = RedirectHelper::hash($url);
+        $now     = JFactory::getDate()->toSql();
+        $referer = StringHelper::substr(isset($_SERVER['HTTP_REFERER']) ? trim((string) $_SERVER['HTTP_REFERER']) : '', 0, 2048);
+        $update  = $db->getQuery(true)
+            ->update($db->quoteName('#__redirect_errors'))
+            ->set($db->quoteName('hits') . ' = ' . $db->quoteName('hits') . ' + 1')
+            ->set($db->quoteName('code') . ' = ' . $code)
+            ->set($db->quoteName('last_hit') . ' = ' . $db->quote($now))
+            ->where($db->quoteName('url_hash') . ' = ' . $db->quote($hash));
+
+        if ($referer !== '') {
+            $update->set($db->quoteName('referer') . ' = ' . $db->quote($referer));
+        }
+
+        $db->setQuery($update)->execute();
+
+        if ($db->getAffectedRows() > 0) {
+            return;
+        }
+
+        $row = (object) array(
+            'url'          => StringHelper::substr($url, 0, 2048),
+            'url_hash'     => $hash,
+            'code'         => $code,
+            'referer'      => $referer,
+            'hits'         => 1,
+            'created_date' => $now,
+            'last_hit'     => $now,
+        );
+
+        try {
+            $db->insertObject('#__redirect_errors', $row);
+        } catch (RuntimeException $e) {
+            // Another request inserted the same address in between
+            return;
+        }
+
+        if (mt_rand(1, 100) === 1) {
+            RedirectHelper::purgeErrors();
         }
     }
 }

@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\Utilities\ArrayHelper;
+JLoader::register('RedirectHelper', JPATH_ADMINISTRATOR . '/components/com_redirect/helpers/redirect.php');
 
 /**
  * Redirect link model.
@@ -44,13 +44,13 @@ class RedirectModelLink extends JModelAdmin
     }
 
     /**
-     * Returns a reference to the a Table object, always creating it.
+     * Method to get a table object, load it if necessary.
      *
-     * @param   string  $type    The table type to instantiate
-     * @param   string  $prefix  A prefix for the table class name. Optional.
+     * @param   string  $type    The table name. Optional.
+     * @param   string  $prefix  The class prefix. Optional.
      * @param   array   $config  Configuration array for model. Optional.
      *
-     * @return  JTable    A database object
+     * @return  JTable  A JTable object
      *
      * @since   1.6
      */
@@ -88,14 +88,29 @@ class RedirectModelLink extends JModelAdmin
             $form->setFieldAttribute('published', 'filter', 'unset');
         }
 
-        // If in advanced mode then we make sure the new URL field is not compulsory and the header
-        // field compulsory in case people select non-3xx redirects
-        if (JComponentHelper::getParams('com_redirect')->get('mode', 0) == true) {
-            $form->setFieldAttribute('new_url', 'required', 'false');
-            $form->setFieldAttribute('header', 'required', 'true');
+        return $form;
+    }
+
+    /**
+     * Method to get a single record: the target split into the form's two fields.
+     *
+     * @param   integer  $pk  The id of the primary key.
+     *
+     * @return  mixed  Object on success, false on failure.
+     *
+     * @since   3.18.0
+     */
+    public function getItem($pk = null)
+    {
+        $item = parent::getItem($pk);
+
+        if ($item) {
+            $item->target_type      = RedirectHelper::isExternal($item->new_url) ? 'external' : 'internal';
+            $item->new_url_external = $item->target_type === 'external' ? $item->new_url : '';
+            $item->new_url          = $item->target_type === 'external' ? '' : $item->new_url;
         }
 
-        return $form;
+        return $item;
     }
 
     /**
@@ -120,110 +135,39 @@ class RedirectModelLink extends JModelAdmin
     }
 
     /**
-     * Method to activate links.
+     * Saves an entry: the target is the field of the chosen type. A target which is the source of another entry is saved
+     * with a warning (each visitor is redirected twice).
      *
-     * @param   array   &$pks     An array of link ids.
-     * @param   string  $url      The new URL to set for the redirect.
-     * @param   string  $comment  A comment for the redirect links.
+     * @param   array  $data  The form data.
      *
-     * @return  boolean  Returns true on success, false on failure.
+     * @return  boolean  True on success.
      *
-     * @since   1.6
+     * @since   3.18.0
      */
-    public function activate(&$pks, $url, $comment = null)
+    public function save($data)
     {
-        $user = JFactory::getUser();
-        $db = $this->getDbo();
+        if (isset($data['target_type']) && $data['target_type'] === 'external') {
+            $data['new_url'] = isset($data['new_url_external']) ? $data['new_url_external'] : '';
 
-        // Sanitize the ids.
-        $pks = (array) $pks;
-        $pks = ArrayHelper::toInteger($pks);
-
-        // Populate default comment if necessary.
-        $comment = (!empty($comment)) ? $comment : JText::sprintf('COM_REDIRECT_REDIRECTED_ON', JHtml::_('date', time()));
-
-        // Access checks.
-        if (!$user->authorise('core.edit', 'com_redirect')) {
-            $pks = array();
-            $this->setError(JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'));
-
-            return false;
-        }
-
-        if (!empty($pks)) {
-            // Update the link rows.
-            $query = $db->getQuery(true)
-                ->update($db->quoteName('#__redirect_links'))
-                ->set($db->quoteName('new_url') . ' = ' . $db->quote($url))
-                ->set($db->quoteName('published') . ' = ' . (int) 1)
-                ->set($db->quoteName('comment') . ' = ' . $db->quote($comment))
-                ->where($db->quoteName('id') . ' IN (' . implode(',', $pks) . ')');
-            $db->setQuery($query);
-
-            try {
-                $db->execute();
-            } catch (RuntimeException $e) {
-                $this->setError($e->getMessage());
+            if (trim($data['new_url']) !== '' && !RedirectHelper::isExternal(trim($data['new_url']))) {
+                $this->setError(JText::_('COM_REDIRECT_ERROR_DESTINATION_URL_INVALID'));
 
                 return false;
             }
         }
 
-        return true;
-    }
+        unset($data['target_type'], $data['new_url_external']);
 
-    /**
-     * Method to batch update URLs to have new redirect urls and comments. Note will publish any unpublished URLs.
-     *
-     * @param   array   &$pks     An array of link ids.
-     * @param   string  $url      The new URL to set for the redirect.
-     * @param   string  $comment  A comment for the redirect links.
-     *
-     * @return  boolean  Returns true on success, false on failure.
-     *
-     * @since   3.6.0
-     */
-    public function duplicateUrls(&$pks, $url, $comment = null)
-    {
-        $user = JFactory::getUser();
-        $db = $this->getDbo();
-
-        // Sanitize the ids.
-        $pks = (array) $pks;
-        $pks = ArrayHelper::toInteger($pks);
-
-        // Access checks.
-        if (!$user->authorise('core.edit', 'com_redirect')) {
-            $pks = array();
-            $this->setError(JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'));
-
+        if (!parent::save($data)) {
             return false;
         }
 
-        if (!empty($pks)) {
-            $date = JFactory::getDate()->toSql();
+        $source = RedirectHelper::normaliseSource($data['old_url']);
+        $target = RedirectHelper::normaliseTarget($data['new_url']);
 
-            // Update the link rows.
-            $query = $db->getQuery(true)
-                ->update($db->quoteName('#__redirect_links'))
-                ->set($db->quoteName('new_url') . ' = ' . $db->quote($url))
-                ->set($db->quoteName('modified_date') . ' = ' . $db->quote($date))
-                ->set($db->quoteName('published') . ' = ' . 1)
-                ->where($db->quoteName('id') . ' IN (' . implode(',', $pks) . ')');
-
-            if (!empty($comment)) {
-                $query->set($db->quoteName('comment') . ' = ' . $db->quote($comment));
-            }
-
-            $db->setQuery($query);
-
-            try {
-                $db->execute();
-            } catch (RuntimeException $e) {
-                $this->setError($e->getMessage());
-
-                return false;
-            }
+        if ($source !== false && $target !== false
+            && RedirectHelper::checkLoop($source, $target, (int) $this->getState($this->getName() . '.id')) === 'chain') {
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_REDIRECT_WARNING_CHAIN'), 'warning');
         }
 
         return true;

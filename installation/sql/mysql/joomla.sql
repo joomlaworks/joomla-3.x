@@ -597,7 +597,7 @@ INSERT INTO `#__extensions` (`extension_id`, `package_id`, `name`, `type`, `elem
 (424, 0, 'plg_system_cache', 'plugin', 'cache', 'system', 0, 0, 1, 1, '', '{"browsercache":"0"}', '', '', 0, '0000-00-00 00:00:00', -70, 0),
 (425, 0, 'plg_system_debug', 'plugin', 'debug', 'system', 0, 1, 1, 0, '', '{"profile":"1","queries":"1","memory":"1","language_files":"1","language_strings":"1","strip-first":"1","strip-prefix":"","strip-suffix":""}', '', '', 0, '0000-00-00 00:00:00', 1000, 0),
 (426, 0, 'plg_system_log', 'plugin', 'log', 'system', 0, 1, 1, 1, '', '', '', '', 0, '0000-00-00 00:00:00', 2, 0),
-(427, 0, 'plg_system_redirect', 'plugin', 'redirect', 'system', 0, 0, 1, 0, '', '', '', '', 0, '0000-00-00 00:00:00', 1, 0),
+(427, 0, 'plg_system_redirect', 'plugin', 'redirect', 'system', 0, 1, 1, 0, '', '', '', '', 0, '0000-00-00 00:00:00', -95, 0),
 (428, 0, 'plg_system_remember', 'plugin', 'remember', 'system', 0, 1, 1, 1, '', '', '', '', 0, '0000-00-00 00:00:00', -80, 0),
 (429, 0, 'plg_system_sef', 'plugin', 'sef', 'system', 0, 1, 1, 0, '', '', '', '', 0, '0000-00-00 00:00:00', 4, 0),
 (430, 0, 'plg_system_logout', 'plugin', 'logout', 'system', 0, 1, 1, 1, '', '', '', '', 0, '0000-00-00 00:00:00', 3, 0),
@@ -686,7 +686,7 @@ INSERT INTO `#__extensions` (`extension_id`, `package_id`, `name`, `type`, `elem
 (523, 0, 'plg_captcha_iconcaptcha', 'plugin', 'iconcaptcha', 'captcha', 0, 1, 1, 0, '', '{"theme":"auto","attempts":"5","credits":"1"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (600, 802, 'English (en-GB)', 'language', 'en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (601, 802, 'English (en-GB)', 'language', 'en-GB', '', 1, 1, 1, 1, '', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '{"updateSteps":["media-upload-defaults","default-editor","media-upload-maxsize","codemirror-theme","littlewaf-enabled","latest-actions-count","system-information-module","system-plugin-order","iconcaptcha-enabled"]}', '', 0, '0000-00-00 00:00:00', 0, 0),
+(700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '{"updateSteps":["media-upload-defaults","default-editor","media-upload-maxsize","codemirror-theme","littlewaf-enabled","latest-actions-count","system-information-module","system-plugin-order","iconcaptcha-enabled","redirect-scheme"]}', '', 0, '0000-00-00 00:00:00', 0, 0),
 (802, 0, 'English (en-GB) Language Pack', 'package', 'pkg_en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '0000-00-00 00:00:00', 0, 0);
 
 -- --------------------------------------------------------
@@ -1737,6 +1737,7 @@ CREATE TABLE IF NOT EXISTS `#__privacy_consents` (
 CREATE TABLE IF NOT EXISTS `#__redirect_links` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `old_url` varchar(2048) NOT NULL,
+  `old_url_hash` char(32) NOT NULL DEFAULT '',
   `new_url` varchar(2048),
   `referer` varchar(2048) NOT NULL,
   `comment` varchar(255) NOT NULL DEFAULT '',
@@ -1747,7 +1748,29 @@ CREATE TABLE IF NOT EXISTS `#__redirect_links` (
   `header` smallint NOT NULL DEFAULT 301,
   PRIMARY KEY (`id`),
   KEY `idx_old_url` (`old_url`(100)),
+  KEY `idx_old_url_hash` (`old_url_hash`),
   KEY `idx_link_modifed` (`modified_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `#__redirect_errors`
+--
+
+CREATE TABLE IF NOT EXISTS `#__redirect_errors` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `url` varchar(2048) NOT NULL,
+  `url_hash` char(32) NOT NULL DEFAULT '',
+  `code` smallint NOT NULL DEFAULT 404,
+  `referer` varchar(2048) NOT NULL DEFAULT '',
+  `hits` int unsigned NOT NULL DEFAULT 0,
+  `created_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_hit` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_url_hash` (`url_hash`),
+  KEY `idx_code` (`code`),
+  KEY `idx_last_hit` (`last_hit`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------

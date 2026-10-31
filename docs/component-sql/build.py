@@ -11,7 +11,7 @@ COMPONENTS = {
     'com_content':        (['content', 'content_frontpage', 'content_rating'], ('mysql', 'postgresql', 'sqlsrv'), '.utf8'),
     'com_messages':       (['messages', 'messages_cfg'], ('mysql', 'postgresql', 'sqlsrv'), '.utf8'),
     'com_privacy':        (['privacy_requests', 'privacy_consents'], ('mysql', 'postgresql', 'sqlsrv'), '.utf8'),
-    'com_redirect':       (['redirect_links'], ('mysql', 'postgresql', 'sqlsrv'), '.utf8'),
+    'com_redirect':       (['redirect_links', 'redirect_errors'], ('mysql', 'postgresql', 'sqlsrv'), '.utf8'),
     'com_tags':           (['tags', 'contentitem_tag_map'], ('mysql', 'postgresql', 'sqlsrv'), '.utf8'),
     'com_contenthistory': (['ucm_history'], ('mysql', 'postgresql', 'sqlsrv'), '.utf8'),
     'com_fields':         (['fields', 'fields_categories', 'fields_groups', 'fields_values'], ('mysql', 'postgresql', 'sqlsrv'), '.utf8'),

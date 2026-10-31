@@ -32,7 +32,6 @@ class RedirectModelLinks extends JModelList
                 'state', 'a.state',
                 'old_url', 'a.old_url',
                 'new_url', 'a.new_url',
-                'referer', 'a.referer',
                 'hits', 'a.hits',
                 'created_date', 'a.created_date',
                 'published', 'a.published',
@@ -42,32 +41,6 @@ class RedirectModelLinks extends JModelList
 
         parent::__construct($config);
     }
-    /**
-     * Removes all of the unpublished redirects from the table.
-     *
-     * @return  boolean result of operation
-     *
-     * @since   3.5
-     */
-    public function purge()
-    {
-        $db = $this->getDbo();
-
-        $query = $db->getQuery(true);
-
-        $query->delete('#__redirect_links')->where($db->qn('published') . '= 0');
-
-        $db->setQuery($query);
-
-        try {
-            $db->execute();
-        } catch (Exception $e) {
-            return false;
-        }
-
-        return true;
-    }
-
     /**
      * Method to auto-populate the model state.
      *
@@ -150,7 +123,9 @@ class RedirectModelLinks extends JModelList
         }
 
         // Filter the items over the HTTP status code header.
-        if ($httpStatusCode = $this->getState('filter.http_status')) {
+        $httpStatusCode = $this->getState('filter.http_status');
+
+        if (is_numeric($httpStatusCode)) {
             $query->where($db->quoteName('a.header') . ' = ' . (int) $httpStatusCode);
         }
 
@@ -165,65 +140,16 @@ class RedirectModelLinks extends JModelList
                 $query->where(
                     '(' . $db->quoteName('old_url') . ' LIKE ' . $search .
                     ' OR ' . $db->quoteName('new_url') . ' LIKE ' . $search .
-                    ' OR ' . $db->quoteName('comment') . ' LIKE ' . $search .
-                    ' OR ' . $db->quoteName('referer') . ' LIKE ' . $search . ')'
+                    ' OR ' . $db->quoteName('comment') . ' LIKE ' . $search . ')'
                 );
             }
         }
 
         // Add the list ordering clause.
-        $query->order($db->escape($this->getState('list.ordering', 'a.old_url')) . ' ' . $db->escape($this->getState('list.direction', 'ASC')));
+        $query->order($db->escape($this->getState('list.ordering', 'a.old_url')) . ' ' . $db->escape($this->getState('list.direction', 'ASC')))
+            ->order($db->quoteName('a.id'));
 
         return $query;
     }
 
-    /**
-     * Add the entered URLs into the database
-     *
-     * @param   array  $batchUrls  Array of URLs to enter into the database
-     *
-     * @return boolean
-     */
-    public function batchProcess($batchUrls)
-    {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $params = JComponentHelper::getParams('com_redirect');
-        $state  = (int) $params->get('defaultImportState', 0);
-
-        $columns = array(
-            $db->quoteName('old_url'),
-            $db->quoteName('new_url'),
-            $db->quoteName('referer'),
-            $db->quoteName('comment'),
-            $db->quoteName('hits'),
-            $db->quoteName('published'),
-            $db->quoteName('created_date')
-        );
-
-        $query->columns($columns);
-
-        foreach ($batchUrls as $batch_url) {
-            $old_url = $batch_url[0];
-
-            // Destination URL can also be an external URL
-            if (!empty($batch_url[1])) {
-                $new_url = $batch_url[1];
-            } else {
-                $new_url = '';
-            }
-
-            $query->insert($db->quoteName('#__redirect_links'), false)
-                ->values(
-                    $db->quote($old_url) . ', ' . $db->quote($new_url) . ' ,' . $db->quote('') . ', ' . $db->quote('') . ', 0, ' . $state . ', ' .
-                    $db->quote(JFactory::getDate()->toSql())
-                );
-        }
-
-        $db->setQuery($query);
-        $db->execute();
-
-        return true;
-    }
 }

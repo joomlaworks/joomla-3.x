@@ -54,6 +54,8 @@ class JHtmlRedirect
             $html = '<a href="#" onclick="return listItemTask(\'cb' . $i . '\',\'' . $state[1] . '\')" class="btn btn-micro hasTooltip'
                 . ($value == 1 ? ' active' : '') . '" title="' . JHtml::_('tooltipText', $state[3])
                 . '"><span class="icon-' . $icon . '" aria-hidden="true"></span></a>';
+        } else {
+            $html = '<span class="btn btn-micro disabled"><span class="icon-' . $icon . '" aria-hidden="true"></span></span>';
         }
 
         return $html;

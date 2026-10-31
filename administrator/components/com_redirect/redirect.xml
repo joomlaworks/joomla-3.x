@@ -26,11 +26,14 @@
     <administration>
         <menu link="option=com_redirect" img="class:redirect">Redirect</menu>
         <files folder="admin">
+            <filename>access.xml</filename>
             <filename>config.xml</filename>
             <filename>controller.php</filename>
             <filename>redirect.php</filename>
             <folder>controllers</folder>
+            <folder>css</folder>
             <folder>helpers</folder>
+            <folder>js</folder>
             <folder>models</folder>
             <folder>tables</folder>
             <folder>views</folder>

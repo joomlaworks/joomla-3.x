@@ -18,6 +18,14 @@ defined('_JEXEC') or die;
 class RedirectTableLink extends JTable
 {
     /**
+     * Set by check() when the target is itself the source of another entry.
+     *
+     * @var    boolean
+     * @since  3.18.0
+     */
+    public $_chain = false;
+
+    /**
      * Constructor
      *
      * @param   JDatabaseDriver  $db  Database object.
@@ -30,7 +38,8 @@ class RedirectTableLink extends JTable
     }
 
     /**
-     * Overloaded check function
+     * Overloaded check function: the source relative to the site and unique, the target on this site or an http(s) address
+     * elsewhere, no loop.
      *
      * @return  boolean
      *
@@ -38,62 +47,90 @@ class RedirectTableLink extends JTable
      */
     public function check()
     {
-        $this->old_url = trim(rawurldecode($this->old_url));
-        $this->new_url = trim(rawurldecode($this->new_url));
+        JLoader::register('RedirectHelper', JPATH_ADMINISTRATOR . '/components/com_redirect/helpers/redirect.php');
 
-        // Check for valid name.
-        if (empty($this->old_url)) {
+        $source = RedirectHelper::normaliseSource($this->old_url);
+
+        if ($source === false) {
+            $this->setError(JText::_('COM_REDIRECT_ERROR_SOURCE_URL_OTHER_SITE'));
+
+            return false;
+        }
+
+        if ($source === '') {
             $this->setError(JText::_('COM_REDIRECT_ERROR_SOURCE_URL_REQUIRED'));
 
             return false;
         }
+
+        if (trim((string) $this->new_url) === '') {
+            $this->setError(JText::_('COM_REDIRECT_ERROR_DESTINATION_URL_REQUIRED'));
+
+            return false;
+        }
+
+        $target = RedirectHelper::normaliseTarget($this->new_url);
+
+        if ($target === false) {
+            $this->setError(JText::_('COM_REDIRECT_ERROR_DESTINATION_URL_INVALID'));
+
+            return false;
+        }
+
+        $this->old_url      = $source;
+        $this->old_url_hash = RedirectHelper::hash($source);
+        $this->new_url      = $target;
+        $this->header       = in_array((int) $this->header, array(301, 302), true) ? (int) $this->header : 0;
 
         // Check for NOT NULL.
         if (empty($this->referer)) {
             $this->referer = '';
         }
 
-        // Check for valid name if not in advanced mode.
-        if (empty($this->new_url) && JComponentHelper::getParams('com_redirect')->get('mode', 0) == false) {
-            $this->setError(JText::_('COM_REDIRECT_ERROR_DESTINATION_URL_REQUIRED'));
-
-            return false;
-        } elseif (empty($this->new_url) && JComponentHelper::getParams('com_redirect')->get('mode', 0) == true) {
-            // Else if an empty URL and in redirect mode only throw the same error if the code is a 3xx status code
-            if ($this->header < 400 && $this->header >= 300) {
-                $this->setError(JText::_('COM_REDIRECT_ERROR_DESTINATION_URL_REQUIRED'));
-
-                return false;
-            }
+        if ($this->comment === null) {
+            $this->comment = '';
         }
 
-        // Check for duplicates
-        if ($this->old_url == $this->new_url) {
-            $this->setError(JText::_('COM_REDIRECT_ERROR_DUPLICATE_URLS'));
-
-            return false;
-        }
-
-        $db = $this->getDbo();
-
-        // Check for existing name
+        $db    = $this->getDbo();
         $query = $db->getQuery(true)
-            ->select($db->quoteName('id'))
-            ->select($db->quoteName('old_url'))
-            ->from('#__redirect_links')
-            ->where($db->quoteName('old_url') . ' = ' . $db->quote($this->old_url));
-        $db->setQuery($query);
-        $urls = $db->loadAssocList();
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__redirect_links'))
+            ->where($db->quoteName('old_url_hash') . ' = ' . $db->quote($this->old_url_hash))
+            ->where($db->quoteName('published') . ' <> -2')
+            ->where($db->quoteName('id') . ' <> ' . (int) $this->id);
 
-        foreach ($urls as $url) {
-            if ($url['old_url'] === $this->old_url && (int) $url['id'] != (int) $this->id) {
-                $this->setError(JText::_('COM_REDIRECT_ERROR_DUPLICATE_OLD_URL'));
+        if ((int) $db->setQuery($query)->loadResult() > 0) {
+            $this->setError(JText::_('COM_REDIRECT_ERROR_DUPLICATE_OLD_URL'));
 
-                return false;
-            }
+            return false;
         }
+
+        $loop = RedirectHelper::checkLoop($source, $target, (int) $this->id);
+
+        if ($loop === 'loop') {
+            $this->setError(JText::_($this->leadsElsewhere($source, $target) ? 'COM_REDIRECT_ERROR_LOOP' : 'COM_REDIRECT_ERROR_DUPLICATE_URLS'));
+
+            return false;
+        }
+
+        $this->_chain = $loop === 'chain';
 
         return true;
+    }
+
+    /**
+     * Whether the target goes somewhere other than the source itself (a loop through other entries rather than to itself).
+     *
+     * @param   string  $source  The normalised source
+     * @param   string  $target  The normalised target
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    protected function leadsElsewhere($source, $target)
+    {
+        return !isset(RedirectHelper::getCandidates($target)[RedirectHelper::hash($source)]);
     }
 
     /**
@@ -116,6 +153,54 @@ class RedirectTableLink extends JTable
             $this->created_date = $date;
         }
 
-        return parent::store($updateNulls);
+        $result = parent::store($updateNulls);
+
+        if ($result) {
+            RedirectHelper::cleanCache();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Changes the state of entries; the site's flag of enabled redirects is cleared.
+     *
+     * @param   mixed    $pks     An array of primary key values, or a single value
+     * @param   integer  $state   The state
+     * @param   integer  $userId  The user changing the state
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    public function publish($pks = null, $state = 1, $userId = 0)
+    {
+        JLoader::register('RedirectHelper', JPATH_ADMINISTRATOR . '/components/com_redirect/helpers/redirect.php');
+
+        $result = parent::publish($pks, $state, $userId);
+
+        RedirectHelper::cleanCache();
+
+        return $result;
+    }
+
+    /**
+     * Deletes an entry; the site's flag of enabled redirects is cleared.
+     *
+     * @param   mixed  $pk  The primary key
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    public function delete($pk = null)
+    {
+        JLoader::register('RedirectHelper', JPATH_ADMINISTRATOR . '/components/com_redirect/helpers/redirect.php');
+
+        $result = parent::delete($pk);
+
+        RedirectHelper::cleanCache();
+
+        return $result;
     }
 }

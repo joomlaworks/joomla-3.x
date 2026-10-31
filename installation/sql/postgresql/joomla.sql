@@ -610,7 +610,7 @@ INSERT INTO "#__extensions" ("extension_id", "package_id", "name", "type", "elem
 (424, 0, 'plg_system_cache', 'plugin', 'cache', 'system', 0, 0, 1, 1, '', '{"browsercache":"0"}', '', '', 0, '1970-01-01 00:00:00', -70, 0),
 (425, 0, 'plg_system_debug', 'plugin', 'debug', 'system', 0, 1, 1, 0, '', '{"profile":"1","queries":"1","memory":"1","language_files":"1","language_strings":"1","strip-first":"1","strip-prefix":"","strip-suffix":""}', '', '', 0, '1970-01-01 00:00:00', 1000, 0),
 (426, 0, 'plg_system_log', 'plugin', 'log', 'system', 0, 1, 1, 1, '', '', '', '', 0, '1970-01-01 00:00:00', 2, 0),
-(427, 0, 'plg_system_redirect', 'plugin', 'redirect', 'system', 0, 0, 1, 0, '', '', '', '', 0, '1970-01-01 00:00:00', 1, 0),
+(427, 0, 'plg_system_redirect', 'plugin', 'redirect', 'system', 0, 1, 1, 0, '', '', '', '', 0, '1970-01-01 00:00:00', -95, 0),
 (428, 0, 'plg_system_remember', 'plugin', 'remember', 'system', 0, 1, 1, 1, '', '', '', '', 0, '1970-01-01 00:00:00', -80, 0),
 (429, 0, 'plg_system_sef', 'plugin', 'sef', 'system', 0, 1, 1, 0, '', '', '', '', 0, '1970-01-01 00:00:00', 4, 0),
 (430, 0, 'plg_system_logout', 'plugin', 'logout', 'system', 0, 1, 1, 1, '', '', '', '', 0, '1970-01-01 00:00:00', 3, 0),
@@ -699,7 +699,7 @@ INSERT INTO "#__extensions" ("extension_id", "package_id", "name", "type", "elem
 (523, 0, 'plg_captcha_iconcaptcha', 'plugin', 'iconcaptcha', 'captcha', 0, 1, 1, 0, '', '{"theme":"auto","attempts":"5","credits":"1"}', '', '', 0, '1970-01-01 00:00:00', 0, 0),
 (600, 802, 'English (en-GB)', 'language', 'en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '1970-01-01 00:00:00', 0, 0),
 (601, 802, 'English (en-GB)', 'language', 'en-GB', '', 1, 1, 1, 1, '', '', '', '', 0, '1970-01-01 00:00:00', 0, 0),
-(700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '{"updateSteps":["media-upload-defaults","default-editor","media-upload-maxsize","codemirror-theme","littlewaf-enabled","latest-actions-count","system-information-module","system-plugin-order","iconcaptcha-enabled"]}', '', 0, '1970-01-01 00:00:00', 0, 0),
+(700, 0, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '', '', '{"updateSteps":["media-upload-defaults","default-editor","media-upload-maxsize","codemirror-theme","littlewaf-enabled","latest-actions-count","system-information-module","system-plugin-order","iconcaptcha-enabled","redirect-scheme"]}', '', 0, '1970-01-01 00:00:00', 0, 0),
 (802, 0, 'English (en-GB) Language Pack', 'package', 'pkg_en-GB', '', 0, 1, 1, 1, '', '', '', '', 0, '1970-01-01 00:00:00', 0, 0);
 
 SELECT setval('#__extensions_extension_id_seq', 10000, false);
@@ -1713,6 +1713,7 @@ CREATE INDEX "#__privacy_consents_idx_user_id" ON "#__privacy_consents" ("user_i
 CREATE TABLE "#__redirect_links" (
   "id" serial NOT NULL,
   "old_url" varchar(2048) NOT NULL,
+  "old_url_hash" char(32) DEFAULT '' NOT NULL,
   "new_url" varchar(2048),
   "referer" varchar(2048) NOT NULL,
   "comment" varchar(255) DEFAULT '' NOT NULL,
@@ -1725,6 +1726,26 @@ CREATE TABLE "#__redirect_links" (
 );
 CREATE INDEX "#__redirect_links_idx_old_url" ON "#__redirect_links" ("old_url");
 CREATE INDEX "#__redirect_links_idx_link_modifed" ON "#__redirect_links" ("modified_date");
+CREATE INDEX "#__redirect_links_idx_old_url_hash" ON "#__redirect_links" USING btree ("old_url_hash");
+
+--
+-- Table structure for table `#__redirect_errors`
+--
+
+CREATE TABLE "#__redirect_errors" (
+  "id" serial NOT NULL,
+  "url" varchar(2048) NOT NULL,
+  "url_hash" char(32) DEFAULT '' NOT NULL,
+  "code" smallint DEFAULT 404 NOT NULL,
+  "referer" varchar(2048) DEFAULT '' NOT NULL,
+  "hits" bigint DEFAULT 0 NOT NULL,
+  "created_date" timestamp without time zone DEFAULT '1970-01-01 00:00:00' NOT NULL,
+  "last_hit" timestamp without time zone DEFAULT '1970-01-01 00:00:00' NOT NULL,
+  PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX "#__redirect_errors_idx_url_hash" ON "#__redirect_errors" USING btree ("url_hash");
+CREATE INDEX "#__redirect_errors_idx_code" ON "#__redirect_errors" USING btree ("code");
+CREATE INDEX "#__redirect_errors_idx_last_hit" ON "#__redirect_errors" USING btree ("last_hit");
 
 --
 -- Table structure for table `#__schemas`
