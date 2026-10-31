@@ -17,8 +17,6 @@ use Joomla\CMS\Router\Route;
 // Include the component HTML helpers.
 JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_privacy/helpers/html');
 
-JHtml::_('bootstrap.tooltip');
-
 $totalRequests  = 0;
 $activeRequests = 0;
 

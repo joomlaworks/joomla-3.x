@@ -9,10 +9,7 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('behavior.formvalidator');
 JHtml::_('stylesheet', 'administrator/components/com_redirect/css/redirect.css', array('version' => 'auto'));
-JHtml::_('behavior.keepalive');
-JHtml::_('formbehavior.chosen', 'select');
 
 ?>
 

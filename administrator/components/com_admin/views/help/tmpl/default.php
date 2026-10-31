@@ -8,8 +8,6 @@
  */
 
 defined('_JEXEC') or die;
-
-JHtml::_('bootstrap.tooltip');
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_admin&amp;view=help'); ?>" method="post" name="adminForm" id="adminForm">
 	<div class="row-fluid">

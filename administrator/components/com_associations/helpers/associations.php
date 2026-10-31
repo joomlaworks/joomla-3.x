@@ -271,8 +271,6 @@ class AssociationsHelper extends JHelperContent
                         . $text . '</a>';
         }
 
-        JHtml::_('bootstrap.popover');
-
         return JLayoutHelper::render('joomla.content.associations', $items);
     }
 

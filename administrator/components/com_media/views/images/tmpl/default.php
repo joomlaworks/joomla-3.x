@@ -18,13 +18,10 @@ $isMoo      = $input->getInt('ismoo', 1);
 $author     = $input->getCmd('author');
 $asset      = $input->getCmd('asset');
 
-JHtml::_('formbehavior.chosen', 'select');
-
 // Load tooltip instance without HTML support because we have a HTML tag in the tip
 JHtml::_('bootstrap.tooltip', '.noHtmlTip', array('html' => false));
 
 // Include jQuery
-JHtml::_('behavior.core');
 JHtml::_('jquery.framework');
 JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true));
 JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));

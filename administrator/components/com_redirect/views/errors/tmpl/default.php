@@ -11,7 +11,6 @@
 defined('_JEXEC') or die;
 
 JHtml::_('behavior.multiselect');
-JHtml::_('formbehavior.chosen', 'select');
 
 $user      = JFactory::getUser();
 $canCreate = $user->authorise('core.create', 'com_redirect');

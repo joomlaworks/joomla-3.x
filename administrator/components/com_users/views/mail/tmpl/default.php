@@ -8,9 +8,6 @@
  */
 
 defined('_JEXEC') or die;
-
-JHtml::_('behavior.formvalidator');
-JHtml::_('formbehavior.chosen', 'select');
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_users&view=mail'); ?>" name="adminForm" data-submit-validate method="post" id="adminForm" class="form-validate">

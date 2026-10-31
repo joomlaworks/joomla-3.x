@@ -8,9 +8,6 @@
  */
 
 defined('_JEXEC') or die;
-
-JHtml::_('behavior.formvalidator');
-
 ?>
 <div class="reset-confirm<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>

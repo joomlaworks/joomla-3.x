@@ -11,14 +11,9 @@ defined('_JEXEC') or die;
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
-JHtml::_('behavior.formvalidator');
-JHtml::_('behavior.keepalive');
-JHtml::_('formbehavior.chosen', 'select');
-
 JHtml::_('stylesheet', 'administrator/components/com_languages/css/languages.css', array('version' => 'auto'));
 
 // The search (js/languages.js): the cache of known strings is refreshed first when it expired; requests send the form token
-JHtml::_('behavior.core');
 JHtml::_('form.csrf');
 JFactory::getDocument()->addScriptOptions('com_languages.override', array('expired' => $this->state->get('cache_expired') == 1));
 JHtml::_('script', 'administrator/components/com_languages/js/languages.min.js', array('version' => 'auto', 'position' => 'footer'));

@@ -76,8 +76,6 @@ abstract class JHtmlContact
                 }
             }
 
-            JHtml::_('bootstrap.popover');
-
             $html = JLayoutHelper::render('joomla.content.associations', $items);
         }
 

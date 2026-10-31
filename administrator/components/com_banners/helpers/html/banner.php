@@ -26,7 +26,6 @@ abstract class JHtmlBanner
      */
     public static function clients()
     {
-        JHtml::_('bootstrap.tooltip');
 
         // Create the batch selector to change the client on a selection list.
         return implode(

@@ -11,7 +11,6 @@ defined('_JEXEC') or die;
 $params = JComponentHelper::getParams('com_media');
 $path   = 'file_path';
 
-JHtml::_('behavior.core');
 // The list's checkboxes and previews (the last part of media.js)
 JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
 JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));

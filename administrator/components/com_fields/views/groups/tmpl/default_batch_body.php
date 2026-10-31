@@ -7,8 +7,6 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 defined('_JEXEC') or die;
-
-JHtml::_('formbehavior.chosen', 'select');
 ?>
 
 <div class="container-fluid">

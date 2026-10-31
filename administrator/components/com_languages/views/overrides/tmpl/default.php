@@ -9,9 +9,6 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('formbehavior.chosen', 'select');
-JHtml::_('bootstrap.tooltip');
-
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 $client    = $this->state->get('filter.client') == 'site' ? JText::_('JSITE') : JText::_('JADMINISTRATOR');
 $language  = $this->state->get('filter.language');

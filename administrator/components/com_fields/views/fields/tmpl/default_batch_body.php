@@ -8,8 +8,6 @@
  */
 defined('_JEXEC') or die;
 
-JHtml::_('formbehavior.chosen', 'select');
-
 $context   = $this->escape($this->state->get('filter.context'));
 ?>
 

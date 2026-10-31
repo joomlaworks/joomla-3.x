@@ -60,7 +60,6 @@ defined('_JEXEC') or die;
  * NOTE: If you override pagination_item_active OR pagination_item_inactive you MUST override them both
  */
 
-
 /**
  * Renders the pagination list
  *
@@ -152,7 +151,6 @@ function pagination_item_active(&$item)
 
     $title = '';
     if (!is_numeric($item->text)) {
-        JHtml::_('bootstrap.tooltip');
         $title = ' class="hasTooltip" title="' . $item->text . '"';
     }
 

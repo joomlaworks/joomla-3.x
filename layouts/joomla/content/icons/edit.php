@@ -9,8 +9,6 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('bootstrap.tooltip');
-
 $article = $displayData['article'];
 $overlib = $displayData['overlib'];
 

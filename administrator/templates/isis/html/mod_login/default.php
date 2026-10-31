@@ -15,8 +15,6 @@ defined('_JEXEC') or die;
  * the password toggle and the help links; the page's "Visit the site" link last (9).
  */
 
-JHtml::_('behavior.keepalive');
-
 $root = htmlspecialchars(JUri::root(), ENT_QUOTES, 'UTF-8');
 ?>
 <form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure', 0)); ?>" method="post" id="form-login" class="loginForm">

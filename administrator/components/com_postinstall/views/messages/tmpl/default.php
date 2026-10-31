@@ -11,7 +11,6 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 
-JHtml::_('formbehavior.chosen', 'select');
 ?>
 
 <div class="row-fluid">

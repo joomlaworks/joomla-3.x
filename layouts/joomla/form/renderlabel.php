@@ -29,7 +29,6 @@ $title = '';
 
 if (!empty($description)) {
     if ($text && $text !== $description) {
-        JHtml::_('bootstrap.popover');
         $classes[] = 'hasPopover';
         $title     = ' title="' . htmlspecialchars(trim((string) $text, ':')) . '"'
             . ' data-content="'. htmlspecialchars((string) $description) . '"';
@@ -38,7 +37,6 @@ if (!empty($description)) {
             $position = ' data-placement="left" ';
         }
     } else {
-        JHtml::_('bootstrap.tooltip');
         $classes[] = 'hasTooltip';
         $title     = ' title="' . JHtml::_('tooltipText', trim((string) $text, ':'), $description, 0) . '"';
     }

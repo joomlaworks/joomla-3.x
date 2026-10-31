@@ -8,9 +8,6 @@
  */
 
 defined('_JEXEC') or die;
-
-JHtml::_('behavior.formvalidator');
-
 ?>
 <div class="contact-form">
 	<form id="contact-form" action="<?php echo JRoute::_('index.php'); ?>" method="post" class="form-validate form-horizontal well">

@@ -35,7 +35,6 @@ extract($displayData);
 
 // The button.
 if ($disabled != true) {
-    JHtml::_('bootstrap.tooltip');
 }
 
 $attr = '';

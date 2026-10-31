@@ -9,7 +9,6 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('behavior.core');
 JHtml::_('script', 'com_content/content.min.js', array('version' => 'auto', 'relative' => true));
 
 $document    = JFactory::getDocument();

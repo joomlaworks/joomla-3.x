@@ -11,10 +11,6 @@ defined('_JEXEC') or die;
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
-JHtml::_('behavior.formvalidator');
-JHtml::_('formbehavior.chosen', 'select');
-
-JHtml::_('behavior.core');
 JHtml::_('script', 'administrator/components/com_languages/js/languages.min.js', array('version' => 'auto', 'position' => 'footer'));
 ?>
 

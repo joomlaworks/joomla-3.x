@@ -12,8 +12,6 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Language\LanguageHelper;
 
-JHtml::_('bootstrap.tooltip', '.hasTooltip');
-
 /**
  * Supports a modal menu item picker.
  *

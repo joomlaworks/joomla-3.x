@@ -9,9 +9,6 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('behavior.formvalidator');
-JHtml::_('behavior.keepalive');
-JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.tabstate');
 
 JFactory::getDocument()->addScriptDeclaration('
@@ -34,7 +31,6 @@ JFactory::getDocument()->addScriptDeclaration('
 		$(".filter-node").change(function() {
 			$(\'input[id="jform_map_count"]\').val(document.querySelectorAll(\'input[type="checkbox"]:checked\').length);
 		});
-
 
 	});
 ');

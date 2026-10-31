@@ -251,8 +251,9 @@ abstract class JHtmlBehavior
             return;
         }
 
-        // The validator is part of global.js and frontend.js (CMS.formValidator, document.formvalidator): it attaches to the
-        // forms when the page carries this option
+        // The validator is part of global.js and frontend.js (CMS.formValidator, document.formvalidator) and attaches to every
+        // form.form-validate and form[data-validate] (forms in the component's or modules' HTML load it by themselves:
+        // HtmlDocument::loadMarkupBehaviours()); this loads the script and the message
         static::core();
         JFactory::getDocument()->addScriptOptions('system.formvalidator', true);
 

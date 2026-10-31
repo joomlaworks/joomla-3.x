@@ -26,6 +26,7 @@ For commands of your own on the command line, see [CLI-GUIDE.md](CLI-GUIDE.md). 
   - [Switching without losing unsaved changes](#switching-without-losing-unsaved-changes)
 - [JavaScript: global.js and the CMS namespace](#javascript-globaljs-and-the-cms-namespace)
   - [The old names](#the-old-names)
+  - [Behaviour from markup: no calls needed](#behaviour-from-markup-no-calls-needed)
   - [Submitting forms: validation without a script](#submitting-forms-validation-without-a-script)
   - [The modal](#the-modal)
   - [Item pickers (Article, Category, Contact, Menu Item, News Feed)](#item-pickers-article-category-contact-menu-item-news-feed)
@@ -438,6 +439,29 @@ CMS.sortable.attach('#gallery', {
 `CMS.suggest.attach(input, options)` shows suggestions under a text field: from the server (`url`, a string or a function of the text, answering `{suggestions: [...]}`, each a text or `{value, data}`; `paramName`, default `q`; `params`; `type` GET or POST) or from the page (`lookup`, a list or a function `(query, done)`), with `minChars`, `delay`, `width`, `maxHeight`, `transformResult(responseText, query)`, `formatResult(suggestion, query)` (HTML), `onSelect(suggestion)`, `onSearchStart(params)`, `onSearchComplete(query, suggestions)`, `onSearchError(query, error)`, `autoSelectFirst`, `noCache`, `preventBadQueries`. It returns an object with `setOptions()`, `disable()`, `enable()`, `clear()`, `hide()` and `dispose()`. The list uses jQuery Autocomplete's class names (`.autocomplete-suggestions`, `.autocomplete-suggestion`, `.autocomplete-selected`).
 
 jQuery UI's sortable plugin and Ajax Autocomplete for jQuery are no longer shipped. For extensions that still call them, `media/system/js/jquery.compat.js` provides `jQuery.fn.sortable()` on `CMS.sortable` and `jQuery.fn.autocomplete()`/`devbridgeAutocomplete()` on `CMS.suggest`, with the plugins' option names, events, callbacks and methods (see the file's header for the list). It's loaded by `JHtml::_('jquery.ui', array('sortable'))`, by requests for either plugin's file under any of its names, and by `JHtml::_('behavior.jquerycompat')`. Not covered: dragging between lists (`connectWith`), helpers, containment and revert animations; options it doesn't know are ignored. New code should use `CMS.sortable` and `CMS.suggest` directly.
+
+### Behaviour from markup: no calls needed
+
+Pages used to load each behaviour with a call (`JHtml::_('behavior.formvalidator')`, `bootstrap.tooltip`, `formbehavior.chosen`, `behavior.keepalive`). Since 3.18 the markup is enough: when the head is written, the HTML of the component and the modules is read, and what it asks for is loaded (`HtmlDocument::loadMarkupBehaviours()`); the scripts then start on what they find. Data attributes are the way to ask in new markup (they show at a glance which elements have behaviour); the classes Joomla always used work too:
+
+| Behaviour | Data attribute | Class | Loads |
+|---|---|---|---|
+| A form validated as it's filled in and sent | `<form data-validate>` | `form-validate` | `behavior.formvalidator` |
+| A tooltip (the element's `title`) | `data-tooltip` | `hasTooltip` | `bootstrap.tooltip` |
+| A popover (`title` and `data-content`) | `data-popover` | `hasPopover` | `bootstrap.popover` |
+| A searchable list | `<select data-searchable>` | `advancedSelect` | `formbehavior.chosen` |
+| The session kept alive while the form is open | `<form data-keepalive>` | | `behavior.keepalive` |
+
+```html
+<form action="..." method="post" data-validate data-keepalive>
+    <select name="catid" data-searchable>...</select>
+    <span data-tooltip title="Where the article is listed">?</span>
+</form>
+```
+
+In the administrator, every page of a logged-in user has the shared script (`global.js`), searchable lists (every `select`) and, outside modal frames, keep-alive (`AdministratorApplication::dispatch()`); `data-searchable="false"`, or Joomla's `data-chosen="true"`, keeps a list as it is. Tooltips and popovers of these selectors work on every page that has the shared script.
+
+The calls still work, and are what to use for other selectors or options: `JHtml::_('formbehavior.chosen', '#jform_catid', null, array('disable_search_threshold' => 0))`, `JHtml::_('bootstrap.tooltip', '.hasTooltip', array('placement' => 'bottom'))` (a selector registered again takes the new options). Markup the template writes itself, or a script adds later, isn't read: call the behaviour for it. Core's views no longer make the calls their markup makes unnecessary.
 
 ### Submitting forms: validation without a script
 

@@ -18,7 +18,6 @@ if ($show_advanced == 1) {
 }
 
 if ($params->get('show_button', 0)) {
-    JHtml::_('bootstrap.tooltip');
 }
 
 // Load the smart search component language file.

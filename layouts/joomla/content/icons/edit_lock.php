@@ -9,8 +9,6 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('bootstrap.tooltip');
-
 $tooltip = $displayData['tooltip'];
 
 // @deprecated  4.0  The legacy icon flag will be removed from this layout in 4.0

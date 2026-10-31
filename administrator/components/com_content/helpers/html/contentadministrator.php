@@ -77,8 +77,6 @@ abstract class JHtmlContentAdministrator
                 }
             }
 
-            JHtml::_('bootstrap.popover');
-
             $html = JLayoutHelper::render('joomla.content.associations', $items);
         }
 
@@ -96,7 +94,6 @@ abstract class JHtmlContentAdministrator
      */
     public static function featured($value = 0, $i = 0, $canChange = true)
     {
-        JHtml::_('bootstrap.tooltip');
 
         // Array of image, task, title, action
         $states = array(

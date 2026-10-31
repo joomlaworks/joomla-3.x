@@ -243,7 +243,6 @@ abstract class MediaHelper
             $strings[strtolower($key)] = JText::_('COM_MEDIA_DROP_' . $key);
         }
 
-        JHtml::_('behavior.core');
         JFactory::getDocument()->addScriptOptions(
             'com_media.dropUpload',
             array(
@@ -282,7 +281,6 @@ abstract class MediaHelper
             return JHtml::_('icons.svg', $name, '', array('path' => 'media/com_media/images/icons', 'size' => 14, 'class' => 'media-rename-icon'));
         };
 
-        JHtml::_('behavior.core');
         JFactory::getDocument()->addScriptOptions(
             'com_media.rename',
             array(

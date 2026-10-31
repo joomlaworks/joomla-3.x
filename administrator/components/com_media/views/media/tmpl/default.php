@@ -19,7 +19,6 @@ $base = trim(str_replace('\\', '/', (string) JComponentHelper::getParams('com_me
 
 JFactory::getDocument()->addScriptOptions('com_media.manager', array('basepath' => $base, 'viewstyle' => (string) $style));
 
-JHtml::_('behavior.keepalive');
 JHtml::_('bootstrap.framework');
 JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true));
 JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));

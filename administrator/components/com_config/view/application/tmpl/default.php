@@ -12,10 +12,6 @@ defined('_JEXEC') or die;
 use Joomla\Registry\Registry;
 
 // Load tooltips behavior
-JHtml::_('behavior.formvalidator');
-JHtml::_('behavior.keepalive');
-JHtml::_('bootstrap.tooltip');
-JHtml::_('formbehavior.chosen', 'select');
 
 // Load JS message titles
 JText::script('ERROR');

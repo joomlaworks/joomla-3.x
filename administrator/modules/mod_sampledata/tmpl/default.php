@@ -11,7 +11,6 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Session\Session;
 
-JHtml::_('behavior.core');
 JHtml::_('script', 'administrator/modules/mod_sampledata/js/sampledata.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
 
 JText::script('MOD_SAMPLEDATA_CONFIRM_START');

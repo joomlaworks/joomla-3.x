@@ -14,6 +14,7 @@ defined('JPATH_PLATFORM') or die;
 use Joomla\CMS\Cache\Cache;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
@@ -1065,6 +1066,91 @@ class HtmlDocument extends Document
     }
 
     /**
+     * The HTML the component and the modules wrote (their buffers), in pieces
+     *
+     * @return  string[]
+     *
+     * @since   3.18.0
+     */
+    protected function getBufferedHtml()
+    {
+        $html = array();
+
+        foreach ((array) parent::$_buffer as $type => $buffers) {
+            if (in_array($type, array('head', 'header', 'footer'), true) || !is_array($buffers)) {
+                continue;
+            }
+
+            array_walk_recursive($buffers, function ($value) use (&$html) {
+                if (is_string($value)) {
+                    $html[] = $value;
+                }
+            });
+        }
+
+        return $html;
+    }
+
+    /**
+     * Behaviours the page's markup asks for, so views needn't call them (the classes Joomla always used, and data attributes,
+     * which new markup should use: they show which elements have behaviour):
+     *
+     * - a form with the class form-validate or a data-validate attribute is validated (behavior.formvalidator)
+     * - elements with the class hasTooltip or hasPopover, or a data-tooltip or data-popover attribute, get their tooltips and
+     *   popovers from their title (bootstrap.tooltip, bootstrap.popover)
+     * - a select with the class advancedSelect or a data-searchable attribute becomes searchable (formbehavior.chosen);
+     *   data-searchable="false" (or Joomla's data-chosen="true") keeps one as it is, also where every list is searchable, as
+     *   in the administrator
+     * - a form with a data-keepalive attribute keeps the session alive while it's open (behavior.keepalive)
+     *
+     * Read from the HTML of the component and the modules when the head is written, as they're done by then; the calls do
+     * nothing more when the page made them already.
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    public function loadMarkupBehaviours()
+    {
+        $html = implode("\n", $this->getBufferedHtml());
+
+        if ($html === '') {
+            return;
+        }
+
+        $class = function ($name) {
+            return '\\bclass\\s*=\\s*["\'][^"\']*\\b' . $name . '\\b';
+        };
+        $attribute = function ($name) {
+            return '\\s' . $name . '(?:\\s*=|[\\s/>])';
+        };
+
+        if (preg_match('#<form\\b[^>]*(?:' . $class('form-validate') . '|' . $attribute('data-validate') . ')#i', $html)) {
+            HTMLHelper::_('behavior.formvalidator');
+        }
+
+        if (preg_match('#<[a-z][^>]*(?:' . $class('hasTooltip') . '|' . $attribute('data-tooltip') . ')#', $html)) {
+            HTMLHelper::_('bootstrap.tooltip');
+        }
+
+        if (preg_match('#<[a-z][^>]*(?:' . $class('hasPopover') . '|' . $attribute('data-popover') . ')#', $html)) {
+            HTMLHelper::_('bootstrap.popover');
+        }
+
+        if (preg_match('#<select\\b[^>]*' . $class('advancedSelect') . '#i', $html)) {
+            HTMLHelper::_('formbehavior.chosen');
+        }
+
+        if (preg_match('#<select\\b[^>]*' . $attribute('data-searchable') . '#i', $html)) {
+            HTMLHelper::_('formbehavior.chosen', 'select[data-searchable]');
+        }
+
+        if (preg_match('#<form\\b[^>]*' . $attribute('data-keepalive') . '#i', $html)) {
+            HTMLHelper::_('behavior.keepalive');
+        }
+    }
+
+    /**
      * Whether something on the page might run code while it loads, using the shared script: a script declaration, a custom
      * tag with a script, or an inline script in the HTML of the component or a module (data scripts, JSON-LD for example,
      * don't count)
@@ -1083,21 +1169,7 @@ class HtmlDocument extends Document
             }
         }
 
-        $html = $this->_custom;
-
-        foreach ((array) parent::$_buffer as $type => $buffers) {
-            if (in_array($type, array('head', 'header', 'footer'), true) || !is_array($buffers)) {
-                continue;
-            }
-
-            array_walk_recursive($buffers, function ($value) use (&$html) {
-                if (is_string($value)) {
-                    $html[] = $value;
-                }
-            });
-        }
-
-        foreach ($html as $chunk) {
+        foreach (array_merge($this->_custom, $this->getBufferedHtml()) as $chunk) {
             if (!preg_match_all('#<script\\b([^>]*)>#i', (string) $chunk, $tags)) {
                 continue;
             }

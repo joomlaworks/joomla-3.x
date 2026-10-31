@@ -9,8 +9,6 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('behavior.core');
-
 foreach ($this->levels as $key => $value) {
     $allLevels[$value->id] = $value->title;
 }

@@ -57,6 +57,12 @@ class HeadRenderer extends DocumentRenderer
             $document->_metaTags['name']['tags'] = implode(', ', $tagsHelper->getTagNames($document->_metaTags['name']['tags']));
         }
 
+        // What the component's and modules' markup asks for (validated forms, tooltips, searchable lists): loaded before the
+        // head is written, as views needn't ask for it themselves
+        if ($document instanceof HtmlDocument) {
+            $document->loadMarkupBehaviours();
+        }
+
         if ($document->getScriptOptions()) {
             \JHtml::_('behavior.core');
         }

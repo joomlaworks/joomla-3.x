@@ -11,9 +11,7 @@ defined('_JEXEC') or die;
 
 JLoader::register('AssociationsHelper', JPATH_ADMINISTRATOR . '/components/com_associations/helpers/associations.php');
 
-JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
-JHtml::_('formbehavior.chosen', 'select');
 
 $listOrder        = $this->escape($this->state->get('list.ordering'));
 $listDirn         = $this->escape($this->state->get('list.direction'));
@@ -26,7 +24,6 @@ $iconStates = array(
     1  => 'icon-publish',
     2  => 'icon-archive',
 );
-
 
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_associations&view=associations'); ?>" method="post" name="adminForm" id="adminForm">

@@ -11,7 +11,6 @@
 defined('_JEXEC') or die;
 
 // The test mail button (vanilla, needs global.js)
-JHtml::_('behavior.core');
 JHtml::_('script', 'administrator/components/com_config/js/config.js', array('version' => 'auto', 'position' => 'footer'));
 
 // Load JavaScript message titles

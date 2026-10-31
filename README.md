@@ -55,6 +55,7 @@ Summary of changes:
 - **Redirects for any address:** Redirects can send any address of the site to a new one, on the site or elsewhere (301 or 302), quickly and before cached pages are served; collected errors (404 and others, off by default) have a list of their own with a "Create Redirect" button, and bulk import checks every line
 
 **New features:**
+- Behaviour from markup: forms validate, tooltips and searchable lists work from data attributes (`data-validate`, `data-tooltip`, `data-searchable`, ...) or Joomla's classes, without a call in the view; the administrator keeps the session alive on every page
 - `<jdoc:include type="footer" />`: the CMS's own scripts load at the end of the page (marked files, `addReadyScript()` code, and `global.js`/`frontend.js` where nothing else needs them earlier); framework files and extensions' scripts stay in the head; email cloaking without an inline script per address
 - Four new CAPTCHA plugins: Cloudflare Turnstile, hCaptcha, Akismet (spam filtering of what forms send, no challenge) and IconCaptcha (self-hosted, no API key required, enabled; PHP 7.4+); the CAPTCHA selectors now list disabled CAPTCHA plugins too, marked as such; the online services they use are listed under External Services in System Information's Third-party Software tab
 - "CAPTCHA - Google reCAPTCHA": one plugin for the checkbox, invisible and score (v3, new) types, replacing the two reCAPTCHA plugins (settings moved over on update); v1 support removed (Google shut it down in 2018)

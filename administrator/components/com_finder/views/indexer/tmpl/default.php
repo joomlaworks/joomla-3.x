@@ -9,8 +9,6 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('behavior.keepalive');
-JHtml::_('behavior.core');
 JHtml::_('script', 'administrator/components/com_finder/js/finder.js', array('version' => 'auto'));
 
 // The message that ends the run (js/finder.js closes the modal on it)

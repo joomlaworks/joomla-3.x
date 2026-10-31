@@ -13,7 +13,6 @@ defined('_JEXEC') or die;
 JHtml::_('jquery.framework');
 
 // Load the scripts (global.js first: joomlaupdate.js reads the page's options)
-JHtml::_('behavior.core');
 JHtml::_('script', 'administrator/components/com_joomlaupdate/js/joomlaupdate.min.js', array('version' => 'auto'));
 
 $password = JFactory::getApplication()->getUserState('com_joomlaupdate.password', null);

@@ -12,10 +12,6 @@ defined('_JEXEC') or die;
 /** @var JoomlaupdateViewDefault $this */
 
 JHtml::_('jquery.framework');
-JHtml::_('bootstrap.tooltip');
-JHtml::_('bootstrap.popover');
-JHtml::_('formbehavior.chosen', 'select');
-JHtml::_('behavior.core');
 JHtml::_('script', 'administrator/components/com_joomlaupdate/js/joomlaupdate.min.js', array('version' => 'auto'));
 
 JText::script('JYES');

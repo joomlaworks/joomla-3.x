@@ -12,9 +12,7 @@ defined('_JEXEC') or die;
 /** @var PrivacyViewConsent $this */
 
 // Load the tooltip behavior.
-JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
-JHtml::_('formbehavior.chosen', 'select');
 
 $user       = JFactory::getUser();
 $listOrder  = $this->escape($this->state->get('list.ordering'));

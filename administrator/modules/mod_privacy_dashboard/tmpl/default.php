@@ -9,8 +9,6 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('bootstrap.tooltip');
-
 $totalRequests  = 0;
 $activeRequests = 0;
 

@@ -6257,8 +6257,8 @@
 		Chosen,
 
 		/**
-		 * Searchable lists for selects (a selector, an element or a list), once each; data-chosen (true) on a select
-		 * leaves it alone, as Joomla's Chosen did
+		 * Searchable lists for selects (a selector, an element or a list), once each; data-searchable="false" or
+		 * data-chosen (true, as Joomla's Chosen had it) on a select leaves it alone
 		 *
 		 * @param   {string|Element|NodeList|Array}  selects
 		 * @param   {Object}                         options  Chosen's options; remote {url, type, jsonTermKey,
@@ -6278,7 +6278,7 @@
 			return elements.filter((select) => select.nodeName === 'SELECT').map((select) => {
 				const flag = select.getAttribute('data-chosen');
 
-				if (chosens.has(select) || (flag && flag !== 'false' && flag !== '0')) {
+				if (chosens.has(select) || (flag && flag !== 'false' && flag !== '0') || select.getAttribute('data-searchable') === 'false') {
 					return chosens.get(select);
 				}
 
@@ -6313,8 +6313,12 @@
 			const tags = CMS.options.get('system.chosentags') || {};
 			const special = Object.keys(remote).concat(Object.keys(tags));
 
-			// Lists with a server lookup or tags first: a general selector ('select') would take them without
-			special.concat(Object.keys(lists).filter((selector) => special.indexOf(selector) < 0)).forEach((selector) => {
+			// Lists with a server lookup or tags first, and every list ('select', the administrator's default) last: a general
+			// selector would take the others without their options
+			const general = Object.keys(lists).filter((selector) => special.indexOf(selector) < 0 && selector.trim() === 'select');
+			const others = Object.keys(lists).filter((selector) => special.indexOf(selector) < 0 && general.indexOf(selector) < 0);
+
+			special.concat(others, general).forEach((selector) => {
 				const options = Object.assign({}, lists[selector] || {});
 
 				if (remote[selector]) {
@@ -8217,7 +8221,13 @@
 	const TIP_MARGIN = 6;
 
 	CMS.tip = {
-		selectors: { tooltip: {}, popover: {} },
+		// Elements with the class hasTooltip or hasPopover, or a data-tooltip or data-popover attribute, have them on every
+		// page (the options bootstrap.tooltip and bootstrap.popover give by default); pages register other selectors, or
+		// other options for these (a selector keeps its place, so the first matching one still wins)
+		selectors: {
+			tooltip: { '.hasTooltip': { html: true }, '[data-tooltip]': { html: true } },
+			popover: { '.hasPopover': { html: true, trigger: 'hover focus' }, '[data-popover]': { html: true, trigger: 'hover focus' } },
+		},
 		shown: new Map(),
 		counter: 0,
 
@@ -8770,21 +8780,18 @@
 			return /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(ascii);
 		});
 
-		const attachAll = () => Array.prototype.forEach.call(document.querySelectorAll('form.form-validate'), attachToForm);
+		const attachAll = () => Array.prototype.forEach.call(document.querySelectorAll('form.form-validate, form[data-validate]'), attachToForm);
 
 		return { isValid, validate, setHandler, attachToForm, custom, attachAll };
 	};
 
-	// From the start, so scripts can add handlers before the page is ready; attached to the forms once it is, on pages
-	// which asked for it (behavior.formvalidator). frontend.js may have made it already: the same one is kept
+	// From the start, so scripts can add handlers before the page is ready; attached to every form.form-validate and
+	// form[data-validate] once it is (the page needn't ask: behavior.formvalidator only adds its message). frontend.js may
+	// have made it already: the same one is kept
 	CMS.formValidator = CMS.formValidator || createValidator();
 	document.formvalidator = CMS.formValidator;
 
-	CMS.ready(() => {
-		if (CMS.options.get('system.formvalidator')) {
-			CMS.formValidator.attachAll();
-		}
-	});
+	CMS.ready(() => CMS.formValidator.attachAll());
 
 	// The old constructor: a validator of its own, attached to the forms at once
 	window.JFormValidator = function JFormValidator() {

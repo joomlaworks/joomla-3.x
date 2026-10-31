@@ -11,7 +11,6 @@ defined('_JEXEC') or die;
 
 /** @var PrivacyViewRequest $this */
 
-JHtml::_('behavior.formvalidator');
 JHtml::_('formbehavior.chosen', 'select');
 
 ?>

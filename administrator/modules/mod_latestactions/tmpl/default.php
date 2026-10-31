@@ -12,7 +12,6 @@ defined('_JEXEC') or die;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
-HTMLHelper::_('bootstrap.tooltip');
 ?>
 <div class="row-striped">
 	<?php if (count($list)) : ?>

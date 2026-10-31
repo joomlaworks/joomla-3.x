@@ -9,9 +9,6 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('formbehavior.chosen', 'select');
-JHtml::_('bootstrap.tooltip');
-
 $listOrder     = $this->escape($this->state->get('list.ordering'));
 $listDirn      = $this->escape($this->state->get('list.direction'));
 $lang          = JFactory::getLanguage();

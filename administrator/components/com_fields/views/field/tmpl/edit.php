@@ -11,11 +11,8 @@ defined('_JEXEC') or die;
 // Include the component HTML helpers.
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
-JHtml::_('behavior.formvalidator');
-JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tabstate');
 JHtml::_('formbehavior.chosen', '#jform_catid', null, array('disable_search_threshold' => 0 ));
-JHtml::_('formbehavior.chosen', 'select');
 
 $app = JFactory::getApplication();
 $input = $app->input;
@@ -23,7 +20,6 @@ $input = $app->input;
 // The label follows the title while they're the same (media/com_fields/js/fields.js)
 JFactory::getDocument()->addScriptOptions('com_fields.label', array('title' => 'jform_title', 'label' => 'jform_label'));
 JHtml::_('script', 'com_fields/fields.min.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));
-
 
 ?>
 

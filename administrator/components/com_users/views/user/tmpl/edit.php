@@ -12,9 +12,6 @@ defined('_JEXEC') or die;
 // Include the component HTML helpers.
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
-JHtml::_('behavior.formvalidator');
-JHtml::_('formbehavior.chosen', 'select');
-
 // Get the form fieldsets.
 $fieldsets = $this->form->getFieldsets();
 ?>

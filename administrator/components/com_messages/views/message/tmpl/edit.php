@@ -12,9 +12,6 @@ defined('_JEXEC') or die;
 // Include the HTML helpers.
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
-JHtml::_('behavior.formvalidator');
-JHtml::_('behavior.keepalive');
-
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_messages'); ?>" method="post" name="adminForm" data-submit-validate id="message-form" class="form-validate form-horizontal">
 	<fieldset class="adminform">

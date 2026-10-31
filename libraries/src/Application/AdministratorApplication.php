@@ -110,6 +110,19 @@ class AdministratorApplication extends CMSApplication
         $contents = ComponentHelper::renderComponent($component);
         $document->setBuffer($contents, 'component');
 
+        // What every page has for logged-in users, so views needn't ask (3.18): the shared script (forms with the class
+        // form-validate validated, tooltips of hasTooltip and hasPopover), every list searchable (data-chosen="true" keeps one
+        // as it is) and, on whole pages (not in a modal's frame), the session kept alive. After the component, whose own
+        // selectors and options for lists come first
+        if ($document->getType() === 'html' && !\JFactory::getUser()->guest) {
+            \JHtml::_('behavior.core');
+            \JHtml::_('formbehavior.chosen', 'select');
+
+            if ($this->input->getCmd('tmpl', 'index') !== 'component') {
+                \JHtml::_('behavior.keepalive');
+            }
+        }
+
         // Trigger the onAfterDispatch event.
         \JPluginHelper::importPlugin('system');
         $this->triggerEvent('onAfterDispatch');

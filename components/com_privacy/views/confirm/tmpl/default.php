@@ -11,8 +11,6 @@ defined('_JEXEC') or die;
 
 /** @var PrivacyViewConfirm $this */
 
-JHtml::_('behavior.formvalidator');
-
 ?>
 <div class="request-confirm<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>

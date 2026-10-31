@@ -10,7 +10,6 @@ defined('_JEXEC') or die;
 
 $user = JFactory::getUser();
 
-JHtml::_('bootstrap.tooltip');
 ?>
 <tr>
 	<td class="imgTotal">

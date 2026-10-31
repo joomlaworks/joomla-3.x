@@ -73,8 +73,6 @@ class JHtmlNewsfeed
                 }
             }
 
-            JHtml::_('bootstrap.popover');
-
             $html = JLayoutHelper::render('joomla.content.associations', $items);
         }
 

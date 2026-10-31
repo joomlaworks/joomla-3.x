@@ -9,10 +9,7 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('bootstrap.tooltip');
-
 // JoomlaInstaller, Joomla.submitbutton4() and the install buttons (js/installer.js); install plugins call them by name
-JHtml::_('behavior.core');
 JHtml::_('behavior.tabstate');
 JText::script('COM_INSTALLER_MSG_INSTALL_ENTER_A_URL');
 JHtml::_('script', 'administrator/components/com_installer/js/installer.min.js', array('version' => 'auto'));

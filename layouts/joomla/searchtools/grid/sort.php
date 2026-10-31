@@ -12,7 +12,6 @@ defined('_JEXEC') or die;
 $data = $displayData;
 
 $title = htmlspecialchars(JText::_($data->tip ?: $data->title));
-JHtml::_('bootstrap.popover');
 ?>
 <a href="#" onclick="return false;" class="js-stools-column-order hasPopover"
    data-order="<?php echo $data->order; ?>" data-direction="<?php echo strtoupper((string) $data->direction); ?>" data-name="<?php echo JText::_($data->title); ?>"
