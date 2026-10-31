@@ -41,19 +41,27 @@
 		<fields name="params">
 			<fieldset name="basic">
 				<field name="customCssNote" type="note" class="alert alert-info" label="TPL_FINCH_CUSTOM_CSS_LABEL" description="TPL_FINCH_CUSTOM_CSS_DESC" />
+				<field name="heading_site" type="spacer" label="TPL_FINCH_HEADING_SITE" />
 				<field name="siteName" type="text" label="TPL_FINCH_SITE_NAME_LABEL" description="TPL_FINCH_SITE_NAME_DESC" default="" />
+				<field name="greeting" type="text" label="TPL_FINCH_GREETING_LABEL" description="TPL_FINCH_GREETING_DESC" default="" />
+				<field name="tagline" type="text" label="TPL_FINCH_TAGLINE_LABEL" description="TPL_FINCH_TAGLINE_DESC" default="" class="input-xxlarge" />
+				<field name="authorBio" type="textarea" label="TPL_FINCH_AUTHOR_BIO_LABEL" description="TPL_FINCH_AUTHOR_BIO_DESC" default="" rows="3" class="input-xxlarge" filter="string" />
+				<field name="heading_appearance" type="spacer" label="TPL_FINCH_HEADING_APPEARANCE" />
 				<field name="colorScheme" type="list" label="TPL_FINCH_COLOR_SCHEME_LABEL" description="TPL_FINCH_COLOR_SCHEME_DESC" default="auto">
 					<option value="auto">TPL_FINCH_COLOR_SCHEME_AUTO</option>
 					<option value="light">TPL_FINCH_COLOR_SCHEME_LIGHT</option>
 					<option value="dark">TPL_FINCH_COLOR_SCHEME_DARK</option>
 				</field>
 				<field name="toneNote" type="note" class="alert alert-info" label="TPL_FINCH_TONES_LABEL" description="TPL_FINCH_TONES_DESC" />
-				<field name="greeting" type="text" label="TPL_FINCH_GREETING_LABEL" description="TPL_FINCH_GREETING_DESC" default="" />
-				<field name="tagline" type="text" label="TPL_FINCH_TAGLINE_LABEL" description="TPL_FINCH_TAGLINE_DESC" default="" class="input-xxlarge" />
-				<field name="authorBio" type="textarea" label="TPL_FINCH_AUTHOR_BIO_LABEL" description="TPL_FINCH_AUTHOR_BIO_DESC" default="" rows="3" class="input-xxlarge" filter="string" />
+				<field name="fontMain" type="fontstack" label="TPL_FINCH_FONT_MAIN_LABEL" description="TPL_FINCH_FONT_MAIN_DESC" default="" class="input-xxlarge">
+					<option value="">JLIB_FORM_FIELD_FONTSTACK_TEMPLATE</option>
+				</field>
+				<field name="fontText" type="fontstack" label="TPL_FINCH_FONT_TEXT_LABEL" description="TPL_FINCH_FONT_TEXT_DESC" default="" class="input-xxlarge">
+					<option value="">JLIB_FORM_FIELD_FONTSTACK_TEMPLATE</option>
+				</field>
+				<field name="heading_footer" type="spacer" label="TPL_FINCH_HEADING_FOOTER" />
 				<field name="footerText" type="textarea" label="TPL_FINCH_FOOTER_TEXT_LABEL" description="TPL_FINCH_FOOTER_TEXT_DESC" default="" rows="3" class="input-xxlarge" />
-			</fieldset>
-			<fieldset name="social" label="TPL_FINCH_FIELDSET_SOCIAL" description="TPL_FINCH_FIELDSET_SOCIAL_DESC">
+				<field name="heading_social" type="spacer" label="TPL_FINCH_FIELDSET_SOCIAL" description="TPL_FINCH_FIELDSET_SOCIAL_DESC" />
 				<field name="social_x" type="url" label="X" default="#" filter="url" class="input-xxlarge" />
 				<field name="social_instagram" type="url" label="Instagram" default="#" filter="url" class="input-xxlarge" />
 				<field name="social_facebook" type="url" label="Facebook" default="#" filter="url" class="input-xxlarge" />

@@ -5137,6 +5137,7 @@ class JoomlaInstallerScript
             '/administrator/templates/prothero/images/login-blocks-3-dark.svg',
             '/templates/finch/helper.php',
             '/templates/hammond/helper.php',
+            '/templates/protostar/helper.php',
             '/templates/rookwood/helper.php',
             '/templates/finch/images/favicon.svg',
             '/templates/hammond/images/favicon.svg',

@@ -43,6 +43,35 @@ abstract class RookwoodHelper
     }
 
     /**
+     * The Font options (stacks of Joomla\CMS\Helper\FontStackHelper) as the custom properties of the template's fonts;
+     * empty when they keep the template's own. Never throws: the error page asks too.
+     *
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    public static function fonts()
+    {
+        $css = '';
+
+        try {
+            $params = static::params();
+
+            foreach (array('font' => '--fh') as $name => $property) {
+                $key = (string) $params->get($name, '');
+
+                if ($key !== '' && isset(\Joomla\CMS\Helper\FontStackHelper::STACKS[$key])) {
+                    $css .= $property . ':' . \Joomla\CMS\Helper\FontStackHelper::STACKS[$key][1] . ';';
+                }
+            }
+        } catch (Throwable $e) {
+            return '';
+        }
+
+        return $css;
+    }
+
+    /**
      * Prepare a page of the template and tell its markup what it needs to know. Sets up the document's head (HTML5, meta
      * tags, the theme, the stylesheets, the icon) for index.php, component.php and offline.php alike; for index.php also the
      * script and the kind of page.
@@ -71,6 +100,11 @@ abstract class RookwoodHelper
         foreach (static::stylesheets() as $stylesheet) {
             $document->addStyleSheet($stylesheet);
             static::preload($stylesheet, 'style');
+        }
+
+        // The Font options, over the template's own stacks
+        if (($fonts = static::fonts()) !== '') {
+            $document->addStyleDeclaration(':root {' . $fonts . '}');
         }
 
         $document->addHeadLink($base . '/images/svg/favicon.svg', 'icon', 'rel', array('type' => 'image/svg+xml'));

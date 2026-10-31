@@ -77,6 +77,8 @@ $groups = array(
             'check' => array('plugins/editors/editorjs/vendor/editorjs/editorjs.umd.js', '/"([0-9]+\.[0-9]+\.[0-9]+)"/')),
     ),
     'Fonts and Icons' => array(
+        array('name' => 'Modern Font Stacks', 'use' => 'shared', 'upstream' => 'current', 'version' => '', 'date' => '2026-03-10', 'dateSource' => 'GitHub, the last change of README.md (the stacks)', 'license' => 'CC0-1.0', 'url' => 'https://modernfontstacks.com', 'path' => 'libraries/src/Helper/FontStackHelper.php',
+            'note' => 'The stacks of the Font field (type fontstack): fonts already on visitors\' devices'),
         array('name' => 'Bootstrap Icons', 'use' => 'shared', 'upstream' => 'npm:bootstrap-icons', 'version' => '1.13.2', 'date' => '2026-10-08', 'dateSource' => 'npm release 1.13.2', 'license' => 'MIT', 'url' => 'https://icons.getbootstrap.com', 'path' => 'media/system/images/icons',
             'note' => 'One SVG file per icon (JHtml::_(\'icons.svg\')), also the Media Manager\'s, Contacts\', Smart Search\'s and the legacy administrator images, and EasyMDE\'s buttons', 'check' => array('docs/icons/build.py', '/npm bootstrap-icons ([0-9.]+)/')),
         array('name' => 'IcoMoon (Joomla icon font)', 'use' => 'shared', 'version' => '', 'date' => '2013-10-02', 'dateSource' => 'Joomla\'s last change to the font (joomla-cms 48e2895, "Added new IcoMoon icon font set")', 'license' => 'Royalty-free', 'url' => 'https://icomoon.io', 'path' => 'media/system/fonts'),

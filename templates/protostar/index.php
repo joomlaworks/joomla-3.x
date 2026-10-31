@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  Templates.protostar
@@ -11,92 +12,7 @@ defined('_JEXEC') or die;
 
 /** @var JDocumentHtml $this */
 
-$app  = JFactory::getApplication();
-$user = JFactory::getUser();
-
-// Output as HTML5
-$this->setHtml5(true);
-
-// Getting params from template
-$params = $app->getTemplate(true)->params;
-
-// Detecting Active Variables
-$option   = $app->input->getCmd('option', '');
-$view     = $app->input->getCmd('view', '');
-$layout   = $app->input->getCmd('layout', '');
-$task     = $app->input->getCmd('task', '');
-$itemid   = $app->input->getCmd('Itemid', '');
-$sitename = htmlspecialchars((string) $app->get('sitename'), ENT_QUOTES, 'UTF-8');
-
-// No legacy markup: no scripts and stylesheets for old Internet Explorer versions
-require_once __DIR__ . '/helper.php';
-
-protostarDropConditionalAssets($this);
-
-// Add JavaScript Frameworks
-JHtml::_('bootstrap.framework');
-
-// Add template js
-JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true));
-
-// Add Stylesheets
-JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
-
-// Use of Google Font
-if ($this->params->get('googleFont')) {
-    $font = $this->params->get('googleFontName');
-
-    // Handle fonts with selected weights and styles, e.g. Source+Sans+Condensed:400,400i
-    $fontStyle = str_replace('+', ' ', strstr((string) $font, ':', true) ?: $font);
-
-    JHtml::_('stylesheet', 'https://fonts.googleapis.com/css?family=' . $font);
-    $this->addStyleDeclaration("
-	h1, h2, h3, h4, h5, h6, .site-title {
-		font-family: '" . $fontStyle . "', sans-serif;
-	}");
-}
-
-// Check for a custom CSS file
-JHtml::_('stylesheet', 'user.css', array('version' => 'auto', 'relative' => true));
-
-// Template options: their colours as custom properties, which css/template-options.css applies after user.css
-require_once __DIR__ . '/helper.php';
-
-$optionColors = protostarOptionColors($this->params);
-
-if ($optionColors['properties'] !== '') {
-    JHtml::_('stylesheet', 'template-options.css', array('version' => 'auto', 'relative' => true));
-    $this->addStyleDeclaration(':root {' . $optionColors['properties'] . '}');
-}
-
-// Check for a custom js file
-JHtml::_('script', 'user.js', array('version' => 'auto', 'relative' => true));
-
-// Load optional RTL Bootstrap CSS
-JHtml::_('bootstrap.loadCss', false, $this->direction);
-
-// Adjusting content width
-$position7ModuleCount = $this->countModules('position-7');
-$position8ModuleCount = $this->countModules('position-8');
-
-if ($position7ModuleCount && $position8ModuleCount) {
-    $span = 'span6';
-} elseif ($position7ModuleCount && !$position8ModuleCount) {
-    $span = 'span9';
-} elseif (!$position7ModuleCount && $position8ModuleCount) {
-    $span = 'span9';
-} else {
-    $span = 'span12';
-}
-
-// Logo file or site title param
-if ($this->params->get('logoFile')) {
-    $logo = '<img src="' . htmlspecialchars(JUri::root() . $this->params->get('logoFile'), ENT_QUOTES) . '" alt="' . $sitename . '" />';
-} elseif ($this->params->get('sitetitle')) {
-    $logo = '<span class="site-title" title="' . $sitename . '">' . htmlspecialchars((string) $this->params->get('sitetitle'), ENT_COMPAT, 'UTF-8') . '</span>';
-} else {
-    $logo = '<span class="site-title" title="' . $sitename . '">' . $sitename . '</span>';
-}
+$page = require __DIR__ . '/includes/helper.php';
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
@@ -104,23 +20,15 @@ if ($this->params->get('logoFile')) {
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<jdoc:include type="header" />
 </head>
-<body class="site <?php echo $option
-    . ' view-' . $view
-    . ($layout ? ' layout-' . $layout : ' no-layout')
-    . ($task ? ' task-' . $task : ' no-task')
-    . ($itemid ? ' itemid-' . $itemid : '')
-    . ($params->get('fluidContainer') ? ' fluid' : '')
-    . ($this->direction === 'rtl' ? ' rtl' : '')
-    . $optionColors['classes'];
-?>">
+<body class="<?php echo $page->bodyClass; ?>">
 	<!-- Body -->
 	<div class="body" id="top">
-		<div class="container<?php echo($params->get('fluidContainer') ? '-fluid' : ''); ?>">
+		<div class="container<?php echo($page->params->get('fluidContainer') ? '-fluid' : ''); ?>">
 			<!-- Header -->
 			<header class="header" role="banner">
 				<div class="header-inner clearfix">
 					<a class="brand pull-left" href="<?php echo $this->baseurl; ?>/">
-						<?php echo $logo; ?>
+						<?php echo $page->logo; ?>
 						<?php if ($this->params->get('sitedescription')) : ?>
 						<?php echo '<div class="site-description">' . htmlspecialchars((string) $this->params->get('sitedescription'), ENT_COMPAT, 'UTF-8') . '</div>'; ?>
 						<?php endif; ?>
@@ -147,7 +55,7 @@ if ($this->params->get('logoFile')) {
 			<?php endif; ?>
 			<jdoc:include type="modules" name="banner" style="xhtml" />
 			<div class="row-fluid">
-				<?php if ($position8ModuleCount) : ?>
+				<?php if ($page->position8ModuleCount) : ?>
 				<!-- Begin Sidebar -->
 				<div id="sidebar" class="span3">
 					<div class="sidebar-nav">
@@ -156,7 +64,7 @@ if ($this->params->get('logoFile')) {
 				</div>
 				<!-- End Sidebar -->
 				<?php endif; ?>
-				<main id="content" role="main" class="<?php echo $span; ?>">
+				<main id="content" role="main" class="<?php echo $page->span; ?>">
 					<!-- Begin Content -->
 					<jdoc:include type="modules" name="position-3" style="xhtml" />
 					<jdoc:include type="message" />
@@ -165,7 +73,7 @@ if ($this->params->get('logoFile')) {
 					<jdoc:include type="modules" name="position-2" style="none" />
 					<!-- End Content -->
 				</main>
-				<?php if ($position7ModuleCount) : ?>
+				<?php if ($page->position7ModuleCount) : ?>
 				<div id="aside" class="span3">
 					<!-- Begin Right Sidebar -->
 					<jdoc:include type="modules" name="position-7" style="well" />
@@ -177,7 +85,7 @@ if ($this->params->get('logoFile')) {
 	</div>
 	<!-- Footer -->
 	<footer class="footer" role="contentinfo">
-		<div class="container<?php echo($params->get('fluidContainer') ? '-fluid' : ''); ?>">
+		<div class="container<?php echo($page->params->get('fluidContainer') ? '-fluid' : ''); ?>">
 			<hr />
 			<jdoc:include type="modules" name="footer" style="none" />
 			<p class="pull-right">
@@ -186,7 +94,7 @@ if ($this->params->get('logoFile')) {
 				</a>
 			</p>
 			<p>
-				&copy; <?php echo date('Y'); ?> <?php echo $sitename; ?>
+				&copy; <?php echo date('Y'); ?> <?php echo $page->sitename; ?>
 			</p>
 		</div>
 	</footer>

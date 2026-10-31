@@ -46,12 +46,20 @@
 		<fields name="params">
 			<fieldset name="basic">
 				<field name="customCssNote" type="note" class="alert alert-info" label="TPL_HAMMOND_CUSTOM_CSS_LABEL" description="TPL_HAMMOND_CUSTOM_CSS_DESC" />
+				<field name="heading_site" type="spacer" label="TPL_HAMMOND_HEADING_SITE" />
 				<field name="siteName" type="text" label="TPL_HAMMOND_SITE_NAME_LABEL" description="TPL_HAMMOND_SITE_NAME_DESC" default="" />
 				<field name="tagline" type="text" label="TPL_HAMMOND_TAGLINE_LABEL" description="TPL_HAMMOND_TAGLINE_DESC" default="" class="input-xxlarge" />
-				<field name="footerText" type="textarea" label="TPL_HAMMOND_FOOTER_TEXT_LABEL" description="TPL_HAMMOND_FOOTER_TEXT_DESC" default="" rows="4" class="input-xxlarge" />
 				<field name="pagesMenu" type="menu" label="TPL_HAMMOND_PAGES_MENU_LABEL" description="TPL_HAMMOND_PAGES_MENU_DESC" default="companymenu" />
-			</fieldset>
-			<fieldset name="social" label="TPL_HAMMOND_FIELDSET_SOCIAL" description="TPL_HAMMOND_FIELDSET_SOCIAL_DESC">
+				<field name="heading_appearance" type="spacer" label="TPL_HAMMOND_HEADING_APPEARANCE" />
+				<field name="fontMain" type="fontstack" label="TPL_HAMMOND_FONT_MAIN_LABEL" description="TPL_HAMMOND_FONT_MAIN_DESC" default="" class="input-xxlarge">
+					<option value="">JLIB_FORM_FIELD_FONTSTACK_TEMPLATE</option>
+				</field>
+				<field name="fontText" type="fontstack" label="TPL_HAMMOND_FONT_TEXT_LABEL" description="TPL_HAMMOND_FONT_TEXT_DESC" default="" class="input-xxlarge">
+					<option value="">JLIB_FORM_FIELD_FONTSTACK_TEMPLATE</option>
+				</field>
+				<field name="heading_footer" type="spacer" label="TPL_HAMMOND_HEADING_FOOTER" />
+				<field name="footerText" type="textarea" label="TPL_HAMMOND_FOOTER_TEXT_LABEL" description="TPL_HAMMOND_FOOTER_TEXT_DESC" default="" rows="4" class="input-xxlarge" />
+				<field name="heading_social" type="spacer" label="TPL_HAMMOND_FIELDSET_SOCIAL" description="TPL_HAMMOND_FIELDSET_SOCIAL_DESC" />
 				<field name="social_facebook" type="url" label="Facebook" default="#" filter="url" class="input-xxlarge" />
 				<field name="social_x" type="url" label="X" default="#" filter="url" class="input-xxlarge" />
 				<field name="social_instagram" type="url" label="Instagram" default="#" filter="url" class="input-xxlarge" />

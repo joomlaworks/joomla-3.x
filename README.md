@@ -55,6 +55,7 @@ Summary of changes:
 - **Redirects for any address:** Redirects can send any address of the site to a new one, on the site or elsewhere (301 or 302), quickly and before cached pages are served; collected errors (404 and others, off by default) have a list of their own with a "Create Redirect" button, and bulk import checks every line
 
 **New features:**
+- Font stacks instead of web fonts: a font field previewing the 15 stacks of Modern Font Stacks; Protostar's Google Font options replaced by it (System UI by default), Hammond, Finch and Rookwood get font options too
 - Behaviour from markup: forms validate, tooltips and searchable lists work from data attributes (`data-validate`, `data-tooltip`, `data-searchable`, ...) or Joomla's classes, without a call in the view; the administrator keeps the session alive on every page
 - `<jdoc:include type="footer" />`: the CMS's own scripts load at the end of the page (marked files, `addReadyScript()` code, and `global.js`/`frontend.js` where nothing else needs them earlier); framework files and extensions' scripts stay in the head; email cloaking without an inline script per address
 - Four new CAPTCHA plugins: Cloudflare Turnstile, hCaptcha, Akismet (spam filtering of what forms send, no challenge) and IconCaptcha (self-hosted, no API key required, enabled; PHP 7.4+); the CAPTCHA selectors now list disabled CAPTCHA plugins too, marked as such; the online services they use are listed under External Services in System Information's Third-party Software tab
@@ -113,6 +114,7 @@ Summary of changes:
 - Isis and Protostar are plain, modern CSS: no more Less, a quarter of the size, the same look, and nothing loaded for old Internet Explorer versions
 - Isis and Prothero: each page file starts with a single include of the template's `includes/helper.php`; legacy admin images as SVG; tidier template markup in every core template
 - Templates manager: previews show the desktop and phone views side by side, in the CMS's own modal
+- Protostar's code in `includes/helper.php` too; the site templates' options on one tab, under headings
 - Hammond, Finch and Rookwood's helpers in `includes/`; scripts at the end of the page grouped (core, plugins, modules, components, template); stylesheets with one selector per line
 - Removable extensions no longer break each other when one is removed, and uninstalling a component also removes its tag mappings, associations, content history, custom fields and site menu items (except the home item)
 - Lists can be reordered by touch on phones and tablets (drag a row by its handle); Prothero adds a Reorder button on phones

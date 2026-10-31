@@ -229,6 +229,22 @@
             "use": "shared",
             "series": "",
             "seriesLatest": ""
+        },
+        {
+            "name": "Modern Font Stacks",
+            "version": "",
+            "date": "2026.03.10",
+            "dateSource": "GitHub, the last change of README.md (the stacks)",
+            "license": "CC0-1.0",
+            "url": "https://modernfontstacks.com",
+            "path": "libraries/src/Helper/FontStackHelper.php",
+            "note": "The stacks of the Font field (type fontstack): fonts already on visitors' devices",
+            "latest": "",
+            "isLatest": true,
+            "checked": "",
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
         }
     ],
     "JavaScript Libraries": [

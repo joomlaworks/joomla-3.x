@@ -2561,3 +2561,12 @@ ul.manager .height-50 .icon-folder-2 {height:35px;width:35px;line-height:35px;fo
 .rtl .categories-list .collapse {margin:0 20px 0 0;}
 .rtl .modal-footer button {float:left;}
 .rtl .finder-selects {margin:0 0 15px 15px;}
+
+/* --- Protostar: Font --- */
+/* The Font option (a font stack, System UI by default): the page sets --protostar-font */
+body,
+input,
+button,
+select,
+textarea,
+.navbar-search .search-query {font-family:var(--protostar-font, system-ui, sans-serif);}

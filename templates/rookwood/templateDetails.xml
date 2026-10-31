@@ -42,19 +42,22 @@
 		<fields name="params">
 			<fieldset name="basic">
 				<field name="customCssNote" type="note" class="alert alert-info" label="TPL_ROOKWOOD_CUSTOM_CSS_LABEL" description="TPL_ROOKWOOD_CUSTOM_CSS_DESC" />
+				<field name="heading_site" type="spacer" label="TPL_ROOKWOOD_HEADING_SITE" />
 				<field name="siteName" type="text" label="TPL_ROOKWOOD_SITE_NAME_LABEL" description="TPL_ROOKWOOD_SITE_NAME_DESC" default="" />
+				<field name="heading_appearance" type="spacer" label="TPL_ROOKWOOD_HEADING_APPEARANCE" />
 				<field name="defaultTheme" type="list" label="TPL_ROOKWOOD_DEFAULT_THEME_LABEL" description="TPL_ROOKWOOD_DEFAULT_THEME_DESC" default="dark">
 					<option value="dark">TPL_ROOKWOOD_THEME_OPTION_DARK</option>
 					<option value="light">TPL_ROOKWOOD_THEME_OPTION_LIGHT</option>
 					<option value="system">TPL_ROOKWOOD_THEME_OPTION_SYSTEM</option>
 				</field>
-			</fieldset>
-			<fieldset name="footer" label="TPL_ROOKWOOD_FIELDSET_FOOTER">
+				<field name="font" type="fontstack" label="TPL_ROOKWOOD_FONT_LABEL" description="TPL_ROOKWOOD_FONT_DESC" default="" class="input-xxlarge">
+					<option value="">JLIB_FORM_FIELD_FONTSTACK_TEMPLATE</option>
+				</field>
+				<field name="heading_footer" type="spacer" label="TPL_ROOKWOOD_FIELDSET_FOOTER" />
 				<field name="footerHeadline" type="text" label="TPL_ROOKWOOD_FOOTER_HEADLINE_LABEL" description="TPL_ROOKWOOD_FOOTER_HEADLINE_DESC" default="" class="input-xxlarge" />
 				<field name="footerEmail" type="email" label="TPL_ROOKWOOD_FOOTER_EMAIL_LABEL" description="TPL_ROOKWOOD_FOOTER_EMAIL_DESC" default="" filter="string" class="input-xlarge" validate="email" />
 				<field name="footerText" type="textarea" label="TPL_ROOKWOOD_FOOTER_TEXT_LABEL" description="TPL_ROOKWOOD_FOOTER_TEXT_DESC" default="" rows="3" class="input-xxlarge" />
-			</fieldset>
-			<fieldset name="social" label="TPL_ROOKWOOD_FIELDSET_SOCIAL" description="TPL_ROOKWOOD_FIELDSET_SOCIAL_DESC">
+				<field name="heading_social" type="spacer" label="TPL_ROOKWOOD_FIELDSET_SOCIAL" description="TPL_ROOKWOOD_FIELDSET_SOCIAL_DESC" />
 				<field name="social_x" type="url" label="X" default="" filter="url" class="input-xxlarge" />
 				<field name="social_linkedin" type="url" label="LinkedIn" default="" filter="url" class="input-xxlarge" />
 				<field name="social_instagram" type="url" label="Instagram" default="" filter="url" class="input-xxlarge" />

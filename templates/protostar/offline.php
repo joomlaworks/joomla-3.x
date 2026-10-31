@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Site
  * @subpackage  Templates.protostar
@@ -11,65 +12,7 @@ defined('_JEXEC') or die;
 
 /** @var JDocumentHtml $this */
 
-$twofactormethods = JAuthenticationHelper::getTwoFactorMethods();
-$app              = JFactory::getApplication();
-
-// Output as HTML5
-$this->setHtml5(true);
-
-// No legacy markup: no scripts and stylesheets for old Internet Explorer versions
-require_once __DIR__ . '/helper.php';
-
-protostarDropConditionalAssets($this);
-
-// Add JavaScript Frameworks
-JHtml::_('bootstrap.framework');
-
-// Add template js
-JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true));
-
-// Add Stylesheets
-JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
-JHtml::_('stylesheet', 'offline.css', array('version' => 'auto', 'relative' => true));
-
-// Use of Google Font
-if ($this->params->get('googleFont')) {
-    JHtml::_('stylesheet', 'https://fonts.googleapis.com/css?family=' . $this->params->get('googleFontName'));
-    $this->addStyleDeclaration("
-	h1, h2, h3, h4, h5, h6, .site-title {
-		font-family: '" . str_replace('+', ' ', $this->params->get('googleFontName')) . "', sans-serif;
-	}");
-}
-
-// Check for a custom CSS file
-JHtml::_('stylesheet', 'user.css', array('version' => 'auto', 'relative' => true));
-
-// Template options: their colours as custom properties, which css/template-options.css applies after user.css
-require_once __DIR__ . '/helper.php';
-
-$optionColors = protostarOptionColors($this->params);
-
-if ($optionColors['properties'] !== '') {
-    JHtml::_('stylesheet', 'template-options.css', array('version' => 'auto', 'relative' => true));
-    $this->addStyleDeclaration(':root {' . $optionColors['properties'] . '}');
-}
-
-// Check for a custom js file
-JHtml::_('script', 'user.js', array('version' => 'auto', 'relative' => true));
-
-// Load optional RTL Bootstrap CSS
-JHtml::_('bootstrap.loadCss', false, $this->direction);
-
-// Logo file or site title param
-$sitename = htmlspecialchars((string) $app->get('sitename'), ENT_QUOTES, 'UTF-8');
-
-if ($this->params->get('logoFile')) {
-    $logo = '<img src="' . htmlspecialchars(JUri::root() . $this->params->get('logoFile'), ENT_QUOTES, 'UTF-8') . '" alt="' . $sitename . '" />';
-} elseif ($this->params->get('sitetitle')) {
-    $logo = '<span class="site-title" title="' . $sitename . '">' . htmlspecialchars((string) $this->params->get('sitetitle')) . '</span>';
-} else {
-    $logo = '<span class="site-title" title="' . $sitename . '">' . $sitename . '</span>';
-}
+$page = require __DIR__ . '/includes/helper.php';
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
@@ -77,22 +20,22 @@ if ($this->params->get('logoFile')) {
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<jdoc:include type="header" />
 </head>
-<body class="site<?php echo $optionColors['classes']; ?>">
+<body class="site<?php echo $page->optionColors['classes']; ?>">
 	<div class="outer">
 		<div class="middle">
 			<div class="inner well">
 				<div class="header">
-					<?php if (!empty($logo)) : ?>
-					<h1><?php echo $logo; ?></h1>
+					<?php if (!empty($page->logo)) : ?>
+					<h1><?php echo $page->logo; ?></h1>
 					<?php else : ?>
-					<h1><?php echo $sitename; ?></h1>
+					<h1><?php echo $page->sitename; ?></h1>
 					<?php endif; ?>
-					<?php if ($app->get('offline_image') && file_exists($app->get('offline_image'))) : ?>
-					<img src="<?php echo $app->get('offline_image'); ?>" alt="<?php echo $sitename; ?>" />
+					<?php if ($page->app->get('offline_image') && file_exists($page->app->get('offline_image'))) : ?>
+					<img src="<?php echo $page->app->get('offline_image'); ?>" alt="<?php echo $page->sitename; ?>" />
 					<?php endif; ?>
-					<?php if ($app->get('display_offline_message', 1) == 1 && str_replace(' ', '', $app->get('offline_message')) !== '') : ?>
-					<p><?php echo $app->get('offline_message'); ?></p>
-					<?php elseif ($app->get('display_offline_message', 1) == 2) : ?>
+					<?php if ($page->app->get('display_offline_message', 1) == 1 && str_replace(' ', '', $page->app->get('offline_message')) !== '') : ?>
+					<p><?php echo $page->app->get('offline_message'); ?></p>
+					<?php elseif ($page->app->get('display_offline_message', 1) == 2) : ?>
 					<p><?php echo JText::_('JOFFLINE_MESSAGE'); ?></p>
 					<?php endif; ?>
 				</div>
@@ -105,7 +48,7 @@ if ($this->params->get('logoFile')) {
 						<label for="password"><?php echo JText::_('JGLOBAL_PASSWORD'); ?></label>
 						<input type="password" name="password" id="password" title="<?php echo JText::_('JGLOBAL_PASSWORD'); ?>" />
 
-						<?php if (count($twofactormethods) > 1) : ?>
+						<?php if (count($page->twofactormethods) > 1) : ?>
 						<label for="secretkey"><?php echo JText::_('JGLOBAL_SECRETKEY'); ?></label>
 						<input type="text" name="secretkey" autocomplete="one-time-code" id="secretkey" title="<?php echo JText::_('JGLOBAL_SECRETKEY'); ?>" />
 						<?php endif; ?>

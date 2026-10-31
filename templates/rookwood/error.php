@@ -39,6 +39,9 @@ $theme = RookwoodHelper::defaultTheme();
 	<?php foreach (RookwoodHelper::stylesheets() as $stylesheet) : ?>
 	<link href="<?php echo htmlspecialchars($stylesheet, ENT_QUOTES, 'UTF-8'); ?>" rel="stylesheet" />
 	<?php endforeach; ?>
+	<?php if (($fonts = RookwoodHelper::fonts()) !== '') : ?>
+	<style>:root {<?php echo $fonts; ?>}</style>
+	<?php endif; ?>
 	<link href="<?php echo htmlspecialchars($tpl, ENT_QUOTES, 'UTF-8'); ?>/images/svg/favicon.svg" rel="icon" type="image/svg+xml" />
 </head>
 <body class="site isInner isError">
