@@ -21,8 +21,8 @@ $asset      = $input->getCmd('asset');
 // Load tooltip instance without HTML support because we have a HTML tag in the tip
 JHtml::_('bootstrap.tooltip', '.noHtmlTip', array('html' => false));
 
-// Include jQuery
-JHtml::_('jquery.framework');
+// The picker's script (media.js) reads its options through the CMS's script (the picker also runs on the site)
+JHtml::_('behavior.core');
 JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true));
 JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));
 

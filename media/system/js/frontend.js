@@ -1924,7 +1924,8 @@
 			}
 
 			const title = CMS.tip.title(element, options);
-			const content = type === 'popover' ? element.getAttribute('data-content') || options.content || '' : '';
+			// The option first, then the attribute, as Bootstrap's popover
+			const content = type === 'popover' ? options.content || element.getAttribute('data-content') || '' : '';
 
 			if (!title && !content) {
 				return;

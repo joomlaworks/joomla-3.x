@@ -94,8 +94,6 @@ $url    = ($readonly ? ''
 	data-preview-height="<?php echo $previewHeight; ?>"
 	>
 	<?php echo JHtml::_('bootstrap.renderModal', 'imageModal_' . $id, array('title' => JText::_('JLIB_FORM_CHANGE_IMAGE'), 'closeButton' => true)); ?>
-	<?php // media.js' media field part is jQuery code: it asks for jQuery, as the templates no longer load it?>
-	<?php JHtml::_('jquery.framework'); ?>
 	<?php JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true)); ?>
 	<?php if ($showPreview && $showAsTooltip) : ?>
 	<div class="input-prepend input-append">

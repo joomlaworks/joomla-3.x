@@ -19,8 +19,7 @@ $base = trim(str_replace('\\', '/', (string) JComponentHelper::getParams('com_me
 
 JFactory::getDocument()->addScriptOptions('com_media.manager', array('basepath' => $base, 'viewstyle' => (string) $style));
 
-// media.js' Media Manager part is jQuery code; its modals are the CMS's (global.js)
-JHtml::_('jquery.framework');
+// The Media Manager (media.js) and its modals (the CMS's, global.js)
 JHtml::_('behavior.cms');
 JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true));
 JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));

@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 /** @var JoomlaupdateViewDefault $this */
 
-JHtml::_('jquery.framework');
+// Plain JavaScript since 3.18 (no jQuery); the CMS's script is on every administrator page
 JHtml::_('script', 'administrator/components/com_joomlaupdate/js/joomlaupdate.min.js', array('version' => 'auto'));
 
 JText::script('JYES');

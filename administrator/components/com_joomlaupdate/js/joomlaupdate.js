@@ -1,6 +1,7 @@
 /*
  * Joomla Update's scripts: AES (Chris Veness), the update run (Akeeba's CMS Update, GPL 3 or later), then the main page's
- * extraction settings and pre-update check (Joomla), which start only on the main page.
+ * extraction settings and pre-update check (Joomla), which start only on the main page. Plain JavaScript since 3.18: the
+ * update run's requests are fetch() calls, the pre-update check's too.
  */
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -512,127 +513,114 @@ doEncryptedAjax = function(data, successCallback, errorCallback)
 	{
 		json = AesCtr.encrypt( json, joomlaupdate_password, 128 );
 	}
-	var post_data = {
-		'json':     json
-	};
 
-	var structure =
+	var fail = function(message)
 	{
-		type: "POST",
-		url: joomlaupdate_ajax_url,
-		cache: false,
-		data: post_data,
-		timeout: 600000,
-
-		success: function(msg, responseXML)
+		if (errorCallback == null)
 		{
-			// Initialize
-			var junk = null;
-			var message = "";
-
-			// Get rid of junk before the data
-			var valid_pos = msg.indexOf('###');
-
-			if( valid_pos == -1 )
+			if (error_callback != null)
 			{
-				// Valid data not found in the response
-				msg = 'Invalid AJAX data:\n' + msg;
-
-				if (errorCallback == null)
-				{
-					if(error_callback != null)
-					{
-						error_callback(msg);
-					}
-				}
-				else
-				{
-					errorCallback(msg);
-				}
-
-				return;
+				error_callback(message);
 			}
-			else if( valid_pos != 0 )
-			{
-				// Data is prefixed with junk
-				junk = msg.substr(0, valid_pos);
-				message = msg.substr(valid_pos);
-			}
-			else
-			{
-				message = msg;
-			}
-
-			message = message.substr(3); // Remove triple hash in the beginning
-
-			// Get of rid of junk after the data
-			var valid_pos = message.lastIndexOf('###');
-
-			message = message.substr(0, valid_pos); // Remove triple hash in the end
-
-			// Decrypt if required
-			var data = null;
-			if( joomlaupdate_password.length > 0 )
-			{
-				try
-				{
-					var data = JSON.parse(message);
-				}
-				catch(err)
-				{
-					message = AesCtr.decrypt(message, joomlaupdate_password, 128);
-				}
-			}
-
-			try
-			{
-				if (empty(data))
-				{
-					data = JSON.parse(message);
-				}
-			}
-			catch(err)
-			{
-				var msg = err.message + "\n<br/>\n<pre>\n" + message + "\n</pre>";
-
-				if (errorCallback == null)
-				{
-					if (error_callback != null)
-					{
-						error_callback(msg);
-					}
-				}
-				else
-				{
-					errorCallback(msg);
-				}
-
-				return;
-			}
-
-			// Call the callback function
-			successCallback(data);
-		},
-
-		error: function(req)
+		}
+		else
 		{
-			var message = 'AJAX Loading Error: ' + req.statusText;
-
-			if(errorCallback == null)
-			{
-				if (error_callback != null)
-				{
-					error_callback(message);
-				}
-			}
-			else
-			{
-				errorCallback(message);
-			}
+			errorCallback(message);
 		}
 	};
 
-	jQuery.ajax( structure );
+	var success = function(msg)
+	{
+		// Initialize
+		var junk = null;
+		var message = "";
+
+		// Get rid of junk before the data
+		var valid_pos = msg.indexOf('###');
+
+		if( valid_pos == -1 )
+		{
+			// Valid data not found in the response
+			fail('Invalid AJAX data:\n' + msg);
+
+			return;
+		}
+		else if( valid_pos != 0 )
+		{
+			// Data is prefixed with junk
+			junk = msg.substr(0, valid_pos);
+			message = msg.substr(valid_pos);
+		}
+		else
+		{
+			message = msg;
+		}
+
+		message = message.substr(3); // Remove triple hash in the beginning
+
+		// Get of rid of junk after the data
+		valid_pos = message.lastIndexOf('###');
+
+		message = message.substr(0, valid_pos); // Remove triple hash in the end
+
+		// Decrypt if required
+		var data = null;
+		if( joomlaupdate_password.length > 0 )
+		{
+			try
+			{
+				data = JSON.parse(message);
+			}
+			catch(err)
+			{
+				message = AesCtr.decrypt(message, joomlaupdate_password, 128);
+			}
+		}
+
+		try
+		{
+			if (empty(data))
+			{
+				data = JSON.parse(message);
+			}
+		}
+		catch(err)
+		{
+			fail(err.message + "\n<br/>\n<pre>\n" + message + "\n</pre>");
+
+			return;
+		}
+
+		// Call the callback function
+		successCallback(data);
+	};
+
+	// A POST of the (encrypted) data as "json", read as text; ten minutes at most, as before (fetch(), no jQuery)
+	var controller = new AbortController();
+	var timer = setTimeout(function () { controller.abort(); }, 600000);
+
+	fetch(joomlaupdate_ajax_url, {
+		method: 'POST',
+		credentials: 'same-origin',
+		body: new URLSearchParams({ json: json }),
+		signal: controller.signal
+	}).then(function (response) {
+		return response.text().then(function (text) {
+			clearTimeout(timer);
+
+			if (!response.ok)
+			{
+				fail('AJAX Loading Error: ' + response.statusText);
+
+				return;
+			}
+
+			success(text);
+		});
+	}, function (error) {
+		clearTimeout(timer);
+		fail('AJAX Loading Error: ' + (error && error.name === 'AbortError' ? 'timeout' : 'error'));
+	});
 };
 
 /**
@@ -711,24 +699,44 @@ stepExtract = function(data)
 		stat_outbytes += data.bytesOut;
 		stat_files += data.files;
 
+		var bar = document.getElementById('progress-bar');
+		var show = function (id, value)
+		{
+			var element = document.getElementById(id);
+
+			if (element)
+			{
+				element.textContent = value;
+			}
+		};
+
+		var setBar = function ()
+		{
+			if (bar)
+			{
+				bar.style.width = stat_percent + '%';
+				bar.setAttribute('aria-valuenow', stat_percent);
+			}
+		};
+
 		if (stat_percent < 100)
 		{
-			jQuery('#progress-bar').css('width', stat_percent + '%').attr('aria-valuenow', stat_percent);
+			setBar();
 		}
 		else if (stat_percent > 100)
 		{
 			stat_percent = 100;
-			jQuery('#progress-bar').css('width', stat_percent + '%').attr('aria-valuenow', stat_percent);
+			setBar();
 		}
-		else
+		else if (bar)
 		{
-			jQuery('#progress-bar').removeClass('bar-success');
+			bar.classList.remove('bar-success');
 		}
 
-		jQuery('#extpercent').text(stat_percent.toFixed(1) + '%');
-		jQuery('#extbytesin').text(stat_inbytes);
-		jQuery('#extbytesout').text(stat_outbytes);
-		jQuery('#extfiles').text(stat_files);
+		show('extpercent', stat_percent.toFixed(1) + '%');
+		show('extbytesin', stat_inbytes);
+		show('extbytesout', stat_outbytes);
+		show('extfiles', stat_files);
 
 		// Do AJAX post
 		post = {
@@ -857,85 +865,117 @@ function is_array (mixed_var)
 
 function extractionMethodHandler(target, prefix)
 {
-	jQuery(function ($) {
-		$em = $(target);
-		displayStyle = ($em.val() === 'direct') ? 'none' : 'table-row';
+	var run = function ()
+	{
+		var list = typeof target === 'string' ? document.querySelector(target) : (target && target.jquery ? target[0] : target);
+		var displayStyle = (list && list.value === 'direct') ? 'none' : 'table-row';
 
-		document.getElementById(prefix + '_notice').style.display = displayStyle;
-		document.getElementById(prefix + '_hostname').style.display = displayStyle;
-		document.getElementById(prefix + '_port').style.display = displayStyle;
-		document.getElementById(prefix + '_username').style.display = displayStyle;
-		document.getElementById(prefix + '_password').style.display = displayStyle;
-		document.getElementById(prefix + '_directory').style.display = displayStyle;
-	});
+		['_notice', '_hostname', '_port', '_username', '_password', '_directory'].forEach(function (name)
+		{
+			var row = document.getElementById(prefix + name);
+
+			if (row)
+			{
+				row.style.display = displayStyle;
+			}
+		});
+	};
+
+	if (document.readyState === 'loading')
+	{
+		document.addEventListener('DOMContentLoaded', run);
+	}
+	else
+	{
+		run();
+	}
 }
 
-(function($, document, window) {
-    /**
-     * PreUpdateChecker
-     *
-     * @type {Object}
-     */
-    var PreUpdateChecker = {};
+(function(document, window) {
+	'use strict';
+
+	var $ = function (selector, context) { return (context || document).querySelector(selector); };
+	var $$ = function (selector, context) { return Array.prototype.slice.call((context || document).querySelectorAll(selector)); };
+	var css = function (elements, styles) { elements.forEach(function (element) { Object.assign(element.style, styles); }); };
+
+	// The update buttons: usable or not
+	var enableSubmit = function (enabled)
+	{
+		$$('button.submitupdate').forEach(function (button)
+		{
+			button.classList.toggle('disabled', !enabled);
+			button.disabled = !enabled;
+		});
+	};
+
+	// Without potentially dangerous plugins (or once none is left), the warnings go and the update can start
+	var clearWarnings = function ()
+	{
+		css($$('#preupdateCheckWarning, #preupdateconfirmation, #preupdatecheckbox, #preupdatecheckheadings'), { display: 'none' });
+
+		var box = $('#preupdatecheckbox #noncoreplugins');
+
+		if (box)
+		{
+			box.checked = true;
+		}
+
+		enableSubmit(true);
+	};
 
 	/**
-	 * Warning visibility flags
+	 * PreUpdateChecker
 	 *
-	 * @type {Boolean}
+	 * @type {Object}
 	 */
-	var showorangewarning = false;
-	var showyellowwarning = false;
+	var PreUpdateChecker = {};
 
 	/**
-     * Config object
-     *
-     * @type {{serverUrl: string, selector: string}}
-     */
-    PreUpdateChecker.config = {
-        serverUrl: 'index.php?option=com_joomlaupdate&task=update.fetchextensioncompatibility',
-        selector: '.extension-check'
-    };
+	 * Config object
+	 *
+	 * @type {{serverUrl: string, selector: string}}
+	 */
+	PreUpdateChecker.config = {
+		serverUrl: 'index.php?option=com_joomlaupdate&task=update.fetchextensioncompatibility',
+		selector: '.extension-check'
+	};
 
-    /**
-     * Extension compatibility states returned by the server.
-     *
-     * @type {{INCOMPATIBLE: number, COMPATIBLE: number, MISSING_COMPATIBILITY_TAG: number, SERVER_ERROR: number}}
-     */
-    PreUpdateChecker.STATE = {
-        INCOMPATIBLE: 0,
-        COMPATIBLE: 1,
-        MISSING_COMPATIBILITY_TAG: 2,
-        SERVER_ERROR: 3
-    };
+	/**
+	 * Extension compatibility states returned by the server.
+	 *
+	 * @type {{INCOMPATIBLE: number, COMPATIBLE: number, MISSING_COMPATIBILITY_TAG: number, SERVER_ERROR: number}}
+	 */
+	PreUpdateChecker.STATE = {
+		INCOMPATIBLE: 0,
+		COMPATIBLE: 1,
+		MISSING_COMPATIBILITY_TAG: 2,
+		SERVER_ERROR: 3
+	};
 
-    /**
-     * Run the PreUpdateChecker.
-     * Called by document ready, setup below.
-     */
-    PreUpdateChecker.run = function () {
-
+	/**
+	 * Run the PreUpdateChecker.
+	 * Called by document ready, setup below.
+	 */
+	PreUpdateChecker.run = function () {
 		// The main page only: this file is also the update page's
 		if (!document.getElementById('joomlaupdate-wrapper'))
 		{
 			return;
 		}
 
-		$('.settingstoggle').css('float', 'right').css('cursor', 'pointer');
-		$('.settingstoggle').on('click', function(toggle, index)
+		css($$('.settingstoggle'), { float: 'right', cursor: 'pointer' });
+		$$('.settingstoggle').forEach(function (toggle)
 		{
-			var settingsfieldset = $(this).closest('fieldset');
-			if($(this).data('state') == 'closed')
+			toggle.addEventListener('click', function ()
 			{
-				$(this).data('state', 'open');
-				$(this).html( COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_LESS_COMPATIBILITY_INFORMATION);
-				settingsfieldset.find('.settingsInfo').removeClass('hidden');
-			}
-			else
-			{
-				$(this).data('state', 'closed');
-				$(this).html( COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION);
-				settingsfieldset.find('.settingsInfo').addClass('hidden');
-			}
+				var info = $$('.settingsInfo', toggle.closest('fieldset'));
+				var open = toggle.dataset.state === 'closed';
+
+				toggle.dataset.state = open ? 'open' : 'closed';
+				toggle.innerHTML = open ? window.COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_LESS_COMPATIBILITY_INFORMATION
+					: window.COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION;
+				info.forEach(function (element) { element.classList.toggle('hidden', !open); });
+			});
 		});
 
 		PreUpdateChecker.nonCoreCriticalPlugins = Joomla.getOptions('nonCoreCriticalPlugins', []);
@@ -943,144 +983,160 @@ function extractionMethodHandler(target, prefix)
 		// If there are no non Core Critical Plugins installed then disable the warnings upfront
 		if (PreUpdateChecker.nonCoreCriticalPlugins.length === 0)
 		{
-			$('#preupdateCheckWarning, #preupdateconfirmation, #preupdatecheckbox, #preupdatecheckheadings').css('display', 'none');
-			$('#preupdatecheckbox #noncoreplugins').prop('checked', true);
-			$('button.submitupdate').removeClass('disabled');
-			$('button.submitupdate').prop('disabled', false);
+			clearWarnings();
 		}
 
 		// Grab all extensions based on the selector set in the config object
-		var $extensions = $(PreUpdateChecker.config.selector);
+		var extensions = $$(PreUpdateChecker.config.selector);
 
 		// If there are no extensions to be checked we can exit here
-		if ($extensions.length === 0)
+		if (extensions.length === 0)
 		{
 			return;
 		}
 
-		$('#preupdatecheckbox #noncoreplugins').on('change', function ()
+		var noncore = $('#preupdatecheckbox #noncoreplugins');
+
+		if (noncore)
 		{
-			if ($('#preupdatecheckbox #noncoreplugins').is(':checked')) {
-				if (confirm(Joomla.JText._('COM_JOOMLAUPDATE_VIEW_DEFAULT_POTENTIALLY_DANGEROUS_PLUGIN_CONFIRM_MESSAGE'))) {
-					$('button.submitupdate').removeClass('disabled');
-					$('button.submitupdate').prop('disabled', false);
+			noncore.addEventListener('change', function ()
+			{
+				if (noncore.checked) {
+					if (confirm(Joomla.JText._('COM_JOOMLAUPDATE_VIEW_DEFAULT_POTENTIALLY_DANGEROUS_PLUGIN_CONFIRM_MESSAGE'))) {
+						enableSubmit(true);
+					}
+					else
+					{
+						noncore.checked = false;
+					}
+				} else {
+					enableSubmit(false);
+				}
+			});
+		}
+
+		// Get version of the available joomla update
+		PreUpdateChecker.joomlaTargetVersion = window.joomlaTargetVersion;
+		PreUpdateChecker.joomlaCurrentVersion = window.joomlaCurrentVersion;
+
+		// No point creating and loading a component stylesheet for 4 settings
+		css($$('.compatibilitytypes img'), { height: '20px' });
+		css($$('.compatibilitytypes'), { display: 'none', marginLeft: '0' });
+		// The currently processing line should show until it’s finished
+		css($$('#compatibilitytype0'), { display: 'block' });
+		css($$('.compatibilitytoggle'), { float: 'right', cursor: 'pointer' });
+
+		$$('.compatibilitytoggle').forEach(function (toggle)
+		{
+			toggle.addEventListener('click', function ()
+			{
+				var types = toggle.closest('fieldset.compatibilitytypes');
+				var open = toggle.dataset.state === 'closed';
+				var each = function (selector, add, remove)
+				{
+					$$(selector, types).forEach(function (element)
+					{
+						element.classList.remove.apply(element.classList, remove);
+						element.classList.add.apply(element.classList, add);
+					});
+				};
+
+				toggle.dataset.state = open ? 'open' : 'closed';
+				toggle.innerHTML = open ? window.COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_LESS_COMPATIBILITY_INFORMATION
+					: window.COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION;
+
+				if (open)
+				{
+					each('.exname', ['span4'], ['span8']);
+					each('.extype', ['span1'], ['span4']);
+					each('.upcomp', ['span3'], ['hidden']);
+					each('.currcomp', ['span3'], ['hidden']);
+					each('.instver', ['span1'], ['hidden']);
+
+					if (PreUpdateChecker.showyellowwarning)
+					{
+						each('#updateyellowwarning', [], ['hidden']);
+					}
+					if (PreUpdateChecker.showorangewarning)
+					{
+						each('#updateorangewarning', [], ['hidden']);
+					}
 				}
 				else
 				{
-					$('#preupdatecheckbox #noncoreplugins').prop('checked', false);
+					each('.exname', ['span8'], ['span4']);
+					each('.extype', ['span4'], ['span1']);
+					each('.upcomp', ['hidden'], ['span3']);
+					each('.currcomp', ['hidden'], ['span3']);
+					each('.instver', ['hidden'], ['span1']);
+					each('#updateyellowwarning', ['hidden'], []);
+					each('#updateorangewarning', ['hidden'], []);
 				}
-			} else {
-				$('button.submitupdate').addClass('disabled');
-				$('button.submitupdate').prop('disabled', true);
-			}
-
+			});
 		});
 
-		// Get version of the available joomla update
-        PreUpdateChecker.joomlaTargetVersion = window.joomlaTargetVersion;
-        PreUpdateChecker.joomlaCurrentVersion = window.joomlaCurrentVersion;
+		extensions.forEach(function (extension) {
+			// Check compatibility for each extension, and a callback function after completing the request
+			PreUpdateChecker.checkCompatibility(extension, PreUpdateChecker.setResultView);
+		});
+	};
 
-		// No point creating and loading a component stylesheet for 4 settings
-		$('.compatibilitytypes img').css('height', '20px');
-		$('.compatibilitytypes').css('display', 'none').css('margin-left', 0);
-		// The currently processing line should show until it’s finished
-		$('#compatibilitytype0').css('display', 'block');
-		$('.compatibilitytoggle').css('float', 'right').css('cursor', 'pointer');
+	/**
+	 * Check the compatibility for a single extension.
+	 * Requests the server checking the compatibility based on the data set in the element's data attributes.
+	 *
+	 * @param {Element} element
+	 * @param {callable} callback
+	 */
+	PreUpdateChecker.checkCompatibility = function (element, callback) {
+		// Result object passed to the callback
+		// Set to server error by default
+		var extension = {
+			element: element,
+			compatibleVersion: 0,
+			serverError: 1
+		};
 
-		$('.compatibilitytoggle').on('click', function(toggle, index)
-		{
-			var compatibilitytypes = $(this).closest('fieldset.compatibilitytypes');
-			if($(this).data('state') == 'closed')
-			{
-				$(this).data('state', 'open');
-				$(this).html( COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_LESS_COMPATIBILITY_INFORMATION);
-				compatibilitytypes.find('.exname').removeClass('span8').addClass('span4');
-				compatibilitytypes.find('.extype').removeClass('span4').addClass('span1');
-				compatibilitytypes.find('.upcomp').removeClass('hidden').addClass('span3');
-				compatibilitytypes.find('.currcomp').removeClass('hidden').addClass('span3');
-				compatibilitytypes.find('.instver').removeClass('hidden').addClass('span1');
-
-				if (PreUpdateChecker.showyellowwarning)
-				{
-					compatibilitytypes.find("#updateyellowwarning").removeClass('hidden');
-				}
-				if (PreUpdateChecker.showorangewarning)
-				{
-					compatibilitytypes.find("#updateorangewarning").removeClass('hidden');
-				}
-			}
-			else
-			{
-				$(this).data('state', 'closed');
-				$(this).html( COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION);
-				compatibilitytypes.find('.exname').addClass('span8').removeClass('span4');
-				compatibilitytypes.find('.extype').addClass('span4').removeClass('span1');
-				compatibilitytypes.find('.upcomp').addClass('hidden').removeClass('span3');
-				compatibilitytypes.find('.currcomp').addClass('hidden').removeClass('span3');
-				compatibilitytypes.find('.instver').addClass('hidden').removeClass('span1');
-
-				compatibilitytypes.find("#updateyellowwarning").addClass('hidden');
-				compatibilitytypes.find("#updateorangewarning").addClass('hidden');
-			}
+		// Request the server to check the compatiblity for the passed extension and joomla version
+		var query = new URLSearchParams({
+			'joomla-target-version': PreUpdateChecker.joomlaTargetVersion,
+			'joomla-current-version': PreUpdateChecker.joomlaCurrentVersion,
+			'extension-version': element.getAttribute('data-extension-current-version') || '',
+			'extension-id': element.getAttribute('data-extension-id') || ''
 		});
 
-        $extensions.each(function () {
-            // Check compatibility for each extension, pass jQuery object and a callback
-            // function after completing the request
-            PreUpdateChecker.checkCompatibility($(this), PreUpdateChecker.setResultView);
-        });
-    }
+		fetch(PreUpdateChecker.config.serverUrl + '&' + query.toString(), { credentials: 'same-origin' })
+			.then(function (response) { return response.ok ? response.json() : Promise.reject(response); })
+			.then(function (response) {
+				// Extract the data from the JResponseJson object
+				extension.serverError = 0;
+				extension.compatibilityData = response.data;
+			})
+			.catch(function () {})
+			.then(function () {
+				// Pass the retrieved data to the callback
+				callback(extension);
+			});
+	};
 
-    /**
-     * Check the compatibility for a single extension.
-     * Requests the server checking the compatibility based on the data set in the element's data attributes.
-     *
-     * @param {Object} $extension
-     * @param {callable} callback
-     */
-    PreUpdateChecker.checkCompatibility = function ($extension, callback) {
-        // Result object passed to the callback
-        // Set to server error by default
-        var extension = {
-            $element: $extension,
-            compatibleVersion: 0,
-            serverError: 1
-        };
+	/**
+	 * Set the result for a passed extensionData object containing state, element and compatible version
+	 *
+	 * @param {Object} extensionData
+	 */
+	PreUpdateChecker.setResultView = function (extensionData) {
+		var html = '';
 
-        // Request the server to check the compatiblity for the passed extension and joomla version
-        $.getJSON(PreUpdateChecker.config.serverUrl, {
-            'joomla-target-version': PreUpdateChecker.joomlaTargetVersion,
-            'joomla-current-version': PreUpdateChecker.joomlaCurrentVersion,
-            'extension-version': $extension.data('extension-current-version'),
-            'extension-id': $extension.data('extensionId')
-        }).done(function(response) {
-            // Extract the data from the JResponseJson object
-            extension.serverError = 0;
-            extension.compatibilityData = response.data;
-        }).always(function(e) {
-            // Pass the retrieved data to the callback
-            callback(extension);
-        });
-    }
-
-    /**
-     * Set the result for a passed extensionData object containing state, jQuery object and compatible version
-     *
-     * @param {Object} extensionData
-     */
-    PreUpdateChecker.setResultView = function (extensionData) {
-        var html = '';
-
-        // Process Target Version Extension Compatibility
-        if (extensionData.serverError) {
+		// Process Target Version Extension Compatibility
+		if (extensionData.serverError) {
 			// An error occurred -> show unknown error note
 			html = Joomla.JText._('COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSION_SERVER_ERROR');
 			// force result into group 4 = Pre update checks failed
 			extensionData.compatibilityData = {
 				'resultGroup' : 4
-			}
+			};
 		}
-        else {
+		else {
 			// Switch the compatibility state
 			switch (extensionData.compatibilityData.upgradeCompatibilityStatus.state) {
 				case PreUpdateChecker.STATE.COMPATIBLE:
@@ -1108,8 +1164,8 @@ function extractionMethodHandler(target, prefix)
 					html = Joomla.JText._('COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSION_WARNING_UNKNOWN');
 			}
 		}
-        // Insert the generated html
-        extensionData.$element.html(html);
+		// Insert the generated html
+		extensionData.element.innerHTML = html;
 
 		// Process Current Version Extension Compatibility
 		html = '';
@@ -1137,11 +1193,17 @@ function extractionMethodHandler(target, prefix)
 			}
 		}
 		// Insert the generated html
-		var extensionId = extensionData.$element.data('extensionId')
-		document.getElementById('available-version-' + extensionId ).innerHTML = html;
+		var extensionId = extensionData.element.getAttribute('data-extension-id');
+		document.getElementById('available-version-' + extensionId).innerHTML = html;
 
-		extensionData.$element.closest('tr').appendTo($('#compatibilitytype' + extensionData.compatibilityData.resultGroup + ' tbody'));
-		$('#compatibilitytype' + extensionData.compatibilityData.resultGroup).css('display', 'block');
+		var group = document.getElementById('compatibilitytype' + extensionData.compatibilityData.resultGroup);
+		var row = extensionData.element.closest('tr');
+
+		if (group && row)
+		{
+			group.querySelector('tbody').appendChild(row);
+			group.style.display = 'block';
+		}
 
 		document.getElementById('compatibilitytype0').style.display = 'block';
 
@@ -1152,37 +1214,41 @@ function extractionMethodHandler(target, prefix)
 
 			for (var i = PreUpdateChecker.nonCoreCriticalPlugins.length - 1; i >= 0; i--)
 			{
-			  pluginInfo = PreUpdateChecker.nonCoreCriticalPlugins[i];
+				pluginInfo = PreUpdateChecker.nonCoreCriticalPlugins[i];
 
-			  if (pluginInfo.package_id == extensionId || pluginInfo.extension_id == extensionId)
-			  {
-				$('#plg_' + pluginInfo.extension_id).remove();
-				PreUpdateChecker.nonCoreCriticalPlugins.splice(i, 1);
-			  }
+				if (pluginInfo.package_id == extensionId || pluginInfo.extension_id == extensionId)
+				{
+					var plugin = document.getElementById('plg_' + pluginInfo.extension_id);
+
+					if (plugin)
+					{
+						plugin.remove();
+					}
+
+					PreUpdateChecker.nonCoreCriticalPlugins.splice(i, 1);
+				}
 			}
 		}
 
 		// Have we finished running through the potentially critical plugins - if so we can hide the warning before all the checks are completed
-		if ($('#preupdatecheckheadings table td').length == 0) {
-			$('#preupdatecheckheadings').css('display', 'none');
+		if ($$('#preupdatecheckheadings table td').length == 0) {
+			css($$('#preupdatecheckheadings'), { display: 'none' });
 		}
 
 		// Have we finished?
-		if ($('#compatibilitytype0 tbody td').length == 0) {
-			$('#compatibilitytype0').css('display', 'none');
+		if ($$('#compatibilitytype0 tbody td').length == 0) {
+			css($$('#compatibilitytype0'), { display: 'none' });
 			for (var cpi in PreUpdateChecker.nonCoreCriticalPlugins)
 			{
-				var problemPluginRow = $('td[data-extension-id=' + PreUpdateChecker.nonCoreCriticalPlugins[cpi].extension_id +']');
-				if (!problemPluginRow.length)
-				{
-					problemPluginRow = $('td[data-extension-id=' + PreUpdateChecker.nonCoreCriticalPlugins[cpi].package_id +']');
-				}
-				if (problemPluginRow.length)
+				var problemPluginRow = $('td[data-extension-id="' + PreUpdateChecker.nonCoreCriticalPlugins[cpi].extension_id + '"]')
+					|| $('td[data-extension-id="' + PreUpdateChecker.nonCoreCriticalPlugins[cpi].package_id + '"]');
+
+				if (problemPluginRow)
 				{
 					var tableRow = problemPluginRow.closest('tr');
-					tableRow.addClass('error');
-					var pluginTitleTableCell = tableRow.find('td:first-child');
-					pluginTitleTableCell.html(pluginTitleTableCell.html()
+					tableRow.classList.add('error');
+					var pluginTitleTableCell = tableRow.querySelector('td:first-child');
+					pluginTitleTableCell.innerHTML = pluginTitleTableCell.innerHTML
 						+ '<span class="label label-warning " >'
 						+ '<span class="icon-warning"></span>'
 						+ Joomla.JText._('COM_JOOMLAUPDATE_VIEW_DEFAULT_POTENTIALLY_DANGEROUS_PLUGIN')
@@ -1194,34 +1260,40 @@ function extractionMethodHandler(target, prefix)
 						+ '>'
 						+ '<span class="icon-help"></span>'
 						+ Joomla.JText._('COM_JOOMLAUPDATE_VIEW_DEFAULT_HELP')
-						+ '</span>'
-					);
-					var popoverElement = pluginTitleTableCell.find('.hasPopover');
-					popoverElement.css('cursor', 'pointer')
-					popoverElement.popover({"placement": "top","trigger": "focus click"});
+						+ '</span>';
+					var popoverElement = pluginTitleTableCell.querySelector('.hasPopover');
+					popoverElement.style.cursor = 'pointer';
+					window.CMS.bootstrap.call('popover', popoverElement, {"placement": "top", "trigger": "focus click"});
 				}
 			}
 			if (PreUpdateChecker.nonCoreCriticalPlugins.length == 0)
 			{
-				$('#preupdateCheckWarning, #preupdateconfirmation, #preupdatecheckbox, #preupdatecheckheadings').css('display', 'none');
-				$('#preupdatecheckbox #noncoreplugins').prop('checked', true);
-				$('button.submitupdate').removeClass('disabled');
-				$('button.submitupdate').prop('disabled', false);
+				clearWarnings();
 			}
 			else {
-				$('#preupdateCheckWarning').addClass('hidden');
-				$('#preupdateCheckCompleteProblems').removeClass('hidden');
-				$('#preupdateconfirmation .preupdateconfirmation_label h3').html(Joomla.JText._('COM_JOOMLAUPDATE_VIEW_DEFAULT_POTENTIALLY_DANGEROUS_PLUGIN_LIST'))
-				$('#preupdateconfirmation .preupdateconfirmation_label').removeClass('label-warning').addClass('label-important')
+				var label = $('#preupdateconfirmation .preupdateconfirmation_label');
+
+				$('#preupdateCheckWarning').classList.add('hidden');
+				$('#preupdateCheckCompleteProblems').classList.remove('hidden');
+				label.querySelector('h3').innerHTML = Joomla.JText._('COM_JOOMLAUPDATE_VIEW_DEFAULT_POTENTIALLY_DANGEROUS_PLUGIN_LIST');
+				label.classList.remove('label-warning');
+				label.classList.add('label-important');
 			}
 		}
-    }
+	};
 
-    // Run PreUpdateChecker on document ready
-	document.addEventListener( "DOMContentLoaded", function() {
-		$(PreUpdateChecker.run);
-	} );
-})(jQuery, document, window);
+	window.PreUpdateChecker = PreUpdateChecker;
+
+	// Run PreUpdateChecker on document ready
+	if (document.readyState === 'loading')
+	{
+		document.addEventListener('DOMContentLoaded', PreUpdateChecker.run);
+	}
+	else
+	{
+		PreUpdateChecker.run();
+	}
+})(document, window);
 ;
 
 /* --- The pages' settings and buttons (script option com_joomlaupdate) --- */
@@ -1312,6 +1384,7 @@ function extractionMethodHandler(target, prefix)
 		[['extraction_method', 'row_ftp'], ['upload_method', 'upload_ftp']].forEach(([id, prefix]) => {
 			const list = document.getElementById(id);
 
+			// Chosen announces its changes through jQuery only: heard through it when the page has it
 			if (list && window.jQuery) {
 				window.jQuery(list).on('change', () => window.extractionMethodHandler('#' + id, prefix));
 			} else if (list) {

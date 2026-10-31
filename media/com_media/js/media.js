@@ -6,7 +6,7 @@
 
 /*
  * The Media Manager's scripts, each starting only where it belongs: the drop upload (the lists, with its script options),
- * the media field (its fields), the Media Manager (its page) and the image picker (its page). The last three need jQuery.
+ * the media field (its fields), the Media Manager (its page) and the image picker (its page). Plain JavaScript (3.18), no jQuery.
  */
 
 /* --- Drop upload --- */
@@ -286,140 +286,16 @@
 })();
 
 /* --- Media field --- */
-/**
- * Field media
+/*
+ * The image field (the templates' layout joomla.form.field.media: .field-media-wrapper, its options in data attributes):
+ * Select opens the image picker in the field's modal (a new frame each time), whose Insert sets the value; Clear empties
+ * it; the preview (a popover on the eye, or an image under the field) and the path's tooltip follow the value. Fields of
+ * subform rows added later start too. jQuery.fn.fieldMedia and jQuery.fieldMedia stay for extensions (where jQuery is).
  */
-;(function($){
+(() => {
 	'use strict';
 
-	if (!$) {
-		return;
-	}
-
-	$.fieldMedia = function(container, options){
-		// Merge options with defaults
-		this.options = $.extend({}, $.fieldMedia.defaults, options);
-
-		// Set up elements
-		this.$container = $(container);
-		this.$modal = this.$container.find(this.options.modal);
-		this.$modalBody = this.$modal.children('.modal-body');
-		this.$input = this.$container.find(this.options.input);
-		this.$containerPreview = this.$container.find(this.options.previewContainer);
-		this.$buttonSelect = this.$container.find(this.options.buttonSelect);
-		this.$buttonClear  = this.$container.find(this.options.buttonClear);
-
-		// Bind events
-		this.$buttonSelect.on('click', this.modalOpen.bind(this));
-		this.$buttonClear.on('click', this.clearValue.bind(this));
-		this.$modal.on('hide', this.removeIframe.bind(this));
-
-		// Update preview for existing value
-		this.updatePreview();
-	};
-
-	// display modal for select the file
-	$.fieldMedia.prototype.modalOpen = function() {
-		var $iframe = $('<iframe>', {
-			name: 'field-media-modal',
-			src: this.options.url.replace('{field-media-id}', this.$input.attr('id')),
-			width: this.options.modalWidth,
-			height: this.options.modalHeight
-		});
-		this.$modalBody.append($iframe);
-		this.$modal.modal('show');
-		$('body').addClass('modal-open');
-
-		var self = this; // save context
-		$iframe.load(function(){
-			var content = $(this).contents();
-
-			// bind insert
-			content.on('click', self.options.buttonSaveSelected, function(){
-				var value = content.find('#f_url').val();
-				if (value) {
-					self.setValue(value);
-				}
-				self.modalClose.call(self);
-			});
-
-			// bind cancel
-			content.on('click', '.button-cancel', function(){
-				$('body').removeClass('modal-open');
-				self.modalClose.bind(self);
-			});
-		});
-	};
-
-	// close modal
-	$.fieldMedia.prototype.modalClose = function() {
-		this.$modal.modal('hide');
-		$('body').removeClass('modal-open');
-		this.$modalBody.empty();
-	};
-
-	// Clear the iframe
-	$.fieldMedia.prototype.removeIframe = function() {
-		this.$modalBody.empty();
-		$('body').removeClass('modal-open');
-	};
-
-	// set the value
-	$.fieldMedia.prototype.setValue = function(value) {
-		this.$input.val(value).trigger('change');
-		this.updatePreview();
-	};
-
-	// clear the value
-	$.fieldMedia.prototype.clearValue = function() {
-		this.setValue('');
-	};
-
-	// update preview
-	$.fieldMedia.prototype.updatePreview = function() {
-		if (!this.options.preview) {
-			return;
-		}
-
-		if (this.options.preview && !this.options.previewAsTooltip) {
-			var value = this.$input.val();
-
-			if (!value) {
-				this.$containerPreview.append('');
-			} else {
-				var imgPreview = new Image();
-				imgPreview.src = this.options.basepath + value;
-				if (imgPreview.width > imgPreview.height) {
-					this.$containerPreview.html($('<img>',{src: imgPreview.src, style: 'width: ' + this.options.previewWidth + 'px'}));
-				} else {
-					this.$containerPreview.html($('<img>',{src: imgPreview.src, style: 'height: ' + this.options.previewHeight + 'px'}));
-				}
-			}
-		} else {
-			// Reset tooltip and preview
-			try {
-				this.$containerPreview.popover('destroy');
-				this.$input.tooltip('destroy');
-			} catch(err) {
-				// Doing this so that jQueryUI tooltips and popover can exist alongside Bootstrap.
-			}
-
-			var value = this.$input.val();
-
-			if (!value) {
-				this.$containerPreview.popover();
-			} else {
-				var imgPreview = new Image(this.options.previewWidth, this.options.previewHeight);
-				imgPreview.src = this.options.basepath + value;
-
-				this.$containerPreview.popover({content: imgPreview});
-				this.$input.tooltip({placement: 'top', title: value, html: false});
-			}
-		}
-	};
-
-	// default options
-	$.fieldMedia.defaults = {
+	const defaults = {
 		basepath: '', // base path to file
 		buttonClear: '.button-clear', // selector for button to clear the value
 		buttonSelect: '.button-select', // selector for button to change the value
@@ -436,122 +312,288 @@
 		modalHeight: '300px', // modal height
 	};
 
-	$.fn.fieldMedia = function(options){
-		return this.each(function(){
-			var $el = $(this), instance = $el.data('fieldMedia');
-			if(!instance){
-				var options = options || {},
-					data = $el.data();
+	const instances = new WeakMap();
 
-				// Check options in the element
-				for (var p in data) {
-					if (data.hasOwnProperty(p)) {
-						options[p] = data[p];
-					}
-				}
+	// The data attributes as jQuery's data() read them: data-preview-width is previewWidth, "true" true, "200" 200
+	const dataOptions = (element) => {
+		const options = {};
 
-				instance = new $.fieldMedia(this, options);
-				$el.data('fieldMedia', instance);
-			}
+		Object.keys(element.dataset).forEach((name) => {
+			const value = element.dataset[name];
+
+			options[name] = value === 'true' ? true : value === 'false' ? false : /^-?\d+(\.\d+)?$/.test(value) ? Number(value) : value;
 		});
+
+		return options;
 	};
 
-	// Initialise all defaults on load and again when subform rows are added
-	$(function($) {
-		initMediaField();
-		$(document).on('subform-row-add', initMediaField);
-
-		function initMediaField (event, container)
-		{
-			$(container || document).find('.field-media-wrapper').fieldMedia();
+	// A plugin call (modal, tooltip, popover): Bootstrap's when the page has it, else the CMS's (global.js)
+	const call = (name, element, option) => {
+		if (element && window.CMS && window.CMS.bootstrap) {
+			window.CMS.bootstrap.call(name, element, option);
 		}
-	});
+	};
 
-})(window.jQuery);
+	class FieldMedia {
+		constructor(container, options) {
+			this.options = Object.assign({}, defaults, options);
+			this.container = container;
+			this.modal = container.querySelector(this.options.modal);
+			this.modalBody = this.modal ? this.modal.querySelector('.modal-body') : null;
+			this.input = container.querySelector(this.options.input);
+			this.preview = container.querySelector(this.options.previewContainer);
 
-// Compatibility with mootools modal layout
+			const select = container.querySelector(this.options.buttonSelect);
+			const clear = container.querySelector(this.options.buttonClear);
+
+			if (select) {
+				select.addEventListener('click', () => this.modalOpen());
+			}
+
+			if (clear) {
+				clear.addEventListener('click', () => this.clearValue());
+			}
+
+			// When the modal closes, its frame goes (through jQuery when the page has it, where both modals send "hide")
+			if (this.modal && window.jQuery) {
+				window.jQuery(this.modal).on('hide', () => this.removeIframe());
+			} else if (this.modal) {
+				this.modal.addEventListener('cms:modal-hide', () => this.removeIframe());
+			}
+
+			this.updatePreview();
+		}
+
+		// The image picker in the modal
+		modalOpen() {
+			if (!this.modalBody || !this.input) {
+				return;
+			}
+
+			const frame = document.createElement('iframe');
+
+			frame.name = 'field-media-modal';
+			frame.src = this.options.url.replace('{field-media-id}', this.input.id);
+			frame.style.width = this.options.modalWidth;
+			frame.style.height = this.options.modalHeight;
+			this.modalBody.appendChild(frame);
+			call('modal', this.modal, 'show');
+			document.body.classList.add('modal-open');
+
+			// Each page the frame loads (folders are pages): its Insert sets the value, its Cancel lets the page scroll again
+			frame.addEventListener('load', () => {
+				let doc = null;
+
+				try {
+					doc = frame.contentDocument;
+				} catch (error) {
+					doc = null;
+				}
+
+				if (!doc) {
+					return;
+				}
+
+				doc.addEventListener('click', (event) => {
+					const target = event.target && event.target.closest ? event.target : null;
+
+					if (target && target.closest(this.options.buttonSaveSelected)) {
+						const url = doc.getElementById('f_url');
+
+						if (url && url.value) {
+							this.setValue(url.value);
+						}
+
+						this.modalClose();
+					} else if (target && target.closest('.button-cancel')) {
+						document.body.classList.remove('modal-open');
+					}
+				});
+			});
+		}
+
+		modalClose() {
+			call('modal', this.modal, 'hide');
+			document.body.classList.remove('modal-open');
+			this.removeIframe();
+		}
+
+		removeIframe() {
+			if (this.modalBody) {
+				this.modalBody.textContent = '';
+			}
+
+			document.body.classList.remove('modal-open');
+		}
+
+		setValue(value) {
+			this.input.value = value;
+			this.input.dispatchEvent(new Event('change', { bubbles: true }));
+			this.updatePreview();
+		}
+
+		clearValue() {
+			this.setValue('');
+		}
+
+		updatePreview() {
+			if (!this.options.preview || !this.preview || !this.input) {
+				return;
+			}
+
+			const value = this.input.value;
+
+			if (!this.options.previewAsTooltip) {
+				if (value) {
+					const image = new Image();
+
+					image.src = this.options.basepath + value;
+
+					// As before: measured before it loads (0 by 0), so the height decides
+					if (image.width > image.height) {
+						image.style.width = this.options.previewWidth + 'px';
+					} else {
+						image.style.height = this.options.previewHeight + 'px';
+					}
+
+					this.preview.textContent = '';
+					this.preview.appendChild(image);
+				}
+
+				return;
+			}
+
+			call('popover', this.preview, 'destroy');
+			call('tooltip', this.input, 'destroy');
+
+			if (!value) {
+				call('popover', this.preview);
+
+				return;
+			}
+
+			const image = new Image(this.options.previewWidth, this.options.previewHeight);
+
+			image.src = this.options.basepath + value;
+			call('popover', this.preview, { content: image });
+			call('tooltip', this.input, { placement: 'top', title: value, html: false });
+		}
+	}
+
+	const start = (element, options) => {
+		if (!instances.has(element)) {
+			instances.set(element, new FieldMedia(element, Object.assign({}, options || {}, dataOptions(element))));
+		}
+
+		return instances.get(element);
+	};
+
+	const startAll = (root) => {
+		Array.prototype.forEach.call((root || document).querySelectorAll('.field-media-wrapper'), (element) => start(element));
+	};
+
+	// jQuery's names for it, for extensions
+	const jq = window.jQuery;
+
+	if (jq && jq.fn && !jq.fn.fieldMedia) {
+		jq.fieldMedia = function fieldMedia(container, options) {
+			return start(container && container.jquery ? container[0] : container, options);
+		};
+		jq.fieldMedia.defaults = defaults;
+		jq.fn.fieldMedia = function fieldMedia(options) {
+			return this.each((index, element) => {
+				start(element, options);
+			});
+		};
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', () => startAll());
+	} else {
+		startAll();
+	}
+
+	document.addEventListener('cms:subform-row-add', (event) => startAll((event.detail && event.detail.row) || document));
+})();
+
+// The image field's old global functions (SqueezeBox's image picker and tooltips of the layout of stock Joomla)
 function jInsertFieldValue(value, id) {
-	var $ = jQuery.noConflict();
-	var old_value = $("#" + id).val();
-	if (old_value != value) {
-		var $elem = $("#" + id);
-		$elem.val(value);
-		$elem.trigger("change");
-		if (typeof($elem.get(0).onchange) === "function") {
-			$elem.get(0).onchange();
-		}
+	const field = document.getElementById(id);
+
+	if (field && field.value !== value) {
+		field.value = value;
+		field.dispatchEvent(new Event('change', { bubbles: true }));
 		jMediaRefreshPreview(id);
 	}
 }
 
 function jMediaRefreshPreview(id) {
-	var $ = jQuery.noConflict();
-	var value = $("#" + id).val();
-	var $img = $("#" + id + "_preview");
-	var basepath = $("#" + id).data("basepath");
+	const field = document.getElementById(id);
+	const image = document.getElementById(id + '_preview');
+	const empty = document.getElementById(id + '_preview_empty');
+	const shown = document.getElementById(id + '_preview_img');
 
-	if ($img.length) {
-		if (value) {
-			$img.attr("src", basepath + value);
-			$("#" + id + "_preview_empty").hide();
-			$("#" + id + "_preview_img").show()
-		} else {
-			$img.attr("src", "");
-			$("#" + id + "_preview_empty").show();
-			$("#" + id + "_preview_img").hide();
-		}
+	if (!field || !image) {
+		return;
+	}
+
+	const value = field.value;
+
+	image.setAttribute('src', value ? (field.getAttribute('data-basepath') || '') + value : '');
+
+	if (empty) {
+		empty.style.display = value ? 'none' : '';
+	}
+
+	if (shown) {
+		shown.style.display = value ? '' : 'none';
 	}
 }
 
-function jMediaRefreshPreviewTip(tip)
-{
-	var $ = jQuery.noConflict();
-	var $tip = $(tip);
-	var $img = $tip.find("img.media-preview");
+function jMediaRefreshPreviewTip(tip) {
+	Array.prototype.forEach.call(tip.querySelectorAll('img.media-preview'), (image) => {
+		const box = tip.querySelector('div.tip');
 
-	$img.each(function(index, value) {
-		$tip.find("div.tip").css("max-width", "none");
-		var id = $(this).attr("id");
-		id = id.substring(0, id.length - "_preview".length);
-		jMediaRefreshPreview(id);
-		$tip.show(this);
+		if (box) {
+			box.style.maxWidth = 'none';
+		}
+
+		jMediaRefreshPreview(image.id.substring(0, image.id.length - '_preview'.length));
+		tip.style.display = 'block';
 	});
 }
 
-// JQuery for tooltip for INPUT showing whole image path
-function jMediaRefreshImgpathTip(tip, els)
-{
-	var $ = jQuery.noConflict();
-	var $tip = $(tip);
-	$tip.css("max-width", "none");
-	var $imgpath = $(els).val();
-	$("#TipImgpath").html($imgpath);
+// The tooltip of an image field's input showing its whole path
+function jMediaRefreshImgpathTip(tip, element) {
+	const field = element && element.jquery ? element[0] : element;
+	const path = field ? field.value : '';
+	const holder = document.getElementById('TipImgpath');
 
-	if ($imgpath.length) {
-		$tip.show();
-	} else {
-		$tip.hide();
+	tip.style.maxWidth = 'none';
+
+	if (holder) {
+		holder.textContent = path;
 	}
+
+	tip.style.display = path.length ? 'block' : 'none';
 }
 
 /* --- Media Manager --- */
-/**
- * JMediaManager behavior for media component
- *
- * @package		Joomla.Extensions
- * @subpackage  Media
- * @since		1.5
+/*
+ * The Media Manager's page (MediaManager): the list in its frame (#folderframe), the views' buttons, the upload form's and
+ * the folder field's folder following the list, the toolbar's Delete, the previews' players. The list's frame uses its
+ * parent's.
  */
-;(function( $, scope ) {
-	"use strict";
+((scope) => {
+	'use strict';
 
 	// Defined by the Media Manager's page only (its list's iframe uses the parent's)
-	if (!$ || scope.MediaManager) {
+	if (scope.MediaManager) {
 		return;
 	}
 
 	// The page's settings (com_media.manager): the files folder relative to the site, shown in the upload form, and the view
-	var settings = (scope.Joomla && scope.Joomla.getOptions && scope.Joomla.getOptions('com_media.manager')) || {};
+	const settings = (scope.Joomla && scope.Joomla.getOptions && scope.Joomla.getOptions('com_media.manager')) || {};
 
 	if (scope.basepath === undefined) {
 		scope.basepath = settings.basepath || '';
@@ -562,9 +604,9 @@ function jMediaRefreshImgpathTip(tip, els)
 	}
 
 	// The toolbar's Delete: only with something checked in the list
-	scope.deleteMedia = function() {
-		var frame = document.getElementById('folderframe');
-		var list = frame && frame.contentDocument;
+	scope.deleteMedia = () => {
+		const frame = document.getElementById('folderframe');
+		const list = frame && frame.contentDocument;
 
 		if (!list || !list.querySelector('input[name="rm[]"]:checked')) {
 			alert(scope.Joomla.JText._('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));
@@ -572,23 +614,31 @@ function jMediaRefreshImgpathTip(tip, els)
 			return false;
 		}
 
-		MediaManager.submit('folder.delete');
+		MediaManager.submit('folder.delete'); // eslint-disable-line no-use-before-define
 
 		return true;
 	};
 
-	var MediaManager = scope.MediaManager = {
+	// A modal's "hidden" (through jQuery when the page has it, where both modals send it)
+	const onHidden = (id, callback) => {
+		const element = document.getElementById(id);
 
+		if (element && scope.jQuery) {
+			scope.jQuery(element).on('hidden', callback);
+		} else if (element) {
+			element.addEventListener('cms:modal-hidden', callback);
+		}
+	};
+
+	const MediaManager = scope.MediaManager = {
 		/**
 		 * Shows a video in the preview window's player (the browser's own); the lists call it from their iframe
 		 *
-		 * @param   string  src     The video's address
-		 * @param   string  poster  An image of the same name, shown before it plays ('' for none)
-		 *
-		 * @return  void
+		 * @param   {string}  src     The video's address
+		 * @param   {string}  poster  An image of the same name, shown before it plays ('' for none)
 		 */
-		playVideo: function(src, poster) {
-			var video = document.getElementById('videoPreviewPlayer');
+		playVideo(src, poster) {
+			const video = document.getElementById('videoPreviewPlayer');
 
 			if (video) {
 				if (poster) {
@@ -602,13 +652,9 @@ function jMediaRefreshImgpathTip(tip, els)
 			}
 		},
 
-		/**
-		 * Pauses the preview's video (when its window closes)
-		 *
-		 * @return  void
-		 */
-		pauseVideo: function() {
-			var video = document.getElementById('videoPreviewPlayer');
+		// Pauses the preview's video (when its window closes)
+		pauseVideo() {
+			const video = document.getElementById('videoPreviewPlayer');
 
 			if (video) {
 				video.pause();
@@ -618,14 +664,13 @@ function jMediaRefreshImgpathTip(tip, els)
 		/**
 		 * Plays an audio file in the preview window's player (the browser's own); the lists call it from their iframe
 		 *
-		 * @param   string  src  The file's address
-		 *
-		 * @return  void
+		 * @param   {string}  src    The file's address
+		 * @param   {string}  cover  An image of the same name ('' for none: the waveform)
 		 */
-		playAudio: function(src, cover) {
-			var audio = document.getElementById('audioPreviewPlayer');
-			var image = document.getElementById('audioPreviewCover');
-			var wave = document.querySelector('#audioPlayer .media-audio-wave');
+		playAudio(src, cover) {
+			const audio = document.getElementById('audioPreviewPlayer');
+			const image = document.getElementById('audioPreviewCover');
+			const wave = document.querySelector('#audioPlayer .media-audio-wave');
 
 			if (!audio) {
 				return;
@@ -645,142 +690,124 @@ function jMediaRefreshImgpathTip(tip, els)
 			audio.load();
 		},
 
-		/**
-		 * Pauses the preview's audio (when its window closes)
-		 *
-		 * @return  void
-		 */
-		pauseAudio: function() {
-			var audio = document.getElementById('audioPreviewPlayer');
+		// Pauses the preview's audio (when its window closes)
+		pauseAudio() {
+			const audio = document.getElementById('audioPreviewPlayer');
 
 			if (audio) {
 				audio.pause();
 			}
 		},
 
-		/**
-		 * Basic setup
-		 *
-		 * @return  void
-		 */
-		initialize: function() {
-			this.folderpath = $( '#folderpath' );
+		// Basic setup
+		initialize() {
+			const player = document.getElementById('audioPreviewPlayer');
+			const holder = document.getElementById('audioPlayer');
 
-			this.updatepaths = $( 'input.update-folder' );
-
+			this.folderpath = document.getElementById('folderpath');
+			this.updatepaths = document.querySelectorAll('input.update-folder');
 			this.frame = window.frames.folderframe;
+			this.frameElement = document.getElementById('folderframe');
 
-			var self = this;
-
-			// The previews stop when their window closes (Bootstrap's modal event)
-			$('#videoPreview').on('hidden', function () {
-				self.pauseVideo();
-			});
-			$('#audioPreview').on('hidden', function () {
-				self.pauseAudio();
-			});
+			// The previews stop when their window closes
+			onHidden('videoPreview', () => this.pauseVideo());
+			onHidden('audioPreview', () => this.pauseAudio());
 
 			// The waveform moves while the audio plays
-			$('#audioPreviewPlayer').on('play playing', function () {
-				$('#audioPlayer').addClass('is-playing');
-			}).on('pause ended emptied', function () {
-				$('#audioPlayer').removeClass('is-playing');
-			});
+			if (player && holder) {
+				['play', 'playing'].forEach((type) => player.addEventListener(type, () => holder.classList.add('is-playing')));
+				['pause', 'ended', 'emptied'].forEach((type) => player.addEventListener(type, () => holder.classList.remove('is-playing')));
+			}
 
-			$(this.frame).one('load', function (e) {
-				self.frameurl = self.frame.location.href;
-			});
+			// Every page the list loads (a folder): the upload form and the folder field follow it
+			if (this.frameElement) {
+				this.frameElement.addEventListener('load', () => this.onloadframe());
+			}
 		},
 
 		/**
 		 * Called from outside. Only ever called with task 'folder.delete'
 		 *
-		 * @param   string  task  [description]
-		 *
-		 * @return  void
+		 * @param   {string}  task
 		 */
-		submit: function( task ) {
-			var form = this.frame.document.getElementById( 'mediamanager-form' );
+		submit(task) {
+			const form = this.frame.document.getElementById('mediamanager-form');
+			const username = document.getElementById('username');
+			const password = document.getElementById('password');
+
 			form.task.value = task;
 
-			if ( $( '#username' ).length ) {
-				form.username.value = $( '#username' ).val();
-				form.password.value = $( '#password' ).val();
+			if (username) {
+				form.username.value = username.value;
+				form.password.value = password ? password.value : '';
 			}
 
 			form.submit();
 		},
 
-		/**
-		 * [onloadframe description]
-		 *
-		 * @return  {[type]}
-		 */
-		onloadframe: function() {
-			// Update the frame url
+		// The list's frame loaded a folder
+		onloadframe() {
 			this.frameurl = this.frame.location.href;
 
-			var folder = this.getFolder() || '',
-				query = [],
-				a = getUriObject( $( '#uploadForm' ).prop( 'action' ) ),
-				q = getQueryObject( a.query ),
-				k, v;
+			const folder = this.getFolder() || '';
+			const upload = document.getElementById('uploadForm');
+			const active = document.getElementById(scope.viewstyle);
 
-			this.updatepaths.each( function( path, el ) {
-				el.value = folder;
-			} );
+			Array.prototype.forEach.call(this.updatepaths, (field) => {
+				field.value = folder;
+			});
 
-			// A jQuery object: .value set nothing, so the field showed only the folder (empty at the top)
-			this.folderpath.val( scope.basepath + ( folder ? '/' + folder : '' ) );
-
-			q.folder = folder;
-
-			for ( k in q ) {
-				if (!q.hasOwnProperty( k )) { continue; }
-
-				v = q[ k ];
-				query.push(encodeURIComponent(k) + (v === null ? '' : '=' + encodeURIComponent(v)));
+			if (this.folderpath) {
+				this.folderpath.value = scope.basepath + (folder ? '/' + folder : '');
 			}
 
-			a.query = query.join( '&' );
-			a.fragment = null;
+			if (upload) {
+				const action = new URL(upload.getAttribute('action'), window.location.href);
 
-			$( '#uploadForm' ).prop( 'action', buildUri(a) );
-			$( '#' + scope.viewstyle ).addClass( 'active' );
+				action.searchParams.set('folder', folder);
+				action.hash = '';
+				upload.setAttribute('action', action.href);
+			}
+
+			if (active) {
+				active.classList.add('active');
+			}
 		},
 
 		/**
 		 * Switch the view type
 		 *
-		 * @param  string  type  'thumbs' || 'details'
+		 * @param  {string}  type  'thumbs' || 'details'
 		 */
-		setViewType: function( type ) {
-			$( '#' + type ).addClass( 'active' );
-			$( '#' + scope.viewstyle ).removeClass( 'active' );
+		setViewType(type) {
+			const next = document.getElementById(type);
+			const previous = document.getElementById(scope.viewstyle);
+
+			if (next) {
+				next.classList.add('active');
+			}
+
+			if (previous && previous !== next) {
+				previous.classList.remove('active');
+			}
+
 			scope.viewstyle = type;
-			var folder = this.getFolder();
 
-			folder = encodeURIComponent(folder);
-			type = encodeURIComponent(type);
-
-			this.setFrameUrl( 'index.php?option=com_media&view=mediaList&tmpl=component&folder=' + folder + '&layout=' + type );
+			this.setFrameUrl('index.php?option=com_media&view=mediaList&tmpl=component&folder=' + encodeURIComponent(this.getFolder())
+				+ '&layout=' + encodeURIComponent(type));
 		},
 
-		refreshFrame: function() {
+		refreshFrame() {
 			this.setFrameUrl();
 		},
 
-		getFolder: function() {
-			var args = getQueryObject( this.frame.location.search.substring( 1 ) );
-
-			args.folder = args.folder === undefined ? '' : args.folder;
-
-			return args.folder;
+		getFolder() {
+			return new URLSearchParams(this.frame.location.search).get('folder') || '';
 		},
 
-		// Without an address (refreshFrame()) the list reloads (it went to "undefined")
-		setFrameUrl: function( url ) {
-			if ( url ) {
+		// Without an address (refreshFrame()) the list reloads
+		setFrameUrl(url) {
+			if (url) {
 				this.frameurl = url;
 			}
 
@@ -788,126 +815,76 @@ function jMediaRefreshImgpathTip(tip, els)
 		},
 	};
 
-	/**
-	 * Convert a query string to an object
-	 *
-	 * @param   string  q  A query string (no leading ?)
-	 *
-	 * @return  object
-	 */
-	function getQueryObject( q ) {
-		var rs = {};
-
-		q = q || '';
-
-		$.each( q.split( /[&;]/ ),
-			function( key, val ) {
-				var keys = val.split( '=' );
-
-				rs[ decodeURIComponent(keys[ 0 ]) ] = keys.length == 2 ? decodeURIComponent(keys[ 1 ]) : null;
-			});
-
-		return rs;
-	}
-
-	/**
-	 * Break a url into its component parts
-	 *
-	 * @param   string  u  URL
-	 *
-	 * @return  object
-	 */
-	function getUriObject( u ) {
-		var bitsAssociate = {},
-			bits = u.match( /^(?:([^:\/?#.]+):)?(?:\/\/)?(([^:\/?#]*)(?::(\d*))?)((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[\?#]|$)))*\/?)?([^?#\/]*))?(?:\?([^#]*))?(?:#(.*))?/ );
-
-		$.each([ 'uri', 'scheme', 'authority', 'domain', 'port', 'path', 'directory', 'file', 'query', 'fragment' ],
-			function( key, index ) {
-				bitsAssociate[ index ] = ( !!bits && !!bits[ key ] ) ? bits[ key ] : '';
-			});
-
-		return bitsAssociate;
-	}
-
-	/**
-	 * Build a url from component parts
-	 *
-	 * @param   object  o  Such as the return value of `getUriObject()`
-	 *
-	 * @return  string
-	 */
-	function buildUri ( o ) {
-		return o.scheme + '://' + o.domain +
-			(o.port ? ':' + o.port : '') +
-			(o.path ? o.path : '/') +
-			(o.query ? '?' + o.query : '') +
-			(o.fragment ? '#' + o.fragment : '');
-	}
-
-	$(function() {
+	const start = () => {
 		if (!window.frames.folderframe) {
 			return;
 		}
 
-		// Added to populate data on iframe load
 		MediaManager.initialize();
 
-		document.updateUploader = function() {
-			$(MediaManager.frame).one('load', function() {
+		// The list may have loaded already (it's in the page)
+		try {
+			if (MediaManager.frame.document.readyState === 'complete' && MediaManager.frame.location.href !== 'about:blank') {
 				MediaManager.onloadframe();
-			});
+			}
+		} catch (error) {
+			// Not loaded yet: its load event follows
+		}
+
+		// What the old script offered for the next load (kept for extensions; every load updates the form now)
+		document.updateUploader = () => {
+			if (MediaManager.frameElement) {
+				MediaManager.frameElement.addEventListener('load', () => MediaManager.onloadframe(), { once: true });
+			}
 		};
+	};
 
-		document.updateUploader();
-	});
-
-}( window.jQuery, window ));
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', start);
+	} else {
+		start();
+	}
+})(window);
 
 /* --- Image picker --- */
-/**
- * JImageManager behavior for media component
- *
- * @package		Joomla.Extensions
- * @subpackage	Media
- * @since		1.5
+/*
+ * The image picker (view images: the editors' Image button, the image field's modal): its list in a frame (#imageframe),
+ * the folder list and Up button, the upload form following the folder, the chosen image's fields, and Insert (onok()),
+ * which writes the image into the editor. The list's frame uses its parent's ImageManager.
  */
-
-(function ($, doc)
-{
+((doc) => {
 	'use strict';
 
 	// Defined by the image picker only (its list's iframe uses the parent's, set before this deferred file runs)
-	if (!$ || window.ImageManager) {
+	if (window.ImageManager) {
 		return;
 	}
 
+	// A query string of these values (missing ones empty, as jQuery's $.param() wrote them)
+	const query = (values) => Object.keys(values)
+		.map((name) => encodeURIComponent(name) + '=' + encodeURIComponent(values[name] === undefined || values[name] === null ? '' : values[name]))
+		.join('&');
+
 	window.ImageManager = {
-
-		/**
-		 * Initialization
-		 *
-		 * @return  void
-		 */
-		initialize: function ()
-		{
-			var o = this.getUriObject(window.self.location.href),
-				q = this.getQueryObject(o.query);
-
-			var options = Joomla.getOptions('mediamanager');
+		// Initialization
+		initialize() {
+			const options = Joomla.getOptions('mediamanager') || {};
+			const frame = doc.getElementById('imageframe');
+			const up = doc.getElementById('upbutton');
 
 			this.author = options.author;
-			this.base   = options.base;
-			this.asset  = options.asset;
-			this.editor = q.e_name;
+			this.base = options.base;
+			this.asset = options.asset;
+			this.editor = new URLSearchParams(window.self.location.search).get('e_name');
 
 			// Setup image manager fields object
 			this.fields = {
-				'url': doc.getElementById("f_url"),
-				'alt': doc.getElementById("f_alt"),
-				'align': doc.getElementById("f_align"),
-				'title': doc.getElementById("f_title"),
-				'caption': doc.getElementById("f_caption"),
-				'c_class': doc.getElementById("f_caption_class")
+				url: doc.getElementById('f_url'),
+				alt: doc.getElementById('f_alt'),
+				align: doc.getElementById('f_align'),
+				title: doc.getElementById('f_title'),
+				caption: doc.getElementById('f_caption'),
+				c_class: doc.getElementById('f_caption_class'),
 			};
 
 			// Setup image listing objects
@@ -916,116 +893,78 @@ function jMediaRefreshImgpathTip(tip, els)
 			this.frameurl = this.frame.location.href;
 
 			// Setup image listing frame
-			$('#imageframe').on('load', function ()
-			{
-				ImageManager.onloadimageview();
-			});
+			frame.addEventListener('load', () => this.onloadimageview());
 
 			// Setup folder up button
-			$('#upbutton').off('click').on('click', function ()
-			{
-				ImageManager.upFolder();
-			});
+			if (up) {
+				up.addEventListener('click', () => this.upFolder());
+			}
 		},
 
-		/**
-		 * Called when the iframe is reloaded.
-		 * Updates the form action with the correct folder.
-		 * This should really be a hidden input rather than part of the action, no?
-		 *
-		 * @return  void
-		 */
-		onloadimageview: function ()
-		{
-			var folder = this.getImageFolder(),
-				$form = $('#uploadForm'),
-				portString = '', a, q;
+		// The list's frame loaded a folder: the folder list and the upload form follow it
+		onloadimageview() {
+			const folder = this.getImageFolder();
+			const form = doc.getElementById('uploadForm');
 
 			// Update the frame url
 			this.frameurl = this.frame.location.href;
 			this.setFolder(folder);
 
-			a = this.getUriObject($form.prop('action'));
-			q = this.getQueryObject(a.query);
-			q.folder = folder;
-			a.query = $.param(q);
+			if (form) {
+				const action = new URL(form.getAttribute('action'), window.location.href);
 
-			if (typeof (a.port) !== 'undefined' && a.port != 80)
-			{
-				portString = ':' + a.port;
+				action.searchParams.set('folder', folder === null ? '' : folder);
+				action.hash = '';
+				form.setAttribute('action', action.href);
 			}
+		},
 
-			$form.prop('action', a.scheme + '://' + a.domain + portString + a.path + '?' + a.query);
+		// The folder shown in the list's frame
+		getImageFolder() {
+			return new URLSearchParams(this.frame.location.search).get('folder');
 		},
 
 		/**
-		 * Get the current directory based on the query string of the iframe
+		 * Insert: the chosen image (and its caption) written into the editor
 		 *
-		 * @return  string
+		 * @return  {boolean}  Always true
 		 */
-		getImageFolder: function ()
-		{
-			return this.getQueryObject(this.frame.location.search.substring(1)).folder;
-		},
+		onok() {
+			const url = this.fields.url.value;
+			const alt = this.fields.alt.value;
+			const align = this.fields.align.value;
+			const title = this.fields.title.value;
+			const caption = this.fields.caption.value;
+			const captionClass = this.fields.c_class.value;
+			const attr = [];
+			let tag = '';
 
-		/**
-		 * Called from outside when the 'OK' button (maybe 'insert' or 'submit', whatever) is clicked.
-		 *
-		 * @return  boolean  Always true
-		 */
-		onok: function ()
-		{
-			var tag = '',
-				attr = [],
-				figclass = '',
-				captionclass = '',
-			// Get the image tag field information
-				url = this.fields.url.value,
-				alt = this.fields.alt.value,
-				align = this.fields.align.value,
-				title = this.fields.title.value,
-				caption = this.fields.caption.value,
-				c_class = this.fields.c_class.value;
-
-			if (url)
-			{
+			if (url) {
 				// Set alt attribute
 				attr.push('alt="' + alt + '"');
 
 				// Set align attribute
-				if (align && !caption)
-				{
+				if (align && !caption) {
 					attr.push('class="pull-' + align + '"');
 				}
 
 				// Set title attribute
-				if (title)
-				{
+				if (title) {
 					attr.push('title="' + title + '"');
 				}
 
 				tag = '<img src="' + url + '" ' + attr.join(' ') + '/>';
 
 				// Process caption
-				if (caption)
-				{
-					if (align)
-					{
-						figclass = ' class="pull-' + align + '"';
-					}
-
-					if (c_class)
-					{
-						captionclass = ' class="' + c_class + '"';
-					}
-
-					tag = '<figure' + figclass + '>' + tag + '<figcaption' + captionclass + '>' + caption + '</figcaption></figure>';
+				if (caption) {
+					tag = '<figure' + (align ? ' class="pull-' + align + '"' : '') + '>' + tag
+						+ '<figcaption' + (captionClass ? ' class="' + captionClass + '"' : '') + '>' + caption + '</figcaption></figure>';
 				}
 			}
 
-			/** Use the API, if editor supports it **/
+			// Use the API, if editor supports it
 			if (window.Joomla && Joomla.editors.instances.hasOwnProperty(this.editor)) {
-				Joomla.editors.instances[editor].replaceSelection(tag)
+				Joomla.editors.instances[this.editor].replaceSelection(tag);
 			} else {
 				window.parent.jInsertEditorText(tag, this.editor);
 			}
@@ -1036,45 +975,34 @@ function jMediaRefreshImgpathTip(tip, els)
 		/**
 		 * Called from outside when the directory selector is used.
 		 *
-		 * @param   string  folder  The folder to switch to
-		 * @param   mixed   asset   Probably an integer or undefined, optional
-		 * @param   mixed   author  Probably an integer or undefined, optional
-		 *
-		 * @return  void
+		 * @param   {string}  folder  The folder to switch to
+		 * @param   {mixed}   asset   Probably an integer or undefined, optional
+		 * @param   {mixed}   author  Probably an integer or undefined, optional
 		 */
-		setFolder: function (folder, asset, author)
-		{
-			for (var i = 0, l = this.folderlist.length; i < l; i++)
-			{
-				if (folder == this.folderlist.options[i].value)
-				{
+		setFolder(folder, asset, author) {
+			for (let i = 0; i < this.folderlist.length; i += 1) {
+				if (folder == this.folderlist.options[i].value) { // eslint-disable-line eqeqeq
 					this.folderlist.selectedIndex = i;
-					$(this.folderlist)
-						.trigger('liszt:updated') // Mootools
-						.trigger('chosen:updated'); // jQuery
+
+					// Its searchable list is drawn again (Chosen hears it natively and through jQuery)
+					this.folderlist.dispatchEvent(new CustomEvent('liszt:updated'));
 
 					break;
 				}
 			}
 
-			if (!!asset || !!author)
-			{
+			if (!!asset || !!author) {
 				this.setFrameUrl(folder, asset, author);
 			}
 		},
 
-		/**
-		 * Move up one directory
-		 *
-		 * @return  void
-		 */
-		upFolder: function ()
-		{
-			var path = this.folderlist.value.split('/'),
-				search;
+		// Move up one directory
+		upFolder() {
+			const path = this.folderlist.value.split('/');
 
 			path.pop();
-			search = path.join('/');
+
+			const search = path.join('/');
 
 			this.setFolder(search);
 			this.setFrameUrl(search, this.asset, this.author);
@@ -1083,127 +1011,99 @@ function jMediaRefreshImgpathTip(tip, els)
 		/**
 		 * Called from outside when a file is selected
 		 *
-		 * @param   string  file  Relative path to the file.
-		 *
-		 * @return  void
+		 * @param   {string}  file  Relative path to the file.
 		 */
-		populateFields: function (file)
-		{
-		    $.each($('a.img-preview', $('#imageframe').contents()), function(i, v) {
-			if (v.href == "javascript:ImageManager.populateFields('" + file + "')") {
-			    $(v, $('#imageframe').contents()).addClass('selected');
-			} else {
-			    $(v, $('#imageframe').contents()).removeClass('selected');
+		populateFields(file) {
+			const list = doc.getElementById('imageframe');
+			const call = "javascript:ImageManager.populateFields('" + file + "')";
+
+			if (list && list.contentDocument) {
+				Array.prototype.forEach.call(list.contentDocument.querySelectorAll('a.img-preview'), (link) => {
+					link.classList.toggle('selected', link.href === call || link.getAttribute('href') === call);
+				});
 			}
-		    });
 
-		    $("#f_url").val(this.base + file);
+			this.fields.url.value = this.base + file;
 		},
 
 		/**
-		 * Not used.
-		 * Should display messages. There are none.
+		 * Not used. Should display messages. There are none.
 		 *
-		 * @param   string  text  The message text
-		 *
-		 * @return  void
+		 * @param   {string}  text  The message text
 		 */
-		showMessage: function (text)
-		{
-			var $message = $('#message');
+		showMessage(text) {
+			const message = doc.getElementById('message');
+			const messages = doc.getElementById('messages');
 
-			$message.find('>:first-child').remove();
-			$message.append(text);
-			$('#messages').css('display', 'block');
+			if (message) {
+				if (message.firstElementChild) {
+					message.firstElementChild.remove();
+				}
+
+				message.insertAdjacentHTML('beforeend', text);
+			}
+
+			if (messages) {
+				messages.style.display = 'block';
+			}
 		},
 
-		/**
-		 * Not used.
-		 * Refreshes the iframe
-		 *
-		 * @return  void
-		 */
-		refreshFrame: function ()
-		{
+		// Not used. Refreshes the iframe
+		refreshFrame() {
 			this.frame.location.href = this.frameurl;
 		},
 
 		/**
 		 * Sets the iframe url, loading a new page. Usually for changing directory.
 		 *
-		 * @param  string  folder  Relative path to directory
-		 * @param  mixed   asset   Probably an integer or undefined, optional
-		 * @param  mixed   author  Probably an integer or undefined, optional
+		 * @param  {string}  folder  Relative path to directory
+		 * @param  {mixed}   asset   Probably an integer or undefined, optional
+		 * @param  {mixed}   author  Probably an integer or undefined, optional
 		 */
-		setFrameUrl: function (folder, asset, author)
-		{
-			var qs = {
+		setFrameUrl(folder, asset, author) {
+			this.frameurl = 'index.php?' + query({
 				option: 'com_media',
 				view: 'imagesList',
 				tmpl: 'component',
-				asset: asset,
-				author: author,
-				folder: folder
-			};
-
-			// Don't run folder through params because / will end up double encoded.
-			this.frameurl = 'index.php?' + $.param(qs);
+				asset,
+				author,
+				folder,
+			});
 			this.frame.location.href = this.frameurl;
 		},
 
 		/**
-		 * Convert a query string to an object
+		 * Convert a query string to an object (as before, for extensions' scripts)
 		 *
-		 * @param   string  q  A query string (no leading ?)
+		 * @param   {string}  q  A query string (no leading ?)
 		 *
-		 * @return  object
+		 * @return  {Object}
 		 */
-		getQueryObject: function (q)
-		{
-			var rs = {};
+		getQueryObject(q) {
+			const result = {};
 
-			$.each((q || '').split(/[&;]/), function (key, val)
-			{
-				var keys = val.split('=');
+			(q || '').split(/[&;]/).forEach((part) => {
+				const keys = part.split('=');
 
-				rs[ decodeURIComponent(keys[0]) ] = keys.length == 2 ? decodeURIComponent(keys[1]) : null;
+				result[decodeURIComponent(keys[0])] = keys.length === 2 ? decodeURIComponent(keys[1]) : null;
 			});
 
-			return rs;
+			return result;
 		},
+	};
 
-		/**
-		 * Break a url into its component parts
-		 *
-		 * @param   string  u  URL
-		 *
-		 * @return  object
-		 */
-		getUriObject: function (u)
-		{
-			var bitsAssociate = {},
-				bits = u.match(/^(?:([^:\/?#.]+):)?(?:\/\/)?(([^:\/?#]*)(?::(\d*))?)((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[\?#]|$)))*\/?)?([^?#\/]*))?(?:\?([^#]*))?(?:#(.*))?/);
-
-			$.each(['uri', 'scheme', 'authority', 'domain', 'port', 'path', 'directory', 'file', 'query', 'fragment'], function (key, index)
-			{
-				bitsAssociate[index] = (!!bits && !!bits[key]) ? bits[key] : '';
-			});
-
-			return bitsAssociate;
+	const start = () => {
+		if (doc.getElementById('imageframe')) {
+			window.ImageManager.initialize();
 		}
 	};
 
-	$(function ()
-	{
-		if (!doc.getElementById('imageframe'))
-		{
-			return;
-		}
-
-		window.ImageManager.initialize();
-	});
-
-}(window.jQuery, document));
+	if (doc.readyState === 'loading') {
+		doc.addEventListener('DOMContentLoaded', start);
+	} else {
+		start();
+	}
+})(document);
 
 /* --- Cropping (the Media Manager's Crop button) --- */
 /*

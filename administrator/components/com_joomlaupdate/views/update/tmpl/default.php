@@ -9,9 +9,6 @@
 
 defined('_JEXEC') or die;
 
-// Include jQuery.
-JHtml::_('jquery.framework');
-
 // Load the scripts (global.js first: joomlaupdate.js reads the page's options)
 JHtml::_('script', 'administrator/components/com_joomlaupdate/js/joomlaupdate.min.js', array('version' => 'auto'));
 
