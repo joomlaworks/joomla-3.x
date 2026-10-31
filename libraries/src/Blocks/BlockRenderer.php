@@ -150,14 +150,19 @@ class BlockRenderer
 
         $layout->setIncludePaths($paths);
 
-        // PDF files ({pdf ...}) as links to them: the preview page has no viewer
+        // PDF files ({pdf ...}) in the viewer, as the site shows them: the page gets its files (head)
+        $head = '';
+
         if (strpos((string) $html, '{pdf') !== false && \JPluginHelper::isEnabled('content', 'pdf')) {
             \JLoader::register('PlgContentPdf', JPATH_PLUGINS . '/content/pdf/pdf.php');
-            $html = \PlgContentPdf::replace((string) $html, true);
+            $plugin = \JPluginHelper::getPlugin('content', 'pdf');
+            $html   = \PlgContentPdf::replace((string) $html, false, new \Joomla\Registry\Registry($plugin ? $plugin->params : ''));
+            $head   = static::pdfViewerHead();
         }
 
         return $layout->render(array(
             'html'      => (string) $html,
+            'head'      => $head,
             'template'  => $this->template,
             'params'    => static::getSiteTemplateParams(),
             'base'      => rtrim(Uri::root(), '/') . '/',
@@ -165,6 +170,31 @@ class BlockRenderer
             'direction' => Factory::getLanguage()->isRtl() ? 'rtl' : 'ltr',
             'renderer'  => $this,
         ));
+    }
+
+    /**
+     * What a preview page showing PDF files needs in its head: the viewer's stylesheet and scripts (frontend.js for its options
+     * and strings) and the options JHtml behavior.pdf set
+     *
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    protected static function pdfViewerHead()
+    {
+        $document = Factory::getDocument();
+        $root     = Uri::root();
+        $version  = '?' . $document->getMediaVersion();
+        $options  = array('system.pdfviewer' => $document->getScriptOptions('system.pdfviewer'), 'joomla.jtext' => \JText::script());
+        $url      = function ($path) use ($root, $version) {
+            return htmlspecialchars($root . $path . $version, ENT_QUOTES, 'UTF-8');
+        };
+
+        return '<link rel="stylesheet" href="' . $url('media/system/css/pdf-viewer.min.css') . '" />' . "\n"
+            . '<script type="application/json" class="joomla-script-options new">'
+            . json_encode($options, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) . '</script>' . "\n"
+            . '<script src="' . $url('media/system/js/frontend.min.js') . '"></script>' . "\n"
+            . '<script src="' . $url('media/system/js/pdf-viewer.min.js') . '" defer></script>' . "\n";
     }
 
     /**

@@ -28,6 +28,7 @@ $r = $displayData['renderer'];
 	<link rel="stylesheet" href="<?php echo $r->e($url); ?>" />
 	<?php endforeach; ?>
 	<style>.blocks-preview .container {padding-top:32px;padding-bottom:32px;max-width:860px;}</style>
+	<?php echo isset($displayData['head']) ? $displayData['head'] : ''; ?>
 </head>
 <body class="blocks-preview">
 	<div class="container"><div class="itemFullText"><?php echo $displayData['html']; ?></div></div>

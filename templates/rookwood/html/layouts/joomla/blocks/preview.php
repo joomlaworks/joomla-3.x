@@ -29,6 +29,7 @@ $theme = $displayData['params']->get('defaultTheme', 'dark') === 'light' ? 'ligh
 	<?php foreach (RookwoodHelper::stylesheets() as $url) : ?>
 	<link rel="stylesheet" href="<?php echo $r->e($url); ?>" />
 	<?php endforeach; ?>
+	<?php echo isset($displayData['head']) ? $displayData['head'] : ''; ?>
 </head>
 <body class="blocks-preview">
 	<main class="main"><div class="container prose"><?php echo $displayData['html']; ?></div></main>

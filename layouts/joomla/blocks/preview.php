@@ -39,6 +39,7 @@ foreach (array('template.css', 'custom.css') as $file) {
 <base href="<?php echo $r->e($displayData['base']); ?>" />
 <?php echo $links; ?>
 <style>body {padding:24px;}</style>
+<?php echo isset($displayData['head']) ? $displayData['head'] : ''; ?>
 </head>
 <body class="blocks-preview">
 <div class="item-page"><?php echo $displayData['html']; ?></div>

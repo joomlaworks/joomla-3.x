@@ -29,6 +29,7 @@ $scheme = in_array($displayData['params']->get('colorScheme', 'auto'), array('li
 	<link rel="stylesheet" href="<?php echo $r->e($url); ?>" />
 	<?php endforeach; ?>
 	<style>.blocks-preview .container {padding-top:32px;padding-bottom:32px;}</style>
+	<?php echo isset($displayData['head']) ? $displayData['head'] : ''; ?>
 </head>
 <body class="blocks-preview">
 	<div class="container"><div class="postContent"><?php echo $displayData['html']; ?></div></div>

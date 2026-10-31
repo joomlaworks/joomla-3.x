@@ -26,8 +26,17 @@
 
 	const icon = (name) => (options().icons || {})[name] || '';
 
-	// A path of the site (images/x.pdf) or an address
-	const resolve = (url) => (/^(https?:)?\/\//i.test(url) || url.charAt(0) === '/' ? url : (options().root || '/') + url);
+	// A path of the site (images/x.pdf) or an address, made absolute against the page's base (pdf.js resolves against the
+	// window's address, which a srcdoc frame, as the Blocks editor's preview, doesn't have)
+	const resolve = (url) => {
+		const address = /^(https?:)?\/\//i.test(url) || url.charAt(0) === '/' ? url : (options().root || '/') + url;
+
+		try {
+			return new URL(address, document.baseURI).href;
+		} catch (error) {
+			return address;
+		}
+	};
 
 	const load = () => {
 		if (!library) {
