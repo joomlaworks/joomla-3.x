@@ -5704,7 +5704,11 @@
 			const general = Object.keys(lists).filter((selector) => special.indexOf(selector) < 0 && selector.trim() === 'select');
 			const others = Object.keys(lists).filter((selector) => special.indexOf(selector) < 0 && general.indexOf(selector) < 0);
 
-			special.concat(others, general).forEach((selector) => {
+			// An extension loaded its own Chosen (VirtueMart's chosen.jquery.js replaces jQuery.fn.chosen) and applies it to its
+			// lists: the administrator's "every list" would put a second widget on each of them
+			const foreign = window.jQuery && window.jQuery.fn.chosen && !window.jQuery.fn.chosen.cms;
+
+			special.concat(others, foreign ? [] : general).forEach((selector) => {
 				const options = Object.assign({}, lists[selector] || {});
 
 				if (remote[selector]) {
@@ -5743,6 +5747,8 @@
 
 			return this;
 		};
+		jq.fn.chosen.cms = true;
+
 
 		jq.fn.ajaxChosen = function ajaxChosen(settings, callback, chosenOptions) {
 			const remote = Object.assign({}, settings || {});
