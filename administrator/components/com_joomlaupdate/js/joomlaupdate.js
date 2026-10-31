@@ -1222,3 +1222,115 @@ function extractionMethodHandler(target, prefix)
 		$(PreUpdateChecker.run);
 	} );
 })(jQuery, document, window);
+;
+
+/* --- The pages' settings and buttons (script option com_joomlaupdate) --- */
+/*
+ * The update page: the extraction's password, size and addresses, as the globals the code above reads, and the extraction
+ * starts. The main page: the versions the pre-update check compares, its texts, the upload tab's checks, and the FTP fields
+ * shown only for the FTP extraction and upload methods.
+ */
+(function (window, document) {
+	'use strict';
+
+	const Joomla = window.Joomla = window.Joomla || {};
+
+	// global.js may come later in the page: the options are read from their element then
+	const read = () => {
+		if (Joomla.getOptions) {
+			return Joomla.getOptions('com_joomlaupdate');
+		}
+
+		try {
+			return JSON.parse(document.querySelector('script.joomla-script-options').textContent).com_joomlaupdate;
+		} catch (error) {
+			return null;
+		}
+	};
+	const options = read() || {};
+
+	if (options.update) {
+		window.joomlaupdate_password = options.update.password || '';
+		window.joomlaupdate_totalsize = options.update.totalsize || '';
+		window.joomlaupdate_ajax_url = options.update.ajax;
+		window.joomlaupdate_return_url = options.update.return;
+
+		document.addEventListener('DOMContentLoaded', () => window.pingExtract());
+
+		return;
+	}
+
+	if (options.target !== undefined) {
+		window.joomlaTargetVersion = options.target;
+		window.joomlaCurrentVersion = options.current;
+	}
+
+	if (options.showMore !== undefined) {
+		window.COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION = options.showMore;
+		window.COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_LESS_COMPATIBILITY_INFORMATION = options.showLess;
+	}
+
+	const text = (key) => Joomla.JText._(key);
+	const overlay = () => document.getElementById('loading');
+
+	Joomla.submitbuttonUpload = () => {
+		const form = document.getElementById('uploadForm');
+
+		if (form.install_package.value === '') {
+			window.alert(text('COM_INSTALLER_MSG_INSTALL_PLEASE_SELECT_A_PACKAGE'));
+		} else if (form.install_package.files[0].size > Number(form.max_upload_size.value)) {
+			window.alert(text('COM_INSTALLER_MSG_WARNINGS_UPLOADFILETOOBIG'));
+		} else {
+			if (overlay()) {
+				overlay().style.display = 'block';
+			}
+
+			form.submit();
+		}
+	};
+
+	Joomla.installpackageChange = () => {
+		const form = document.getElementById('uploadForm');
+		const size = document.getElementById('file_size');
+		const warning = document.getElementById('max_upload_size_warn');
+		const file = form.install_package.files[0];
+
+		if (form.install_package.value === '' || !file) {
+			size.classList.add('hidden');
+			warning.classList.add('hidden');
+
+			return;
+		}
+
+		size.classList.remove('hidden');
+		// The language string has markup (<strong>); the size is a number
+		size.innerHTML = text('JGLOBAL_SELECTED_UPLOAD_FILE_SIZE').replace('%s', (file.size / 1024 / 1024).toFixed(2) + ' MB');
+		warning.classList.toggle('hidden', file.size <= Number(form.max_upload_size.value));
+	};
+
+	document.addEventListener('DOMContentLoaded', () => {
+		[['extraction_method', 'row_ftp'], ['upload_method', 'upload_ftp']].forEach(([id, prefix]) => {
+			const list = document.getElementById(id);
+
+			if (list && window.jQuery) {
+				window.jQuery(list).on('change', () => window.extractionMethodHandler('#' + id, prefix));
+			} else if (list) {
+				list.addEventListener('change', () => window.extractionMethodHandler('#' + id, prefix));
+			}
+		});
+
+		document.querySelectorAll('button.submit').forEach((button) => button.addEventListener('click', () => {
+			document.querySelectorAll('div.download_message').forEach((message) => {
+				message.style.display = '';
+			});
+		}));
+
+		const wrapper = document.getElementById('joomlaupdate-wrapper');
+
+		if (wrapper && overlay()) {
+			Object.assign(overlay().style, {
+				top: wrapper.getBoundingClientRect().top + 'px', left: '0', width: '100%', height: '100%', display: 'none', marginTop: '-10px',
+			});
+		}
+	});
+})(window, document);

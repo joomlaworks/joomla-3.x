@@ -15,6 +15,7 @@ JHtml::_('jquery.framework');
 JHtml::_('bootstrap.tooltip');
 JHtml::_('bootstrap.popover');
 JHtml::_('formbehavior.chosen', 'select');
+JHtml::_('behavior.core');
 JHtml::_('script', 'administrator/components/com_joomlaupdate/js/joomlaupdate.min.js', array('version' => 'auto'));
 
 JText::script('JYES');
@@ -31,25 +32,8 @@ JText::script('COM_JOOMLAUPDATE_VIEW_DEFAULT_HELP');
 $latestJoomlaVersion = $this->updateInfo['latest'];
 $currentJoomlaVersion = isset($this->updateInfo['installed']) ? $this->updateInfo['installed'] : JVERSION;
 
-JFactory::getDocument()->addScriptDeclaration(
-    <<<JS
-jQuery(document).ready(function($) {
-	$('#extraction_method').change(function(e){
-		extractionMethodHandler('#extraction_method', 'row_ftp');
-	});
-	$('#upload_method').change(function(e){
-		extractionMethodHandler('#upload_method', 'upload_ftp');
-	});
-
-	$('button.submit').on('click', function() {
-		$('div.download_message').show();
-	});
-});
-
-var joomlaTargetVersion = '$latestJoomlaVersion';
-var joomlaCurrentVersion = '$currentJoomlaVersion';
-JS
-);
+// The versions the pre-update check compares (js/joomlaupdate.js)
+JFactory::getDocument()->addScriptOptions('com_joomlaupdate', array('target' => (string) $latestJoomlaVersion, 'current' => (string) $currentJoomlaVersion));
 
 ?>
 

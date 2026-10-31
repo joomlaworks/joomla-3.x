@@ -11,9 +11,11 @@ defined('_JEXEC') or die;
 
 /** @var JoomlaupdateViewDefault $this */
 
-// JText::script doesn't have a sprintf equivalent so work around this
-JFactory::getDocument()->addScriptDeclaration("var COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION = '" . JText::sprintf('COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION', '<span class="icon-chevron-right small"></span>', true) . "';");
-JFactory::getDocument()->addScriptDeclaration("var COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_LESS_COMPATIBILITY_INFORMATION = '" . JText::sprintf('COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_LESS_COMPATIBILITY_INFORMATION', '<span class="icon-chevron-up small"></span>', true) . "';");
+// The compatibility details' Show more / Show less (JText::script has no sprintf)
+JFactory::getDocument()->addScriptOptions('com_joomlaupdate', array(
+    'showMore' => JText::sprintf('COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_MORE_COMPATIBILITY_INFORMATION', '<span class="icon-chevron-right small"></span>'),
+    'showLess' => JText::sprintf('COM_JOOMLAUPDATE_VIEW_DEFAULT_EXTENSIONS_SHOW_LESS_COMPATIBILITY_INFORMATION', '<span class="icon-chevron-up small"></span>'),
+));
 JFactory::getDocument()->addScriptOptions('nonCoreCriticalPlugins', array_values($this->nonCoreCriticalPlugins));
 
 $compatibilityTypes = array(

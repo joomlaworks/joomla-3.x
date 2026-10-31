@@ -12,7 +12,8 @@ defined('_JEXEC') or die;
 // Include jQuery.
 JHtml::_('jquery.framework');
 
-// Load the scripts
+// Load the scripts (global.js first: joomlaupdate.js reads the page's options)
+JHtml::_('behavior.core');
 JHtml::_('script', 'administrator/components/com_joomlaupdate/js/joomlaupdate.min.js', array('version' => 'auto'));
 
 $password = JFactory::getApplication()->getUserState('com_joomlaupdate.password', null);
@@ -20,18 +21,13 @@ $filesize = JFactory::getApplication()->getUserState('com_joomlaupdate.filesize'
 $ajaxUrl = JUri::base() . 'components/com_joomlaupdate/restore.php';
 $returnUrl = 'index.php?option=com_joomlaupdate&task=update.finalise&' . JFactory::getSession()->getFormToken() . '=1';
 
-JFactory::getDocument()->addScriptDeclaration(
-    "
-	var joomlaupdate_password = '$password';
-	var joomlaupdate_totalsize = '$filesize';
-	var joomlaupdate_ajax_url = '$ajaxUrl';
-	var joomlaupdate_return_url = '$returnUrl';
-
-	jQuery(document).ready(function(){
-		window.pingExtract();
-		});
-	"
-);
+// The extraction (js/joomlaupdate.js) starts when the page is ready
+JFactory::getDocument()->addScriptOptions('com_joomlaupdate', array('update' => array(
+    'password'  => (string) $password,
+    'totalsize' => (string) $filesize,
+    'ajax'      => $ajaxUrl,
+    'return'    => $returnUrl,
+)));
 ?>
 
 <p class="nowarning"><?php echo JText::_('COM_JOOMLAUPDATE_VIEW_UPDATE_INPROGRESS'); ?></p>

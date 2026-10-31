@@ -11,68 +11,10 @@ defined('_JEXEC') or die;
 
 /** @var JoomlaupdateViewDefault $this */
 
-$errSelectPackage = JText::_('COM_INSTALLER_MSG_INSTALL_PLEASE_SELECT_A_PACKAGE', true);
-$errPackageTooBig = JText::_('COM_INSTALLER_MSG_WARNINGS_UPLOADFILETOOBIG', true);
-$txtPackageSize   = JText::_('JGLOBAL_SELECTED_UPLOAD_FILE_SIZE', true);
-$js               = <<< JS
-	Joomla.submitbuttonUpload = function() {
-		var form = document.getElementById("uploadForm");
-
-		// do field validation
-		if (form.install_package.value == "") {
-			alert("$errSelectPackage");
-		}
-		else if (form.install_package.files[0].size > form.max_upload_size.value) {
-			alert("$errPackageTooBig");
-		}
-		else
-		{
-			jQuery("#loading").css("display", "block");
-
-			form.submit();
-		}
-	};
-
-	Joomla.installpackageChange = function() {
-		var form = document.getElementById('uploadForm');
-		var fileSize = form.install_package.files[0].size;
-		var fileSizeMB = fileSize * 1.0 / 1024.0 / 1024.0;
-		var fileSizeText = "$txtPackageSize";
-		var fileSizeElement = document.getElementById('file_size');
-		var warningElement  = document.getElementById('max_upload_size_warn');
-
-		if (form.install_package.value == '') {
-			fileSizeElement.classList.add('hidden');
-			warningElement .classList.add('hidden');
-		}
-		else if (fileSize) {
-			fileSizeElement.classList.remove('hidden');
-			fileSizeElement.innerHTML = fileSizeText.replace('%s', fileSizeMB.toFixed(2) + ' MB');
-
-			if (fileSize > form.max_upload_size.value) {
-				warningElement .classList.remove('hidden');
-			} else {
-				warningElement .classList.add('hidden');
-			}
-		}
-	};
-
-	// Add spindle-wheel for installations:
-	jQuery(document).ready(function($) {
-		var outerDiv = $("#joomlaupdate-wrapper");
-
-		$("#loading")
-		.css("top", outerDiv.position().top - $(window).scrollTop())
-		.css("left", "0")
-		.css("width", "100%")
-		.css("height", "100%")
-		.css("display", "none")
-		.css("margin-top", "-10px");
-	});
-
-JS;
-
-JFactory::getDocument()->addScriptDeclaration($js);
+// Joomla.submitbuttonUpload() and Joomla.installpackageChange() (js/joomlaupdate.js)
+JText::script('COM_INSTALLER_MSG_INSTALL_PLEASE_SELECT_A_PACKAGE');
+JText::script('COM_INSTALLER_MSG_WARNINGS_UPLOADFILETOOBIG');
+JText::script('JGLOBAL_SELECTED_UPLOAD_FILE_SIZE');
 
 $ajaxLoaderImage = JHtml::_('image', 'system/ajax-loader.gif', '', null, true, true);
 $css             = <<< CSS
@@ -80,8 +22,6 @@ $css             = <<< CSS
 		background: rgba(255, 255, 255, .8) url('$ajaxLoaderImage') 50% 15% no-repeat;
 		position: fixed;
 		opacity: 1;
-		-ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity = 80);
-		filter: alpha(opacity = 80);
 		overflow: hidden;
 	}
 CSS;
