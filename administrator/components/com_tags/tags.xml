@@ -25,7 +25,6 @@
     </uninstall>
     <files folder="site">
         <filename>controller.php</filename>
-        <filename>metadata.xml</filename>
         <filename>tags.php</filename>
         <filename>router.php</filename>
         <folder>helpers</folder>

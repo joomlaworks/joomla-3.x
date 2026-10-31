@@ -10,9 +10,7 @@
     <version>3.0.0</version>
     <description>COM_MEDIA_XML_DESCRIPTION</description>
     <files folder="site">
-        <filename>controller.php</filename>
         <filename>media.php</filename>
-        <folder>helpers</folder>
     </files>
     <media folder="media">
         <folder>com_media</folder>

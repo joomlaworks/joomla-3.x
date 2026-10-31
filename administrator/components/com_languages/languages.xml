@@ -20,7 +20,6 @@
             <folder>js</folder>
             <folder>layouts</folder>
             <folder>models</folder>
-            <folder>tables</folder>
             <folder>views</folder>
         </files>
         <languages folder="admin">

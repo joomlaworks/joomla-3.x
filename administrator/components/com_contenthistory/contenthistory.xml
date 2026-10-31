@@ -25,7 +25,6 @@
     </uninstall>
     <files folder="site">
         <filename>contenthistory.php</filename>
-        <filename>index.html</filename>
     </files>
     <media folder="media">
         <folder>com_contenthistory</folder>
@@ -37,7 +36,6 @@
             <filename>contenthistory.php</filename>
             <folder>controllers</folder>
             <folder>helpers</folder>
-            <folder>media</folder>
             <folder>models</folder>
             <folder>views</folder>
             <folder>sql</folder>

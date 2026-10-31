@@ -12,7 +12,6 @@
     <administration>
         <files folder="admin">
             <filename>categories.php</filename>
-            <filename>config.xml</filename>
             <filename>controller.php</filename>
             <folder>controllers</folder>
             <folder>helpers</folder>

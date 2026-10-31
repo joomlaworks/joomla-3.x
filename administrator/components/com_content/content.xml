@@ -43,7 +43,6 @@
             <filename>content.php</filename>
             <filename>controller.php</filename>
             <folder>controllers</folder>
-            <folder>elements</folder>
             <folder>helpers</folder>
             <folder>models</folder>
             <folder>tables</folder>

@@ -5324,6 +5324,21 @@ class JoomlaInstallerScript
             '/administrator/templates/prothero/images/logo.png',
             '/administrator/templates/prothero/images/pdf_button.png',
             '/administrator/templates/prothero/images/printButton.png',
+            // sodium_compat 1.24.2 (3.18) no longer ships its alternative autoloaders and one Base64 class
+            '/libraries/vendor/paragonie/sodium_compat/autoload-fast.php',
+            '/libraries/vendor/paragonie/sodium_compat/autoload-pedantic.php',
+            '/libraries/vendor/paragonie/sodium_compat/autoload-phpunit.php',
+            '/libraries/vendor/paragonie/sodium_compat/src/Core/Base64/Common.php',
+            // Files of 3.18 development builds: Prothero's first scripts and editor stylesheet, the News sample set's first
+            // plugin file, the site templates' icon sprites (one SVG per icon since)
+            '/administrator/templates/prothero/html/editor_content.css',
+            '/administrator/templates/prothero/js/application.js',
+            '/administrator/templates/prothero/js/classes.js',
+            '/administrator/templates/prothero/js/login.js',
+            '/plugins/sampledata/blog/news.php',
+            '/templates/finch/images/icons.svg',
+            '/templates/hammond/images/icons.svg',
+            '/templates/rookwood/images/icons.svg',
         );
 
         // TODO There is an issue while deleting folders using the ftp mode
