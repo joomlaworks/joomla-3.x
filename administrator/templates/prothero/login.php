@@ -13,7 +13,8 @@ defined('_JEXEC') or die;
 /** @var JDocumentHtml $this */
 
 $page = require __DIR__ . '/includes/helper.php';
-?><!DOCTYPE html>
+?>
+<!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-scheme="<?php echo $page->scheme; ?>">
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -35,9 +36,9 @@ $page = require __DIR__ . '/includes/helper.php';
 			<div class="loginPanel">
 				<div class="loginPanel-logo">
 					<?php if ($page->loginLogoFile !== '') : ?>
-						<img src="<?php echo ProtheroHelper::escape(JUri::root() . $page->loginLogoFile); ?>" alt="<?php echo ProtheroHelper::escape($page->sitename); ?>" />
+					<img src="<?php echo ProtheroHelper::escape(JUri::root() . $page->loginLogoFile); ?>" alt="<?php echo ProtheroHelper::escape($page->sitename); ?>" />
 					<?php else : ?>
-						<?php echo ProtheroHelper::logo(); ?>
+					<?php echo ProtheroHelper::logo(); ?>
 					<?php endif; ?>
 				</div>
 				<h1 class="loginPanel-title"><?php echo JText::_('TPL_PROTHERO_LOGIN_HEADING'); ?></h1>

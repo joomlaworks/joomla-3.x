@@ -43,5 +43,5 @@ $heading = isset($data['heading']) ? trim((string) $data['heading']) : '';
 $intro   = isset($data['intro']) ? trim((string) $data['intro']) : '';
 ?>
 <section class="blockTestimonials wide"><?php
-    echo $heading !== '' ? '<h2 class="blockTitle">' . $r->e($heading) . '</h2>' : '';
+echo $heading !== '' ? '<h2 class="blockTitle">' . $r->e($heading) . '</h2>' : '';
 echo $intro !== '' ? '<p class="lead">' . nl2br($r->e($intro)) . '</p>' : ''; ?><div class="testimonials"><?php echo implode('', $quotes); ?></div></section>

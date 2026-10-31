@@ -199,6 +199,22 @@
     ],
     "Fonts and Icons": [
         {
+            "name": "Bootstrap Icons",
+            "version": "1.13.2",
+            "date": "2026.10.08",
+            "dateSource": "npm release 1.13.2",
+            "license": "MIT",
+            "url": "https://icons.getbootstrap.com",
+            "path": "media/system/images/icons",
+            "note": "One SVG file per icon (JHtml::_('icons.svg')), also the Media Manager's, Contacts', Smart Search's and the legacy administrator images, and EasyMDE's buttons",
+            "latest": "",
+            "isLatest": false,
+            "checked": "",
+            "use": "shared",
+            "series": "",
+            "seriesLatest": ""
+        },
+        {
             "name": "IcoMoon (Joomla icon font)",
             "version": "",
             "date": "2013.10.02",

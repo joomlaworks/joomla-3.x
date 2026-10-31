@@ -111,7 +111,8 @@ Summary of changes:
 - Uninstalling a core component removes its own database tables (shared ones stay); every removable component has install and uninstall SQL for MySQL, PostgreSQL and SQL Server, so restoring brings its tables back. Updating from an earlier version also removes the tables of core components uninstalled before
 - PostgreSQL 9.5 is now the minimum (was 9.0)
 - Isis and Protostar are plain, modern CSS: no more Less, a quarter of the size, the same look, and nothing loaded for old Internet Explorer versions
-- Isis and Prothero: each page file starts with a single include of the template's `includes/helper.php`; legacy admin images as SVG, portrait previews
+- Isis and Prothero: each page file starts with a single include of the template's `includes/helper.php`; legacy admin images as SVG; tidier template markup in every core template
+- Templates manager: previews show the desktop and phone views side by side, in the CMS's own modal
 - Removable extensions no longer break each other when one is removed, and uninstalling a component also removes its tag mappings, associations, content history, custom fields and site menu items (except the home item)
 - Lists can be reordered by touch on phones and tablets (drag a row by its handle); Prothero adds a Reorder button on phones
 - The old schema.org microdata attributes are gone from the site's HTML (core layouts and the three templates); structured data comes as JSON-LD instead

@@ -1,6 +1,7 @@
 """Copies the Bootstrap Icons (https://icons.getbootstrap.com, MIT) core extensions use into their icon folders, one SVG
-file each, unchanged, with the licence beside them; JHtml::_('icons.svg', $name, $label, array('path' => $folder)) writes
-one into the page, drawn in the text colour. Also writes the few icons stylesheets use as backgrounds, in a fixed colour.
+file each, unchanged; JHtml::_('icons.svg', $name, $label, array('path' => $folder)) writes one into the page, drawn in
+the text colour. Their licence is on System Information's Third-party Software list (docs/thirdparty/build.php, which
+reads the version from the usage line below). Also writes the few icons stylesheets use as backgrounds, in a fixed colour.
 
 Usage: build.py <bootstrap-icons package folder> <site root>    (npm bootstrap-icons 1.13.2; needs svgo)
 Add an icon to FOLDERS and run this again rather than copying files by hand. Every file written goes through svgo
@@ -13,9 +14,9 @@ import sys
 
 FOLDERS = {
     # Shared icons (JHtml::_('icons.svg', ...)): breadcrumbs, content icons, vote, feeds, tooltips, mail, date fields, the
-    # administrator menu's language item
+    # administrator menu's language item, Isis' and Prothero's status bar (envelope, person: CSS masks)
     'media/system/images/icons': [
-        'calendar3', 'chevron-left', 'chevron-right', 'envelope', 'file-earmark-plus', 'info-circle-fill', 'lock-fill', 'pencil-square',
+        'calendar3', 'chevron-left', 'chevron-right', 'envelope', 'file-earmark-plus', 'info-circle-fill', 'lock-fill', 'pencil-square', 'person',
         'printer', 'rss-fill', 'star', 'star-fill', 'translate', 'x-lg',
     ],
     # The Media Manager's file types (administrator/components/com_media/models/list.php), renaming and thumbnail sizes
@@ -78,7 +79,6 @@ DRAWN = {
 package, root = sys.argv[1], sys.argv[2]
 written = []
 config = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'svgo.config.mjs')
-licence = 'Bootstrap Icons 1.13.2, https://icons.getbootstrap.com\n\n' + open(package + '/LICENSE').read()
 
 for folder, names in FOLDERS.items():
     os.makedirs(root + '/' + folder, exist_ok=True)
@@ -87,7 +87,6 @@ for folder, names in FOLDERS.items():
         shutil.copyfile('%s/icons/%s.svg' % (package, name), '%s/%s/%s.svg' % (root, folder, name))
         written.append('%s/%s/%s.svg' % (root, folder, name))
 
-    open(root + '/' + folder + '/license.txt', 'w').write(licence)
     print(folder, len(names), 'icons')
 
 for target, (name, colour) in COLOURED.items():
@@ -101,9 +100,6 @@ for target, (name, colour) in COLOURED.items():
 for target, svg in DRAWN.items():
     open(root + '/' + target, 'w').write(svg + '\n')
     written.append(root + '/' + target)
-
-for folder in ('media/com_finder/images', 'media/system/images/admin'):
-    open(root + '/' + folder + '/license.txt', 'w').write(licence)
 
 subprocess.run(['svgo', '--quiet', '--config', config] + written, check=True)
 print(len(written), 'files optimised')

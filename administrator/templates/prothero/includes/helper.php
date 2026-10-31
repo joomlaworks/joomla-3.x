@@ -356,7 +356,7 @@ if (!class_exists('ProtheroHelper', false)) {
          */
         public static function logo()
         {
-            $logo = (string) @file_get_contents(dirname(__DIR__) . '/images/joomla-logo.svg');
+            $logo = (string) @file_get_contents(JPATH_ROOT . '/media/system/images/logo/joomla.svg');
 
             return trim(str_replace(array('fill="#3b3a40"', '<svg '), array('fill="currentColor"', '<svg role="img" aria-label="Joomla!" focusable="false" '), $logo));
         }

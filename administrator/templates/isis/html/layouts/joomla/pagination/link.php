@@ -85,15 +85,15 @@ if ($displayData['active']) {
 }
 ?>
 <?php if ($displayData['active']) : ?>
-	<li<?php echo $liClass ? ' class="' . $liClass . '"' : ''; ?>>
-		<a aria-label="<?php echo $aria; ?>" <?php echo $cssClasses ? 'class="' . implode(' ', $cssClasses) . '"' : ''; ?> <?php echo $title; ?> href="#" onclick="<?php echo $onClick; ?>">
-			<?php echo $display; ?>
-		</a>
-	</li>
+<li<?php echo $liClass ? ' class="' . $liClass . '"' : ''; ?>>
+	<a aria-label="<?php echo $aria; ?>" <?php echo $cssClasses ? 'class="' . implode(' ', $cssClasses) . '"' : ''; ?> <?php echo $title; ?> href="#" onclick="<?php echo $onClick; ?>">
+		<?php echo $display; ?>
+	</a>
+</li>
 <?php else : ?>
-	<li class="<?php echo $class; ?>">
+<li class="<?php echo $class; ?>">
 	<span <?php echo $class == 'active' ? 'aria-current="true" aria-label="' . JText::sprintf('JLIB_HTML_PAGE_CURRENT', $item->text) . '"' : ''; ?>>
 		<?php echo $display; ?>
 	</span>
-	</li>
+</li>
 <?php endif;

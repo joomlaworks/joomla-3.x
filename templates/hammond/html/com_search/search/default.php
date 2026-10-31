@@ -21,9 +21,9 @@ $hasOptions = $this->params->get('search_phrases', 1) || $this->params->get('sea
 		<p class="listKicker"><?php echo HammondHelper::icon('search') . JText::_('TPL_HAMMOND_SEARCH'); ?></p>
 		<h1 class="listTitle">
 			<?php if ($this->searchword !== '' && $this->searchword !== null) : ?>
-				<?php echo JText::sprintf('TPL_HAMMOND_SEARCH_RESULTS_FOR', $this->escape($this->origkeyword)); ?>
+			<?php echo JText::sprintf('TPL_HAMMOND_SEARCH_RESULTS_FOR', $this->escape($this->origkeyword)); ?>
 			<?php else : ?>
-				<?php echo $this->escape($this->params->get('page_heading') ?: $this->params->get('page_title')); ?>
+			<?php echo $this->escape($this->params->get('page_heading') ?: $this->params->get('page_title')); ?>
 			<?php endif; ?>
 		</h1>
 		<?php if (!empty($this->searchword)) : ?>

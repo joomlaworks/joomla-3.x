@@ -35,8 +35,8 @@ $columns = max(1, min(3, (int) $this->params->get('num_columns', 1)));
 		<?php else : ?>
 		<div class="cardGrid cardGridLarge columns-<?php echo $columns; ?>">
 			<?php foreach ($items as $i => $item) : ?>
-			<?php echo RookwoodHelper::card($item, array('class' => 'cardLarge', 'excerpt' => 160, 'eager' => $first && $i < $columns,
-                'sizes' => '(min-width: 1100px) ' . round(100 / $columns) . 'vw, (min-width: 700px) 50vw, 100vw')); ?>
+			<?php $sizes = '(min-width: 1100px) ' . round(100 / $columns) . 'vw, (min-width: 700px) 50vw, 100vw'; ?>
+			<?php echo RookwoodHelper::card($item, array('class' => 'cardLarge', 'excerpt' => 160, 'eager' => $first && $i < $columns, 'sizes' => $sizes)); ?>
 			<?php endforeach; ?>
 		</div>
 		<?php endif; ?>

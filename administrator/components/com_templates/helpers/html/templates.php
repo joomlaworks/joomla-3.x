@@ -29,26 +29,31 @@ class JHtmlTemplates
      */
     public static function thumb($template, $clientId = 0)
     {
-        $client = JApplicationHelper::getClientInfo($clientId);
+        $client   = JApplicationHelper::getClientInfo($clientId);
         $basePath = $client->path . '/templates/' . $template;
-        $thumb = $basePath . '/template_thumbnail.png';
-        $preview = $basePath . '/template_preview.png';
-        $html = '';
+        $baseUrl  = JUri::root(true) . ($clientId == 0 ? '' : '/administrator') . '/templates/' . $template;
 
-        if (file_exists($thumb)) {
-
-            $clientPath = ($clientId == 0) ? '' : 'administrator/';
-            $thumb = $clientPath . 'templates/' . $template . '/template_thumbnail.png';
-            // A width only: thumbnails may be landscape (206x150, as stock Joomla's) or portrait, and drawn at twice their size
-            $html = JHtml::_('image', $thumb, JText::_('COM_TEMPLATES_PREVIEW'), array('width' => 200));
-
-            if (file_exists($preview)) {
-                $html = '<button type="button" data-target="#' . $template . '-Modal" class="thumbnail pull-left hasTooltip" data-toggle="modal"'
-                    . ' title="' . JHtml::_('tooltipText', 'COM_TEMPLATES_CLICK_TO_ENLARGE') . '">' . $html . '</button>';
-            }
+        if (!file_exists($basePath . '/template_thumbnail.png')) {
+            return '';
         }
 
-        return $html;
+        $clientPath = ($clientId == 0) ? '' : 'administrator/';
+
+        // A width only: thumbnails may be landscape (206x150, as stock Joomla's) or square, and drawn at twice their size
+        $html = JHtml::_('image', $clientPath . 'templates/' . $template . '/template_thumbnail.png', JText::_('COM_TEMPLATES_PREVIEW'), array('width' => 200));
+
+        if (!file_exists($basePath . '/template_preview.png')) {
+            return $html;
+        }
+
+        // The preview opens in the CMS's modal, fitted to the window's width and scrolling when taller (js/templates.js)
+        JHtml::_('behavior.cms');
+        JHtml::_('script', 'administrator/components/com_templates/js/templates.min.js', array('version' => 'auto', 'position' => 'footer'), array('defer' => true));
+
+        return '<button type="button" class="thumbnail pull-left hasTooltip" data-template-preview="'
+            . htmlspecialchars($baseUrl . '/template_preview.png', ENT_QUOTES, 'UTF-8') . '" data-template-name="'
+            . htmlspecialchars($template, ENT_QUOTES, 'UTF-8') . '" title="' . JHtml::_('tooltipText', 'COM_TEMPLATES_CLICK_TO_ENLARGE') . '">'
+            . $html . '</button>';
     }
 
     /**
@@ -57,39 +62,12 @@ class JHtmlTemplates
      * @param   string   $template  The name of the template.
      * @param   integer  $clientId  The application client ID the template applies to
      *
-     * @return  string  The html string
+     * @return  string  The html string: nothing since 3.18, as the preview opens in the CMS's modal (thumb())
      *
      * @since   3.4
      */
     public static function thumbModal($template, $clientId = 0)
     {
-        $client = JApplicationHelper::getClientInfo($clientId);
-        $basePath = $client->path . '/templates/' . $template;
-        $baseUrl = ($clientId == 0) ? JUri::root(true) : JUri::root(true) . '/administrator';
-        $thumb = $basePath . '/template_thumbnail.png';
-        $preview = $basePath . '/template_preview.png';
-        $html = '';
-
-        if (file_exists($thumb)) {
-            if (file_exists($preview)) {
-                $preview = $baseUrl . '/templates/' . $template . '/template_preview.png';
-                $footer = '<button type="button" class="btn" data-dismiss="modal">'
-                    . JText::_('JTOOLBAR_CLOSE') . '</button>';
-
-                $html .= JHtml::_(
-                    'bootstrap.renderModal',
-                    $template . '-Modal',
-                    array(
-                        'title'  => JText::_('COM_TEMPLATES_BUTTON_PREVIEW'),
-                        'height' => '500px',
-                        'width'  => '800px',
-                        'footer' => $footer,
-                    ),
-                    $body = '<div><img src="' . $preview . '" style="max-width:100%" alt="' . $template . '"></div>'
-                );
-            }
-        }
-
-        return $html;
+        return '';
     }
 }

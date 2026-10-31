@@ -2264,8 +2264,8 @@ html[dir="rtl"] .quick-icons .nav-list [class^="icon-"],html[dir="rtl"] .quick-i
 #status .badge {margin-right:0.25em;}
 /* Visitors and Messages as icons (images/svg), masks painted in the text colour, so they follow the bar's colours */
 #status .statusIcon {display:inline-block;width:14px;height:14px;margin-right:4px;vertical-align:-2px;background-color:currentColor;}
-#status .statusIconVisitors {-webkit-mask:url('../images/svg/visitors.svg') center / contain no-repeat;mask:url('../images/svg/visitors.svg') center / contain no-repeat;}
-#status .statusIconMessages {-webkit-mask:url('../images/svg/messages.svg') center / contain no-repeat;mask:url('../images/svg/messages.svg') center / contain no-repeat;}
+#status .statusIconVisitors {-webkit-mask:url('../../../../media/system/images/icons/person.svg') center / contain no-repeat;mask:url('../../../../media/system/images/icons/person.svg') center / contain no-repeat;}
+#status .statusIconMessages {-webkit-mask:url('../../../../media/system/images/icons/envelope.svg') center / contain no-repeat;mask:url('../../../../media/system/images/icons/envelope.svg') center / contain no-repeat;}
 
 /* --- Prothero: Tables --- */
 @media (max-width:479px) {

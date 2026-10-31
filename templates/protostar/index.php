@@ -122,7 +122,7 @@ if ($this->params->get('logoFile')) {
 					<a class="brand pull-left" href="<?php echo $this->baseurl; ?>/">
 						<?php echo $logo; ?>
 						<?php if ($this->params->get('sitedescription')) : ?>
-							<?php echo '<div class="site-description">' . htmlspecialchars((string) $this->params->get('sitedescription'), ENT_COMPAT, 'UTF-8') . '</div>'; ?>
+						<?php echo '<div class="site-description">' . htmlspecialchars((string) $this->params->get('sitedescription'), ENT_COMPAT, 'UTF-8') . '</div>'; ?>
 						<?php endif; ?>
 					</a>
 					<div class="header-search pull-right">
@@ -131,30 +131,30 @@ if ($this->params->get('logoFile')) {
 				</div>
 			</header>
 			<?php if ($this->countModules('position-1')) : ?>
-				<nav class="navigation" role="navigation">
-					<div class="navbar pull-left">
-						<a class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".nav-collapse">
-							<span class="element-invisible"><?php echo JTEXT::_('TPL_PROTOSTAR_TOGGLE_MENU'); ?></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</a>
-					</div>
-					<div class="nav-collapse">
-						<jdoc:include type="modules" name="position-1" style="none" />
-					</div>
-				</nav>
+			<nav class="navigation" role="navigation">
+				<div class="navbar pull-left">
+					<a class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".nav-collapse">
+						<span class="element-invisible"><?php echo JTEXT::_('TPL_PROTOSTAR_TOGGLE_MENU'); ?></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</a>
+				</div>
+				<div class="nav-collapse">
+					<jdoc:include type="modules" name="position-1" style="none" />
+				</div>
+			</nav>
 			<?php endif; ?>
 			<jdoc:include type="modules" name="banner" style="xhtml" />
 			<div class="row-fluid">
 				<?php if ($position8ModuleCount) : ?>
-					<!-- Begin Sidebar -->
-					<div id="sidebar" class="span3">
-						<div class="sidebar-nav">
-							<jdoc:include type="modules" name="position-8" style="xhtml" />
-						</div>
+				<!-- Begin Sidebar -->
+				<div id="sidebar" class="span3">
+					<div class="sidebar-nav">
+						<jdoc:include type="modules" name="position-8" style="xhtml" />
 					</div>
-					<!-- End Sidebar -->
+				</div>
+				<!-- End Sidebar -->
 				<?php endif; ?>
 				<main id="content" role="main" class="<?php echo $span; ?>">
 					<!-- Begin Content -->
@@ -166,11 +166,11 @@ if ($this->params->get('logoFile')) {
 					<!-- End Content -->
 				</main>
 				<?php if ($position7ModuleCount) : ?>
-					<div id="aside" class="span3">
-						<!-- Begin Right Sidebar -->
-						<jdoc:include type="modules" name="position-7" style="well" />
-						<!-- End Right Sidebar -->
-					</div>
+				<div id="aside" class="span3">
+					<!-- Begin Right Sidebar -->
+					<jdoc:include type="modules" name="position-7" style="well" />
+					<!-- End Right Sidebar -->
+				</div>
 				<?php endif; ?>
 			</div>
 		</div>

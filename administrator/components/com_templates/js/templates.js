@@ -9,6 +9,9 @@
  *   File and Manage Folders windows a click on a folder chooses it instead (its address goes to the window's field);
  * - the open file and its folders are marked in the tree;
  * - an image's crop area (#image-crop, its own size in data-width and data-height) goes to the form's x, y, w and h.
+ *
+ * The preview of a template (its thumbnail's button, data-template-preview: the image's address) opens in CMS.modal, as
+ * wide as the image or the window allows, scrolling when the image is taller than the window.
  */
 (() => {
 	'use strict';
@@ -20,6 +23,33 @@
 	const toggle = (element, shown) => {
 		element.style.display = shown ? '' : 'none';
 	};
+
+	const preview = (button) => {
+		const image = new Image();
+
+		image.alt = button.getAttribute('data-template-name') || '';
+		image.addEventListener('load', () => {
+			const width = Math.min(image.naturalWidth, window.innerWidth - 80);
+			const height = Math.min(Math.round((width * image.naturalHeight) / image.naturalWidth), window.innerHeight - 80);
+			const root = document.createElement('div');
+
+			image.style.cssText = 'display:block;width:100%;height:auto;';
+			root.style.cssText = 'width:' + width + 'px;height:' + height + 'px;overflow:auto;overscroll-behavior:contain;';
+			root.appendChild(image);
+
+			window.CMS.modal.open(root, { handler: 'adopt', size: { x: width, y: height } });
+		}, { once: true });
+		image.src = button.getAttribute('data-template-preview');
+	};
+
+	document.addEventListener('click', (event) => {
+		const button = event.target.closest && event.target.closest('[data-template-preview]');
+
+		if (button) {
+			event.preventDefault();
+			preview(button);
+		}
+	});
 
 	const start = () => {
 		const holder = document.querySelector('.tree-holder');

@@ -26,7 +26,7 @@ if (!$items) {
 ?>
 <div class="cardGrid cardGridLarge columns-2 workGrid">
 	<?php foreach ($items as $i => $item) : ?>
-	<?php echo RookwoodHelper::card($item, array('class' => 'cardLarge' . (!$i ? ' cardWide' : ''), 'excerpt' => !$i ? 180 : 0,
-        'sizes' => !$i ? '(min-width: 1440px) 1400px, 100vw' : '(min-width: 1100px) 50vw, 100vw')); ?>
+	<?php $sizes = !$i ? '(min-width: 1440px) 1400px, 100vw' : '(min-width: 1100px) 50vw, 100vw'; ?>
+	<?php echo RookwoodHelper::card($item, array('class' => 'cardLarge' . (!$i ? ' cardWide' : ''), 'excerpt' => !$i ? 180 : 0, 'sizes' => $sizes)); ?>
 	<?php endforeach; ?>
 </div>

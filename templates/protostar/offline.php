@@ -82,19 +82,19 @@ if ($this->params->get('logoFile')) {
 		<div class="middle">
 			<div class="inner well">
 				<div class="header">
-				<?php if (!empty($logo)) : ?>
+					<?php if (!empty($logo)) : ?>
 					<h1><?php echo $logo; ?></h1>
-				<?php else : ?>
+					<?php else : ?>
 					<h1><?php echo $sitename; ?></h1>
-				<?php endif; ?>
-				<?php if ($app->get('offline_image') && file_exists($app->get('offline_image'))) : ?>
+					<?php endif; ?>
+					<?php if ($app->get('offline_image') && file_exists($app->get('offline_image'))) : ?>
 					<img src="<?php echo $app->get('offline_image'); ?>" alt="<?php echo $sitename; ?>" />
-				<?php endif; ?>
-				<?php if ($app->get('display_offline_message', 1) == 1 && str_replace(' ', '', $app->get('offline_message')) !== '') : ?>
+					<?php endif; ?>
+					<?php if ($app->get('display_offline_message', 1) == 1 && str_replace(' ', '', $app->get('offline_message')) !== '') : ?>
 					<p><?php echo $app->get('offline_message'); ?></p>
-				<?php elseif ($app->get('display_offline_message', 1) == 2) : ?>
+					<?php elseif ($app->get('display_offline_message', 1) == 2) : ?>
 					<p><?php echo JText::_('JOFFLINE_MESSAGE'); ?></p>
-				<?php endif; ?>
+					<?php endif; ?>
 				</div>
 				<jdoc:include type="message" />
 				<form action="<?php echo JRoute::_('index.php', true); ?>" method="post" id="form-login">

@@ -96,21 +96,9 @@ $url    = ($readonly ? ''
 	data-preview-container=".field-media-preview"
 	data-preview-width="<?php echo $previewWidth; ?>"
 	data-preview-height="<?php echo $previewHeight; ?>"
->
-	<?php
-    // Render the modal
-    echo JHtml::_(
-        'bootstrap.renderModal',
-        'imageModal_'. $id,
-        array(
-            'title' => JText::_('JLIB_FORM_CHANGE_IMAGE'),
-            'closeButton' => true,
-            'footer' => '<button type="button" class="btn" data-dismiss="modal">' . JText::_('JCANCEL') . '</button>'
-        )
-    );
-
-JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true));
-?>
+	>
+	<?php echo JHtml::_('bootstrap.renderModal', 'imageModal_' . $id, array('title' => JText::_('JLIB_FORM_CHANGE_IMAGE'), 'closeButton' => true)); ?>
+	<?php JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true)); ?>
 	<?php if ($showPreview && $showAsTooltip) : ?>
 	<div class="input-prepend input-append">
 		<span rel="popover" class="add-on pop-helper field-media-preview"
@@ -123,18 +111,18 @@ JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relativ
 	<?php endif; ?>
 		<input type="text" name="<?php echo $name; ?>" id="<?php echo $id; ?>" value="<?php echo htmlspecialchars($value, ENT_COMPAT, 'UTF-8'); ?>" readonly="readonly"<?php echo $attr; ?>/>
 		<?php if ($disabled != true) : ?>
-			<button type="button" class="btn button-select"><?php echo JText::_("JLIB_FORM_BUTTON_SELECT"); ?></button>
-			<button
-				type="button"
-				class="btn hasTooltip button-clear"
-				title="<?php echo JText::_("JLIB_FORM_BUTTON_CLEAR"); ?>"
-				aria-label="<?php echo JText::_("JLIB_FORM_BUTTON_CLEAR"); ?>"
-				>
-				<span class="icon-remove" aria-hidden="true"></span>
-			</button>
+		<button type="button" class="btn button-select"><?php echo JText::_("JLIB_FORM_BUTTON_SELECT"); ?></button>
+		<button
+			type="button"
+			class="btn hasTooltip button-clear"
+			title="<?php echo JText::_("JLIB_FORM_BUTTON_CLEAR"); ?>"
+			aria-label="<?php echo JText::_("JLIB_FORM_BUTTON_CLEAR"); ?>"
+			>
+			<span class="icon-remove" aria-hidden="true"></span>
+		</button>
 		<?php endif; ?>
 	</div>
 	<?php if ($showPreview && !$showAsTooltip) : ?>
-		<div class="field-media-preview" style="width: <?php echo $previewWidth; ?>px; max-height: <?php echo $previewHeight; ?>px;margin-top:10px;"></div>
+	<div class="field-media-preview" style="width: <?php echo $previewWidth; ?>px; max-height: <?php echo $previewHeight; ?>px;margin-top:10px;"></div>
 	<?php endif; ?>
 </div>

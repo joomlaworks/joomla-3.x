@@ -13,28 +13,29 @@ defined('_JEXEC') or die;
 /** @var JDocumentError $this */
 
 $page = require __DIR__ . '/includes/helper.php';
-?><!DOCTYPE html>
+?>
+<!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-scheme="<?php echo $page->scheme; ?>" data-navbar="<?php echo $page->navbar; ?>">
 <head>
 	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title><?php echo $this->title; ?> <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
 	<?php if ($page->app->get('debug_lang', '0') == '1' || $page->app->get('debug', '0') == '1') : ?>
-		<!-- Load additional CSS styles for debug mode-->
-		<link href="<?php echo JUri::root(true); ?>/media/system/css/debug.css" rel="stylesheet" />
+	<!-- Load additional CSS styles for debug mode-->
+	<link href="<?php echo JUri::root(true); ?>/media/system/css/debug.css" rel="stylesheet" />
 	<?php endif; ?>
 	<?php // If Right-to-Left?>
 	<?php if ($this->direction == 'rtl') : ?>
-		<link href="<?php echo JUri::root(true); ?>/media/system/css/bootstrap-rtl.css" rel="stylesheet" />
+	<link href="<?php echo JUri::root(true); ?>/media/system/css/bootstrap-rtl.css" rel="stylesheet" />
 	<?php endif; ?>
 	<?php // Load specific language related CSS?>
 	<?php $file = '/administrator/language/' . $page->lang->getTag() . '/' . $page->lang->getTag() . '.css'; ?>
 	<?php if (is_file(JPATH_ROOT . $file)) : ?>
-		<link href="<?php echo JUri::root(true) . $file; ?>" rel="stylesheet" />
+	<link href="<?php echo JUri::root(true) . $file; ?>" rel="stylesheet" />
 	<?php endif; ?>
 	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template.css" rel="stylesheet" />
 	<?php if ($this->direction === 'rtl') : ?>
-		<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template-rtl.css" rel="stylesheet" />
+	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template-rtl.css" rel="stylesheet" />
 	<?php endif; ?>
 	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 	<script src="<?php echo JUri::root(true); ?>/media/system/js/jquery.js"></script>
@@ -48,12 +49,12 @@ $page = require __DIR__ . '/includes/helper.php';
 		<div class="navbar-inner">
 			<div class="container-fluid">
 				<?php if ($page->params->get('admin_menus') != '0') : ?>
-					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-						<span class="element-invisible"><?php echo JTEXT::_('TPL_PROTHERO_TOGGLE_MENU'); ?></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</a>
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="element-invisible"><?php echo JTEXT::_('TPL_PROTHERO_TOGGLE_MENU'); ?></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
 				<?php endif; ?>
 				<a class="admin-logo" href="<?php echo $this->baseurl; ?>"><span class="icon-joomla"></span></a>
 
@@ -68,8 +69,8 @@ $page = require __DIR__ . '/includes/helper.php';
 					<?php // Display menu modules?>
 					<?php $menumodules = JModuleHelper::getModules('menu'); ?>
 					<?php foreach ($menumodules as $menumodule) : ?>
-						<?php $output = JModuleHelper::renderModule($menumodule, array('style' => 'none')); ?>
-						<?php echo $output; ?>
+					<?php $output = JModuleHelper::renderModule($menumodule, array('style' => 'none')); ?>
+					<?php echo $output; ?>
 					<?php endforeach; ?>
 					<ul class="nav nav-user<?php echo ($this->direction == 'rtl') ? ' pull-left' : ' pull-right'; ?>">
 						<li class="dropdown">
@@ -105,9 +106,9 @@ $page = require __DIR__ . '/includes/helper.php';
 		<?php if ($page->displayHeader) : ?>
 		<div class="container-logo">
 			<?php if ($page->logo !== '') : ?>
-				<img src="<?php echo $page->logo; ?>" class="logo" alt="<?php echo $page->sitename; ?>" />
+			<img src="<?php echo $page->logo; ?>" class="logo" alt="<?php echo $page->sitename; ?>" />
 			<?php else : ?>
-				<span class="logo"><?php echo ProtheroHelper::logo(); ?></span>
+			<span class="logo"><?php echo ProtheroHelper::logo(); ?></span>
 			<?php endif; ?>
 		</div>
 		<?php endif; ?>
@@ -127,31 +128,31 @@ $page = require __DIR__ . '/includes/helper.php';
 					<blockquote>
 						<span class="label label-inverse"><?php echo $this->error->getCode(); ?></span> <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8');?>
 						<?php if ($this->debug) : ?>
-							<br/><?php echo htmlspecialchars((string) $this->error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->error->getLine(); ?>
+						<br/><?php echo htmlspecialchars((string) $this->error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->error->getLine(); ?>
 						<?php endif; ?>
 					</blockquote>
 					<?php if ($this->debug) : ?>
-						<div>
-							<?php echo $this->renderBacktrace(); ?>
-							<?php // Check if there are more Exceptions and render their data as well?>
-							<?php if ($this->error->getPrevious()) : ?>
-								<?php $loop = true; ?>
-								<?php // Reference $this->_error here and in the loop as setError() assigns errors to this property and we need this for the backtrace to work correctly?>
-								<?php // Make the first assignment to setError() outside the loop so the loop does not skip Exceptions?>
-								<?php $this->setError($this->_error->getPrevious()); ?>
-								<?php while ($loop === true) : ?>
-									<p><strong><?php echo JText::_('JERROR_LAYOUT_PREVIOUS_ERROR'); ?></strong></p>
-									<p>
-										<?php echo htmlspecialchars((string) $this->_error->getMessage(), ENT_QUOTES, 'UTF-8'); ?>
-										<br/><?php echo htmlspecialchars((string) $this->_error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->_error->getLine(); ?>
-									</p>
-									<?php echo $this->renderBacktrace(); ?>
-									<?php $loop = $this->setError($this->_error->getPrevious()); ?>
-								<?php endwhile; ?>
-								<?php // Reset the main error object to the base error?>
-								<?php $this->setError($this->error); ?>
-							<?php endif; ?>
-						</div>
+					<div>
+						<?php echo $this->renderBacktrace(); ?>
+						<?php // Check if there are more Exceptions and render their data as well?>
+						<?php if ($this->error->getPrevious()) : ?>
+						<?php $loop = true; ?>
+						<?php // Reference $this->_error here and in the loop as setError() assigns errors to this property and we need this for the backtrace to work correctly?>
+						<?php // Make the first assignment to setError() outside the loop so the loop does not skip Exceptions?>
+						<?php $this->setError($this->_error->getPrevious()); ?>
+						<?php while ($loop === true) : ?>
+						<p><strong><?php echo JText::_('JERROR_LAYOUT_PREVIOUS_ERROR'); ?></strong></p>
+						<p>
+							<?php echo htmlspecialchars((string) $this->_error->getMessage(), ENT_QUOTES, 'UTF-8'); ?>
+							<br/><?php echo htmlspecialchars((string) $this->_error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->_error->getLine(); ?>
+						</p>
+						<?php echo $this->renderBacktrace(); ?>
+						<?php $loop = $this->setError($this->_error->getPrevious()); ?>
+						<?php endwhile; ?>
+						<?php // Reset the main error object to the base error?>
+						<?php $this->setError($this->error); ?>
+						<?php endif; ?>
+					</div>
 					<?php endif; ?>
 					<p><a href="<?php echo $this->baseurl; ?>" class="btn"><span class="icon-dashboard"></span> <?php echo JText::_('JGLOBAL_TPL_CPANEL_LINK_TEXT'); ?></a></p>
 					<!-- End Content -->

@@ -47,32 +47,32 @@ if ($params->get('logoFile')) {
 <head>
 	<meta charset="utf-8" />
 	<title><?php echo $this->title; ?> <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<?php // Use of Google Font?>
 	<?php if ($params->get('googleFont')) : ?>
-		<link href="https://fonts.googleapis.com/css?family=<?php echo $params->get('googleFontName'); ?>" rel="stylesheet" />
-		<style>
-			h1, h2, h3, h4, h5, h6, .site-title {
-				font-family: '<?php echo str_replace('+', ' ', $params->get('googleFontName')); ?>', sans-serif;
-			}
-		</style>
+	<link href="https://fonts.googleapis.com/css?family=<?php echo $params->get('googleFontName'); ?>" rel="stylesheet" />
+	<style>
+		h1, h2, h3, h4, h5, h6, .site-title {
+			font-family: '<?php echo str_replace('+', ' ', $params->get('googleFontName')); ?>', sans-serif;
+		}
+	</style>
 	<?php endif; ?>
 	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template.css" rel="stylesheet" />
 	<?php if ($app->get('debug_lang', '0') == '1' || $app->get('debug', '0') == '1') : ?>
-		<link href="<?php echo JUri::root(true); ?>/media/system/css/debug.css" rel="stylesheet" />
+	<link href="<?php echo JUri::root(true); ?>/media/system/css/debug.css" rel="stylesheet" />
 	<?php endif; ?>
 	<?php // If Right-to-Left?>
 	<?php if ($this->direction === 'rtl') : ?>
-		<link href="<?php echo JUri::root(true); ?>/media/system/css/bootstrap-rtl.css" rel="stylesheet" />
+	<link href="<?php echo JUri::root(true); ?>/media/system/css/bootstrap-rtl.css" rel="stylesheet" />
 	<?php endif; ?>
 	<?php if (file_exists('templates/' . $this->template . '/css/user.css')) : ?>
-		<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/user.css" rel="stylesheet" />
+	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/user.css" rel="stylesheet" />
 	<?php endif; ?>
 	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 	<?php // The template options' colours, as on other pages?>
 	<?php if ($optionColors['properties'] !== '') : ?>
-		<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template-options.css" rel="stylesheet" />
-		<style>:root {<?php echo $optionColors['properties']; ?>}</style>
+	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template-options.css" rel="stylesheet" />
+	<style>:root {<?php echo $optionColors['properties']; ?>}</style>
 	<?php endif; ?>
 </head>
 <body class="site <?php echo $option
@@ -94,24 +94,24 @@ if ($params->get('logoFile')) {
 						<?php echo $logo; ?>
 					</a>
 					<?php if ($format === 'html') : ?>
-						<div class="header-search pull-right">
-							<?php // Display position-0 modules?>
-							<?php echo $this->loadRenderer('modules')->render('position-0', array('style' => 'none')); ?>
-						</div>
+					<div class="header-search pull-right">
+						<?php // Display position-0 modules?>
+						<?php echo $this->loadRenderer('modules')->render('position-0', array('style' => 'none')); ?>
+					</div>
 					<?php endif; ?>
 				</div>
 			</header>
 			<?php if ($format === 'html') : ?>
-				<nav class="navigation" role="navigation">
-					<?php // Display position-1 modules?>
-					<?php echo $this->loadRenderer('modules')->render('position-1', array('style' => 'none')); ?>
-				</nav>
+			<nav class="navigation" role="navigation">
+				<?php // Display position-1 modules?>
+				<?php echo $this->loadRenderer('modules')->render('position-1', array('style' => 'none')); ?>
+			</nav>
 			<?php endif; ?>
 			<!-- Banner -->
 			<?php if ($format === 'html') : ?>
-				<div class="banner">
-					<?php echo $this->loadRenderer('modules')->render('banner', array('style' => 'xhtml')); ?>
-				</div>
+			<div class="banner">
+				<?php echo $this->loadRenderer('modules')->render('banner', array('style' => 'xhtml')); ?>
+			</div>
 			<?php endif; ?>
 			<div class="row-fluid">
 				<main id="content" role="main" class="span12">
@@ -131,10 +131,10 @@ if ($params->get('logoFile')) {
 							</div>
 							<div class="span6">
 								<?php if ($format === 'html' && JModuleHelper::getModule('mod_search')) : ?>
-									<p><strong><?php echo JText::_('JERROR_LAYOUT_SEARCH'); ?></strong></p>
-									<p><?php echo JText::_('JERROR_LAYOUT_SEARCH_PAGE'); ?></p>
-									<?php $module = JModuleHelper::getModule('mod_search'); ?>
-									<?php echo JModuleHelper::renderModule($module); ?>
+								<p><strong><?php echo JText::_('JERROR_LAYOUT_SEARCH'); ?></strong></p>
+								<p><?php echo JText::_('JERROR_LAYOUT_SEARCH_PAGE'); ?></p>
+								<?php $module = JModuleHelper::getModule('mod_search'); ?>
+								<?php echo JModuleHelper::renderModule($module); ?>
 								<?php endif; ?>
 								<p><?php echo JText::_('JERROR_LAYOUT_GO_TO_THE_HOME_PAGE'); ?></p>
 								<p><a href="<?php echo $this->baseurl; ?>/index.php" class="btn"><span class="icon-home" aria-hidden="true"></span> <?php echo JText::_('JERROR_LAYOUT_HOME_PAGE'); ?></a></p>
@@ -145,31 +145,31 @@ if ($params->get('logoFile')) {
 						<blockquote>
 							<span class="label label-inverse"><?php echo $this->error->getCode(); ?></span> <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8');?>
 							<?php if ($this->debug) : ?>
-								<br/><?php echo htmlspecialchars((string) $this->error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->error->getLine(); ?>
+							<br/><?php echo htmlspecialchars((string) $this->error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->error->getLine(); ?>
 							<?php endif; ?>
 						</blockquote>
 						<?php if ($this->debug) : ?>
-							<div>
-								<?php echo $this->renderBacktrace(); ?>
-								<?php // Check if there are more Exceptions and render their data as well?>
-								<?php if ($this->error->getPrevious()) : ?>
-									<?php $loop = true; ?>
-									<?php // Reference $this->_error here and in the loop as setError() assigns errors to this property and we need this for the backtrace to work correctly?>
-									<?php // Make the first assignment to setError() outside the loop so the loop does not skip Exceptions?>
-									<?php $this->setError($this->_error->getPrevious()); ?>
-									<?php while ($loop === true) : ?>
-										<p><strong><?php echo JText::_('JERROR_LAYOUT_PREVIOUS_ERROR'); ?></strong></p>
-										<p>
-											<?php echo htmlspecialchars((string) $this->_error->getMessage(), ENT_QUOTES, 'UTF-8'); ?>
-											<br/><?php echo htmlspecialchars((string) $this->_error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->_error->getLine(); ?>
-										</p>
-										<?php echo $this->renderBacktrace(); ?>
-										<?php $loop = $this->setError($this->_error->getPrevious()); ?>
-									<?php endwhile; ?>
-									<?php // Reset the main error object to the base error?>
-									<?php $this->setError($this->error); ?>
-								<?php endif; ?>
-							</div>
+						<div>
+							<?php echo $this->renderBacktrace(); ?>
+							<?php // Check if there are more Exceptions and render their data as well?>
+							<?php if ($this->error->getPrevious()) : ?>
+							<?php $loop = true; ?>
+							<?php // Reference $this->_error here and in the loop as setError() assigns errors to this property and we need this for the backtrace to work correctly?>
+							<?php // Make the first assignment to setError() outside the loop so the loop does not skip Exceptions?>
+							<?php $this->setError($this->_error->getPrevious()); ?>
+							<?php while ($loop === true) : ?>
+							<p><strong><?php echo JText::_('JERROR_LAYOUT_PREVIOUS_ERROR'); ?></strong></p>
+							<p>
+								<?php echo htmlspecialchars((string) $this->_error->getMessage(), ENT_QUOTES, 'UTF-8'); ?>
+								<br/><?php echo htmlspecialchars((string) $this->_error->getFile(), ENT_QUOTES, 'UTF-8');?>:<?php echo $this->_error->getLine(); ?>
+							</p>
+							<?php echo $this->renderBacktrace(); ?>
+							<?php $loop = $this->setError($this->_error->getPrevious()); ?>
+							<?php endwhile; ?>
+							<?php // Reset the main error object to the base error?>
+							<?php $this->setError($this->error); ?>
+							<?php endif; ?>
+						</div>
 						<?php endif; ?>
 					</div>
 					<!-- End Content -->
@@ -182,7 +182,7 @@ if ($params->get('logoFile')) {
 		<div class="container<?php echo($params->get('fluidContainer') ? '-fluid' : ''); ?>">
 			<hr />
 			<?php if ($format === 'html') : ?>
-				<?php echo $this->loadRenderer('modules')->render('footer', array('style' => 'none')); ?>
+			<?php echo $this->loadRenderer('modules')->render('footer', array('style' => 'none')); ?>
 			<?php endif; ?>
 			<p class="pull-right">
 				<a href="#top" id="back-top">
@@ -195,7 +195,7 @@ if ($params->get('logoFile')) {
 		</div>
 	</footer>
 	<?php if ($format === 'html') : ?>
-		<?php echo $this->loadRenderer('modules')->render('debug', array('style' => 'none')); ?>
+	<?php echo $this->loadRenderer('modules')->render('debug', array('style' => 'none')); ?>
 	<?php endif; ?>
 </body>
 </html>

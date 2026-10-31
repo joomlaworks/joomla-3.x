@@ -51,7 +51,7 @@ $groups = array(
         array('name' => 'MooTools More', 'use' => 'shared', 'upstream' => 'github:mootools/mootools-more', 'version' => '1.4.0.1', 'date' => '2011-09-10', 'dateSource' => 'GitHub tag 1.4.0.1 (annotated)', 'license' => 'MIT', 'url' => 'https://mootools.net/more', 'path' => 'media/system/js/mootools-more.js',
             'check' => array('media/system/js/mootools-more.js', '/version:"([0-9.]+)"/')),
         array('name' => 'JalaliDatePicker', 'use' => 'core', 'upstream' => 'npm:@majidh1/jalalidatepicker', 'version' => '1.0.0', 'date' => '2026-07-07', 'dateSource' => 'npm release 1.0.0', 'license' => 'MIT', 'url' => 'https://github.com/majidh1/JalaliDatePicker', 'path' => 'media/system/js/jalalidatepicker.min.js',
-            'note' => 'Date fields of languages using the Jalali calendar', 'check' => array('media/system/js/jalalidatepicker-license.txt', '/JalaliDatePicker ([0-9.]+)/')),
+            'note' => 'Date fields of languages using the Jalali calendar'),
         array('name' => 'Chosen', 'use' => 'shared', 'upstream' => 'npm:chosen-js', 'version' => '1.6.2', 'date' => '2016-08-02', 'dateSource' => 'GitHub release v1.6.2', 'license' => 'MIT', 'url' => 'https://harvesthq.github.io/chosen/', 'path' => 'media/system/css/chosen.css', 'note' => 'Its stylesheet and sprite only (the markup templates style), image paths changed by Joomla 3.x UTD; the script is Joomla 3.x UTD\'s own (CMS.chosen in global.js)',
             'check' => array('media/system/css/chosen.css', '/Version ([0-9.]+)/')),
         array('name' => 'diff-match-patch', 'use' => 'core', 'version' => '', 'license' => 'Apache-2.0', 'url' => 'https://github.com/google/diff-match-patch', 'path' => 'media/com_contenthistory/js/contenthistory.js',
@@ -77,6 +77,8 @@ $groups = array(
             'check' => array('plugins/editors/editorjs/vendor/editorjs/editorjs.umd.js', '/"([0-9]+\.[0-9]+\.[0-9]+)"/')),
     ),
     'Fonts and Icons' => array(
+        array('name' => 'Bootstrap Icons', 'use' => 'shared', 'upstream' => 'npm:bootstrap-icons', 'version' => '1.13.2', 'date' => '2026-10-08', 'dateSource' => 'npm release 1.13.2', 'license' => 'MIT', 'url' => 'https://icons.getbootstrap.com', 'path' => 'media/system/images/icons',
+            'note' => 'One SVG file per icon (JHtml::_(\'icons.svg\')), also the Media Manager\'s, Contacts\', Smart Search\'s and the legacy administrator images, and EasyMDE\'s buttons', 'check' => array('docs/icons/build.py', '/npm bootstrap-icons ([0-9.]+)/')),
         array('name' => 'IcoMoon (Joomla icon font)', 'use' => 'shared', 'version' => '', 'date' => '2013-10-02', 'dateSource' => 'Joomla\'s last change to the font (joomla-cms 48e2895, "Added new IcoMoon icon font set")', 'license' => 'Royalty-free', 'url' => 'https://icomoon.io', 'path' => 'media/system/fonts'),
     ),
     // Not bundled: services the CAPTCHA plugins connect to, with the API version they use

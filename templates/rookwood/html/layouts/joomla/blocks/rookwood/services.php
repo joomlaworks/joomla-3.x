@@ -40,5 +40,5 @@ $heading = isset($data['heading']) ? trim((string) $data['heading']) : '';
 $intro   = isset($data['intro']) ? trim((string) $data['intro']) : '';
 ?>
 <section class="blockServices wide"><?php
-    echo $heading !== '' ? '<h2 class="blockTitle">' . $r->e($heading) . '</h2>' : '';
+echo $heading !== '' ? '<h2 class="blockTitle">' . $r->e($heading) . '</h2>' : '';
 echo $intro !== '' ? '<p class="lead">' . nl2br($r->e($intro)) . '</p>' : ''; ?><ul class="services count-<?php echo min(4, count($cards)); ?>"><?php echo implode('', $cards); ?></ul></section>

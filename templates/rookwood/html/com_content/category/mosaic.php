@@ -26,14 +26,11 @@ $first = $this->pagination->limitstart == 0;
 	<?php echo RookwoodHelper::listHeader(RookwoodHelper::categoryTitle($this->params, $this->category), RookwoodHelper::categoryDescription($this->params, $this->category)); ?>
 	<div class="container">
 		<div class="mosaic">
-			<?php foreach ($items as $i => $item) : $feature = $i % 7 === 0; ?>
-			<?php echo RookwoodHelper::card($item, array(
-                'class'   => $feature ? 'cardFeature' . ((int) ($i / 7) % 2 ? ' cardFeatureRight' : '') : '',
-                'heading' => $feature ? 'h2' : 'h3',
-                'excerpt' => $feature ? 220 : 0,
-                'eager'   => $first && $i < 3,
-                'sizes'   => $feature ? '(min-width: 1100px) 75vw, 100vw' : '(min-width: 1100px) 25vw, (min-width: 700px) 50vw, 100vw',
-            )); ?>
+			<?php foreach ($items as $i => $item) : ?>
+			<?php $feature = $i % 7 === 0; ?>
+			<?php $sizes = $feature ? '(min-width: 1100px) 75vw, 100vw' : '(min-width: 1100px) 25vw, (min-width: 700px) 50vw, 100vw'; ?>
+			<?php $class = $feature ? 'cardFeature' . ((int) ($i / 7) % 2 ? ' cardFeatureRight' : '') : ''; ?>
+			<?php echo RookwoodHelper::card($item, array('class' => $class, 'heading' => $feature ? 'h2' : 'h3', 'excerpt' => $feature ? 220 : 0, 'eager' => $first && $i < 3, 'sizes' => $sizes)); ?>
 			<?php endforeach; ?>
 		</div>
 		<?php if ($this->pagination->pagesTotal > 1) : ?>

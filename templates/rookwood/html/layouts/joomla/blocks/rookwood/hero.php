@@ -39,7 +39,7 @@ if (trim(strip_tags($title)) === '' && $image === '') {
 }
 ?>
 <section class="hero blockHero wide <?php echo $size; ?>"><?php echo $image; ?><div class="heroBody"><?php
-    echo $value('eyebrow') !== '' ? '<p class="eyebrow">' . $r->e($value('eyebrow')) . '</p>' : '';
+echo $value('eyebrow') !== '' ? '<p class="eyebrow">' . $r->e($value('eyebrow')) . '</p>' : '';
 echo trim(strip_tags($title)) !== '' ? '<h2 class="displayTitle">' . $title . '</h2>' : '';
 echo $value('lead') !== '' ? '<p class="lead">' . nl2br($r->e($value('lead'))) . '</p>' : '';
 echo $buttons !== '' ? '<div class="actions">' . trim($buttons) . '</div>' : ''; ?></div></section>

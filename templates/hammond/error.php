@@ -35,7 +35,7 @@ $tpl  = $this->baseurl . '/templates/' . $this->template;
 	<?php foreach (HammondHelper::stylesheets() as $stylesheet) : ?>
 	<link href="<?php echo htmlspecialchars($stylesheet, ENT_QUOTES, 'UTF-8'); ?>" rel="stylesheet" />
 	<?php endforeach; ?>
-	<link href="<?php echo htmlspecialchars($tpl, ENT_QUOTES, 'UTF-8'); ?>/images/favicon.svg" rel="icon" type="image/svg+xml" />
+	<link href="<?php echo htmlspecialchars($tpl, ENT_QUOTES, 'UTF-8'); ?>/images/svg/favicon.svg" rel="icon" type="image/svg+xml" />
 </head>
 <body class="site isInner isError">
 	<main class="siteMain errorPage">

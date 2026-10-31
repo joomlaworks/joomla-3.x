@@ -14,7 +14,7 @@
     --font:            system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
     --c-page:          #ffffff;
     --c-panel:         #ffffff;
-    --c-side:          #f4f4f5;  /* the site's panel: building blocks (images/login-blocks*.svg) */
+    --c-side:          #f4f4f5;  /* the site's panel: building blocks (images/svg/login-blocks*.svg) */
     --c-side-plate:    rgba(255, 255, 255, 0.5);  /* under the site's name, over the blocks */
     --c-on-side:       #09090b;
     --c-side-muted:    #52525b;
@@ -113,16 +113,16 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 .loginBrand-visit:focus-visible {outline:2px solid var(--c-side-muted);outline-offset:2px;}
 
 /* The blocks in three colourways, one after another on each visit (login.php writes data-blocks), light and dark */
-.loginLayout {--blocks:url("../images/login-blocks.svg");}
-.loginLayout:has(> .loginBrand[data-blocks="2"]) {--blocks:url("../images/login-blocks-2.svg");}
-.loginLayout:has(> .loginBrand[data-blocks="3"]) {--blocks:url("../images/login-blocks-3.svg");}
-:root[data-scheme="dark"] .loginLayout {--blocks:url("../images/login-blocks-dark.svg");}
-:root[data-scheme="dark"] .loginLayout:has(> .loginBrand[data-blocks="2"]) {--blocks:url("../images/login-blocks-2-dark.svg");}
-:root[data-scheme="dark"] .loginLayout:has(> .loginBrand[data-blocks="3"]) {--blocks:url("../images/login-blocks-3-dark.svg");}
+.loginLayout {--blocks:url("../images/svg/login-blocks.svg");}
+.loginLayout:has(> .loginBrand[data-blocks="2"]) {--blocks:url("../images/svg/login-blocks-2.svg");}
+.loginLayout:has(> .loginBrand[data-blocks="3"]) {--blocks:url("../images/svg/login-blocks-3.svg");}
+:root[data-scheme="dark"] .loginLayout {--blocks:url("../images/svg/login-blocks-dark.svg");}
+:root[data-scheme="dark"] .loginLayout:has(> .loginBrand[data-blocks="2"]) {--blocks:url("../images/svg/login-blocks-2-dark.svg");}
+:root[data-scheme="dark"] .loginLayout:has(> .loginBrand[data-blocks="3"]) {--blocks:url("../images/svg/login-blocks-3-dark.svg");}
 @media (prefers-color-scheme:dark) {
-    :root[data-scheme="auto"] .loginLayout {--blocks:url("../images/login-blocks-dark.svg");}
-    :root[data-scheme="auto"] .loginLayout:has(> .loginBrand[data-blocks="2"]) {--blocks:url("../images/login-blocks-2-dark.svg");}
-    :root[data-scheme="auto"] .loginLayout:has(> .loginBrand[data-blocks="3"]) {--blocks:url("../images/login-blocks-3-dark.svg");}
+    :root[data-scheme="auto"] .loginLayout {--blocks:url("../images/svg/login-blocks-dark.svg");}
+    :root[data-scheme="auto"] .loginLayout:has(> .loginBrand[data-blocks="2"]) {--blocks:url("../images/svg/login-blocks-2-dark.svg");}
+    :root[data-scheme="auto"] .loginLayout:has(> .loginBrand[data-blocks="3"]) {--blocks:url("../images/svg/login-blocks-3-dark.svg");}
 }
 
 /* --- Form panel --- */

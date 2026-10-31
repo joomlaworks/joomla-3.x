@@ -16,31 +16,31 @@ $dispatcher = JEventDispatcher::getInstance();
 ?>
 
 <?php foreach ($this->images as $i => $img) : ?>
-	<?php $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$img, &$params, 0)); ?>
-	<li class="imgOutline thumbnail center">
+<?php $dispatcher->trigger('onContentBeforeDisplay', array('com_media.file', &$img, &$params, 0)); ?>
+<li class="imgOutline thumbnail center">
 
-		<?php if ($this->canDelete):?>
-		<div class="imgDelete">
-			<a class="close delete-item" target="_top"
+	<?php if ($this->canDelete):?>
+	<div class="imgDelete">
+		<a class="close delete-item" target="_top"
 			href="index.php?option=com_media&amp;task=file.delete&amp;tmpl=index&amp;<?php echo JSession::getFormToken(); ?>=1&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>&amp;rm[]=<?php echo $this->escape($img->name); ?>"
 			rel="<?php echo $this->escape($img->name); ?>" title="<?php echo JText::_('JACTION_DELETE'); ?>"><span class="icon-delete"> </span></a>
-		</div>
+	</div>
+	<?php endif; ?>
+
+	<div class="imgThumb imgInput">
+		<?php if ($this->canDelete):?>
+		<?php echo JHtml::_('grid.id', $i, $this->escape($img->name), false, 'rm', 'cb-image'); ?>
 		<?php endif; ?>
+		<a class="img-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $img->path_relative)); ?>" tabindex="-1">
+			<?php echo JHtml::_('image', COM_MEDIA_BASEURL . '/' . $this->escape($img->path_relative), JText::sprintf('COM_MEDIA_IMAGE_TITLE', $this->escape($img->title), JHtml::_('number.bytes', $img->size)), array('width' => $img->width_60, 'height' => $img->height_60)); ?>
+		</a>
+	</div>
 
-		<div class="imgThumb imgInput">
-			<?php if ($this->canDelete):?>
-			<?php echo JHtml::_('grid.id', $i, $this->escape($img->name), false, 'rm', 'cb-image'); ?>
-			<?php endif; ?>
-			<a class="img-preview" href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $img->path_relative)); ?>" tabindex="-1">
-				<?php echo JHtml::_('image', COM_MEDIA_BASEURL . '/' . $this->escape($img->path_relative), JText::sprintf('COM_MEDIA_IMAGE_TITLE', $this->escape($img->title), JHtml::_('number.bytes', $img->size)), array('width' => $img->width_60, 'height' => $img->height_60)); ?>
-			</a>
-		</div>
-
-		<div class="imgPreview nowrap small">
-			<a href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $img->path_relative)); ?>" title="<?php echo $this->escape($img->name); ?>" class="preview truncate">
-				<?php echo $this->escape($img->name); ?>
-			</a>
-		</div>
-	</li>
-	<?php $dispatcher->trigger('onContentAfterDisplay', array('com_media.file', &$img, &$params, 0)); ?>
+	<div class="imgPreview nowrap small">
+		<a href="<?php echo COM_MEDIA_BASEURL . '/' . str_replace('%2F', '/', rawurlencode((string) $img->path_relative)); ?>" title="<?php echo $this->escape($img->name); ?>" class="preview truncate">
+			<?php echo $this->escape($img->name); ?>
+		</a>
+	</div>
+</li>
+<?php $dispatcher->trigger('onContentAfterDisplay', array('com_media.file', &$img, &$params, 0)); ?>
 <?php endforeach; ?>

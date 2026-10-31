@@ -73,7 +73,7 @@ abstract class RookwoodHelper
             static::preload($stylesheet, 'style');
         }
 
-        $document->addHeadLink($base . '/images/favicon.svg', 'icon', 'rel', array('type' => 'image/svg+xml'));
+        $document->addHeadLink($base . '/images/svg/favicon.svg', 'icon', 'rel', array('type' => 'image/svg+xml'));
 
         if ($layout !== 'index') {
             return $page;
@@ -402,7 +402,7 @@ abstract class RookwoodHelper
     }
 
     /**
-     * An icon's file (images/icons/<name>.svg), read once per request
+     * An icon's file (images/svg/<name>.svg), read once per request
      *
      * @param   string  $name  The icon's name
      *
@@ -415,7 +415,7 @@ abstract class RookwoodHelper
         static $icons = array();
 
         if (!isset($icons[$name])) {
-            $file = __DIR__ . '/images/icons/' . preg_replace('/[^a-z0-9-]/', '', (string) $name) . '.svg';
+            $file = __DIR__ . '/images/svg/' . preg_replace('/[^a-z0-9-]/', '', (string) $name) . '.svg';
 
             $icons[$name] = is_file($file) && preg_match('#<svg\b[^>]*\sviewBox="([^"]*)"[^>]*>(.*)</svg>#s', (string) file_get_contents($file), $svg)
                 ? array($svg[1], trim($svg[2]))
