@@ -1630,7 +1630,7 @@ class JoomlaInstallerScript
                     ->where($db->quoteName('state') . ' <> -1')
             )->loadObject();
 
-            // Options: the plugin's exclusions become the ignore list
+            // Options: the plugin's exclusions become the ignore list, else the default one
             $params        = new JRegistry($component->params);
             $pluginParams  = new JRegistry($plugin ? $plugin->params : '');
             $ignore        = array();
@@ -1657,7 +1657,7 @@ class JoomlaInstallerScript
                 $ignore[] = $term;
             }
 
-            $params->set('ignore', implode("\n", array_values(array_unique($ignore))));
+            $params->set('ignore', $ignore ? implode("\n", array_values(array_unique($ignore))) : RedirectHelper::DEFAULT_IGNORE);
             $params->set('collect_errors', 0);
             $params->set('default_code', 301);
             $params->remove('mode');

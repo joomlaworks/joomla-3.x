@@ -20,6 +20,18 @@ class RedirectHelper
     public static $extension = 'com_redirect';
 
     /**
+     * The ignore list of new sites: requests browsers, devices and scanners make for things a Joomla site never has (the
+     * .well-known files, iOS icons, source maps, other software's admin and debug paths)
+     *
+     * @var    string
+     * @since  3.18.0
+     */
+    public const DEFAULT_IGNORE = '.well-known/' . "\n"
+        . 'apple-touch-icon' . "\n"
+        . '/\\.(?:js|css)\\.map(?:\\?|$)/i' . "\n"
+        . '/^\\/(?:vendor|actuator|_ignition|telescope|autodiscover|owa|boaform|hnap1|server-status)(?:\\/|$)/i';
+
+    /**
      * Configure the Linkbar.
      *
      * @param   string  $vName  The name of the active view.
@@ -542,7 +554,9 @@ class RedirectHelper
     public static function getIgnoreList($list = null)
     {
         if ($list === null) {
-            $list = JComponentHelper::getParams('com_redirect')->get('ignore', '');
+            // Registry::get() gives the default for an emptied list
+            $params = JComponentHelper::getParams('com_redirect');
+            $list   = $params->exists('ignore') ? (string) $params->toObject()->ignore : static::DEFAULT_IGNORE;
         }
 
         return array_values(array_filter(array_map('trim', preg_split('/\R/', (string) $list)), 'strlen'));

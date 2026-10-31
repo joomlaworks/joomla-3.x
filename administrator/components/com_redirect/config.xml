@@ -11,7 +11,7 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
-        <field name="ignore" type="textarea" label="COM_REDIRECT_IGNORE_LABEL" description="COM_REDIRECT_IGNORE_DESC" rows="6" class="input-xxlarge" filter="raw" validate="redirectignore" showon="collect_errors:1" />
+        <field name="ignore" type="textarea" label="COM_REDIRECT_IGNORE_LABEL" description="COM_REDIRECT_IGNORE_DESC" rows="6" class="input-xxlarge" filter="raw" validate="redirectignore" default=".well-known/&#10;apple-touch-icon&#10;/\.(?:js|css)\.map(?:\?|$)/i&#10;/^\/(?:vendor|actuator|_ignition|telescope|autodiscover|owa|boaform|hnap1|server-status)(?:\/|$)/i" showon="collect_errors:1" />
         <field name="errors_keep" type="number" label="COM_REDIRECT_ERRORS_KEEP_LABEL" description="COM_REDIRECT_ERRORS_KEEP_DESC" default="10000" min="0" step="1" filter="uint" showon="collect_errors:1" />
         <field name="errors_days" type="number" label="COM_REDIRECT_ERRORS_DAYS_LABEL" description="COM_REDIRECT_ERRORS_DAYS_DESC" default="30" min="0" step="1" filter="uint" showon="collect_errors:1" />
         <field name="heading_import" type="spacer" label="COM_REDIRECT_HEADING_IMPORT" />
