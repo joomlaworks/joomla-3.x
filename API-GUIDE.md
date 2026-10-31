@@ -90,7 +90,19 @@ Link: <https://fonts.gstatic.com>; rel=preconnect; crossorigin=anonymous, <https
 - **Skipped:** addresses a header can't carry (non-ASCII characters, spaces, `<` or `>`), and hints the response already has.
 - **Parameters:** `as`, `type`, `crossorigin`, `media`, `fetchpriority`, `imagesrcset` and `imagesizes` are carried over. Give an image's `srcset` and `sizes` as `imagesrcset` and `imagesizes`, so the browser preloads the size it will use.
 - **Page cache:** the System - Page Cache plugin stores headers with the page, so cached pages send them too.
-- **Turning them off:** `$doc->setLinkHeaders(false)`, e.g. from a system plugin, before the head is rendered. `getLinkHeaders()` tells whether they're on.
+- **Turning them off:** `setLinkHeaders(false)` stops every `Link:` header of the page: the hints and the preloads of its own stylesheets and scripts. The `<link>` tags in the HTML stay. Call it before the head is rendered, e.g. from a system plugin's `onBeforeCompileHead()`, or from a template's page file before `<jdoc:include type="header" />`. `getLinkHeaders()` tells whether they're on.
+
+  ```php
+  // In a system plugin
+  public function onBeforeCompileHead()
+  {
+      $document = JFactory::getDocument();
+
+      if ($document instanceof Joomla\CMS\Document\HtmlDocument) {
+          $document->setLinkHeaders(false);
+      }
+  }
+  ```
 
 ### Other links
 
