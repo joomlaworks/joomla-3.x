@@ -64,7 +64,7 @@ $escape = function ($text) {
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta name="color-scheme" content="light dark" />
-	<jdoc:include type="head" />
+	<jdoc:include type="header" />
 </head>
 <body class="loginPage <?php echo $escape($option . ' view-' . $view); ?>">
 	<div class="loginLayout">

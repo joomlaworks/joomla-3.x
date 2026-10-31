@@ -18,7 +18,7 @@ $page = HammondHelper::prepare($this, 'offline');
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
-	<jdoc:include type="head" />
+	<jdoc:include type="header" />
 </head>
 <body class="site isOffline">
 	<main class="siteMain errorPage offlinePage">

@@ -57,7 +57,7 @@ if ($optionColors['properties'] !== '') {
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
-	<jdoc:include type="head" />
+	<jdoc:include type="header" />
 </head>
 <body class="contentpane component<?php echo $optionColors['classes']; ?>">
 	<jdoc:include type="message" />

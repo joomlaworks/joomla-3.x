@@ -47,7 +47,7 @@ JHtml::_('stylesheet', 'custom.css', array('version' => 'auto', 'relative' => tr
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-scheme="<?php echo protheroScheme($this->params); ?>">
 <head>
-	<jdoc:include type="head" />
+	<jdoc:include type="header" />
 </head>
 <body class="contentpane component">
 	<jdoc:include type="message" />

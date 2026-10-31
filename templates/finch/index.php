@@ -18,7 +18,7 @@ $page = FinchHelper::prepare($this);
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-scheme="<?php echo FinchHelper::scheme(); ?>">
 <head>
-	<jdoc:include type="head" />
+	<jdoc:include type="header" />
 </head>
 <body id="top" class="<?php echo FinchHelper::e($page->bodyClass); ?>">
 	<a class="skipLink" href="#content"><?php echo JText::_('TPL_FINCH_SKIP_TO_CONTENT'); ?></a>

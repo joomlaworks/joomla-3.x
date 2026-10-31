@@ -40,7 +40,7 @@ if ($app->get('display_offline_message', 1) == 1 && str_replace(' ', '', $app->g
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<jdoc:include type="head" />
+		<jdoc:include type="header" />
 	</head>
 	<body class="tmpl-offline">
 		<div class="sys-split">

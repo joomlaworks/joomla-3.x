@@ -135,7 +135,7 @@ In an HTML5 document (`$doc->setHtml5(true)`, as Hammond, Finch, Rookwood, Isis 
 
 ### Order of output
 
-What `<jdoc:include type="head" />` writes, from top to bottom:
+What `<jdoc:include type="header" />` writes, from top to bottom (`type="header"` is the name core templates use since 3.18; `type="head"` is the same and keeps working in templates that use it):
 
 1. `<meta charset>`
 2. `<base>`, when set

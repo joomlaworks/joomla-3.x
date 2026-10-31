@@ -22,7 +22,7 @@ JHtml::_('stylesheet', 'system/frontend.min.css', array('version' => 'auto', 're
 	<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<jdoc:include type="head" />
+		<jdoc:include type="header" />
 	</head>
 	<body class="contentpane tmpl-component">
 		<jdoc:include type="message" />

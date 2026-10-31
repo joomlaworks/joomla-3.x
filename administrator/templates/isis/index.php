@@ -137,7 +137,7 @@ if ($optionColors['properties'] !== '') {
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<jdoc:include type="head" />
+	<jdoc:include type="header" />
 </head>
 <body class="admin <?php echo $option . ' view-' . $view . ' layout-' . $layout . ' task-' . $task . ' itemid-' . $itemid . $optionColors['classes']; ?>" data-basepath="<?php echo JURI::root(true); ?>">
 <!-- Top Navigation -->

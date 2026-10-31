@@ -18,7 +18,7 @@ $page = RookwoodHelper::prepare($this, 'component');
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-theme="<?php echo $page->theme === 'light' ? 'light' : 'dark'; ?>">
 <head>
-	<jdoc:include type="head" />
+	<jdoc:include type="header" />
 </head>
 <body class="contentpane modal">
 	<div class="container">

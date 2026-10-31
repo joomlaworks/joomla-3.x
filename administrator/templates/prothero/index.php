@@ -102,7 +102,7 @@ if ($stickyToolbar) {
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-scheme="<?php echo protheroScheme($this->params); ?>" data-navbar="<?php echo protheroNavbarColor($this->params); ?>">
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<jdoc:include type="head" />
+	<jdoc:include type="header" />
 </head>
 <body class="admin <?php echo $option . ' view-' . $view . ' layout-' . $layout . ' task-' . $task . ' itemid-' . $itemid; ?>" data-basepath="<?php echo JURI::root(true); ?>">
 <!-- Top Navigation -->
