@@ -12,6 +12,8 @@ namespace Joomla\CMS\Console;
 defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Table\Table;
 
 /**
  * Disables an extension.
@@ -115,6 +117,35 @@ class ExtensionDisableCommand extends AbstractExtensionCommand
                 ($this->state ? 'Enable ' : 'Disable ') . $this->describe($extension),
                 array('action' => $this->state ? 'enable' : 'disable', 'id' => (int) $extension->extension_id, 'name' => $extension->name)
             );
+
+            return self::SUCCESS;
+        }
+
+        // A protected plugin (Page Cache, Language Filter...): the Extensions manager never changes its state, the Plugins
+        // manager enables it; disabling one is refused above
+        if ($this->state && (int) $extension->protected === 1 && $extension->type === 'plugin') {
+            $table = Table::getInstance('Extension');
+
+            if (!$table->load((int) $extension->extension_id)) {
+                $io->error($this->describe($extension) . ' was not ' . $verb . '.');
+
+                return self::FAILURE;
+            }
+
+            $table->enabled = 1;
+
+            PluginHelper::importPlugin('extension');
+            \JEventDispatcher::getInstance()->trigger('onExtensionChangeState', array('com_plugins.plugin', array((int) $extension->extension_id), 1));
+
+            if (!$table->store()) {
+                $io->error($this->describe($extension) . ' was not ' . $verb . '. ' . $table->getError());
+
+                return self::FAILURE;
+            }
+
+            $this->cleanCacheGroup('com_plugins');
+            $this->cleanCacheGroup('_system');
+            $io->success($this->describe($extension) . ' ' . $verb . '.');
 
             return self::SUCCESS;
         }

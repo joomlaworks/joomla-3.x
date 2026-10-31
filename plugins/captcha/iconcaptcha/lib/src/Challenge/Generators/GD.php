@@ -87,7 +87,10 @@ class GD extends AbstractImageGenerator
         ob_start();
         imagepng($image);
         $output = ob_get_contents();
-        imagedestroy($image);
+        // Joomla 3.x UTD patch: imagedestroy() does nothing since PHP 8.0 and is deprecated in 8.5
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($image);
+        }
         ob_end_clean();
 
         return base64_encode($output);

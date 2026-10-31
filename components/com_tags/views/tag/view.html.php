@@ -258,6 +258,9 @@ class TagsViewTag extends JViewLegacy
             }
         }
 
+        // The breadcrumb names the tags (or the page), never the site name the browser's title may add
+        $crumb = $title;
+
         if (empty($title)) {
             $title = $app->get('sitename');
         } elseif ($app->get('sitename_pagetitles', 0) == 1) {
@@ -268,7 +271,7 @@ class TagsViewTag extends JViewLegacy
 
         $this->document->setTitle($title);
 
-        $pathway->addItem($title);
+        $pathway->addItem($crumb !== '' ? $crumb : $title);
 
         foreach ($this->item as $itemElement) {
             if ($itemElement->metadesc) {

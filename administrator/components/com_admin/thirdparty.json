@@ -388,7 +388,7 @@
             "license": "MIT",
             "url": "https://github.com/fabianwennink/IconCaptcha-PHP",
             "path": "plugins/captcha/iconcaptcha/lib",
-            "note": "With its widget (its css and js folders)",
+            "note": "With its widget (its css and js folders); patched by Joomla 3.x UTD (PHP 8.5: imagedestroy())",
             "latest": "4.0.6",
             "isLatest": true,
             "checked": "2026.10.31",

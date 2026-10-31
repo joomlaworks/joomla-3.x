@@ -991,7 +991,8 @@ class PlgSystemStructureddata extends CMSPlugin
     /**
      * @param   string  $html  HTML
      *
-     * @return  string  Its text: tags, plugin codes ({loadposition ...}) and spare whitespace removed
+     * @return  string  Its text: tags, plugin codes ({loadposition ...}) and spare whitespace removed, and email addresses
+     *                   while "Content - Email Cloaking" hides them on the page (harvesters read structured data too)
      *
      * @since   3.18.0
      */
@@ -999,8 +1000,13 @@ class PlgSystemStructureddata extends CMSPlugin
     {
         $text = preg_replace('#<(script|style)\b[^>]*>.*?</\1>#is', ' ', (string) $html);
         $text = preg_replace('/\{[a-z][^{}]*\}/i', ' ', strip_tags(str_replace('<', ' <', $text)));
+        $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
 
-        return trim(preg_replace('/\s+/u', ' ', html_entity_decode($text, ENT_QUOTES, 'UTF-8')));
+        if (PluginHelper::isEnabled('content', 'emailcloak')) {
+            $text = preg_replace('/[^\s@<>"\'(),;:]+@[^\s@<>"\'(),;:]+\.[^\s@<>"\'(),;:]+/u', ' ', $text);
+        }
+
+        return trim(preg_replace('/\s+/u', ' ', $text));
     }
 
     /**
