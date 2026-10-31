@@ -2243,6 +2243,47 @@
 		},
 	};
 
+	/* --- Email addresses cloaked from spambots (JHtml email.cloak) --- */
+
+	/*
+	 * The address comes in parts in data attributes (data-cloak-user, data-cloak-domain: a JSON list of the domain's parts;
+	 * their vowels as character references, decoded only when the link is written), with the link's text (data-cloak-text,
+	 * or data-cloak-text-user and -domain for an address) and data-cloak-link for a link. What the inline script of each
+	 * address wrote before 3.18, from the same parts.
+	 */
+	CMS.cloak = {
+		start(container) {
+			(container || document).querySelectorAll('[data-cloak]').forEach((span) => {
+				const parts = (prefix) => {
+					let domain = [];
+
+					try {
+						domain = JSON.parse(span.getAttribute('data-cloak-' + prefix + 'domain') || '[]');
+					} catch (error) {
+						domain = [];
+					}
+
+					return span.getAttribute('data-cloak-' + prefix + 'user') + '&#64;' + domain.join('&#46;');
+				};
+				const address = parts('');
+				let text = address;
+
+				if (span.hasAttribute('data-cloak-text-user')) {
+					text = parts('text-');
+				} else if (span.hasAttribute('data-cloak-text')) {
+					text = span.getAttribute('data-cloak-text');
+				}
+
+				span.removeAttribute('data-cloak');
+				span.innerHTML = span.hasAttribute('data-cloak-link')
+					? '<a ' + 'hr' + 'ef=\'' + '&#109;a' + 'i&#108;' + '&#116;o' + ':' + address + '\'>' + text + '</a>'
+					: address;
+			});
+		},
+	};
+
+	CMS.ready(() => CMS.cloak.start());
+
 	/* --- Captions from the title of images (behavior.caption, deprecated: use <figure>) --- */
 
 	CMS.caption = {

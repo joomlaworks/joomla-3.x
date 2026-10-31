@@ -48,49 +48,40 @@ abstract class JHtmlEmail
         // Random hash
         $rand = md5($mail . mt_rand(1, 100000));
 
-        // Split email by @ symbol
+        // The address in parts (CMS.cloak in global.js and frontend.js puts them together): the user and the domain's parts
         $mail       = explode('@', $mail);
-        $mail_parts = explode('.', $mail[1]);
+        $attributes = array(
+            'data-cloak'        => '',
+            'data-cloak-user'   => (string) $mail[0],
+            'data-cloak-domain' => json_encode(explode('.', isset($mail[1]) ? $mail[1] : '')),
+        );
 
         if ($mailto) {
-            // Special handling when mail text is different from mail address
+            $attributes['data-cloak-link'] = '';
+
+            // The link's text, when it isn't the address
             if ($text) {
-                // Convert text - here is the right place
                 $text = static::convertEncoding($text);
 
                 if ($email) {
-                    // Split email by @ symbol
                     $text = explode('@', $text);
-                    $text_parts = explode('.', $text[1]);
-                    $tmpScript = "var addy_text" . $rand . " = '" . @$text[0] . "' + '&#64;' + '" . implode("' + '&#46;' + '", @$text_parts)
-                        . "';";
+                    $attributes['data-cloak-text-user']   = (string) $text[0];
+                    $attributes['data-cloak-text-domain'] = json_encode(explode('.', isset($text[1]) ? $text[1] : ''));
                 } else {
-                    $tmpScript = "var addy_text" . $rand . " = '" . $text . "';";
+                    $attributes['data-cloak-text'] = $text;
                 }
-
-                $tmpScript .= "document.getElementById('cloak" . $rand . "').innerHTML += '<a ' + path + '\'' + prefix + ':' + addy"
-                    . $rand . " + '\'>'+addy_text" . $rand . "+'<\/a>';";
-            } else {
-                $tmpScript = "document.getElementById('cloak" . $rand . "').innerHTML += '<a ' + path + '\'' + prefix + ':' + addy"
-                    . $rand . " + '\'>' +addy" . $rand . "+'<\/a>';";
             }
-        } else {
-            $tmpScript = "document.getElementById('cloak" . $rand . "').innerHTML += addy" . $rand . ";";
         }
 
-        $script       = "
-				document.getElementById('cloak" . $rand . "').innerHTML = '';
-				var prefix = '&#109;a' + 'i&#108;' + '&#116;o';
-				var path = 'hr' + 'ef' + '=';
-				var addy" . $rand . " = '" . @$mail[0] . "' + '&#64;';
-				addy" . $rand . " = addy" . $rand . " + '" . implode("' + '&#46;' + '", $mail_parts) . "';
-				$tmpScript
-		";
+        JHtml::_('behavior.core');
 
-        // TODO: Use inline script for now
-        $inlineScript = "<script type='text/javascript'>" . $script . "</script>";
+        $html = '<span id="cloak' . $rand . '"';
 
-        return '<span id="cloak' . $rand . '">' . JText::_('JLIB_HTML_CLOAKING') . '</span>' . $inlineScript;
+        foreach ($attributes as $name => $value) {
+            $html .= ' ' . $name . '="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '"';
+        }
+
+        return $html . '>' . JText::_('JLIB_HTML_CLOAKING') . '</span>';
     }
 
     /**
