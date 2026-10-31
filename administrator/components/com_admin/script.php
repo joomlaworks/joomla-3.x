@@ -1630,10 +1630,10 @@ class JoomlaInstallerScript
                     ->where($db->quoteName('state') . ' <> -1')
             )->loadObject();
 
-            // Options: the plugin's exclusions join the default ignore list
+            // Options: the plugin's exclusions become the ignore list
             $params        = new JRegistry($component->params);
             $pluginParams  = new JRegistry($plugin ? $plugin->params : '');
-            $ignore        = RedirectHelper::getIgnoreList(RedirectHelper::DEFAULT_IGNORE);
+            $ignore        = array();
 
             foreach ((array) $pluginParams->get('exclude_urls', array()) as $exclude) {
                 $exclude = (object) $exclude;

@@ -20,14 +20,6 @@ class RedirectHelper
     public static $extension = 'com_redirect';
 
     /**
-     * The lines of the ignore list when it was never saved.
-     *
-     * @var    string
-     * @since  3.18.0
-     */
-    public const DEFAULT_IGNORE = "=http://";
-
-    /**
      * Configure the Linkbar.
      *
      * @param   string  $vName  The name of the active view.
@@ -550,9 +542,7 @@ class RedirectHelper
     public static function getIgnoreList($list = null)
     {
         if ($list === null) {
-            // Registry::get() gives the default for an emptied list
-            $params = JComponentHelper::getParams('com_redirect');
-            $list   = $params->exists('ignore') ? (string) $params->toObject()->ignore : static::DEFAULT_IGNORE;
+            $list = JComponentHelper::getParams('com_redirect')->get('ignore', '');
         }
 
         return array_values(array_filter(array_map('trim', preg_split('/\R/', (string) $list)), 'strlen'));
