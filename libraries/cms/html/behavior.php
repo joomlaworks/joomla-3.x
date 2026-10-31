@@ -91,19 +91,18 @@ abstract class JHtmlBehavior
         // Add core and base uri paths so javascript scripts can use them.
         JFactory::getDocument()->addScriptOptions('system.paths', array('root' => JUri::root(true), 'base' => JUri::base(true)));
 
-        // What core.js was (the Joomla namespace, mapped to CMS): on the site the slim frontend.js, unless a behaviour asked for
-        // global.js (cms(), which takes its place), in the administrator global.js
-        if (JFactory::getApplication()->isClient('site') && !isset(static::$loaded[__CLASS__ . '::cms'])) {
-            JHtml::_('script', 'system/frontend.min.js', array('version' => 'auto', 'relative' => true));
-        } else {
+        // What core.js was (the Joomla namespace, mapped to CMS): frontend.js, and in the administrator global.js after it (cms())
+        JHtml::_('script', 'system/frontend.min.js', array('version' => 'auto', 'relative' => true));
+
+        if (!JFactory::getApplication()->isClient('site')) {
             static::cms();
         }
     }
 
     /**
-     * Loads media/system/js/global.js and its styles (global.css): the CMS namespace with everything, for behaviours beyond what
-     * the site's frontend.js has (modals, tooltips, tabs, sliders, trees, the password meter, the editor switcher...). It
-     * takes frontend.js' place when the page has it already, so scripts between them still find the namespace.
+     * Loads media/system/js/global.js and its styles (global.css): what frontend.js (core()) doesn't have, for behaviours
+     * beyond it (modals, tooltips, tabs, sliders, trees, the password meter, the editor switcher...). It goes right after
+     * frontend.js, so scripts added between them find all of the namespace, as they found it in one file before.
      *
      * @return  void
      *
@@ -117,24 +116,32 @@ abstract class JHtmlBehavior
 
         static::$loaded[__METHOD__] = true;
 
+        static::core();
+        JHtml::_('script', 'system/global.min.js', array('version' => 'auto', 'relative' => true));
+
+        // Right after frontend.js
         $document = JFactory::getDocument();
         $frontend = JHtml::_('script', 'system/frontend.min.js', array('relative' => true, 'pathOnly' => true));
         $global   = JHtml::_('script', 'system/global.min.js', array('relative' => true, 'pathOnly' => true));
 
-        if ($frontend && $global && isset($document->_scripts[$frontend])) {
-            $scripts = array();
+        if ($frontend && $global && isset($document->_scripts[$frontend], $document->_scripts[$global])) {
+            $attributes = $document->_scripts[$global];
+            $scripts    = array();
 
-            foreach ($document->_scripts as $url => $attributes) {
-                $scripts[$url === $frontend ? $global : $url] = $attributes;
+            unset($document->_scripts[$global]);
+
+            foreach ($document->_scripts as $url => $script) {
+                $scripts[$url] = $script;
+
+                if ($url === $frontend) {
+                    $scripts[$global] = $attributes;
+                }
             }
 
             $document->_scripts = $scripts;
-        } else {
-            JHtml::_('script', 'system/global.min.js', array('version' => 'auto', 'relative' => true));
         }
 
         static::styles();
-        static::core();
     }
 
     /**

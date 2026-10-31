@@ -40,6 +40,7 @@ $page = require __DIR__ . '/includes/helper.php';
 	<?php endif; ?>
 	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 	<?php // The CMS's script (its dropdowns and collapse for the menu; no jQuery or Bootstrap's script)?>
+	<script src="<?php echo JUri::root(true); ?>/media/system/js/frontend.min.js"></script>
 	<script src="<?php echo JUri::root(true); ?>/media/system/js/global.min.js"></script>
 	<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/template.js"></script>
 </head>

@@ -7,7 +7,7 @@
 ((window, document) => {
 	'use strict';
 
-	if (window.CMS && (window.CMS.global || window.CMS.frontend)) {
+	if (window.CMS && window.CMS.frontend) {
 		return;
 	}
 
@@ -1623,6 +1623,27 @@
 		});
 	}
 
+	// The old calendar of behavior.calendar() (removed in 3.18): Calendar.setup() turns its field into a date field and
+	// hides the button that opened it
+	if (!window.Calendar) {
+		window.Calendar = {
+			setup(params) {
+				params = params || {};
+
+				CMS.ready(() => {
+					const field = typeof params.inputField === 'string' ? document.getElementById(params.inputField) : params.inputField;
+					const button = typeof params.button === 'string' ? document.getElementById(params.button) : params.button;
+
+					if (button && button !== field) {
+						button.hidden = true;
+					}
+
+					CMS.dateField.attach(field, params.ifFormat || (params.showsTime ? '%Y-%m-%d %H:%M' : '%Y-%m-%d'));
+				});
+			},
+		};
+	}
+
 	// JalaliDatePicker (loaded by the layout for languages using the Jalali calendar): fields set time, seconds and limits
 	// through their data-jdp-* attributes
 	CMS.ready(() => {
@@ -1648,6 +1669,9 @@
 	/* --- Show-on: form fields shown only when other fields have given values (data-showon; what cms.js was) --- */
 
 	CMS.showon = {
+		// The names of the fields the started conditions read: changes to any other field are ignored at once
+		names: new Set(),
+
 		/**
 		 * The fields a condition reads (a field and its [] form)
 		 *
@@ -1740,6 +1764,15 @@
 			Array.prototype.forEach.call((container || document).querySelectorAll('[data-showon]'), (target) => {
 				if (!target.hasAttribute('data-showon-initialised')) {
 					target.setAttribute('data-showon-initialised', '');
+
+					try {
+						(JSON.parse(target.getAttribute('data-showon') || '[]') || []).forEach((condition) => {
+							CMS.showon.names.add(String(condition.field || '').replace(/\[\]$/, ''));
+						});
+					} catch (error) {
+						// update() leaves an element with unreadable conditions alone
+					}
+
 					CMS.showon.update(target);
 				}
 			});
@@ -1753,7 +1786,7 @@
 		changed(field) {
 			const name = field && field.name ? field.name.replace(/\[\]$/, '') : '';
 
-			if (!name) {
+			if (!name || !CMS.showon.names.has(name)) {
 				return;
 			}
 
@@ -1846,6 +1879,71 @@
 		shown: new Map(),
 		counter: 0,
 
+		// Elements given their own options (attach(): jQuery's .tooltip() and .popover() where Bootstrap's script isn't loaded)
+		elements: new WeakMap(),
+
+		/**
+		 * An element's own tooltip or popover, as Bootstrap's jQuery plugins made one: options as Bootstrap's (its defaults,
+		 * then the element's data-placement, data-trigger, data-html, data-delay, then the given ones; title and content may be
+		 * functions, content an element), or a method: show, hide, toggle, destroy. With a selector option, the elements it
+		 * matches get them.
+		 *
+		 * @param  {Element}        element
+		 * @param  {string}         type     tooltip or popover
+		 * @param  {Object|string}  option
+		 */
+		attach(element, type, option) {
+			if (typeof option === 'string') {
+				const options = CMS.tip.elements.get(element);
+
+				if (option === 'destroy') {
+					CMS.tip.hide(element);
+					CMS.tip.elements.delete(element);
+					element.removeAttribute('data-cms-tip');
+				} else if (option === 'hide' || (option === 'toggle' && CMS.tip.shown.has(element))) {
+					CMS.tip.hide(element);
+				} else if (options && (option === 'show' || option === 'toggle')) {
+					CMS.tip.show({ element, type, options });
+				}
+
+				return;
+			}
+
+			const data = element.dataset;
+			const own = {};
+
+			if (data.placement) {
+				own.placement = data.placement;
+			}
+
+			if (data.trigger) {
+				own.trigger = data.trigger;
+			}
+
+			if (data.html) {
+				own.html = data.html !== 'false';
+			}
+
+			if (data.delay) {
+				own.delay = parseInt(data.delay, 10) || 0;
+			}
+
+			const options = Object.assign({
+				html: false,
+				placement: type === 'popover' ? 'right' : 'top',
+				trigger: type === 'popover' ? 'click' : 'hover focus',
+			}, own, option || {});
+
+			if (options.selector) {
+				CMS.tip.register(options.selector, options, type);
+
+				return;
+			}
+
+			element.setAttribute('data-cms-tip', type);
+			CMS.tip.elements.set(element, options);
+		},
+
 		/**
 		 * Elements of a selector get tooltips or popovers
 		 *
@@ -1867,6 +1965,12 @@
 		find(target) {
 			if (!target || !target.closest) {
 				return null;
+			}
+
+			const own = target.closest('[data-cms-tip]');
+
+			if (own && CMS.tip.elements.has(own)) {
+				return { element: own, type: own.getAttribute('data-cms-tip') === 'popover' ? 'popover' : 'tooltip', options: CMS.tip.elements.get(own) };
 			}
 
 			for (const type of ['popover', 'tooltip']) {
@@ -1906,7 +2010,7 @@
 				element.removeAttribute('title');
 			}
 
-			return element.getAttribute('data-original-title') || options.title || '';
+			return element.getAttribute('data-original-title') || (typeof options.title === 'function' ? options.title.call(element) : options.title) || '';
 		},
 
 		show(found) {
@@ -1917,8 +2021,10 @@
 			}
 
 			const title = CMS.tip.title(element, options);
-			// The option first, then the attribute, as Bootstrap's popover
-			const content = type === 'popover' ? options.content || element.getAttribute('data-content') || '' : '';
+			const content = type === 'popover'
+				// The option first, then the attribute, as Bootstrap's popover
+				? (typeof options.content === 'function' ? options.content.call(element) : options.content) || element.getAttribute('data-content') || ''
+				: '';
 
 			if (!title && !content) {
 				return;
@@ -1927,7 +2033,10 @@
 			const tip = document.createElement('div');
 			const html = options.html !== false;
 			const fill = (node, text) => {
-				if (html) {
+				if (text && text.nodeType) {
+					node.textContent = '';
+					node.appendChild(text);
+				} else if (html) {
 					node.innerHTML = text;
 				} else {
 					node.textContent = text;
@@ -2483,7 +2592,7 @@
 		Object.keys(CMS.options.get('system.caption') || {}).forEach((selector) => CMS.caption.attach(selector));
 	});
 
-	/* --- The old names (the full list is in global.js) --- */
+	/* --- The old names (global.js adds the rest) --- */
 
 	const LEGACY = {
 		'Joomla.submitform': CMS.form.submit,

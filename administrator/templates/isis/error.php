@@ -45,6 +45,7 @@ $page = require __DIR__ . '/includes/helper.php';
 	<style>:root {<?php echo $page->optionColors['properties']; ?>}</style>
 	<?php endif; ?>
 	<?php // The CMS's script (its dropdowns and collapse for the menu; no jQuery or Bootstrap's script)?>
+	<script src="<?php echo JUri::root(true); ?>/media/system/js/frontend.min.js"></script>
 	<script src="<?php echo JUri::root(true); ?>/media/system/js/global.min.js"></script>
 	<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/template.js"></script>
 </head>
