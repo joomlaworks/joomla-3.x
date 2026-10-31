@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 // A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
-class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/helper.php';
+class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/includes/helper.php';
 
 /**
  * Search: the list header, the form (its options folded away) and the results, one under another.

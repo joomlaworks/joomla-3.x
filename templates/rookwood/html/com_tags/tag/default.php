@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 
 // A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
-class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/helper.php';
+class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/includes/helper.php';
 
 /**
  * The items of a tag (or tags), as a grid of cards.

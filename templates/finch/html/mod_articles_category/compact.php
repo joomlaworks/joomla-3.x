@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 // A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
-class_exists('FinchHelper', false) || require_once dirname(__DIR__, 2) . '/helper.php';
+class_exists('FinchHelper', false) || require_once dirname(__DIR__, 2) . '/includes/helper.php';
 
 // Posts as a short numbered list: the title and the date (e.g. popular posts in the sidebar, in order)
 /** @var array $list */

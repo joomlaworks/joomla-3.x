@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 // A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
-class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/helper.php';
+class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/includes/helper.php';
 
 /**
  * "Showcase": a category's articles (e.g. case studies, products or services) with large images: as panels in one column,

@@ -3,7 +3,17 @@
  * is set. The page sets each option's colour as a custom property and a class on <body>; :where() keeps the selectors' specificity
  * as without the class.
  */
-:where(.isis-navbar-color) .navbar-inner,:where(.isis-navbar-color) .navbar-inverse .navbar-inner,:where(.isis-navbar-color) .dropdown-menu li > a:hover,:where(.isis-navbar-color) .dropdown-menu .active > a,:where(.isis-navbar-color) .dropdown-menu .active > a:hover,:where(.isis-navbar-color) .navbar-inverse .nav li.dropdown.open > .dropdown-toggle,:where(.isis-navbar-color) .navbar-inverse .nav li.dropdown.active > .dropdown-toggle,:where(.isis-navbar-color) .navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle,:where(.isis-navbar-color) #status.status-top {background:var(--isis-navbar-color);}
+:where(.isis-navbar-color) .navbar-inner,
+:where(.isis-navbar-color) .navbar-inverse .navbar-inner,
+:where(.isis-navbar-color) .dropdown-menu li > a:hover,
+:where(.isis-navbar-color) .dropdown-menu .active > a,
+:where(.isis-navbar-color) .dropdown-menu .active > a:hover,
+:where(.isis-navbar-color) .navbar-inverse .nav li.dropdown.open > .dropdown-toggle,
+:where(.isis-navbar-color) .navbar-inverse .nav li.dropdown.active > .dropdown-toggle,
+:where(.isis-navbar-color) .navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle,
+:where(.isis-navbar-color) #status.status-top {background:var(--isis-navbar-color);}
 :where(.isis-header-color) .header {background:var(--isis-header-color);}
-:where(.isis-sidebar-color) .nav-list > .active > a,:where(.isis-sidebar-color) .nav-list > .active > a:hover {background:var(--isis-sidebar-color);}
-:where(.isis-link-color) a,:where(.isis-link-color) .j-toggle-sidebar-button {color:var(--isis-link-color);}
+:where(.isis-sidebar-color) .nav-list > .active > a,
+:where(.isis-sidebar-color) .nav-list > .active > a:hover {background:var(--isis-sidebar-color);}
+:where(.isis-link-color) a,
+:where(.isis-link-color) .j-toggle-sidebar-button {color:var(--isis-link-color);}

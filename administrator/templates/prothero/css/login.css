@@ -96,7 +96,9 @@
 }
 
 /* --- Page --- */
-*,*::before,*::after {box-sizing:border-box;}
+*,
+*::before,
+*::after {box-sizing:border-box;}
 html {-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c-text);font:16px/1.5 var(--font);-webkit-font-smoothing:antialiased;}
 .loginLayout {display:grid;grid-template-columns:minmax(0, 3fr) minmax(24rem, 2fr);min-height:100vh;}
@@ -108,8 +110,10 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 .loginBrand-host {margin:0.75rem 0 2rem;font-size:1rem;color:var(--c-side-muted);overflow-wrap:anywhere;}
 .loginBrand-visit {display:inline-flex;align-items:center;gap:0.5rem;padding:0.55rem 1rem;border:1px solid var(--c-side-line);border-radius:var(--radius);color:var(--c-on-side);background:var(--c-panel);font-size:0.9rem;font-weight:500;text-decoration:none;transition:background-color 0.15s ease;}
 .loginBrand-visit svg {transition:transform 0.15s ease;}
-.loginBrand-visit:hover,.loginBrand-visit:focus-visible {background:var(--c-hover);}
-.loginBrand-visit:hover svg,.loginBrand-visit:focus-visible svg {transform:translateX(3px);}
+.loginBrand-visit:hover,
+.loginBrand-visit:focus-visible {background:var(--c-hover);}
+.loginBrand-visit:hover svg,
+.loginBrand-visit:focus-visible svg {transform:translateX(3px);}
 .loginBrand-visit:focus-visible {outline:2px solid var(--c-side-muted);outline-offset:2px;}
 
 /* The blocks in three colourways, one after another on each visit (login.php writes data-blocks), light and dark */
@@ -129,7 +133,8 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 .loginMain {display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;padding:clamp(1.5rem, 4vw, 3rem) 1rem;}
 .loginPanel {width:100%;max-width:23rem;padding:0;background:var(--c-panel);}
 .loginPanel-logo {display:flex;justify-content:center;color:var(--c-text);}
-.loginPanel-logo svg,.loginPanel-logo img {display:block;width:auto;max-width:100%;height:1.75rem;}
+.loginPanel-logo svg,
+.loginPanel-logo img {display:block;width:auto;max-width:100%;height:1.75rem;}
 /* Joomla's logo in one colour, as the rest of the page */
 .loginPanel-logo svg [fill] {fill:currentColor;}
 .loginPanel-title {margin:1.5rem 0 1.5rem;font-size:1.5rem;text-align:center;font-weight:600;line-height:1.3;letter-spacing:-0.02em;}
@@ -137,12 +142,14 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 /* --- Messages --- */
 #system-message-container:empty {display:none;}
 #system-message-container .alert {position:relative;margin:0 0 1.25rem;padding:0.85rem 2.5rem 0.85rem 1rem;border-radius:8px;background:var(--c-warn-bg);color:var(--c-warn-text);font-size:0.92rem;}
-#system-message-container .alert-error,#system-message-container .alert-danger {background:var(--c-error-bg);color:var(--c-error-text);}
+#system-message-container .alert-error,
+#system-message-container .alert-danger {background:var(--c-error-bg);color:var(--c-error-text);}
 #system-message-container .alert-info {background:var(--c-info-bg);color:var(--c-info-text);}
 #system-message-container .alert-success {background:var(--c-ok-bg);color:var(--c-ok-text);}
 #system-message-container .alert-heading {margin:0 0 0.2rem;font-size:0.92rem;font-weight:700;}
 #system-message-container .close {position:absolute;top:0.45rem;right:0.5rem;width:2rem;height:2rem;padding:0;border:0;border-radius:6px;background:transparent;color:inherit;font:inherit;font-size:1.3rem;line-height:1;cursor:pointer;opacity:0.7;}
-#system-message-container .close:hover,#system-message-container .close:focus-visible {opacity:1;background:rgba(0, 0, 0, 0.06);}
+#system-message-container .close:hover,
+#system-message-container .close:focus-visible {opacity:1;background:rgba(0, 0, 0, 0.06);}
 .loginNotice {margin:1rem 0 0;color:var(--c-error-text);font-size:0.9rem;}
 
 /* --- Form --- */
@@ -151,11 +158,16 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 .loginField-head {display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:0.25rem 1rem;}
 .loginField-head label {font-size:0.875rem;font-weight:500;}
 .loginField-head a {color:var(--c-muted);font-size:0.8rem;text-decoration:none;}
-.loginField-head a:hover,.loginField-head a:focus-visible {color:var(--c-text);text-decoration:underline;text-underline-offset:3px;}
-.loginForm input[type="text"],.loginForm input[type="password"],.loginForm select {width:100%;min-height:2.5rem;margin:0;padding:0.5rem 0.75rem;border:1px solid var(--c-line);border-radius:var(--radius);background:var(--c-field);color:var(--c-text);font:inherit;transition:border-color 0.15s ease, box-shadow 0.15s ease;}
+.loginField-head a:hover,
+.loginField-head a:focus-visible {color:var(--c-text);text-decoration:underline;text-underline-offset:3px;}
+.loginForm input[type="text"],
+.loginForm input[type="password"],
+.loginForm select {width:100%;min-height:2.5rem;margin:0;padding:0.5rem 0.75rem;border:1px solid var(--c-line);border-radius:var(--radius);background:var(--c-field);color:var(--c-text);font:inherit;transition:border-color 0.15s ease, box-shadow 0.15s ease;}
 .loginForm select {-webkit-appearance:none;appearance:none;padding-right:2.5rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-position:right 0.8rem center;background-repeat:no-repeat;background-size:1.1rem;}
-.loginForm input:hover,.loginForm select:hover {border-color:var(--c-muted);}
-.loginForm input:focus,.loginForm select:focus {border-color:var(--c-muted);outline:none;box-shadow:0 0 0 3px var(--c-focus);}
+.loginForm input:hover,
+.loginForm select:hover {border-color:var(--c-muted);}
+.loginForm input:focus,
+.loginForm select:focus {border-color:var(--c-muted);outline:none;box-shadow:0 0 0 3px var(--c-focus);}
 .loginField-help {margin:0;color:var(--c-muted);font-size:0.8rem;}
 /* Show/hide password, inside the field */
 .loginField-reveal {position:relative;}
@@ -164,7 +176,8 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 .loginReveal[hidden] {display:none;}
 .loginReveal:hover {color:var(--c-text);background:var(--c-hover);}
 .loginReveal:focus-visible {outline:2px solid var(--c-muted);outline-offset:1px;}
-.loginReveal-hide,.loginReveal[aria-pressed="true"] .loginReveal-show {display:none;}
+.loginReveal-hide,
+.loginReveal[aria-pressed="true"] .loginReveal-show {display:none;}
 .loginReveal[aria-pressed="true"] .loginReveal-hide {display:block;}
 .loginReveal-label {position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
 .loginSubmit {min-height:2.5rem;margin-top:0.25rem;padding:0.5rem 1rem;border:0;border-radius:var(--radius);background:var(--c-accent);color:var(--c-on-accent);font:inherit;font-weight:500;cursor:pointer;transition:background-color 0.15s ease;}
@@ -172,7 +185,8 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 .loginSubmit:focus-visible {outline:2px solid var(--c-muted);outline-offset:2px;}
 .loginSubmit[aria-busy="true"] {cursor:progress;opacity:0.8;}
 /* Other modules in the "login" position */
-.loginPanel #section-box,.loginPanel .module-body {margin-top:1rem;}
+.loginPanel #section-box,
+.loginPanel .module-body {margin-top:1rem;}
 
 /* --- Small screens: the blocks behind the page, the site's name and link at the top, the form in the middle, in a bordered card --- */
 @media (max-width:899px) {
@@ -185,7 +199,8 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
     .loginBrand-site {font-size:clamp(1.4rem, 5.5vw, 1.9rem);}
     .loginBrand-host {display:none;}
     .loginBrand-visit {margin-top:0.85rem;padding:0.45rem 0.9rem;color:var(--c-text);border-color:var(--c-line);}
-    .loginBrand-visit:hover,.loginBrand-visit:focus-visible {background:var(--c-hover);}
+    .loginBrand-visit:hover,
+    .loginBrand-visit:focus-visible {background:var(--c-hover);}
     .loginBrand-visit:focus-visible {outline-color:var(--c-muted);}
     .loginMain {padding:0 1rem;}
     .loginPanel {max-width:25rem;padding:1.75rem;border:1px solid var(--c-line);border-radius:12px;box-shadow:0 1px 2px rgba(0, 0, 0, 0.05);}
@@ -219,7 +234,8 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
     [dir="rtl"] .loginBrand {border-right:0;border-left:1px solid var(--c-side-line);}
 }
 [dir="rtl"] .loginBrand-visit svg {transform:scaleX(-1);}
-[dir="rtl"] .loginBrand-visit:hover svg,[dir="rtl"] .loginBrand-visit:focus-visible svg {transform:scaleX(-1) translateX(3px);}
+[dir="rtl"] .loginBrand-visit:hover svg,
+[dir="rtl"] .loginBrand-visit:focus-visible svg {transform:scaleX(-1) translateX(3px);}
 [dir="rtl"] .loginPanel-logo img {object-position:right center;}
 [dir="rtl"] .loginField-reveal input {padding-right:0.75rem;padding-left:2.75rem;}
 [dir="rtl"] .loginReveal {right:auto;left:0.35rem;}
@@ -228,5 +244,7 @@ body.loginPage {margin:0;min-height:100vh;background:var(--c-page);color:var(--c
 [dir="rtl"] #system-message-container .close {right:auto;left:0.5rem;}
 
 @media (prefers-reduced-motion:reduce) {
-    .loginBrand-visit,.loginBrand-visit svg,.loginSubmit {transition:none;}
+    .loginBrand-visit,
+    .loginBrand-visit svg,
+    .loginSubmit {transition:none;}
 }

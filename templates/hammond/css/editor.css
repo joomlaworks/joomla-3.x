@@ -35,13 +35,19 @@
 html {color-scheme:light;}
 body {max-width:var(--measure);margin:0 auto;padding:32px 24px 48px;font-family:var(--fs);font-size:1.2rem;line-height:1.7;color:var(--c-text);background:var(--c-bg);-webkit-font-smoothing:antialiased;}
 body > :first-child {margin-top:0;}
-h1,h2,h3,h4,h5,h6 {font-family:var(--fh);color:var(--c-ink);line-height:1.15;letter-spacing:-0.015em;margin:0 0 .5em;}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {font-family:var(--fh);color:var(--c-ink);line-height:1.15;letter-spacing:-0.015em;margin:0 0 .5em;}
 h1 {font-size:2.5rem;font-weight:800;}
 h2 {margin-top:1.6em;margin-bottom:.6em;font-size:1.6rem;font-weight:800;}
 h3 {margin-top:1.4em;margin-bottom:.5em;font-size:1.3rem;font-weight:750;}
 h4 {font-size:1.05rem;font-weight:700;}
 p {margin:0 0 1.15em;}
-ul,ol {margin:0 0 1em;padding-left:1.3em;}
+ul,
+ol {margin:0 0 1em;padding-left:1.3em;}
 li {margin-bottom:.4em;}
 li::marker {color:var(--c-accent);font-family:var(--fh);font-weight:800;}
 a {color:var(--c-ink);text-decoration:underline;text-decoration-color:var(--c-accent);text-decoration-thickness:2px;text-underline-offset:3px;}
@@ -53,13 +59,16 @@ blockquote cite::before {content:'— ';}
 figure {margin:1.8em 0;}
 figure img {display:block;width:100%;border-radius:var(--radius);}
 figcaption {margin-top:8px;font-family:var(--fh);font-size:.82rem;color:var(--c-muted);}
-code,pre,kbd {font-family:var(--fm);font-size:.9em;}
+code,
+pre,
+kbd {font-family:var(--fm);font-size:.9em;}
 table {width:100%;margin:1.6em 0;border-collapse:collapse;font-family:var(--fh);font-size:.92rem;}
 caption {caption-side:top;text-align:left;font-weight:800;padding-bottom:8px;color:var(--c-ink);}
 th {text-align:left;padding:10px 12px;background:var(--c-ink);color:var(--c-white);font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;}
 td {padding:10px 12px;border-bottom:1px solid var(--c-line);}
 tbody tr:nth-child(even) td {background:var(--c-paper);}
-td:last-child,th:last-child {text-align:right;font-variant-numeric:tabular-nums;}
+td:last-child,
+th:last-child {text-align:right;font-variant-numeric:tabular-nums;}
 hr {border:0;border-top:1px solid var(--c-line);margin:2em 0;}
 
 /* Embedded videos and X posts */

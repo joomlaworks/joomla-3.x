@@ -113,6 +113,7 @@ Summary of changes:
 - Isis and Protostar are plain, modern CSS: no more Less, a quarter of the size, the same look, and nothing loaded for old Internet Explorer versions
 - Isis and Prothero: each page file starts with a single include of the template's `includes/helper.php`; legacy admin images as SVG; tidier template markup in every core template
 - Templates manager: previews show the desktop and phone views side by side, in the CMS's own modal
+- Hammond, Finch and Rookwood's helpers in `includes/`; scripts at the end of the page grouped (core, plugins, modules, components, template); stylesheets with one selector per line
 - Removable extensions no longer break each other when one is removed, and uninstalling a component also removes its tag mappings, associations, content history, custom fields and site menu items (except the home item)
 - Lists can be reordered by touch on phones and tablets (drag a row by its handle); Prothero adds a Reorder button on phones
 - The old schema.org microdata attributes are gone from the site's HTML (core layouts and the three templates); structured data comes as JSON-LD instead

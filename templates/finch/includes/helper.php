@@ -2,7 +2,7 @@
 
 /**
  * @package     Joomla.Site
- * @subpackage  Templates.rookwood
+ * @subpackage  Templates.finch
  *
  * @copyright   (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license     GNU General Public License version 2 or later; see LICENSE.md
@@ -13,12 +13,12 @@ defined('_JEXEC') or die;
 JLoader::register('ContentHelperRoute', JPATH_SITE . '/components/com_content/helpers/route.php');
 
 /**
- * Shared helpers of the Rookwood template: the page set-up, the theme, the logo, and one way to show an article's image,
- * category, author, date and excerpt in every list and module layout.
+ * Shared helpers of the Finch template: one way to show a post's image, category, author, date and excerpt in every list,
+ * module layout and post.
  *
  * @since  3.17.0
  */
-abstract class RookwoodHelper
+abstract class FinchHelper
 {
     /**
      * The template's parameters
@@ -44,29 +44,37 @@ abstract class RookwoodHelper
 
     /**
      * Prepare a page of the template and tell its markup what it needs to know. Sets up the document's head (HTML5, meta
-     * tags, the theme, the stylesheets, the icon) for index.php, component.php and offline.php alike; for index.php also the
-     * script and the kind of page.
+     * tags, the stylesheets, the icon) for index.php, component.php (print and popup views) and offline.php alike; for
+     * index.php also the script and the kind of page.
      *
      * @param   JDocumentHtml  $document  The document ($this in the template's files)
      * @param   string         $layout    index, component or offline
      *
-     * @return  stdClass  params, siteName, theme; for index also isHome, isPage, isList, ownLayout (an override draws the page), hasSearch,
-     *                    bodyClass
+     * @return  stdClass  params, siteName; for index also isHome, isPost, isPage, isList, hasSidebar, hasSearch, bodyClass
      *
      * @since   3.17.0
      */
     public static function prepare($document, $layout = 'index')
     {
-        $base           = JUri::root(true) . '/templates/' . basename(__DIR__);
+        $base           = JUri::root(true) . '/templates/' . basename(dirname(__DIR__));
         $page           = new stdClass();
         $page->params   = static::params();
         $page->siteName = static::siteName();
-        $page->theme    = static::defaultTheme();
 
         $document->setHtml5(true);
         $document->setGenerator('');
         $document->setMetaData('viewport', 'width=device-width, initial-scale=1');
-        $document->setMetaData('color-scheme', 'dark light');
+        $page->scheme   = static::scheme();
+
+        // The browser's own parts (scroll bars, fields) and its bar match the page's colours
+        $document->setMetaData('color-scheme', $page->scheme === 'auto' ? 'light dark' : $page->scheme);
+
+        if ($page->scheme === 'auto') {
+            $document->addCustomTag('<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />');
+            $document->addCustomTag('<meta name="theme-color" content="#1b1022" media="(prefers-color-scheme: dark)" />');
+        } else {
+            $document->setMetaData('theme-color', $page->scheme === 'dark' ? '#1b1022' : '#ffffff');
+        }
 
         foreach (static::stylesheets() as $stylesheet) {
             $document->addStyleSheet($stylesheet);
@@ -79,7 +87,7 @@ abstract class RookwoodHelper
             return $page;
         }
 
-        $script = $base . '/js/template.js?t=' . date('Ymd_Hi', filemtime(__DIR__ . '/js/template.js'));
+        $script = $base . '/js/template.js?t=' . date('Ymd_Hi', filemtime(dirname(__DIR__) . '/js/template.js'));
         $document->addScript($script, array('position' => 'footer'), array('defer' => true));
         static::preload($script, 'script');
 
@@ -89,59 +97,22 @@ abstract class RookwoodHelper
         $option = $input->getCmd('option', '');
         $view   = $input->getCmd('view', '');
 
-        // The home page is made of the frontpage modules, whatever its menu item shows (without modules there, e.g. on a new site
-        // without sample data, it shows the component). Joomla also makes the home item active on pages without a menu item of
-        // their own (tags, search), so the request must be the home item's own link.
-        $home         = $active ? $active->query : array();
-        $page->isHome = $active && $active->home && $document->countModules('frontpage')
-            && (isset($home['option']) ? $home['option'] : '') === $option && (isset($home['view']) ? $home['view'] : '') === $view
-            && (!isset($home['id']) || (int) $home['id'] === $input->getInt('id'));
-        $page->isPage    = static::isPage();
-        $page->isList    = !$page->isHome && in_array(
-            $option . '.' . $view,
-            array('com_content.category', 'com_content.archive', 'com_content.featured', 'com_tags.tag', 'com_tags.tags', 'com_search.search'),
-            true
-        );
-        $page->ownLayout = in_array($option . '.' . $view, array('com_content.article', 'com_content.category', 'com_content.featured',
-            'com_content.archive', 'com_tags.tag', 'com_tags.tags', 'com_search.search'), true) && $input->getCmd('layout') !== 'edit';
-        $page->hasSearch = (bool) $document->countModules('search');
-        $page->bodyClass = implode(' ', array_filter(array(
-            'site', $page->isHome ? 'isFrontpage' : 'isInner', $page->isPage ? 'isPage' : '', $page->isList ? 'isList' : '',
-            'option-' . str_replace('com_', '', $option), 'view-' . $view, $active ? 'itemid-' . (int) $active->id : '',
-            $active ? trim((string) $active->getParams()->get('pageclass_sfx')) : '',
+        // Joomla makes the home item active on pages without a menu item of their own (tags, search): the home page is its own link
+        $home             = $active ? $active->query : array();
+        $page->isHome     = $active && $active->home && (isset($home['option']) ? $home['option'] : '') === $option
+            && (isset($home['view']) ? $home['view'] : '') === $view && (!isset($home['id']) || (int) $home['id'] === $input->getInt('id'));
+        $page->isPage     = static::isPage();
+        $page->isPost     = $option === 'com_content' && $view === 'article' && !$page->isPage;
+        $page->isList     = in_array($option . '.' . $view, array('com_content.featured', 'com_content.category', 'com_content.archive', 'com_tags.tag', 'com_search.search'), true);
+        $page->hasSidebar = $page->isList && $document->countModules('sidebar');
+        $page->hasSearch  = (bool) $document->countModules('search');
+        $page->bodyClass  = implode(' ', array_filter(array(
+            'site', $page->isHome ? 'isHome' : '', $page->isPost ? 'isPost' : '', $page->isPage ? 'isPage' : '', $page->isList ? 'isList' : '',
+            $page->hasSidebar ? 'hasSidebar' : '', 'option-' . str_replace('com_', '', $option), 'view-' . $view,
+            $active ? 'itemid-' . (int) $active->id : '', $active ? trim((string) $active->getParams()->get('pageclass_sfx')) : '',
         )));
 
         return $page;
-    }
-
-    /**
-     * The theme a page starts with: the template's option (dark, light, or the visitor's system setting).
-     *
-     * @return  string  dark, light or system
-     *
-     * @since   3.17.0
-     */
-    public static function defaultTheme()
-    {
-        $theme = (string) static::params()->get('defaultTheme', 'dark');
-
-        return in_array($theme, array('dark', 'light', 'system'), true) ? $theme : 'dark';
-    }
-
-    /**
-     * The script which sets the theme on the html element: the visitor's choice (kept in the browser by the theme switch), else
-     * the template's default. It runs in the head, before the page is drawn.
-     *
-     * @return  string
-     *
-     * @since   3.17.0
-     */
-    public static function themeScript()
-    {
-        return "(function(d){var t;try{t=localStorage.getItem('rookwood-theme');}catch(e){}"
-            . "if(t!=='dark'&&t!=='light'){t=" . json_encode(static::defaultTheme()) . ";}"
-            . "if(t==='system'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}"
-            . "d.documentElement.setAttribute('data-theme',t);})(document);";
     }
 
     /**
@@ -157,29 +128,7 @@ abstract class RookwoodHelper
     }
 
     /**
-     * The logo: the mark and the site's name, its first word in bold.
-     *
-     * @param   string  $class  Classes
-     *
-     * @return  string
-     *
-     * @since   3.17.0
-     */
-    public static function logo($class = 'logo')
-    {
-        $name  = static::siteName();
-        $space = strpos($name, ' ');
-
-        return '<a class="' . $class . '" href="' . JUri::base(true) . '/" aria-label="' . static::e($name) . '">'
-            . '<svg class="logoMark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="currentColor"/>'
-            . '<path d="M13 30V10h8.5a5.75 5.75 0 0 1 0 11.5H13M20.5 21.5 28 30" fill="none" stroke="var(--c-bg)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>'
-            . '<circle cx="30" cy="10.5" r="3.2" fill="var(--c-lime)"/></svg>'
-            . '<span class="logoText"><strong>' . static::e($space === false ? $name : substr($name, 0, $space)) . '</strong>'
-            . ($space !== false ? ' <span>' . static::e(substr($name, $space + 1)) . '</span>' : '') . '</span></a>';
-    }
-
-    /**
-     * The links to the site's social profiles (the template's options), and its feed.
+     * The links to the blog's social profiles (the template's options), and its feed.
      *
      * @param   string  $class  Classes of the list
      *
@@ -189,9 +138,9 @@ abstract class RookwoodHelper
      */
     public static function socialLinks($class = 'socialLinks')
     {
-        $html = '';
+        $items = '';
 
-        foreach (array('x' => 'X', 'linkedin' => 'LinkedIn', 'instagram' => 'Instagram', 'github' => 'GitHub', 'dribbble' => 'Dribbble', 'rss' => 'RSS') as $network => $label) {
+        foreach (array('x' => 'X', 'instagram' => 'Instagram', 'facebook' => 'Facebook', 'linkedin' => 'LinkedIn', 'rss' => 'RSS') as $network => $label) {
             $url = trim((string) static::params()->get('social_' . $network, ''));
 
             // The site's feed unless another one is set
@@ -202,12 +151,12 @@ abstract class RookwoodHelper
             // Web addresses (or paths) only: never javascript: and the like, however it's spelt (browsers ignore tabs and newlines in it)
             if ($url !== '' && (!preg_match('/^[a-z][a-z0-9+.\-]*:/i', preg_replace('/[\x00-\x20]+/', '', $url), $scheme)
                 || preg_match('/^https?:$/i', $scheme[0]))) {
-                $html .= '<li><a href="' . static::e($url) . '" aria-label="' . static::e($label) . '"' . ($network !== 'rss' ? ' rel="noopener" target="_blank"' : '')
+                $items .= '<li><a href="' . static::e($url) . '" aria-label="' . static::e($label) . '"' . ($network !== 'rss' ? ' rel="noopener" target="_blank"' : '')
                     . '>' . static::icon($network) . '</a></li>';
             }
         }
 
-        return $html === '' ? '' : '<ul class="' . $class . '">' . $html . '</ul>';
+        return $items === '' ? '' : '<ul class="' . $class . '">' . $items . '</ul>';
     }
 
     /**
@@ -279,36 +228,36 @@ abstract class RookwoodHelper
     }
 
     /**
-     * Preloads the article's main image, which the article view shows at the top (fetchpriority high), with the same srcset
-     * and sizes as its img(), so the browser preloads the size it will use.
+     * Preloads the article's main image, which the article view shows at the top (fetchpriority high).
      *
-     * @param   array   $image  image()'s result
-     * @param   string  $sizes  The sizes attribute its img() gets
+     * @param   array  $image  image()'s result
      *
      * @return  void
      *
      * @since   3.18.0
      */
-    public static function preloadImage(array $image, $sizes = '100vw')
+    public static function preloadImage(array $image)
     {
         if ($image['src'] === '') {
             return;
         }
 
+        // With the srcset the image gets, so the browser preloads the size it will use
         $attribs = array('fetchpriority' => 'high');
-        $srcset  = static::srcset($image);
+        $srcset  = static::srcsetFor($image['src']);
 
         if ($srcset !== '') {
             $attribs['imagesrcset'] = $srcset;
-            $attribs['imagesizes']  = $sizes;
+            $attribs['imagesizes']  = static::SIZES_MAIN;
         }
 
         static::preload($image['src'], 'image', $attribs);
     }
 
     /**
-     * Resource hints for what an article's text embeds: YouTube videos load lazily, often below the first screen, so only
-     * their host name is resolved early (a preconnect would mostly go unused).
+     * Resource hints for what an article's text embeds. X posts make template.js load X's script at once, so the connection
+     * to it is opened early; YouTube videos load lazily, often below the first screen, so only their host name is resolved
+     * (a preconnect would mostly go unused).
      *
      * @param   string  $text  The article's text
      *
@@ -319,13 +268,18 @@ abstract class RookwoodHelper
     public static function embedHints($text)
     {
         $document = JFactory::getDocument();
+        $text     = (string) $text;
 
-        if (!method_exists($document, 'addDnsPrefetch')) {
+        if (!method_exists($document, 'addPreconnect')) {
             return;
         }
 
+        if (strpos($text, 'twitter-tweet') !== false) {
+            $document->addPreconnect('https://platform.twitter.com');
+        }
+
         foreach (array('https://www.youtube-nocookie.com/embed/', 'https://www.youtube.com/embed/') as $embed) {
-            if (strpos((string) $text, $embed) !== false) {
+            if (strpos($text, $embed) !== false) {
                 $document->addDnsPrefetch($embed);
             }
         }
@@ -342,12 +296,12 @@ abstract class RookwoodHelper
      */
     public static function stylesheets()
     {
-        $base = JUri::root(true) . '/templates/' . basename(__DIR__) . '/css/';
+        $base = JUri::root(true) . '/templates/' . basename(dirname(__DIR__)) . '/css/';
         $urls = array();
 
         foreach (array('template.css', 'custom.css') as $file) {
-            if (is_file(__DIR__ . '/css/' . $file)) {
-                $urls[] = $base . $file . '?t=' . date('Ymd_Hi', filemtime(__DIR__ . '/css/' . $file));
+            if (is_file(dirname(__DIR__) . '/css/' . $file)) {
+                $urls[] = $base . $file . '?t=' . date('Ymd_Hi', filemtime(dirname(__DIR__) . '/css/' . $file));
             }
         }
 
@@ -384,7 +338,7 @@ abstract class RookwoodHelper
     }
 
     /**
-     * An SVG icon from the sprite at the top of the page.
+     * An SVG icon from the sprite in index.php.
      *
      * @param   string  $name   The icon
      * @param   string  $class  Extra classes
@@ -415,7 +369,7 @@ abstract class RookwoodHelper
         static $icons = array();
 
         if (!isset($icons[$name])) {
-            $file = __DIR__ . '/images/svg/' . preg_replace('/[^a-z0-9-]/', '', (string) $name) . '.svg';
+            $file = dirname(__DIR__) . '/images/svg/' . preg_replace('/[^a-z0-9-]/', '', (string) $name) . '.svg';
 
             $icons[$name] = is_file($file) && preg_match('#<svg\b[^>]*\sviewBox="([^"]*)"[^>]*>(.*)</svg>#s', (string) file_get_contents($file), $svg)
                 ? array($svg[1], trim($svg[2]))
@@ -426,38 +380,53 @@ abstract class RookwoodHelper
     }
 
     /**
-     * The article's image: the intro image, else the full article image, else the first image of the text.
+     * The logo: the finch and the site's name.
      *
-     * @param   object   $item  The article
+     * @param   string  $name   The site's name
+     * @param   string  $class  Classes of the link
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    public static function logo($name, $class = 'logo')
+    {
+        return '<a class="' . $class . '" href="' . JUri::base(true) . '/">'
+            . '<svg class="logoMark" viewBox="0 0 48 48" aria-hidden="true">' . static::iconFile('finch')[1] . '</svg>'
+            . '<span class="logoText">' . static::e($name) . '</span></a>';
+    }
+
+    /**
+     * The post's image: the intro image, else the full article image, else the first image of the text.
+     *
+     * @param   object   $item  The post
      * @param   boolean  $full  Prefer the full article image
      *
-     * @return  array  src, alt, caption, path (empty src when there is none; path: the site-relative file, for its sizes)
+     * @return  array  src, alt, caption (empty src when there is none)
      *
      * @since   3.17.0
      */
     public static function image($item, $full = false)
     {
-        $images = is_string($item->images ?? null) ? json_decode($item->images) : ($item->images ?? null);
-        $order  = $full ? array('fulltext', 'intro') : array('intro', 'fulltext');
+        $images = isset($item->images) && is_string($item->images) ? json_decode($item->images) : (isset($item->images) ? (object) $item->images : null);
 
-        foreach ($order as $type) {
-            $src = $images->{'image_' . $type} ?? '';
+        foreach ($full ? array('fulltext', 'intro') : array('intro', 'fulltext') as $type) {
+            $src = isset($images->{'image_' . $type}) ? (string) $images->{'image_' . $type} : '';
 
             if ($src !== '') {
                 return array(
                     'src'     => static::url($src),
-                    'path'    => preg_replace('/#.*$/', '', $src),
-                    'alt'     => $images->{'image_' . $type . '_alt'} ?? '',
-                    'caption' => $images->{'image_' . $type . '_caption'} ?? '',
+                    'alt'     => isset($images->{'image_' . $type . '_alt'}) ? $images->{'image_' . $type . '_alt'} : '',
+                    'caption' => isset($images->{'image_' . $type . '_caption'}) ? $images->{'image_' . $type . '_caption'} : '',
                 );
             }
         }
 
-        if (preg_match('/<img[^>]+src="([^"]+)"/i', (string) ($item->introtext ?? ''), $match)) {
-            return array('src' => static::url($match[1]), 'path' => $match[1], 'alt' => '', 'caption' => '');
+        if (preg_match('/<img[^>]+src="([^"]+)"/i', (string) (isset($item->introtext) ? $item->introtext : ''), $match)) {
+            return array('src' => static::url($match[1]), 'alt' => '', 'caption' => '');
         }
 
-        return array('src' => '', 'path' => '', 'alt' => '', 'caption' => '');
+        return array('src' => '', 'alt' => '', 'caption' => '');
     }
 
     /**
@@ -471,77 +440,42 @@ abstract class RookwoodHelper
      */
     public static function url($src)
     {
-        $src = (string) $src;
-
         // Images of the media manager carry their size after a #
-        $src = preg_replace('/#.*$/', '', $src);
+        $src = preg_replace('/#.*$/', '', (string) $src);
 
         return preg_match('#^(https?:)?//#i', $src) ? $src : JUri::root(true) . '/' . ltrim($src, '/');
     }
 
     /**
-     * An image's srcset when a smaller copy sits next to it (photo-960.webp beside photo.webp), else an empty string.
+     * The image, linked to the post (or nothing).
      *
-     * @param   array  $image  image()'s result
-     *
-     * @return  string
-     *
-     * @since   3.18.0
-     */
-    public static function srcset(array $image)
-    {
-        static $mobile = null;
-
-        $path = ltrim((string) $image['path'], '/');
-
-        if ($path === '' || preg_match('#^(https?:)?//#i', $path) || !preg_match('/^(.+)\.(webp|jpe?g|png|avif)$/i', $path, $parts)
-            || !is_file(JPATH_ROOT . '/' . $path)) {
-            return '';
-        }
-
-        // The small screen copy the Media Manager makes on upload (photo-600.webp, its Small Screen Width), or the sample images' -960
-        if ($mobile === null) {
-            $mobile = (int) JComponentHelper::getParams('com_media')->get('optimise_mobile_width', 600);
-        }
-
-        foreach (array_unique(array_filter(array($mobile, 960))) as $width) {
-            if (is_file(JPATH_ROOT . '/' . $parts[1] . '-' . $width . '.' . $parts[2])) {
-                $size = @getimagesize(JPATH_ROOT . '/' . $path);
-
-                return $size && $size[0] > $width
-                    ? static::url($parts[1] . '-' . $width . '.' . $parts[2]) . ' ' . $width . 'w, ' . $image['src'] . ' ' . (int) $size[0] . 'w' : '';
-            }
-        }
-
-        return '';
-    }
-
-    /**
-     * An img element for an image of the site: when a smaller copy sits next to it (photo-960.webp beside photo.webp), the
-     * browser picks the size the layout needs (srcset and sizes).
-     *
-     * @param   array    $image  image()'s result
-     * @param   string   $sizes  The sizes attribute: how wide the image is shown
-     * @param   boolean  $eager  The top of the page: load at once, with priority (lazily otherwise)
-     * @param   string   $class  Its class
+     * @param   object   $item   The post
+     * @param   string   $link   The post's link
+     * @param   string   $class  Classes of the wrapper
+     * @param   boolean  $lazy   Load lazily
      *
      * @return  string
      *
      * @since   3.17.0
      */
-    public static function img(array $image, $sizes = '100vw', $eager = false, $class = '')
+    public static function figure($item, $link, $class = 'postImage', $lazy = true)
     {
-        $srcset = static::srcset($image);
-        $srcset = $srcset !== '' ? ' srcset="' . static::e($srcset) . '" sizes="' . static::e($sizes) . '"' : '';
+        $image = static::image($item);
 
-        return '<img' . ($class ? ' class="' . $class . '"' : '') . ' src="' . static::e($image['src']) . '"' . $srcset . ' alt="' . static::e($image['alt'])
-            . '" width="1920" height="1080"' . ($eager ? ' fetchpriority="high"' : ' loading="lazy" decoding="async"') . ' />';
+        if ($image['src'] === '') {
+            return '';
+        }
+
+        return '<div class="' . $class . '"><a href="' . $link . '" tabindex="-1" aria-hidden="true"><img src="' . static::e($image['src'])
+            . '"' . static::srcsetAttributes($image['src'], static::SIZES_CARD)
+            . ' alt="' . static::e($image['alt']) . '" width="1280" height="720"' . ($lazy ? ' loading="lazy" decoding="async"' : ' fetchpriority="high"')
+            . ' /></a></div>';
     }
 
     /**
-     * The article's link.
+     * The post's link.
      *
-     * @param   object  $item  The article
+     * @param   object  $item  The post
      *
      * @return  string
      *
@@ -553,16 +487,16 @@ abstract class RookwoodHelper
             return $item->link;
         }
 
-        $slug    = $item->slug ?? ($item->id . ':' . ($item->alias ?? ''));
-        $catslug = $item->catslug ?? $item->catid;
+        $slug    = isset($item->slug) ? $item->slug : $item->id . ':' . (isset($item->alias) ? $item->alias : '');
+        $catslug = isset($item->catslug) ? $item->catslug : $item->catid;
 
-        return JRoute::_(ContentHelperRoute::getArticleRoute($slug, $catslug, $item->language ?? '*'));
+        return JRoute::_(ContentHelperRoute::getArticleRoute($slug, $catslug, isset($item->language) ? $item->language : '*'));
     }
 
     /**
-     * The category's title, as a label.
+     * The category, linked to its page.
      *
-     * @param   object  $item  The article
+     * @param   object  $item  The post
      *
      * @return  string
      *
@@ -570,54 +504,20 @@ abstract class RookwoodHelper
      */
     public static function category($item)
     {
-        $title = $item->category_title ?? ($item->displayCategoryTitle ?? '');
+        $title = isset($item->category_title) ? (string) $item->category_title : '';
 
-        return $title === '' ? '' : '<span class="itemCategory">' . static::e(strip_tags($title)) . '</span>';
-    }
-
-    /**
-     * The article's first tags (the services of a case study, the topics of a post), as labels.
-     *
-     * @param   object   $item  The article
-     * @param   integer  $max   At most this many
-     *
-     * @return  string
-     *
-     * @since   3.17.0
-     */
-    public static function tags($item, $max = 2)
-    {
-        // Tags are the Tags component's: without it (uninstalled or disabled) they aren't shown
-        if (!JComponentHelper::isEnabled('com_tags')) {
+        if ($title === '') {
             return '';
         }
 
-        // The lists load their articles' tags already; modules don't
-        if (!isset($item->tagLabels)) {
-            $tags = isset($item->tags->itemTags) ? $item->tags : new JHelperTags();
-
-            if (!isset($item->tags->itemTags)) {
-                $tags->getItemTags('com_content.article', (int) $item->id);
-            }
-
-            $item->tagLabels = array_map(function ($tag) {
-                return $tag->title;
-            }, (array) $tags->itemTags);
-        }
-
-        $html = '';
-
-        foreach (array_slice($item->tagLabels, 0, $max) as $title) {
-            $html .= '<li>' . static::e($title) . '</li>';
-        }
-
-        return $html === '' ? '' : '<ul class="itemTags">' . $html . '</ul>';
+        return '<a class="postCategory" href="' . JRoute::_(ContentHelperRoute::getCategoryRoute($item->catid, isset($item->language) ? $item->language : '*')) . '">'
+            . static::e($title) . '</a>';
     }
 
     /**
      * The author's name: the alias, else the user's name.
      *
-     * @param   object  $item  The article
+     * @param   object  $item  The post
      *
      * @return  string
      *
@@ -645,22 +545,19 @@ abstract class RookwoodHelper
      */
     public static function initials($name)
     {
-        $parts = preg_split('/\s+/u', trim($name), -1, PREG_SPLIT_NO_EMPTY);
+        $parts = preg_split('/\s+/u', trim((string) $name), -1, PREG_SPLIT_NO_EMPTY);
 
         if (!$parts) {
             return '';
         }
 
-        $first = mb_substr($parts[0], 0, 1);
-        $last  = count($parts) > 1 ? mb_substr(end($parts), 0, 1) : '';
-
-        return mb_strtoupper($first . $last);
+        return mb_strtoupper(mb_substr($parts[0], 0, 1) . (count($parts) > 1 ? mb_substr(end($parts), 0, 1) : ''));
     }
 
     /**
      * The publishing date.
      *
-     * @param   object  $item  The article
+     * @param   object  $item  The post
      *
      * @return  string  A time element
      *
@@ -668,19 +565,19 @@ abstract class RookwoodHelper
      */
     public static function date($item)
     {
-        $value = $item->publish_up ?? ($item->created ?? '');
+        $value = isset($item->publish_up) ? $item->publish_up : (isset($item->created) ? $item->created : '');
 
         if (!$value || $value === JFactory::getDbo()->getNullDate()) {
             return '';
         }
 
-        return '<time class="itemDate" datetime="' . JFactory::getDate($value)->format('c') . '">' . static::e(JHtml::_('date', $value, JText::_('DATE_FORMAT_LC3'))) . '</time>';
+        return '<time class="postDate" datetime="' . JFactory::getDate($value)->format('c') . '">' . static::e(JHtml::_('date', $value, JText::_('DATE_FORMAT_LC3'))) . '</time>';
     }
 
     /**
      * Plain text of the intro, cut at a word.
      *
-     * @param   object   $item    The article
+     * @param   object   $item    The post
      * @param   integer  $length  At most this many characters (0: all)
      *
      * @return  string
@@ -689,7 +586,7 @@ abstract class RookwoodHelper
      */
     public static function excerpt($item, $length = 0)
     {
-        $text = trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string) ($item->introtext ?? '')), ENT_QUOTES, 'UTF-8')));
+        $text = trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string) (isset($item->introtext) ? $item->introtext : '')), ENT_QUOTES, 'UTF-8')));
 
         if ($length && mb_strlen($text) > $length) {
             $text = rtrim(mb_substr($text, 0, mb_strrpos(mb_substr($text, 0, $length), ' ') ?: $length), ' ,.;:') . '…';
@@ -699,9 +596,9 @@ abstract class RookwoodHelper
     }
 
     /**
-     * Minutes to read the article.
+     * Minutes to read the post.
      *
-     * @param   object  $item  The article
+     * @param   object  $item  The post
      *
      * @return  integer
      *
@@ -709,13 +606,13 @@ abstract class RookwoodHelper
      */
     public static function readingTime($item)
     {
-        $words = str_word_count(strip_tags(($item->introtext ?? '') . ' ' . ($item->fulltext ?? ($item->text ?? ''))));
+        $text = (isset($item->introtext) ? $item->introtext : '') . ' ' . (isset($item->fulltext) ? $item->fulltext : (isset($item->text) ? $item->text : ''));
 
-        return max(1, (int) round($words / 230));
+        return max(1, (int) round(str_word_count(strip_tags($text)) / 230));
     }
 
     /**
-     * The page shows one article through a menu item of its own (e.g. Studio, Contact): a page, not a post.
+     * A standalone page (e.g. About): an article shown through a menu item of its own, rather than a post opened from a list.
      *
      * @return  boolean
      *
@@ -725,15 +622,15 @@ abstract class RookwoodHelper
     {
         $app    = JFactory::getApplication();
         $active = $app->getMenu()->getActive();
-        $input  = $app->input;
 
-        return $active && $input->get('option') === 'com_content' && $input->get('view') === 'article'
-            && ($active->query['option'] ?? '') === 'com_content' && ($active->query['view'] ?? '') === 'article'
-            && (int) ($active->query['id'] ?? 0) === $input->getInt('id');
+        return $active && isset($active->query['option'], $active->query['view'], $active->query['id'])
+            && $active->query['option'] === 'com_content' && $active->query['view'] === 'article'
+            && $app->input->get('option') === 'com_content' && $app->input->get('view') === 'article'
+            && (int) $active->query['id'] === $app->input->getInt('id');
     }
 
     /**
-     * A tag view's item (com_tags, core_* fields) as an article-like object for the helpers.
+     * A tag view's item (com_tags, core_* fields) as a post-like object for the helpers.
      *
      * @param   object  $item  The tagged item
      *
@@ -745,16 +642,16 @@ abstract class RookwoodHelper
     {
         JLoader::register('TagsHelperRoute', JPATH_SITE . '/components/com_tags/helpers/route.php');
 
-        $article                 = new stdClass();
-        $article->id             = (int) $item->content_item_id;
-        $article->title          = $item->core_title;
-        $article->introtext      = $item->core_body;
-        $article->images         = $item->core_images;
-        $article->publish_up     = $item->core_publish_up;
-        $article->catid          = (int) $item->core_catid;
-        $article->language       = $item->core_language;
-        $article->author         = $item->author ?? '';
-        $article->link           = JRoute::_(TagsHelperRoute::getItemRoute(
+        $post                 = new stdClass();
+        $post->id             = (int) $item->content_item_id;
+        $post->title          = $item->core_title;
+        $post->introtext      = $item->core_body;
+        $post->images         = $item->core_images;
+        $post->publish_up     = $item->core_publish_up;
+        $post->catid          = (int) $item->core_catid;
+        $post->language       = $item->core_language;
+        $post->author         = isset($item->author) ? $item->author : '';
+        $post->link           = JRoute::_(TagsHelperRoute::getItemRoute(
             $item->content_item_id,
             $item->core_alias,
             $item->core_catid,
@@ -762,113 +659,140 @@ abstract class RookwoodHelper
             $item->type_alias,
             $item->router
         ));
-        $category                = $article->catid ? JCategories::getInstance('Content')->get($article->catid) : null;
-        $article->category_title = $category ? $category->title : '';
-        $article->tagLabels      = array();
+        $category             = $post->catid ? JCategories::getInstance('Content')->get($post->catid) : null;
+        $post->category_title = $category ? $category->title : '';
 
-        return $article;
+        return $post;
     }
 
     /**
-     * An article as a card: image, labels, title, excerpt and byline. The lists, the journal's mosaic and the modules share it.
+     * The template's five tones, by name: a topic's colour, given as a class in its menu item's Page Class (e.g. tone-mint)
      *
-     * @param   object  $item     The article
-     * @param   array   $options  class (extra classes), heading (h2/h3), excerpt (characters, 0: none), eager (the top of the
-     *                            page), sizes (how wide its image is shown), labels (tags or category)
+     * @var    string[]
+     * @since  3.17.0
+     */
+    public const TONES = array('lavender', 'sunflower', 'coral', 'mint', 'sky');
+
+    /**
+     * The colour of a topic: the tone in the Page Class of the menu item showing the category (Category Blog or List), else
+     * one picked by the category's ID (consecutive IDs get different tones). A post keeps its topic's colour everywhere: lists,
+     * its page, "Read next".
+     *
+     * @param   object  $item  The post (its catid) or the category (its id)
+     *
+     * @return  string  A class: tone-lavender, tone-sunflower, tone-coral, tone-mint or tone-sky
+     *
+     * @since   3.17.0
+     */
+    public static function tone($item)
+    {
+        static $chosen = null;
+
+        if ($chosen === null) {
+            $chosen = array();
+
+            foreach ((array) JFactory::getApplication()->getMenu()->getItems('component', 'com_content') as $menuItem) {
+                if (isset($menuItem->query['view'], $menuItem->query['id']) && $menuItem->query['view'] === 'category'
+                    && preg_match('/(?:^|\s)tone-(' . implode('|', static::TONES) . ')(?:\s|$)/', (string) $menuItem->getParams()->get('pageclass_sfx'), $match)) {
+                    $chosen[(int) $menuItem->query['id']] = 'tone-' . $match[1];
+                }
+            }
+        }
+
+        $id = isset($item->catid) ? (int) $item->catid : (isset($item->id) ? (int) $item->id : 0);
+
+        return isset($chosen[$id]) ? $chosen[$id] : 'tone-' . static::TONES[$id % 5];
+    }
+
+    /**
+     * The colour scheme: the template's option, light, dark, or the device's setting (auto).
+     *
+     * @return  string  auto, light or dark
+     *
+     * @since   3.17.0
+     */
+    public static function scheme()
+    {
+        // The error page calls it too, when something may have failed already: never let the option break that page
+        try {
+            $scheme = (string) static::params()->get('colorScheme', 'auto');
+        } catch (Exception $e) {
+            $scheme = 'auto';
+        }
+
+        return in_array($scheme, array('light', 'dark'), true) ? $scheme : 'auto';
+    }
+
+    /**
+     * The publishing date as a stamp: the day large, the month and year under it.
+     *
+     * @param   object  $item  The post
+     *
+     * @return  string  Empty without a date
+     *
+     * @since   3.17.0
+     */
+    public static function stamp($item)
+    {
+        $value = isset($item->publish_up) ? $item->publish_up : (isset($item->created) ? $item->created : '');
+
+        if (!$value || $value === JFactory::getDbo()->getNullDate()) {
+            return '';
+        }
+
+        return '<time class="postStamp" datetime="' . JFactory::getDate($value)->format('c') . '"><span class="stampDay">'
+            . static::e(JHtml::_('date', $value, 'j')) . '</span><span class="stampMonth">' . static::e(JHtml::_('date', $value, 'M Y')) . '</span></time>';
+    }
+
+    /**
+     * A post in a list: the date stamp, its topic, title, excerpt and reading time, and its image on a block of the topic's
+     * colour. The lead post (the newest, on a list's first page) is a band of that colour across the page.
+     *
+     * @param   object   $item   The post
+     * @param   boolean  $lead   The lead post
+     * @param   boolean  $eager  Its image is at the top of the page: load it at once
      *
      * @return  string
      *
      * @since   3.17.0
      */
-    public static function card($item, array $options = array())
+    public static function card($item, $lead = false, $eager = false)
     {
-        $options += array('class' => '', 'heading' => 'h3', 'excerpt' => 140, 'eager' => false, 'sizes' => '(min-width: 1100px) 33vw, (min-width: 700px) 50vw, 100vw', 'labels' => 'tags');
         $link    = static::link($item);
-        $image   = static::image($item);
-        $author  = static::author($item);
-        $h       = $options['heading'];
-        $labels  = $options['labels'] === 'tags' ? static::tags($item) : static::category($item);
+        $minutes = isset($item->fulltext) || isset($item->text) ? JText::sprintf('TPL_FINCH_READING_TIME', static::readingTime($item)) : '';
+        $h       = $lead ? 2 : 3;
 
-        return '<article class="card' . ($options['class'] ? ' ' . $options['class'] : '') . '">'
-            . ($image['src'] !== '' ? '<div class="cardImage">' . static::img($image, $options['sizes'], $options['eager']) . '</div>' : '')
-            . '<div class="cardBody">' . $labels
-            . '<' . $h . ' class="cardTitle"><a href="' . $link . '">' . static::e($item->title) . '</a></' . $h . '>'
-            . ($options['excerpt'] ? '<p class="cardText">' . static::excerpt($item, $options['excerpt']) . '</p>' : '')
-            . '<p class="cardMeta">' . ($author !== '' ? '<span class="itemAuthor">' . static::e($author) . '</span>' : '') . static::date($item) . '</p>'
+        return '<article class="post ' . static::tone($item) . ($lead ? ' postLead' : '') . '"><div class="postInner">'
+            . static::stamp($item)
+            . '<div class="postBody">' . static::category($item)
+            . '<h' . $h . ' class="postTitle"><a href="' . $link . '">' . static::e($item->title) . '</a></h' . $h . '>'
+            . '<p class="postExcerpt">' . static::excerpt($item, $lead ? 260 : 190) . '</p>'
+            . ($minutes !== '' ? '<p class="postMeta"><span class="postReading">' . $minutes . '</span></p>' : '')
+            . '</div>'
+            . static::figure($item, $link, 'postImage', !$lead && !$eager)
             . '</div></article>';
     }
 
     /**
-     * The header of a list (a category, the featured articles, the archive, a tag): its title and description, in a band as
-     * wide as the page.
+     * A list of posts, one after the other: the newest with a wide image on the first page of a list, the others with a small
+     * one beside their text. The first two images load at once, the others lazily.
      *
-     * @param   string  $title        The title
-     * @param   string  $description  Its description (HTML, already prepared), or empty
-     *
-     * @return  string
-     *
-     * @since   3.17.0
-     */
-    public static function listHeader($title, $description = '')
-    {
-        return '<header class="listHeader"><div class="container"><h1 class="listTitle">' . static::e($title) . '</h1>'
-            . (trim(strip_tags($description, '<img>')) !== '' ? '<div class="listDescription">' . static::lazyImages($description) . '</div>' : '')
-            . '</div></header>';
-    }
-
-    /**
-     * The title of a category layout: the menu item's page heading when it shows one, else the category's title.
-     *
-     * @param   Joomla\Registry\Registry  $params    The view's parameters
-     * @param   JCategoryNode              $category  The category
+     * @param   object[]  $items  The posts
+     * @param   boolean   $lead   Show the first post large
      *
      * @return  string
      *
      * @since   3.17.0
      */
-    public static function categoryTitle($params, $category)
+    public static function postList(array $items, $lead = true)
     {
-        return $params->get('show_page_heading') && $params->get('page_heading') ? $params->get('page_heading') : $category->title;
-    }
+        $html = '';
 
-    /**
-     * The description of a category layout, prepared by the content plugins, when the menu item shows it.
-     *
-     * @param   Joomla\Registry\Registry  $params    The view's parameters
-     * @param   JCategoryNode              $category  The category
-     *
-     * @return  string
-     *
-     * @since   3.17.0
-     */
-    public static function categoryDescription($params, $category)
-    {
-        return $params->get('show_description', 1) && $category->description
-            ? JHtml::_('content.prepare', $category->description, '', 'com_content.category') : '';
-    }
+        foreach (array_values($items) as $i => $item) {
+            $html .= static::card($item, $lead && !$i, $i < 2);
+        }
 
-    /**
-     * A case study as a panel: the image as its canvas, the text over it.
-     *
-     * @param   object   $item   The article
-     * @param   boolean  $eager  The top of the page
-     *
-     * @return  string
-     *
-     * @since   3.17.0
-     */
-    public static function panel($item, $eager = false)
-    {
-        $link  = static::link($item);
-        $image = static::image($item, true);
-
-        return '<article class="panel">'
-            . ($image['src'] !== '' ? '<div class="panelImage">' . static::img($image, '100vw', $eager) . '</div>' : '')
-            . '<div class="panelBody">' . static::tags($item, 3)
-            . '<h2 class="panelTitle"><a href="' . $link . '">' . static::e($item->title) . '</a></h2>'
-            . '<p class="panelText">' . static::excerpt($item, 200) . '</p>'
-            . '<a class="btn btnLight" href="' . $link . '" tabindex="-1" aria-hidden="true">' . JText::_('TPL_ROOKWOOD_VIEW_PROJECT') . static::icon('arrow-right') . '</a>'
-            . '</div></article>';
+        return '<div class="postList">' . $html . '</div>';
     }
 
     /**

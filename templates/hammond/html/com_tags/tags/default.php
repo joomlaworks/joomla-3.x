@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 JLoader::register('TagsHelperRoute', JPATH_SITE . '/components/com_tags/helpers/route.php');
 // A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
-class_exists('HammondHelper', false) || require_once dirname(__DIR__, 3) . '/helper.php';
+class_exists('HammondHelper', false) || require_once dirname(__DIR__, 3) . '/includes/helper.php';
 
 /**
  * All tags. Unlike the stock layout, no captions script (and with it jQuery) and no inline scripts: the filter is a plain form.

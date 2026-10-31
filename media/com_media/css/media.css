@@ -35,15 +35,23 @@
 #upload-file {max-width:100%;box-sizing:border-box;}
 
 @media only screen and (min-width: 768px) {
-    #imageForm .control-group,#uploadform .control-group {margin-bottom:0;}
+    #imageForm .control-group,
+    #uploadform .control-group {margin-bottom:0;}
 }
 
 :where([dir="rtl"]:has(#imageForm)) #messages {right:175px;float:right;}
-:where([dir="rtl"]) #imageForm fieldset,:where([dir="rtl"]) #uploadform,:where([dir="rtl"]) #upload-noflash {text-align:right;}
+:where([dir="rtl"]) #imageForm fieldset,
+:where([dir="rtl"]) #uploadform,
+:where([dir="rtl"]) #upload-noflash {text-align:right;}
 :where([dir="rtl"]:has(#imageForm)) .fltrt {float:left;}
 :where([dir="rtl"]:has(#imageForm)) .fltlft {float:right;}
-:where([dir="rtl"]:has(#imageForm)) fieldset input,:where([dir="rtl"]:has(#imageForm)) fieldset textarea,:where([dir="rtl"]:has(#imageForm)) fieldset select,:where([dir="rtl"]:has(#imageForm)) fieldset img,:where([dir="rtl"]:has(#imageForm)) fieldset button {float:right;margin:5px 0 5px 5px;}
-:where([dir="rtl"]) #imageForm fieldset label,:where([dir="rtl"]) #uploadform fieldset label {float:right;clear:right;}
+:where([dir="rtl"]:has(#imageForm)) fieldset input,
+:where([dir="rtl"]:has(#imageForm)) fieldset textarea,
+:where([dir="rtl"]:has(#imageForm)) fieldset select,
+:where([dir="rtl"]:has(#imageForm)) fieldset img,
+:where([dir="rtl"]:has(#imageForm)) fieldset button {float:right;margin:5px 0 5px 5px;}
+:where([dir="rtl"]) #imageForm fieldset label,
+:where([dir="rtl"]) #uploadform fieldset label {float:right;clear:right;}
 
 /* --- Image picker: list --- */
 .contentpane:where(:has(.media-picker)) {padding:0 !important;overflow-x:hidden;}
@@ -51,20 +59,36 @@
 .thumbnails-media:where(.media-picker) .thumbnail {background-color:#f4f4f4;border-radius:3px;border:0;box-shadow:0 0 0 1px rgba(0, 0, 0, 0.05) inset;padding:0;height:100px;width:100px;margin:8px;position:relative;text-align:center;overflow:hidden;}
 .thumbnails-media:where(.media-picker) .thumbnail .close {background-color:#ccc;border-left:1px solid rgba(0, 0, 0, 0.1);height:22px;line-height:22px;opacity:0.3;text-align:center;width:22px;top:0;right:0;}
 .thumbnails-media:where(.media-picker) .thumbnail .close:hover {background-color:#bbb;}
-.thumbnails-media:where(.media-picker) .thumbnail *,.thumbnails-media:where(.media-picker) .thumbnail *:before {transition:all 0.2s ease;background-clip:padding-box;box-sizing:border-box;}
-.thumbnails-media:where(.media-picker) .thumbnail input[type="radio"],.thumbnails-media:where(.media-picker) .thumbnail input[type="checkbox"] {margin:0;opacity:0.55;position:absolute;top:5px;left:5px;}
-.thumbnails-media:where(.media-picker) .thumbnail .controls,.thumbnails-media:where(.media-picker) .thumbnail .imginfoBorder {display:none;}
+.thumbnails-media:where(.media-picker) .thumbnail *,
+.thumbnails-media:where(.media-picker) .thumbnail *:before {transition:all 0.2s ease;background-clip:padding-box;box-sizing:border-box;}
+.thumbnails-media:where(.media-picker) .thumbnail input[type="radio"],
+.thumbnails-media:where(.media-picker) .thumbnail input[type="checkbox"] {margin:0;opacity:0.55;position:absolute;top:5px;left:5px;}
+.thumbnails-media:where(.media-picker) .thumbnail .controls,
+.thumbnails-media:where(.media-picker) .thumbnail .imginfoBorder {display:none;}
 .thumbnails-media:where(.media-picker) .imgThumb {position:relative;z-index:1;width:100%;display:inline-block;}
 .thumbnails-media:where(.media-picker) .imgThumb input {display:none;}
-.thumbnails-media:where(.media-picker) .imgThumb label,.thumbnails-media:where(.media-picker) .imgThumb .imgThumbInside {display:block;line-height:100px;position:relative;width:100%;border-radius:3px;overflow:hidden;}
-.thumbnails-media:where(.media-picker) .imgThumb label:before,.thumbnails-media:where(.media-picker) .imgThumb .imgThumbInside:before {font-family:"IcoMoon";font-style:normal;content:'G';position:absolute;top:0;right:0;background-color:#46a546;color:#fff;line-height:26px;width:26px;transform:scale(0.5);opacity:0;border-color:rgba(0, 0, 0, 0.2);box-shadow:0 1px 2px rgba(0, 0, 0, 0.05);border-radius:0 3px;}
+.thumbnails-media:where(.media-picker) .imgThumb label,
+.thumbnails-media:where(.media-picker) .imgThumb .imgThumbInside {display:block;line-height:100px;position:relative;width:100%;border-radius:3px;overflow:hidden;}
+.thumbnails-media:where(.media-picker) .imgThumb label:before,
+.thumbnails-media:where(.media-picker) .imgThumb .imgThumbInside:before {font-family:"IcoMoon";font-style:normal;content:'G';position:absolute;top:0;right:0;background-color:#46a546;color:#fff;line-height:26px;width:26px;transform:scale(0.5);opacity:0;border-color:rgba(0, 0, 0, 0.2);box-shadow:0 1px 2px rgba(0, 0, 0, 0.05);border-radius:0 3px;}
 .thumbnails-media:where(.media-picker) .imgThumb img {width:auto;}
-.thumbnails-media:where(.media-picker) .selected :checked + label,.thumbnails-media:where(.media-picker) .selected .imgThumbInside,.thumbnails-media:where(.media-picker) .imgInput :checked + label,.thumbnails-media:where(.media-picker) .imgInput .imgThumbInside {background-color:#ddd;}
-.thumbnails-media:where(.media-picker) .selected :checked + label:before,.thumbnails-media:where(.media-picker) .selected .imgThumbInside:before,.thumbnails-media:where(.media-picker) .imgInput :checked + label:before,.thumbnails-media:where(.media-picker) .imgInput .imgThumbInside:before {transform:scale(1);opacity:1;}
-.thumbnails-media:where(.media-picker) .selected :checked + label:after,.thumbnails-media:where(.media-picker) .selected .imgThumbInside:after,.thumbnails-media:where(.media-picker) .imgInput :checked + label:after,.thumbnails-media:where(.media-picker) .imgInput .imgThumbInside:after {position:absolute;top:0;left:0;right:0;bottom:0;content:'';border:3px solid #46a546;border-radius:5px;}
+.thumbnails-media:where(.media-picker) .selected :checked + label,
+.thumbnails-media:where(.media-picker) .selected .imgThumbInside,
+.thumbnails-media:where(.media-picker) .imgInput :checked + label,
+.thumbnails-media:where(.media-picker) .imgInput .imgThumbInside {background-color:#ddd;}
+.thumbnails-media:where(.media-picker) .selected :checked + label:before,
+.thumbnails-media:where(.media-picker) .selected .imgThumbInside:before,
+.thumbnails-media:where(.media-picker) .imgInput :checked + label:before,
+.thumbnails-media:where(.media-picker) .imgInput .imgThumbInside:before {transform:scale(1);opacity:1;}
+.thumbnails-media:where(.media-picker) .selected :checked + label:after,
+.thumbnails-media:where(.media-picker) .selected .imgThumbInside:after,
+.thumbnails-media:where(.media-picker) .imgInput :checked + label:after,
+.thumbnails-media:where(.media-picker) .imgInput .imgThumbInside:after {position:absolute;top:0;left:0;right:0;bottom:0;content:'';border:3px solid #46a546;border-radius:5px;}
 .thumbnails-media:where(.media-picker) .imgPreview a {padding:0;position:absolute;left:0;z-index:1;height:26px;width:26px;}
-.thumbnails-media:where(.media-picker) .imgPreview a,.thumbnails-media:where(.media-picker) .imgDetails {position:absolute;left:0;background-color:#fff;border-color:rgba(0, 0, 0, 0.2);bottom:0;line-height:26px;border:1px solid rgba(0, 0, 0, 0.1);border-width:1px 1px 0 0;border-radius:0 3px 0 0;z-index:1;}
-.thumbnails-media:where(.media-picker) .imgPreview a:hover,.thumbnails-media:where(.media-picker) .imgDetails:hover {background-color:#eee;}
+.thumbnails-media:where(.media-picker) .imgPreview a,
+.thumbnails-media:where(.media-picker) .imgDetails {position:absolute;left:0;background-color:#fff;border-color:rgba(0, 0, 0, 0.2);bottom:0;line-height:26px;border:1px solid rgba(0, 0, 0, 0.1);border-width:1px 1px 0 0;border-radius:0 3px 0 0;z-index:1;}
+.thumbnails-media:where(.media-picker) .imgPreview a:hover,
+.thumbnails-media:where(.media-picker) .imgDetails:hover {background-color:#eee;}
 .thumbnails-media:where(.media-picker) .imgDetails {padding:0 5px;line-height:20px;color:#555;}
 .thumbnails-media:where(.media-picker) .imgFolder span {line-height:90px;font-size:38px;margin:0;width:auto;}
 .thumbnails-media:where(.media-picker) .imgFolder + .imgDetails {color:inherit;}
@@ -90,17 +114,21 @@
 #audioPlayer [hidden] {display:none;}
 
 @keyframes media-loading-dots {
-    0%,80%,100% {opacity:0.25;}
+    0%,
+    80%,
+    100% {opacity:0.25;}
     40% {opacity:1;}
 }
 
 @keyframes media-audio-wave {
-    0%,100% {transform:scaleY(0.35);}
+    0%,
+    100% {transform:scaleY(0.35);}
     50% {transform:scaleY(1);}
 }
 
 @media (prefers-reduced-motion: reduce) {
-    #audioPlayer .media-audio-wave rect,#imageForm .media-loading-dots span {animation:none;}
+    #audioPlayer .media-audio-wave rect,
+    #imageForm .media-loading-dots span {animation:none;}
 }
 
 /* --- Media Manager: list --- */
@@ -116,12 +144,19 @@
 /* Images: the picture opens the preview, as the name does */
 .manager:not(.media-picker) > .imgOutline .imgPreview a {text-decoration:none;text-align:center;}
 /* Image tiles' name: a see-through bar over the picture's foot */
-.manager:not(.media-picker) > .imgOutline > .imgPreview a,.manager:not(.media-picker) > .imgOutline > .imgPreview a:hover {border:0;border-radius:0;background-color:rgba(0, 0, 0, 0.55);color:#fff;}
-.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]):hover,.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]:focus-visible),.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]):hover .imgPreview a,.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]:focus-visible) .imgPreview a {background-image:linear-gradient(rgba(128, 128, 128, 0.16), rgba(128, 128, 128, 0.16));}
+.manager:not(.media-picker) > .imgOutline > .imgPreview a,
+.manager:not(.media-picker) > .imgOutline > .imgPreview a:hover {border:0;border-radius:0;background-color:rgba(0, 0, 0, 0.55);color:#fff;}
+.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]):hover,
+.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]:focus-visible),
+.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]):hover .imgPreview a,
+.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]:focus-visible) .imgPreview a {background-image:linear-gradient(rgba(128, 128, 128, 0.16), rgba(128, 128, 128, 0.16));}
 /* Names in full on up to two lines (the link's title has the whole name) */
 .manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview) {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;line-height:1.3;padding:0 6px;}
 .manager:not(.media-picker) > .imgOutline .imgPreview a {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;height:auto;max-height:none;padding:3px 6px;white-space:normal;overflow:hidden;overflow-wrap:anywhere;line-height:1.3;}
-.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]):hover,.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]:focus-visible),.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]):hover > .height-50,.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]:focus-visible) > .height-50 {background-image:linear-gradient(rgba(128, 128, 128, 0.16), rgba(128, 128, 128, 0.16));}
+.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]):hover,
+.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]:focus-visible),
+.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]):hover > .height-50,
+.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]:focus-visible) > .height-50 {background-image:linear-gradient(rgba(128, 128, 128, 0.16), rgba(128, 128, 128, 0.16));}
 
 /* --- Dropping files on the Media Manager's lists --- */
 .media-drop-overlay {position:fixed;inset:8px;z-index:1050;display:flex;align-items:center;justify-content:center;padding:24px;border:3px dashed currentColor;border-radius:10px;background:rgba(128, 128, 128, 0.18);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:none;}
@@ -151,12 +186,19 @@
 .media-crop-size {flex:none;margin:0;min-height:20px;line-height:20px;font-variant-numeric:tabular-nums;}
 
 /* --- Renaming (the pencil next to names in the lists) --- */
-.media-rename-pencil,.media-rename-save,.media-rename-cancel {display:inline-flex;flex:none;align-items:center;justify-content:center;width:22px;height:22px;margin:0;padding:0;border:0;border-radius:4px;background:none;color:inherit;line-height:1;vertical-align:middle;cursor:pointer;}
+.media-rename-pencil,
+.media-rename-save,
+.media-rename-cancel {display:inline-flex;flex:none;align-items:center;justify-content:center;width:22px;height:22px;margin:0;padding:0;border:0;border-radius:4px;background:none;color:inherit;line-height:1;vertical-align:middle;cursor:pointer;}
 /* Above the name link's cover of the tile */
-.media-rename-pencil,.media-rename-form {position:relative;z-index:2;}
+.media-rename-pencil,
+.media-rename-form {position:relative;z-index:2;}
 .media-rename-pencil {opacity:0.55;}
-.media-rename-pencil:hover,.media-rename-pencil:focus-visible,.media-rename-save:hover,.media-rename-cancel:hover {opacity:1;background:rgba(128, 128, 128, 0.2);}
-.media-rename-pencil[hidden],.media-rename-label[hidden] {display:none;}
+.media-rename-pencil:hover,
+.media-rename-pencil:focus-visible,
+.media-rename-save:hover,
+.media-rename-cancel:hover {opacity:1;background:rgba(128, 128, 128, 0.2);}
+.media-rename-pencil[hidden],
+.media-rename-label[hidden] {display:none;}
 .media-rename-icon {display:block;}
 .media-rename-form {display:inline-flex;align-items:center;gap:2px;max-width:100%;vertical-align:middle;}
 .media-rename-form.is-busy {opacity:0.6;}
@@ -170,9 +212,11 @@
 .imgOutline .media-rename-form {display:flex;width:100%;box-sizing:border-box;min-height:26px;padding:1px 2px;background:rgba(0, 0, 0, 0.55);color:#fff;}
 .imgOutline .media-rename-input {width:auto;}
 .media-rename-actions {display:inline-flex;flex:none;gap:2px;}
-.imgOutline > .media-rename > .media-rename-pencil,.imgOutline > .media-rename .media-rename-actions {position:absolute;bottom:100%;inset-inline-end:0;width:auto;height:auto;margin:0;padding:2px;border:0;border-radius:0;border-start-start-radius:5px;background:rgba(0, 0, 0, 0.55);color:#fff;opacity:1;}
+.imgOutline > .media-rename > .media-rename-pencil,
+.imgOutline > .media-rename .media-rename-actions {position:absolute;bottom:100%;inset-inline-end:0;width:auto;height:auto;margin:0;padding:2px;border:0;border-radius:0;border-start-start-radius:5px;background:rgba(0, 0, 0, 0.55);color:#fff;opacity:1;}
 .imgOutline > .media-rename > .media-rename-pencil {width:28px;height:28px;}
-.imgOutline > .media-rename > .media-rename-pencil:hover,.imgOutline > .media-rename > .media-rename-pencil:focus-visible {background:rgba(0, 0, 0, 0.8);}
+.imgOutline > .media-rename > .media-rename-pencil:hover,
+.imgOutline > .media-rename > .media-rename-pencil:focus-visible {background:rgba(0, 0, 0, 0.8);}
 .imgOutline .media-rename-actions button:hover {background:rgba(255, 255, 255, 0.25);}
 /* Shown over the tile under the pointer or with the focus, as the delete button is (always on touch screens) */
 @media (hover: hover) {
@@ -207,7 +251,8 @@ td.media-rename .media-rename-pencil {margin-inline-start:4px;}
 #mediamanager-form .manager:not(.media-picker) > .imgOutline > .imgThumb > a.img-preview > img {width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;}
 /* The page's bar above the list: Check All Items at the left, the sizes and the views at the right */
 .media-bar {display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px;}
-.media-bar > .btn-group,.media-bar > .checkbox {margin:0;}
+.media-bar > .btn-group,
+.media-bar > .checkbox {margin:0;}
 .media-bar > .media-check-all {display:inline-flex;align-items:center;gap:6px;margin-inline-end:auto;padding-inline-start:12px;}
 .media-tile-size {display:flex;align-items:center;gap:2px;}
 .media-tile-size > .btn-group {margin:0;}
@@ -231,7 +276,8 @@ td.media-rename .media-rename-pencil {margin-inline-start:4px;}
 .media-preview-stage > img {max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;}
 /* Previous and next: at the image's sides, over it */
 .media-preview-arrow {position:absolute;top:50%;display:grid;place-content:center;width:44px;height:64px;margin:0;padding:0;border:0;border-radius:6px;background:rgba(0, 0, 0, 0.45);color:#fff;opacity:0.75;transform:translateY(-50%);cursor:pointer;}
-.media-preview-arrow:hover,.media-preview-arrow:focus-visible {background:rgba(0, 0, 0, 0.7);opacity:1;}
+.media-preview-arrow:hover,
+.media-preview-arrow:focus-visible {background:rgba(0, 0, 0, 0.7);opacity:1;}
 .media-preview-previous {inset-inline-start:0;}
 .media-preview-next {inset-inline-end:0;}
 :where([dir="rtl"]) .media-preview-arrow .cms-icon {transform:scaleX(-1);}

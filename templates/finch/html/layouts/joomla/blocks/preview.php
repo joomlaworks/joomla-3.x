@@ -9,7 +9,7 @@
 
 defined('JPATH_BASE') or die;
 
-class_exists('FinchHelper', false) || require_once __DIR__ . '/../../../../helper.php';
+class_exists('FinchHelper', false) || require_once __DIR__ . '/../../../../includes/helper.php';
 
 /**
  * The Blocks editor's preview in Finch: its stylesheets, the default style's colour scheme and a post's text (.postContent).

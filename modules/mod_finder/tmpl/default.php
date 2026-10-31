@@ -17,9 +17,6 @@ if ($show_advanced == 1) {
     JHtml::_('formbehavior.chosen');
 }
 
-if ($params->get('show_button', 0)) {
-}
-
 // Load the smart search component language file.
 $lang = JFactory::getLanguage();
 $lang->load('com_finder', JPATH_SITE);

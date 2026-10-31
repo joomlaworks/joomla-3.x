@@ -9,7 +9,7 @@
 
 defined('JPATH_BASE') or die;
 
-class_exists('HammondHelper', false) || require_once __DIR__ . '/../../../../helper.php';
+class_exists('HammondHelper', false) || require_once __DIR__ . '/../../../../includes/helper.php';
 
 /**
  * The Blocks editor's preview in Hammond: its stylesheets and an article's text (.itemFullText).

@@ -9,7 +9,7 @@
 
 defined('JPATH_BASE') or die;
 
-class_exists('RookwoodHelper', false) || require_once __DIR__ . '/../../../../helper.php';
+class_exists('RookwoodHelper', false) || require_once __DIR__ . '/../../../../includes/helper.php';
 
 /**
  * The Blocks editor's preview in Rookwood: its stylesheets, the default style's theme, and an article's text column (.prose,

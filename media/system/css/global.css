@@ -12,11 +12,13 @@
 #sbox-overlay {position:fixed;top:0;left:0;background-color:#000;}
 #sbox-window {position:absolute;padding:10px;background-color:#fff;text-align:left;overflow:visible;border-radius:3px;}
 #sbox-window.shadow {box-shadow:0 0 10px rgba(0, 0, 0, 0.7);}
-#sbox-window[aria-hidden=true],#sbox-overlay[aria-hidden=true] {display:none;}
+#sbox-window[aria-hidden=true],
+#sbox-overlay[aria-hidden=true] {display:none;}
 #sbox-btn-close {position:absolute;top:-15px;right:-15px;width:30px;height:30px;background:url(../images/modal/closebox.svg) no-repeat center;border:none;}
 #sbox-content {clear:both;width:100%;height:100%;overflow:auto;background-color:#fff;}
 .sbox-loading #sbox-content {background-image:url(../images/modal/spinner.svg);background-repeat:no-repeat;background-position:center;}
-.sbox-content-image#sbox-content,.sbox-content-iframe#sbox-content {overflow:visible;}
+.sbox-content-image#sbox-content,
+.sbox-content-iframe#sbox-content {overflow:visible;}
 #sbox-image {display:block;}
 .sbox-content-image img {display:block;width:100%;height:100%;}
 /* A block: inline, the line it sat on made the box a few pixels taller than the window, and scroll */
@@ -29,8 +31,12 @@
 #sbox-buttons {display:flex;flex:none;flex-wrap:wrap;justify-content:flex-end;gap:5px;padding-top:10px;}
 #sbox-buttons .btn {margin:0;}
 .body-overlayed {overflow:hidden;}
-.body-overlayed embed,.body-overlayed object,.body-overlayed select {visibility:hidden;}
-#sbox-window embed,#sbox-window object,#sbox-window select {visibility:visible;}
+.body-overlayed embed,
+.body-overlayed object,
+.body-overlayed select {visibility:hidden;}
+#sbox-window embed,
+#sbox-window object,
+#sbox-window select {visibility:visible;}
 
 @media (max-width: 979px) {
     #sbox-btn-close {top:-10px;right:-10px;}
@@ -53,8 +59,10 @@
 .editor-switch summary {display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border:1px solid rgba(128, 128, 128, 0.45);border-radius:4px;cursor:pointer;list-style:none;-webkit-user-select:none;user-select:none;}
 .editor-switch summary::-webkit-details-marker {display:none;}
 .editor-switch summary::after {content:"";border:4px solid transparent;border-top-color:currentColor;border-bottom:0;margin-top:2px;}
-.editor-switch summary:hover,.editor-switch details[open] summary {background:rgba(128, 128, 128, 0.12);}
-.editor-switch summary:focus-visible,.editor-switch button:focus-visible {outline:2px solid var(--c-accent, #2a69b8);outline-offset:1px;}
+.editor-switch summary:hover,
+.editor-switch details[open] summary {background:rgba(128, 128, 128, 0.12);}
+.editor-switch summary:focus-visible,
+.editor-switch button:focus-visible {outline:2px solid var(--c-accent, #2a69b8);outline-offset:1px;}
 .editor-switch .editor-switch-label {opacity:0.7;}
 .editor-switch .editor-switch-label::after {content:":";}
 .editor-switch ul {position:absolute;inset-inline-end:0;top:calc(100% + 4px);min-width:100%;margin:0;padding:4px;list-style:none;white-space:nowrap;background:var(--c-card, var(--c-bg, #fff));color:var(--c-fg, #222);border:1px solid rgba(128, 128, 128, 0.35);border-radius:6px;box-shadow:0 6px 20px rgba(0, 0, 0, 0.18);}
@@ -69,7 +77,8 @@
 /* The edit buttons stand alone: the site's template may have no Bootstrap or icon font */
 .jmoddiv.jmodinside {position:relative;}
 .cms-frontedit {box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;padding:0;border:1px solid rgba(0, 0, 0, 0.25);border-radius:4px;background:#fff;color:#222;box-shadow:0 2px 6px rgba(0, 0, 0, 0.2);text-decoration:none;line-height:1;}
-.cms-frontedit:hover,.cms-frontedit:focus-visible {background:#222;color:#fff;}
+.cms-frontedit:hover,
+.cms-frontedit:focus-visible {background:#222;color:#fff;}
 .jmodedit.cms-frontedit {position:absolute;z-index:1001;}
 .cms-frontedit-popup {position:absolute;z-index:1002;margin-top:4px;}
 .cms-frontedit-tip {z-index:1003;max-width:280px;padding:6px 10px;border-radius:4px;background:#222;color:#fff;font:13px/1.4 system-ui, sans-serif;}
@@ -88,7 +97,9 @@ div.mod-languages a {text-decoration:none;}
 .cms-color .cms-color-swatch {flex:none;width:2.5em;min-height:30px;height:auto;margin:0;padding:3px;border:1px solid rgba(128, 128, 128, 0.45);border-radius:4px;background:transparent;box-sizing:border-box;cursor:pointer;}
 .cms-color .cms-color-swatch:disabled {cursor:default;opacity:0.6;}
 .cms-color .cms-color-value {width:8em;min-width:0;margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;}
-.cms-color .cms-color-value[data-format="rgb"],.cms-color .cms-color-value[data-format="rgba"],.cms-color .cms-color-value[data-keywords] {width:13em;}
+.cms-color .cms-color-value[data-format="rgb"],
+.cms-color .cms-color-value[data-format="rgba"],
+.cms-color .cms-color-value[data-keywords] {width:13em;}
 .cms-color .cms-color-clear {display:inline-flex;align-items:center;justify-content:center;margin:0;padding:0 9px;}
 /* Each engine's swatch has its own pseudo-element: in one selector list, the other engine would drop the whole rule */
 .cms-color .cms-color-swatch::-webkit-color-swatch-wrapper {padding:0;}
@@ -110,7 +121,8 @@ div.mod-languages a {text-decoration:none;}
 /* --- Date field (layout joomla.form.field.calendar) --- */
 .cms-date {display:inline-flex;align-items:stretch;gap:4px;max-width:100%;vertical-align:middle;}
 .cms-date .cms-date-input {width:auto;min-width:0;margin:0;font-variant-numeric:tabular-nums;}
-.cms-date .cms-date-now,.cms-date .cms-date-clear {display:inline-flex;align-items:center;justify-content:center;margin:0;white-space:nowrap;}
+.cms-date .cms-date-now,
+.cms-date .cms-date-clear {display:inline-flex;align-items:center;justify-content:center;margin:0;white-space:nowrap;}
 .cms-date .cms-date-clear {padding:0 9px;}
 .cms-date .cms-date-input::-webkit-calendar-picker-indicator {cursor:pointer;}
 /* Shown as text in the language's format: the browser's input lies invisible under the field, so its picker opens there */
@@ -137,10 +149,12 @@ html[dir=rtl] .js-stools .js-stools-container-bar {float:right;}
 html[dir=rtl] .js-stools .js-stools-container-list {float:left;text-align:left;}
 .js-stools .chzn-container {text-align:left;}
 html[dir=rtl] .js-stools .chzn-container {text-align:right;}
-.js-stools .js-stools-container-filters select.active,.js-stools .js-stools-container-filters .chzn-container.active .chzn-single {border:2px solid #2384D3;}
+.js-stools .js-stools-container-filters select.active,
+.js-stools .js-stools-container-filters .chzn-container.active .chzn-single {border:2px solid #2384D3;}
 .js-stools .js-stools-container-filters-visible {display:inline-block;}
 .js-stools .chzn-container-single .chzn-single span {overflow:visible;}
-.js-stools .js-stools-field-list,.js-stools .js-stools-field-filter {display:inline-block;margin:0 5px 5px 0;}
+.js-stools .js-stools-field-list,
+.js-stools .js-stools-field-filter {display:inline-block;margin:0 5px 5px 0;}
 .js-stools .js-stools-container-list .js-stools-field-list:last-child {margin-right:0;}
 
 @media (max-width: 480px) {
@@ -151,17 +165,20 @@ html[dir=rtl] .js-stools .chzn-container {text-align:right;}
 }
 
 @media (min-width: 768px) and (max-width: 979px) {
-    .js-stools .js-stools-container-bar,.js-stools .js-stools-container-list {float:none;display:block;}
+    .js-stools .js-stools-container-bar,
+    .js-stools .js-stools-container-list {float:none;display:block;}
 }
 
 /* --- Sorting rows (subforms, the Repeatable field, lists sorted by ordering, CMS.sortable) --- */
 /* none: a touch on a handle drags the row instead of scrolling the page (touch-action needs a box, not an inline element) */
-.group-move,.sortable-handler {cursor:move;touch-action:none;}
+.group-move,
+.sortable-handler {cursor:move;touch-action:none;}
 .sortable-handler {display:inline-block;}
 /* The row being moved */
 .cms-sort-dragging {opacity:0.6;outline:2px dashed var(--c-primary, #2a6fb5);outline-offset:-2px;}
 /* Where the row will go: a shadow, as striped tables' backgrounds outrank this rule */
-div.cms-sort-placeholder,li.cms-sort-placeholder {height:4px;margin:4px 0;list-style:none;background:var(--c-primary, #2a6fb5);border-radius:2px;}
+div.cms-sort-placeholder,
+li.cms-sort-placeholder {height:4px;margin:4px 0;list-style:none;background:var(--c-primary, #2a6fb5);border-radius:2px;}
 /* Items side by side: a frame of the item's size (set by the script) */
 .cms-sort-placeholder.is-inline {box-sizing:border-box;background:none;border:2px dashed var(--c-primary, #2a6fb5);border-radius:4px;}
 tr.cms-sort-placeholder > td {height:4px;padding:0;border:0;box-shadow:inset 0 0 0 2px var(--c-primary, #2a6fb5);}
@@ -169,7 +186,9 @@ tr.cms-sort-placeholder > td {height:4px;padding:0;border:0;box-shadow:inset 0 0
 .sortable-handler.inactive {cursor:default;touch-action:auto;}
 /* Rows of other groups (another category) while a row is dragged */
 .dndlist-group-disabled {opacity:0.3;}
-.middle,.table td.middle,.table th.middle {vertical-align:middle;}
+.middle,
+.table td.middle,
+.table th.middle {vertical-align:middle;}
 
 /* --- Administrator error page without a template's own (layout joomla.system.admin.error, body.tmpl-error) --- */
 body.tmpl-error {margin:15px;padding:0;background:#fff;color:#333;font:11px/1.4 Arial, Helvetica, sans-serif;}

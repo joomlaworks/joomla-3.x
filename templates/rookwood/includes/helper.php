@@ -2,7 +2,7 @@
 
 /**
  * @package     Joomla.Site
- * @subpackage  Templates.hammond
+ * @subpackage  Templates.rookwood
  *
  * @copyright   (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license     GNU General Public License version 2 or later; see LICENSE.md
@@ -13,12 +13,12 @@ defined('_JEXEC') or die;
 JLoader::register('ContentHelperRoute', JPATH_SITE . '/components/com_content/helpers/route.php');
 
 /**
- * Shared helpers of the Hammond template: one way to show an article's image, category, author, date and excerpt in
- * every module layout and list view.
+ * Shared helpers of the Rookwood template: the page set-up, the theme, the logo, and one way to show an article's image,
+ * category, author, date and excerpt in every list and module layout.
  *
  * @since  3.17.0
  */
-abstract class HammondHelper
+abstract class RookwoodHelper
 {
     /**
      * The template's parameters
@@ -44,27 +44,29 @@ abstract class HammondHelper
 
     /**
      * Prepare a page of the template and tell its markup what it needs to know. Sets up the document's head (HTML5, meta
-     * tags, the stylesheets, the icon) for index.php, component.php (print and popup views) and offline.php alike; for
-     * index.php also the script and the kind of page.
+     * tags, the theme, the stylesheets, the icon) for index.php, component.php and offline.php alike; for index.php also the
+     * script and the kind of page.
      *
      * @param   JDocumentHtml  $document  The document ($this in the template's files)
      * @param   string         $layout    index, component or offline
      *
-     * @return  stdClass  params, siteName; for index also isHome, isPage, isList, hasSidebar, hasMenu, bodyClass
+     * @return  stdClass  params, siteName, theme; for index also isHome, isPage, isList, ownLayout (an override draws the page), hasSearch,
+     *                    bodyClass
      *
      * @since   3.17.0
      */
     public static function prepare($document, $layout = 'index')
     {
-        $base           = JUri::root(true) . '/templates/' . basename(__DIR__);
+        $base           = JUri::root(true) . '/templates/' . basename(dirname(__DIR__));
         $page           = new stdClass();
         $page->params   = static::params();
         $page->siteName = static::siteName();
+        $page->theme    = static::defaultTheme();
 
         $document->setHtml5(true);
         $document->setGenerator('');
         $document->setMetaData('viewport', 'width=device-width, initial-scale=1');
-        $document->setMetaData('theme-color', '#ffffff');
+        $document->setMetaData('color-scheme', 'dark light');
 
         foreach (static::stylesheets() as $stylesheet) {
             $document->addStyleSheet($stylesheet);
@@ -77,7 +79,7 @@ abstract class HammondHelper
             return $page;
         }
 
-        $script = $base . '/js/template.js?t=' . date('Ymd_Hi', filemtime(__DIR__ . '/js/template.js'));
+        $script = $base . '/js/template.js?t=' . date('Ymd_Hi', filemtime(dirname(__DIR__) . '/js/template.js'));
         $document->addScript($script, array('position' => 'footer'), array('defer' => true));
         static::preload($script, 'script');
 
@@ -87,28 +89,59 @@ abstract class HammondHelper
         $option = $input->getCmd('option', '');
         $view   = $input->getCmd('view', '');
 
-        // The home page is made of the frontpage module grid, whatever its menu item shows (without modules there, e.g. on a new
-        // site without sample data, it shows the component). Joomla also makes the home item active on pages without a menu item
-        // of their own (tags, search), so the request must be the home item's own link.
+        // The home page is made of the frontpage modules, whatever its menu item shows (without modules there, e.g. on a new site
+        // without sample data, it shows the component). Joomla also makes the home item active on pages without a menu item of
+        // their own (tags, search), so the request must be the home item's own link.
         $home         = $active ? $active->query : array();
         $page->isHome = $active && $active->home && $document->countModules('frontpage')
             && (isset($home['option']) ? $home['option'] : '') === $option && (isset($home['view']) ? $home['view'] : '') === $view
             && (!isset($home['id']) || (int) $home['id'] === $input->getInt('id'));
-        $page->isPage = static::isPage();
-        $page->isList = !$page->isHome && in_array(
+        $page->isPage    = static::isPage();
+        $page->isList    = !$page->isHome && in_array(
             $option . '.' . $view,
-            array('com_content.category', 'com_content.archive', 'com_content.featured', 'com_tags.tag', 'com_search.search'),
+            array('com_content.category', 'com_content.archive', 'com_content.featured', 'com_tags.tag', 'com_tags.tags', 'com_search.search'),
             true
         );
-        $page->hasSidebar = !$page->isHome && !$page->isPage && $document->countModules('sidebar');
-        $page->hasMenu    = $document->countModules('search') || $document->countModules('megamenu') || $document->countModules('megamenu-aside');
-        $page->bodyClass  = implode(' ', array_filter(array(
+        $page->ownLayout = in_array($option . '.' . $view, array('com_content.article', 'com_content.category', 'com_content.featured',
+            'com_content.archive', 'com_tags.tag', 'com_tags.tags', 'com_search.search'), true) && $input->getCmd('layout') !== 'edit';
+        $page->hasSearch = (bool) $document->countModules('search');
+        $page->bodyClass = implode(' ', array_filter(array(
             'site', $page->isHome ? 'isFrontpage' : 'isInner', $page->isPage ? 'isPage' : '', $page->isList ? 'isList' : '',
-            $page->hasSidebar ? 'hasSidebar' : '', 'option-' . str_replace('com_', '', $option), 'view-' . $view,
-            $active ? 'itemid-' . (int) $active->id : '', $active ? trim((string) $active->getParams()->get('pageclass_sfx')) : '',
+            'option-' . str_replace('com_', '', $option), 'view-' . $view, $active ? 'itemid-' . (int) $active->id : '',
+            $active ? trim((string) $active->getParams()->get('pageclass_sfx')) : '',
         )));
 
         return $page;
+    }
+
+    /**
+     * The theme a page starts with: the template's option (dark, light, or the visitor's system setting).
+     *
+     * @return  string  dark, light or system
+     *
+     * @since   3.17.0
+     */
+    public static function defaultTheme()
+    {
+        $theme = (string) static::params()->get('defaultTheme', 'dark');
+
+        return in_array($theme, array('dark', 'light', 'system'), true) ? $theme : 'dark';
+    }
+
+    /**
+     * The script which sets the theme on the html element: the visitor's choice (kept in the browser by the theme switch), else
+     * the template's default. It runs in the head, before the page is drawn.
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    public static function themeScript()
+    {
+        return "(function(d){var t;try{t=localStorage.getItem('rookwood-theme');}catch(e){}"
+            . "if(t!=='dark'&&t!=='light'){t=" . json_encode(static::defaultTheme()) . ";}"
+            . "if(t==='system'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}"
+            . "d.documentElement.setAttribute('data-theme',t);})(document);";
     }
 
     /**
@@ -126,7 +159,7 @@ abstract class HammondHelper
     /**
      * The logo: the mark and the site's name, its first word in bold.
      *
-     * @param   string  $class  Classes, e.g. "logo logoSmall"
+     * @param   string  $class  Classes
      *
      * @return  string
      *
@@ -138,9 +171,9 @@ abstract class HammondHelper
         $space = strpos($name, ' ');
 
         return '<a class="' . $class . '" href="' . JUri::base(true) . '/" aria-label="' . static::e($name) . '">'
-            . '<svg class="logoMark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="9" fill="currentColor"/>'
-            . '<path d="M12 10.5v19M28 10.5v19M12 20h16" fill="none" stroke="#fff" stroke-width="4.6" stroke-linecap="round"/>'
-            . '<circle cx="31.5" cy="8.5" r="2.6" fill="var(--c-accent)"/></svg>'
+            . '<svg class="logoMark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="currentColor"/>'
+            . '<path d="M13 30V10h8.5a5.75 5.75 0 0 1 0 11.5H13M20.5 21.5 28 30" fill="none" stroke="var(--c-bg)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>'
+            . '<circle cx="30" cy="10.5" r="3.2" fill="var(--c-lime)"/></svg>'
             . '<span class="logoText"><strong>' . static::e($space === false ? $name : substr($name, 0, $space)) . '</strong>'
             . ($space !== false ? ' <span>' . static::e(substr($name, $space + 1)) . '</span>' : '') . '</span></a>';
     }
@@ -150,15 +183,15 @@ abstract class HammondHelper
      *
      * @param   string  $class  Classes of the list
      *
-     * @return  string
+     * @return  string  Empty when there are none
      *
      * @since   3.17.0
      */
     public static function socialLinks($class = 'socialLinks')
     {
-        $html = '<ul class="' . $class . '">';
+        $html = '';
 
-        foreach (array('facebook' => 'Facebook', 'x' => 'X', 'instagram' => 'Instagram', 'youtube' => 'YouTube', 'linkedin' => 'LinkedIn', 'rss' => 'RSS') as $network => $label) {
+        foreach (array('x' => 'X', 'linkedin' => 'LinkedIn', 'instagram' => 'Instagram', 'github' => 'GitHub', 'dribbble' => 'Dribbble', 'rss' => 'RSS') as $network => $label) {
             $url = trim((string) static::params()->get('social_' . $network, ''));
 
             // The site's feed unless another one is set
@@ -174,7 +207,7 @@ abstract class HammondHelper
             }
         }
 
-        return $html . '</ul>';
+        return $html === '' ? '' : '<ul class="' . $class . '">' . $html . '</ul>';
     }
 
     /**
@@ -246,36 +279,36 @@ abstract class HammondHelper
     }
 
     /**
-     * Preloads the article's main image, which the article view shows at the top (fetchpriority high).
+     * Preloads the article's main image, which the article view shows at the top (fetchpriority high), with the same srcset
+     * and sizes as its img(), so the browser preloads the size it will use.
      *
-     * @param   array  $image  image()'s result
+     * @param   array   $image  image()'s result
+     * @param   string  $sizes  The sizes attribute its img() gets
      *
      * @return  void
      *
      * @since   3.18.0
      */
-    public static function preloadImage(array $image)
+    public static function preloadImage(array $image, $sizes = '100vw')
     {
         if ($image['src'] === '') {
             return;
         }
 
-        // With the srcset the image gets, so the browser preloads the size it will use
         $attribs = array('fetchpriority' => 'high');
-        $srcset  = static::srcsetFor($image['src']);
+        $srcset  = static::srcset($image);
 
         if ($srcset !== '') {
             $attribs['imagesrcset'] = $srcset;
-            $attribs['imagesizes']  = static::SIZES_MAIN;
+            $attribs['imagesizes']  = $sizes;
         }
 
         static::preload($image['src'], 'image', $attribs);
     }
 
     /**
-     * Resource hints for what an article's text embeds. X posts make template.js load X's script at once, so the connection
-     * to it is opened early; YouTube videos load lazily, often below the first screen, so only their host name is resolved
-     * (a preconnect would mostly go unused).
+     * Resource hints for what an article's text embeds: YouTube videos load lazily, often below the first screen, so only
+     * their host name is resolved early (a preconnect would mostly go unused).
      *
      * @param   string  $text  The article's text
      *
@@ -286,18 +319,13 @@ abstract class HammondHelper
     public static function embedHints($text)
     {
         $document = JFactory::getDocument();
-        $text     = (string) $text;
 
-        if (!method_exists($document, 'addPreconnect')) {
+        if (!method_exists($document, 'addDnsPrefetch')) {
             return;
         }
 
-        if (strpos($text, 'twitter-tweet') !== false) {
-            $document->addPreconnect('https://platform.twitter.com');
-        }
-
         foreach (array('https://www.youtube-nocookie.com/embed/', 'https://www.youtube.com/embed/') as $embed) {
-            if (strpos($text, $embed) !== false) {
+            if (strpos((string) $text, $embed) !== false) {
                 $document->addDnsPrefetch($embed);
             }
         }
@@ -314,12 +342,12 @@ abstract class HammondHelper
      */
     public static function stylesheets()
     {
-        $base = JUri::root(true) . '/templates/' . basename(__DIR__) . '/css/';
+        $base = JUri::root(true) . '/templates/' . basename(dirname(__DIR__)) . '/css/';
         $urls = array();
 
         foreach (array('template.css', 'custom.css') as $file) {
-            if (is_file(__DIR__ . '/css/' . $file)) {
-                $urls[] = $base . $file . '?t=' . date('Ymd_Hi', filemtime(__DIR__ . '/css/' . $file));
+            if (is_file(dirname(__DIR__) . '/css/' . $file)) {
+                $urls[] = $base . $file . '?t=' . date('Ymd_Hi', filemtime(dirname(__DIR__) . '/css/' . $file));
             }
         }
 
@@ -356,7 +384,7 @@ abstract class HammondHelper
     }
 
     /**
-     * An SVG icon from the sprite in index.php.
+     * An SVG icon from the sprite at the top of the page.
      *
      * @param   string  $name   The icon
      * @param   string  $class  Extra classes
@@ -387,7 +415,7 @@ abstract class HammondHelper
         static $icons = array();
 
         if (!isset($icons[$name])) {
-            $file = __DIR__ . '/images/svg/' . preg_replace('/[^a-z0-9-]/', '', (string) $name) . '.svg';
+            $file = dirname(__DIR__) . '/images/svg/' . preg_replace('/[^a-z0-9-]/', '', (string) $name) . '.svg';
 
             $icons[$name] = is_file($file) && preg_match('#<svg\b[^>]*\sviewBox="([^"]*)"[^>]*>(.*)</svg>#s', (string) file_get_contents($file), $svg)
                 ? array($svg[1], trim($svg[2]))
@@ -403,7 +431,7 @@ abstract class HammondHelper
      * @param   object   $item  The article
      * @param   boolean  $full  Prefer the full article image
      *
-     * @return  array  src, alt, caption (empty src when there is none)
+     * @return  array  src, alt, caption, path (empty src when there is none; path: the site-relative file, for its sizes)
      *
      * @since   3.17.0
      */
@@ -418,6 +446,7 @@ abstract class HammondHelper
             if ($src !== '') {
                 return array(
                     'src'     => static::url($src),
+                    'path'    => preg_replace('/#.*$/', '', $src),
                     'alt'     => $images->{'image_' . $type . '_alt'} ?? '',
                     'caption' => $images->{'image_' . $type . '_caption'} ?? '',
                 );
@@ -425,10 +454,10 @@ abstract class HammondHelper
         }
 
         if (preg_match('/<img[^>]+src="([^"]+)"/i', (string) ($item->introtext ?? ''), $match)) {
-            return array('src' => static::url($match[1]), 'alt' => '', 'caption' => '');
+            return array('src' => static::url($match[1]), 'path' => $match[1], 'alt' => '', 'caption' => '');
         }
 
-        return array('src' => '', 'alt' => '', 'caption' => '');
+        return array('src' => '', 'path' => '', 'alt' => '', 'caption' => '');
     }
 
     /**
@@ -451,29 +480,62 @@ abstract class HammondHelper
     }
 
     /**
-     * The image as a picture element (or nothing), linked to the article.
+     * An image's srcset when a smaller copy sits next to it (photo-960.webp beside photo.webp), else an empty string.
      *
-     * @param   object   $item     The article
-     * @param   string   $link     The article's link
-     * @param   string   $class    Classes of the wrapper
-     * @param   boolean  $lazy     Load lazily
+     * @param   array  $image  image()'s result
+     *
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    public static function srcset(array $image)
+    {
+        static $mobile = null;
+
+        $path = ltrim((string) $image['path'], '/');
+
+        if ($path === '' || preg_match('#^(https?:)?//#i', $path) || !preg_match('/^(.+)\.(webp|jpe?g|png|avif)$/i', $path, $parts)
+            || !is_file(JPATH_ROOT . '/' . $path)) {
+            return '';
+        }
+
+        // The small screen copy the Media Manager makes on upload (photo-600.webp, its Small Screen Width), or the sample images' -960
+        if ($mobile === null) {
+            $mobile = (int) JComponentHelper::getParams('com_media')->get('optimise_mobile_width', 600);
+        }
+
+        foreach (array_unique(array_filter(array($mobile, 960))) as $width) {
+            if (is_file(JPATH_ROOT . '/' . $parts[1] . '-' . $width . '.' . $parts[2])) {
+                $size = @getimagesize(JPATH_ROOT . '/' . $path);
+
+                return $size && $size[0] > $width
+                    ? static::url($parts[1] . '-' . $width . '.' . $parts[2]) . ' ' . $width . 'w, ' . $image['src'] . ' ' . (int) $size[0] . 'w' : '';
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * An img element for an image of the site: when a smaller copy sits next to it (photo-960.webp beside photo.webp), the
+     * browser picks the size the layout needs (srcset and sizes).
+     *
+     * @param   array    $image  image()'s result
+     * @param   string   $sizes  The sizes attribute: how wide the image is shown
+     * @param   boolean  $eager  The top of the page: load at once, with priority (lazily otherwise)
+     * @param   string   $class  Its class
      *
      * @return  string
      *
      * @since   3.17.0
      */
-    public static function figure($item, $link, $class = 'itemImage', $lazy = true)
+    public static function img(array $image, $sizes = '100vw', $eager = false, $class = '')
     {
-        $image = static::image($item);
+        $srcset = static::srcset($image);
+        $srcset = $srcset !== '' ? ' srcset="' . static::e($srcset) . '" sizes="' . static::e($sizes) . '"' : '';
 
-        if ($image['src'] === '') {
-            return '';
-        }
-
-        return '<div class="' . $class . '"><a href="' . $link . '" tabindex="-1" aria-hidden="true"><img src="' . static::e($image['src'])
-            . '"' . static::srcsetAttributes($image['src'], static::SIZES_CARD)
-            . ' alt="' . static::e($image['alt']) . '" width="1280" height="720"' . ($lazy ? ' loading="lazy" decoding="async"' : ' fetchpriority="high"')
-            . ' /></a></div>';
+        return '<img' . ($class ? ' class="' . $class . '"' : '') . ' src="' . static::e($image['src']) . '"' . $srcset . ' alt="' . static::e($image['alt'])
+            . '" width="1920" height="1080"' . ($eager ? ' fetchpriority="high"' : ' loading="lazy" decoding="async"') . ' />';
     }
 
     /**
@@ -498,7 +560,7 @@ abstract class HammondHelper
     }
 
     /**
-     * The category label, linked to the category.
+     * The category's title, as a label.
      *
      * @param   object  $item  The article
      *
@@ -508,16 +570,48 @@ abstract class HammondHelper
      */
     public static function category($item)
     {
-        $title = $item->category_title ?? '';
+        $title = $item->category_title ?? ($item->displayCategoryTitle ?? '');
 
-        if ($title === '') {
+        return $title === '' ? '' : '<span class="itemCategory">' . static::e(strip_tags($title)) . '</span>';
+    }
+
+    /**
+     * The article's first tags (the services of a case study, the topics of a post), as labels.
+     *
+     * @param   object   $item  The article
+     * @param   integer  $max   At most this many
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    public static function tags($item, $max = 2)
+    {
+        // Tags are the Tags component's: without it (uninstalled or disabled) they aren't shown
+        if (!JComponentHelper::isEnabled('com_tags')) {
             return '';
         }
 
-        $alias = $item->category_alias ?? JApplicationHelper::stringURLSafe($title);
+        // The lists load their articles' tags already; modules don't
+        if (!isset($item->tagLabels)) {
+            $tags = isset($item->tags->itemTags) ? $item->tags : new JHelperTags();
 
-        return '<a class="itemCategory cat-' . static::e($alias) . '" href="' . JRoute::_(ContentHelperRoute::getCategoryRoute($item->catid, $item->language ?? '*')) . '">'
-            . static::e($title) . '</a>';
+            if (!isset($item->tags->itemTags)) {
+                $tags->getItemTags('com_content.article', (int) $item->id);
+            }
+
+            $item->tagLabels = array_map(function ($tag) {
+                return $tag->title;
+            }, (array) $tags->itemTags);
+        }
+
+        $html = '';
+
+        foreach (array_slice($item->tagLabels, 0, $max) as $title) {
+            $html .= '<li>' . static::e($title) . '</li>';
+        }
+
+        return $html === '' ? '' : '<ul class="itemTags">' . $html . '</ul>';
     }
 
     /**
@@ -564,7 +658,7 @@ abstract class HammondHelper
     }
 
     /**
-     * The publishing date: relative for today ("3 hours ago"), else the date.
+     * The publishing date.
      *
      * @param   object  $item  The article
      *
@@ -580,17 +674,7 @@ abstract class HammondHelper
             return '';
         }
 
-        $date    = JFactory::getDate($value);
-        $seconds = time() - $date->toUnix();
-
-        if ($seconds >= 0 && $seconds < 86400) {
-            $text = $seconds < 3600 ? JText::plural('TPL_HAMMOND_MINUTES_AGO', max(1, (int) floor($seconds / 60)))
-                : JText::plural('TPL_HAMMOND_HOURS_AGO', (int) floor($seconds / 3600));
-        } else {
-            $text = JHtml::_('date', $value, JText::_('DATE_FORMAT_LC3'));
-        }
-
-        return '<time class="itemDate" datetime="' . $date->format('c') . '">' . static::e($text) . '</time>';
+        return '<time class="itemDate" datetime="' . JFactory::getDate($value)->format('c') . '">' . static::e(JHtml::_('date', $value, JText::_('DATE_FORMAT_LC3'))) . '</time>';
     }
 
     /**
@@ -631,22 +715,7 @@ abstract class HammondHelper
     }
 
     /**
-     * How many items a module skips: a "skip-N" class (e.g. a row of featured articles after the main story, which shows
-     * the first one).
-     *
-     * @param   \Joomla\Registry\Registry  $params  The module's parameters
-     *
-     * @return  integer
-     *
-     * @since   3.17.0
-     */
-    public static function skip($params)
-    {
-        return preg_match('/\bskip-(\d+)\b/', (string) $params->get('moduleclass_sfx'), $match) ? (int) $match[1] : 0;
-    }
-
-    /**
-     * The page is one of the info pages (the "company" menu): centered, without sidebar.
+     * The page shows one article through a menu item of its own (e.g. Studio, Contact): a page, not a post.
      *
      * @return  boolean
      *
@@ -654,11 +723,15 @@ abstract class HammondHelper
      */
     public static function isPage()
     {
-        $active = JFactory::getApplication()->getMenu()->getActive();
+        $app    = JFactory::getApplication();
+        $active = $app->getMenu()->getActive();
+        $input  = $app->input;
 
-        return $active && $active->menutype === static::params()->get('pagesMenu', 'companymenu')
-            && isset($active->query['option']) && JFactory::getApplication()->input->get('option') === $active->query['option'];
+        return $active && $input->get('option') === 'com_content' && $input->get('view') === 'article'
+            && ($active->query['option'] ?? '') === 'com_content' && ($active->query['view'] ?? '') === 'article'
+            && (int) ($active->query['id'] ?? 0) === $input->getInt('id');
     }
+
     /**
      * A tag view's item (com_tags, core_* fields) as an article-like object for the helpers.
      *
@@ -691,33 +764,110 @@ abstract class HammondHelper
         ));
         $category                = $article->catid ? JCategories::getInstance('Content')->get($article->catid) : null;
         $article->category_title = $category ? $category->title : '';
-        $article->category_alias = $category ? $category->alias : '';
+        $article->tagLabels      = array();
 
         return $article;
     }
 
     /**
-     * An article in a list view (category, archive, tag): image, category, title, excerpt, author and date.
+     * An article as a card: image, labels, title, excerpt and byline. The lists, the journal's mosaic and the modules share it.
      *
-     * @param   object   $item   The article
-     * @param   boolean  $lead   The first, larger item
-     * @param   boolean  $eager  Load its image at once (the top of the page; lazily otherwise)
+     * @param   object  $item     The article
+     * @param   array   $options  class (extra classes), heading (h2/h3), excerpt (characters, 0: none), eager (the top of the
+     *                            page), sizes (how wide its image is shown), labels (tags or category)
      *
      * @return  string
      *
      * @since   3.17.0
      */
-    public static function listItem($item, $lead = false, $eager = false)
+    public static function card($item, array $options = array())
     {
-        $link   = static::link($item);
-        $author = static::author($item);
+        $options += array('class' => '', 'heading' => 'h3', 'excerpt' => 140, 'eager' => false, 'sizes' => '(min-width: 1100px) 33vw, (min-width: 700px) 50vw, 100vw', 'labels' => 'tags');
+        $link    = static::link($item);
+        $image   = static::image($item);
+        $author  = static::author($item);
+        $h       = $options['heading'];
+        $labels  = $options['labels'] === 'tags' ? static::tags($item) : static::category($item);
 
-        return '<article class="item' . ($lead ? ' itemLead' : '') . '">'
-            . static::figure($item, $link, 'itemImage', !$lead && !$eager)
-            . '<div class="itemBody">' . static::category($item)
-            . '<h' . ($lead ? 2 : 3) . ' class="itemTitle"><a href="' . $link . '">' . static::e($item->title) . '</a></h' . ($lead ? 2 : 3) . '>'
-            . '<p class="itemIntroText">' . static::excerpt($item, $lead ? 260 : 170) . '</p>'
-            . '<div class="itemMeta">' . ($author !== '' ? '<span class="itemAuthor">' . static::e($author) . '</span>' : '') . static::date($item) . '</div>'
+        return '<article class="card' . ($options['class'] ? ' ' . $options['class'] : '') . '">'
+            . ($image['src'] !== '' ? '<div class="cardImage">' . static::img($image, $options['sizes'], $options['eager']) . '</div>' : '')
+            . '<div class="cardBody">' . $labels
+            . '<' . $h . ' class="cardTitle"><a href="' . $link . '">' . static::e($item->title) . '</a></' . $h . '>'
+            . ($options['excerpt'] ? '<p class="cardText">' . static::excerpt($item, $options['excerpt']) . '</p>' : '')
+            . '<p class="cardMeta">' . ($author !== '' ? '<span class="itemAuthor">' . static::e($author) . '</span>' : '') . static::date($item) . '</p>'
+            . '</div></article>';
+    }
+
+    /**
+     * The header of a list (a category, the featured articles, the archive, a tag): its title and description, in a band as
+     * wide as the page.
+     *
+     * @param   string  $title        The title
+     * @param   string  $description  Its description (HTML, already prepared), or empty
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    public static function listHeader($title, $description = '')
+    {
+        return '<header class="listHeader"><div class="container"><h1 class="listTitle">' . static::e($title) . '</h1>'
+            . (trim(strip_tags($description, '<img>')) !== '' ? '<div class="listDescription">' . static::lazyImages($description) . '</div>' : '')
+            . '</div></header>';
+    }
+
+    /**
+     * The title of a category layout: the menu item's page heading when it shows one, else the category's title.
+     *
+     * @param   Joomla\Registry\Registry  $params    The view's parameters
+     * @param   JCategoryNode              $category  The category
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    public static function categoryTitle($params, $category)
+    {
+        return $params->get('show_page_heading') && $params->get('page_heading') ? $params->get('page_heading') : $category->title;
+    }
+
+    /**
+     * The description of a category layout, prepared by the content plugins, when the menu item shows it.
+     *
+     * @param   Joomla\Registry\Registry  $params    The view's parameters
+     * @param   JCategoryNode              $category  The category
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    public static function categoryDescription($params, $category)
+    {
+        return $params->get('show_description', 1) && $category->description
+            ? JHtml::_('content.prepare', $category->description, '', 'com_content.category') : '';
+    }
+
+    /**
+     * A case study as a panel: the image as its canvas, the text over it.
+     *
+     * @param   object   $item   The article
+     * @param   boolean  $eager  The top of the page
+     *
+     * @return  string
+     *
+     * @since   3.17.0
+     */
+    public static function panel($item, $eager = false)
+    {
+        $link  = static::link($item);
+        $image = static::image($item, true);
+
+        return '<article class="panel">'
+            . ($image['src'] !== '' ? '<div class="panelImage">' . static::img($image, '100vw', $eager) . '</div>' : '')
+            . '<div class="panelBody">' . static::tags($item, 3)
+            . '<h2 class="panelTitle"><a href="' . $link . '">' . static::e($item->title) . '</a></h2>'
+            . '<p class="panelText">' . static::excerpt($item, 200) . '</p>'
+            . '<a class="btn btnLight" href="' . $link . '" tabindex="-1" aria-hidden="true">' . JText::_('TPL_ROOKWOOD_VIEW_PROJECT') . static::icon('arrow-right') . '</a>'
             . '</div></article>';
     }
 

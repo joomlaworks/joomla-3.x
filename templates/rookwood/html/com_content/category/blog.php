@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 // A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
-class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/helper.php';
+class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/includes/helper.php';
 
 /**
  * A category's articles as a grid of cards. The template's other layouts of a category blog: "Mosaic" (the journal's mixed

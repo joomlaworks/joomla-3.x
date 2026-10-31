@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 // A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
-class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/helper.php';
+class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/includes/helper.php';
 
 /**
  * "Mosaic": a category's articles in groups of seven on a four-column grid: a large article, its image as the canvas of its

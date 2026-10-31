@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 
 // A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
-class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/helper.php';
+class_exists('RookwoodHelper', false) || require_once dirname(__DIR__, 3) . '/includes/helper.php';
 
 /**
  * The archive: a filter (title, month, year, number) and a grid of cards. Unlike the stock layout, no Chosen (jQuery) for the

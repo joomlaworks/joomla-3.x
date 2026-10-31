@@ -33,10 +33,6 @@ defined('_JEXEC') or die;
  */
 extract($displayData);
 
-// The button.
-if ($disabled != true) {
-}
-
 $attr = '';
 
 // Initialize some field attributes.

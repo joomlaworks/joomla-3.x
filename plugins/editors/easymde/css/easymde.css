@@ -46,7 +46,8 @@
 .EasyMDEContainer .CodeMirror-fullscreen {z-index:1040;}
 .EasyMDEContainer .editor-toolbar.fullscreen {z-index:1041;}
 /* Side by side in the page: both columns as high as each other, each scrolling inside, so EasyMDE scrolls them together */
-.EasyMDEContainer.sided--no-fullscreen .CodeMirror,.EasyMDEContainer.sided--no-fullscreen .editor-preview-active-side {height:max(var(--easymde-height, 500px), 70vh);}
+.EasyMDEContainer.sided--no-fullscreen .CodeMirror,
+.EasyMDEContainer.sided--no-fullscreen .editor-preview-active-side {height:max(var(--easymde-height, 500px), 70vh);}
 .EasyMDEContainer.sided--no-fullscreen .editor-preview-active-side {overflow:auto;}
 /* Only in full screen: side by side in the page makes the container a flex box, whose items honour z-index even when static, so the
    preview rose above the fixed menu bar */
@@ -54,30 +55,64 @@
 
 /* --- Preview --- */
 
-.js-editor-easymde .editor-preview,.js-editor-easymde .editor-preview-side {padding:16px 20px;font-size:15px;line-height:1.6;}
-.js-editor-easymde .editor-preview img,.js-editor-easymde .editor-preview-side img,.js-editor-easymde .editor-preview video,.js-editor-easymde .editor-preview-side video {max-width:100%;height:auto;}
-.js-editor-easymde .editor-preview table,.js-editor-easymde .editor-preview-side table {border-collapse:collapse;}
-.js-editor-easymde .editor-preview th,.js-editor-easymde .editor-preview td,.js-editor-easymde .editor-preview-side th,.js-editor-easymde .editor-preview-side td {padding:4px 8px;border:1px solid rgba(128, 128, 128, .4);}
-.js-editor-easymde .editor-preview blockquote,.js-editor-easymde .editor-preview-side blockquote {margin:0 0 1em;padding:0 0 0 1em;border-left:4px solid rgba(128, 128, 128, .4);}
-.js-editor-easymde .editor-preview pre,.js-editor-easymde .editor-preview-side pre {padding:10px;background:rgba(128, 128, 128, .12);border:0;}
+.js-editor-easymde .editor-preview,
+.js-editor-easymde .editor-preview-side {padding:16px 20px;font-size:15px;line-height:1.6;}
+.js-editor-easymde .editor-preview img,
+.js-editor-easymde .editor-preview-side img,
+.js-editor-easymde .editor-preview video,
+.js-editor-easymde .editor-preview-side video {max-width:100%;height:auto;}
+.js-editor-easymde .editor-preview table,
+.js-editor-easymde .editor-preview-side table {border-collapse:collapse;}
+.js-editor-easymde .editor-preview th,
+.js-editor-easymde .editor-preview td,
+.js-editor-easymde .editor-preview-side th,
+.js-editor-easymde .editor-preview-side td {padding:4px 8px;border:1px solid rgba(128, 128, 128, .4);}
+.js-editor-easymde .editor-preview blockquote,
+.js-editor-easymde .editor-preview-side blockquote {margin:0 0 1em;padding:0 0 0 1em;border-left:4px solid rgba(128, 128, 128, .4);}
+.js-editor-easymde .editor-preview pre,
+.js-editor-easymde .editor-preview-side pre {padding:10px;background:rgba(128, 128, 128, .12);border:0;}
 
 /* --- Prothero --- */
 
 /* Prothero's tokens, light and dark (the template writes data-scheme on <html>; Isis keeps EasyMDE's own colours) */
-:root[data-scheme] .js-editor-easymde .editor-toolbar,:root[data-scheme] .js-editor-easymde .EasyMDEContainer .CodeMirror,:root[data-scheme] .js-editor-easymde .editor-preview-side {border-color:var(--c-border);}
+:root[data-scheme] .js-editor-easymde .editor-toolbar,
+:root[data-scheme] .js-editor-easymde .EasyMDEContainer .CodeMirror,
+:root[data-scheme] .js-editor-easymde .editor-preview-side {border-color:var(--c-border);}
 :root[data-scheme] .js-editor-easymde .editor-toolbar {background:var(--c-subtle);color:var(--c-fg);}
-:root[data-scheme] .js-editor-easymde .editor-toolbar button:hover,:root[data-scheme] .js-editor-easymde .editor-toolbar button.active {background:var(--c-muted);border-color:transparent;}
+:root[data-scheme] .js-editor-easymde .editor-toolbar button:hover,
+:root[data-scheme] .js-editor-easymde .editor-toolbar button.active {background:var(--c-muted);border-color:transparent;}
 :root[data-scheme] .js-editor-easymde .editor-toolbar i.separator {border-left-color:var(--c-border);border-right-color:transparent;}
-:root[data-scheme] .js-editor-easymde .EasyMDEContainer .CodeMirror,:root[data-scheme] .js-editor-easymde .editor-preview,:root[data-scheme] .js-editor-easymde .editor-preview-side,:root[data-scheme] .EasyMDEContainer .CodeMirror-fullscreen,:root[data-scheme] .EasyMDEContainer .editor-toolbar.fullscreen {background:var(--c-bg);color:var(--c-fg);}
+:root[data-scheme] .js-editor-easymde .EasyMDEContainer .CodeMirror,
+:root[data-scheme] .js-editor-easymde .editor-preview,
+:root[data-scheme] .js-editor-easymde .editor-preview-side,
+:root[data-scheme] .EasyMDEContainer .CodeMirror-fullscreen,
+:root[data-scheme] .EasyMDEContainer .editor-toolbar.fullscreen {background:var(--c-bg);color:var(--c-fg);}
 :root[data-scheme] .js-editor-easymde .CodeMirror-cursor {border-left-color:var(--c-fg);}
 /* The browser's own selection (the editor's input is contenteditable, for spell checking): CodeMirror sets only its background,
    so Prothero's page-wide ::selection text colour (--c-bg) landed on CodeMirror's lilac; Prothero's inverted selection instead */
-:root[data-scheme] .js-editor-easymde .CodeMirror-line::selection,:root[data-scheme] .js-editor-easymde .CodeMirror-line > span::selection,:root[data-scheme] .js-editor-easymde .CodeMirror-line > span > span::selection {background:var(--c-fg);color:var(--c-bg);}
-:root[data-scheme] .js-editor-easymde .EasyMDEContainer .CodeMirror-focused .CodeMirror-selected,:root[data-scheme] .js-editor-easymde .CodeMirror-selected {background:var(--c-muted);}
+:root[data-scheme] .js-editor-easymde .CodeMirror-line::selection,
+:root[data-scheme] .js-editor-easymde .CodeMirror-line > span::selection,
+:root[data-scheme] .js-editor-easymde .CodeMirror-line > span > span::selection {background:var(--c-fg);color:var(--c-bg);}
+:root[data-scheme] .js-editor-easymde .EasyMDEContainer .CodeMirror-focused .CodeMirror-selected,
+:root[data-scheme] .js-editor-easymde .CodeMirror-selected {background:var(--c-muted);}
 :root[data-scheme] .js-editor-easymde .editor-statusbar {color:var(--c-muted-fg);}
 /* Monochrome syntax colours (CodeMirror's are made for white): markup and Markdown's own signs muted, text and values in the text colour */
-:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-tag,:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-bracket,:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-attribute,:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-formatting,:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-quote,:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-comment,:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-hr {color:var(--c-muted-fg);}
-:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-string,:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-header,:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-strong,:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-em,:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-variable-2,:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-keyword {color:var(--c-fg);}
-:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-link,:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-url {color:var(--c-muted-fg);}
-:root[data-scheme] .js-editor-easymde .editor-preview a,:root[data-scheme] .js-editor-easymde .editor-preview-side a {color:var(--c-accent);}
-:root[data-scheme] .editor-toolbar.fullscreen::before,:root[data-scheme] .editor-toolbar.fullscreen::after {display:none;}
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-tag,
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-bracket,
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-attribute,
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-formatting,
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-quote,
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-comment,
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-hr {color:var(--c-muted-fg);}
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-string,
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-header,
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-strong,
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-em,
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-variable-2,
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-keyword {color:var(--c-fg);}
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-link,
+:root[data-scheme] .js-editor-easymde .cm-s-easymde .cm-url {color:var(--c-muted-fg);}
+:root[data-scheme] .js-editor-easymde .editor-preview a,
+:root[data-scheme] .js-editor-easymde .editor-preview-side a {color:var(--c-accent);}
+:root[data-scheme] .editor-toolbar.fullscreen::before,
+:root[data-scheme] .editor-toolbar.fullscreen::after {display:none;}

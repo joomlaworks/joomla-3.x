@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 // A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
-class_exists('HammondHelper', false) || require_once dirname(__DIR__) . '/helper.php';
+class_exists('HammondHelper', false) || require_once dirname(__DIR__) . '/includes/helper.php';
 
 /**
  * Module chrome: a moduleContainer with the module's class suffix (e.g. grid-col-span-8), and its title. The title of a

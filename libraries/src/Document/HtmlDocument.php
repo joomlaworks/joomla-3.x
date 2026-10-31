@@ -1036,7 +1036,48 @@ class HtmlDocument extends Document
             $clean = !$this->hasInlineScripts();
         }
 
-        return $this->footerScripts = array_merge($clean ? $shared : array(), $marked);
+        return $this->footerScripts = array_merge($clean ? $shared : array(), $this->groupScripts($marked));
+    }
+
+    /**
+     * Script files of the footer in groups by where they come from: core's media/system, then plugins, modules, components
+     * and templates, then the rest (other media folders, other places), each group in the order the files were added. They
+     * may be reordered as nothing a marked file holds is used while the page loads.
+     *
+     * @param   array  $scripts  Their addresses
+     *
+     * @return  array
+     *
+     * @since   3.18.0
+     */
+    protected function groupScripts(array $scripts)
+    {
+        $groups = array(
+            '#/media/system/#'                  => 0,
+            '#/plugins/|/media/plg_#'          => 1,
+            '#/modules/|/media/mod_#'          => 2,
+            '#/components/|/media/com_#'        => 3,
+            '#/templates/#'                     => 4,
+        );
+        $sorted = array();
+
+        foreach ($scripts as $position => $src) {
+            $path  = (string) parse_url((string) $src, PHP_URL_PATH);
+            $group = 5;
+
+            foreach ($groups as $pattern => $number) {
+                if (preg_match($pattern, $path)) {
+                    $group = $number;
+                    break;
+                }
+            }
+
+            $sorted[] = array($group, $position, $src);
+        }
+
+        sort($sorted);
+
+        return array_column($sorted, 2);
     }
 
     /**

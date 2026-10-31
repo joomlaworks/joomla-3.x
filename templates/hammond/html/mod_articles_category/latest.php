@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 // A copy of the template (Templates: Copy Template) has the same class: whichever the page loaded first is used
-class_exists('HammondHelper', false) || require_once dirname(__DIR__, 2) . '/helper.php';
+class_exists('HammondHelper', false) || require_once dirname(__DIR__, 2) . '/includes/helper.php';
 
 /** @var array $list  @var Joomla\Registry\Registry $params */
 $items = array_slice(array_values($list), HammondHelper::skip($params));

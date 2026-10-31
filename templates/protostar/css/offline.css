@@ -9,7 +9,9 @@ body.site {margin:0;padding:0;}
 .inner {margin:0 auto;max-width:30em;background-color:#ffffff;}
 .header {text-align:center;margin:0 0 1em 0;}
 img {max-width:100%;height:auto;border:0;}
-form,fieldset {margin:0;padding:0;}
+form,
+fieldset {margin:0;padding:0;}
 label {display:block;margin:0;}
-input[type="text"],input[type="password"] {box-sizing:border-box;width:100%;height:auto;}
+input[type="text"],
+input[type="password"] {box-sizing:border-box;width:100%;height:auto;}
 input {margin:.5em 0 1em 0;}
