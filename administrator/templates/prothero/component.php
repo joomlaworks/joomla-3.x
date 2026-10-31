@@ -17,6 +17,7 @@ $page = require __DIR__ . '/includes/helper.php';
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-scheme="<?php echo $page->scheme; ?>">
 <head>
+	<style>@view-transition {navigation:auto;}</style>
 	<jdoc:include type="header" />
 </head>
 <body class="contentpane component">
