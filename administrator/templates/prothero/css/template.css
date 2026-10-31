@@ -3162,7 +3162,7 @@ html[dir="rtl"] .quick-icons .nav-list [class*=" icon-"] {margin-left:9px;margin
     :has(> .j-sidebar-container)::after {display:table;clear:both;content:"";}
     /* The positioned form would paint over the floated system message before it and take its clicks (e.g. a message's link) */
     #system-message-container {position:relative;z-index:1;}
-    .j-sidebar-container {top:0;bottom:0;width:calc(16.5% + 6.6px);margin-left:-21px;}
+    .j-sidebar-container {top:0;bottom:0;min-height:max-content;width:calc(16.5% + 6.6px);margin-left:-21px;}
     .j-sidebar-container,
     .j-sidebar-container.j-sidebar-hidden {left:calc(-16.5% - 6.6px);}
     .j-sidebar-container.j-sidebar-visible {left:0;}
@@ -3174,7 +3174,7 @@ html[dir="rtl"] .quick-icons .nav-list [class*=" icon-"] {margin-left:9px;margin
     :has(> .j-sidebar-container)::after {display:table;clear:both;content:"";}
     /* The positioned form would paint over the floated system message before it and take its clicks (e.g. a message's link) */
     #system-message-container {position:relative;z-index:1;}
-    .j-sidebar-container {top:0;bottom:0;width:calc(16.5% + 3.3px);margin-left:-11px;}
+    .j-sidebar-container {top:0;bottom:0;min-height:max-content;width:calc(16.5% + 3.3px);margin-left:-11px;}
     .j-sidebar-container,
     .j-sidebar-container.j-sidebar-hidden {left:calc(-16.5% - 3.3px);}
     .j-sidebar-container.j-sidebar-visible {left:0;}
