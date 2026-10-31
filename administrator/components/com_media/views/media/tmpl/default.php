@@ -33,6 +33,18 @@ JHtml::_('behavior.styles');
 // The CMS's modal: image previews (the list's links), cropping
 JHtml::_('behavior.cms');
 
+// The image preview's arrows (media.js: MediaPreview, through the folder's images)
+$arrow = function ($name) {
+    return JHtml::_('icons.svg', $name, '', array('size' => 28));
+};
+
+JFactory::getDocument()->addScriptOptions('com_media.preview', array(
+    'icons' => array('previous' => $arrow('chevron-left'), 'next' => $arrow('chevron-right')),
+));
+JText::script('COM_MEDIA_PREVIEW_PREVIOUS');
+JText::script('COM_MEDIA_PREVIEW_NEXT');
+JText::script('COM_MEDIA_PREVIEW_POSITION');
+
 // The Crop button's window (media.js, global.js' cropper)
 if ($user->authorise('core.create', 'com_media') && $user->authorise('core.delete', 'com_media')) {
     JFactory::getDocument()->addScriptOptions('com_media.crop', array(

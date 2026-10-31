@@ -54,8 +54,12 @@ $doc->addScriptDeclaration(
 			window.parent.document.updateUploader();
 			$('.img-preview, .preview').each(function(index, value) {
 				$(this).on('click', function(e) {
-					// The CMS's modal, the image as large as the window allows
-					window.parent.CMS.modal.open($(this).attr('href'), {handler: 'image'});
+					// The CMS's modal, the image as large as the window allows, with the folder's other images
+					if (window.parent.MediaPreview) {
+						window.parent.MediaPreview.open($(this).attr('href'), document);
+					} else {
+						window.parent.CMS.modal.open($(this).attr('href'), {handler: 'image'});
+					}
 
 					// Focus leaves the list's frame for the modal, so Escape closes it
 					var close = window.parent.document.getElementById('sbox-btn-close');

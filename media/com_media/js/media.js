@@ -1837,3 +1837,160 @@ function jMediaRefreshImgpathTip(tip, els)
 		start();
 	}
 })();
+
+/* --- Image preview (the list's images in the CMS's modal) --- */
+/*
+ * MediaPreview.open(address, listDocument), called by the list's frame: the image as large as the window allows, with a
+ * bar under it (its name; its pixel size and file size) and, when the folder has more images, buttons at its sides and
+ * the arrow keys to go through them (in the list's order, round; neighbours loaded ahead).
+ */
+(() => {
+	'use strict';
+
+	if (window.MediaPreview) {
+		return;
+	}
+
+	const text = (key, fallback) => (window.CMS ? window.CMS.text.get(key, fallback) : fallback);
+	const bytes = (size) => {
+		const units = ['B', 'KB', 'MB', 'GB'];
+		let unit = 0;
+
+		while (size >= 1024 && unit < units.length - 1) {
+			size /= 1024;
+			unit += 1;
+		}
+
+		return (unit ? size.toFixed(size < 10 ? 1 : 0) : size) + ' ' + units[unit];
+	};
+	const nameOf = (address) => {
+		try {
+			return decodeURIComponent(new URL(address, document.baseURI).pathname.split('/').pop());
+		} catch (error) {
+			return address;
+		}
+	};
+
+	window.MediaPreview = {
+		open(address, listDocument) {
+			const CMS = window.CMS;
+			const options = (CMS && CMS.options.get('com_media.preview')) || {};
+			const icons = options.icons || {};
+			const links = listDocument ? Array.prototype.map.call(listDocument.querySelectorAll('a.img-preview[href]'), (link) => link.href) : [];
+			const images = links.filter((link, index) => links.indexOf(link) === index);
+			const absolute = new URL(address, listDocument ? listDocument.baseURI : document.baseURI).href;
+			let current = Math.max(0, images.indexOf(absolute));
+
+			if (!images.length) {
+				images.push(absolute);
+			}
+
+			const root = document.createElement('div');
+			const stage = document.createElement('div');
+			const image = document.createElement('img');
+			const bar = document.createElement('div');
+			const name = document.createElement('span');
+			const position = document.createElement('span');
+			const size = document.createElement('span');
+			const rtl = window.getComputedStyle(document.documentElement).direction === 'rtl';
+			const sizes = {};
+			const arrow = (step, key, fallback, icon) => {
+				const button = document.createElement('button');
+
+				button.type = 'button';
+				button.className = 'media-preview-arrow media-preview-' + (step < 0 ? 'previous' : 'next');
+				button.title = text(key, fallback);
+				button.setAttribute('aria-label', button.title);
+				button.innerHTML = icon || (step < 0 ? '&lsaquo;' : '&rsaquo;');
+				button.addEventListener('click', () => go(step));
+
+				return button;
+			};
+
+			root.className = 'media-preview';
+			stage.className = 'media-preview-stage';
+			bar.className = 'media-preview-bar';
+			name.className = 'media-preview-name';
+			position.className = 'media-preview-position';
+			size.className = 'media-preview-size';
+			size.setAttribute('aria-live', 'polite');
+			stage.appendChild(image);
+
+			if (images.length > 1) {
+				stage.appendChild(arrow(-1, 'COM_MEDIA_PREVIEW_PREVIOUS', 'Previous image', icons.previous));
+				stage.appendChild(arrow(1, 'COM_MEDIA_PREVIEW_NEXT', 'Next image', icons.next));
+			}
+
+			bar.appendChild(name);
+			bar.appendChild(position);
+			bar.appendChild(size);
+			root.appendChild(stage);
+			root.appendChild(bar);
+
+			// The file's size, asked of the server once per image
+			const fileSize = (url) => {
+				if (sizes[url] === undefined) {
+					sizes[url] = fetch(url, { method: 'HEAD', credentials: 'same-origin' })
+						.then((response) => parseInt(response.headers.get('Content-Length'), 10) || 0)
+						.catch(() => 0);
+				}
+
+				return sizes[url];
+			};
+
+			const show = () => {
+				const url = images[current];
+				const shown = current;
+
+				name.textContent = nameOf(url);
+				name.title = name.textContent;
+				position.textContent = images.length > 1 ? text('COM_MEDIA_PREVIEW_POSITION', '%1$s of %2$s').replace('%1$s', current + 1).replace('%2$s', images.length) : '';
+				size.textContent = '';
+				image.alt = name.textContent;
+				image.src = url;
+
+				image.decode().catch(() => null).then(() => fileSize(url)).then((length) => {
+					if (shown === current) {
+						size.textContent = image.naturalWidth + ' × ' + image.naturalHeight + (length ? ' · ' + bytes(length) : '');
+					}
+				});
+
+				// The neighbours, ready for the arrows
+				[-1, 1].forEach((step) => {
+					if (images.length > 1) {
+						new Image().src = images[(current + step + images.length) % images.length];
+					}
+				});
+			};
+
+			const go = (step) => {
+				current = (current + step + images.length) % images.length;
+				show();
+			};
+
+			const onKey = (event) => {
+				if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
+					return;
+				}
+
+				event.preventDefault();
+				go((event.key === 'ArrowRight') !== rtl ? 1 : -1);
+			};
+
+			CMS.modal.open(root, {
+				handler: 'adopt',
+				size: { x: Math.min(1600, window.innerWidth - 80), y: Math.min(1000, window.innerHeight - 100) },
+				classWindow: 'media-preview-window',
+				onClose() {
+					document.removeEventListener('keydown', onKey);
+				},
+			});
+
+			if (images.length > 1) {
+				document.addEventListener('keydown', onKey);
+			}
+
+			show();
+		},
+	};
+})();

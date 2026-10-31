@@ -222,3 +222,21 @@ td.media-rename .media-rename-pencil {margin-inline-start:4px;}
 .media-back .cms-icon {display:inline-block;margin-inline-end:4px;vertical-align:-3px;}
 .media-tile-size .cms-icon {display:block;}
 .media-tile-size[hidden] {display:none;}
+
+/* --- Image preview (MediaPreview in the CMS's modal) --- */
+/* The window's content holds it at its size, in the window's colours */
+#sbox-content:has(> .media-preview) {display:flex;overflow:hidden;background:none;}
+.media-preview {display:flex;flex:1 1 auto;flex-direction:column;gap:8px;min-width:0;min-height:0;}
+.media-preview-stage {position:relative;display:grid;flex:1 1 auto;place-items:center;min-height:0;overflow:hidden;}
+.media-preview-stage > img {max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;}
+/* Previous and next: at the image's sides, over it */
+.media-preview-arrow {position:absolute;top:50%;display:grid;place-content:center;width:44px;height:64px;margin:0;padding:0;border:0;border-radius:6px;background:rgba(0, 0, 0, 0.45);color:#fff;opacity:0.75;transform:translateY(-50%);cursor:pointer;}
+.media-preview-arrow:hover,.media-preview-arrow:focus-visible {background:rgba(0, 0, 0, 0.7);opacity:1;}
+.media-preview-previous {inset-inline-start:0;}
+.media-preview-next {inset-inline-end:0;}
+:where([dir="rtl"]) .media-preview-arrow .cms-icon {transform:scaleX(-1);}
+/* Under it: the name at the start, the position in the middle, the sizes at the end */
+.media-preview-bar {display:grid;flex:none;grid-template-columns:minmax(0, 1fr) auto minmax(0, 1fr);gap:12px;align-items:center;min-height:22px;line-height:22px;}
+.media-preview-name {overflow:hidden;font-weight:600;text-overflow:ellipsis;white-space:nowrap;}
+.media-preview-position {opacity:0.7;}
+.media-preview-size {font-variant-numeric:tabular-nums;text-align:end;white-space:nowrap;}
