@@ -35,6 +35,44 @@ COLOURED = {
     'media/system/images/icons/notice-alert.svg': ('dash-circle-fill', '#c9302c'),
     'media/system/images/icons/notice-note.svg': ('exclamation-circle-fill', '#e09000'),
     'media/com_finder/images/file-pdf.svg': ('file-earmark-pdf-fill', '#c62828'),
+    # The legacy administrator images (JHtml::_('image', 'admin/<name>.png', ..., true): JHtmlGrid, extensions; 32 PNGs
+    # in Isis' images/admin until 3.18), asked for as .png and found as .svg (HTMLHelper::MOVED_IMAGE_TYPES)
+    'media/system/images/admin/checked_out.svg': ('lock-fill', '#6c757d'),
+    'media/system/images/admin/collapseall.svg': ('dash-square', '#3070a8'),
+    'media/system/images/admin/disabled.svg': ('slash-circle', '#555555'),
+    'media/system/images/admin/downarrow.svg': ('arrow-down-circle-fill', '#2a6fb5'),
+    'media/system/images/admin/downarrow0.svg': ('arrow-down-circle-fill', '#2a6fb5'),
+    'media/system/images/admin/downarrow-1.svg': ('caret-down-fill', '#c9302c'),
+    'media/system/images/admin/expandall.svg': ('plus-square', '#3070a8'),
+    'media/system/images/admin/featured.svg': ('star-fill', '#333333'),
+    'media/system/images/admin/filesave.svg': ('floppy-fill', '#555555'),
+    'media/system/images/admin/filter_16.svg': ('funnel-fill', '#333333'),
+    'media/system/images/admin/icon-16-add.svg': ('plus-circle-fill', '#f0a020'),
+    'media/system/images/admin/icon-16-allow.svg': ('check-lg', '#46a546'),
+    'media/system/images/admin/icon-16-allowinactive.svg': ('check-lg', '#a6d39b'),
+    'media/system/images/admin/icon-16-deny.svg': ('dash-circle-fill', '#c9302c'),
+    'media/system/images/admin/icon-16-denyinactive.svg': ('dash-circle-fill', '#e8a3a1'),
+    'media/system/images/admin/icon-16-links.svg': ('link-45deg', '#2a6fb5'),
+    'media/system/images/admin/icon-16-notice-note.svg': ('exclamation-circle-fill', '#e09000'),
+    'media/system/images/admin/icon-16-protected.svg': ('lock-fill', '#46a546'),
+    'media/system/images/admin/note_add_16.svg': ('journal-plus', '#e09000'),
+    'media/system/images/admin/publish_g.svg': ('check-circle-fill', '#46a546'),
+    'media/system/images/admin/publish_r.svg': ('x-circle-fill', '#c9302c'),
+    'media/system/images/admin/publish_x.svg': ('stop-circle-fill', '#c9302c'),
+    'media/system/images/admin/publish_y.svg': ('exclamation-circle-fill', '#e09000'),
+    'media/system/images/admin/sort_asc.svg': ('caret-up-fill', '#888888'),
+    'media/system/images/admin/sort_desc.svg': ('caret-down-fill', '#888888'),
+    'media/system/images/admin/tick.svg': ('check-circle', '#333333'),
+    'media/system/images/admin/trash.svg': ('trash-fill', '#3a87ad'),
+    'media/system/images/admin/uparrow.svg': ('arrow-up-circle-fill', '#2a6fb5'),
+    'media/system/images/admin/uparrow0.svg': ('arrow-up-circle-fill', '#2a6fb5'),
+    'media/system/images/admin/uparrow-1.svg': ('caret-up-fill', '#c9302c'),
+}
+
+# Drawn here, not Bootstrap Icons: the legacy set's empty image and menu divider
+DRAWN = {
+    'media/system/images/admin/blank.svg': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"/>',
+    'media/system/images/admin/menu_divider.svg': '<svg xmlns="http://www.w3.org/2000/svg" width="2" height="28" viewBox="0 0 2 28"><path fill="#cccccc" d="M0 0h1v28H0z"/><path fill="#ffffff" d="M1 0h1v28H1z"/></svg>',
 }
 
 package, root = sys.argv[1], sys.argv[2]
@@ -53,14 +91,19 @@ for folder, names in FOLDERS.items():
     print(folder, len(names), 'icons')
 
 for target, (name, colour) in COLOURED.items():
+    os.makedirs(os.path.dirname(root + '/' + target), exist_ok=True)
     svg = open('%s/icons/%s.svg' % (package, name)).read()
     svg = re.sub(r'\sclass="[^"]*"', '', svg.replace('fill="currentColor"', 'fill="%s"' % colour))
     open(root + '/' + target, 'w').write(svg)
     written.append(root + '/' + target)
     print(target, name)
 
-if os.path.exists(root + '/media/com_finder/images'):
-    open(root + '/media/com_finder/images/license.txt', 'w').write(licence)
+for target, svg in DRAWN.items():
+    open(root + '/' + target, 'w').write(svg + '\n')
+    written.append(root + '/' + target)
+
+for folder in ('media/com_finder/images', 'media/system/images/admin'):
+    open(root + '/' + folder + '/license.txt', 'w').write(licence)
 
 subprocess.run(['svgo', '--quiet', '--config', config] + written, check=True)
 print(len(written), 'files optimised')

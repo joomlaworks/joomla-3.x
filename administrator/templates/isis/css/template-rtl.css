@@ -151,8 +151,6 @@ body {direction:rtl;}
 #status .statusIcon {margin-left:4px;margin-right:0;}
 .dropdown-menu > li > a {text-align:right;}
 .btn-group.btn-group-yesno > .btn,.btn-group > .btn,.btn-group > .btn + .dropdown-toggle {float:none;}
-a.grid_false {display:inline-block;height:16px;width:16px;background-image:url("../images/admin/publish_r.png");}
-a.grid_true {display:inline-block;height:16px;width:16px;background-image:url("../images/admin/icon-16-allow.png");}
 .view-login .login-joomla {position:absolute;right:50%;height:24px;width:24px;margin-right:-12px;font-size:22px;}
 .view-login .input-medium {width:169px;}
 .login .chzn-single {width:219px !important;}

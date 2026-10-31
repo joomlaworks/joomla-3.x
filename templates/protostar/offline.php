@@ -121,5 +121,6 @@ if ($this->params->get('logoFile')) {
 			</div>
 		</div>
 	</div>
+	<jdoc:include type="footer" />
 </body>
 </html>

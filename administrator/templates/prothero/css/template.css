@@ -2393,8 +2393,8 @@ th .tooltip-inner {font-weight:normal;}
 #permissions-sliders .input-small {width:120px;}
 .editor {overflow:hidden;position:relative;}
 .editor textarea.mce_editable {box-sizing:border-box;}
-a.grid_false {display:inline-block;height:16px;width:16px;background-image:url("../images/admin/publish_r.png");}
-a.grid_true {display:inline-block;height:16px;width:16px;background-image:url("../images/admin/icon-16-allow.png");}
+a.grid_false {display:inline-block;height:16px;width:16px;background-image:url("../../../../media/system/images/admin/publish_r.svg");}
+a.grid_true {display:inline-block;height:16px;width:16px;background-image:url("../../../../media/system/images/admin/icon-16-allow.svg");}
 textarea,input,.uneditable-input {box-shadow:none;}
 textarea:focus,input:focus,.uneditable-input:focus {border-color:var(--c-ring);box-shadow:var(--ring);outline:0;}
 input[type="checkbox"]:focus,input[type="radio"]:focus {box-shadow:none;}

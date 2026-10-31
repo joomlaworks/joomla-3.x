@@ -130,9 +130,10 @@ abstract class HTMLHelper
     public const PREVIOUS_FOLDERS = array('system/flags' => 'mod_languages', 'system/images/flags' => 'mod_languages/images');
 
     /**
-     * Images of a media folder whose type changed (since 3.18: the language flags, GIF to WebP), by relative name and by
-     * path under media/: a file asked for in one type and not found is looked for in the other, so code naming the GIFs
-     * and language packs bringing a GIF of their own keep working
+     * Images of a media folder whose type changed (since 3.18: the language flags, GIF to WebP; the legacy administrator
+     * images, the administrator templates' PNGs, to SVG in media/system/images/admin), by relative name and by path under
+     * media/: a file asked for in one type and not found is looked for in the other, so code naming the old files and
+     * language packs bringing a GIF of their own keep working
      *
      * @var    array
      * @since  3.18.0
@@ -140,6 +141,7 @@ abstract class HTMLHelper
     public const MOVED_IMAGE_TYPES = array(
         'system/flags' => array('gif' => 'webp', 'webp' => 'gif'), 'system/images/flags' => array('gif' => 'webp', 'webp' => 'gif'),
         'mod_languages' => array('gif' => 'webp', 'webp' => 'gif'), 'mod_languages/images' => array('gif' => 'webp', 'webp' => 'gif'),
+        'admin' => array('png' => 'svg'), 'system/images/admin' => array('png' => 'svg'),
     );
 
     /**

@@ -42,5 +42,6 @@ JHtml::_('bootstrap.loadCss', $includeMaincss = false, $this->direction);
 <body class="contentpane modal<?php echo $this->direction === 'rtl' ? ' rtl' : ''; ?>">
 	<jdoc:include type="message" />
 	<jdoc:include type="component" />
+	<jdoc:include type="footer" />
 </body>
 </html>

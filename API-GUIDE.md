@@ -160,7 +160,7 @@ Each group keeps the order its items were added in. So the hints come right afte
 
 ### Scripts at the end of the page: the footer
 
-Templates write the end of the page with `<jdoc:include type="footer" />`, right before `</body>` (every core template since 3.18 except Protostar). What goes there:
+Templates write the end of the page with `<jdoc:include type="footer" />`, right before `</body>` (every core template since 3.18), after any module position such as `debug`. What goes there:
 
 - script files added with the option `'position' => 'footer'`, in their order and without `defer` (the end of the page is later than `defer` would run them anyway):
 

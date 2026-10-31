@@ -945,14 +945,21 @@ class HtmlDocument extends Document
         $file = $filter->clean($params['file'], 'cmd');
 
         // A page the template lacks: its override of core's layout, else core's (layouts/joomla/system/, the "system"
-        // templates' until 3.18); index.php when there is none of that name either
+        // templates' until 3.18); without one of that name either, the template's own index.php (the Control Panel asks
+        // for cpanel.php, which templates may leave out), else core's
         $path = $directory . '/' . $template;
 
         if (!file_exists($path . '/' . $file)) {
-            $path = SystemLayout::path($path, $file);
+            $system = SystemLayout::path($path, $file);
 
-            if (!file_exists($path . '/' . $file)) {
+            if (file_exists($system . '/' . $file)) {
+                $path = $system;
+            } else {
                 $file = 'index.php';
+
+                if (!file_exists($path . '/' . $file)) {
+                    $path = SystemLayout::path($path, $file);
+                }
             }
         }
 

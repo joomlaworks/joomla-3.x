@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  Templates.prothero
@@ -11,100 +12,14 @@ defined('_JEXEC') or die;
 
 /** @var JDocumentHtml $this */
 
-$app   = JFactory::getApplication();
-$lang  = JFactory::getLanguage();
-$input = $app->input;
-$user  = JFactory::getUser();
-
-// Output as HTML5
-$this->setHtml5(true);
-
-// Gets the FrontEnd Main page Uri
-$frontEndUri = JUri::getInstance(JUri::root());
-$frontEndUri->setScheme(((int) $app->get('force_ssl', 0) === 2) ? 'https' : 'http');
-$mainPageUri = $frontEndUri->toString();
-
-// No legacy markup: no scripts and stylesheets for old Internet Explorer versions
-require_once __DIR__ . '/helper.php';
-
-protheroDropConditionalAssets($this);
-
-// Add JavaScript Frameworks
-JHtml::_('bootstrap.framework');
-
-// Add template js
-JHtml::_('script', 'template.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));
-
-// For the lists' Reorder button on phones (js/template.js)
-JText::script('TPL_PROTHERO_REORDER');
-JText::script('TPL_PROTHERO_REORDER_DONE');
-
-// Add Stylesheets
-JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
-
-if ($this->direction === 'rtl') {
-    JHtml::_('stylesheet', 'template-rtl.css', array('version' => 'auto', 'relative' => true));
-}
-
-// Load specific language related CSS
-JHtml::_('stylesheet', 'administrator/language/' . $lang->getTag() . '/' . $lang->getTag() . '.css', array('version' => 'auto'));
-
-// Load custom.css
-JHtml::_('stylesheet', 'custom.css', array('version' => 'auto', 'relative' => true));
-
-JHtml::_('stylesheet', 'responsive.css', array('version' => 'auto', 'relative' => true));
-
-
-// Detecting Active Variables
-$option   = $input->get('option', '');
-$view     = $input->get('view', '');
-$layout   = $input->get('layout', '');
-$task     = $input->get('task', '');
-$itemid   = $input->get('Itemid', 0, 'int');
-$sitename = htmlspecialchars((string) $app->get('sitename', ''), ENT_QUOTES, 'UTF-8');
-$cpanel   = $option === 'com_cpanel';
-
-$hidden = $app->input->get('hidemainmenu');
-
-$showSubmenu          = false;
-$this->submenumodules = JModuleHelper::getModules('submenu');
-
-foreach ($this->submenumodules as $submenumodule) {
-    $output = JModuleHelper::renderModule($submenumodule);
-
-    if ($output !== '') {
-        $showSubmenu = true;
-        break;
-    }
-}
-
-// Template Parameters
-$displayHeader = $this->params->get('displayHeader', '1');
-$stickyToolbar = $this->params->get('stickyToolbar', '1');
-
-// The logo in the header: the site's own, else Joomla's, inline so its wordmark follows the colour scheme
-$logo = $displayHeader && $this->params->get('logoFile') ? JUri::root() . htmlspecialchars((string) $this->params->get('logoFile'), ENT_QUOTES) : '';
-
-// Pass some values to javascript
-$offset = 34;
-
-if ($displayHeader) {
-    $offset = 44;
-}
-
-$stickyBar = 0;
-
-if ($stickyToolbar) {
-    $stickyBar = 'true';
-}
-?>
-<!DOCTYPE html>
-<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-scheme="<?php echo protheroScheme($this->params); ?>" data-navbar="<?php echo protheroNavbarColor($this->params); ?>">
+$page = require __DIR__ . '/includes/helper.php';
+?><!DOCTYPE html>
+<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>" data-scheme="<?php echo $page->scheme; ?>" data-navbar="<?php echo $page->navbar; ?>">
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<jdoc:include type="header" />
 </head>
-<body class="admin <?php echo $option . ' view-' . $view . ' layout-' . $layout . ' task-' . $task . ' itemid-' . $itemid; ?>" data-basepath="<?php echo JURI::root(true); ?>">
+<body class="admin <?php echo $page->option . ' view-' . $page->view . ' layout-' . $page->layout . ' task-' . $page->task . ' itemid-' . $page->itemid; ?>" data-basepath="<?php echo JURI::root(true); ?>">
 <!-- Top Navigation -->
 <nav class="navbar navbar-inverse navbar-fixed-top">
 	<div class="navbar-inner">
@@ -121,37 +36,37 @@ if ($stickyToolbar) {
 			<!-- skip to content -->
 			<a class="element-invisible" href="#skiptarget"><?php echo JText::_('TPL_PROTHERO_SKIP_TO_MAIN_CONTENT'); ?></a>
 
-			<a class="admin-logo <?php echo($hidden ? 'disabled' : ''); ?>" <?php echo($hidden ? '' : 'href="' . $this->baseurl . '/index.php"'); ?>>
+			<a class="admin-logo <?php echo($page->hidden ? 'disabled' : ''); ?>" <?php echo($page->hidden ? '' : 'href="' . $this->baseurl . '/index.php"'); ?>>
 				<span class="icon-joomla"></span>
 				<div class="element-invisible">
 					<?php echo JText::_('TPL_PROTHERO_CONTROL_PANEL'); ?>
 				</div>
 			</a>
 
-			<a class="brand hidden-desktop hidden-tablet" href="<?php echo $mainPageUri; ?>" title="<?php echo JText::sprintf('TPL_PROTHERO_PREVIEW', $sitename); ?>" target="_blank"><?php echo JHtml::_('string.truncate', $sitename, 14, false, false); ?>
+			<a class="brand hidden-desktop hidden-tablet" href="<?php echo $page->mainPageUri; ?>" title="<?php echo JText::sprintf('TPL_PROTHERO_PREVIEW', $page->sitename); ?>" target="_blank"><?php echo JHtml::_('string.truncate', $page->sitename, 14, false, false); ?>
 				<span class="icon-out-2 small"></span></a>
 
 			<div<?php echo ($this->params->get('admin_menus') != '0') ? ' class="nav-collapse collapse"' : ''; ?>>
 				<jdoc:include type="modules" name="menu" style="none" />
 				<ul class="nav nav-user<?php echo ($this->direction == 'rtl') ? ' pull-left' : ' pull-right'; ?>">
 					<li class="dropdown">
-						<a class="<?php echo($hidden ? ' disabled' : 'dropdown-toggle'); ?>" data-toggle="<?php echo($hidden ? '' : 'dropdown'); ?>" <?php echo($hidden ? '' : 'href="#"'); ?>><span class="icon-user"></span>
+						<a class="<?php echo($page->hidden ? ' disabled' : 'dropdown-toggle'); ?>" data-toggle="<?php echo($page->hidden ? '' : 'dropdown'); ?>" <?php echo($page->hidden ? '' : 'href="#"'); ?>><span class="icon-user"></span>
 							<span class="caret"></span>
 							<div class="element-invisible">
 								<?php echo JText::_('TPL_PROTHERO_USERMENU'); ?>
 							</div>
 						</a>
 						<ul class="dropdown-menu">
-							<?php if (!$hidden) : ?>
+							<?php if (!$page->hidden) : ?>
 								<li>
 									<span>
 										<span class="icon-user"></span>
-										<strong><?php echo htmlspecialchars((string) $user->name, ENT_QUOTES, 'UTF-8'); ?></strong>
+										<strong><?php echo htmlspecialchars((string) $page->user->name, ENT_QUOTES, 'UTF-8'); ?></strong>
 									</span>
 								</li>
 								<li class="divider"></li>
 								<li>
-									<a href="index.php?option=com_admin&amp;task=profile.edit&amp;id=<?php echo $user->id; ?>"><?php echo JText::_('TPL_PROTHERO_EDIT_ACCOUNT'); ?></a>
+									<a href="index.php?option=com_admin&amp;task=profile.edit&amp;id=<?php echo $page->user->id; ?>"><?php echo JText::_('TPL_PROTHERO_EDIT_ACCOUNT'); ?></a>
 								</li>
 								<li class="divider"></li>
 								<li class="">
@@ -161,7 +76,7 @@ if ($stickyToolbar) {
 						</ul>
 					</li>
 				</ul>
-				<a class="brand visible-desktop visible-tablet" href="<?php echo $mainPageUri; ?>" title="<?php echo JText::sprintf('TPL_PROTHERO_PREVIEW', $sitename); ?>" target="_blank"><?php echo JHtml::_('string.truncate', $sitename, 14, false, false); ?>
+				<a class="brand visible-desktop visible-tablet" href="<?php echo $page->mainPageUri; ?>" title="<?php echo JText::sprintf('TPL_PROTHERO_PREVIEW', $page->sitename); ?>" target="_blank"><?php echo JHtml::_('string.truncate', $page->sitename, 14, false, false); ?>
 					<span class="icon-out-2 small"></span></a>
 			</div>
 			<!--/.nav-collapse -->
@@ -169,13 +84,13 @@ if ($stickyToolbar) {
 	</div>
 </nav>
 <!-- Header -->
-<?php if ($displayHeader) : ?>
+<?php if ($page->displayHeader) : ?>
 	<header class="header">
 		<div class="container-logo">
-			<?php if ($logo !== '') : ?>
-				<img src="<?php echo $logo; ?>" class="logo" alt="<?php echo $sitename;?>" />
+			<?php if ($page->logo !== '') : ?>
+				<img src="<?php echo $page->logo; ?>" class="logo" alt="<?php echo $page->sitename;?>" />
 			<?php else : ?>
-				<span class="logo"><?php echo protheroLogo(); ?></span>
+				<span class="logo"><?php echo ProtheroHelper::logo(); ?></span>
 			<?php endif; ?>
 		</div>
 		<div class="container-title">
@@ -183,11 +98,11 @@ if ($stickyToolbar) {
 		</div>
 	</header>
 <?php endif; ?>
-<?php if (!$cpanel) : ?>
+<?php if (!$page->cpanel) : ?>
 	<!-- Subheader -->
 	<a class="btn btn-subhead" data-toggle="collapse" data-target=".subhead-collapse"><?php echo JText::_('TPL_PROTHERO_TOOLBAR'); ?>
 		<span class="icon-wrench"></span></a>
-	<div class="subhead-collapse collapse" id="isisJsData" data-tmpl-sticky="<?php echo $stickyBar; ?>" data-tmpl-offset="<?php echo $offset; ?>">
+	<div class="subhead-collapse collapse" id="isisJsData" data-tmpl-sticky="<?php echo $page->stickyBar; ?>" data-tmpl-offset="<?php echo $page->offset; ?>">
 		<div class="subhead">
 			<div class="container-fluid">
 				<div id="container-collapse" class="container-collapse"></div>
@@ -213,7 +128,7 @@ if ($stickyToolbar) {
 		<!-- Begin Content -->
 		<jdoc:include type="modules" name="top" style="xhtml" />
 		<div class="row-fluid">
-			<?php if ($showSubmenu) : ?>
+			<?php if ($page->showSubmenu) : ?>
 			<div class="span2">
 				<jdoc:include type="modules" name="submenu" style="none" />
 			</div>
@@ -235,7 +150,7 @@ if ($stickyToolbar) {
 		<footer class="footer">
 			<p class="text-center">
 				<jdoc:include type="modules" name="footer" style="no" />
-				&copy; <?php echo $sitename; ?> <?php echo date('Y'); ?></p>
+				&copy; <?php echo $page->sitename; ?> <?php echo date('Y'); ?></p>
 		</footer>
 	<?php endif; ?>
 </div>
@@ -246,7 +161,7 @@ if ($stickyToolbar) {
 			<div class="btn-group pull-right">
 				<p>
 					<jdoc:include type="modules" name="footer" style="no" />
-					&copy; <?php echo date('Y'); ?> <?php echo $sitename; ?>
+					&copy; <?php echo date('Y'); ?> <?php echo $page->sitename; ?>
 				</p>
 
 			</div>

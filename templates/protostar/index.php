@@ -191,5 +191,6 @@ if ($this->params->get('logoFile')) {
 		</div>
 	</footer>
 	<jdoc:include type="modules" name="debug" style="none" />
+	<jdoc:include type="footer" />
 </body>
 </html>

@@ -40,7 +40,8 @@ class JHtmlTemplates
 
             $clientPath = ($clientId == 0) ? '' : 'administrator/';
             $thumb = $clientPath . 'templates/' . $template . '/template_thumbnail.png';
-            $html = JHtml::_('image', $thumb, JText::_('COM_TEMPLATES_PREVIEW'));
+            // A width only: thumbnails may be landscape (206x150, as stock Joomla's) or portrait, and drawn at twice their size
+            $html = JHtml::_('image', $thumb, JText::_('COM_TEMPLATES_PREVIEW'), array('width' => 200));
 
             if (file_exists($preview)) {
                 $html = '<button type="button" data-target="#' . $template . '-Modal" class="thumbnail pull-left hasTooltip" data-toggle="modal"'

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  Templates.isis
@@ -9,71 +10,16 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\Registry\Registry;
-
 /** @var JDocumentError $this */
 
-// Getting params from template
-$params = JFactory::getApplication()->getTemplate(true)->params;
-
-$app   = JFactory::getApplication();
-$lang  = JFactory::getLanguage();
-$input = $app->input;
-$user  = JFactory::getUser();
-
-// Gets the FrontEnd Main page Uri
-$frontEndUri = JUri::getInstance(JUri::root());
-$frontEndUri->setScheme(((int) $app->get('force_ssl', 0) === 2) ? 'https' : 'http');
-$mainPageUri = $frontEndUri->toString();
-
-// Detecting Active Variables
-$option   = $input->get('option', '');
-$view     = $input->get('view', '');
-$layout   = $input->get('layout', '');
-$task     = $input->get('task', '');
-$itemid   = $input->get('Itemid', 0, 'int');
-$sitename = htmlspecialchars((string) $app->get('sitename'), ENT_QUOTES, 'UTF-8');
-
-$cpanel = ($option === 'com_cpanel');
-
-$showSubmenu = false;
-$submenumodules = JModuleHelper::getModules('submenu');
-foreach ($submenumodules as $submenumodule) {
-    $output = JModuleHelper::renderModule($submenumodule);
-    if ($output !== '') {
-        $showSubmenu = true;
-        break;
-    }
-}
-
-// Logo file
-if ($params->get('logoFile')) {
-    $logo = htmlspecialchars(JUri::root() . $params->get('logoFile'), ENT_QUOTES, 'UTF-8');
-} else {
-    $logo = $this->baseurl . '/templates/' . $this->template . '/images/logo.png';
-}
-
-// Template Parameters
-$displayHeader = $params->get('displayHeader', '1');
-$statusFixed   = $params->get('statusFixed', '1');
-$stickyToolbar = $params->get('stickyToolbar', '1');
-
-require_once __DIR__ . '/helper.php';
-
-$optionColors = isisOptionColors(array(
-    'navbar'  => $params->get('templateColor'),
-    'header'  => $displayHeader ? $params->get('headerColor') : '',
-    'sidebar' => $params->get('sidebarColor'),
-    'link'    => $params->get('linkColor'),
-));
-?>
-<!DOCTYPE html>
+$page = require __DIR__ . '/includes/helper.php';
+?><!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title><?php echo $this->title; ?> <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
-	<?php if ($app->get('debug_lang', '0') == '1' || $app->get('debug', '0') == '1') : ?>
+	<?php if ($page->app->get('debug_lang', '0') == '1' || $page->app->get('debug', '0') == '1') : ?>
 		<!-- Load additional CSS styles for debug mode-->
 		<link href="<?php echo JUri::root(true); ?>/media/system/css/debug.css" rel="stylesheet" />
 	<?php endif; ?>
@@ -82,7 +28,7 @@ $optionColors = isisOptionColors(array(
 		<link href="<?php echo JUri::root(true); ?>/media/system/css/bootstrap-rtl.css" rel="stylesheet" />
 	<?php endif; ?>
 	<?php // Load specific language related CSS?>
-	<?php $file = '/administrator/language/' . $lang->getTag() . '/' . $lang->getTag() . '.css'; ?>
+	<?php $file = '/administrator/language/' . $page->lang->getTag() . '/' . $page->lang->getTag() . '.css'; ?>
 	<?php if (is_file(JPATH_ROOT . $file)) : ?>
 		<link href="<?php echo JUri::root(true) . $file; ?>" rel="stylesheet" />
 	<?php endif; ?>
@@ -92,21 +38,21 @@ $optionColors = isisOptionColors(array(
 	<?php endif; ?>
 	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 	<?php // The template options' colours, as on other pages?>
-	<?php if ($optionColors['properties'] !== '') : ?>
+	<?php if ($page->optionColors['properties'] !== '') : ?>
 		<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template-options.css" rel="stylesheet" />
-		<style>:root {<?php echo $optionColors['properties']; ?>}</style>
+		<style>:root {<?php echo $page->optionColors['properties']; ?>}</style>
 	<?php endif; ?>
 	<script src="<?php echo JUri::root(true); ?>/media/system/js/jquery.js"></script>
 	<script src="<?php echo JUri::root(true); ?>/media/system/js/jquery-noconflict.js"></script>
 	<script src="<?php echo JUri::root(true); ?>/media/system/js/bootstrap.js"></script>
 	<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/template.js"></script>
 </head>
-<body class="admin <?php echo $option . ' view-' . $view . ' layout-' . $layout . ' task-' . $task . $optionColors['classes']; ?>" data-spy="scroll" data-target=".subhead" data-offset="87">
+<body class="admin <?php echo $page->option . ' view-' . $page->view . ' layout-' . $page->layout . ' task-' . $page->task . $page->optionColors['classes']; ?>" data-spy="scroll" data-target=".subhead" data-offset="87">
 	<!-- Top Navigation -->
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container-fluid">
-				<?php if ($params->get('admin_menus') != '0') : ?>
+				<?php if ($page->params->get('admin_menus') != '0') : ?>
 					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
 						<span class="element-invisible"><?php echo JTEXT::_('TPL_ISIS_TOGGLE_MENU'); ?></span>
 						<span class="icon-bar"></span>
@@ -116,10 +62,10 @@ $optionColors = isisOptionColors(array(
 				<?php endif; ?>
 				<a class="admin-logo" href="<?php echo $this->baseurl; ?>"><span class="icon-joomla"></span></a>
 
-				<a class="brand hidden-desktop hidden-tablet" href="<?php echo $mainPageUri; ?>" title="<?php echo JText::sprintf('TPL_ISIS_PREVIEW', $sitename); ?>" target="_blank"><?php echo JHtml::_('string.truncate', $sitename, 14, false, false); ?>
+				<a class="brand hidden-desktop hidden-tablet" href="<?php echo $page->mainPageUri; ?>" title="<?php echo JText::sprintf('TPL_ISIS_PREVIEW', $page->sitename); ?>" target="_blank"><?php echo JHtml::_('string.truncate', $page->sitename, 14, false, false); ?>
 					<span class="icon-out-2 small"></span></a>
 
-				<?php if ($params->get('admin_menus') != '0') : ?>
+				<?php if ($page->params->get('admin_menus') != '0') : ?>
 				<div class="nav-collapse">
 				<?php else : ?>
 				<div>
@@ -128,7 +74,6 @@ $optionColors = isisOptionColors(array(
 					<?php $menumodules = JModuleHelper::getModules('menu'); ?>
 					<?php foreach ($menumodules as $menumodule) : ?>
 						<?php $output = JModuleHelper::renderModule($menumodule, array('style' => 'none')); ?>
-						<?php $params = new Registry($menumodule->params); ?>
 						<?php echo $output; ?>
 					<?php endforeach; ?>
 					<ul class="nav nav-user<?php echo ($this->direction == 'rtl') ? ' pull-left' : ' pull-right'; ?>">
@@ -139,12 +84,12 @@ $optionColors = isisOptionColors(array(
 								<li>
 									<span>
 										<span class="icon-user"></span>
-										<strong><?php echo htmlspecialchars((string) $user->name, ENT_QUOTES, 'UTF-8'); ?></strong>
+										<strong><?php echo htmlspecialchars((string) $page->user->name, ENT_QUOTES, 'UTF-8'); ?></strong>
 									</span>
 								</li>
 								<li class="divider"></li>
 								<li class="">
-									<a href="index.php?option=com_admin&amp;task=profile.edit&amp;id=<?php echo $user->id; ?>"><?php echo JText::_('TPL_ISIS_EDIT_ACCOUNT'); ?></a>
+									<a href="index.php?option=com_admin&amp;task=profile.edit&amp;id=<?php echo $page->user->id; ?>"><?php echo JText::_('TPL_ISIS_EDIT_ACCOUNT'); ?></a>
 								</li>
 								<li class="divider"></li>
 								<li class="">
@@ -153,7 +98,7 @@ $optionColors = isisOptionColors(array(
 							</ul>
 						</li>
 					</ul>
-					<a class="brand visible-desktop visible-tablet" href="<?php echo $mainPageUri; ?>" title="<?php echo JText::sprintf('TPL_ISIS_PREVIEW', $sitename); ?>" target="_blank"><?php echo JHtml::_('string.truncate', $sitename, 14, false, false); ?>
+					<a class="brand visible-desktop visible-tablet" href="<?php echo $page->mainPageUri; ?>" title="<?php echo JText::sprintf('TPL_ISIS_PREVIEW', $page->sitename); ?>" target="_blank"><?php echo JHtml::_('string.truncate', $page->sitename, 14, false, false); ?>
 						<span class="icon-out-2 small"></span></a>
 				</div>
 				<!--/.nav-collapse -->
@@ -162,29 +107,32 @@ $optionColors = isisOptionColors(array(
 	</nav>
 	<!-- Header -->
 	<header class="header">
-		<?php if ($displayHeader) : ?>
+		<?php if ($page->displayHeader) : ?>
 		<div class="container-logo">
-			<img src="<?php echo $logo; ?>" class="logo" />
+			<?php if ($page->logo !== '') : ?>
+				<img src="<?php echo $page->logo; ?>" class="logo" alt="<?php echo $page->sitename; ?>" />
+			<?php else : ?>
+				<span class="logo"><?php echo IsisHelper::logo(); ?></span>
+			<?php endif; ?>
 		</div>
 		<?php endif; ?>
 		<div class="container-title">
 			<h1 class="page-title"><?php echo JText::_('ERROR'); ?></h1>
 		</div>
 	</header>
-	<?php if (!$statusFixed && $this->getInstance()->countModules('status')) : ?>
+	<?php if (!$page->statusFixed && $this->getInstance()->countModules('status')) : ?>
 		<!-- Begin Status Module -->
 		<div id="status" class="navbar status-top hidden-phone">
 			<div class="btn-toolbar">
 				<div class="btn-group pull-right">
 					<p>
-						&copy; <?php echo date('Y'); ?> <?php echo $sitename; ?>
+						&copy; <?php echo date('Y'); ?> <?php echo $page->sitename; ?>
 					</p>
 				</div>
 				<?php // Display status modules?>
 				<?php $this->statusmodules = JModuleHelper::getModules('status'); ?>
 				<?php foreach ($this->statusmodules as $statusmodule) : ?>
 					<?php $output = JModuleHelper::renderModule($statusmodule, array('style' => 'no')); ?>
-					<?php $params = new Registry($statusmodule->params); ?>
 					<?php echo $output; ?>
 				<?php endforeach; ?>
 			</div>

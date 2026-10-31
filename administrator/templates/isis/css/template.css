@@ -1708,6 +1708,10 @@ input.field-media-input {width:auto;}
 }
 .container-logo {float:right;text-align:right;}
 .logo {width:auto;max-width:100%;max-height:36px;height:auto;}
+/* The default logo: Joomla's, inline, its wordmark white on the header, dark on a light Header Colour */
+span.logo {display:inline-block;height:36px;color:#fff;}
+span.logo svg {display:block;width:auto;height:36px;}
+.header-inverse span.logo {color:#3b3a40;}
 .page-title {color:white;font-weight:normal;font-size:20px;line-height:36px;margin:0;}
 .page-title [class^="icon-"],.page-title [class*=" icon-"] {margin-right:16px;}
 @media (max-width:767px) {
@@ -2048,8 +2052,8 @@ th .tooltip-inner {font-weight:normal;}
 #permissions-sliders .input-small {width:120px;}
 .editor {overflow:hidden;position:relative;}
 .editor textarea.mce_editable {box-sizing:border-box;}
-a.grid_false {display:inline-block;height:16px;width:16px;background-image:url("../images/admin/publish_r.png");}
-a.grid_true {display:inline-block;height:16px;width:16px;background-image:url("../images/admin/icon-16-allow.png");}
+a.grid_false {display:inline-block;height:16px;width:16px;background-image:url("../../../../media/system/images/admin/publish_r.svg");}
+a.grid_true {display:inline-block;height:16px;width:16px;background-image:url("../../../../media/system/images/admin/icon-16-allow.svg");}
 textarea,input,.uneditable-input {box-shadow:none !important;}
 textarea:focus,input:focus,.uneditable-input:focus {box-shadow:none;border:1px solid var(--c-link);}
 .js-pstats-data-details dd {margin-left:240px;}

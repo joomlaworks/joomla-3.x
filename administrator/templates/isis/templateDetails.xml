@@ -10,9 +10,7 @@
     <description>TPL_ISIS_XML_DESCRIPTION</description>
     <files>
         <filename>component.php</filename>
-        <filename>cpanel.php</filename>
         <filename>favicon.ico</filename>
-        <filename>helper.php</filename>
         <filename>index.php</filename>
         <filename>login.php</filename>
         <filename>templateDetails.xml</filename>
@@ -21,7 +19,7 @@
         <folder>css</folder>
         <folder>html</folder>
         <folder>images</folder>
-        <folder>img</folder>
+        <folder>includes</folder>
         <folder>js</folder>
         <folder>language</folder>
     </files>

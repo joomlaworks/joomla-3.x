@@ -5120,6 +5120,28 @@ class JoomlaInstallerScript
             '/media/system/images/modal/bg_se.png',
             '/media/system/images/modal/bg_sw.png',
             '/media/system/images/modal/bg_w.png',
+            // The administrator templates' page set-up moved to includes/helper.php; the Control Panel uses index.php (3.18)
+            '/administrator/templates/isis/cpanel.php',
+            '/administrator/templates/isis/helper.php',
+            '/administrator/templates/prothero/cpanel.php',
+            '/administrator/templates/prothero/helper.php',
+            // The administrator templates' unused images and Isis' PNG logos (inline SVG since 3.18)
+            '/administrator/templates/isis/images/emailButton.png',
+            '/administrator/templates/isis/images/joomla.png',
+            '/administrator/templates/isis/images/login-joomla-inverse.png',
+            '/administrator/templates/isis/images/login-joomla.png',
+            '/administrator/templates/isis/images/logo-inverse.png',
+            '/administrator/templates/isis/images/logo.png',
+            '/administrator/templates/isis/images/pdf_button.png',
+            '/administrator/templates/isis/images/printButton.png',
+            '/administrator/templates/prothero/images/emailButton.png',
+            '/administrator/templates/prothero/images/joomla.png',
+            '/administrator/templates/prothero/images/login-joomla-inverse.png',
+            '/administrator/templates/prothero/images/login-joomla.png',
+            '/administrator/templates/prothero/images/logo-inverse.png',
+            '/administrator/templates/prothero/images/logo.png',
+            '/administrator/templates/prothero/images/pdf_button.png',
+            '/administrator/templates/prothero/images/printButton.png',
         );
 
         // TODO There is an issue while deleting folders using the ftp mode
@@ -5451,6 +5473,12 @@ class JoomlaInstallerScript
             '/plugins/captcha/recaptcha_invisible',
             '/plugins/system/p3p',
             '/administrator/templates/isis/less',
+            // The administrator templates' Bootstrap 2 glyph sprites (unused: IcoMoon draws the icons) and legacy images (SVG
+            // in media/system/images/admin since 3.18)
+            '/administrator/templates/isis/img',
+            '/administrator/templates/isis/images/admin',
+            '/administrator/templates/prothero/img',
+            '/administrator/templates/prothero/images/admin',
             '/templates/protostar/less',
         );
 
