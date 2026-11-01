@@ -681,6 +681,14 @@ final class SiteApplication extends CMSApplication
 
             case 'html':
             default:
+                // "Site - Site": a view without a menu item of its own took the active (home) item's Browser Page Title,
+                // which defaults to the site name, and added the site name to it (Site Name in Page Titles)
+                $sitename = (string) $this->get('sitename');
+
+                if ($sitename !== '' && $this->document->getTitle() === \JText::sprintf('JPAGETITLE', $sitename, $sitename)) {
+                    $this->document->setTitle($sitename);
+                }
+
                 $template = $this->getTemplate(true);
                 $file     = $this->input->get('tmpl', 'index');
 
