@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
 			</h1>
 		</div>
 	<?php endif; ?>
-	<?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
+	<?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', (string) $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
 		<div class="login-description">
 	<?php endif; ?>
 	<?php if ($this->params->get('logindescription_show') == 1) : ?>
@@ -26,7 +26,7 @@ defined('_JEXEC') or die;
 	<?php if ($this->params->get('login_image') != '') : ?>
 		<img src="<?php echo $this->escape($this->params->get('login_image')); ?>" class="login-image" alt="<?php echo JText::_('COM_USERS_LOGIN_IMAGE_ALT'); ?>" />
 	<?php endif; ?>
-	<?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
+	<?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', (string) $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
 		</div>
 	<?php endif; ?>
 	<form action="<?php echo JRoute::_('index.php?option=com_users&task=user.login'); ?>" method="post" class="form-validate form-horizontal well">

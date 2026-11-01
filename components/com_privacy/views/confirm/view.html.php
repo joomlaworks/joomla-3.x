@@ -107,6 +107,11 @@ class PrivacyViewConfirm extends JViewLegacy
 
         $title = $this->params->get('page_title', '');
 
+        // Without a menu item of its own, page_title is another item's (the home item's) or the site name
+        if (!$menu || ($menu->query['option'] ?? '') !== 'com_privacy' || ($menu->query['view'] ?? '') !== 'confirm') {
+            $title = JText::_('COM_PRIVACY_VIEW_CONFIRM_PAGE_TITLE');
+        }
+
         if (empty($title)) {
             $title = $app->get('sitename');
         } elseif ($app->get('sitename_pagetitles', 0) == 1) {

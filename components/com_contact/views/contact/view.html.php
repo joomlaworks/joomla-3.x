@@ -383,6 +383,11 @@ class ContactViewContact extends JViewLegacy
             }
         }
 
+        // Without an active menu item, page_title is the site name
+        if (!$menu && $this->item->name) {
+            $title = $this->item->name;
+        }
+
         if (empty($title)) {
             $title = $app->get('sitename');
         } elseif ($app->get('sitename_pagetitles', 0) == 1) {

@@ -146,6 +146,13 @@ class ContentViewForm extends JViewLegacy
 
         $title = $this->params->def('page_title', JText::_('COM_CONTENT_FORM_EDIT_ARTICLE'));
 
+        // Without a menu item of its own, page_title is another item's (e.g. the article's category) or the site name
+        if (!$menu || ($menu->query['option'] ?? '') !== 'com_content' || ($menu->query['view'] ?? '') !== 'form') {
+            $title = JText::_('COM_CONTENT_FORM_EDIT_ARTICLE');
+        }
+
+        $crumb = $title;
+
         if ($app->get('sitename_pagetitles', 0) == 1) {
             $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
         } elseif ($app->get('sitename_pagetitles', 0) == 2) {
@@ -155,7 +162,7 @@ class ContentViewForm extends JViewLegacy
         $this->document->setTitle($title);
 
         $pathway = $app->getPathWay();
-        $pathway->addItem($title, '');
+        $pathway->addItem($crumb, '');
 
         if ($this->params->get('menu-meta_description')) {
             $this->document->setDescription($this->params->get('menu-meta_description'));

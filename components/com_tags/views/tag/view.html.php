@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * HTML View class for the Tags component
@@ -241,8 +242,12 @@ class TagsViewTag extends JViewLegacy
         $pathway          = $app->getPathway();
         $title            = '';
 
-        // Highest priority for "Browser Page Title".
-        if ($menu) {
+        // Highest priority for "Browser Page Title", when the menu item shows these tags (not the home item made active)
+        $menuTags = $menu ? implode(',', (array) ($menu->query['id'] ?? array())) : '';
+        $menuTags = implode(',', array_filter(ArrayHelper::toInteger(explode(',', $menuTags))));
+
+        if ($menu && ($menu->query['option'] ?? '') === 'com_tags' && ($menu->query['view'] ?? '') === 'tag'
+            && $menuTags === (string) $this->state->get('tag.id')) {
             $title = $menu->params->get('page_title', '');
         }
 

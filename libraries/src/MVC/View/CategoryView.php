@@ -260,6 +260,14 @@ class CategoryView extends HtmlView
 
         $title = $this->params->get('page_title', '');
 
+        // Without a menu item of its own, page_title is another item's (the home item's) or the site name
+        $query = $this->menu ? $this->menu->query : array();
+
+        if (!isset($query['option'], $query['view'], $query['id']) || $query['option'] !== $this->extension || $query['view'] !== 'category'
+            || (int) $query['id'] !== (int) $this->category->id) {
+            $title = $this->category->title;
+        }
+
         if (empty($title)) {
             $title = $app->get('sitename');
         } elseif ($app->get('sitename_pagetitles', 0) == 1) {

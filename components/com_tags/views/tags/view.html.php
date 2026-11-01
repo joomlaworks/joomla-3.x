@@ -133,73 +133,22 @@ class TagsViewTags extends JViewLegacy
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
 
-        // If this is not a single tag menu item, set the page title to the tag titles
-        $title = '';
+        $title = $this->params->get('page_title', '');
 
-        if (!empty($this->item)) {
-            foreach ($this->item as $i => $itemElement) {
-                if ($itemElement->title) {
-                    if ($i != 0) {
-                        $title .= ', ';
-                    }
-
-                    $title .= $itemElement->title;
-                }
-            }
-
-            if (empty($title)) {
-                $title = $app->get('sitename');
-            } elseif ($app->get('sitename_pagetitles', 0) == 1) {
-                $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-            } elseif ($app->get('sitename_pagetitles', 0) == 2) {
-                $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
-            }
-
-            $this->document->setTitle($title);
-
-            foreach ($this->item as $itemElement) {
-                if ($itemElement->metadesc) {
-                    $this->document->setDescription($this->item->metadesc);
-                } elseif ($this->params->get('menu-meta_description')) {
-                    $this->document->setDescription($this->params->get('menu-meta_description'));
-                }
-
-                if ($itemElement->metakey) {
-                    $this->document->setMetadata('keywords', $this->tag->metakey);
-                } elseif ($this->params->get('menu-meta_keywords')) {
-                    $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
-                }
-
-                if ($this->params->get('robots')) {
-                    $this->document->setMetadata('robots', $this->params->get('robots'));
-                }
-
-                if ($app->get('MetaAuthor') == '1') {
-                    $this->document->setMetaData('author', $itemElement->created_user_id);
-                }
-
-                $mdata = $this->item->metadata->toArray();
-
-                foreach ($mdata as $k => $v) {
-                    if ($v) {
-                        $this->document->setMetadata($k, $v);
-                    }
-                }
-            }
+        // Without a menu item of its own, page_title is another item's (the home item's) or the site name
+        if (!$menu || ($menu->query['option'] ?? '') !== 'com_tags' || ($menu->query['view'] ?? '') !== 'tags') {
+            $title = JText::_('COM_TAGS_DEFAULT_PAGE_TITLE');
         }
 
-        // Respect configuration Sitename Before/After for TITLE in views All Tags.
-        if (!$title && ($pos = $app->get('sitename_pagetitles', 0))) {
-            $title = $this->document->getTitle();
-
-            if ($pos == 1) {
-                $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-            } else {
-                $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
-            }
-
-            $this->document->setTitle($title);
+        if (empty($title)) {
+            $title = $app->get('sitename');
+        } elseif ($app->get('sitename_pagetitles', 0) == 1) {
+            $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+        } elseif ($app->get('sitename_pagetitles', 0) == 2) {
+            $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
         }
+
+        $this->document->setTitle($title);
 
         // Add alternative feed link
         if ($this->params->get('show_feed_link', 1) == 1) {

@@ -94,6 +94,11 @@ class UsersViewLogin extends JViewLegacy
 
         $title = $this->params->get('page_title', '');
 
+        // Without a menu item of its own, page_title is another item's (the home item's) or the site name
+        if (!$menu || ($menu->query['option'] ?? '') !== 'com_users' || ($menu->query['view'] ?? '') !== 'login') {
+            $title = $login ? JText::_('JLOGIN') : JText::_('JLOGOUT');
+        }
+
         if (empty($title)) {
             $title = $app->get('sitename');
         } elseif ($app->get('sitename_pagetitles', 0) == 1) {

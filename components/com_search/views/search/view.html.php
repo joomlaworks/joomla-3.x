@@ -44,7 +44,10 @@ class SearchViewSearch extends JViewLegacy
         $searchWord = $state->get('keyword');
         $params     = $app->getParams();
 
-        if (!$app->getMenu()->getActive()) {
+        $menu = $app->getMenu()->getActive();
+
+        // Without a menu item of its own, page_title is another item's (the home item's) or the site name
+        if (!$menu || ($menu->query['option'] ?? '') !== 'com_search' || ($menu->query['view'] ?? '') !== 'search') {
             $params->set('page_title', JText::_('COM_SEARCH_SEARCH'));
         }
 

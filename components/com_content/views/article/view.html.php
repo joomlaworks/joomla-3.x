@@ -238,6 +238,11 @@ class ContentViewArticle extends JViewLegacy
             }
         }
 
+        // Without an active menu item, page_title is the site name
+        if (!$menu) {
+            $title = $this->item->params->get('article_page_title', $this->item->title ?: $title);
+        }
+
         // Check for empty title and add site name if param is set
         if (empty($title)) {
             $title = $app->get('sitename');
