@@ -178,6 +178,7 @@ class PlgCaptchaIconcaptcha extends JPlugin
     {
         JLoader::registerNamespace('IconCaptcha', __DIR__ . '/lib/src', false, false, 'psr4');
         JLoader::register('PlgCaptchaIconcaptchaToken', __DIR__ . '/token.php');
+        JLoader::register('PlgCaptchaIconcaptchaAttempts', __DIR__ . '/attempts.php');
 
         // The session IconCaptcha keeps its challenges in
         JFactory::getSession();
@@ -193,10 +194,17 @@ class PlgCaptchaIconcaptcha extends JPlugin
                 'iconAmount' => array('min' => 5, 'max' => 8),
             ),
             'validation' => array(
+                // Wrong answers per IP address (not per session, which a script renews for every guess): that many within
+                // two minutes, then two minutes' wait
                 'attempts' => array(
                     'enabled' => true,
                     'amount'  => $attempts,
-                    'timeout' => 60,
+                    'timeout' => 120,
+                    'valid'   => 120,
+                    'storage' => array(
+                        'driver'  => 'PlgCaptchaIconcaptchaAttempts',
+                        'options' => array(),
+                    ),
                 ),
             ),
         ));

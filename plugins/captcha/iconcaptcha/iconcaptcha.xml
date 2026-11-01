@@ -16,6 +16,7 @@
         <folder>lib</folder>
         <filename>license.txt</filename>
         <filename>token.php</filename>
+        <filename>attempts.php</filename>
     </files>
     <languages>
         <language tag="en-GB">en-GB.plg_captcha_iconcaptcha.ini</language>
