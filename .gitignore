@@ -32,6 +32,7 @@ Desktop.ini
 AGENTS.md
 AGENTS-HISTORY.md
 QA-PROMPT.md
+UTD-EVOLUTION-REPORT.md
 
 # Python bytecode (docs/ build and format scripts)
 __pycache__/
