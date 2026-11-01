@@ -27,14 +27,18 @@
 	const icon = (name) => (options().icons || {})[name] || '';
 
 	// A path of the site (images/x.pdf) or an address, made absolute against the page's base (pdf.js resolves against the
-	// window's address, which a srcdoc frame, as the Blocks editor's preview, doesn't have)
+	// window's address, which a srcdoc frame, as the Blocks editor's preview, doesn't have). Only the site's own files: an
+	// address elsewhere (written into content by hand) is refused, as the document would be fetched with the page's origin
 	const resolve = (url) => {
-		const address = /^(https?:)?\/\//i.test(url) || url.charAt(0) === '/' ? url : (options().root || '/') + url;
+		const root = options().root || '/';
+		const address = /^(https?:)?\/\//i.test(url) || url.charAt(0) === '/' ? url : root + url;
 
 		try {
-			return new URL(address, document.baseURI).href;
+			const resolved = new URL(address, document.baseURI);
+
+			return resolved.origin === new URL(root, document.baseURI).origin ? resolved.href : null;
 		} catch (error) {
-			return address;
+			return null;
 		}
 	};
 
@@ -68,8 +72,14 @@
 
 	const open = (url) => load().then((lib) => {
 		const settings = options();
+		const address = resolve(url);
+
+		if (!address) {
+			throw new Error('Not a file of this site');
+		}
+
 		const task = lib.getDocument({
-			url: resolve(url),
+			url: address,
 			cMapUrl: settings.cmaps,
 			cMapPacked: true,
 			standardFontDataUrl: settings.fonts,
@@ -137,7 +147,7 @@
 	let thumbObserver = null;
 
 	const drawThumbnail = (element) => {
-		const width = parseInt(element.getAttribute('data-pdf-width'), 10) || element.clientWidth || 120;
+		const width = Math.min(Math.max(parseInt(element.getAttribute('data-pdf-width'), 10) || element.clientWidth || 120, 16), 1200);
 
 		thumbnail(element.getAttribute('data-pdf-thumb'), width).then((result) => {
 			result.canvas.className = 'cms-pdf-thumb';
@@ -200,6 +210,11 @@
 		}
 
 		const url = resolve(element.getAttribute('data-pdf'));
+
+		if (!url) {
+			return null;
+		}
+
 		const name = element.getAttribute('data-name') || decodeURIComponent(url.split('/').pop().split('?')[0]);
 		const download = element.getAttribute('data-download') !== '0';
 		const state = { pdf: null, pages: [], scale: 1, fit: true, size: null, tasks: new Map(), current: 1 };
