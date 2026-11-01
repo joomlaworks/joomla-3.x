@@ -603,7 +603,7 @@ SQL;
     private function writeConfiguration(CommandIO $io, array $changes, $failure = null)
     {
         $file   = JPATH_CONFIGURATION . '/configuration.php';
-        $config = new Registry(get_object_vars(new \JConfig()));
+        $config = new Registry(ConfigSetCommand::readConfiguration());
 
         foreach ($changes as $option => $value) {
             $config->set($option, $value);

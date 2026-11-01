@@ -11,7 +11,6 @@ namespace Joomla\CMS\Console;
 
 defined('JPATH_PLATFORM') or die;
 
-use Joomla\CMS\Factory;
 
 /**
  * Shows the value of one, a group or all of the global configuration options.
@@ -92,7 +91,7 @@ class ConfigGetCommand extends AbstractCommand
      */
     protected function doExecute(CommandIO $io)
     {
-        $configs = Factory::getConfig()->toArray();
+        $configs = ConfigSetCommand::readConfiguration();
         $option  = (string) $io->getArgument('option');
         $group   = (string) $io->getOption('group');
         $secrets = (bool) $io->getOption('show-secrets');

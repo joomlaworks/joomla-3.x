@@ -87,7 +87,7 @@ class ConfigSetCommand extends AbstractCommand
      */
     protected function doExecute(CommandIO $io)
     {
-        $current = get_object_vars(new \JConfig());
+        $current = static::readConfiguration();
         $changes = array();
 
         foreach ((array) $io->getArgument('options') as $pair) {
@@ -189,6 +189,41 @@ class ConfigSetCommand extends AbstractCommand
     }
 
     /**
+     * The options of configuration.php as the file holds them now.
+     *
+     * A long-running process (the MCP server) loaded JConfig when it started, and a class can't be loaded again, so later
+     * runs read the file under a name of their own: otherwise they reported, and saved back, the values it had then.
+     *
+     * @return  array  Option => value
+     *
+     * @since   3.18.0
+     */
+    public static function readConfiguration()
+    {
+        $file = JPATH_CONFIGURATION . '/configuration.php';
+
+        if (!class_exists('JConfig', false)) {
+            require_once $file;
+
+            return get_object_vars(new \JConfig());
+        }
+
+        clearstatcache(true, $file);
+        $code = is_file($file) ? file_get_contents($file) : false;
+
+        if ($code === false || !preg_match('/\bclass\s+JConfig\b/', $code)) {
+            return get_object_vars(new \JConfig());
+        }
+
+        $name = 'JConfigRead' . bin2hex(random_bytes(8));
+
+        // The site's own configuration file, as including it would run it
+        eval('?>' . preg_replace('/\bclass\s+JConfig\b/', 'class ' . $name, $code, 1));
+
+        return class_exists($name, false) ? get_object_vars(new $name()) : get_object_vars(new \JConfig());
+    }
+
+    /**
      * Save configuration options with the Global Configuration model.
      *
      * @param   CommandIO  $io       The output
@@ -201,7 +236,7 @@ class ConfigSetCommand extends AbstractCommand
     protected function saveConfiguration(CommandIO $io, array $changes)
     {
         if ($io->isDryRun()) {
-            $current = get_object_vars(new \JConfig());
+            $current = static::readConfiguration();
 
             foreach ($changes as $option => $value) {
                 $old = isset($current[$option]) ? $current[$option] : null;
@@ -227,7 +262,7 @@ class ConfigSetCommand extends AbstractCommand
         // The model expects every option, as the Global Configuration form sends them
         $model = new \ConfigModelApplication();
 
-        if (!$model->save(array_merge(get_object_vars(new \JConfig()), $changes))) {
+        if (!$model->save(array_merge(static::readConfiguration(), $changes))) {
             $io->error('The configuration was not saved.');
 
             return false;
