@@ -237,6 +237,32 @@
 		});
 	}
 
+	/* --- The bar's height: two rows when the menu and the site's name don't fit on one (768 to 979 pixels, long menu labels) --- */
+
+	function initNavHeight() {
+		var navbar = $('nav.navbar');
+
+		if (!navbar) {
+			return;
+		}
+
+		var update = function () {
+			if (window.innerWidth >= 768 && getComputedStyle(navbar).position === 'fixed') {
+				// Less its bottom border, which the page and the toolbar overlap (44px for the one row)
+				document.documentElement.style.setProperty('--nav-h', (navbar.offsetHeight - 1) + 'px');
+			} else {
+				document.documentElement.style.removeProperty('--nav-h');
+			}
+		};
+
+		update();
+		window.addEventListener('resize', update);
+
+		if (window.ResizeObserver) {
+			new ResizeObserver(update).observe(navbar);
+		}
+	}
+
 	/* --- The pinned toolbar --- */
 
 	function initStickyToolbar() {
@@ -252,7 +278,10 @@
 		}
 
 		var measure = function () {
-			navTop = subhead.getBoundingClientRect().top + window.pageYOffset - parseInt(data.getAttribute('data-tmpl-offset'), 10);
+			// A bar taller than its one row (initNavHeight()) pins the toolbar that much earlier
+			var extra = Math.max(0, (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h'), 10) || 44) - 44);
+
+			navTop = subhead.getBoundingClientRect().top + window.pageYOffset - parseInt(data.getAttribute('data-tmpl-offset'), 10) - extra;
 
 			if (main) {
 				main.style.top = (height(subhead) + height(navbar)) + 'px';
@@ -548,6 +577,7 @@
 		colourAllChosen();
 		initMenu();
 		initMenuButton();
+		initNavHeight();
 		initStickyToolbar();
 		initTabRows();
 		initReorder();

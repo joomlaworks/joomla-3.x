@@ -3286,7 +3286,7 @@ td.nowrap.has-context {width:45%;}
 .subhead-collapse.collapse {height:auto;overflow:visible;}
 .btn-toolbar {margin-bottom:5px;}
 .btn-toolbar .btn-wrapper {display:inline-block;margin:0 0 8px 5px;}
-.subhead-fixed {position:fixed;width:100%;top:44px;z-index:100;box-shadow:var(--shadow-sm);}
+.subhead-fixed {position:fixed;width:100%;top:var(--nav-h, 44px);z-index:100;box-shadow:var(--shadow-sm);}
 @media (max-width:767px) {
     .subhead {margin-left:-20px;margin-right:-20px;padding-left:10px;padding-right:10px;}
 }
@@ -3374,7 +3374,7 @@ ul.treeselect ul.dropdown-menu li {padding:0 5px;border:none;}
     .container-fluid {padding-left:10px;padding-right:10px;}
 }
 @media (min-width:768px) {
-    body {padding-top:44px;}
+    body {padding-top:var(--nav-h, 44px);}
     .nav-collapse.collapse.in {height:auto !important;}
 }
 @media (max-width:767px) {
