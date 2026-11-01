@@ -119,10 +119,12 @@ class TemplatesViewTemplate extends JViewLegacy
             $this->type   = 'file';
         } elseif (in_array($ext, $imageTypes)) {
             $this->image = $this->get('Image');
-            $this->type  = 'image';
+
+            // A file that can't be read is reported by the model; show the template's home instead
+            $this->type = $this->image ? 'image' : 'home';
         } elseif (in_array($ext, $fontTypes)) {
             $this->font = $this->get('Font');
-            $this->type = 'font';
+            $this->type = $this->font ? 'font' : 'home';
         } elseif (in_array($ext, $archiveTypes)) {
             $this->archive = $this->get('Archive');
             $this->type    = 'archive';
