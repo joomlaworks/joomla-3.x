@@ -1226,6 +1226,25 @@ class FinderIndexerQuery
             }
         }
 
+        // SQLite compares text with NOCASE (ASCII case only), where MySQL's collation also ignores accents ("tomas" finds
+        // "tomás"): when the exact lookup found nothing, the driver's LIKE, which compares as MySQL does. A scan of the
+        // terms, so only then
+        if (empty($token->matches) && $db instanceof JDatabaseDriverMysqlonsqlite) {
+            $like = function ($column, $value) use ($db) {
+                return $db->quoteName($column) . ' LIKE ' . $db->quote($db->escape((string) $value, true), false);
+            };
+
+            $query = $db->getQuery(true)
+                ->select('t.term, t.term_id')
+                ->from('#__finder_terms AS t')
+                ->where($like('t.term', $token->term) . ($token->phrase ? '' : ' OR ' . $like('t.stem', $token->stem)))
+                ->where('t.phrase = ' . ($token->phrase ? 1 : 0));
+
+            foreach ($db->setQuery($query)->loadObjectList() as $match) {
+                $token->matches[$match->term] = (int) $match->term_id;
+            }
+        }
+
         // If no matches were found, try to find a similar but better token.
         if (empty($token->matches)) {
             // Create a database query to get the similar terms.
