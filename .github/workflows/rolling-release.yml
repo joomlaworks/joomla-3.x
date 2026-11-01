@@ -5,7 +5,7 @@ name: Rolling Release
 #   https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip
 #
 # com_joomlaupdate compares the version in docs/list.xml against the site's
-# current Joomla version. To publish a new release, bump the <version> in
+# current Joomla version. To publish a new release, bump the rows' version in
 # docs/list.xml (and Version.php) and push — this workflow does the rest.
 
 on:
@@ -45,7 +45,12 @@ jobs:
       - name: Read version from list.xml
         id: version
         run: |
-          VERSION=$(grep -oP '(?<=<version>)\d+\.\d+\.\d+' docs/list.xml | head -1)
+          # The rows' version attribute (the collection has no <version> elements), the highest if they differ
+          VERSION=$(grep -oP '<extension\b[^>]*\bversion="\K\d+\.\d+\.\d+' docs/list.xml | sort -V | tail -1)
+          if [ -z "$VERSION" ]; then
+            echo "::error::No version found in docs/list.xml"
+            exit 1
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Create rolling release with zip
