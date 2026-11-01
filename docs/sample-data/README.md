@@ -66,3 +66,13 @@ and `news/credits.json` credit each one.
 The Studio set's own images, `images/sampledata/studio/<name>.webp` (1920 × 1080) with a 960px copy `<name>-960.webp` for
 phones (about 2.3 MB), are CC0 photos from Wikimedia Commons (Unsplash's CC0 era), credited in `studio/CREDITS.md` and
 `studio/credits.json`. Rookwood's `img()` adds the smaller copy as a `srcset` whenever one exists next to an image.
+
+## The PDF files
+
+Each set has one article showing a PDF with the `{pdf}` shortcode ("Content - PDF"): a viewer where the shortcode is a paragraph of
+its own, a link where it's in a sentence. The files are in `images/sampledata/pdf/`: `city-budget-2027.pdf` (News, *Riverton's
+2027 budget, explained in three pages*), `reading-list.pdf` (Blog, *A reading list for slower days*) and `studio-profile.pdf`
+(Studio, *Our studio profile, in three pages*). `pdfs/build.py` writes them: HTML pages of this project's own text (fictional
+places, people and figures; the reading list names public domain books) with the sets' CC0 images, printed by headless Chrome
+(three pages each, the last landscape; Noto Sans and Noto Serif, SIL Open Font License, embedded as subsets). The articles are the
+last of each generator, so the rest of a set's content stays as it was.

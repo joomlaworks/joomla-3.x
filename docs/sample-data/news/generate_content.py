@@ -316,6 +316,30 @@ for i, (section, headline) in enumerate(SUBSCRIBER_TITLES):
         'access': 'Registered',
     })
 
+# An article showing a PDF with the {pdf} shortcode (the file is written by docs/sample-data/pdfs/build.py): a viewer where the
+# shortcode is a paragraph of its own, a link where it's in a sentence. Last, so the rest stays as it was.
+articles.append({
+    'category': 'finance',
+    'title': 'Riverton\'s 2027 budget, explained in three pages',
+    'intro': '<p>The council has approved next year\'s budget. Our three-page summary shows where the money goes, what changes '
+             'from this year, and what residents should see built, opened and repaired, quarter by quarter.</p>',
+    'full': '\n'.join([
+        '<p>%s</p>' % paragraph(), '<p>%s</p>' % paragraph(),
+        '<p>{pdf images/sampledata/pdf/city-budget-2027.pdf}</p>',
+        '<h2>What changes for residents</h2>',
+        '<p>%s</p>' % paragraph(), '<p>%s</p>' % paragraph(),
+        '<p>Prefer to read it later? Download {pdf images/sampledata/pdf/city-budget-2027.pdf} and keep it for the next council meeting.</p>',
+    ]),
+    'image': '%s/finance/finance-24.jpg' % IMG_BASE,
+    'image_alt': 'Riverton\'s 2027 budget, explained in three pages',
+    'author': random.choice(REPORTERS),
+    'publish_up': (now - datetime.timedelta(hours=26, minutes=random.randint(0, 59))).strftime('%Y-%m-%d %H:%M'),
+    'featured': False,
+    'tags': [],
+    'hits': hits(40, 9000),
+    'has': ['pdf'],
+})
+
 categories = [{'alias': a, 'title': t, 'description': '<p>%s</p>' % d} for a, t, d in CATS]
 categories.append({'alias': 'subscribers', 'title': 'For Subscribers',
                    'description': '<p>In-depth reporting, analysis and behind-the-scenes stories for our registered readers. Log in to read them in full.</p>'})

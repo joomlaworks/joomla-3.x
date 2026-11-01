@@ -407,6 +407,21 @@
 				"Design"
 			],
 			"hits": 10
+		},
+		{
+			"category": "journal",
+			"title": "Our studio profile, in three pages",
+			"intro": "<p>Who we are, what we do and how a project runs, in a short PDF to read here, download or pass on.</p>",
+			"full": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>\n<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>\n<p>{pdf images/sampledata/pdf/studio-profile.pdf}</p>\n<h2>Why a PDF</h2>\n<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>\n<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>\n<p>Sharing it with your team? Download {pdf images/sampledata/pdf/studio-profile.pdf}, or send them this page.</p>",
+			"image": "images/sampledata/studio/violet-desk.webp",
+			"image_alt": "A desk with a laptop in violet light",
+			"author": "Mara Ellis",
+			"publish_up": "2026-10-03 06:30",
+			"featured": false,
+			"tags": [
+				"Studio life"
+			],
+			"hits": 9
 		}
 	]
 }

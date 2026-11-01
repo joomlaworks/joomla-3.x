@@ -326,6 +326,21 @@
     "Society"
    ],
    "hits": 28
+  },
+  {
+   "category": "ideas",
+   "title": "A reading list for slower days",
+   "intro": "<p>Eight old books, all in the public domain, for long evenings and train journeys. I made it a page you can print, with boxes to tick.</p>",
+   "full": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>\n<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>\n<p>{pdf images/sampledata/pdf/reading-list.pdf}</p>\n<h2>Why old books</h2>\n<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>\n<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>\n<p>To print it, download {pdf images/sampledata/pdf/reading-list.pdf}: the last page has room for your own notes.</p>",
+   "image": "images/news/opinion/opinion-05.jpg",
+   "image_alt": "A reading list for slower days",
+   "author": "Finch Hartley",
+   "publish_up": "2026-10-04 07:45",
+   "featured": true,
+   "tags": [
+    "Culture"
+   ],
+   "hits": 25
   }
  ]
 }

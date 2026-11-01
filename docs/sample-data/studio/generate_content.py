@@ -169,5 +169,20 @@ for i, (title, image, alt, tags, intro, featured) in enumerate(journal):
                      'author': AUTHORS[i % len(AUTHORS)], 'publish_up': when.strftime('%Y-%m-%d %H:%M'), 'featured': featured, 'tags': tags,
                      'hits': hits(150, 3000)})
 
+# A journal post showing a PDF with the {pdf} shortcode (the file is written by docs/sample-data/pdfs/build.py): a viewer where
+# the shortcode is a paragraph of its own, a link where it's in a sentence. Last, so the rest stays as it was.
+articles.append({'category': 'journal', 'title': 'Our studio profile, in three pages',
+                 'intro': '<p>Who we are, what we do and how a project runs, in a short PDF to read here, download or pass on.</p>',
+                 'full': '\n'.join([
+                     '<p>%s</p>' % LOREM[0], '<p>%s</p>' % LOREM[1],
+                     '<p>{pdf images/sampledata/pdf/studio-profile.pdf}</p>',
+                     '<h2>Why a PDF</h2>',
+                     '<p>%s</p>' % LOREM[2], '<p>%s</p>' % LOREM[3],
+                     '<p>Sharing it with your team? Download {pdf images/sampledata/pdf/studio-profile.pdf}, or send them this page.</p>',
+                 ]),
+                 'image': STUDIO + 'violet-desk.webp', 'image_alt': 'A desk with a laptop in violet light', 'author': AUTHORS[0],
+                 'publish_up': (start - datetime.timedelta(days=2, hours=3)).strftime('%Y-%m-%d %H:%M'), 'featured': False,
+                 'tags': ['Studio life'], 'hits': hits(150, 3000)})
+
 json.dump({'categories': categories, 'articles': articles}, open(os.path.join(HERE, 'content.json'), 'w'), indent='\t', ensure_ascii=False)
 print(len(articles), 'articles')

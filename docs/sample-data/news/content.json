@@ -4341,6 +4341,22 @@
     "ul>\n<li>Reprehenderit"
    ],
    "access": "Registered"
+  },
+  {
+   "category": "finance",
+   "title": "Riverton's 2027 budget, explained in three pages",
+   "intro": "<p>The council has approved next year's budget. Our three-page summary shows where the money goes, what changes from this year, and what residents should see built, opened and repaired, quarter by quarter.</p>",
+   "full": "<p>Mauris ut irure ipsum ea sed sit ex pretium sed nulla tincidunt. Fringilla morbi dolor mollit officia occaecat cillum vulputate felis porta proident id. Exercitation dolore nunc tortor vitae consectetur fringilla, sagittis eiusmod consectetur integer sed.</p>\n<p>Facilisis ex id mollit curabitur occaecat vulputate cupidatat. Lectus luctus irure eiusmod facilisis tempor labore pariatur nostrud cillum nostrud officia fringilla tincidunt commodo. Officia aliquet porta vitae eget, ornare in exercitation pariatur. Qui do aliquip aliquip aliquip commodo occaecat facilisis voluptate nostrud exercitation morbi enim irure.</p>\n<p>{pdf images/sampledata/pdf/city-budget-2027.pdf}</p>\n<h2>What changes for residents</h2>\n<p>Qui in aliqua lorem elit ullamco tincidunt adipiscing. Aliquip labore integer lacus lacus felis fringilla aliqua enim tortor tortor. Adipiscing exercitation labore anim integer incididunt sunt porta aliqua eiusmod est commodo.</p>\n<p>Anim pretium enim tempor veniam duis pretium in elit vitae aliqua amet id cupidatat sint exercitation. Deserunt nisi aliqua gravida lorem dolore fringilla in aliquip, quis tortor curabitur integer sed excepteur et. Magna ornare duis minim luctus excepteur sed aliquet non laboris sagittis esse lacus tortor elit mauris et reprehenderit. Curabitur et dolore cillum sagittis in esse nisi reprehenderit ut minim ea reprehenderit est veniam ea eiusmod. Ullamco laborum voluptate velit morbi, ornare consectetur facilisis luctus commodo mauris cillum ut eget officia.</p>\n<p>Prefer to read it later? Download {pdf images/sampledata/pdf/city-budget-2027.pdf} and keep it for the next council meeting.</p>",
+   "image": "images/news/finance/finance-24.jpg",
+   "image_alt": "Riverton's 2027 budget, explained in three pages",
+   "author": "Anna Kovač",
+   "publish_up": "2026-10-04 15:15",
+   "featured": false,
+   "tags": [],
+   "hits": 11,
+   "has": [
+    "pdf"
+   ]
   }
  ]
 }

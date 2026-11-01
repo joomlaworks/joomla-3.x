@@ -59,5 +59,29 @@ for title, category, tags in plan:
     })
     when -= datetime.timedelta(days=random.randint(2, 4), hours=random.randint(-5, 5), minutes=random.randint(0, 59))
 
+# A post showing a PDF with the {pdf} shortcode (the file is written by docs/sample-data/pdfs/build.py): a viewer where the
+# shortcode is a paragraph of its own, a link where it's in a sentence. Last, so the rest stays as it was.
+articles.append({
+    'category': 'ideas', 'title': 'A reading list for slower days',
+    'intro': '<p>Eight old books, all in the public domain, for long evenings and train journeys. I made it a page you can print, '
+             'with boxes to tick.</p>',
+    'full': '\n'.join([
+        '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. '
+        'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>',
+        '<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint '
+        'occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>',
+        '<p>{pdf images/sampledata/pdf/reading-list.pdf}</p>',
+        '<h2>Why old books</h2>',
+        '<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque '
+        'ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>',
+        '<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui '
+        'ratione voluptatem sequi nesciunt.</p>',
+        '<p>To print it, download {pdf images/sampledata/pdf/reading-list.pdf}: the last page has room for your own notes.</p>',
+    ]),
+    'image': 'images/news/opinion/opinion-05.jpg', 'image_alt': 'A reading list for slower days', 'author': AUTHOR,
+    'publish_up': '2026-10-04 07:45', 'featured': True, 'tags': ['Culture'],
+    'hits': hits(180, 2600),
+})
+
 json.dump({'categories': categories, 'articles': articles}, open(os.path.join(HERE, 'content.json'), 'w'), indent=1, ensure_ascii=False)
-print(len(articles), 'posts,', articles[-1]['publish_up'], 'to', articles[0]['publish_up'])
+print(len(articles), 'posts,', min(a['publish_up'] for a in articles), 'to', max(a['publish_up'] for a in articles))
