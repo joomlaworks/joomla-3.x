@@ -46,13 +46,16 @@ A short overview of each release. Every change is described in detail in [CHANGE
 Summary of changes:
 - **Much more of the core can be removed, cleanly:** Articles, Private Messages, Privacy, Redirect, Tags, Wrapper, the Breadcrumbs and Syndication Feeds modules and CodeMirror can be uninstalled (using K2 instead of Articles? uninstall Articles, the rest keeps working). A component takes its tables, modules, plugins, media, Smart Search entries and menu items along, and "Restore uninstalled core extensions" brings them back
 - **Prothero**, a new black and white administrator template with a dark mode, the default on new sites (Isis stays, and works with the same extensions)
-- **New editors:** Markdown (EasyMDE) and Blocks (Editor.js), next to TinyMCE 8, with a switcher in the administrator; PDF files shown on the site with a viewer
-- **A new Media Manager:** drag and drop uploads, cropping, renaming in place, large previews of images, audio, video and PDF files, and optimised uploads (upright, WebP, no metadata)
+- **New editors:** Markdown (EasyMDE) and Blocks (Editor.js), next to TinyMCE 8, with a switcher in the administrator; PDF files shown on the site with a viewer & a new editor button to make attaching PDF documents with inline previews a breeze! We've also added an editor switcher, available anywhere editors load and allows switching between TinyMCE, TinyMCE (legacy), Markdown and Blocks for the session, without losing unsaved changes
+- **A better Media Manager:** drag and drop uploads, cropping, renaming in place, large previews of images, audio, video and PDF files, and optimised uploads (upright, WebP, no metadata)
 - **Little WAF, on by default:** blocks scans, attack tools, executable uploads and object injection, sends safe security headers and cleans up the malformed addresses crawlers make up
-- **Faster, sturdier caching:** campaign and social links get cached pages, a page is rendered once however many visitors ask for it, stale pages keep a busy or failing site answering, and cache times are exact across Joomla, Varnish, CDNs and browsers
-- **Redirects for any address** of the site, and **structured data, Open Graph and X cards** for every page
-- **No MooTools in the core**, and no jQuery or Bootstrap script on administrator pages that don't need them: one shared plain JavaScript file (`global.js`) does the work, and old names keep working for extensions
-- Smart Search fixes for large sites ([#9](https://github.com/joomlaworks/joomla-3.x/issues/9), [#21](https://github.com/joomlaworks/joomla-3.x/issues/21), [#23](https://github.com/joomlaworks/joomla-3.x/issues/23)), more PHP 8.2–8.5 fixes ([#20](https://github.com/joomlaworks/joomla-3.x/issues/20)), and compatibility tested with K2, VirtueMart, Akeeba Backup, JCE, Convert Forms, HikaShop, Community Builder, JEvents, AcyMailing and Phoca Gallery
+- **Faster, sturdier caching:** campaign and social links get cached pages, a page is rendered once however many visitors ask for it, stale pages keep a busy or failing site answering, and cache times are exact across Joomla, Varnish, CDNs and browsers - fetching cache objects is also now much faster (server-side)
+- **Redirects** how you want them, not just for error pages: create custom redirects as you like
+- **Structured data, Open Graph and X cards** for every page
+- **CAPTCHA plugins**: Updated Google's reCaptcha to support all active versions & added new ones for Cloudflare Turnstile, hCaptcha, Akismet and IconCaptcha (fully self-hosted)
+- **No MooTools in the core**, and no jQuery or Bootstrap scripts on administrator pages that don't need them: one shared plain JavaScript file (`global.js`) does the work, and old names keep working for extensions. Tested extensively on many popular large extensions (K2, Virtuemart, Hikashop, JEvents, JCE, Convert Forms, AcyMailing, Community Builder and many others)
+- Smart Search fixes for large sites ([#9](https://github.com/joomlaworks/joomla-3.x/issues/9), [#21](https://github.com/joomlaworks/joomla-3.x/issues/21), [#23](https://github.com/joomlaworks/joomla-3.x/issues/23)), more PHP 8.2–8.5 fixes ([#20](https://github.com/joomlaworks/joomla-3.x/issues/20))
+- An amazing new **Debug** console
 
 Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 
@@ -81,7 +84,7 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 - Bootstrap Icons replace IcoMoon (the `icon-*` classes keep working), core icons are SVGs in the text's colour, and the language flags are redrawn
 - Isis and Protostar are plain CSS (no more Less; Isis' stylesheets about a third of their former size), wider form fields in the administrator, and no files for old Internet Explorer anywhere
 - Hammond, Finch and Rookwood send resource hints (also as `Link:` headers for Early Hints), and every page's stylesheets and scripts are sent as preload headers
-- Updated libraries: PHPMailer 7.1.1 (was 5.2.28), CodeMirror 5.65.21 (with a dark theme), jQuery UI 1.14.2, SimplePie 1.9.0, Symfony Yaml 4.4, sodium_compat 1.24.2; removed: HTML5 Shiv, Google's reCAPTCHA client, unused web service libraries and polyfills for PHP below 7.1
+- Updated libraries: PHPMailer 7.1.1 (was 5.2.28), CodeMirror 5.65.21 (with a dark theme), jQuery UI 1.14.2 (for extensions still requiring it), SimplePie 1.9.0 (for extensions still requiring it), Symfony Yaml 4.4, sodium_compat 1.24.2; removed: HTML5 Shiv, Google's reCAPTCHA client, unused web service libraries and polyfills for PHP below 7.1
 - Media Manager: current file types uploadable by default (WebP, AVIF, MP4, WebM, MP3, Opus, FLAC, Office...; SVG deliberately not), uploads up to 128 MB, a name already taken gets the time added instead of failing
 - The core system plugins run in a better order (Little WAF, Redirect, Language Filter, Remember Me and Page Cache first), so cached pages skip third-party plugins' work
 - Sites updating get TinyMCE 8 as default editor (when they used TinyMCE 4) and Prothero as administrator template (when they used Isis); the "What's New" message lists what to check after updating
