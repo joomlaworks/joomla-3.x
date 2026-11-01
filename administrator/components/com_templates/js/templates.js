@@ -82,7 +82,10 @@
 				if (chooser) {
 					document.querySelectorAll('.folder-url.selected').forEach((selected) => selected.classList.remove('selected'));
 					link.classList.add('selected');
-					chooser.querySelector('input.address').value = link.getAttribute('data-id');
+					// Every form of the modal (create, upload, copy, delete) acts on the chosen folder
+					chooser.querySelectorAll('input.address').forEach((input) => {
+						input.value = link.getAttribute('data-id');
+					});
 
 					return;
 				}
