@@ -92,17 +92,16 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 
 **Security fixes:**
 - TinyMCE 8.10.0, with 8.9.3's fix for a stored XSS in its media plugin
-- Restricted articles: Hammond, Finch and Rookwood no longer show their full text to visitors without access, and the Blocks editor no longer keeps a hidden copy of the whole text in the intro (moved by the update in existing articles)
+- Restricted articles: Hammond, Finch and Rookwood no longer show their full text to visitors without access
 - Media Manager uploads and folders stay inside the media folder, and uploads compare executable extensions in any case (the "Illegal MIME Types" option is now checked)
 - The head escapes the addresses and attributes extensions pass for links, scripts and stylesheets
-- Little WAF's redirects no longer name a host taken from the request
-- Hardening: IconCaptcha counts wrong answers per IP address and checks its requests, the Blocks renderer needs an editing right, images too large for memory are left alone
+- Command line: `database:import` refuses SQL hidden in a dump's table definitions, and an MCP server started with `--allow-write` alone can no longer create or promote administrators
 
 **Bug fixes:**
 - Administrator menu: one click opens a menu on laptops whose touchpad or screen reports touch (a second menu needed two), and the other menus open on hover while one is open
 - Pages no longer scroll sideways at tablet widths: administrator lists in Prothero and Isis hide the columns Joomla hides on phones only as far as needed to fit, and Protostar's page fits between Bootstrap's steps
 - Hammond, Finch and Rookwood: Smart Search's suggestions no longer cover the Search button, and are readable on dark pages
-- Third-party compatibility: moved core files keep loading by their old addresses (e.g. Convert Forms' TinyMCE), extensions' own date fields work, third-party components' lists are left as they were, and `extension:install` works for VirtueMart
+- `extension:install` works for extensions whose installers ask the application for its client (VirtueMart)
 - Caching (all stock Joomla 3 bugs): no empty pages from damaged cache entries, browser caching (304) of cached pages works, every visitor gets their own form token from cached pages, views keep their headers, a visit with tracking parameters no longer puts them in cached pages' links, and Redis, APCu and WinCache clean only the site's own cache
 - Lists no longer repeat or skip items between pages (all databases), and modules dragged to a new place stay there
 - Smart Search: full reindexes and the command line indexer no longer stop, and Advanced Search's dates work; searches find accented and Greek words on every database
