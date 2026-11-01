@@ -201,6 +201,7 @@ Summary of changes:
 - Smaller hardening: IconCaptcha checks its requests (an error showed the server's path), the Blocks renderer needs an editing right, images too large for memory are left alone also without a memory limit
 
 **Bug fixes:**
+- Third-party compatibility, from tests with HikaShop, Community Builder, JEvents, AcyMailing and Phoca Gallery: extensions' own date fields in the old calendar's markup work again, the administrator no longer turns third-party components' lists into searchable lists (as stock Joomla), and Prothero shows extensions' coloured Yes/No buttons
 - Extensions loading moved core files by their old address (TinyMCE 4's `tinymce.min.js`, `media/jui/...`) get the new one: Convert Forms' form editor works again
 - Lists no longer repeat or skip items between pages when sorted by a column many items share (all databases, mostly PostgreSQL and SQL Server)
 - Updates deleted Smart Search's PDF icon; installs from the upload, URL or folder tab ignored their return address
