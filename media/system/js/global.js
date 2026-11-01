@@ -4073,10 +4073,8 @@
 		},
 	};
 
-	// After the page's other scripts, as repeatable.js did (window load), so the fields' own scripts have run
-	const startRepeatables = () => {
-		document.querySelectorAll('input.form-field-repeatable').forEach((input) => CMS.repeatable.attach(input));
-
+	// repeatable.js' jQuery names, defined when it ran: extensions call them from their own ready handlers
+	const defineJRepeatable = () => {
 		if (window.jQuery && !window.jQuery.fn.JRepeatable) {
 			window.jQuery.JRepeatable = function JRepeatable(input, options) {
 				return CMS.repeatable.attach(input, options);
@@ -4088,6 +4086,15 @@
 				});
 			};
 		}
+	};
+
+	defineJRepeatable();
+	CMS.ready(defineJRepeatable);
+
+	// After the page's other scripts, as repeatable.js did (window load), so the fields' own scripts have run
+	const startRepeatables = () => {
+		defineJRepeatable();
+		document.querySelectorAll('input.form-field-repeatable').forEach((input) => CMS.repeatable.attach(input));
 	};
 
 	if (document.readyState === 'complete') {
