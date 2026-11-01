@@ -900,6 +900,19 @@ class ConsoleApplication extends CliApplication
     }
 
     /**
+     * The client ID core and extensions' install scripts ask the application for (LanguageHelper, VirtueMart's installer): the
+     * command line acts as the administrator does (installs, updates, content), as an administrator's account.
+     *
+     * @return  integer
+     *
+     * @since   3.18.0
+     */
+    public function getClientId()
+    {
+        return 1;
+    }
+
+    /**
      * @param   string  $identifier  The client name
      *
      * @return  boolean
