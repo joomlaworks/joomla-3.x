@@ -11,6 +11,9 @@ namespace Joomla\CMS\Console;
 
 defined('JPATH_PLATFORM') or die;
 
+use Joomla\CMS\Cache\CleanRequests;
+use Joomla\CMS\Cache\Storage\CommandlineStorage;
+
 /**
  * Cleans the site and administrator cache, or only its expired entries.
  *
@@ -36,9 +39,9 @@ class CacheCleanCommand extends AbstractCommand
      */
     protected $help = 'Deletes every cache group of the site and the administrator, like System > Clear Cache > Delete All. '
         . 'With the "expired" argument it only removes expired entries, like System > Clear Expired Cache. '
-        . 'A cache kept in APCu or WinCache can\'t be cleaned from the command line: those keep a separate memory for each '
-        . 'kind of PHP process, so the command refuses instead of cleaning a cache the site doesn\'t use ("expired" has nothing '
-        . 'to do there: they remove expired entries themselves).';
+        . 'A cache kept in APCu or WinCache is in the web server\'s own memory, which the command line can\'t reach: the '
+        . 'command asks the web server to clean it, which it does on its next request ("expired" has nothing to do there: '
+        . 'they remove expired entries themselves).';
 
     /**
      * @var    boolean
@@ -81,10 +84,13 @@ class CacheCleanCommand extends AbstractCommand
 
         $io->title('Cleaning System Cache');
 
-        $handler = (string) (ConfigSetCommand::readConfiguration()['cache_handler'] ?? '');
+        /** @var \CacheModelCache $model */
+        $model   = $this->getAdministratorModel('com_cache', 'Cache', 'CacheModel');
+        $storage = $model->getCache(0)->_getStorage();
 
-        if (in_array($handler, array('apcu', 'wincache'), true)) {
-            $name = $handler === 'apcu' ? 'APCu' : 'WinCache';
+        // APCu and WinCache keep the cache in the web server's own memory, which the command line can't reach
+        if ($storage instanceof CommandlineStorage) {
+            $name = $storage->handler === 'wincache' ? 'WinCache' : 'APCu';
 
             if ($expired !== '') {
                 $io->success(sprintf('Nothing to do: the cache is kept in %s, which removes expired entries itself.', $name));
@@ -92,18 +98,26 @@ class CacheCleanCommand extends AbstractCommand
                 return self::SUCCESS;
             }
 
-            $io->error(sprintf(
-                'The cache is kept in %s, which keeps a separate memory for each kind of PHP process: the command line '
-                . 'can\'t reach the web server\'s cache. Clean it in the administrator (System > Clear Cache), or restart '
-                . 'the web server\'s PHP.',
-                $name
-            ));
+            if ($io->isDryRun()) {
+                $io->plan(
+                    sprintf('Ask the web server to clean its %s cache (every group) on its next request', $name),
+                    array('action' => 'clean', 'handler' => $storage->handler)
+                );
 
-            return self::FAILURE;
+                return self::SUCCESS;
+            }
+
+            if (!$storage->cleanAll()) {
+                $io->error(sprintf('The web server\'s %s cache could not be cleaned: the cache folder\'s %s could not be written.', $name, basename(CleanRequests::getFile())));
+
+                return self::FAILURE;
+            }
+
+            $io->success(sprintf('Cache cleaned: the web server keeps it in %s and cleans it on its next request.', $name));
+
+            return self::SUCCESS;
         }
 
-        /** @var \CacheModelCache $model */
-        $model   = $this->getAdministratorModel('com_cache', 'Cache', 'CacheModel');
         $cleaned = true;
         $groups  = 0;
 

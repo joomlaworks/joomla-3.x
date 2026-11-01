@@ -22,6 +22,20 @@ use Joomla\CMS\Cache\CacheStorage;
 class WincacheStorage extends CacheStorage
 {
     /**
+     * Constructor: applies the cleans asked for on the command line, which can't reach this memory
+     *
+     * @param   array  $options  Optional parameters
+     *
+     * @since   3.18.0
+     */
+    public function __construct($options = array())
+    {
+        parent::__construct($options);
+
+        $this->applyCleanRequests();
+    }
+
+    /**
      * Check if the cache contains data stored by ID and group
      *
      * @param   string  $id     The cache data ID
@@ -181,5 +195,34 @@ class WincacheStorage extends CacheStorage
     public static function isSupported()
     {
         return extension_loaded('wincache') && function_exists('wincache_ucache_get') && !strcmp(ini_get('wincache.ucenabled'), '1');
+    }
+
+    /**
+     * A value of the store outside the cache's groups
+     *
+     * @param   string  $key  The key
+     *
+     * @return  mixed  The value, or false
+     *
+     * @since   3.18.0
+     */
+    protected function getValue($key)
+    {
+        return wincache_ucache_get($key);
+    }
+
+    /**
+     * Keep a value of the store outside the cache's groups, without an expiry
+     *
+     * @param   string  $key    The key
+     * @param   mixed   $value  The value
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    protected function setValue($key, $value)
+    {
+        return wincache_ucache_set($key, $value);
     }
 }

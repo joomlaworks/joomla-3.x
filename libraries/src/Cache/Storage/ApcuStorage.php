@@ -22,6 +22,20 @@ use Joomla\CMS\Cache\CacheStorage;
 class ApcuStorage extends CacheStorage
 {
     /**
+     * Constructor: applies the cleans asked for on the command line, which can't reach this memory
+     *
+     * @param   array  $options  Optional parameters
+     *
+     * @since   3.18.0
+     */
+    public function __construct($options = array())
+    {
+        parent::__construct($options);
+
+        $this->applyCleanRequests();
+    }
+
+    /**
      * Check if the cache contains data stored by ID and group
      *
      * @param   string  $id     The cache data ID
@@ -290,5 +304,34 @@ class ApcuStorage extends CacheStorage
         }
 
         return true;
+    }
+
+    /**
+     * A value of the store outside the cache's groups
+     *
+     * @param   string  $key  The key
+     *
+     * @return  mixed  The value, or false
+     *
+     * @since   3.18.0
+     */
+    protected function getValue($key)
+    {
+        return apcu_fetch($key);
+    }
+
+    /**
+     * Keep a value of the store outside the cache's groups, without an expiry
+     *
+     * @param   string  $key    The key
+     * @param   mixed   $value  The value
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    protected function setValue($key, $value)
+    {
+        return apcu_store($key, $value);
     }
 }

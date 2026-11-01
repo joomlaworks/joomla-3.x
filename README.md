@@ -110,7 +110,7 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 - Uninstalling one removable extension no longer breaks others, and "User - Joomla!" can no longer be uninstalled
 - Sample Data no longer hides every module after an interrupted install
 - PHP 8.1–8.5 deprecations and PHP warnings fixed throughout (Media Manager, Templates: Customise), missing language strings added, and bundled files PHP couldn't parse removed
-- `cache:clean` no longer reports success on sites caching in APCu or WinCache, which the command line can't reach; the password reset form checks the email address in the browser
+- Command line cleans of an APCu or WinCache cache (`cache:clean`, content commands) reach the web server's cache; the password reset form checks the email address in the browser
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:

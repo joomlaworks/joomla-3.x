@@ -302,7 +302,7 @@ php cli/joomla.php cache:clean
 php cli/joomla.php finder:index                  # rebuild Smart Search's index
 ```
 
-`cache:clean` can't reach a cache kept in APCu or WinCache (they keep a separate memory for each kind of PHP process): it says so and fails, so clean those in the administrator (System > Clear Cache).
+A cache kept in APCu or WinCache is in the web server's own memory, which the command line can't reach: `cache:clean` (and every command changing content) asks the web server to clean it, which it does on its next request.
 
 **New sites**
 ```

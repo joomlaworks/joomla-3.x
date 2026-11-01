@@ -79,6 +79,14 @@ class CacheStorage
     public $_hash;
 
     /**
+     * Sites whose command line clean requests this process checked (applyCleanRequests())
+     *
+     * @var    array
+     * @since  3.18.0
+     */
+    protected static $cleanRequestsChecked = array();
+
+    /**
      * Cache threshold (legacy, no longer used in core)
      *
      * @var    integer
@@ -145,6 +153,11 @@ class CacheStorage
 
         // We can't cache this since options may change...
         $handler = strtolower(preg_replace('/[^A-Z0-9_\.-]/i', '', $handler));
+
+        // The command line has a memory of its own: it can't reach the web server's cache, only ask it to clean
+        if (in_array($handler, array('apcu', 'wincache'), true) && CleanRequests::isCommandLine()) {
+            return new Storage\CommandlineStorage(array_merge($options, array('handler' => $handler)));
+        }
 
         /** @var CacheStorage $class */
         $class = __NAMESPACE__ . '\\Storage\\' . ucfirst($handler) . 'Storage';
@@ -349,6 +362,77 @@ class CacheStorage
      * @since   1.7.0
      */
     public function unlock($id, $group = null)
+    {
+        return false;
+    }
+
+    /**
+     * Apply the cleans asked for on the command line since this store last did (CleanRequests), once per process. For the
+     * handlers keeping the cache in the web server's own memory (APCu, WinCache), which give getValue() and setValue().
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    protected function applyCleanRequests()
+    {
+        if (isset(self::$cleanRequestsChecked[$this->_hash]) || CleanRequests::isCommandLine()) {
+            return;
+        }
+
+        self::$cleanRequestsChecked[$this->_hash] = true;
+
+        $mtime = @filemtime(CleanRequests::getFile());
+
+        if (!$mtime) {
+            return;
+        }
+
+        // What this store applied: the file's time when it read it and the newest request; a file unchanged for a second
+        // can't hold anything newer (its time is in whole seconds)
+        $key     = $this->_hash . '-clean-requests';
+        $applied = $this->getValue($key);
+        $applied = is_array($applied) ? $applied + array('mtime' => 0, 'time' => 0) : array('mtime' => 0, 'time' => 0);
+
+        if ((int) $applied['mtime'] === (int) $mtime && time() - $mtime > 1) {
+            return;
+        }
+
+        $time = (float) $applied['time'];
+
+        foreach (CleanRequests::since($time) as $request) {
+            $this->clean($request['group'], $request['mode']);
+            $time = max($time, (float) $request['time']);
+        }
+
+        $this->setValue($key, array('mtime' => (int) $mtime, 'time' => $time));
+    }
+
+    /**
+     * A value of the store outside the cache's groups (applyCleanRequests())
+     *
+     * @param   string  $key  The key
+     *
+     * @return  mixed  The value, or false
+     *
+     * @since   3.18.0
+     */
+    protected function getValue($key)
+    {
+        return false;
+    }
+
+    /**
+     * Keep a value of the store outside the cache's groups, without an expiry (applyCleanRequests())
+     *
+     * @param   string  $key    The key
+     * @param   mixed   $value  The value
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    protected function setValue($key, $value)
     {
         return false;
     }
