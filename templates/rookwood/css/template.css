@@ -178,11 +178,12 @@ input[type=submit]:hover {border-color:var(--c-accent);background:var(--c-accent
 .logoText span {font-weight:500;}
 
 /* Main navigation */
-.mainNav {display:flex;align-items:center;gap:28px;margin-left:auto;}
-.mainNav > ul.menu {display:flex;align-items:center;gap:4px;margin:0;padding:0;list-style:none;}
+.mainNav {display:flex;align-items:center;gap:28px;min-width:0;margin-left:auto;}
+/* Long menus wrap onto a second row instead of widening the page */
+.mainNav > ul.menu {display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:4px;margin:0;padding:0;list-style:none;}
 .mainNav > ul.menu ul {display:none;}
 .mainNav > ul.menu > li > a,
-.mainNav > ul.menu > li > span {position:relative;display:block;padding:10px 14px;border-radius:999px;font-weight:700;font-size:.98rem;color:var(--c-ink);}
+.mainNav > ul.menu > li > span {position:relative;display:block;padding:10px 14px;border-radius:999px;font-weight:700;font-size:.98rem;color:var(--c-ink);white-space:nowrap;}
 .mainNav > ul.menu > li > a:hover {background:color-mix(in srgb,var(--c-ink) 10%,transparent);color:var(--c-ink);}
 .mainNav > ul.menu > li.active > a {background:var(--c-ink);color:var(--c-bg);}
 /* Joomla makes the home item active on pages without a menu item of their own (tags, search): only highlight it on the home page */
