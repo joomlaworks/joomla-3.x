@@ -2398,6 +2398,9 @@ body.site.fluid {background-color:#ffffff;}
 .hero-unit > * {color:white;text-shadow:1px 1px 1px rgba(0,0,0,0.5);}
 .container {max-width:960px;}
 .body .container {background-color:#fff;border-radius:4px;padding:20px;border:1px solid rgba(0,0,0,0.15);box-shadow:0px 0px 6px rgba(0,0,0,0.05);}
+
+/* Bootstrap's fixed widths plus the plate's padding and border are wider than the page between its steps */
+.body .container {max-width:min(960px, calc(100% - 42px));}
 .well .page-header {margin:0px 0px 5px 0px;}
 h1,
 h2,
