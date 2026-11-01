@@ -198,6 +198,7 @@ Summary of changes:
 - The Blocks editor no longer saves its hidden copy of the whole text in the intro text (visible to visitors without access); the update moves it in existing articles
 - Media Manager uploads and folders stay inside the media folder (a folder beside it with a similar name counted as inside)
 - IconCaptcha counts wrong answers per IP address, not per session
+- Smaller hardening: IconCaptcha checks its requests (an error showed the server's path), the Blocks renderer needs an editing right, images too large for memory are left alone also without a memory limit
 
 **Bug fixes:**
 - Updates deleted Smart Search's PDF icon; installs from the upload, URL or folder tab ignored their return address

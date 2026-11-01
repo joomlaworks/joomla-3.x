@@ -12,6 +12,7 @@ namespace Joomla\CMS\Console;
 defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -122,6 +123,13 @@ class FinderIndexCommand extends AbstractCommand
             $io->error(sprintf('Unknown argument "%s". Give "purge" or nothing.', $purge));
 
             return self::INVALID;
+        }
+
+        // Disabled, it would still be indexed; uninstalled, its classes are gone
+        if (!ComponentHelper::isEnabled('com_finder')) {
+            $io->error('Smart Search (com_finder) is not installed or not enabled.');
+
+            return self::NOT_FOUND;
         }
 
         $this->io   = $io;

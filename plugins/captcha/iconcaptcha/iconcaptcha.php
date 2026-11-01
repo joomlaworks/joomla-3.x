@@ -124,7 +124,60 @@ class PlgCaptchaIconcaptcha extends JPlugin
         // Its answer is plain text, never stored by a cache
         JFactory::getApplication()->allowCache(false);
 
-        $this->getIconCaptcha()->request()->process();
+        try {
+            $captcha = $this->getIconCaptcha();
+
+            if (!$this->isValidPayload()) {
+                $this->badRequest();
+            }
+
+            $captcha->request()->process();
+        } catch (Throwable $e) {
+            // The library's exceptions name server paths (an unknown theme is a missing file)
+            $this->badRequest();
+        }
+    }
+
+    /**
+     * The widget's request as the widget sends it: the library takes any theme (a folder name) and widget ID (a key in the
+     * visitor's session) as given.
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    private function isValidPayload()
+    {
+        if (!isset($_POST['payload']) || !is_string($_POST['payload'])) {
+            return true;
+        }
+
+        $payload = json_decode((string) base64_decode($_POST['payload'], true), true);
+
+        if (!is_array($payload)) {
+            return true;
+        }
+
+        $uuid = static function ($value) {
+            return is_string($value) && preg_match('/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/', $value) === 1;
+        };
+
+        return (!isset($payload['theme']) || in_array($payload['theme'], array('light', 'dark'), true))
+            && (!isset($payload['widgetId']) || $uuid($payload['widgetId']))
+            && (!isset($payload['challengeId']) || $uuid($payload['challengeId']));
+    }
+
+    /**
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    private function badRequest()
+    {
+        http_response_code(400);
+        header('Content-type: text/plain');
+
+        exit('Bad request');
     }
 
     /**

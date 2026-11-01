@@ -229,6 +229,47 @@ class PlgEditorEditorjs extends JPlugin
     }
 
     /**
+     * Whether the user may create or edit anything (globally or in a component), i.e. has a reason to use an editor: the
+     * renderer signs what it returns, so it's not for every account that can log in.
+     *
+     * @param   JUser  $user  The user
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    protected static function canEdit($user)
+    {
+        if ($user->guest) {
+            return false;
+        }
+
+        $actions = array('core.create', 'core.edit', 'core.edit.own');
+
+        foreach ($actions as $action) {
+            if ($user->authorise($action)) {
+                return true;
+            }
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('name'))
+            ->from($db->quoteName('#__assets'))
+            ->where($db->quoteName('level') . ' = 1');
+
+        foreach ($db->setQuery($query)->loadColumn() as $asset) {
+            foreach ($actions as $action) {
+                if ($user->authorise($action, $asset)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Renders blocks for the editor (through com_ajax, see PlgEditorsEditorjs): "blocks", the editor's JSON, and the form token,
      * posted by a user who is logged in. Returns the HTML, which the editor puts in the form. Nothing is saved here: the form
      * is, with the text filters of Global Configuration, as with any editor.
@@ -245,6 +286,10 @@ class PlgEditorEditorjs extends JPlugin
 
         if (!JSession::checkToken('post') || JFactory::getUser()->guest) {
             throw new RuntimeException(JText::_('JINVALID_TOKEN'), 403);
+        }
+
+        if (!static::canEdit(JFactory::getUser())) {
+            throw new RuntimeException(JText::_('JERROR_ALERTNOAUTHOR'), 403);
         }
 
         $json = $input->post->get('blocks', '', 'raw');

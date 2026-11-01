@@ -83,7 +83,8 @@ class BlockRenderer
             $block = (array) $block;
             $type  = isset($block['type']) ? (string) $block['type'] : '';
 
-            if (!preg_match('/^[a-z][a-z0-9_-]{0,49}$/', $type)) {
+            // The preview's layout is a page, not a block
+            if (!preg_match('/^[a-z][a-z0-9_-]{0,49}$/', $type) || $type === 'preview') {
                 continue;
             }
 
@@ -517,7 +518,7 @@ class BlockRenderer
      */
     public function inline($html)
     {
-        $html = (string) $html;
+        $html = static::text($html);
 
         if ($html === '') {
             return '';
@@ -552,7 +553,7 @@ class BlockRenderer
      */
     public function url($url)
     {
-        $url = trim((string) $url);
+        $url = trim(static::text($url));
 
         if ($url === '' || preg_match('/[\x00-\x1f\x7f]/', $url)) {
             return '';
@@ -603,7 +604,21 @@ class BlockRenderer
      */
     public function e($text)
     {
-        return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
+        return htmlspecialchars(static::text($text), ENT_QUOTES, 'UTF-8');
+    }
+
+    /**
+     * A block's value as text: blocks come from the browser, where any value may be an array or an object.
+     *
+     * @param   mixed  $value  The value
+     *
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    protected static function text($value)
+    {
+        return is_scalar($value) ? (string) $value : '';
     }
 
     /**
@@ -617,7 +632,7 @@ class BlockRenderer
      */
     public function plain($html)
     {
-        return trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags(str_ireplace(array('<br>', '<br/>', '<br />'), ' ', (string) $html)), ENT_QUOTES, 'UTF-8')));
+        return trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags(str_ireplace(array('<br>', '<br/>', '<br />'), ' ', static::text($html))), ENT_QUOTES, 'UTF-8')));
     }
 
     /**

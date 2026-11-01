@@ -353,9 +353,7 @@ class MediaHelper
         list($width, $height) = $info;
 
         // GD needs about 5 bytes a pixel, twice when resizing; an image too large for PHP's memory stays as it is
-        $limit = $this->toBytes(ini_get('memory_limit'));
-
-        if ($limit > 0 && memory_get_usage() + $width * $height * 10 > $limit * 0.9) {
+        if (!$this->fitsMemory($width, $height)) {
             return $path;
         }
 
@@ -528,10 +526,9 @@ class MediaHelper
 
         $width  = (int) $width;
         $height = (int) $height;
-        $limit  = $this->toBytes(ini_get('memory_limit'));
 
         // GD needs about 5 bytes a pixel, twice while cropping
-        if ($limit > 0 && memory_get_usage() + $info[0] * $info[1] * 10 > $limit * 0.9) {
+        if (!$this->fitsMemory($info[0], $info[1])) {
             return false;
         }
 
@@ -1008,6 +1005,30 @@ class MediaHelper
         }
 
         return array($total_file, $total_dir);
+    }
+
+    /**
+     * Whether GD can decode an image of that size within PHP's memory limit (about 10 bytes a pixel, as resizing and cropping
+     * hold two copies). Without a limit (-1), images over 1 GB of it are refused too: a small file of huge dimensions would
+     * take the server's memory.
+     *
+     * @param   integer  $width   The image's width
+     * @param   integer  $height  Its height
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    protected function fitsMemory($width, $height)
+    {
+        $limit  = $this->toBytes(ini_get('memory_limit'));
+        $needed = (float) $width * (float) $height * 10;
+
+        if ($limit <= 0) {
+            return $needed <= 1073741824;
+        }
+
+        return memory_get_usage() + $needed <= $limit * 0.9;
     }
 
     /**

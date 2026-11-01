@@ -202,15 +202,14 @@ class CoreUpdateCommand extends AbstractCommand
         if ($file !== '') {
             $io->plan(sprintf('Install Joomla from %s over the site (version %s now)', realpath($file), $installed), array('action' => 'install', 'file' => realpath($file)));
         } else {
+            // What the last check found: a dry run neither changes the stored update information nor goes online
             $model = $this->getAdministratorModel('com_joomlaupdate', 'Default', 'JoomlaupdateModel');
-            $model->applyUpdateSite();
-            $model->purge();
-            $model->refreshUpdates(true);
+            $io->plan('Fetch the update feed of the configured update channel and replace the cached update information', array('action' => 'refresh'));
             $info = $model->getUpdateInformation();
             $io->setData('latest', $info['latest']);
 
             if (!$info['hasUpdate'] && !$io->getOption('reinstall')) {
-                $io->success('You already have the latest Joomla! version ' . $info['latest'] . '; nothing would be updated.');
+                $io->success('At the last check, ' . $info['latest'] . ' was the latest Joomla! version; nothing would be updated unless the feed has a newer one.');
 
                 return self::SUCCESS;
             }

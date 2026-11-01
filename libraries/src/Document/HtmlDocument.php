@@ -945,6 +945,11 @@ class HtmlDocument extends Document
         $template = $filter->clean($params['template'], 'cmd');
         $file = $filter->clean($params['file'], 'cmd');
 
+        // The error page is the error document's (it reads $this->error); asked for as tmpl=error, it's the index page
+        if (strtolower($file) === 'error.php') {
+            $file = 'index.php';
+        }
+
         // A page the template lacks: its override of core's layout, else core's (layouts/joomla/system/, the "system"
         // templates' until 3.18); without one of that name either, the template's own index.php (the Control Panel asks
         // for cpanel.php, which templates may leave out), else core's

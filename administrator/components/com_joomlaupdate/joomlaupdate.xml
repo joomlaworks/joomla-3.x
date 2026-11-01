@@ -27,9 +27,6 @@
             <language tag="en-GB">language/en-GB.com_joomlaupdate.sys.ini</language>
         </languages>
     </administration>
-    <updateservers>
-        <server type="extension" name="Joomla! Update Component Update Site">https://update.joomla.org/core/extensions/com_joomlaupdate.xml</server>
-    </updateservers>
     <!-- Extensions which only serve this component, uninstalled with it ("Restore uninstalled core extensions" in Joomla Update brings them back); a shared one stays while another component listing it is installed -->
     <companions>
         <plugin group="quickicon" element="joomlaupdate" />
