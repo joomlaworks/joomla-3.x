@@ -8,20 +8,23 @@
 #   WORK=<folder>    where the site and logs go (default: a new folder in /tmp); an existing site there is reused
 #                    (the administrator's password, user admin, is in <work>/password)
 #   PORT=<number>    the first port (default 8921; one per version, on 127.0.0.1)
+#   PREFIX=<name>    names of the containers and the network (default j3qa; e.g. j3qa-claude, so runs of several agents
+#                    on one machine never share or remove each other's containers)
 #   KEEP=1           leave the containers running afterwards (the database server, the sites' servers)
 #   DB_IMAGE=<image> the database server (default mariadb:11.4; e.g. mysql:8.4, whose caching_sha2_password PHP 7.1's
 #                    mysqlnd in these images can't complete: use MariaDB, or MySQL with mysql_native_password, for 7.1)
 # Needs Docker, Node 22+ and Chrome (the crawler). The installer needs PHP 7.4+ (SQLite), so it runs on 8.5; PHP 7.1
-# serves the site once it is on MySQL. Containers and the network are named j3qa-*.
+# serves the site once it is on MySQL. Containers and the network are named $PREFIX-* (the PHP images j3qa-php:<version> are shared: built once, never changed).
 set -e
 
 REPO=$(pwd)
 VERSIONS=${*:-7.1 7.4 8.2 8.5}
-WORK=${WORK:-$(mktemp -d /tmp/j3qa-XXXXXX)}
+WORK=${WORK:-$(mktemp -d /tmp/${PREFIX:-j3qa}-XXXXXX)}
 PORT=${PORT:-8921}
-NET=j3qa
+PREFIX=${PREFIX:-j3qa}
+NET=$PREFIX
 DB_IMAGE=${DB_IMAGE:-mariadb:11.4}
-DB=j3qa-db-$(echo "$DB_IMAGE" | tr -c 'a-z0-9\n' '-')
+DB=$PREFIX-db-$(echo "$DB_IMAGE" | tr -c 'a-z0-9\n' '-')
 USER_ID="$(id -u):$(id -g)"
 
 [ -f libraries/src/Version.php ] || { echo "Run it from the repository's root"; exit 2; }
@@ -81,7 +84,7 @@ port=$PORT
 summary=""
 
 for version in $VERSIONS; do
-    name="j3qa-php-$(echo "$version" | tr . -)"
+    name="$PREFIX-php-$(echo "$version" | tr . -)"
     log="logs/php-$version.log"
     docker rm -f "$name" >/dev/null 2>&1 || true
     : > "$WORK/site/$log"
