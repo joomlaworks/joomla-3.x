@@ -6,6 +6,7 @@
 #
 # Usage: sh docs/qa/php-matrix.sh [versions...]     (from the repository's root; default 7.1 7.4 8.2 8.5)
 #   WORK=<folder>    where the site and logs go (default: a new folder in /tmp); an existing site there is reused
+#                    (the administrator's password, user admin, is in <work>/password)
 #   PORT=<number>    the first port (default 8921; one per version, on 127.0.0.1)
 #   KEEP=1           leave the containers running afterwards (the database server, the sites' servers)
 #   DB_IMAGE=<image> the database server (default mariadb:11.4; e.g. mysql:8.4, whose caching_sha2_password PHP 7.1's
@@ -18,7 +19,6 @@ REPO=$(pwd)
 VERSIONS=${*:-7.1 7.4 8.2 8.5}
 WORK=${WORK:-$(mktemp -d /tmp/j3qa-XXXXXX)}
 PORT=${PORT:-8921}
-PASSWORD='QaMatrix-2026!x'
 NET=j3qa
 DB_IMAGE=${DB_IMAGE:-mariadb:11.4}
 DB=j3qa-db-$(echo "$DB_IMAGE" | tr -c 'a-z0-9\n' '-')
@@ -27,6 +27,12 @@ USER_ID="$(id -u):$(id -g)"
 [ -f libraries/src/Version.php ] || { echo "Run it from the repository's root"; exit 2; }
 echo "Work folder: $WORK"
 mkdir -p "$WORK/images"
+
+# The administrator's password: made once per work folder and kept there, so a reused site keeps it
+if [ ! -s "$WORK/password" ]; then
+    (umask 077 && printf 'Qa-%s' "$(head -c 18 /dev/urandom | base64 | tr -d '/+=')" > "$WORK/password")
+fi
+PASSWORD=$(cat "$WORK/password")
 
 image() {
     if ! docker image inspect "j3qa-php:$1" >/dev/null 2>&1; then
@@ -99,4 +105,4 @@ done
 
 [ -n "$KEEP" ] || docker stop $DB >/dev/null
 echo "$summary"
-echo "Logs: $WORK/site/logs"
+echo "Logs: $WORK/site/logs; administrator: admin, password in $WORK/password"
