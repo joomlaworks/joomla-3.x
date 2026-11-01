@@ -5663,6 +5663,29 @@ class WP_MySQL_On_SQLite extends PDO {
 		}
 
 		/*
+		 * Joomla 3.x UTD patch: a column in parentheses, as in "SELECT DISTINCT(t.alias)",
+		 * is named after the column in MySQL ("alias"), but after the text in SQLite
+		 * ("(t.alias)"), so code reading the row by the column's name found nothing.
+		 */
+		if ( $column_ref ) {
+			$bare = trim( $item );
+			while ( strlen( $bare ) > 1 && '(' === $bare[0] && ')' === substr( $bare, -1 ) ) {
+				$bare = trim( substr( $bare, 1, -1 ) );
+			}
+			if ( $bare !== trim( $item ) && $bare === $this->translate( $column_ref )
+				&& preg_match( '/(?:"((?:[^"]|"")*)"|`((?:[^`]|``)*)`|([A-Za-z0-9_$\x80-\xff]+))$/', $bare, $match ) ) {
+				if ( isset( $match[3] ) && '' !== $match[3] ) {
+					$name = $match[3];
+				} elseif ( isset( $match[2] ) && '' !== $match[2] ) {
+					$name = str_replace( '``', '`', $match[2] );
+				} else {
+					$name = str_replace( '""', '"', $match[1] );
+				}
+				return sprintf( '%s AS %s', $item, $this->quote_sqlite_identifier( $name ) );
+			}
+		}
+
+		/*
 		 * When the select item is a text string literal, we need to use an alias
 		 * to ensure that the column name is the same as it would be in MySQL.
 		 * In MySQL, the column name is the original text string literal value
