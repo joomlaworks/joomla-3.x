@@ -96,6 +96,7 @@ class JoomlaInstallerScript
         $this->removeObsoletePluginParams();
         $this->mergeRecaptchaPlugins();
         $this->switchDefaultEditor();
+        $this->moveBlocksMarkers();
         $this->fixCoreCategorySubmenus();
 
         if ($this->restoreCoreExtensions) {
@@ -1830,6 +1831,55 @@ class JoomlaInstallerScript
         } while (count($rows) === 500);
 
         RedirectHelper::cleanCache();
+    }
+
+    /**
+     * Moves the blocks editor's hidden element (the whole document's blocks) from an article's intro to the end of its full
+     * text, where the editor writes it since 3.18: in the intro it reached readers shown only the intro of an article they may
+     * not read in full (show_noauth). Only articles with a full text; every update, as it changes nothing twice.
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    protected function moveBlocksMarkers()
+    {
+        $pattern = '#<div class="joomla-blocks" hidden="hidden" data-version="1" data-hash="[0-9a-f]{1,8}" data-signature="[0-9a-f]{64}"'
+            . ' data-blocks="[A-Za-z0-9+/=]+">(?:[ \t\r\n]|&nbsp;|&\#160;|\xC2\xA0)*</div>\n?#';
+
+        try {
+            $db = JFactory::getDbo();
+
+            if (!in_array($db->replacePrefix('#__content'), $db->getTableList(), true)) {
+                return;
+            }
+
+            $rows = $db->setQuery(
+                $db->getQuery(true)
+                    ->select($db->quoteName(array('id', 'introtext', 'fulltext')))
+                    ->from($db->quoteName('#__content'))
+                    ->where($db->quoteName('introtext') . ' LIKE ' . $db->quote('%joomla-blocks%'))
+            )->loadObjectList();
+
+            foreach ($rows as $row) {
+                if (trim((string) $row->fulltext) === '' || !preg_match($pattern, (string) $row->introtext, $match)) {
+                    continue;
+                }
+
+                $introtext = preg_replace($pattern, '', (string) $row->introtext, 1);
+                $fulltext  = preg_match($pattern, (string) $row->fulltext) ? (string) $row->fulltext : rtrim((string) $row->fulltext) . "\n" . trim($match[0]);
+
+                $db->setQuery(
+                    $db->getQuery(true)
+                        ->update($db->quoteName('#__content'))
+                        ->set($db->quoteName('introtext') . ' = ' . $db->quote($introtext))
+                        ->set($db->quoteName('fulltext') . ' = ' . $db->quote($fulltext))
+                        ->where($db->quoteName('id') . ' = ' . (int) $row->id)
+                )->execute();
+            }
+        } catch (Exception $e) {
+            echo JText::sprintf('JLIB_DATABASE_ERROR_FUNCTION_FAILED', $e->getCode(), $e->getMessage()) . '<br />';
+        }
     }
 
     /**

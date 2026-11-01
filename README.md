@@ -195,6 +195,9 @@ Summary of changes:
 - Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors without access (with "Show Unauthorised Links" on); they get the intro text and a link to log in, as with Joomla's own layout
 - The head escapes `<link>`, script and stylesheet addresses and attributes, which extensions could pass unescaped
 - Media uploads compare executable extensions in any case (`x.SHTML.png` got through), and the "Illegal MIME Types" option is actually checked
+- The Blocks editor no longer saves its hidden copy of the whole text in the intro text (visible to visitors without access); the update moves it in existing articles
+- Media Manager uploads and folders stay inside the media folder (a folder beside it with a similar name counted as inside)
+- IconCaptcha counts wrong answers per IP address, not per session
 
 **Bug fixes:**
 - Updates deleted Smart Search's PDF icon; installs from the upload, URL or folder tab ignored their return address

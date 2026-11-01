@@ -198,6 +198,32 @@ class BlockRenderer
     }
 
     /**
+     * The blocks editor's hidden element (the whole document's blocks, signed) in stored text, as it writes it
+     *
+     * @var    string
+     * @since  3.18.0
+     */
+    public const MARKER = '#<div class="joomla-blocks" hidden="hidden" data-version="1" data-hash="[0-9a-f]{1,8}" data-signature="[0-9a-f]{64}"'
+        . ' data-blocks="[A-Za-z0-9+/=]+">(?:[ \t\r\n]|&nbsp;|&\#160;|\xC2\xA0)*</div>\n?#';
+
+    /**
+     * Text without the blocks editor's hidden element: for an article's intro shown to readers who may not see the rest, as
+     * the element holds the whole document (articles saved before 3.18 had it in the intro)
+     *
+     * @param   string  $html  The text
+     *
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    public static function stripMarker($html)
+    {
+        $html = (string) $html;
+
+        return strpos($html, 'joomla-blocks') === false ? $html : preg_replace(static::MARKER, '', $html);
+    }
+
+    /**
      * The options of the site's default template style.
      *
      * @return  \Joomla\Registry\Registry

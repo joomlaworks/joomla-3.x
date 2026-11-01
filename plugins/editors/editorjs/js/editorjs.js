@@ -1132,7 +1132,9 @@
 						return original;
 					}
 
-					return blocks.length ? render(blocks).then((result) => `${markerHtml(result)}\n${result.html}`) : '';
+					// The blocks (the whole document) after the text: with a Read more they go into the full text, which only readers
+					// allowed to see the article get (first, they were in the intro shown to everyone)
+					return blocks.length ? render(blocks).then((result) => `${result.html}\n${markerHtml(result)}`) : '';
 				})
 				.then((value) => {
 					element.value = value;

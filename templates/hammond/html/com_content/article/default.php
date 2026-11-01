@@ -35,7 +35,7 @@ $text  = $item->text;
 $login = '';
 
 if (!$item->params->get('access-view')) {
-    $text = JFactory::getUser()->get('guest') ? JHtml::_('content.prepare', $item->introtext, '', 'com_content.article') : '';
+    $text = JFactory::getUser()->get('guest') ? JHtml::_('content.prepare', \Joomla\CMS\Blocks\BlockRenderer::stripMarker($item->introtext), '', 'com_content.article') : '';
 
     if ($text !== '' && $item->params->get('show_readmore') && (string) $item->fulltext !== '') {
         $active = JFactory::getApplication()->getMenu()->getActive();
