@@ -1655,15 +1655,69 @@
 		}
 	});
 
-	// The old calendar's script object: extensions call it after adding fields; the browser's input needs no start
+	/**
+	 * Fields written with the old calendar's markup by extensions themselves (div.field-calendar with an input and a
+	 * button[data-inputfield], which the removed calendar.js started at load): the field stays as it is (its id, name,
+	 * format and the extension's own handlers), a browser date input under it gives the picker, opened by its button
+	 *
+	 * @param  {Element|Document}  root
+	 */
+	CMS.dateField.attachOld = (root) => {
+		const scope = root || document;
+		const containers = scope.matches && scope.matches('.field-calendar') ? [scope] : Array.prototype.slice.call(scope.querySelectorAll('.field-calendar'));
+
+		containers.forEach((container) => {
+			const button = container.querySelector('button[data-inputfield]');
+			const field = button ? document.getElementById(button.getAttribute('data-inputfield')) : null;
+
+			if (container.classList.contains('cms-date') || !field || !container.contains(field) || field.tagName !== 'INPUT') {
+				return;
+			}
+
+			const format = button.getAttribute('data-dayformat') || (button.getAttribute('data-show-time') === '1' ? '%Y-%m-%d %H:%M:%S' : '%Y-%m-%d');
+			const input = document.createElement('input');
+			const parts = CMS.dateField.parseFormatted(field.value, format);
+
+			input.type = CMS.dateField.typeOf(format);
+			input.className = 'cms-date-input';
+			input.tabIndex = -1;
+			input.setAttribute('aria-hidden', 'true');
+
+			if (/%[ST]/.test(format)) {
+				input.step = 1;
+			}
+
+			if (parts) {
+				input.value = CMS.dateField.nativeValue(parts, input);
+			}
+
+			container.classList.add('cms-date', 'is-text', 'cms-date-old');
+			field.classList.add('cms-date-value', 'cms-date-text');
+			field.setAttribute('data-format', format);
+			field.parentNode.insertBefore(input, field.nextSibling);
+			button.classList.add('cms-date-pick');
+		});
+	};
+
+	CMS.ready(() => CMS.dateField.attachOld(document));
+
+	// The old calendar's script object: extensions call JoomlaCalendar.init() after adding fields, and some patch its
+	// prototype; nothing of it runs, the fields are the browser's
 	if (!window.JoomlaCalendar) {
-		window.JoomlaCalendar = {
-			init() {},
-			getCalObject() {
-				return null;
-			},
-			onSubmit() {},
+		const JoomlaCalendar = function () {};
+
+		['show', 'close', 'hide', 'setDate', 'recreate', 'processCalendar', '_handleDayMouseDown', '_handleDocumentClick'].forEach((name) => {
+			JoomlaCalendar.prototype[name] = function () {};
+		});
+
+		JoomlaCalendar.init = (element) => {
+			if (element) {
+				CMS.dateField.attachOld(typeof element === 'string' ? document.querySelector(element) || document : element);
+			}
 		};
+		JoomlaCalendar.getCalObject = () => null;
+		JoomlaCalendar.onSubmit = () => {};
+		window.JoomlaCalendar = JoomlaCalendar;
 	}
 
 	/* --- Show-on: form fields shown only when other fields have given values (data-showon; what cms.js was) --- */
