@@ -216,6 +216,9 @@ class FinderModelIndex extends JModelList
 
         $query->order($ordering);
 
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        $query->order($db->quoteName('l.link_id') . ' ' . $db->escape($listDir));
+
         return $query;
     }
 

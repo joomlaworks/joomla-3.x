@@ -501,7 +501,20 @@ class ContentModelArticles extends JModelList
         }
 
         // Add the list ordering clause.
-        $query->order($this->getState('list.ordering', 'a.ordering') . ' ' . $this->getState('list.direction', 'ASC'));
+        $ordering  = $this->getState('list.ordering', 'a.ordering');
+        $direction = $this->getState('list.direction', 'ASC');
+        $query->order($ordering . ' ' . $direction);
+
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!preg_match('/(^|[\s,(])(a\.)?id\b/i', $ordering)) {
+            $direction = strtoupper(trim($direction));
+
+            if (!in_array($direction, array('ASC', 'DESC'), true)) {
+                $direction = preg_match('/\bDESC\s*$/i', $ordering) ? 'DESC' : 'ASC';
+            }
+
+            $query->order('a.id ' . $direction);
+        }
 
         return $query;
     }

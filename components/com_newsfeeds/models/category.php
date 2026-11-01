@@ -162,7 +162,14 @@ class NewsfeedsModelCategory extends JModelList
         }
 
         // Add the list ordering clause.
-        $query->order($db->escape($this->getState('list.ordering', 'a.ordering')) . ' ' . $db->escape($this->getState('list.direction', 'ASC')));
+        $listOrdering = $this->getState('list.ordering', 'a.ordering');
+        $listDirn     = $db->escape($this->getState('list.direction', 'ASC'));
+        $query->order($db->escape($listOrdering) . ' ' . $listDirn);
+
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!in_array($listOrdering, array('a.id', 'id'), true)) {
+            $query->order('a.id ' . $listDirn);
+        }
 
         return $query;
     }

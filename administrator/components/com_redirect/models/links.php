@@ -146,8 +146,14 @@ class RedirectModelLinks extends JModelList
         }
 
         // Add the list ordering clause.
-        $query->order($db->escape($this->getState('list.ordering', 'a.old_url')) . ' ' . $db->escape($this->getState('list.direction', 'ASC')))
-            ->order($db->quoteName('a.id'));
+        $listOrdering = $this->getState('list.ordering', 'a.old_url');
+        $listDirn     = $db->escape($this->getState('list.direction', 'ASC'));
+        $query->order($db->escape($listOrdering) . ' ' . $listDirn);
+
+        // A unique last column (never twice: SQL Server refuses it), or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!in_array($listOrdering, array('a.id', 'id'), true)) {
+            $query->order($db->quoteName('a.id') . ' ' . $listDirn);
+        }
 
         return $query;
     }

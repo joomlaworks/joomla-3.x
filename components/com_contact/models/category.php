@@ -204,6 +204,11 @@ class ContactModelCategory extends JModelList
             $query->order($db->escape($this->getState('list.ordering', 'a.ordering')) . ' ' . $db->escape($this->getState('list.direction', 'ASC')));
         }
 
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!in_array($this->getState('list.ordering', 'a.ordering'), array('a.id', 'id'), true)) {
+            $query->order('a.id ' . $db->escape($this->getState('list.direction', 'ASC')));
+        }
+
         return $query;
     }
 

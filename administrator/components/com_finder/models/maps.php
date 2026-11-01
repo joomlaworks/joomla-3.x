@@ -215,6 +215,9 @@ class FinderModelMaps extends JModelList
             $query->order("a.state $listDirn, branch_title $listDirn, level ASC");
         }
 
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        $query->order('a.id ' . $db->escape($listDirn));
+
         return $query;
     }
 

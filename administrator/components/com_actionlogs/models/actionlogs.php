@@ -97,6 +97,14 @@ class ActionlogsModelActionlogs extends JModelList
         // Apply ordering
         if (!empty($fullorderCol)) {
             $query->order($db->escape($fullorderCol));
+
+            // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+            $orderParts = preg_split('/\s+/', trim($fullorderCol));
+
+            if (!in_array($orderParts[0], array('a.id', 'id'), true)) {
+                $orderDirn = isset($orderParts[1]) && strtoupper($orderParts[1]) === 'DESC' ? 'DESC' : 'ASC';
+                $query->order($db->quoteName('a.id') . ' ' . $orderDirn);
+            }
         }
 
         // Get filter by user

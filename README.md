@@ -201,6 +201,7 @@ Summary of changes:
 - Smaller hardening: IconCaptcha checks its requests (an error showed the server's path), the Blocks renderer needs an editing right, images too large for memory are left alone also without a memory limit
 
 **Bug fixes:**
+- Lists no longer repeat or skip items between pages when sorted by a column many items share (all databases, mostly PostgreSQL and SQL Server)
 - Updates deleted Smart Search's PDF icon; installs from the upload, URL or folder tab ignored their return address
 - Associations' Propagate fills the other languages' items correctly on SQLite and PostgreSQL
 - Module forms' Ordering list shows titles with commas and `&` correctly

@@ -100,7 +100,14 @@ class ModulesModelSelect extends JModelList
         $query->where('a.enabled = 1');
 
         // Add the list ordering clause.
-        $query->order($db->escape($this->getState('list.ordering', 'a.ordering')) . ' ' . $db->escape($this->getState('list.direction', 'ASC')));
+        $listOrdering = $this->getState('list.ordering', 'a.ordering');
+        $listDirn     = $db->escape($this->getState('list.direction', 'ASC'));
+        $query->order($db->escape($listOrdering) . ' ' . $listDirn);
+
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!in_array($listOrdering, array('a.extension_id', 'extension_id'), true)) {
+            $query->order('a.extension_id ' . $listDirn);
+        }
 
         return $query;
     }

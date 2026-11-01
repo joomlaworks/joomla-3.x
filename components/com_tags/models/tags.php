@@ -148,7 +148,14 @@ class TagsModelTags extends JModelList
 
         $query->where($db->quoteName('a.published') . ' = ' . $published);
 
-        $query->order($db->quoteName($orderby) . ' ' . $orderDirection . ', a.title ASC');
+        $query->order($db->quoteName($orderby) . ' ' . $orderDirection);
+
+        // Each column once (SQL Server refuses one twice), the unique ID last, or pages repeat or skip rows sharing a value.
+        if ($orderby !== 'title') {
+            $query->order('a.title ASC');
+        }
+
+        $query->order('a.id ASC');
 
         return $query;
     }

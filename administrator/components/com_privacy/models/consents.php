@@ -89,6 +89,11 @@ class PrivacyModelConsents extends JModelList
 
         if (!empty($ordering)) {
             $query->order($db->escape($ordering) . ' ' . $db->escape($direction));
+
+            // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+            if (!in_array($ordering, array('a.id', 'id'), true)) {
+                $query->order($db->quoteName('a.id') . ' ' . $db->escape($direction));
+            }
         }
 
         return $query;

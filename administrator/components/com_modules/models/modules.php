@@ -162,7 +162,8 @@ class ModulesModelModules extends JModelList
 
         // If ordering by fields that need translate we need to sort the array of objects after translating them.
         if (in_array($listOrder, array('pages', 'name'))) {
-            // Fetch the results.
+            // Fetch the results, in a fixed order for rows the sort below finds equal.
+            $query->order($this->_db->quoteName('a.id'));
             $this->_db->setQuery($query);
             $result = $this->_db->loadObjectList();
 
@@ -193,6 +194,11 @@ class ModulesModelModules extends JModelList
                 ->order($this->_db->quoteName('a.ordering') . ' ASC');
         } else {
             $query->order($this->_db->quoteName($listOrder) . ' ' . $this->_db->escape($listDirn));
+        }
+
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!in_array($listOrder, array('a.id', 'id'), true)) {
+            $query->order($this->_db->quoteName('a.id') . ' ' . $this->_db->escape($listDirn));
         }
 
         // Process pagination.

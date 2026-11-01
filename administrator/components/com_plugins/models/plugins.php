@@ -129,6 +129,8 @@ class PluginsModelPlugins extends JModelList
         }
 
         if ($ordering == 'name' || (!empty($search) && stripos($search, 'id:') !== 0)) {
+            // A fixed order for rows the sort below finds equal.
+            $query->order('a.extension_id');
             $this->_db->setQuery($query);
             $result = $this->_db->loadObjectList();
             $this->translate($result);
@@ -166,6 +168,11 @@ class PluginsModelPlugins extends JModelList
 
             if ($ordering == 'folder') {
                 $query->order('a.ordering ASC');
+            }
+
+            // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+            if (!in_array($ordering, array('a.extension_id', 'extension_id'), true)) {
+                $query->order('a.extension_id ' . $this->getState('list.direction'));
             }
 
             $result = parent::_getList($query, $limitstart, $limit);

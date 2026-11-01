@@ -68,9 +68,13 @@ class InstallerModel extends JModelList
         // decodes manifest_cache per row, so it can't be an SQL ORDER BY column either.
         $customOrderFields = array('name', 'client_translated', 'type_translated', 'folder_translated', 'author');
 
+        // Unique last columns, or rows sharing a value come back in any order and pages repeat or skip them.
+        $uniqueColumns = $this instanceof InstallerModelUpdatesites ? array('s.update_site_id', 'e.extension_id') : array('extension_id');
+
         // Process searching, ordering and pagination for fields that need to be translated.
         if (in_array($listOrder, $customOrderFields) || (!empty($search) && stripos($search, 'id:') !== 0)) {
             // Get results from database and translate them.
+            $query->order($db->quoteName($uniqueColumns));
             $db->setQuery($query);
             $result = $db->loadObjectList();
             $this->translate($result);
@@ -122,6 +126,13 @@ class InstallerModel extends JModelList
 
         // Process searching, ordering and pagination for regular database fields.
         $query->order($db->quoteName($listOrder) . ' ' . $db->escape($listDirn));
+
+        foreach ($uniqueColumns as $column) {
+            if ($listOrder !== $column && $listOrder !== substr(strrchr('.' . $column, '.'), 1)) {
+                $query->order($db->quoteName($column) . ' ' . $db->escape($listDirn));
+            }
+        }
+
         $result = parent::_getList($query, $limitstart, $limit);
         $this->translate($result);
 

@@ -107,8 +107,14 @@ class RedirectModelErrors extends JModelList
             }
         }
 
-        $query->order($db->escape($this->getState('list.ordering', 'a.last_hit')) . ' ' . $db->escape($this->getState('list.direction', 'DESC')))
-            ->order($db->quoteName('a.id') . ' DESC');
+        $listOrdering = $this->getState('list.ordering', 'a.last_hit');
+        $listDirn     = $db->escape($this->getState('list.direction', 'DESC'));
+        $query->order($db->escape($listOrdering) . ' ' . $listDirn);
+
+        // A unique last column (never twice: SQL Server refuses it), or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!in_array($listOrdering, array('a.id', 'id'), true)) {
+            $query->order($db->quoteName('a.id') . ' ' . $listDirn);
+        }
 
         return $query;
     }

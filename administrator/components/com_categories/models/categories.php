@@ -267,6 +267,11 @@ class CategoriesModelCategories extends JModelList
             $query->order($db->escape($listOrdering) . ' ' . $listDirn);
         }
 
+        // A unique last column (lft repeats across trees), or pages repeat or skip rows sharing a value.
+        if (!in_array($listOrdering, array('a.id', 'id'), true)) {
+            $query->order('a.id ' . $listDirn);
+        }
+
         // Group by on Categories for JOIN with component tables to count items
         $query->group(
             'a.id,

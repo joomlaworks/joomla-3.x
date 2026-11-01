@@ -79,7 +79,14 @@ class FinderModelFilters extends JModelList
         }
 
         // Add the list ordering clause.
-        $query->order($db->escape($this->getState('list.ordering', 'a.title') . ' ' . $db->escape($this->getState('list.direction', 'ASC'))));
+        $listOrdering = $this->getState('list.ordering', 'a.title');
+        $listDirn     = $db->escape($this->getState('list.direction', 'ASC'));
+        $query->order($db->escape($listOrdering) . ' ' . $listDirn);
+
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!in_array($listOrdering, array('a.filter_id', 'filter_id'), true)) {
+            $query->order('a.filter_id ' . $listDirn);
+        }
 
         return $query;
     }

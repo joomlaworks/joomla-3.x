@@ -116,7 +116,14 @@ class SearchModelSearches extends JModelList
         }
 
         // Add the list ordering clause.
-        $query->order($db->escape($this->getState('list.ordering', 'a.hits')) . ' ' . $db->escape($this->getState('list.direction', 'ASC')));
+        $listOrdering = $this->getState('list.ordering', 'a.hits');
+        $listDirn     = $db->escape($this->getState('list.direction', 'ASC'));
+        $query->order($db->escape($listOrdering) . ' ' . $listDirn);
+
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!in_array($listOrdering, array('a.search_term', 'search_term'), true)) {
+            $query->order('a.search_term ' . $listDirn);
+        }
 
         return $query;
     }

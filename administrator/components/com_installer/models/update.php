@@ -179,6 +179,8 @@ class InstallerModelUpdate extends JModelList
 
         // Process ordering.
         if (in_array($listOrder, array('client_translated', 'folder_translated', 'type_translated'))) {
+            // A fixed order for rows the sort below finds equal.
+            $query->order($db->quoteName('u.update_id'));
             $db->setQuery($query);
             $result = $db->loadObjectList();
             $this->translate($result);
@@ -193,6 +195,11 @@ class InstallerModelUpdate extends JModelList
             return array_slice($result, $limitstart, $limit ?: null);
         } else {
             $query->order($db->quoteName($listOrder) . ' ' . $db->escape($listDirn));
+
+            // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+            if (!in_array($listOrder, array('u.update_id', 'update_id'), true)) {
+                $query->order($db->quoteName('u.update_id') . ' ' . $db->escape($listDirn));
+            }
 
             $result = parent::_getList($query, $limitstart, $limit);
             $this->translate($result);

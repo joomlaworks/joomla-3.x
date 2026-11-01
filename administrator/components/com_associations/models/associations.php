@@ -374,6 +374,11 @@ class AssociationsModelAssociations extends JModelList
 
         $query->order($db->escape($listOrdering) . ' ' . $db->escape($orderDirn));
 
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if ($listOrdering !== 'id') {
+            $query->order($db->qn($fields['id']) . ' ' . $db->escape($orderDirn));
+        }
+
         return $query;
     }
 

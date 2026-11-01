@@ -346,6 +346,11 @@ class ContenthistoryModelHistory extends JModelList
         $orderDirn = $this->state->get('list.direction');
         $query->order($db->quoteName($orderCol) . $orderDirn);
 
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!in_array($orderCol, array('h.version_id', 'version_id'), true)) {
+            $query->order($db->quoteName('h.version_id') . ' ' . $db->escape($orderDirn));
+        }
+
         return $query;
     }
 

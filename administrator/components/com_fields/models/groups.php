@@ -197,6 +197,11 @@ class FieldsModelGroups extends JModelList
 
         $query->order($db->escape($listOrdering) . ' ' . $listDirn);
 
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!in_array($listOrdering, array('a.id', 'id'), true)) {
+            $query->order('a.id ' . $listDirn);
+        }
+
         return $query;
     }
 

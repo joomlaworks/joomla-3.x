@@ -166,7 +166,22 @@ class BannersModelTracks extends JModelList
         }
 
         // Add the list ordering clause.
-        $query->order($db->escape($this->getState('list.ordering', 'b.name')) . ' ' . $db->escape($this->getState('list.direction', 'ASC')));
+        $listOrdering = $this->getState('list.ordering', 'b.name');
+        $listDirn     = $db->escape($this->getState('list.direction', 'ASC'));
+        $query->order($db->escape($listOrdering) . ' ' . $listDirn);
+
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!in_array($listOrdering, array('a.track_date', 'track_date'), true)) {
+            $query->order('a.track_date ' . $listDirn);
+        }
+
+        if (!in_array($listOrdering, array('a.track_type', 'track_type'), true)) {
+            $query->order('a.track_type ' . $listDirn);
+        }
+
+        if (!in_array($listOrdering, array('a.banner_id', 'banner_id'), true)) {
+            $query->order('a.banner_id ' . $listDirn);
+        }
 
         return $query;
     }

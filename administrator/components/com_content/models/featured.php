@@ -243,6 +243,11 @@ class ContentModelFeatured extends ContentModelArticles
 
         $query->order($db->escape($orderCol) . ' ' . $db->escape($orderDirn));
 
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if (!in_array($orderCol, array('a.id', 'id'), true)) {
+            $query->order('a.id ' . $db->escape($orderDirn));
+        }
+
         return $query;
     }
 
