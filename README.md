@@ -91,25 +91,52 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 - PostgreSQL 9.5 is now the minimum (was 9.0); the distribution's PHP code follows PSR-12
 
 **Security fixes:**
-- TinyMCE 8.10.0, with 8.9.3's fix for a stored XSS in its media plugin
-- Restricted articles: Hammond, Finch and Rookwood no longer show their full text to visitors without access
-- Media Manager uploads and folders stay inside the media folder, and uploads compare executable extensions in any case (the "Illegal MIME Types" option is now checked)
-- The head escapes the addresses and attributes extensions pass for links, scripts and stylesheets
-- Command line: `database:import` refuses SQL hidden in a dump's table definitions, and an MCP server started with `--allow-write` alone can no longer create or promote administrators
+- TinyMCE updated to 8.10.0, which fixes a way to slip harmful code into content through its media plugin
+- Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors who aren't allowed to read them
+- Media Manager uploads can no longer end up in a folder outside the media folder, and dangerous file types are caught however their names are capitalised
+- Extensions can no longer accidentally open the page to harmful code through the links, scripts and styles they add
+- Command line: importing a database file can no longer run hidden commands, and an AI assistant given write access can no longer create administrators unless it was explicitly allowed to install code
 
 **Bug fixes:**
-- Administrator menu: one click opens a menu on laptops whose touchpad or screen reports touch (a second menu needed two), and the other menus open on hover while one is open
-- Pages no longer scroll sideways at tablet widths: administrator lists in Prothero and Isis hide the columns Joomla hides on phones only as far as needed to fit, and Protostar's page fits between Bootstrap's steps
-- Hammond, Finch and Rookwood: Smart Search's suggestions no longer cover the Search button, and are readable on dark pages
-- `extension:install` works for extensions whose installers ask the application for its client (VirtueMart)
-- Caching (all stock Joomla 3 bugs): no empty pages from damaged cache entries, browser caching (304) of cached pages works, every visitor gets their own form token from cached pages, views keep their headers, a visit with tracking parameters no longer puts them in cached pages' links, and Redis, APCu and WinCache clean only the site's own cache
-- Lists no longer repeat or skip items between pages (all databases), and modules dragged to a new place stay there
-- Smart Search: full reindexes and the command line indexer no longer stop, and Advanced Search's dates work; searches find accented and Greek words on every database
-- PostgreSQL, SQL Server and SQLite: pages failing with Debug System or caching on, saving new items, `SELECT DISTINCT(column)` on SQLite, and collations of sites moved to MySQL
-- Uninstalling one removable extension no longer breaks others, and "User - Joomla!" can no longer be uninstalled
-- Sample Data no longer hides every module after an interrupted install
-- PHP 8.1–8.5 deprecations and PHP warnings fixed throughout (Media Manager, Templates: Customise), missing language strings added, and bundled files PHP couldn't parse removed
-- Command line cleans of an APCu or WinCache cache (`cache:clean`, content commands) reach the web server's cache; the password reset form checks the email address in the browser
+- **Administrator:**
+  - The menu opens with one click on laptops whose touchpad or screen reports touch support (opening a second menu needed two)
+  - Lists no longer make the page scroll sideways on tablets and narrow windows: the least important columns are hidden, only as many as needed to fit
+  - Modules dragged to a new place in the Modules list now stay there
+  - The windows opened by the editor's buttons and by image fields fit on phones and small tablets
+  - Smaller fixes in Language Overrides, menu assignments, module ordering, Smart Search, Banners, the extension installer, two-factor authentication and Install from Web
+- **Site and templates:**
+  - Hammond, Finch and Rookwood show an Edit link to users who may edit an article, as Joomla's own layouts do
+  - Hammond, Finch and Rookwood: subcategory lists expand, Smart Search's advanced options open, search suggestions no longer cover the Search button, the image picker for front-end editing looks right, and form lists follow the dark themes
+  - Rookwood's main menu and Protostar no longer make the page scroll sideways at some widths
+  - Pages without a menu item of their own (login, tags, search...) no longer get "Site - Site" as their title
+  - Error pages show the right error, and a site whose template was deleted shows another template instead of an error
+  - Deleting a menu item no longer hides modules shown "on all pages except" that item
+  - The password reset form checks the email address before sending
+- **Media Manager:** common file types the settings allow (icons, OpenDocument files, older Excel and PowerPoint files) upload again, refused files get a clear message, and videos in subfolders play
+- **Search and Smart Search:**
+  - Rebuilding the Smart Search index no longer stops partway on MySQL and MariaDB, nor from the command line
+  - Searching by date works with only a start or an end date, and the "All" results setting shows results
+  - Searches find words typed without accents, also in Greek and other alphabets, and search suggestions work on SQLite
+- **Caching** (bugs inherited from Joomla 3):
+  - A damaged cache entry no longer shows visitors an empty page
+  - Browsers can reuse cached pages they already have, and forms on cached pages work for every visitor
+  - Visits from social media or newsletter links (with tracking codes) no longer change what cached pages show others
+  - Clearing the cache only clears this site's cache, also from the command line
+- **Databases:**
+  - Lists no longer show some items twice and skip others when going from one page to the next
+  - PostgreSQL: pages work with debugging or caching on, and new items save
+  - SQL Server: private messages and privacy consents save, and Smart Search indexes every item
+  - SQLite: searches work in every alphabet, and a few lists and options fill in correctly
+  - Moving a site from MySQL 8 to MariaDB or an older MySQL works
+- **Command line and MCP:** installing extensions such as VirtueMart, enabling plugins like Page Cache, editing articles (their formatting was lost) and changing settings through an AI assistant all work as expected
+- **Updates and extensions:**
+  - Uninstalling a core component also removes the extensions that only served it and the files it left behind, and nothing else breaks without it
+  - The plugin everyone needs to log in can no longer be uninstalled by mistake
+  - Updating an old site keeps the Beez 3 template if the site uses it, and updates remove files that are no longer part of Joomla
+  - Installing a new site no longer starts over when a step shows a warning
+  - Sample data no longer hides every module after an interrupted install
+- **PHP compatibility:** warnings that filled server logs on PHP 8.1–8.5 are gone, older extensions built on FOF work on PHP 8, two-factor logins set up in Joomla 3.2–3.6 work on PHP 8, and exporting the User Actions Log works on PHP 7
+- **Other:** small fixes in the code editor (CodeMirror), and missing texts that showed as codes were added
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:
