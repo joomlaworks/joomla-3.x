@@ -236,6 +236,7 @@ abstract class ModArticlesCategoryHelper
             } else {
                 $menu      = $app->getMenu();
                 $menuitems = $menu->getItems('link', 'index.php?option=com_users&view=login');
+                $Itemid    = 0;
 
                 if (isset($menuitems[0])) {
                     $Itemid = $menuitems[0]->id;
@@ -244,7 +245,7 @@ abstract class ModArticlesCategoryHelper
                     $Itemid = $app->input->getInt('Itemid');
                 }
 
-                $item->link = JRoute::_('index.php?option=com_users&view=login&Itemid=' . $Itemid);
+                $item->link = JRoute::_('index.php?option=com_users&view=login' . ($Itemid ? '&Itemid=' . $Itemid : ''));
             }
 
             // Used for styling the active article
