@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-    <field name="itemtype" type="itemtype" label="COM_ASSOCIATIONS_COMPONENT_SELECTOR_LABEL" description="COM_ASSOCIATIONS_COMPONENT_SELECTOR_DESC" filtermode="selector" onchange="jQuery('select[id^=\'filter_\']').val('');jQuery('select[id^=\'list_\']').val('');this.form.submit();">
+    <field name="itemtype" type="itemtype" label="COM_ASSOCIATIONS_COMPONENT_SELECTOR_LABEL" description="COM_ASSOCIATIONS_COMPONENT_SELECTOR_DESC" filtermode="selector" onchange="document.querySelectorAll('select[id^=filter_], select[id^=list_]').forEach(function (e) {e.value = '';});this.form.submit();">
         <option value="">COM_ASSOCIATIONS_FILTER_SELECT_ITEM_TYPE</option>
     </field>
     <field name="language" type="contentlanguage" label="JOPTION_FILTER_LANGUAGE" description="JOPTION_FILTER_LANGUAGE_DESC" filtermode="selector" onchange="this.form.submit();">

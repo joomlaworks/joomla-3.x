@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
     <fieldset addfieldpath="/administrator/components/com_templates/models/fields" />
-    <field name="client_id" type="list" filtermode="selector" onchange="jQuery('#filter_search, select[id^=filter_], #list_fullordering').val('');this.form.submit();">
+    <field name="client_id" type="list" filtermode="selector" onchange="document.querySelectorAll('#filter_search, select[id^=filter_], #list_fullordering').forEach(function (e) {e.value = '';});this.form.submit();">
         <option value="0">JSITE</option>
         <option value="1">JADMINISTRATOR</option>
     </field>
