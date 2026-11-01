@@ -384,6 +384,8 @@ class JoomlaInstallerScript
             '3.18.0-2026-10-28.sql' => '3.18.0',
             // Content - PDF and Button - PDF
             '3.18.0-2026-10-31.sql' => '3.18.0',
+            // What's new in 3.18 (post-installation message)
+            '3.18.0-2026-11-02.sql' => '3.18.0',
         );
 
         foreach ($dataMigrationFiles as $file => $addedIn) {

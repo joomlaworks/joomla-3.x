@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Version 3.18 - unreleased [pending]
+## Version 3.18 - released November 2nd, 2026
 
 ### New features
 - **PDF files: shown on the site, previewed in the Media Manager and the editors.** pdf.js 6.4.299 (Mozilla, Apache 2.0, in `media/system/pdfjs`, with its font, character map and image decoder files; loaded only where a PDF is shown, about 480 KB compressed) draws PDFs the same way in every browser, phones included.

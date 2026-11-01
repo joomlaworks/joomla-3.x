@@ -15,7 +15,7 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 
 ## CONTENTS
 - [Changelog](#changelog)
-  - [Version 3.18 - unreleased [pending]](#version-318---unreleased-pending)
+  - [Version 3.18 - released November 2nd, 2026](#version-318---released-november-2nd-2026)
   - [Version 3.17 - released October 10th, 2026](#version-317---released-october-10th-2026)
   - [Version 3.16 - released October 3rd, 2026](#version-316---released-october-3rd-2026)
   - [Version 3.15 - released July 18th, 2026](#version-315---released-july-18th-2026)
@@ -42,7 +42,7 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 
 A short overview of each release. Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 
-## Version 3.18 - unreleased [pending]
+## Version 3.18 - released November 2nd, 2026
 Summary of changes:
 - Much more of Joomla's core can be removed: Articles, Private Messages, Privacy, Redirect, Tags, Wrapper, the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. Using K2 instead of Articles? Uninstall Articles, and the rest of the site keeps working
 - Clean uninstalls: a component takes its own database tables, modules, plugins, media and Smart Search entries along (and "Restore uninstalled core extensions" brings them back, on every supported database), and updates clean up after earlier uninstalls

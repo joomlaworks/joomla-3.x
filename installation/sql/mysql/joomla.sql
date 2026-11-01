@@ -1692,7 +1692,8 @@ INSERT INTO `#__postinstall_messages` (`extension_id`, `title_key`, `description
 (700, 'COM_CPANEL_MSG_UTD_3_15_TITLE', 'COM_CPANEL_MSG_UTD_3_15_BODY', '', 'com_cpanel', 1, 'message', '', '', '', '', '3.15.0', 1),
 (700, 'COM_CPANEL_MSG_UTD_3_16_TITLE', 'COM_CPANEL_MSG_UTD_3_16_BODY', '', 'com_cpanel', 1, 'message', '', '', '', '', '3.16.0', 1),
 (700, 'COM_CPANEL_MSG_UTD_3_17_TITLE', 'COM_CPANEL_MSG_UTD_3_17_BODY', '', 'com_cpanel', 1, 'message', '', '', '', '', '3.17.0', 1),
-(700, 'COM_CPANEL_MSG_UTD_PAGECACHE_TITLE', 'COM_CPANEL_MSG_UTD_PAGECACHE_BODY', 'COM_CPANEL_MSG_UTD_PAGECACHE_BUTTON', 'com_cpanel', 1, 'action', 'admin://components/com_admin/postinstall/pagecache.php', 'admin_postinstall_pagecache_action', 'admin://components/com_admin/postinstall/pagecache.php', 'admin_postinstall_pagecache_condition', '3.18.0', 0);
+(700, 'COM_CPANEL_MSG_UTD_PAGECACHE_TITLE', 'COM_CPANEL_MSG_UTD_PAGECACHE_BODY', 'COM_CPANEL_MSG_UTD_PAGECACHE_BUTTON', 'com_cpanel', 1, 'action', 'admin://components/com_admin/postinstall/pagecache.php', 'admin_postinstall_pagecache_action', 'admin://components/com_admin/postinstall/pagecache.php', 'admin_postinstall_pagecache_condition', '3.18.0', 0),
+(700, 'COM_CPANEL_MSG_UTD_3_18_TITLE', 'COM_CPANEL_MSG_UTD_3_18_BODY', '', 'com_cpanel', 1, 'message', '', '', '', '', '3.18.0', 1);
 
 -- --------------------------------------------------------
 
