@@ -139,8 +139,16 @@ class ViewController extends CacheController
             }
         }
 
-        // Store the cache data
-        $this->cache->store(serialize($data), $id);
+        /*
+         * A request with ignored query parameters (Global Configuration's cache_ignored_params: utm_*, fbclid...) shares its ID with
+         * the page without them, but the view may have written them into its output (the feed links of lists): it's served stored
+         * copies, never stored, as the page cache does.
+         */
+        list(, $ignored) = Cache::withoutIgnoredParameters(\JUri::getInstance()->toString());
+
+        if (!$ignored) {
+            $this->cache->store(serialize($data), $id);
+        }
 
         if ($locktest->locked === true) {
             $this->cache->unlock($id);
