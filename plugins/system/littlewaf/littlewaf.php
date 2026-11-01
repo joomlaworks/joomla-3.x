@@ -227,7 +227,7 @@ class PlgSystemLittlewaf extends CMSPlugin
             return;
         }
 
-        $this->app->redirect(Uri::root());
+        $this->redirectTo(Uri::root(true) . '/');
     }
 
     /**
@@ -253,7 +253,7 @@ class PlgSystemLittlewaf extends CMSPlugin
         // Core's Search and Smart Search, and components searching with a "search" task or a searchword (K2's item list)
         if (in_array($input->getCmd('option'), array('com_search', 'com_finder'), true) || $input->getCmd('task') === 'search'
             || $input->getString('searchword', '') !== '') {
-            $this->app->redirect(Uri::base(), 301);
+            $this->redirectTo(Uri::base(true) . '/', 301);
         }
     }
 
@@ -545,43 +545,42 @@ class PlgSystemLittlewaf extends CMSPlugin
             return;
         }
 
-        $origin = $this->origin();
-
-        if ($origin === '') {
-            return;
-        }
-
-        // Always an absolute address on this site: a path starting with "//" mustn't become another host
-        $this->app->redirect($origin . $normalised, 301);
+        $this->redirectTo($normalised, 301);
     }
 
     /**
-     * The site's scheme, host and port for redirects: Global Configuration's Live Site when it's set, otherwise the request's,
-     * when its host is a valid name or address. The request's Host header is the client's: a cache in front of the site that
-     * doesn't key pages by it could otherwise store a redirect to another host.
+     * Redirects to a path of the site (from its root, with the site's folder): with Global Configuration's Live Site when
+     * it's set, otherwise the path alone, which the browser asks of the host it asked before. The request's Host header is
+     * the client's: an address built from it (as WebApplication::redirect() builds one for a path) sends a forged Host's
+     * request elsewhere, and a cache in front of the site that doesn't key pages by Host could store that.
      *
-     * @return  string  Empty when there is no trustworthy one (no redirect then)
+     * @param   string   $path    The path, with the query
+     * @param   integer  $status  The HTTP status
+     *
+     * @return  void
      *
      * @since   3.18.0
      */
-    private function origin()
+    private function redirectTo($path, $status = 303)
     {
+        // One leading slash: "//x" would be another host
+        $path = '/' . ltrim($path, '/');
         $live = trim((string) $this->app->get('live_site'));
 
         if ($live !== '') {
             $uri = new Uri($live);
 
-            return $uri->getHost() !== '' ? $uri->toString(array('scheme', 'host', 'port')) : '';
+            if ($uri->getHost() !== '') {
+                $this->app->redirect($uri->toString(array('scheme', 'host', 'port')) . $path, $status);
+
+                return;
+            }
         }
 
-        $uri  = Uri::getInstance();
-        $host = (string) $uri->getHost();
-
-        if (!preg_match('/^(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*|\[[0-9A-Fa-f:.]+\])$/', $host)) {
-            return '';
-        }
-
-        return $uri->toString(array('scheme', 'host', 'port'));
+        $this->app->setHeader('Status', $status, true);
+        $this->app->setHeader('Location', $path, true);
+        $this->app->sendHeaders();
+        $this->app->close();
     }
 
     /**
