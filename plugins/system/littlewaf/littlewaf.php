@@ -545,8 +545,43 @@ class PlgSystemLittlewaf extends CMSPlugin
             return;
         }
 
+        $origin = $this->origin();
+
+        if ($origin === '') {
+            return;
+        }
+
         // Always an absolute address on this site: a path starting with "//" mustn't become another host
-        $this->app->redirect(Uri::getInstance()->toString(array('scheme', 'host', 'port')) . $normalised, 301);
+        $this->app->redirect($origin . $normalised, 301);
+    }
+
+    /**
+     * The site's scheme, host and port for redirects: Global Configuration's Live Site when it's set, otherwise the request's,
+     * when its host is a valid name or address. The request's Host header is the client's: a cache in front of the site that
+     * doesn't key pages by it could otherwise store a redirect to another host.
+     *
+     * @return  string  Empty when there is no trustworthy one (no redirect then)
+     *
+     * @since   3.18.0
+     */
+    private function origin()
+    {
+        $live = trim((string) $this->app->get('live_site'));
+
+        if ($live !== '') {
+            $uri = new Uri($live);
+
+            return $uri->getHost() !== '' ? $uri->toString(array('scheme', 'host', 'port')) : '';
+        }
+
+        $uri  = Uri::getInstance();
+        $host = (string) $uri->getHost();
+
+        if (!preg_match('/^(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*|\[[0-9A-Fa-f:.]+\])$/', $host)) {
+            return '';
+        }
+
+        return $uri->toString(array('scheme', 'host', 'port'));
     }
 
     /**

@@ -589,6 +589,11 @@ class FinderModelSearch extends JModelList
         $base->select($this->_db->escape($ordering) . ' AS ordering');
         $base->order($this->_db->escape($ordering) . ' ' . $this->_db->escape($direction));
 
+        // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
+        if ($ordering !== 'l.link_id') {
+            $base->order('l.link_id ' . $this->_db->escape($direction));
+        }
+
         /*
          * If there are no optional or required search terms in the query, we
          * can get the results in one relatively simple database query.
@@ -664,7 +669,8 @@ class FinderModelSearch extends JModelList
                     // Adjust the query to join on the appropriate mapping table.
                     $query = clone $base;
                     $query->join('INNER', $this->_db->quoteName('#__finder_links_terms' . $suffix) . ' AS m ON m.link_id = l.link_id')
-                        ->where('m.term_id IN (' . implode(',', $ids) . ')');
+                        ->where('m.term_id IN (' . implode(',', $ids) . ')')
+                        ->order('m.term_id');
 
                     // Load the results from the database.
                     $this->_db->setQuery($query, $start, $limit);
@@ -1028,7 +1034,10 @@ class FinderModelSearch extends JModelList
 
         // Load the list state.
         $this->setState('list.start', $input->get('limitstart', 0, 'uint'));
-        $this->setState('list.limit', $input->get('limit', $app->get('list_limit', 20), 'uint'));
+        // Always a limit, at most the list limit menu's largest (100), also for its All (0): a page of every match (up to
+        // match.limit) is a heavy request anyone can make, and the results were cut with array_slice(), for which 0 is none
+        $limit = (int) $input->get('limit', $app->get('list_limit', 20), 'uint');
+        $this->setState('list.limit', $limit > 0 ? min($limit, 100) : 100);
 
         /**
          * Load the sort ordering.
