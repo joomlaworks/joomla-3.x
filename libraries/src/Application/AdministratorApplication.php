@@ -12,6 +12,7 @@ namespace Joomla\CMS\Application;
 defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Extension\ExtensionHelper;
 use Joomla\CMS\Input\Input;
 use Joomla\Registry\Registry;
 
@@ -111,12 +112,17 @@ class AdministratorApplication extends CMSApplication
         $document->setBuffer($contents, 'component');
 
         // What every page has for logged-in users, so views needn't ask (3.18): the shared script (forms with the class
-        // form-validate validated, tooltips of hasTooltip and hasPopover), every list searchable (data-chosen="true" keeps one
-        // as it is) and, on whole pages (not in a modal's frame), the session kept alive. After the component, whose own
-        // selectors and options for lists come first
+        // form-validate validated, tooltips of hasTooltip and hasPopover), on core components' pages every list searchable
+        // (data-chosen="true" keeps one as it is) and, on whole pages (not in a modal's frame), the session kept alive. After
+        // the component, whose own selectors and options for lists come first. Third-party components' lists stay as they
+        // were in Joomla 3 (they ask for Chosen themselves): they may replace them with widgets of their own (JEvents) or
+        // listen through their own copy of jQuery (Community Builder)
         if ($document->getType() === 'html' && !\JFactory::getUser()->guest) {
             \JHtml::_('behavior.core');
-            \JHtml::_('formbehavior.chosen', 'select');
+
+            if (ExtensionHelper::checkIfCoreExtension('component', $component, 1) || ExtensionHelper::checkIfCoreExtension('component', $component, 0)) {
+                \JHtml::_('formbehavior.chosen', 'select');
+            }
 
             if ($this->input->getCmd('tmpl', 'index') !== 'component') {
                 \JHtml::_('behavior.keepalive');

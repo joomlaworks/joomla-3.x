@@ -473,7 +473,7 @@ Pages used to load each behaviour with a call (`JHtml::_('behavior.formvalidator
 </form>
 ```
 
-In the administrator, every page of a logged-in user has the shared script (`global.js`), searchable lists (every `select`) and, outside modal frames, keep-alive (`AdministratorApplication::dispatch()`); `data-searchable="false"`, or Joomla's `data-chosen="true"`, keeps a list as it is. Tooltips and popovers of these selectors work on every page that has the shared script.
+In the administrator, every page of a logged-in user has the shared script (`global.js`), searchable lists (every `select`, on core components' pages only: third-party components' lists stay as in Joomla 3, where they ask for Chosen themselves) and, outside modal frames, keep-alive (`AdministratorApplication::dispatch()`); `data-searchable="false"`, or Joomla's `data-chosen="true"`, keeps a list as it is. Tooltips and popovers of these selectors work on every page that has the shared script.
 
 The calls still work, and are what to use for other selectors or options: `JHtml::_('formbehavior.chosen', '#jform_catid', null, array('disable_search_threshold' => 0))`, `JHtml::_('bootstrap.tooltip', '.hasTooltip', array('placement' => 'bottom'))` (a selector registered again takes the new options). Markup the template writes itself, or a script adds later, isn't read: call the behaviour for it. Core's views no longer make the calls their markup makes unnecessary.
 
