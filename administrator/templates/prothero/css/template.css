@@ -2281,7 +2281,9 @@ th .tooltip-inner {font-weight:normal;}
 .alert-info .alert-link {color:inherit;}
 
 /* --- Joomla modals --- */
-div.modal {position:fixed;top:5%;left:50%;z-index:1050;width:80%;margin-left:-40%;color:var(--c-fg);background-color:var(--c-popover);border:1px solid var(--c-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);background-clip:padding-box;outline:none;overflow:hidden;}
+div.modal {position:fixed;top:5%;left:50%;z-index:1050;width:80%;margin-left:-40%;color:var(--c-fg);background-color:var(--c-popover);border:1px solid var(--c-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);background-clip:padding-box;outline:none;}
+/* A frame ending the modal is clipped to its corners; nothing else is, as lists opening over the modal's edge (Chosen) must show whole */
+div.modal > .modal-body:last-child:has(iframe) {overflow:hidden;border-radius:0 0 calc(var(--radius-lg) - 1px) calc(var(--radius-lg) - 1px);}
 div.modal.fade {transition:opacity 0.3s linear, top 0.3s ease-out;top:-25%;}
 div.modal.fade.in {top:5%;}
 .modal-batch {overflow-y:visible;}
