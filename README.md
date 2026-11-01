@@ -101,10 +101,10 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 **Bug fixes:**
 - Administrator menu: one click opens a menu on laptops whose touchpad or screen reports touch (a second menu needed two), and the other menus open on hover while one is open
 - Third-party compatibility: moved core files keep loading by their old addresses (e.g. Convert Forms' TinyMCE), extensions' own date fields work, third-party components' lists are left as they were, and `extension:install` works for VirtueMart
-- Caching (all stock Joomla 3 bugs): no empty pages from damaged cache entries, browser caching (304) of cached pages works, every visitor gets their own form token from cached pages, views keep their headers, and Redis, APCu and WinCache clean only the site's own cache
+- Caching (all stock Joomla 3 bugs): no empty pages from damaged cache entries, browser caching (304) of cached pages works, every visitor gets their own form token from cached pages, views keep their headers, a visit with tracking parameters no longer puts them in cached pages' links, and Redis, APCu and WinCache clean only the site's own cache
 - Lists no longer repeat or skip items between pages (all databases), and modules dragged to a new place stay there
 - Smart Search: full reindexes and the command line indexer no longer stop, and Advanced Search's dates work; searches find accented and Greek words on every database
-- PostgreSQL, SQL Server and SQLite: pages failing with Debug System or caching on, saving new items, and collations of sites moved to MySQL
+- PostgreSQL, SQL Server and SQLite: pages failing with Debug System or caching on, saving new items, `SELECT DISTINCT(column)` on SQLite, and collations of sites moved to MySQL
 - Uninstalling one removable extension no longer breaks others, and "User - Joomla!" can no longer be uninstalled
 - Sample Data no longer hides every module after an interrupted install
 - PHP 8.1–8.5 deprecations fixed throughout, missing language strings added
