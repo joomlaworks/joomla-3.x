@@ -25,6 +25,23 @@
 
 	const isRemote = (url) => url.indexOf(options().base_url) === 0 || /^index\.php/.test(url);
 
+	// The directory's images have addresses relative to the directory (../uploads/...), which the page would ask of this site
+	const rebase = (html) => {
+		const template = document.createElement('template');
+
+		// Inert: images in a template's content aren't loaded
+		template.innerHTML = html;
+		template.content.querySelectorAll('img[src]').forEach((image) => {
+			const src = image.getAttribute('src');
+
+			if (!/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(src)) {
+				image.setAttribute('src', new URL(src, options().base_url).href);
+			}
+		});
+
+		return template.innerHTML;
+	};
+
 	const setHidden = (element, hidden) => {
 		if (element) {
 			element.hidden = hidden;
@@ -140,7 +157,7 @@
 				const container = byId('jed-container');
 
 				setHidden(byId('web-loader'), true);
-				container.innerHTML = response.data.html;
+				container.innerHTML = rebase(response.data.html);
 
 				const installAt = byId('joomlaapsinstallatinput');
 
@@ -173,7 +190,7 @@
 		getJson(url)
 			.then((response) => {
 				setHidden(loader, true);
-				byId(target).innerHTML = response.data.html;
+				byId(target).innerHTML = rebase(response.data.html);
 				prepareLinks();
 			})
 			.catch(() => setHidden(loader, true));
