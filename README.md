@@ -202,6 +202,7 @@ Summary of changes:
 - Smaller hardening: IconCaptcha checks its requests (an error showed the server's path), the Blocks renderer needs an editing right, images too large for memory are left alone also without a memory limit
 
 **Bug fixes:**
+- The administrator's menu opens with one click on laptops whose touchpad or screen reports touch (a second menu needed two), and the bar's other menus open on hover while one is open, as in stock Joomla
 - Smart Search on SQLite finds words regardless of accents, as on MySQL; `extension:install` works for extensions whose installer asks the application for its client (VirtueMart); Rookwood's long menus wrap instead of widening the page
 - Third-party compatibility, from tests with HikaShop, Community Builder, JEvents, AcyMailing and Phoca Gallery: extensions' own date fields in the old calendar's markup work again, the administrator no longer turns third-party components' lists into searchable lists (as stock Joomla), and Prothero shows extensions' coloured Yes/No buttons
 - Extensions loading moved core files by their old address (TinyMCE 4's `tinymce.min.js`, `media/jui/...`) get the new one: Convert Forms' form editor works again

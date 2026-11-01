@@ -6891,6 +6891,10 @@
 
 					if (parent && parent.classList) {
 						parent.classList.remove('open');
+
+						if (parent.parentNode && parent.parentNode.classList) {
+							parent.parentNode.classList.remove('nav-hover');
+						}
 					}
 				});
 			},
@@ -6906,16 +6910,19 @@
 				CMS.bootstrap.dropdown.clear();
 
 				if (!active) {
-					// On touch screens a layer under the menu takes the tap that closes it (as Bootstrap 2.3)
+					// iOS Safari sends a tap outside the menu to the page only over elements listening for something (as Bootstrap
+					// 4 does it). Never Bootstrap 2.3's layer under the menu: on every device reporting touch, the touchpads of
+					// many laptops too, it took the next click, so a second menu needed two
 					if ('ontouchstart' in document.documentElement) {
-						const backdrop = document.createElement('div');
-
-						backdrop.className = 'dropdown-backdrop';
-						backdrop.addEventListener('click', () => CMS.bootstrap.dropdown.clear());
-						toggle.parentNode.insertBefore(backdrop, toggle);
+						Array.prototype.forEach.call(document.body.children, (child) => child.addEventListener('mouseover', noop));
 					}
 
 					parent.classList.add('open');
+
+					// The menu bar's other menus open on hover while one is open (Joomla's Bootstrap: nav-hover)
+					if (parent.parentNode && parent.parentNode.classList) {
+						parent.parentNode.classList.add('nav-hover');
+					}
 				}
 
 				toggle.focus();
@@ -7428,6 +7435,10 @@
 		},
 	};
 
+	// Menus the pointer opened (nav-hover, below): a click on one keeps it open (Joomla's Bootstrap closed it again, so the
+	// click seemed lost); the next one closes it
+	const hoverOpened = new WeakSet();
+
 	// The data attributes, delegated, unless Bootstrap's own script is on the page
 	document.addEventListener('click', (event) => {
 		const target = event.target;
@@ -7464,8 +7475,16 @@
 			const link = href && href.charAt(0) !== '#' && !/^javascript:/i.test(href);
 
 			if (toggle && !link) {
+				const parent = CMS.bootstrap.dropdown.parent(toggle);
+
 				event.preventDefault();
-				CMS.bootstrap.dropdown.toggle(toggle);
+
+				if (hoverOpened.has(parent) && parent.classList.contains('open')) {
+					hoverOpened.delete(parent);
+				} else {
+					hoverOpened.delete(parent);
+					CMS.bootstrap.dropdown.toggle(toggle);
+				}
 			} else if (!link && !target.closest('.dropdown form')) {
 				CMS.bootstrap.dropdown.clear();
 			}
@@ -7542,6 +7561,18 @@
 				event.preventDefault();
 				CMS.bootstrap.alert.close(dismiss);
 			}
+		}
+	});
+
+	// Another menu of the bar a menu is open in, on hover (Joomla's Bootstrap did this)
+	document.addEventListener('mouseover', (event) => {
+		const toggle = !bootstrapLoaded('dropdown') && event.target && event.target.closest ? event.target.closest(CMS.bootstrap.dropdown.toggles) : null;
+		const parent = toggle ? CMS.bootstrap.dropdown.parent(toggle) : null;
+
+		if (parent && parent.parentNode && parent.parentNode.classList && parent.parentNode.classList.contains('nav-hover')
+			&& !parent.classList.contains('open')) {
+			CMS.bootstrap.dropdown.toggle(toggle);
+			hoverOpened.add(parent);
 		}
 	});
 
