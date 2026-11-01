@@ -1123,22 +1123,34 @@ input[type="button"].btn-block {width:100%;}
 .btn-inverse {box-shadow:var(--shadow-sm);}
 .btn-primary {border:1px solid var(--c-primary);color:var(--c-on-primary);background-color:var(--c-primary);}
 .btn-primary:hover,
-.btn-primary:focus {border-color:var(--c-primary-hover);background-color:var(--c-primary-hover);color:var(--c-on-primary);text-decoration:none;}
+.btn-primary:focus,
+.btn-primary.active,
+.btn-primary:active {border-color:var(--c-primary-hover);background-color:var(--c-primary-hover);color:var(--c-on-primary);text-decoration:none;}
 .btn-warning {border:1px solid var(--c-warning);color:var(--c-on-color);background-color:var(--c-warning);}
 .btn-warning:hover,
-.btn-warning:focus {border-color:var(--c-warning-hover);background-color:var(--c-warning-hover);color:var(--c-on-color);text-decoration:none;}
+.btn-warning:focus,
+.btn-warning.active,
+.btn-warning:active {border-color:var(--c-warning-hover);background-color:var(--c-warning-hover);color:var(--c-on-color);text-decoration:none;}
 .btn-danger {border:1px solid var(--c-danger);color:var(--c-on-color);background-color:var(--c-danger);}
 .btn-danger:hover,
-.btn-danger:focus {border-color:var(--c-danger-hover);background-color:var(--c-danger-hover);color:var(--c-on-color);text-decoration:none;}
+.btn-danger:focus,
+.btn-danger.active,
+.btn-danger:active {border-color:var(--c-danger-hover);background-color:var(--c-danger-hover);color:var(--c-on-color);text-decoration:none;}
 .btn-success {border:1px solid var(--c-primary);color:var(--c-on-primary);background-color:var(--c-primary);}
 .btn-success:hover,
-.btn-success:focus {border-color:var(--c-primary-hover);background-color:var(--c-primary-hover);color:var(--c-on-primary);text-decoration:none;}
+.btn-success:focus,
+.btn-success.active,
+.btn-success:active {border-color:var(--c-primary-hover);background-color:var(--c-primary-hover);color:var(--c-on-primary);text-decoration:none;}
 .btn-info {border:1px solid var(--c-muted);color:var(--c-fg);background-color:var(--c-muted);}
 .btn-info:hover,
-.btn-info:focus {border-color:var(--c-border);background-color:var(--c-border);color:var(--c-fg);text-decoration:none;}
+.btn-info:focus,
+.btn-info.active,
+.btn-info:active {border-color:var(--c-border);background-color:var(--c-border);color:var(--c-fg);text-decoration:none;}
 .btn-inverse {border:1px solid var(--c-primary);color:var(--c-on-primary);background-color:var(--c-primary);}
 .btn-inverse:hover,
-.btn-inverse:focus {border-color:var(--c-primary-hover);background-color:var(--c-primary-hover);color:var(--c-on-primary);text-decoration:none;}
+.btn-inverse:focus,
+.btn-inverse.active,
+.btn-inverse:active {border-color:var(--c-primary-hover);background-color:var(--c-primary-hover);color:var(--c-on-primary);text-decoration:none;}
 .btn-link,
 .btn-link:active,
 .btn-link[disabled] {background-color:transparent;background-image:none;box-shadow:none;}

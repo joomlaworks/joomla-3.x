@@ -384,8 +384,9 @@ class HtmlView extends \JObject
             $model = strtolower($default);
         }
 
-        // First check to make sure the model requested exists
-        if (isset($this->_models[$model])) {
+        // First check to make sure the model requested exists (a view without a default model has none: PHP 8.5 deprecates
+        // null as an array offset)
+        if ($model !== null && isset($this->_models[$model])) {
             // Model exists, let's build the method name
             $method = 'get' . ucfirst($property);
 
@@ -419,7 +420,9 @@ class HtmlView extends \JObject
             $name = $this->_defaultModel;
         }
 
-        return $this->_models[strtolower($name)];
+        $name = strtolower((string) $name);
+
+        return isset($this->_models[$name]) ? $this->_models[$name] : null;
     }
 
     /**
