@@ -38,6 +38,26 @@ class MediaHelper
     }
 
     /**
+     * Whether a path is the media folder or inside it, after resolving it (links, "..") with realpath(). The folder's own path
+     * is compared with a separator after it: a plain prefix test took a sibling folder whose name starts with the media
+     * folder's ("images_old" next to "images") as inside it.
+     *
+     * @param   string  $path  The path to check
+     * @param   string  $base  The media folder (COM_MEDIA_BASE)
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    public static function isInside($path, $base)
+    {
+        $path = realpath((string) $path);
+        $base = realpath((string) $base);
+
+        return $path !== false && $base !== false && ($path === $base || strpos($path, rtrim($base, '\\/') . DIRECTORY_SEPARATOR) === 0);
+    }
+
+    /**
      * Gets the file extension for purposed of using an icon
      *
      * @param   string  $fileName  The filename

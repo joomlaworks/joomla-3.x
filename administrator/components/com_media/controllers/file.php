@@ -46,6 +46,14 @@ class MediaControllerFile extends JControllerLegacy
         $return       = JFactory::getSession()->get('com_media.return_url');
         $this->folder = $this->input->get('folder', '', 'path');
 
+        // A folder of the media folder, never one beside it ("../images_old"): the path filter keeps ".."
+        if (in_array('..', preg_split('#[\\\\/]+#', (string) $this->folder), true)) {
+            JError::raiseWarning(100, JText::_('COM_MEDIA_ERROR_WARNINVALID_FOLDER'));
+            $this->setRedirect('index.php?option=com_media');
+
+            return false;
+        }
+
         // Instantiate the media helper
         $mediaHelper = new JHelperMedia();
 
@@ -113,7 +121,7 @@ class MediaControllerFile extends JControllerLegacy
             // We need a url safe name
             $fileparts = pathinfo(COM_MEDIA_BASE . '/' . $this->folder . '/' . $file['name']);
 
-            if (strpos(realpath($fileparts['dirname']), JPath::clean(realpath(COM_MEDIA_BASE))) !== 0) {
+            if (!\Joomla\CMS\Helper\MediaHelper::isInside($fileparts['dirname'], COM_MEDIA_BASE)) {
                 JError::raiseWarning(100, JText::_('COM_MEDIA_ERROR_WARNINVALID_FOLDER'));
 
                 return false;
@@ -283,7 +291,7 @@ class MediaControllerFile extends JControllerLegacy
         foreach ($safePaths as $key => $path) {
             $fullPath = implode(DIRECTORY_SEPARATOR, array(COM_MEDIA_BASE, $folder, $path));
 
-            if (strpos(realpath($fullPath), JPath::clean(realpath(COM_MEDIA_BASE))) !== 0) {
+            if (!\Joomla\CMS\Helper\MediaHelper::isInside($fullPath, COM_MEDIA_BASE)) {
                 unset($safePaths[$key]);
             }
         }

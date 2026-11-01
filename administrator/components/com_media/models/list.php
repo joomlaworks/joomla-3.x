@@ -113,7 +113,7 @@ class MediaModelList extends JModelLegacy
         $mediaBase = str_replace(DIRECTORY_SEPARATOR, '/', COM_MEDIA_BASE . '/');
 
         // Reset base path
-        if (strpos(realpath($basePath), JPath::clean(realpath(COM_MEDIA_BASE))) !== 0) {
+        if (!\Joomla\CMS\Helper\MediaHelper::isInside($basePath, COM_MEDIA_BASE)) {
             $basePath = COM_MEDIA_BASE;
         }
 

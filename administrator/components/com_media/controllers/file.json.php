@@ -54,6 +54,17 @@ class MediaControllerFile extends JControllerLegacy
         // Files dropped on the Media Manager's lists (and the image picker): into the folder shown, as its upload form does
         $mediaManager = $this->input->getCmd('context') === 'mediamanager';
 
+        // A folder of the media folder, never one beside it ("../images_old"): the path filter keeps ".."
+        if (in_array('..', preg_split('#[\\\\/]+#', (string) $folder), true)) {
+            echo json_encode(array(
+                'status'  => '0',
+                'message' => JText::_('COM_MEDIA_ERROR_WARNINVALID_FOLDER'),
+                'error'   => JText::_('COM_MEDIA_ERROR_WARNINVALID_FOLDER'),
+            ));
+
+            return;
+        }
+
         // Instantiate the media helper
         $mediaHelper = new JHelperMedia();
 
@@ -118,7 +129,7 @@ class MediaControllerFile extends JControllerLegacy
             $file['name'] = basename($filepath);
 
             if (!$mediaHelper->canUpload($file, 'com_media')
-                || strpos(realpath($fileparts['dirname']), JPath::clean(realpath(COM_MEDIA_BASE))) !== 0) {
+                || !\Joomla\CMS\Helper\MediaHelper::isInside($fileparts['dirname'], COM_MEDIA_BASE)) {
                 try {
                     JLog::add('Invalid: ' . $filepath, JLog::INFO, 'upload');
                 } catch (RuntimeException $exception) {
