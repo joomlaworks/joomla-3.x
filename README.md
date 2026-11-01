@@ -44,208 +44,67 @@ A short overview of each release. Every change is described in detail in [CHANGE
 
 ## Version 3.18 - released November 2nd, 2026
 Summary of changes:
-- Much more of Joomla's core can be removed: Articles, Private Messages, Privacy, Redirect, Tags, Wrapper, the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. Using K2 instead of Articles? Uninstall Articles, and the rest of the site keeps working
-- Clean uninstalls: a component takes its own database tables, modules, plugins, media and Smart Search entries along (and "Restore uninstalled core extensions" brings them back, on every supported database), and updates clean up after earlier uninstalls
-- Housekeeping: the GMail sign-in and P3P plugins, Memcache options, unused libraries and pre-7.1 PHP polyfills are gone
-- Smart Search fixes for large sites, the command line indexer and Advanced Search's dates ([#9](https://github.com/joomlaworks/joomla-3.x/issues/9), [#21](https://github.com/joomlaworks/joomla-3.x/issues/21), [#23](https://github.com/joomlaworks/joomla-3.x/issues/23)), plus more PHP 8.2–8.5 fixes ([#20](https://github.com/joomlaworks/joomla-3.x/issues/20))
-- Prothero, a new black and white administrator template with a dark mode, the default on new sites; Isis stays, and works with the same extensions
-- Google structured data, Open Graph and X cards for every page, from a new core plugin, on by default
-- **Little WAF, now on by default and much more than a filter:** it blocks scans for WordPress and other platforms' files, executable uploads, PHP object injection and attack tools, sends safe security headers, and sends the malformed addresses crawlers make up to their clean address, before any other plugin runs
-- **Faster, sturdier caching:** campaign and social links (`utm_*`, `fbclid`, `gclid`, ...) now get cached pages (about 18 ms instead of 200 ms to render one in our tests), cached pages skip the work of third-party system plugins, the file cache reads about 30% faster, a page being cached is rendered once instead of by every request waiting for it, and cache times are precise across Joomla, Varnish or CDNs and browsers (an `Age` header, times counted from when a page was stored); plus fixes for blank pages, browser caching, form tokens and Redis/APCu that stock Joomla 3 never had
-- **Redirects for any address:** Redirects can send any address of the site to a new one, on the site or elsewhere (301 or 302), quickly and before cached pages are served; collected errors (404 and others, off by default) have a list of their own with a "Create Redirect" button, and bulk import checks every line
+- **Much more of the core can be removed, cleanly:** Articles, Private Messages, Privacy, Redirect, Tags, Wrapper, the Breadcrumbs and Syndication Feeds modules and CodeMirror can be uninstalled (using K2 instead of Articles? uninstall Articles, the rest keeps working). A component takes its tables, modules, plugins, media, Smart Search entries and menu items along, and "Restore uninstalled core extensions" brings them back
+- **Prothero**, a new black and white administrator template with a dark mode, the default on new sites (Isis stays, and works with the same extensions)
+- **New editors:** Markdown (EasyMDE) and Blocks (Editor.js), next to TinyMCE 8, with a switcher in the administrator; PDF files shown on the site with a viewer
+- **A new Media Manager:** drag and drop uploads, cropping, renaming in place, large previews of images, audio, video and PDF files, and optimised uploads (upright, WebP, no metadata)
+- **Little WAF, on by default:** blocks scans, attack tools, executable uploads and object injection, sends safe security headers and cleans up the malformed addresses crawlers make up
+- **Faster, sturdier caching:** campaign and social links get cached pages, a page is rendered once however many visitors ask for it, stale pages keep a busy or failing site answering, and cache times are exact across Joomla, Varnish, CDNs and browsers
+- **Redirects for any address** of the site, and **structured data, Open Graph and X cards** for every page
+- **No MooTools in the core**, and no jQuery or Bootstrap script on administrator pages that don't need them: one shared plain JavaScript file (`global.js`) does the work, and old names keep working for extensions
+- Smart Search fixes for large sites ([#9](https://github.com/joomlaworks/joomla-3.x/issues/9), [#21](https://github.com/joomlaworks/joomla-3.x/issues/21), [#23](https://github.com/joomlaworks/joomla-3.x/issues/23)), more PHP 8.2–8.5 fixes ([#20](https://github.com/joomlaworks/joomla-3.x/issues/20)), and compatibility tested with K2, VirtueMart, Akeeba Backup, JCE, Convert Forms, HikaShop, Community Builder, JEvents, AcyMailing and Phoca Gallery
+
+Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 
 **New features:**
-- PDF files: a viewer on the site (`{pdf images/file.pdf}`, "Content - PDF", pdf.js), a PDF button in the editors with previews in TinyMCE and the Blocks editor, and PDF previews in the Media Manager
-- The installer asks which administrator template to use, Prothero (the default) or Isis, with their thumbnails; `core:install --admin-template=isis` likewise
-- A plugin's options opened from a component's notice (Redirects, Smart Search, Fields...) return to it when saved or closed
-- The Media Manager, the image field and Joomla Update in plain JavaScript (no jQuery on their pages); uploads in the Media Manager go to the folder shown
-- No jQuery or Bootstrap script on administrator pages that don't need them: `global.js` does Bootstrap's dropdowns, collapse, tabs, modals and alerts; Isis' script is plain JavaScript. Extensions using jQuery or Bootstrap in the administrator must ask for them (`JHtml::_('jquery.framework')`)
-- Font stacks instead of web fonts: a font field previewing the 15 stacks of Modern Font Stacks; Protostar's Google Font options replaced by it (System UI by default), Hammond, Finch and Rookwood get font options too
-- Behaviour from markup: forms validate, tooltips and searchable lists work from data attributes (`data-validate`, `data-tooltip`, `data-searchable`, ...) or Joomla's classes, without a call in the view; the administrator keeps the session alive on every page
-- `<jdoc:include type="footer" />`: the CMS's own scripts load at the end of the page (marked files, `addReadyScript()` code, and `global.js`/`frontend.js` where nothing else needs them earlier); framework files and extensions' scripts stay in the head; email cloaking without an inline script per address
-- Four new CAPTCHA plugins: Cloudflare Turnstile, hCaptcha, Akismet (spam filtering of what forms send, no challenge) and IconCaptcha (self-hosted, no API key required, enabled; PHP 7.4+); the CAPTCHA selectors now list disabled CAPTCHA plugins too, marked as such; the online services they use are listed under External Services in System Information's Third-party Software tab
-- "CAPTCHA - Google reCAPTCHA": one plugin for the checkbox, invisible and score (v3, new) types, replacing the two reCAPTCHA plugins (settings moved over on update); v1 support removed (Google shut it down in 2018)
-- Little WAF can hide the administrator's login behind a secret key in its address (`/administrator/?key` or `?name=value`; off by default): without it, visitors go to the home page
-- System Information has a Third-party Software tab: the libraries, frameworks, editors, fonts and PHP libraries included, with version, date, licence and home page; Folder Permissions is sorted alphabetically (folders inside the site without the server's full path) and PHP Settings sits next to PHP Information
-- Media Manager: drag and drop files onto the list to upload them into the folder shown, with progress for each (also in the image picker, which selects a dropped image), using the Media Manager's optimisation settings
-- Media Manager: crop an image (free, or 21:9, 16:9, 14:9, 4:3, 3:2 or 1:1) and save it as a new file or over the original
-- Media Manager: rename files and folders in place, from a pencil next to their name; larger, square thumbnails showing the whole tile's picture, with buttons to make them smaller or larger, a Back button and a list as tall as the window; images preview in a large window with their name and size, and the arrow keys go through the folder's images
-- Redirects: any address can be redirected (not only 404s), with exact matching that ignores case, slashes and `index.php/` (an old address `something` catches `/something`, `/index.php/something`, `/Something/` and `https://www.example.com/something`, while the new address is kept exactly as written, `index.php/` included), query strings passed on, a default code of 301 or 302 in Options, loops refused and chains warned about; addresses relative to the site, with the site's address shown before the field, and new addresses on the site or elsewhere (http/https). Errors (404 and other codes) are collected into a list of their own, off by default, with a "Create Redirect" button, an ignore list (text, `*` wildcards, regular expressions) and limits on how many and how old. Import is a page of its own for Super Users, checking every line and reporting what it skipped and why. The plugin is enabled by default, and its options moved into the component
-- The debug console opens from a button at the bottom right, showing the page's time, memory, queries and errors, as a panel with tabs instead of a block at the end of every page; redesigned, light and dark
-- Prothero, a new administrator template next to Isis: Isis' markup (so extensions made for Isis work with it), with a minimal black and white look in the style of shadcn/ui and Vercel, light and dark colour schemes (automatic by default), a choice of colours for the top menu bar and a matching login page. It's the default administrator template of new sites; existing sites keep Isis and can switch in System > Templates
-- PostgreSQL understands MySQL-style backtick-quoted names in queries, so many third-party extensions' SQL works on it unchanged
-- "System - Structured Data & Social Tags": Google structured data (JSON-LD), Open Graph and X (Twitter) card tags for every page, with any template. Articles (with their full text and images), categories, tags and search results describe themselves, and search engines may show large image previews (Google Discover); every other page uses the site's name, description, image, publisher and profiles. Articles' structured data type (Article, News Article, Blog Post, Review, Product, Recipe...) is set for the whole site and can be changed per category and tag. Extensions with tags of their own (e.g. K2) keep them, and can add to these
-- For developers: `addPreconnect()`, `addDnsPrefetch()` and `addPreload()` on the HTML document, written right after the title (preconnects, then dns-prefetches, then preloads) and also sent as HTTP `Link:` headers; documented in the new [API-GUIDE.md](API-GUIDE.md)
-- "Editor - EasyMDE (Markdown)": write in Markdown, with preview and side by side, and drop or paste images, videos and documents to upload them; content is still saved as HTML (nothing Markdown can't express is lost), so articles work everywhere as before
-- Images uploaded in the editors (optionally in the Media Manager too) are turned upright, saved as WebP and stripped of their metadata (GPS included), and organised in dated folders (`images/uploads/YYYY/MM/DD/`). Resizing (900 pixels) and a 600 pixels copy for phones are options; with the copy, the editors (TinyMCE 8 and 4, EasyMDE) write the image's `srcset`, so phones load it with any template, and Hammond, Finch and Rookwood offer the copies for older images too. `media:optimize` does the same for existing images. The Media Manager's options are reorganised
-- "Custom Code", a new site and administrator module: code of your own (HTML, CSS, JavaScript, embeds, snippets) written in CodeMirror and output as it is
-- "Editor - Blocks (Editor.js)": write content as blocks (headings, lists, images, embeds, quotes, tables, code, notes, HTML, Read more), saved as HTML which the site template's block layouts decide (templates override any block in `html/layouts/joomla/blocks/`); templates add blocks of their own (a field definition and a layout each; Rookwood comes with Hero, Testimonials and Services); a preview with the site template (desktop, tablet, phone), full screen and a content width (800px by default); a "Custom Blocks" module (site and administrator) builds module content from blocks
-- Editor switcher in the administrator: switch between TinyMCE, TinyMCE (legacy), Markdown and Blocks for the session, without losing unsaved changes; and a Default Editor (Site) option for front-end editing
-- MooTools is gone from the core: one shared script, `global.js` (namespace `CMS`), replaces `core.js` (removed; `JHtml` requests for it load `global.js`) and does what MooTools did (modals, tooltips, tabs, sliders, tree, password meter) in plain JavaScript; old names keep working, and MooTools stays available for extensions that ask for it. Polyfills for old browsers are gone too
+- **Administrator:**
+  - Prothero: Isis' markup with a minimal black and white look, light and dark colour schemes (automatic by default), a choice of colours for the menu bar and a matching login page; the installer asks which administrator template to use
+  - Editor switcher: switch between TinyMCE, TinyMCE (legacy), Markdown and Blocks for the session, without losing unsaved changes; a Default Editor (Site) option for front-end editing
+  - The debug console opens from a button at the bottom right, as a panel with tabs (time, memory, queries, errors), light and dark
+  - System Information lists the bundled third-party software (version, licence, home page; outdated software marked), and a "System Information" module sits beside the Control Panel's quick icons
+- **Content:**
+  - "Editor - EasyMDE (Markdown)": write in Markdown, with preview, side by side and drag and drop uploads; content is still saved as HTML
+  - "Editor - Blocks (Editor.js)": write content as blocks (headings, lists, images, embeds, quotes, tables, code, notes, HTML, Read more), saved as HTML which the site template's block layouts decide; templates add blocks of their own (Rookwood: Hero, Testimonials, Services); a preview at desktop, tablet and phone widths; a "Custom Blocks" module
+  - "Custom Code" module (site and administrator): your own HTML, CSS, JavaScript or embeds, written in CodeMirror and output as it is
+  - PDF files: a viewer on the site (`{pdf images/file.pdf}`), a PDF button in the editors, previews in TinyMCE, the Blocks editor and the Media Manager
+- **Media Manager:** drag and drop uploads into the folder shown (also in the image picker), cropping (free or 21:9 to 1:1, as a new file or over the original), renaming files and folders in place, square thumbnails you can make smaller or larger, large previews of images (with the arrow keys), audio, video and PDF files. Images uploaded in the editors are turned upright, saved as WebP, stripped of their metadata (GPS included) and filed in dated folders; resizing and a copy for phones (with `srcset` written by the editors) are options, and `media:optimize` does the same for existing images
+- **Security:**
+  - Little WAF's generic protections (whatever extensions a site has), security headers (safe ones on by default) and URL Normalizations; an optional secret key in the administrator's address
+  - Four new CAPTCHA plugins: Cloudflare Turnstile, hCaptcha, Akismet (spam filtering without a challenge) and IconCaptcha (self-hosted, no keys, enabled); one Google reCAPTCHA plugin for the checkbox, invisible and score (v3, new) types
+- **Redirects:** any address can be redirected, on the site or elsewhere (301 or 302), with matching that ignores case, slashes and `index.php/`, query strings passed on, loops refused and chains warned about; errors (404 and others) collected into a list of their own (off by default) with a "Create Redirect" button; import that checks every line
+- **Search engines and social networks:** "System - Structured Data & Social Tags" writes Google structured data (JSON-LD), Open Graph and X card tags for every page, with any template; the type of articles (Article, News Article, Blog Post, Review, Recipe...) per site, category or tag
+- **Caching:** the page cache ignores tracking parameters (`utm_*`, `fbclid`, `gclid`... editable in Global Configuration), has its own times for the home page and other pages, serves stale pages while one request refreshes them (and instead of an error page), sends `Age`, `s-maxage`, `stale-while-revalidate`, `stale-if-error` and `X-Logged-In` for Varnish and CDNs, and the file cache reads about 30% faster
+- **For developers:** behaviour from markup (`data-validate`, `data-tooltip`, `data-searchable`... without a call in the view), `<jdoc:include type="footer" />` for the CMS's scripts at the end of the page, `addPreconnect()`/`addDnsPrefetch()`/`addPreload()` also sent as `Link:` headers (Early Hints), console plugins adding command line commands ([CLI-GUIDE.md](CLI-GUIDE.md)), and PostgreSQL understanding MySQL-style backticks; see [API-GUIDE.md](API-GUIDE.md)
 
 **Improvements:**
-- Bootstrap Icons replace IcoMoon as the icon font (the `icon-*` classes keep working), cut down to the icons core draws (13 KB) and preloaded; the last raster interface images are SVGs
-- Every page's stylesheets and scripts are also sent as preload `Link:` headers, for CDNs sending Early Hints (Cloudflare); searchable lists' styles are part of `global.css`; the Control Panel's update and privacy checks start after the page
-- Symfony Yaml 4.4, TYPO3 PHAR Stream Wrapper 4.0 and QR Code Generator 2.0.4; Symfony's ctype polyfill removed (the installer and Joomla Update check for PHP's ctype); the Third-party Software list marks outdated software instead of highlighting current software
-- Third-party Software list: Chosen off (only its stylesheet remains), the two-factor authentication's QR code generator on; CodeMirror 5.x shown as current
-- Wider form fields in the administrator (550 pixels instead of about 220, never wider than their column), lined up: inputs and lists have the same width
-- Prothero becomes the administrator's template when updating a site that uses Isis (once; Isis stays available)
-- Page scripts of the administrator (menus, modules, fields, templates, installer, Joomla Update, Media Manager, CodeMirror and more) moved into their extensions' own files in plain JavaScript, mostly without jQuery; pages carry data instead of code
-- Edit forms validate before saving without a script of their own (attributes on the form; 30 page scripts and their jQuery removed); two-factor settings and banner types switch with show-on, Smart Search and Associations confirm through the toolbar
-- Templates write the document head with `<jdoc:include type="header" />` (`type="head"` keeps working)
-- Wrapper: cached pages follow the `load` query parameter (letters, digits, `_` and `-`), for template overrides and plugins using it
-- Library updates: jQuery UI 1.14.2 (with the 1.9 helpers kept for extensions), SimplePie 1.9.0 (needs PHP 7.2; core doesn't use it), sodium_compat 1.24.2
-- SQLite driver: MySQL on SQLite 3.1.2 (temporary tables, transactions, date arithmetic and `ALTER TABLE` fixed upstream), Joomla's patches kept
-- Three unused libraries removed: HTML5 Shiv (for Internet Explorer 8), Google's reCAPTCHA PHP client and a duplicate copy of PHP UTF-8
-- PHPMailer updated from 5.2.28 (2020) to 7.1.1 (May 2026), with Joomla's mailer and extensions using PHPMailer's old class names working as before
-- Larger modals for picking images, articles, modules, menu items, contacts and fields: most of the window instead of 800 by 500 pixels
-- **Little WAF**, enabled by default (new sites, and once on update), first of all system plugins, and all its options on one page:
-  - Generic protections against whole classes of attack, whatever extensions a site has: scans for other platforms' files (WordPress's `wp-login.php` and `xmlrpc.php`, `.git`, `.env`, phpMyAdmin, backups) get a plain 404 before Joomla builds a page for them; executable uploads (`shell.php.jpg`, `.htaccess`), PHP-serialized objects (object injection) and attack tools (sqlmap, Nikto, WPScan, ...) get a 403
-  - Security headers: `X-Content-Type-Options`, `X-XSS-Protection` and `Referrer-Policy` on by default; `X-Frame-Options`, HSTS and `Permissions-Policy` when you choose them
-  - URL Normalizations: duplicate query parameters (crawlers repeating `start`, `limitstart` or `format`), doubled or empty question marks, HTML-escaped ampersands (`&amp;`), text after an ampersand in the path and feeds of search results are sent to the clean address with one 301 redirect, so search engines index one address per page
-- **Caching and performance:**
-  - The page cache ignores tracking parameters (`utm_*`, `fbclid`, `gclid`, `msclkid`, ... 58 by default, editable in Global Configuration): visitors from campaigns and social links get the cached page instead of a new copy each (an article: about 18 ms from the cache instead of 200 ms rendered), while analytics still see the parameters
-  - Page Cache times of its own, one for the home page and one for other pages (1 and 3 minutes by default), separate from the caches of components and modules
-  - Page Cache serves stale pages: while one request renders the fresh copy, every other visitor gets the previous one at once, and a page whose rendering fails with a server error gets its previous copy instead of an error page (with a page taking 2 s to render, visitors arriving with the refresh got their page in 21 to 30 ms)
-  - Page Cache keeps server and browser caching apart: browsers may keep pages for a time of their own (one for the home page, one for the rest), or, by default, always fetch the latest page; caches in front of the site (Varnish, CDNs) get their own times (`s-maxage`), with `stale-while-revalidate` and `stale-if-error` so they keep serving pages while refreshing them or when the site fails, and an `X-Logged-In` header to tell guests' pages from logged-in users'; its options are all on one tab, with a short explanation of caching, and sites updating with the plugin enabled get a post-installation message asking to review them
-  - The core system plugins run in a better order: Little WAF, Language Filter, Remember Me and Page Cache first, so cached pages skip the work of third-party system plugins; Debug last
-  - **More precise cache times**, so no layer keeps a page longer than intended:
-    - Pages served from the Page Cache carry an `Age` header (how long Joomla has held them) and an `Expires` counted from when they were stored, so Varnish, CDNs and browsers subtract that time instead of starting their own from zero. Before, a page Joomla had held for 150 of its 180 seconds could be kept for a further full `s-maxage` (or browser time): visitors got pages older than the times you set, and Varnish users had to correct it in their VCL
-    - Views served from the view cache count their browser time from when they were stored too: a view cached 10 minutes ago gets the 5 minutes left of a 15-minute time, not another 15
-    - Pages that views or extensions mark cachable (e.g. K2's items) follow Global Configuration's Cache Time, instead of 15 minutes hardcoded since Joomla 1.5 whatever the site's settings
-    - Together with the view cache now keeping views' `Last-Modified` and `ETag` (see Bug fixes), cached pages tell browsers and proxies exactly how fresh they are
-  - The file cache reads about 30% faster (20,000 cache hits: 442 ms before, 306 ms now), which counts on pages with many cached modules
-  - A request for a page (or module) that another request is caching now waits for it, instead of rendering it again: no more pile-ups on busy pages when their cache expires (file, APCu and Memcached; with a page taking 0.5 s to render, a second request got it after 0.41 s, where it used to give up after 0.03 s and render it again)
-  - Measured on a local test site (PHP 8.5): the figures show proportions, not what a production server does
-- Control Panel: Latest Actions shows 20 actions, a "System Information" module (server and site information) sits beside the quick icons, and Privacy Dashboard is unpublished on new sites
-- More core extensions can be uninstalled entirely: Articles, Private Messages, Privacy, Redirect, Tags and Wrapper (with the modules and plugins that only serve them), the Breadcrumbs and Syndication Feeds modules and the CodeMirror editor. The administrator's quick icons, menu and status bar, article tags and Contacts work without them
-- Uninstalling a component (core or third-party) removes its entries from the Smart Search index
-- Uninstalling a core component removes its own database tables (shared ones stay); every removable component has install and uninstall SQL for MySQL, PostgreSQL and SQL Server, so restoring brings its tables back. Updating from an earlier version also removes the tables of core components uninstalled before
-- PostgreSQL 9.5 is now the minimum (was 9.0)
-- Isis and Protostar are plain, modern CSS: no more Less, a quarter of the size, the same look, and nothing loaded for old Internet Explorer versions
-- Isis and Prothero: each page file starts with a single include of the template's `includes/helper.php`; legacy admin images as SVG; tidier template markup in every core template
-- Templates manager: previews show the desktop and phone views side by side, in the CMS's own modal
-- Protostar's code in `includes/helper.php` too; the site templates' options on one tab, under headings
-- Hammond, Finch and Rookwood's helpers in `includes/`; scripts at the end of the page grouped (core, plugins, modules, components, template); stylesheets with one selector per line
-- Removable extensions no longer break each other when one is removed, and uninstalling a component also removes its tag mappings, associations, content history, custom fields and site menu items (except the home item)
-- Lists can be reordered by touch on phones and tablets (drag a row by its handle); Prothero adds a Reorder button on phones
-- The old schema.org microdata attributes are gone from the site's HTML (core layouts and the three templates); structured data comes as JSON-LD instead
-- PostgreSQL: table column information includes MySQL's `Key` and `Extra` fields too, for extensions written against MySQL
-- `core:install` numbers its steps and says how long the installation took (on SQLite, about 1.5 seconds, or 3.5 with sample data); in a terminal, command line messages wrap at word boundaries
-- Command line: extensions can add commands of their own (guide for developers: [CLI-GUIDE.md](CLI-GUIDE.md)), which can't take core commands' names; extensions can be enabled, disabled, reinstalled and removed by name (e.g. `plg_system_k2`), and a site whose database settings point nowhere can be pointed at a database of another type with `config:set`
-- Removed the "Authentication - GMail" plugin (Google stopped accepting its password sign-in in 2022), the "System - P3P Policy" plugin, joomla.org's update site for the Joomla Update component, Global Configuration's Memcache options, unused web service libraries and polyfills for PHP versions below 7.1
-- The News sample data has a For Subscribers category of 20 registered-only articles (guests see their intro and a link to log in)
-- Sample data articles have a few dozen views each instead of thousands
-- Dashboard modules carry their name and ID as classes (e.g. `mod-k2-dashboard module-id-12`), so each can be styled on its own
-- New sites no longer ship stock Joomla's unused images (the sample banners, `images/headers`, two logos; existing sites keep theirs), and get an empty `images/uploads` folder for the site's own images
-- `configuration.php` lists its settings alphabetically, so they're easier to find
-- Hammond, Finch and Rookwood preload their stylesheets, script and the article's main image, and connect early to X and YouTube when an article embeds them, also through HTTP `Link:` headers (103 Early Hints behind Cloudflare and similar CDNs)
-- CodeMirror 5.65.21 (was 5.60.0, from 2021), with fixes for scrolling and clicks in current browsers
-- Media Manager: WebP, AVIF, MP4, WebM, MOV, OGV, M4V, MP3, M4A, AAC, OGG, Opus, WAV, FLAC, CSV, RTF and current Office files can be uploaded by default (SVG deliberately not), the type lists are easy-to-edit textareas, and every file type gets an icon
-- Media Manager: an upload with a name already taken is saved with the time added to its name instead of failing
-- Media Manager: every thumbnail works the same way: the whole tile opens the image, video, audio file or folder (with a hover tint), a larger checkbox in its corner selects it, and names show in full on up to two lines on slightly larger tiles
-- Unused files removed from `media/system` (IcoMoon's design sources and Internet Explorer files, old colour picker images), about 315 KB
-- Sites updating from TinyMCE 4, the old default editor, get TinyMCE 8 as their default editor (sites with another editor keep theirs)
-- Media Manager: uploads up to 128 MB by default, and a Memory Limit option to raise PHP's memory for resizing large photos where the server allows it
-- The "Custom" module is now "Custom HTML", with content plugins on by default for new modules ("Execute Content-type Plugins", formerly "Prepare Content")
-- CodeMirror gets a Height option and a dark theme in Visual Studio Code's colours, the default on new sites and on updated sites still using the stock theme
-- English language files sorted by key, with typos, stray spaces and inconsistent wording fixed
-- Unused language strings removed (the old MySQL driver, FTP logins, Mcrypt and others)
-- The front-end article form no longer asks logged-in users to solve a CAPTCHA (an Articles option brings it back)
-- Administrator-only extensions keep their scripts and styles in their own folders instead of `media/`, so a password-protected `/administrator` never affects the site
-- `media/` folders are named after their extensions (`com_contact`, `com_media`), shared files (the debug console's, the e-mail form's icon, and all of `media/jui`: Bootstrap, jQuery, Chosen, IcoMoon...; the language flags in `media/system/images/flags`, the switcher's styles in `global.css`) are in `media/system`, and old names still load them through `JHtml` (direct links to `media/jui` files need changing)
-- Date fields use the browser's date input, with Now and Clear buttons; the calendar scripts (about 140 KB) removed, dates posted as before
-- Global Configuration's new UI Settings: date and time fields in the browser's format (default) or the site's language format (text with the browser's calendar); users can choose in their profile
-- Jalali dates again for languages using the Jalali calendar (Persian), with JalaliDatePicker; dates are still saved as Gregorian
-- New error page (clear message by kind, search, way home) and offline page (a modern login page) for templates without their own, responsive, light and dark
-- The system templates' pages (error, offline, component) and module chromes are core's layouts (`layouts/joomla/system/`), still overridable by templates; the site's shared styles are `media/system/css/frontend.css`; the administrator's system template removed, the site's kept with stylesheets importing the new files; a modern fallback `editor.css`
-- Tooltips and popovers are the CMS's own, looking as before but always inside the window (they flip side and slide along the edges, arrows following)
-- The user field opens the list of users in the CMS's own modal (no Bootstrap modal or jQuery plugin); `fielduser.js` removed
-- Image cropping (template editor) is the CMS's own `CMS.cropper`, with touch and keyboard; Jcrop removed
-- The Article, Category, Contact, Menu Item and News Feed pickers open in the CMS's own modal (Create and Edit with their buttons below the form); `modal-fields.js` removed
-- The module ordering list is plain JavaScript in `global.js` (`moduleorder.js` removed), and `Joomla.request()` uses `fetch()` with the same callbacks
-- Subforms and the old Repeatable field are part of `global.js` (no jQuery UI): rows move by dragging with mouse, touch or pen, or with the arrow keys
-- Menu Assignment's tree (modules, menu item containers) is plain JavaScript in `global.js`, with keyboard toggles; System Information lists the configuration alphabetically
-- Lists sorted by ordering are reordered without jQuery UI: drag with mouse, touch or pen, or use the arrow keys; no core page loads jQuery UI
-- The Control Panel's update and privacy checks, the statistics message, the language override search, Smart Search's indexer, the Multilingual Associations editor and Content History's versions and comparison are plain JavaScript
-- Show-on fields and a dozen small administrator scripts no longer load jQuery
-- Tooltips and popovers no longer load Bootstrap's script or jQuery; the Login Form loads no script at all (its tooltips removed, the secret key's help shown as text)
-- Keep-alive only while editing after logging in: login, registration, reset, contact and other one-off forms no longer ping the server
-- Searchable lists (Chosen, Ajax Chosen) rewritten in plain JavaScript in `global.js`: same look and markup, screen-reader roles added, no jQuery needed
-- Lists' search tools and Smart Search's suggestions rewritten in plain JavaScript (`global.js`, `frontend.js`): same look and behaviour, no jQuery needed; Smart Search's search page and module load no jQuery
-- TinyMCE (legacy)'s toolbar builder in plain JavaScript; jQuery UI's sortable and Ajax Autocomplete removed, with stand-ins on the CMS's own code for extensions that still call them (`jquery.compat.js`)
-- Unused libraries removed (Symfony's PHP 7.3 polyfill, the Framework's DI container and PSR-11); FOF's LESS compiler updated to lessphp 0.5.0
-- Administrator menu: Media at the top level after Content, no Help menu; Prothero's phone menu in two columns without gaps
-- Inline Editing (front-end editing of modules and menus) is off by default
-- The distribution's PHP code follows PSR-12 (third-party libraries keep their own style)
-- Show-on (fields shown depending on other fields) is plain JavaScript in `global.js`; `cms.js` removed
-- Site or Administrator is a row of tabs above lists that show either (modules, languages, menus, templates, cache), no longer a small list easily missed
-- Colour fields use the browser's colour picker, with the value as text and a Clear button; MiniColors and Simple Colors (jQuery plugins) removed
-- Core icons are SVG (Bootstrap Icons, one file each) in the text colour, sharp and dark-mode friendly: the Media Manager, Contacts, breadcrumbs, content icons, vote stars, feeds, tooltips, modals
-- Language flags redrawn: sharp WebP at twice the old size, current flags, the GIFs removed (old names still load them)
-- The Media Manager previews audio files too, with the file's cover when an image of the same name is next to it (videos take it as their poster), else an animated waveform
-- The Media Manager previews videos in the browser's own player (MediaElement.js removed); punycode.js removed (the browser converts international domains)
-- Form validation, edit forms' remembered tabs, the switcher and the combo box without jQuery (part of `global.js`; validation also of the site's `frontend.js`)
-- Every stylesheet of our own and Joomla's is written in one style (one rule per line), without Internet Explorer hacks; administrator-only scripts and styles named after their extension, Joomla Update's three scripts in one; the media player's Flash and Silverlight fallbacks removed
-- The editors, CAPTCHA plugins and two-factor authentication keep their files in their own plugin folders; each extension's folder in `media/` has one stylesheet and one script named after it (`com_x/css/x.css`, `com_x/js/x.js`), the Media Manager's included; unused files removed
-- Script and stylesheet headers hold only copyright and licence lines; old vendor prefixes removed from our stylesheets (only Chrome-only, non-standard ones like `-webkit-font-smoothing` stay); a visible hover on Prothero's Log in button
+- Plain JavaScript instead of jQuery, jQuery UI, MooTools and Bootstrap's scripts throughout the core: modals, tooltips, tabs, searchable lists (Chosen rewritten, same look), search tools, subforms, drag and drop reordering (with touch), date fields (the browser's date input; Jalali for Persian), colour fields (the browser's colour picker), show-on fields, the Media Manager and Joomla Update; old names and jQuery plugin calls keep working for extensions, and MooTools stays available for those that ask for it
+- Bootstrap Icons replace IcoMoon (the `icon-*` classes keep working), core icons are SVGs in the text's colour, and the language flags are redrawn
+- Isis and Protostar are plain CSS (no more Less; Isis' stylesheets about a third of their former size), wider form fields in the administrator, and no files for old Internet Explorer anywhere
+- Hammond, Finch and Rookwood send resource hints (also as `Link:` headers for Early Hints), and every page's stylesheets and scripts are sent as preload headers
+- Updated libraries: PHPMailer 7.1.1 (was 5.2.28), CodeMirror 5.65.21 (with a dark theme), jQuery UI 1.14.2, SimplePie 1.9.0, Symfony Yaml 4.4, sodium_compat 1.24.2; removed: HTML5 Shiv, Google's reCAPTCHA client, unused web service libraries and polyfills for PHP below 7.1
+- Media Manager: current file types uploadable by default (WebP, AVIF, MP4, WebM, MP3, Opus, FLAC, Office...; SVG deliberately not), uploads up to 128 MB, a name already taken gets the time added instead of failing
+- The core system plugins run in a better order (Little WAF, Redirect, Language Filter, Remember Me and Page Cache first), so cached pages skip third-party plugins' work
+- Sites updating get TinyMCE 8 as default editor (when they used TinyMCE 4) and Prothero as administrator template (when they used Isis); the "What's New" message lists what to check after updating
+- PostgreSQL 9.5 is now the minimum (was 9.0); the distribution's PHP code follows PSR-12
 
 **Security fixes:**
-- TinyMCE updated to 8.10.0, with 8.9.3's fix for a stored XSS in its media plugin
-- Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors without access (with "Show Unauthorised Links" on); they get the intro text and a link to log in, as with Joomla's own layout
-- The head escapes `<link>`, script and stylesheet addresses and attributes, which extensions could pass unescaped
-- Media uploads compare executable extensions in any case (`x.SHTML.png` got through), and the "Illegal MIME Types" option is actually checked
-- The Blocks editor no longer saves its hidden copy of the whole text in the intro text (visible to visitors without access); the update moves it in existing articles
-- Media Manager uploads and folders stay inside the media folder (a folder beside it with a similar name counted as inside)
-- IconCaptcha counts wrong answers per IP address, not per session
-- Little WAF's redirects no longer name a host taken from the request's `Host` header
-- Smaller hardening: IconCaptcha checks its requests (an error showed the server's path), the Blocks renderer needs an editing right, images too large for memory are left alone also without a memory limit
+- TinyMCE 8.10.0, with 8.9.3's fix for a stored XSS in its media plugin
+- Restricted articles: Hammond, Finch and Rookwood no longer show their full text to visitors without access, and the Blocks editor no longer keeps a hidden copy of the whole text in the intro (moved by the update in existing articles)
+- Media Manager uploads and folders stay inside the media folder, and uploads compare executable extensions in any case (the "Illegal MIME Types" option is now checked)
+- The head escapes the addresses and attributes extensions pass for links, scripts and stylesheets
+- Little WAF's redirects no longer name a host taken from the request
+- Hardening: IconCaptcha counts wrong answers per IP address and checks its requests, the Blocks renderer needs an editing right, images too large for memory are left alone
 
 **Bug fixes:**
-- The administrator's menu opens with one click on laptops whose touchpad or screen reports touch (a second menu needed two), and the bar's other menus open on hover while one is open, as in stock Joomla
-- Smart Search on SQLite finds words regardless of accents, as on MySQL; `extension:install` works for extensions whose installer asks the application for its client (VirtueMart); Rookwood's long menus wrap instead of widening the page
-- Third-party compatibility, from tests with HikaShop, Community Builder, JEvents, AcyMailing and Phoca Gallery: extensions' own date fields in the old calendar's markup work again, the administrator no longer turns third-party components' lists into searchable lists (as stock Joomla), and Prothero shows extensions' coloured Yes/No buttons
-- Extensions loading moved core files by their old address (TinyMCE 4's `tinymce.min.js`, `media/jui/...`) get the new one: Convert Forms' form editor works again
-- Lists no longer repeat or skip items between pages when sorted by a column many items share (all databases, mostly PostgreSQL and SQL Server)
-- Updates deleted Smart Search's PDF icon; installs from the upload, URL or folder tab ignored their return address
-- Associations' Propagate fills the other languages' items correctly on SQLite and PostgreSQL
-- Module forms' Ordering list shows titles with commas and `&` correctly
-- Language overrides: searching for text with `&` or `+` works, and the search requests check the form token
-- LESS compiling no longer floods the log with PHP 8 deprecations
-- Invisible reCAPTCHA no longer refuses forms that take more than two minutes to fill in (its check now runs when the form is sent)
-- **Caching** (all bugs of stock Joomla 3):
-  - A damaged cache entry (an interrupted write) no longer serves an empty page until it expires
-  - Browser caching of cached pages works: browsers get a 304 for a page they already have
-  - Cached pages, views and modules give every visitor their own form token, in Joomla's script options and in HTML5-style forms (Joomla's AJAX requests and those forms failed for everyone but the visitor who filled the cache)
-  - View caching keeps the HTTP headers views set (e.g. `Last-Modified`, `ETag`) and their browser caching; the page cache no longer repeats, or keeps sending after they were turned off, the headers of plugins which run before it; `setHeader()` sends a value of `0`
-  - Redis, APCu and WinCache: Clear Cache also removes the mobile copies and never touches data that isn't the site's cache (sessions, other sites); Redis no longer blocks its server with `KEYS *` (cleaning a group among 7,300 keys: 83 ms, the other 4,500 left alone)
-  - Long-running processes (the MCP server, indexing) see cache entries expire
-- Uninstalling a core component also uninstalls the modules and plugins which only serve it (e.g. "Smart Search - Contacts", which stopped indexing) and leaves no media folders or language files behind; updates clean up after earlier uninstalls
-- Smart Search: full reindexes no longer stop with "The table '#__finder_tokens' is full" on MySQL/MariaDB's default settings, the command line indexer no longer stops on content with modules in it, and Advanced Search's date range works with only a start or an end date
-- Articles with "Link Author" no longer fail when Contacts is uninstalled or disabled
-- Sites updating from before 3.12 keep Beez 3 when they use it (as a third-party template); a site whose template files are missing falls back to another template instead of failing
-- Fixed PHP 8.1+/8.5 deprecation warnings in text logs (e.g. during updates), the front-end article form, Joomla Update's extraction (which flooded the server's error log), database iterators, the administrator's toolbar title, registries and sessions, and SQL list fields
-- Users' and Contacts' Options, the Multilingual Status, batch copy/move of articles and Privacy's data exports no longer fail when Fields or Contacts has been uninstalled
-- "User - Joomla!" can no longer be uninstalled: without it nobody could log in
-- Sample Data: installing a set after an interrupted install no longer hides every module of the site (and a safeguard in core prevents it anywhere); deleting a menu item no longer hides modules shown on all pages except it
-- PostgreSQL: pages no longer fail with Debug System on, or with caching on (PHP 8.1+), new items whose form posts an empty ID save again, `insertid()` works after an INSERT given as text, and Smart Search no longer scans its whole links table for each item it indexes
-- PHP 8: users whose two-factor settings date from Joomla 3.6 or earlier can log in again (their profile and user page failed too), and extensions' FOF layouts no longer fail
-- MySQL: no more "mysqli_ping() is deprecated" warnings on PHP 8.4+
-- SQLite: searches ignore case and accents in every language, as on MySQL (they did for English letters only)
-- Search: Greek (and other non-Latin) searches typed without accents find their results again, on every database
-- SQLite: sites moved to MySQL no longer get case-sensitive titles: the collations of tables and columns are recorded correctly, and updating (or Extensions: Database's Fix) repairs those of existing sites; moving a database to MariaDB or MySQL 5.7 no longer fails on MySQL 8-only collations
-- The head no longer repeats inline scripts and styles added more than once (e.g. from a loop), links to the same address with different relations no longer replace each other, and script attributes set to `false` (e.g. `nomodule`) are left out instead of switched on
-- Media Manager: ICO, OpenDocument, XLS and PPT files can be uploaded again (the default MIME list refused them), and folders with GIMP or Draw files no longer warn on PHP 8
-- Media Manager: Create Folder shows the folder the new one goes in again (an empty grey box), and no longer gives the page the server's path
-- Command line: `article:update` now saves the new `--text` and no longer strips the HTML from articles' text
-- Hammond, Finch and Rookwood: buttons in article text (e.g. "Register to read more") look like the templates' other buttons again (they were unreadable in Hammond and Finch)
-- Installer: a warning during installation (e.g. while installing sample data) no longer restarts the installation over and over
-- CodeMirror no longer asks for a missing stylesheet with its stock theme
-- Missing language strings added: messages and labels that showed their keys (Language Overrides, Privacy, the logout image, the extension installer, front-end Template and Module options)
-- Google reCAPTCHA works again on pages that load MooTools (the front-end article form never sent with the invisible type)
-- Modules dragged to a new place in their position no longer go back on the next page load; failed reordering is reported
-- Smart Search's Advanced Search button works in every template
-- No more "Undefined array key 1" PHP warnings from browsers whose version number has no minor part (e.g. Safari's `Version/18`); edit forms no longer render the item's ID field twice
+- Administrator menu: one click opens a menu on laptops whose touchpad or screen reports touch (a second menu needed two), and the other menus open on hover while one is open
+- Third-party compatibility: moved core files keep loading by their old addresses (e.g. Convert Forms' TinyMCE), extensions' own date fields work, third-party components' lists are left as they were, and `extension:install` works for VirtueMart
+- Caching (all stock Joomla 3 bugs): no empty pages from damaged cache entries, browser caching (304) of cached pages works, every visitor gets their own form token from cached pages, views keep their headers, and Redis, APCu and WinCache clean only the site's own cache
+- Lists no longer repeat or skip items between pages (all databases), and modules dragged to a new place stay there
+- Smart Search: full reindexes and the command line indexer no longer stop, and Advanced Search's dates work; searches find accented and Greek words on every database
+- PostgreSQL, SQL Server and SQLite: pages failing with Debug System or caching on, saving new items, and collations of sites moved to MySQL
+- Uninstalling one removable extension no longer breaks others, and "User - Joomla!" can no longer be uninstalled
+- Sample Data no longer hides every module after an interrupted install
+- PHP 8.1–8.5 deprecations fixed throughout, missing language strings added
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:
