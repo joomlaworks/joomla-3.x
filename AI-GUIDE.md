@@ -302,6 +302,8 @@ php cli/joomla.php cache:clean
 php cli/joomla.php finder:index                  # rebuild Smart Search's index
 ```
 
+`cache:clean` can't reach a cache kept in APCu or WinCache (they keep a separate memory for each kind of PHP process): it says so and fails, so clean those in the administrator (System > Clear Cache).
+
 **New sites**
 ```
 php cli/joomla.php core:install --site-name="My Site" --admin-email=me@example.com --admin-username=admin --sample-data=blog

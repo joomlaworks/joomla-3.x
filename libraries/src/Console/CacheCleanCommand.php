@@ -35,7 +35,10 @@ class CacheCleanCommand extends AbstractCommand
      * @since  3.17.0
      */
     protected $help = 'Deletes every cache group of the site and the administrator, like System > Clear Cache > Delete All. '
-        . 'With the "expired" argument it only removes expired entries, like System > Clear Expired Cache.';
+        . 'With the "expired" argument it only removes expired entries, like System > Clear Expired Cache. '
+        . 'A cache kept in APCu or WinCache can\'t be cleaned from the command line: those keep a separate memory for each '
+        . 'kind of PHP process, so the command refuses instead of cleaning a cache the site doesn\'t use ("expired" has nothing '
+        . 'to do there: they remove expired entries themselves).';
 
     /**
      * @var    boolean
@@ -77,6 +80,27 @@ class CacheCleanCommand extends AbstractCommand
         }
 
         $io->title('Cleaning System Cache');
+
+        $handler = (string) (ConfigSetCommand::readConfiguration()['cache_handler'] ?? '');
+
+        if (in_array($handler, array('apcu', 'wincache'), true)) {
+            $name = $handler === 'apcu' ? 'APCu' : 'WinCache';
+
+            if ($expired !== '') {
+                $io->success(sprintf('Nothing to do: the cache is kept in %s, which removes expired entries itself.', $name));
+
+                return self::SUCCESS;
+            }
+
+            $io->error(sprintf(
+                'The cache is kept in %s, which keeps a separate memory for each kind of PHP process: the command line '
+                . 'can\'t reach the web server\'s cache. Clean it in the administrator (System > Clear Cache), or restart '
+                . 'the web server\'s PHP.',
+                $name
+            ));
+
+            return self::FAILURE;
+        }
 
         /** @var \CacheModelCache $model */
         $model   = $this->getAdministratorModel('com_cache', 'Cache', 'CacheModel');
