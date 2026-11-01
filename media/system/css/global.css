@@ -171,6 +171,9 @@ html[dir=rtl] .js-stools .chzn-container {text-align:right;}
 .group-move,
 .sortable-handler {cursor:move;touch-action:none;}
 .sortable-handler {display:inline-block;}
+/* Its icon on the middle of the line, level with the row's checkbox and buttons (the icon's box sat high on the baseline) */
+.sortable-handler [class^="icon-"],
+.sortable-handler [class*=" icon-"] {vertical-align:middle;}
 /* The row being moved */
 .cms-sort-dragging {opacity:0.6;outline:2px dashed var(--c-primary, #2a6fb5);outline-offset:-2px;}
 /* Where the row will go: a shadow, as striped tables' backgrounds outrank this rule */
