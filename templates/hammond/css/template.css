@@ -804,6 +804,11 @@ dl.stats-module dd {margin:0;overflow-wrap:anywhere;}
 .form-search .finder,
 .form-search {display:flex;flex-wrap:wrap;gap:8px;}
 .form-search .search-query {flex:1;min-width:0;}
+
+/* Smart Search's page: the Search button beside the field, as the suggestions open below it */
+#finder-search .word {display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
+#finder-search .word label {flex-basis:100%;}
+#finder-search .word input {flex:1 1 12rem;width:auto;min-width:0;}
 .bannergroup .banneritem {margin-bottom:12px;}
 .contentSidebar .moduleContent ul.menu {margin:0;padding:0;list-style:none;}
 .contentSidebar .moduleContent ul.menu a {display:block;padding:8px 0;border-bottom:1px solid var(--c-line);font-weight:600;}

@@ -23,7 +23,7 @@ ul.autocompleter-choices li {background:none;position:relative;padding:0.1em 1.5
 ul.autocompleter-choices li.autocompleter-selected {background-color:#444;color:#fff;}
 ul.autocompleter-choices span.autocompleter-queried {font-weight:bold;}
 ul.autocompleter-choices li.autocompleter-selected span.autocompleter-queried {color:#9fcfff;}
-.autocomplete-suggestions {border:1px solid #999;background:#fff;cursor:default;overflow:auto;box-shadow:1px 4px 3px rgba(50, 50, 50, 0.64);}
+.autocomplete-suggestions {border:1px solid #999;background:#fff;color:#333;cursor:default;overflow:auto;box-shadow:1px 4px 3px rgba(50, 50, 50, 0.64);}
 .autocomplete-suggestion {padding:2px 5px;white-space:nowrap;overflow:hidden;}
 .autocomplete-no-suggestion {padding:2px 5px;}
 .autocomplete-selected {background:#f0f0f0;}

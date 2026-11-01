@@ -799,6 +799,11 @@ ul.category > li {padding:14px 0;border-bottom:1px solid var(--c-line);}
 .form-search .finder,
 .form-search {display:flex;flex-wrap:wrap;gap:8px;}
 .form-search .search-query {flex:1;min-width:0;}
+
+/* Smart Search's page: the Search button beside the field, as the suggestions open below it */
+#finder-search .word {display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
+#finder-search .word label {flex-basis:100%;}
+#finder-search .word input {flex:1 1 12rem;width:auto;min-width:0;}
 .search-results dt.result-title {margin-top:20px;font-size:1.2rem;font-weight:800;}
 .search-results dd {margin:4px 0 0;}
 .bannergroup img {display:block;max-width:100%;height:auto;}
