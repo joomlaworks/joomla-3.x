@@ -342,9 +342,15 @@ class ContenthistoryModelHistory extends JModelList
             ->join('LEFT', '#__users AS uc ON uc.id = h.editor_user_id');
 
         // Add the list ordering clause.
-        $orderCol = $this->state->get('list.ordering');
-        $orderDirn = $this->state->get('list.direction');
-        $query->order($db->quoteName($orderCol) . $orderDirn);
+        $orderCol  = $this->state->get('list.ordering');
+        $orderDirn = strtoupper((string) $this->state->get('list.direction')) === 'ASC' ? 'ASC' : 'DESC';
+
+        // A list[...] request without an ordering left an array here
+        if (!is_string($orderCol) || !in_array($orderCol, $this->filter_fields, true)) {
+            $orderCol = 'h.save_date';
+        }
+
+        $query->order($db->quoteName($orderCol) . ' ' . $orderDirn);
 
         // A unique last column, or rows sharing a value come back in any order and pages repeat or skip them.
         if (!in_array($orderCol, array('h.version_id', 'version_id'), true)) {
