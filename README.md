@@ -54,7 +54,7 @@ Summary of changes:
 - **Structured data, Open Graph and X cards** for every page
 - **CAPTCHA plugins:** Updated Google's reCAPTCHA to support all active versions & added new ones for Cloudflare Turnstile, hCaptcha, Akismet and IconCaptcha (fully self-hosted)
 - **No MooTools in the core**, and no jQuery or Bootstrap scripts on administrator pages that don't need them: one shared plain JavaScript file (`global.js`) does the work, and old names keep working for extensions. Tested extensively on many popular large extensions (K2, VirtueMart, HikaShop, JEvents, JCE, Convert Forms, AcyMailing, Community Builder and many others)
-- Smart Search fixes for large sites ([#9](https://github.com/joomlaworks/joomla-3.x/issues/9), [#21](https://github.com/joomlaworks/joomla-3.x/issues/21), [#23](https://github.com/joomlaworks/joomla-3.x/issues/23)), more PHP 8.2–8.5 fixes ([#20](https://github.com/joomlaworks/joomla-3.x/issues/20))
+- **Smart Search fixes** for large sites ([#9](https://github.com/joomlaworks/joomla-3.x/issues/9), [#21](https://github.com/joomlaworks/joomla-3.x/issues/21), [#23](https://github.com/joomlaworks/joomla-3.x/issues/23)), more PHP 8.2–8.5 fixes ([#20](https://github.com/joomlaworks/joomla-3.x/issues/20))
 - **An amazing new debug console:** a button at the bottom right opens a panel with tabs (time, memory, queries, errors), light and dark
 
 Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
