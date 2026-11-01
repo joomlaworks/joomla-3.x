@@ -21,6 +21,22 @@ jimport('joomla.filesystem.folder');
 class MediaControllerFile extends JControllerLegacy
 {
     /**
+     * Constructor: this controller only has tasks of its own, so an unknown task is not found (the generic display() has
+     * no model or view to show here).
+     *
+     * @param   array  $config  An optional associative array of configuration settings.
+     *
+     * @since   3.18.0
+     */
+    public function __construct($config = array())
+    {
+        parent::__construct($config);
+
+        $this->unregisterTask('display');
+        $this->unregisterTask('__default');
+    }
+
+    /**
      * The folder we are uploading into
      *
      * @var   string

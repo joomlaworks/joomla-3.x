@@ -277,7 +277,7 @@ class BaseController extends \JObject
             } elseif (isset($backuppath) && file_exists($backuppath)) {
                 require_once $backuppath;
             } else {
-                throw new \InvalidArgumentException(\JText::sprintf('JLIB_APPLICATION_ERROR_INVALID_CONTROLLER', $type, $format));
+                throw new \InvalidArgumentException(\JText::sprintf('JLIB_APPLICATION_ERROR_INVALID_CONTROLLER', $type, $format), 404);
             }
         }
 
