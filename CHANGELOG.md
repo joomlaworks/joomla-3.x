@@ -278,6 +278,7 @@
 - Prothero's login page: the Log in button's hover is now visible (a lighter shade with a soft ring, in light and dark), as it barely changed before.
 
 ### Security fixes
+- Hardening: the front end's profile model refuses to save without an existing account (`UsersModelProfile::save()` with no user ID), so code reaching it without the controller's guest check (fixed in 3.16) can't create an account.
 - **IconCaptcha's requests are checked before the library sees them.** It took any theme (a folder name) and widget ID as sent, and an unknown theme made it answer with an exception naming the server's path, to any visitor; the theme must be light or dark and the IDs UUIDs now, and any exception is a plain 400.
 - **The Blocks editor's renderer needs an editing right.** Any logged-in account could have blocks rendered and signed through com_ajax; now only users who may create or edit something (globally or in a component). It also no longer renders its preview page as a block (`{"type":"preview"}`), and values that aren't text (arrays from a crafted request) render as nothing instead of PHP warnings.
 - **Images without a memory limit:** with PHP's `memory_limit` at -1, resizing, optimising and cropping decoded images of any size, so a small file of huge dimensions could take the server's memory; images needing over 1 GB are left alone now (`MediaHelper::fitsMemory()`).

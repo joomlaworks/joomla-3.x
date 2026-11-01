@@ -286,7 +286,14 @@ class UsersModelProfile extends JModelForm
      */
     public function save($data)
     {
-        $userId = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('user.id');
+        $userId = (!empty($data['id'])) ? (int) $data['id'] : (int) $this->getState('user.id');
+
+        // A profile is an existing account's: without one, JUser would save a new, unblocked account
+        if ($userId <= 0) {
+            $this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
+
+            return false;
+        }
 
         $user = new JUser($userId);
 
