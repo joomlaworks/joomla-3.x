@@ -53,7 +53,7 @@ Summary of changes:
 - **Redirects** how you want them, not just for error pages: create custom redirects as you like
 - **Structured data, Open Graph and X cards** for every page
 - **CAPTCHA plugins:** Updated Google's reCAPTCHA to support all active versions & added new ones for Cloudflare Turnstile, hCaptcha, Akismet and IconCaptcha (fully self-hosted)
-- **No MooTools in the core**, and no jQuery or Bootstrap scripts on administrator pages that don't need them: one shared plain JavaScript file (`global.js`) does the work, and old names keep working for extensions. Tested extensively on many popular large extensions (K2, VirtueMart, HikaShop, JEvents, JCE, Convert Forms, AcyMailing, Community Builder and many others)
+- **No jQuery, jQuery UI, MooTools or Bootstrap in the core**: one shared plain JavaScript file (`global.js`) does the work, and old names keep working for extensions. Tested extensively on many popular large extensions (K2, VirtueMart, HikaShop, JEvents, JCE, Convert Forms, AcyMailing, Community Builder and others)
 - **Smart Search fixes** for large sites ([#9](https://github.com/joomlaworks/joomla-3.x/issues/9), [#21](https://github.com/joomlaworks/joomla-3.x/issues/21), [#23](https://github.com/joomlaworks/joomla-3.x/issues/23)), more PHP 8.2–8.5 fixes ([#20](https://github.com/joomlaworks/joomla-3.x/issues/20))
 - **An amazing new debug console:** a button at the bottom right opens a panel with tabs (time, memory, queries, errors), light and dark
 
@@ -100,6 +100,8 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 
 **Bug fixes:**
 - Administrator menu: one click opens a menu on laptops whose touchpad or screen reports touch (a second menu needed two), and the other menus open on hover while one is open
+- Pages no longer scroll sideways at tablet widths: administrator lists in Prothero and Isis hide the columns Joomla hides on phones only as far as needed to fit, and Protostar's page fits between Bootstrap's steps
+- Hammond, Finch and Rookwood: Smart Search's suggestions no longer cover the Search button, and are readable on dark pages
 - Third-party compatibility: moved core files keep loading by their old addresses (e.g. Convert Forms' TinyMCE), extensions' own date fields work, third-party components' lists are left as they were, and `extension:install` works for VirtueMart
 - Caching (all stock Joomla 3 bugs): no empty pages from damaged cache entries, browser caching (304) of cached pages works, every visitor gets their own form token from cached pages, views keep their headers, a visit with tracking parameters no longer puts them in cached pages' links, and Redis, APCu and WinCache clean only the site's own cache
 - Lists no longer repeat or skip items between pages (all databases), and modules dragged to a new place stay there
@@ -107,7 +109,8 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 - PostgreSQL, SQL Server and SQLite: pages failing with Debug System or caching on, saving new items, `SELECT DISTINCT(column)` on SQLite, and collations of sites moved to MySQL
 - Uninstalling one removable extension no longer breaks others, and "User - Joomla!" can no longer be uninstalled
 - Sample Data no longer hides every module after an interrupted install
-- PHP 8.1–8.5 deprecations fixed throughout, missing language strings added
+- PHP 8.1–8.5 deprecations and PHP warnings fixed throughout (Media Manager, Templates: Customise), missing language strings added, and bundled files PHP couldn't parse removed
+- `cache:clean` no longer reports success on sites caching in APCu or WinCache, which the command line can't reach; the password reset form checks the email address in the browser
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:
