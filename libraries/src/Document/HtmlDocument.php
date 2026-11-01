@@ -689,6 +689,11 @@ class HtmlDocument extends Document
             );
             $cbuffer = $cache->get('cbuffer_' . $type);
 
+            // false when nothing is stored yet (PHP 8.1+ deprecates turning false into an array)
+            if (!is_array($cbuffer)) {
+                $cbuffer = array();
+            }
+
             if (isset($cbuffer[$hash])) {
                 return Cache::getWorkarounds($cbuffer[$hash], array('mergehead' => 1));
             }
