@@ -5384,6 +5384,19 @@ class JoomlaInstallerScript
             // Backups the patch tool left beside MySQL on SQLite's patched files (3.18 development builds)
             '/libraries/vendor/wordpress/mysql-on-sqlite/src/sqlite/class-wp-mysql-on-sqlite.php.orig',
             '/libraries/vendor/wordpress/mysql-on-sqlite/src/sqlite/class-wp-sqlite-information-schema-builder.php.orig',
+            // Templates' previews and thumbnails, WebP since 3.18
+            '/administrator/templates/isis/template_preview.png',
+            '/administrator/templates/isis/template_thumbnail.png',
+            '/administrator/templates/prothero/template_preview.png',
+            '/administrator/templates/prothero/template_thumbnail.png',
+            '/templates/finch/template_preview.png',
+            '/templates/finch/template_thumbnail.png',
+            '/templates/hammond/template_preview.png',
+            '/templates/hammond/template_thumbnail.png',
+            '/templates/protostar/template_preview.png',
+            '/templates/protostar/template_thumbnail.png',
+            '/templates/rookwood/template_preview.png',
+            '/templates/rookwood/template_thumbnail.png',
             // Files of 3.18 development builds: Prothero's first scripts and editor stylesheet, the News sample set's first
             // plugin file, the site templates' icon sprites (one SVG per icon since)
             '/administrator/templates/prothero/html/editor_content.css',
