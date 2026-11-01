@@ -680,6 +680,18 @@ abstract class HTMLHelper
             }
         }
 
+        // A file that moved elsewhere (MovedPaths: movedmap.php, e.g. TinyMCE 4's from media/editors/tinymce/ into its plugin),
+        // asked for from the site's root or by a relative name
+        if (!$includes && !$previous) {
+            foreach (static::mediaPaths($folder, $asked, $relative) as $path) {
+                $moved = MovedPaths::find($path);
+
+                if ($moved !== null) {
+                    return array(Uri::root(true) . '/' . $moved . static::getMd5Version(JPATH_ROOT . '/' . $moved));
+                }
+            }
+        }
+
         // An image whose type changed (MOVED_IMAGE_TYPES), asked for by the other type (relative or from the site's root);
         // the other type is tried once (a file missing in both would go back and forth)
         static $otherType = false;
@@ -720,6 +732,36 @@ abstract class HTMLHelper
         }
 
         return $includes;
+    }
+
+    /**
+     * The paths from the site's root a file asked for may be at: as given (not relative), or in an extension's media folder
+     * (relative: com_x/file is media/com_x/<folder>/file, com_x/element/file media/com_x/element/<folder>/file or
+     * media/com_x/<folder>/element/file).
+     *
+     * @param   string   $folder    The type's folder (js, css, images)
+     * @param   string   $file      The file asked for
+     * @param   boolean  $relative  Whether it's a relative name
+     *
+     * @return  string[]
+     *
+     * @since   3.18.0
+     */
+    protected static function mediaPaths($folder, $file, $relative)
+    {
+        $file = ltrim((string) $file, '/');
+
+        if (!$relative) {
+            return array($file);
+        }
+
+        $parts = explode('/', $file, 3);
+
+        if (count($parts) === 3) {
+            return array("media/$parts[0]/$parts[1]/$folder/$parts[2]", "media/$parts[0]/$folder/$parts[1]/$parts[2]");
+        }
+
+        return count($parts) === 2 ? array("media/$parts[0]/$folder/$parts[1]") : array();
     }
 
     /**

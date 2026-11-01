@@ -444,6 +444,27 @@ class Document
     }
 
     /**
+     * A moved file's new address (Joomla\CMS\HTML\MovedPaths): extensions give old addresses of core's files directly. The
+     * new address is the one JHtml gives, so a file added both ways is added once.
+     *
+     * @param   string  $url  The address
+     *
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    protected function movedUrl($url)
+    {
+        if (!is_string($url) || strpos($url, 'media/') === false) {
+            return $url;
+        }
+
+        $moved = \Joomla\CMS\HTML\MovedPaths::url($url);
+
+        return $moved === null ? $url : $moved;
+    }
+
+    /**
      * Adds a linked script to the page
      *
      * @param   string  $url      URL to the linked script.
@@ -485,6 +506,8 @@ class Document
         if (!isset($attribs['type']) && !isset($attribs['mime'])) {
             $attribs['type'] = 'text/javascript';
         }
+
+        $url = $this->movedUrl($url);
 
         $this->_scripts[$url]            = isset($this->_scripts[$url]) ? array_replace($this->_scripts[$url], $attribs) : $attribs;
         $this->_scripts[$url]['options'] = isset($this->_scripts[$url]['options']) ? array_replace($this->_scripts[$url]['options'], $options) : $options;
@@ -698,6 +721,8 @@ class Document
         if (!isset($attribs['type']) && !isset($attribs['mime'])) {
             $attribs['type'] = 'text/css';
         }
+
+        $url = $this->movedUrl($url);
 
         $this->_styleSheets[$url] = isset($this->_styleSheets[$url]) ? array_replace($this->_styleSheets[$url], $attribs) : $attribs;
 
