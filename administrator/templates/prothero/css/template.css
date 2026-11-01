@@ -3220,6 +3220,9 @@ html[dir="rtl"] .quick-icons .nav-list [class*=" icon-"] {margin-left:9px;margin
 }
 #system-message-container,
 #j-main-container {padding:0 0 0 5px;min-height:0;}
+
+/* Lists' headers wrap at their spaces when the column is narrow (template.js hides columns if that isn't enough) */
+#j-main-container .table th.nowrap {white-space:normal;}
 #system-message-container.j-toggle-main,
 #j-main-container.j-toggle-main,
 #system-debug.j-toggle-main {float:right;}

@@ -362,6 +362,72 @@
 		}
 	};
 
+	/* --- Lists wider than their column --- */
+
+	// A list wider than its column (tablets, the sidebar beside it, many columns) loses the columns Joomla hides on phones,
+	// from the right, until it fits: the page itself would scroll sideways otherwise
+	function initFitTables() {
+		var tables = $$('#j-main-container table').filter(function (table) {
+			return table.tHead && table.tHead.rows.length && $$('th.hidden-phone', table.tHead).length;
+		});
+
+		// The cell starting at a column, unless it spans several (pagination, "no items")
+		var cellAt = function (row, index) {
+			for (var i = 0, at = 0; i < row.cells.length && at <= index; at += row.cells[i].colSpan, i++) {
+				if (at === index) {
+					return row.cells[i].colSpan === 1 ? row.cells[i] : null;
+				}
+			}
+
+			return null;
+		};
+
+		tables.forEach(function (table) {
+			var header  = table.tHead.rows[table.tHead.rows.length - 1];
+			var columns = [];
+			var hidden  = [];
+			var width   = 0;
+
+			for (var i = 0, at = 0; i < header.cells.length; at += header.cells[i].colSpan, i++) {
+				if (header.cells[i].colSpan === 1 && header.cells[i].classList.contains('hidden-phone')) {
+					columns.unshift(at);
+				}
+			}
+
+			var fit = function () {
+				var available = table.parentNode.clientWidth;
+
+				if (available === width) {
+					return;
+				}
+
+				width = available;
+
+				hidden.forEach(function (cell) { cell.style.display = ''; });
+				hidden = [];
+
+				for (var c = 0; c < columns.length && table.offsetWidth > table.parentNode.clientWidth; c++) {
+					Array.prototype.forEach.call(table.rows, function (row) {
+						var cell = cellAt(row, columns[c]);
+
+						if (cell) {
+							cell.style.display = 'none';
+							hidden.push(cell);
+						}
+					});
+				}
+			};
+
+			fit();
+
+			if (window.ResizeObserver) {
+				new ResizeObserver(fit).observe(table.parentNode);
+			} else {
+				window.addEventListener('resize', fit);
+			}
+		});
+	}
+
 	/* --- Start --- */
 
 	function init() {
@@ -369,6 +435,7 @@
 		colourAllChosen();
 		initMenu();
 		initStickyToolbar();
+		initFitTables();
 
 		// Events only jQuery hears: Chosen ready (and changed through its API), subform rows added
 		if (jq()) {
