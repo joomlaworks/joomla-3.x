@@ -4480,6 +4480,9 @@ class JoomlaInstallerScript
             '/libraries/vendor/joomla/archive/.drone.yml',
             '/libraries/vendor/joomla/string/.drone.jsonnet',
             '/libraries/vendor/joomla/string/.drone.yml',
+            // Classes named String, which PHP 7 can't parse (3.18)
+            '/libraries/vendor/joomla/string/src/String.php',
+            '/libraries/vendor/joomla/filesystem/src/Stream/String.php',
             '/libraries/vendor/leafo/lessphp/.drone.yml',
             '/libraries/vendor/leafo/lessphp/phpunit.xml.dist',
             '/libraries/vendor/leafo/lessphp/ruleset.xml',
@@ -5726,6 +5729,8 @@ class JoomlaInstallerScript
             '/libraries/vendor/symfony/polyfill-ctype',
             '/libraries/vendor/joomla/di',
             '/libraries/vendor/psr/container',
+            // PHP 5.3 polyfills (3.18)
+            '/libraries/vendor/joomla/compat',
             // MySQL on SQLite 3.1.2 dropped its optional native (Rust) parser
             '/libraries/vendor/wordpress/mysql-on-sqlite/src/mysql/native',
             '/libraries/phputf8',

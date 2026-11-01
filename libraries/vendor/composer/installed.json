@@ -145,50 +145,6 @@
             "install-path": "../joomla/archive"
         },
         {
-            "name": "joomla/compat",
-            "version": "1.2.0",
-            "version_normalized": "1.2.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/joomla-framework/compat.git",
-                "reference": "f23565fe0184517778996226eb4b2333deb369c4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/compat/zipball/f23565fe0184517778996226eb4b2333deb369c4",
-                "reference": "f23565fe0184517778996226eb4b2333deb369c4",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.10"
-            },
-            "time": "2015-02-24T00:21:06+00:00",
-            "type": "joomla-package",
-            "installation-source": "dist",
-            "autoload": {
-                "classmap": [
-                    "src/JsonSerializable.php",
-                    "src/CallbackFilterIterator.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "description": "Joomla Compat Package",
-            "homepage": "https://github.com/joomla-framework/compat",
-            "keywords": [
-                "compat",
-                "framework",
-                "joomla"
-            ],
-            "support": {
-                "issues": "https://github.com/joomla-framework/compat/issues",
-                "source": "https://github.com/joomla-framework/compat/tree/1.2.0"
-            },
-            "install-path": "../joomla/compat"
-        },
-        {
             "name": "joomla/data",
             "version": "1.2.0",
             "version_normalized": "1.2.0.0",

@@ -48,11 +48,6 @@ JLoader::setup();
 
 JLoader::registerPrefix('J', JPATH_PLATFORM . '/legacy');
 
-// Check if the JsonSerializable interface exists already
-if (!interface_exists('JsonSerializable')) {
-    JLoader::register('JsonSerializable', JPATH_PLATFORM . '/vendor/joomla/compat/src/JsonSerializable.php');
-}
-
 // Add deprecated constants
 // @deprecated 4.0
 define('JPATH_ISWIN', IS_WIN);

@@ -6,7 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname(dirname($vendorDir));
 
 return array(
-    'CallbackFilterIterator' => $vendorDir . '/joomla/compat/src/CallbackFilterIterator.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'Joomla\\Application\\AbstractApplication' => $vendorDir . '/joomla/application/src/AbstractApplication.php',
     'Joomla\\Application\\AbstractCliApplication' => $vendorDir . '/joomla/application/src/AbstractCliApplication.php',
@@ -52,7 +51,6 @@ return array(
     'Joomla\\Filesystem\\Patcher' => $vendorDir . '/joomla/filesystem/src/Patcher.php',
     'Joomla\\Filesystem\\Path' => $vendorDir . '/joomla/filesystem/src/Path.php',
     'Joomla\\Filesystem\\Stream' => $vendorDir . '/joomla/filesystem/src/Stream.php',
-    'Joomla\\Filesystem\\Stream\\String' => $vendorDir . '/joomla/filesystem/src/Stream/String.php',
     'Joomla\\Filesystem\\Stream\\StringWrapper' => $vendorDir . '/joomla/filesystem/src/Stream/StringWrapper.php',
     'Joomla\\Filesystem\\Support\\StringController' => $vendorDir . '/joomla/filesystem/src/Support/StringController.php',
     'Joomla\\Filter\\InputFilter' => $vendorDir . '/joomla/filter/src/InputFilter.php',
@@ -92,7 +90,6 @@ return array(
     'Joomla\\Session\\Storage\\Wincache' => $vendorDir . '/joomla/session/Joomla/Session/Storage/Wincache.php',
     'Joomla\\String\\Inflector' => $vendorDir . '/joomla/string/src/Inflector.php',
     'Joomla\\String\\Normalise' => $vendorDir . '/joomla/string/src/Normalise.php',
-    'Joomla\\String\\String' => $vendorDir . '/joomla/string/src/String.php',
     'Joomla\\String\\StringHelper' => $vendorDir . '/joomla/string/src/StringHelper.php',
     'Joomla\\Uri\\AbstractUri' => $vendorDir . '/joomla/uri/src/AbstractUri.php',
     'Joomla\\Uri\\Uri' => $vendorDir . '/joomla/uri/src/Uri.php',
@@ -101,7 +98,6 @@ return array(
     'Joomla\\Uri\\UriInterface' => $vendorDir . '/joomla/uri/src/UriInterface.php',
     'Joomla\\Utilities\\ArrayHelper' => $vendorDir . '/joomla/utilities/src/ArrayHelper.php',
     'Joomla\\Utilities\\IpHelper' => $vendorDir . '/joomla/utilities/src/IpHelper.php',
-    'JsonSerializable' => $vendorDir . '/joomla/compat/src/JsonSerializable.php',
     'PHPMailer' => $baseDir . '/libraries/src/Mail/phpmailer-aliases.php',
     'POP3' => $baseDir . '/libraries/src/Mail/phpmailer-aliases.php',
     'Psr\\Log\\AbstractLogger' => $vendorDir . '/psr/log/Psr/Log/AbstractLogger.php',

@@ -28,15 +28,6 @@
             'reference' => 'b1c1e6c3aecc0486453cadbb92bc529cfa89a89f',
             'dev_requirement' => false,
         ),
-        'joomla/compat' => array(
-            'pretty_version' => '1.2.0',
-            'version' => '1.2.0.0',
-            'type' => 'joomla-package',
-            'install_path' => __DIR__ . '/../joomla/compat',
-            'aliases' => array(),
-            'reference' => 'f23565fe0184517778996226eb4b2333deb369c4',
-            'dev_requirement' => false,
-        ),
         'joomla/data' => array(
             'pretty_version' => '1.2.0',
             'version' => '1.2.0.0',

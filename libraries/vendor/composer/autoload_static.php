@@ -160,7 +160,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
     );
 
     public static $classMap = array (
-        'CallbackFilterIterator' => __DIR__ . '/..' . '/joomla/compat/src/CallbackFilterIterator.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Joomla\\Application\\AbstractApplication' => __DIR__ . '/..' . '/joomla/application/src/AbstractApplication.php',
         'Joomla\\Application\\AbstractCliApplication' => __DIR__ . '/..' . '/joomla/application/src/AbstractCliApplication.php',
@@ -206,7 +205,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'Joomla\\Filesystem\\Patcher' => __DIR__ . '/..' . '/joomla/filesystem/src/Patcher.php',
         'Joomla\\Filesystem\\Path' => __DIR__ . '/..' . '/joomla/filesystem/src/Path.php',
         'Joomla\\Filesystem\\Stream' => __DIR__ . '/..' . '/joomla/filesystem/src/Stream.php',
-        'Joomla\\Filesystem\\Stream\\String' => __DIR__ . '/..' . '/joomla/filesystem/src/Stream/String.php',
         'Joomla\\Filesystem\\Stream\\StringWrapper' => __DIR__ . '/..' . '/joomla/filesystem/src/Stream/StringWrapper.php',
         'Joomla\\Filesystem\\Support\\StringController' => __DIR__ . '/..' . '/joomla/filesystem/src/Support/StringController.php',
         'Joomla\\Filter\\InputFilter' => __DIR__ . '/..' . '/joomla/filter/src/InputFilter.php',
@@ -246,7 +244,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'Joomla\\Session\\Storage\\Wincache' => __DIR__ . '/..' . '/joomla/session/Joomla/Session/Storage/Wincache.php',
         'Joomla\\String\\Inflector' => __DIR__ . '/..' . '/joomla/string/src/Inflector.php',
         'Joomla\\String\\Normalise' => __DIR__ . '/..' . '/joomla/string/src/Normalise.php',
-        'Joomla\\String\\String' => __DIR__ . '/..' . '/joomla/string/src/String.php',
         'Joomla\\String\\StringHelper' => __DIR__ . '/..' . '/joomla/string/src/StringHelper.php',
         'Joomla\\Uri\\AbstractUri' => __DIR__ . '/..' . '/joomla/uri/src/AbstractUri.php',
         'Joomla\\Uri\\Uri' => __DIR__ . '/..' . '/joomla/uri/src/Uri.php',
@@ -255,7 +252,6 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'Joomla\\Uri\\UriInterface' => __DIR__ . '/..' . '/joomla/uri/src/UriInterface.php',
         'Joomla\\Utilities\\ArrayHelper' => __DIR__ . '/..' . '/joomla/utilities/src/ArrayHelper.php',
         'Joomla\\Utilities\\IpHelper' => __DIR__ . '/..' . '/joomla/utilities/src/IpHelper.php',
-        'JsonSerializable' => __DIR__ . '/..' . '/joomla/compat/src/JsonSerializable.php',
         'PHPMailer' => __DIR__ . '/../../..' . '/libraries/src/Mail/phpmailer-aliases.php',
         'POP3' => __DIR__ . '/../../..' . '/libraries/src/Mail/phpmailer-aliases.php',
         'Psr\\Log\\AbstractLogger' => __DIR__ . '/..' . '/psr/log/Psr/Log/AbstractLogger.php',
