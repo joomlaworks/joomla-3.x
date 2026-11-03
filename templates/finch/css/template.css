@@ -221,6 +221,11 @@ body:not(.isHome) .mainNav ul.menu > li.default > a:hover {background:var(--c-so
 
 /* --- Modules --- */
 .moduleTitle {margin:0 0 18px;font-size:1.25rem;font-weight:900;letter-spacing:-0.025em;color:var(--c-ink);}
+
+/* The class "wide": from one side of the window to the other (--vw leaves the scrollbar out); its title stays in line with the page */
+.moduleContainer.wide {margin-inline:calc(50% - var(--vw, 100vw) / 2);}
+.moduleContainer.wide > .moduleTitle {margin-inline:calc(max(0px, (100% - var(--container) - 48px) / 2) + 24px);}
+
 .moduleContent ul.menu {margin:0;padding:0;list-style:none;}
 .moduleContent ul.menu a {display:block;padding:6px 0;font-weight:700;}
 
@@ -837,6 +842,7 @@ dl.stats-module dd {margin:0;overflow-wrap:anywhere;}
 
 @media only screen and (max-width:575px) {
     .container {padding:0 18px;}
+    .moduleContainer.wide > .moduleTitle {margin-inline:18px;}
     .authorBox {flex-direction:column;}
     .backToTop {margin-left:0;}
 }

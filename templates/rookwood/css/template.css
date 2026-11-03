@@ -228,6 +228,11 @@ ul.menu.buttons {display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;ma
 /* Sections: every module of frontpage, above-content and below-content is a full-width band */
 .section {position:relative;padding:var(--section) 0;}
 .section.section-full {padding:0;}
+
+/* The class "wide": the section's content from one side of the window to the other; its header stays in line with the page */
+.section.wide > .container {max-width:none;padding-inline:0;}
+.section.wide > .container > .sectionHeader {margin-inline:calc(max(0px, (100% - var(--container) - 2 * var(--gutter)) / 2) + var(--gutter));}
+
 .section.tone-alt {background:var(--c-surface);}
 .section.tone-accent {background:var(--c-violet);color:#fff;--c-ink:#fff;--c-text:rgba(255,255,255,.88);--c-muted:rgba(255,255,255,.75);}
 .section.tone-lime {background:var(--c-lime);color:#0e1014;--c-ink:#0e1014;--c-text:#1d1f25;--c-muted:#3a3d45;}

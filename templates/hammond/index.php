@@ -19,6 +19,7 @@ $page = HammondHelper::prepare($this);
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
 	<jdoc:include type="header" />
+	<script><?php echo HammondHelper::wideScript(); ?></script>
 </head>
 <body id="top" class="<?php echo HammondHelper::e($page->bodyClass); ?>">
 	<a class="skipLink" href="#content"><?php echo JText::_('TPL_HAMMOND_SKIP_TO_CONTENT'); ?></a>

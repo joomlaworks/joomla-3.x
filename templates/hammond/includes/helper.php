@@ -29,6 +29,20 @@ abstract class HammondHelper
     protected static $params;
 
     /**
+     * The script giving modules with the class "wide" the window's width without its scrollbar, which 100vw includes. It runs in
+     * the head, before the page is drawn.
+     *
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    public static function wideScript()
+    {
+        return "(function(r){var w=0,s=function(){if(r.clientWidth!==w){w=r.clientWidth;r.style.setProperty('--vw',w+'px');}};s();"
+            . "if(window.ResizeObserver){new ResizeObserver(s).observe(r);}else{window.addEventListener('resize',s);}})(document.documentElement);";
+    }
+
+    /**
      * @return  \Joomla\Registry\Registry
      *
      * @since   3.17.0

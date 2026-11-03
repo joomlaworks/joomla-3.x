@@ -15,7 +15,7 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 
 ## CONTENTS
 - [Changelog](#changelog)
-  - [Version 3.18 - released November 2nd, 2026](#version-318---released-november-2nd-2026)
+  - [Version 3.18 - released November 5th, 2026](#version-318---released-november-5th-2026)
   - [Version 3.17 - released October 10th, 2026](#version-317---released-october-10th-2026)
   - [Version 3.16 - released October 3rd, 2026](#version-316---released-october-3rd-2026)
   - [Version 3.15 - released July 18th, 2026](#version-315---released-july-18th-2026)
@@ -42,7 +42,7 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 
 A short overview of each release. Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 
-## Version 3.18 - released November 2nd, 2026
+## Version 3.18 - released November 5th, 2026
 Summary of changes:
 - **Much more of the core can be removed, cleanly:** Articles, Private Messages, Privacy, Redirect, Tags, Wrapper, the Breadcrumbs and Syndication Feeds modules and CodeMirror can be uninstalled (using K2 instead of Articles? uninstall Articles, the rest keeps working). A component takes its tables, modules, plugins, media, Smart Search entries and menu items along, and "Restore uninstalled core extensions" brings them back
 - **Prothero**, a new black and white administrator template with a dark mode, the default on new sites (Isis stays, and works with the same extensions)
@@ -84,6 +84,7 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 - Bootstrap Icons replace IcoMoon (the `icon-*` classes keep working), core icons are SVGs in the text's colour, and the language flags are redrawn
 - Isis and Protostar are plain CSS (no more Less; Isis' stylesheets about a third of their former size), wider form fields in the administrator, and no files for old Internet Explorer anywhere
 - Hammond, Finch and Rookwood send resource hints (also as `Link:` headers for Early Hints), and every page's stylesheets and scripts are sent as preload headers
+- Hammond, Finch and Rookwood: give a module the class `wide` to take it from one side of the window to the other (e.g. a slideshow on the home page)
 - Updated libraries: PHPMailer 7.1.1 (was 5.2.28), CodeMirror 5.65.21 (with a dark theme), jQuery UI 1.14.2 (for extensions still requiring it), SimplePie 1.9.0 (for extensions still requiring it), Symfony Yaml 4.4, sodium_compat 1.24.2; removed: HTML5 Shiv, Google's reCAPTCHA client, unused web service libraries and polyfills for PHP below 7.1
 - Media Manager: current file types uploadable by default (WebP, AVIF, MP4, WebM, MP3, Opus, FLAC, Office...; SVG deliberately not), uploads up to 128 MB, a name already taken gets the time added instead of failing
 - The core system plugins run in a better order (Little WAF, Redirect, Language Filter, Remember Me and Page Cache first), so cached pages skip third-party plugins' work

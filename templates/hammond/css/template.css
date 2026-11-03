@@ -51,7 +51,7 @@
 *::before,
 *::after {box-sizing:border-box;}
 html {-webkit-text-size-adjust:100%;scrollbar-gutter:stable;scroll-behavior:smooth;scroll-padding-top:calc(var(--header-h) + 20px);}
-body {margin:0;font-family:var(--fh);font-size:16px;line-height:1.55;color:var(--c-text);background:var(--c-bg);text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;}
+body {margin:0;font-family:var(--fh);font-size:16px;line-height:1.55;color:var(--c-text);background:var(--c-bg);text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;overflow-x:clip;}
 
 /* Links */
 a {color:var(--c-ink);text-decoration:none;}
@@ -279,6 +279,11 @@ body.megaOpen {overflow:hidden;}
 /* ~ Modules ~ */
 .moduleHeader {display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px;padding-top:12px;border-top:3px solid var(--c-ink);}
 .moduleTitle {margin:0;font-size:1.35rem;font-weight:900;letter-spacing:-0.02em;}
+
+/* The class "wide": from one side of the window to the other (--vw leaves the scrollbar out); its title stays in line with the page */
+.moduleContainer.wide {margin-inline:calc(50% - var(--vw, 100vw) / 2);}
+.moduleContainer.wide > .moduleHeader {margin-inline:calc(max(0px, (100% - var(--container)) / 2) + 20px);}
+
 .moduleMore {display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:700;color:var(--c-muted);white-space:nowrap;}
 .moduleMore .icon {width:16px;height:16px;transition:transform .15s;}
 .moduleMore:hover .icon {transform:translateX(3px);}
@@ -927,6 +932,7 @@ dl.stats-module dd {margin:0;overflow-wrap:anywhere;}
     .masthead .logoMark {width:34px;height:34px;}
     .mastheadToggles .iconButton {padding:8px;}
     .container {padding:0 16px;}
+    .moduleContainer.wide > .moduleHeader {margin-inline:16px;}
     .siteMain {padding-top:20px;}
     .topBar .socialLinks {display:none;}
     .layout-opinion {grid-template-columns:1fr;}
