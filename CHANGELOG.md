@@ -297,6 +297,7 @@
 
 ### Bug fixes
 #### Administrator
+- Lists' checkboxes sat about 3 pixels below the text and drag handle beside them, in rows and headers (stock Isis): Bootstrap's `margin-top:4px` for checkboxes in forms applied in tables too. List tables have a margin of their own in Isis and Prothero.
 - **The administrator's menu took two clicks on many laptops.** On devices reporting touch support (touchscreens, and many touchpads), an open menu put Bootstrap 2.3's invisible layer over the page, which took the next click: opening a second menu needed two. The layer is gone (taps outside a menu reach the page on iOS through an empty `mouseover` listener, as Bootstrap 4 does it), and Joomla's own behaviour is back: while a menu is open, the bar's other menus open on hover (`nav-hover`). A click on a menu the pointer just opened keeps it open (Joomla's Bootstrap closed it again); the next click closes it. Checked with real mouse input, with and without touch support: every click opens its menu.
 - Content History: a request with list settings but no ordering made "ORDER BY Array" (a database error); the ordering is checked against the list's columns, with the space before its direction. Banners: Clients warned for clients whose purchase type isn't one of the five (stock).
 - Banners: Tracks' export window's Cancel closed nothing (it named a modal that doesn't exist, `#modal-download`).

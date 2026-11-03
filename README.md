@@ -103,6 +103,7 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
   - Lists no longer make the page scroll sideways on tablets and narrow windows: the least important columns are hidden, only as many as needed to fit
   - Modules dragged to a new place in the Modules list now stay there
   - The windows opened by the editor's buttons and by image fields fit on phones and small tablets
+  - Checkboxes in lists line up with the text beside them
   - Smaller fixes in Language Overrides, menu assignments, module ordering, Smart Search, Banners, the extension installer, two-factor authentication and Install from Web
 - **Site and templates:**
   - Hammond, Finch and Rookwood show an Edit link to users who may edit an article, as Joomla's own layouts do

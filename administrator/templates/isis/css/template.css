@@ -735,6 +735,11 @@ table {max-width:100%;background-color:transparent;border-collapse:collapse;bord
 .table {width:100%;margin-bottom:18px;}
 .table th,
 .table td {padding:8px;line-height:18px;text-align:left;vertical-align:top;border-top:1px solid var(--c-border);}
+
+/* Bootstrap's top margin is for forms: in a list's rows it puts the checkbox below the text beside it */
+.table th input[type="checkbox"],
+.table td input[type="checkbox"] {margin:-1px 0 0;}
+
 .table th {font-weight:bold;}
 .table thead th {vertical-align:bottom;}
 .table caption + thead tr:first-child th,

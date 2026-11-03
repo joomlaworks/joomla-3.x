@@ -928,6 +928,11 @@ table {max-width:100%;background-color:transparent;border-collapse:collapse;bord
 .table {width:100%;margin-bottom:18px;}
 .table th,
 .table td {padding:9px 8px;line-height:20px;text-align:left;vertical-align:top;border-top:1px solid var(--c-border);}
+
+/* Bootstrap's top margin is for forms: in a list's rows it puts the checkbox below the text beside it */
+.table th input[type="checkbox"],
+.table td input[type="checkbox"] {margin:-3px 0 0;}
+
 .table th {font-weight:500;}
 .table thead th {vertical-align:bottom;color:var(--c-muted-fg);background-color:var(--c-subtle);}
 .table caption + thead tr:first-child th,
