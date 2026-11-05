@@ -154,19 +154,26 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 **Joomla 3 bugs fixed:**
 
 Part of what this project does is fix what never got fixed in Joomla 3 itself. These are the ones site owners are most likely to have met, all already there in the Joomla 3.10 code this distribution started from, and also part of the list above. The [CHANGELOG](CHANGELOG.md) marks more than 70 fixes in this release as "stock Joomla 3".
-- An unreachable cache server, or a Redis server out of memory, took the whole site and its administrator down
-- With Redis or APCu, a traffic spike rebuilt the same page once per visitor instead of once
-- Cached pages could give a visitor someone else's form token, and a damaged cache entry showed an empty page until it expired
-- Clearing the cache could fail on large, busy sites, and Clear Expired Cache left the site's own cache untouched
-- Browser caching of cached pages never worked
-- Modules dragged to a new place in the Modules list went back on the next page load
-- Deleting a menu item could make a module disappear from every page
-- A module could lose its surrounding markup once caching was on
-- Smart Search's full reindex stopped with "table is full" on MySQL and MariaDB with default settings
-- Search dropped results when a word was typed without the accents of a non-Latin script, such as Greek
-- Common file types the default settings allow (icons, OpenDocument files, older Excel and PowerPoint files) couldn't be uploaded
-- Windows opened by the editor's buttons ran off the screen on phones, and administrator lists scrolled sideways on tablets
-- "User - Joomla!" could be uninstalled, after which nobody could log in
+- **Caching:**
+  - An unreachable cache server, or a Redis server out of memory, took the whole site and its administrator down
+  - With Redis or APCu, a traffic spike rebuilt the same page once per visitor instead of once
+  - Cached pages could give a visitor someone else's form token
+  - A damaged cache entry showed an empty page until it expired
+  - Clearing the cache could fail on large, busy sites
+  - Clear Expired Cache left the site's own cache untouched
+  - Browser caching of cached pages never worked
+- **Modules:**
+  - Modules dragged to a new place in the Modules list went back on the next page load
+  - Deleting a menu item could make a module disappear from every page
+  - A module could lose its surrounding markup once caching was on
+- **Search and Smart Search:**
+  - Smart Search's full reindex stopped with "table is full" on MySQL and MariaDB with default settings
+  - Search dropped results when a word was typed without the accents of a non-Latin script, such as Greek
+- **Administrator:**
+  - Windows opened by the editor's buttons ran off the screen on phones
+  - Administrator lists scrolled sideways on tablets
+  - "User - Joomla!" could be uninstalled, after which nobody could log in
+- **Media Manager:** common file types the default settings allow (icons, OpenDocument files, older Excel and PowerPoint files) couldn't be uploaded
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:
