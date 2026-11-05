@@ -247,6 +247,9 @@ SQL;
             }
 
             $io->text('The site is offline while its database is copied.');
+
+            // The file is read again when written, so back online is a change to ask for
+            $settings['configuration']['offline'] = 0;
         }
 
         $result = self::FAILURE;
@@ -256,7 +259,7 @@ SQL;
         } finally {
             // The switch writes configuration.php online again; otherwise restore it as it was
             if ($takeOffline && $result !== self::SUCCESS) {
-                if ($this->writeConfiguration($io, array(), 'Cannot put the site back online: set "offline" to 0 in configuration.php.')) {
+                if ($this->writeConfiguration($io, array('offline' => 0), 'Cannot put the site back online: set "offline" to 0 in configuration.php.')) {
                     $io->text('The site is online again, still with its current database.');
                 }
             }
