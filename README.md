@@ -107,6 +107,7 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
   - Checkboxes in lists line up with the text beside them
   - Smaller fixes in Language Overrides, menu assignments, module ordering, Smart Search, Banners, the extension installer, two-factor authentication and Install from Web
 - **Site and templates:**
+  - Some third-party modules no longer lose their module container (title, classes and layout) once caching is on
   - Hammond, Finch and Rookwood show an Edit link to users who may edit an article, as Joomla's own layouts do
   - Hammond, Finch and Rookwood: subcategory lists expand, Smart Search's advanced options open, search suggestions no longer cover the Search button, the image picker for front-end editing looks right, and form lists follow the dark themes
   - Rookwood's main menu and Protostar no longer make the page scroll sideways at some widths

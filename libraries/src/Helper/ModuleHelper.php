@@ -121,6 +121,35 @@ abstract class ModuleHelper
     }
 
     /**
+     * Run a module's file, with the variables modules have always found. In a scope of its own, as its variables are its own:
+     * one named $template (Frontpage Slideshow's) made renderModule() look for the chromes in another template's folder.
+     * $module, $params and $attribs are references, as modules may change them for the chrome.
+     *
+     * @param   string     $path      The module's file
+     * @param   object     $module    The module
+     * @param   Registry   $params    Its parameters
+     * @param   array      $attribs   The attributes of its position
+     * @param   object     $app       The application
+     * @param   string     $scope     The application's scope before the module
+     * @param   string     $template  The template's name
+     * @param   object     $lang      The language
+     *
+     * @return  string  What it wrote, and its $content
+     *
+     * @since   3.18.0
+     */
+    protected static function includeModule($path, &$module, &$params, &$attribs, $app, $scope, $template, $lang)
+    {
+        $content = '';
+        ob_start();
+        include $path;
+        $output = ob_get_contents() . $content;
+        ob_end_clean();
+
+        return $output;
+    }
+
+    /**
      * Render the module.
      *
      * @param   object  $module   A module object.
@@ -182,11 +211,7 @@ abstract class ModuleHelper
                     $lang->load($module->module, $extensionLanguageDirectory, null, false, true);
             }
 
-            $content = '';
-            ob_start();
-            include $path;
-            $module->content = ob_get_contents() . $content;
-            ob_end_clean();
+            $module->content = static::includeModule($path, $module, $params, $attribs, $app, $scope, $template, $lang);
         }
 
         // Load the module chrome functions
