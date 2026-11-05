@@ -66,7 +66,7 @@ class MemcachedStorage extends CacheStorage
     {
         parent::__construct($options);
 
-        $this->_compress = \JFactory::getConfig()->get('memcached_compress', false) ? \Memcached::OPT_COMPRESSION : 0;
+        $this->_compress = \JFactory::getConfig()->get('memcached_compress', true) ? \Memcached::OPT_COMPRESSION : 0;
 
         if (static::$_db === null) {
             $this->getConnection();

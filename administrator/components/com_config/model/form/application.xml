@@ -7,7 +7,7 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
-        <field name="memcached_compress" type="radio" label="COM_CONFIG_FIELD_MEMCACHE_COMPRESSION_LABEL" description="COM_CONFIG_FIELD_MEMCACHE_COMPRESSION_DESC" class="btn-group btn-group-yesno" default="0" showon="cache_handler:memcached" filter="integer">
+        <field name="memcached_compress" type="radio" label="COM_CONFIG_FIELD_MEMCACHE_COMPRESSION_LABEL" description="COM_CONFIG_FIELD_MEMCACHE_COMPRESSION_DESC" class="btn-group btn-group-yesno" default="1" showon="cache_handler:memcached" filter="integer">
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
