@@ -97,9 +97,9 @@ abstract class ModHousekeepingHelper
                 throw new RuntimeException(JText::_('JERROR_ALERTNOAUTHOR'), 403);
             }
 
-            $groups = static::cleanCache(false);
+            $cleaned = static::cleanCache(false);
 
-            return array('message' => JText::plural('MOD_HOUSEKEEPING_CACHE_CLEANED', $groups), 'groups' => $groups);
+            return array('message' => JText::plural('MOD_HOUSEKEEPING_CACHE_CLEANED', $cleaned['objects'], static::size($cleaned['bytes']))) + $cleaned;
         }
 
         if (!in_array($action, array('all', 'checkin'), true)) {
@@ -120,11 +120,12 @@ abstract class ModHousekeepingHelper
         // Empty the folders whatever the cache's clean found, and report it after them
         $failure = null;
 
+        $cleaned = array('groups' => 0, 'objects' => 0, 'bytes' => 0);
+
         try {
-            $groups = static::cleanCache(true);
+            $cleaned = static::cleanCache(true);
         } catch (RuntimeException $exception) {
             $failure = $exception;
-            $groups  = 0;
         }
 
         $deleted = 0;
@@ -156,7 +157,7 @@ abstract class ModHousekeepingHelper
             throw $failure;
         }
 
-        $message = JText::sprintf('MOD_HOUSEKEEPING_ALL_CLEANED', $groups, $deleted, static::size($bytes));
+        $message = JText::sprintf('MOD_HOUSEKEEPING_ALL_CLEANED', $cleaned['objects'], static::size($cleaned['bytes']), $deleted, static::size($bytes));
 
         if ($updating) {
             $message .= ' ' . JText::_('MOD_HOUSEKEEPING_TMP_SKIPPED_UPDATE');
@@ -166,7 +167,7 @@ abstract class ModHousekeepingHelper
             $message .= ' ' . JText::sprintf('MOD_HOUSEKEEPING_FOLDER_SKIPPED', JPath::removeRoot($folder));
         }
 
-        return array('message' => $message, 'groups' => $groups, 'deleted' => $deleted, 'bytes' => $bytes, 'skipped' => array_map('JPath::removeRoot', $skipped),
+        return array('message' => $message, 'groups' => $cleaned['groups'], 'objects' => $cleaned['objects'], 'cacheBytes' => $cleaned['bytes'], 'deleted' => $deleted, 'bytes' => $bytes, 'skipped' => array_map('JPath::removeRoot', $skipped),
             'updating' => $updating);
     }
 
@@ -176,7 +177,7 @@ abstract class ModHousekeepingHelper
      *
      * @param   boolean  $expired  Also remove the expired entries
      *
-     * @return  integer  The number of groups cleaned
+     * @return  array  The groups cleaned, and the objects and bytes they held
      *
      * @since   3.17.0
      * @throws  RuntimeException
@@ -186,6 +187,8 @@ abstract class ModHousekeepingHelper
         JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_cache/models', 'CacheModel');
         $model   = JModelLegacy::getInstance('Cache', 'CacheModel', array('ignore_request' => true));
         $groups  = 0;
+        $objects = 0;
+        $bytes   = 0;
         $failed  = array();
 
         foreach (array(0, 1) as $clientId) {
@@ -195,9 +198,13 @@ abstract class ModHousekeepingHelper
             foreach ($cache->getAll() ?: array() as $group) {
                 if ($cache->clean($group->group) === false) {
                     $failed[$group->group] = $group->group;
+
+                    continue;
                 }
 
                 $groups++;
+                $objects += (int) $group->count;
+                $bytes   += (int) $group->size;
             }
 
             if ($expired) {
@@ -212,7 +219,7 @@ abstract class ModHousekeepingHelper
         // As the Clear Cache manager does after a purge
         JFactory::getApplication()->triggerEvent('onAfterPurge', array());
 
-        return $groups;
+        return array('groups' => $groups, 'objects' => $objects, 'bytes' => $bytes);
     }
 
     /**
