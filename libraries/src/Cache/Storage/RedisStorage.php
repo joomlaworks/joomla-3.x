@@ -208,19 +208,30 @@ class RedisStorage extends CacheStorage
         }
 
         $data = array();
+        $keys = $this->getSiteKeys();
 
-        foreach ($this->getSiteKeys() as $key) {
-            $group = $this->getKeyGroup($key);
+        foreach (array_chunk($keys, 1000) as $batch) {
+            $pipeline = static::$_redis->multi(\Redis::PIPELINE);
 
-            if ($group !== null) {
-                if (!isset($data[$group])) {
-                    $item = new CacheStorageHelper($group);
-                } else {
-                    $item = $data[$group];
+            foreach ($batch as $key) {
+                $pipeline->strlen($key);
+            }
+
+            $sizes = $pipeline->exec();
+
+            foreach ($batch as $i => $key) {
+                $group = $this->getKeyGroup($key);
+
+                if ($group !== null) {
+                    if (!isset($data[$group])) {
+                        $item = new CacheStorageHelper($group);
+                    } else {
+                        $item = $data[$group];
+                    }
+
+                    $item->updateSize((int) ($sizes[$i] ?? 0));
+                    $data[$group] = $item;
                 }
-
-                $item->updateSize(strlen($key) * 8);
-                $data[$group] = $item;
             }
         }
 
@@ -287,10 +298,16 @@ class RedisStorage extends CacheStorage
             return false;
         }
 
+        $keys = array();
+
         foreach ($this->getSiteKeys() as $key) {
             if ($this->isCleaned($this->getKeyGroup($key), $group, $mode)) {
-                static::$_redis->del($key);
+                $keys[] = $key;
             }
+        }
+
+        foreach (array_chunk($keys, 1000) as $batch) {
+            static::$_redis->del($batch);
         }
 
         return true;
