@@ -17,15 +17,15 @@ use Joomla\CMS\Factory;
 	<div class="span10 offset1">
 		<?php // The toolbar (Hide all messages) submits this form; the choice of extension appears once another one has messages?>
 		<form action="index.php" method="post" name="adminForm" class="form-inline" id="adminForm">
-			<input type="hidden" name="option" value="com_postinstall">
-			<input type="hidden" name="task" value="">
+			<input type="hidden" name="option" value="com_postinstall" />
+			<input type="hidden" name="task" value="" />
 			<?php echo JHtml::_('form.token'); ?>
-		<?php if (count($this->extension_options) > 1) : ?>
+			<?php if (count($this->extension_options) > 1) : ?>
 			<label for="eid"><?php echo JText::_('COM_POSTINSTALL_MESSAGES_FOR'); ?></label>
 			<?php echo JHtml::_('select.genericlist', $this->extension_options, 'eid', array('onchange' => 'this.form.submit()', 'class' => 'input-xlarge'), 'value', 'text', $this->eid, 'eid'); ?>
-		<?php else : ?>
-			<input type="hidden" name="eid" value="<?php echo (int) $this->eid; ?>">
-		<?php endif; ?>
+			<?php else : ?>
+			<input type="hidden" name="eid" value="<?php echo (int) $this->eid; ?>" />
+			<?php endif; ?>
 		</form>
 
 		<?php if (empty($this->items)) : ?>
