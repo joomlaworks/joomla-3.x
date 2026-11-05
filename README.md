@@ -485,7 +485,7 @@ A new fork is on the way, based on Joomla 3.x. This fork is WIP (but very, very 
 ## LEGAL
 Joomla 3.x UTD is an independent community project. It is not affiliated with, endorsed by, or supported by Open Source Matters, Inc. or The Joomla! Project™.
 
-The Joomla!® name and logo are trademarks of Open Source Matters, Inc. in the United States and other countries. This project does not use the Joomla! logo.
+The Joomla!® name and logo are trademarks of Open Source Matters, Inc. in the United States and other countries. The logo appears in this distribution only where Joomla 3 itself shows it (the installer and the administrator), kept unchanged for continuity, and in screenshots of the software. Joomla 3.x UTD does not use it to brand itself.
 
 This distribution is free software, released under the GNU General Public License version 2 or later. See LICENSE.txt.
 
