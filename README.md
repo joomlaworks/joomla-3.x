@@ -96,7 +96,7 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 - PostgreSQL 9.5 is now the minimum (was 9.0); the distribution's PHP code follows PSR-12
 
 **Security fixes:**
-- TinyMCE updated to 8.10.0, which fixes a way to slip harmful code into content through its media plugin
+- TinyMCE updated to 8.10.1, which fixes a way to slip harmful code into content through its media plugin
 - Hammond, Finch and Rookwood no longer show the full text of restricted articles to visitors who aren't allowed to read them
 - Media Manager uploads can no longer end up in a folder outside the media folder, and dangerous file types are caught however their names are capitalised
 - Extensions can no longer accidentally open the page to harmful code through the links, scripts and styles they add

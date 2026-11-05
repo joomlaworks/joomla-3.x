@@ -61,7 +61,7 @@ $groups = array(
             'note' => 'JavaScript and CSS; the stylesheets\' image paths changed by Joomla 3.x UTD', 'check' => array('media/system/js/bootstrap.js', '/bootstrap-transition\.js v([0-9.]+)/')),
     ),
     'Editors' => array(
-        array('name' => 'TinyMCE', 'use' => 'shared', 'upstream' => 'npm:tinymce', 'version' => '8.10.0', 'date' => '2026-10-14', 'dateSource' => 'TinyMCE changelog ("8.10.0 - 2026-10-14")', 'license' => 'GPL-2.0-or-later', 'url' => 'https://www.tiny.cloud', 'path' => 'plugins/editors/tinymce_latest',
+        array('name' => 'TinyMCE', 'use' => 'shared', 'upstream' => 'npm:tinymce', 'version' => '8.10.1', 'date' => '2026-10-28', 'dateSource' => 'TinyMCE changelog ("8.10.1 - 2026-10-28")', 'license' => 'GPL-2.0-or-later', 'url' => 'https://www.tiny.cloud', 'path' => 'plugins/editors/tinymce_latest',
             'check' => array('plugins/editors/tinymce_latest/tinymce.min.js', '/TinyMCE version ([0-9.]+)/')),
         array('name' => 'TinyMCE (legacy)', 'use' => 'shared', 'upstream' => 'npm:tinymce', 'version' => '4.5.12', 'license' => 'LGPL-2.1', 'url' => 'https://www.tiny.cloud', 'path' => 'plugins/editors/tinymce',
             'check' => array('plugins/editors/tinymce/changelog.txt', '/Version ([0-9.]+) \((?<date>\d{4}-\d{2}-\d{2})\)/')),

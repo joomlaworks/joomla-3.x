@@ -1,19 +1,19 @@
 {
     "github:WordPress/sqlite-database-integration": {
-        "version": "3.1.2",
-        "checked": "2026-11-01"
+        "version": "3.1.3",
+        "checked": "2026-11-05"
     },
     "github:mootools/mootools-core": {
         "version": "1.6.0",
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "github:mootools/mootools-more": {
         "version": "1.6.0",
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "github:phlylabs/idna-convert": {
         "version": "4.2.2",
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:@claviska/jquery-minicolors": {
         "version": "2.3.6",
@@ -31,7 +31,7 @@
             "version": "2.31.7",
             "date": "2026-09-17"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:@majidh1/jalalidatepicker": {
         "version": "1.0.0",
@@ -40,11 +40,11 @@
             "version": "1.0.0",
             "date": "2026-07-07"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:bootstrap": {
         "version": "5.3.8",
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:bootstrap-icons": {
         "version": "1.13.2",
@@ -53,7 +53,7 @@
             "version": "1.13.2",
             "date": "2026-10-08"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:chosen-js": {
         "version": "1.8.7",
@@ -71,7 +71,7 @@
             "version": "5.65.21",
             "date": "2026-02-07"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:devbridge-autocomplete": {
         "version": "2.0.7",
@@ -89,7 +89,7 @@
             "version": "2.21.0",
             "date": "2026-05-03"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:jcrop": {
         "version": "3.0.1",
@@ -102,7 +102,7 @@
             "version": "1.12.4",
             "date": "2016-05-20"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:jquery-migrate": {
         "version": "4.0.2",
@@ -111,7 +111,7 @@
             "version": "1.4.1",
             "date": "2016-05-20"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:jquery-ui": {
         "version": "1.14.2",
@@ -120,25 +120,25 @@
             "version": "1.14.2",
             "date": "2026-01-28"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:marked": {
-        "version": "18.1.2",
+        "version": "18.1.3",
         "series": {
             "major": "18",
-            "version": "18.1.2",
-            "date": "2026-10-26"
+            "version": "18.1.3",
+            "date": "2026-11-02"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:pdfjs-dist": {
-        "version": "6.4.299",
+        "version": "6.5.438",
         "series": {
             "major": "6",
-            "version": "6.4.299",
-            "date": "2026-10-03"
+            "version": "6.5.438",
+            "date": "2026-11-01"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:polyfill-service": {
         "version": "3.25.3",
@@ -156,7 +156,7 @@
             "version": "2.0.4",
             "date": "2025-08-07"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:tinymce": {
         "version": "8.10.1",
@@ -165,16 +165,16 @@
             "version": "4.9.11",
             "date": "2020-07-13"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "npm:turndown": {
-        "version": "7.2.4",
+        "version": "7.2.5",
         "series": {
             "major": "7",
-            "version": "7.2.4",
-            "date": "2026-04-03"
+            "version": "7.2.5",
+            "date": "2026-11-04"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "packagist:defuse/php-encryption": {
         "version": "2.4.0",
@@ -183,7 +183,7 @@
             "version": "1.2.1",
             "date": "2015-03-14"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "packagist:fabianwennink/iconcaptcha": {
         "version": "4.0.6",
@@ -192,7 +192,7 @@
             "version": "4.0.6",
             "date": "2025-06-16"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "packagist:leafo/lessphp": {
         "version": "0.5.0",
@@ -201,7 +201,7 @@
             "version": "0.5.0",
             "date": "2014-11-24"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "packagist:paragonie/sodium_compat": {
         "version": "2.5.2",
@@ -210,7 +210,7 @@
             "version": "1.24.2",
             "date": "2026-08-18"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "packagist:phpmailer/phpmailer": {
         "version": "7.1.1",
@@ -219,7 +219,7 @@
             "version": "7.1.1",
             "date": "2026-05-18"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "packagist:psr/container": {
         "version": "2.0.2",
@@ -237,7 +237,7 @@
             "version": "1.1.4",
             "date": "2021-05-03"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "packagist:simplepie/simplepie": {
         "version": "1.9.0",
@@ -246,7 +246,7 @@
             "version": "1.9.0",
             "date": "2025-09-12"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "packagist:symfony/polyfill-ctype": {
         "version": "1.37.0",
@@ -267,13 +267,13 @@
         "checked": "2026-10-27"
     },
     "packagist:symfony/yaml": {
-        "version": "8.1.10",
+        "version": "8.1.11",
         "series": {
             "major": "4",
             "version": "4.4.45",
             "date": "2022-08-02"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     },
     "packagist:typo3/phar-stream-wrapper": {
         "version": "4.0.0",
@@ -282,6 +282,6 @@
             "version": "4.0.0",
             "date": "2024-12-10"
         },
-        "checked": "2026-11-01"
+        "checked": "2026-11-05"
     }
 }
