@@ -141,8 +141,10 @@ class FileStorage extends CacheStorage
             }
 
             if ($data !== false && $data !== '') {
-                // Remove the initial die() statement
-                return str_replace('<?php die("Access Denied"); ?>#x#', '', $data);
+                // Remove the initial die() statement, and only that: the same text inside the value is the value's
+                $header = '<?php die("Access Denied"); ?>#x#';
+
+                return strpos($data, $header) === 0 ? (string) substr($data, strlen($header)) : $data;
             }
         }
 
@@ -278,7 +280,7 @@ class FileStorage extends CacheStorage
 
                 for ($i = 0, $n = count($folders); $i < $n; $i++) {
                     if ($folders[$i] != $folder) {
-                        $return |= $this->_deleteFolder($this->_root . '/' . $folders[$i]);
+                        $return = $this->_deleteFolder($this->_root . '/' . $folders[$i]) && $return;
                     }
                 }
 
@@ -314,7 +316,8 @@ class FileStorage extends CacheStorage
             $time = @filemtime($file);
 
             if (($time + $this->_lifetime) < $this->_now || empty($time)) {
-                $result |= @unlink($file);
+                // Another request may have removed it first
+                $result = (@unlink($file) || !file_exists($file)) && $result;
             }
         }
 

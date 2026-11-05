@@ -210,9 +210,9 @@ class ApcuStorage extends CacheStorage
                 $internalKey = $key['key'];
             }
 
-            // Fetching an expired entry removes it
-            if ($this->getKeyGroup($internalKey) !== null) {
-                apcu_fetch($internalKey);
+            // APCu keeps expired entries until it runs out of memory, fetching them or not
+            if ($this->getKeyGroup($internalKey) !== null && !empty($key['ttl']) && $key['creation_time'] + $key['ttl'] < time()) {
+                apcu_delete($internalKey);
             }
         }
 
@@ -263,12 +263,13 @@ class ApcuStorage extends CacheStorage
         if ($data_lock === false) {
             $lock_counter = 0;
 
+            // Waited, so whoever gets the lock looks for the entry again: the other request has just stored it
+            $returning->locklooped = true;
+
             // Loop until you find that the lock has been released.
             // That implies that data get from other thread has finished
             while ($data_lock === false) {
                 if ($lock_counter > $looptime) {
-                    $returning->locked = false;
-                    $returning->locklooped = true;
                     break;
                 }
 

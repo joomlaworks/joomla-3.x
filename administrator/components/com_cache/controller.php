@@ -110,7 +110,16 @@ class CacheController extends JControllerLegacy
             $mCache    = $model->getCache($client);
             $clientStr = JText::_($client ? 'JADMINISTRATOR' : 'JSITE') .' > ';
 
-            foreach ($mCache->getAll() as $cache) {
+            try {
+                $groups = $mCache->getAll() ?: array();
+            } catch (JCacheException $exception) {
+                $app->enqueueMessage($exception->getMessage(), 'error');
+                $allCleared = false;
+
+                break;
+            }
+
+            foreach ($groups as $cache) {
                 if ($mCache->clean($cache->group) === false) {
                     $app->enqueueMessage(JText::sprintf('COM_CACHE_EXPIRED_ITEMS_DELETE_ERROR', $clientStr . $cache->group), 'error');
                     $allCleared = false;

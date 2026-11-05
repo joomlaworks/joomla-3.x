@@ -279,11 +279,7 @@ class CacheModelCache extends JModelList
      */
     public function clean($group = '')
     {
-        try {
-            $this->getCache()->clean($group);
-        } catch (JCacheExceptionConnecting $exception) {
-            return false;
-        } catch (JCacheExceptionUnsupported $exception) {
+        if ($this->getCache()->clean($group) === false) {
             return false;
         }
 
@@ -331,14 +327,10 @@ class CacheModelCache extends JModelList
      */
     public function purge()
     {
-        try {
-            foreach ($this->getSharedHandler() ? array(0) : array(0, 1) as $clientId) {
-                $this->getCache($clientId)->gc();
+        foreach ($this->getSharedHandler() ? array(0) : array(0, 1) as $clientId) {
+            if ($this->getCache($clientId)->gc() === false) {
+                return false;
             }
-        } catch (JCacheExceptionConnecting $exception) {
-            return false;
-        } catch (JCacheExceptionUnsupported $exception) {
-            return false;
         }
 
         Factory::getApplication()->triggerEvent('onAfterPurge', array());

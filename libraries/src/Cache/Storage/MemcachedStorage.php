@@ -92,13 +92,20 @@ class MemcachedStorage extends CacheStorage
         $host = $config->get('memcached_server_host', 'localhost');
         $port = $config->get('memcached_server_port', 11211);
 
+        // A socket file has no port, whatever the field says
+        $socket = strpos((string) $host, '/') === 0;
+
+        if ($socket) {
+            $port = 0;
+        }
+
 
         // Create the memcached connection
         if ($config->get('memcached_persist', true)) {
             static::$_db = new \Memcached($this->_hash);
             $servers = static::$_db->getServerList();
 
-            if ($servers && ($servers[0]['host'] != $host || $servers[0]['port'] != $port)) {
+            if ($servers && ($servers[0]['host'] != $host || (!$socket && $servers[0]['port'] != $port))) {
                 static::$_db->resetServerList();
                 $servers = array();
             }
@@ -113,8 +120,12 @@ class MemcachedStorage extends CacheStorage
 
         static::$_db->setOption(\Memcached::OPT_COMPRESSION, $this->_compress);
 
-        $stats  = static::$_db->getStats();
-        $result = !empty($stats["$host:$port"]) && $stats["$host:$port"]['pid'] > 0;
+        // One server was added; its name in the answer isn't what was given for a socket file
+        $result = false;
+
+        foreach ((array) static::$_db->getStats() as $stats) {
+            $result = $result || (!empty($stats['pid']) && $stats['pid'] > 0);
+        }
 
         if (!$result) {
             // Null out the connection to inform the constructor it will need to attempt to connect if this class is instantiated again
@@ -138,7 +149,7 @@ class MemcachedStorage extends CacheStorage
     {
         $prefix   = Cache::getPlatformPrefix();
         $length   = strlen($prefix);
-        $cache_id = parent::_getCacheId($id, $group . '-' . $this->getGeneration($group));
+        $cache_id = parent::_getCacheId($id, $this->keyName($group) . '-' . $this->getGeneration($group));
 
         if ($length) {
             // Memcached use suffix instead of prefix
@@ -162,7 +173,7 @@ class MemcachedStorage extends CacheStorage
     {
         static::$_db->get($this->_getCacheId($id, $group));
 
-        return static::$_db->getResultCode() !== \Memcached::RES_NOTFOUND;
+        return static::$_db->getResultCode() === \Memcached::RES_SUCCESS;
     }
 
     /**
@@ -200,14 +211,14 @@ class MemcachedStorage extends CacheStorage
         $keys = array();
 
         foreach ($groups as $group) {
-            $keys[] = $this->_hash . '-count-' . $group;
-            $keys[] = $this->_hash . '-size-' . $group;
+            $keys[] = $this->_hash . '-count-' . $this->keyName($group);
+            $keys[] = $this->_hash . '-size-' . $this->keyName($group);
         }
 
         $values = static::$_db->getMulti($keys) ?: array();
 
         foreach ($groups as $group) {
-            $count = $this->_hash . '-count-' . $group;
+            $count = $this->_hash . '-count-' . $this->keyName($group);
 
             // A cleaned group counts 0; one whose counter the server dropped may still hold entries
             if (isset($values[$count]) && (int) $values[$count] <= 0) {
@@ -216,7 +227,7 @@ class MemcachedStorage extends CacheStorage
 
             $item        = new CacheStorageHelper($group);
             $item->count = isset($values[$count]) ? (int) $values[$count] : 0;
-            $item->size  = (int) ($values[$this->_hash . '-size-' . $group] ?? 0);
+            $item->size  = (int) ($values[$this->_hash . '-size-' . $this->keyName($group)] ?? 0);
 
             $data[$group] = $item;
         }
@@ -237,13 +248,17 @@ class MemcachedStorage extends CacheStorage
      */
     public function store($id, $group, $data)
     {
-        if (!static::$_db->set($this->_getCacheId($id, $group), $data, $this->_lifetime)) {
+        // Memcached reads a time over 30 days as a date, long past: the entry would be gone at once
+        $lifetime = (int) $this->_lifetime;
+        $expires  = $lifetime > 2592000 ? time() + $lifetime : $lifetime;
+
+        if (!static::$_db->set($this->_getCacheId($id, $group), $data, $expires)) {
             return false;
         }
 
         $this->addGroup($group);
-        $this->addToCounter($this->_hash . '-count-' . $group, 1);
-        $this->addToCounter($this->_hash . '-size-' . $group, strlen((string) $data));
+        $this->addToCounter($this->_hash . '-count-' . $this->keyName($group), 1);
+        $this->addToCounter($this->_hash . '-size-' . $this->keyName($group), strlen((string) $data));
 
         return true;
     }
@@ -263,7 +278,7 @@ class MemcachedStorage extends CacheStorage
         $removed = static::$_db->delete($this->_getCacheId($id, $group));
 
         if ($removed) {
-            static::$_db->decrement($this->_hash . '-count-' . $group);
+            static::$_db->decrement($this->_hash . '-count-' . $this->keyName($group));
         }
 
         return $removed;
@@ -287,7 +302,8 @@ class MemcachedStorage extends CacheStorage
     {
         $groups = array((string) $group);
 
-        if ($mode === 'notgroup') {
+        // The empty group is the whole cache, as it always was for the file handler
+        if ($mode === 'notgroup' || (string) $group === '') {
             $groups = array_diff((array) static::$_db->get($this->_hash . '-groups'), $groups);
         }
 
@@ -296,15 +312,15 @@ class MemcachedStorage extends CacheStorage
         foreach ($groups as $name) {
             $generation = bin2hex(random_bytes(6));
 
-            if (!static::$_db->set($this->_hash . '-generation-' . $name, $generation, 0)) {
+            if (!static::$_db->set($this->_hash . '-generation-' . $this->keyName($name), $generation, 0)) {
                 $cleaned = false;
 
                 continue;
             }
 
             static::$generations[$name] = array($generation, $this->_now);
-            static::$_db->set($this->_hash . '-count-' . $name, 0, 0);
-            static::$_db->set($this->_hash . '-size-' . $name, 0, 0);
+            static::$_db->set($this->_hash . '-count-' . $this->keyName($name), 0, 0);
+            static::$_db->set($this->_hash . '-size-' . $this->keyName($name), 0, 0);
         }
 
         return $cleaned;
@@ -412,6 +428,22 @@ class MemcachedStorage extends CacheStorage
     }
 
     /**
+     * A group's name in the server's keys, which can't hold spaces or control characters and have a length limit
+     *
+     * @param   string  $group  The group
+     *
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    protected function keyName($group)
+    {
+        $group = (string) $group;
+
+        return strlen($group) > 100 || preg_match('/[\x00-\x20\x7f]/', $group) ? md5($group) : $group;
+    }
+
+    /**
      * The generation of a group, part of its entries' keys. It's a random value, never a number counted up: if the server drops
      * it, a new one leaves the old entries out of reach instead of bringing old ones back.
      *
@@ -430,7 +462,7 @@ class MemcachedStorage extends CacheStorage
             return static::$generations[$group][0];
         }
 
-        $key        = $this->_hash . '-generation-' . $group;
+        $key        = $this->_hash . '-generation-' . $this->keyName($group);
         $generation = static::$_db->get($key);
 
         if (!$generation) {

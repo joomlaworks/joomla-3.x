@@ -567,7 +567,7 @@ abstract class BaseDatabaseModel extends \JObject
         try {
             /** @var \JCacheControllerCallback $cache */
             $cache = \JCache::getInstance('callback', $options);
-            $cache->clean();
+            $options['result'] = $cache->clean() !== false;
         } catch (\JCacheException $exception) {
             $options['result'] = false;
         }

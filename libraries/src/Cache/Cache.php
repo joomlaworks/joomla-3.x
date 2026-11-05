@@ -40,6 +40,22 @@ class Cache
     public static $_handler = array();
 
     /**
+     * The handlers which couldn't be reached: name => array(exception, time)
+     *
+     * @var    array
+     * @since  3.18.0
+     */
+    protected static $unavailable = array();
+
+    /**
+     * The storage errors already logged in this process
+     *
+     * @var    array
+     * @since  3.18.0
+     */
+    protected static $reported = array();
+
+    /**
      * Cache options
      *
      * @var    array
@@ -199,7 +215,11 @@ class Cache
         // Get the default group
         $group = $group ?: $this->_options['defaultgroup'];
 
-        return $this->_getStorage()->contains($id, $group);
+        try {
+            return $this->_getStorage()->contains($id, $group);
+        } catch (CacheExceptionInterface $e) {
+            return $this->storageFailed($e);
+        }
     }
 
     /**
@@ -221,7 +241,11 @@ class Cache
         // Get the default group
         $group = $group ?: $this->_options['defaultgroup'];
 
-        return $this->_getStorage()->get($id, $group, $this->_options['checkTime']);
+        try {
+            return $this->_getStorage()->get($id, $group, $this->_options['checkTime']);
+        } catch (CacheExceptionInterface $e) {
+            return $this->storageFailed($e);
+        }
     }
 
     /**
@@ -261,7 +285,11 @@ class Cache
         $group = $group ?: $this->_options['defaultgroup'];
 
         // Get the storage and store the cached data
-        return $this->_getStorage()->store($id, $group, $data);
+        try {
+            return $this->_getStorage()->store($id, $group, $data);
+        } catch (CacheExceptionInterface $e) {
+            return $this->storageFailed($e);
+        }
     }
 
     /**
@@ -282,11 +310,7 @@ class Cache
         try {
             return $this->_getStorage()->remove($id, $group);
         } catch (CacheExceptionInterface $e) {
-            if (!$this->getCaching()) {
-                return false;
-            }
-
-            throw $e;
+            return $this->storageFailed($e);
         }
     }
 
@@ -311,11 +335,7 @@ class Cache
         try {
             return $this->_getStorage()->clean($group, $mode);
         } catch (CacheExceptionInterface $e) {
-            if (!$this->getCaching()) {
-                return false;
-            }
-
-            throw $e;
+            return $this->storageFailed($e);
         }
     }
 
@@ -331,11 +351,7 @@ class Cache
         try {
             return $this->_getStorage()->gc();
         } catch (CacheExceptionInterface $e) {
-            if (!$this->getCaching()) {
-                return false;
-            }
-
-            throw $e;
+            return $this->storageFailed($e);
         }
     }
 
@@ -371,58 +387,52 @@ class Cache
          * Allow storage handlers to perform locking on their own
          * NOTE drivers with lock need also unlock or unlocking will fail because of false $id
          */
-        $handler = $this->_getStorage();
+        try {
+            $handler = $this->_getStorage();
 
-        if ($this->_options['locking'] == true) {
+            if ($this->_options['locking'] != true) {
+                $returning->locked = false;
+
+                return $returning;
+            }
+
             $locked = $handler->lock($id, $group, $locktime);
 
             if ($locked !== false) {
                 return $locked;
             }
-        }
 
-        // Fallback
-        $curentlifetime = $this->_options['lifetime'];
+            // Fallback for handlers without a lock of their own: an entry which lasts as long as the lock (the handler's lifetime
+            // is in seconds), so that a request which never releases it holds nobody for longer
+            $lifetime           = $handler->_lifetime;
+            $handler->_lifetime = (int) $locktime;
 
-        // Set lifetime to locktime for storing in children
-        $this->_options['lifetime'] = $locktime;
+            try {
+                $looptime = $locktime * 10;
+                $id2      = $id . '_lock';
+                $counter  = 0;
 
-        $looptime = $locktime * 10;
-        $id2      = $id . '_lock';
-
-        if ($this->_options['locking'] == true) {
-            $data_lock = $handler->get($id2, $group, $this->_options['checkTime']);
-        } else {
-            $data_lock         = false;
-            $returning->locked = false;
-        }
-
-        if ($data_lock !== false) {
-            $lock_counter = 0;
-
-            // Loop until you find that the lock has been released. That implies that data get from other thread has finished
-            while ($data_lock !== false) {
-                if ($lock_counter > $looptime) {
-                    $returning->locked = false;
+                while ($handler->get($id2, $group, $this->_options['checkTime']) !== false) {
                     $returning->locklooped = true;
-                    break;
+
+                    if ($counter++ > $looptime) {
+                        $returning->locked = false;
+
+                        return $returning;
+                    }
+
+                    usleep(10000);
                 }
 
-                // A short wait: this lock is an entry kept for the cache's lifetime, which an interrupted request never removes,
-                // so a long one would hold every visitor of that page until it expires (the handlers' own locks expire or are
-                // released with the process, and wait longer)
-                usleep(100);
-                $data_lock = $handler->get($id2, $group, $this->_options['checkTime']);
-                $lock_counter++;
+                $returning->locked = $handler->store($id2, $group, 1);
+            } finally {
+                $handler->_lifetime = $lifetime;
             }
-        }
+        } catch (CacheExceptionInterface $e) {
+            $this->storageFailed($e);
 
-        if ($this->_options['locking'] == true) {
-            $returning->locked = $handler->store($id2, $group, 1);
+            $returning->locked = false;
         }
-
-        // Revert lifetime to previous one
-        $this->_options['lifetime'] = $curentlifetime;
 
         return $returning;
     }
@@ -446,17 +456,21 @@ class Cache
         // Get the default group
         $group = $group ?: $this->_options['defaultgroup'];
 
-        // Allow handlers to perform unlocking on their own
-        $handler = $this->_getStorage();
+        try {
+            // Allow handlers to perform unlocking on their own
+            $handler = $this->_getStorage();
 
-        $unlocked = $handler->unlock($id, $group);
+            $unlocked = $handler->unlock($id, $group);
 
-        if ($unlocked !== false) {
-            return $unlocked;
+            if ($unlocked !== false) {
+                return $unlocked;
+            }
+
+            // Fallback
+            return $handler->remove($id . '_lock', $group);
+        } catch (CacheExceptionInterface $e) {
+            return $this->storageFailed($e);
         }
-
-        // Fallback
-        return $handler->remove($id . '_lock', $group);
     }
 
     /**
@@ -478,9 +492,60 @@ class Cache
             return self::$_handler[$hash];
         }
 
-        self::$_handler[$hash] = CacheStorage::getInstance($this->_options['storage'], $this->_options);
+        // A server that just refused isn't asked again for every cache call of the page, each of which may wait for it to answer
+        $storage = (string) $this->_options['storage'];
+
+        if (isset(self::$unavailable[$storage]) && self::$unavailable[$storage][1] > time() - 30) {
+            throw self::$unavailable[$storage][0];
+        }
+
+        try {
+            self::$_handler[$hash] = CacheStorage::getInstance($this->_options['storage'], $this->_options);
+        } catch (CacheExceptionInterface $e) {
+            self::$unavailable[$storage] = array($e, time());
+
+            throw $e;
+        }
 
         return self::$_handler[$hash];
+    }
+
+    /**
+     * A cache that can't be reached (its server is down, its PHP extension is gone) must not stop the site: the page is made
+     * without it. Administrators are told, and PHP's error log records it. Only getAll() throws, for those who report on the cache.
+     *
+     * @param   \Exception  $exception  The storage's exception
+     *
+     * @return  boolean  False
+     *
+     * @since   3.18.0
+     */
+    protected function storageFailed($exception)
+    {
+        $this->setCaching(false);
+
+        $message = $exception->getMessage();
+
+        if (isset(self::$reported[$message])) {
+            return false;
+        }
+
+        self::$reported[$message] = true;
+
+        // Never the "jerror" log category: it goes into the page's messages, which visitors would see
+        error_log('Joomla cache: ' . $message);
+
+        try {
+            $app = \JFactory::$application;
+
+            if ($app && method_exists($app, 'isClient') && $app->isClient('administrator')) {
+                $app->enqueueMessage($message, 'warning');
+            }
+        } catch (\Exception $e) {
+            // Telling about it must not stop the site either
+        }
+
+        return false;
     }
 
     /**

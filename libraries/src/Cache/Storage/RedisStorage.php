@@ -12,6 +12,7 @@ namespace Joomla\CMS\Cache\Storage;
 defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Cache\CacheStorage;
+use Joomla\CMS\Cache\Exception\CacheConnectingException;
 use Joomla\CMS\Log\Log;
 
 /**
@@ -99,12 +100,7 @@ class RedisStorage extends CacheStorage
         if ($connection == false) {
             static::$_redis = null;
 
-            // Because the application instance may not be available on cli script, use it only if needed
-            if (\JFactory::getApplication()->isClient('administrator')) {
-                \JError::raiseWarning(500, 'Redis connection failed');
-            }
-
-            return false;
+            throw new CacheConnectingException('Could not connect to the Redis server');
         }
 
         try {
@@ -117,38 +113,20 @@ class RedisStorage extends CacheStorage
         if ($auth === false) {
             static::$_redis = null;
 
-            // Because the application instance may not be available on cli script, use it only if needed
-            if (\JFactory::getApplication()->isClient('administrator')) {
-                \JError::raiseWarning(500, 'Redis authentication failed');
-            }
-
-            return false;
-        }
-
-        $select = static::$_redis->select($server['db']);
-
-        if ($select == false) {
-            static::$_redis = null;
-
-            // Because the application instance may not be available on cli script, use it only if needed
-            if (\JFactory::getApplication()->isClient('administrator')) {
-                \JError::raiseWarning(500, 'Redis failed to select database');
-            }
-
-            return false;
+            throw new CacheConnectingException('Could not log in to the Redis server');
         }
 
         try {
+            // A server asking for a password which wasn't given answers here first
+            if (static::$_redis->select($server['db']) == false) {
+                throw new \RedisException('database ' . $server['db']);
+            }
+
             static::$_redis->ping();
         } catch (\RedisException $e) {
             static::$_redis = null;
 
-            // Because the application instance may not be available on cli script, use it only if needed
-            if (\JFactory::getApplication()->isClient('administrator')) {
-                \JError::raiseWarning(500, 'Redis ping failed');
-            }
-
-            return false;
+            throw new CacheConnectingException('Could not use the Redis server: ' . $e->getMessage());
         }
 
         return static::$_redis;
@@ -170,8 +148,12 @@ class RedisStorage extends CacheStorage
             return false;
         }
 
-        // Redis exists returns integer values lets convert that to boolean see: https://redis.io/commands/exists
-        return (bool) static::$_redis->exists($this->_getCacheId($id, $group));
+        try {
+            // Redis exists returns integer values lets convert that to boolean see: https://redis.io/commands/exists
+            return (bool) static::$_redis->exists($this->_getCacheId($id, $group));
+        } catch (\RedisException $e) {
+            return $this->failed($e);
+        }
     }
 
     /**
@@ -191,7 +173,11 @@ class RedisStorage extends CacheStorage
             return false;
         }
 
-        return static::$_redis->get($this->_getCacheId($id, $group));
+        try {
+            return static::$_redis->get($this->_getCacheId($id, $group));
+        } catch (\RedisException $e) {
+            return $this->failed($e);
+        }
     }
 
     /**
@@ -207,35 +193,39 @@ class RedisStorage extends CacheStorage
             return false;
         }
 
-        $data = array();
-        $keys = $this->getSiteKeys();
+        try {
+            $data = array();
+            $keys = $this->getSiteKeys();
 
-        foreach (array_chunk($keys, 1000) as $batch) {
-            $pipeline = static::$_redis->multi(\Redis::PIPELINE);
+            foreach (array_chunk($keys, 1000) as $batch) {
+                $pipeline = static::$_redis->multi(\Redis::PIPELINE);
 
-            foreach ($batch as $key) {
-                $pipeline->strlen($key);
-            }
+                foreach ($batch as $key) {
+                    $pipeline->strlen($key);
+                }
 
-            $sizes = $pipeline->exec();
+                $sizes = $pipeline->exec();
 
-            foreach ($batch as $i => $key) {
-                $group = $this->getKeyGroup($key);
+                foreach ($batch as $i => $key) {
+                    $group = $this->getKeyGroup($key);
 
-                if ($group !== null) {
-                    if (!isset($data[$group])) {
-                        $item = new CacheStorageHelper($group);
-                    } else {
-                        $item = $data[$group];
+                    if ($group !== null) {
+                        if (!isset($data[$group])) {
+                            $item = new CacheStorageHelper($group);
+                        } else {
+                            $item = $data[$group];
+                        }
+
+                        $item->updateSize((int) ($sizes[$i] ?? 0));
+                        $data[$group] = $item;
                     }
-
-                    $item->updateSize((int) ($sizes[$i] ?? 0));
-                    $data[$group] = $item;
                 }
             }
-        }
 
-        return $data;
+            return $data;
+        } catch (\RedisException $e) {
+            return $this->failed($e);
+        }
     }
 
     /**
@@ -255,9 +245,12 @@ class RedisStorage extends CacheStorage
             return false;
         }
 
-        static::$_redis->setex($this->_getCacheId($id, $group), $this->_lifetime, $data);
-
-        return true;
+        try {
+            // A server out of memory refuses it: the site must carry on without the entry
+            return (bool) static::$_redis->setex($this->_getCacheId($id, $group), (int) $this->_lifetime, $data);
+        } catch (\RedisException $e) {
+            return $this->failed($e);
+        }
     }
 
     /**
@@ -276,7 +269,11 @@ class RedisStorage extends CacheStorage
             return false;
         }
 
-        return (bool) static::$_redis->del($this->_getCacheId($id, $group));
+        try {
+            return (bool) static::$_redis->del($this->_getCacheId($id, $group));
+        } catch (\RedisException $e) {
+            return $this->failed($e);
+        }
     }
 
     /**
@@ -298,19 +295,115 @@ class RedisStorage extends CacheStorage
             return false;
         }
 
-        $keys = array();
+        try {
+            $keys = array();
 
-        foreach ($this->getSiteKeys() as $key) {
-            if ($this->isCleaned($this->getKeyGroup($key), $group, $mode)) {
-                $keys[] = $key;
+            foreach ($this->getSiteKeys() as $key) {
+                if ($this->isCleaned($this->getKeyGroup($key), $group, $mode)) {
+                    $keys[] = $key;
+                }
             }
-        }
 
-        foreach (array_chunk($keys, 1000) as $batch) {
-            static::$_redis->del($batch);
+            foreach (array_chunk($keys, 1000) as $batch) {
+                static::$_redis->del($batch);
+            }
+        } catch (\RedisException $e) {
+            return $this->failed($e);
         }
 
         return true;
+    }
+
+    /**
+     * Lock cached item
+     *
+     * @param   string   $id        The cache data ID
+     * @param   string   $group     The cache data group
+     * @param   integer  $locktime  Cached item max lock time
+     *
+     * @return  object  Properties "locked" and "locklooped"
+     *
+     * @since   3.18.0
+     */
+    public function lock($id, $group, $locktime)
+    {
+        $returning             = new \stdClass();
+        $returning->locked     = false;
+        $returning->locklooped = false;
+
+        if (static::isConnected() == false) {
+            return $returning;
+        }
+
+        $key      = $this->_getCacheId($id, $group) . '_lock';
+        $options  = array('nx', 'ex' => (int) $locktime);
+        $looptime = $locktime * 10;
+
+        try {
+            $returning->locked = (bool) static::$_redis->set($key, 1, $options);
+            $counter           = 0;
+
+            while (!$returning->locked && $counter++ <= $looptime) {
+                $returning->locklooped = true;
+
+                // 10 ms between tries, as the other handlers: the wait (a tenth of the lock time) can see the other request finish
+                usleep(10000);
+
+                $returning->locked = (bool) static::$_redis->set($key, 1, $options);
+            }
+        } catch (\RedisException $e) {
+            $this->failed($e);
+        }
+
+        return $returning;
+    }
+
+    /**
+     * Unlock cached item
+     *
+     * @param   string  $id     The cache data ID
+     * @param   string  $group  The cache data group
+     *
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    public function unlock($id, $group = null)
+    {
+        if (static::isConnected() == false) {
+            return true;
+        }
+
+        try {
+            static::$_redis->del($this->_getCacheId($id, $group) . '_lock');
+        } catch (\RedisException $e) {
+            $this->failed($e);
+        }
+
+        return true;
+    }
+
+    /**
+     * A command the server refused or couldn't answer (out of memory, connection lost) must not stop the page.
+     *
+     * @param   \RedisException  $exception  The exception
+     *
+     * @return  boolean  False
+     *
+     * @since   3.18.0
+     */
+    protected function failed($exception)
+    {
+        static $logged = false;
+
+        if (!$logged) {
+            $logged = true;
+
+            // Never the "jerror" log category: it goes into the page's messages, which visitors would see
+            error_log('Joomla cache: Redis: ' . $exception->getMessage());
+        }
+
+        return false;
     }
 
     /**

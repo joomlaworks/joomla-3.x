@@ -481,7 +481,12 @@ class CacheStorage
      */
     protected function isCleaned($keyGroup, $group, $mode)
     {
-        return $keyGroup !== null && (($keyGroup === (string) $group) === ($mode !== 'notgroup'));
+        if ($keyGroup === null) {
+            return false;
+        }
+
+        // The empty group is the whole cache, as it always was for the file handler
+        return (string) $group === '' || (($keyGroup === (string) $group) === ($mode !== 'notgroup'));
     }
 
     /**

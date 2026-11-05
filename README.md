@@ -124,6 +124,11 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
   - Searching by date works with only a start or an end date, and the "All" results setting shows results
   - Searches find words typed without accents, also in Greek and other alphabets, and search suggestions work on SQLite
 - **Caching** (bugs inherited from Joomla 3):
+  - If the cache server can't be reached, runs out of memory or asks for a password, the site keeps working without the cache. Before, some of these cases showed an error on every page, including the administrator, where the setting could have been changed. Administrators now see a warning.
+  - When several visitors ask for the same page at once, only one builds it on Redis and APCu too (it already worked this way on Memcached and the file cache), which matters most during traffic spikes.
+  - Clear Expired Cache now really removes expired items on APCu.
+  - The Clear Cache page and the command line now say when cleaning failed, instead of reporting success.
+  - Memcached works with very long cache times (over 30 days) and over a socket file.
   - Clearing the cache works on large, busy sites with file or Memcached caching, Memcached no longer slows down as the cache grows, and Redis clears faster and shows true sizes
   - Clear Expired Cache also cleans the site's cache (it only cleaned the administrator's)
   - A damaged cache entry no longer shows visitors an empty page

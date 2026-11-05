@@ -3014,6 +3014,7 @@ class JoomlaInstallerScript
             '/libraries/joomla/base/observable.php',
             '/libraries/joomla/base/observer.php',
             '/libraries/joomla/base/tree.php',
+            '/administrator/components/com_admin/postinstall/eaccelerator.php',
             '/libraries/joomla/cache/storage/eaccelerator.php',
             '/libraries/joomla/cache/storage/helpers/helper.php',
             '/libraries/joomla/cache/storage/helpers/index.html',
@@ -6160,8 +6161,7 @@ class JoomlaInstallerScript
         JModelLegacy::addIncludePath(JPATH_ROOT . '/administrator/components/com_cache/models');
         $model = JModelLegacy::getInstance('cache', 'CacheModel');
 
-        // Clean every group, like System > Clear Cache > Delete All. Cleaning the empty default group only
-        // empties the File handler; Redis, Memcached, APCu and WinCache take it literally and clean nothing.
+        // Clean every group, like System > Clear Cache > Delete All
         $cleaned = true;
 
         foreach (array(0, 1) as $clientId) {

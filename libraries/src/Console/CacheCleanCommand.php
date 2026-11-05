@@ -121,7 +121,8 @@ class CacheCleanCommand extends AbstractCommand
         $cleaned = true;
         $groups  = 0;
 
-        foreach (array(0, 1) as $clientId) {
+        // Handlers keeping one cache for both would be listed and counted twice
+        foreach ($model->getSharedHandler() ? array(0) : array(0, 1) as $clientId) {
             $cache = $model->getCache($clientId);
 
             if ($io->isDryRun()) {
@@ -150,7 +151,6 @@ class CacheCleanCommand extends AbstractCommand
                 continue;
             }
 
-            // Clean every group: the Redis, Memcached, APCu and WinCache handlers clean nothing for an empty group name
             foreach ($cache->getAll() ?: array() as $group) {
                 $cleaned = $cache->clean($group->group) !== false && $cleaned;
                 $groups++;

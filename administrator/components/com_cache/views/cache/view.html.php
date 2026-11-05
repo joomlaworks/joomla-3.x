@@ -56,7 +56,8 @@ class CacheViewCache extends JViewLegacy
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
-            throw new Exception(implode("\n", $errors), 500);
+            // A cache that can't be reached is no reason to lose the page which says so
+            JFactory::getApplication()->enqueueMessage(implode("\n", array_unique($errors)), 'error');
         }
 
         $this->addToolbar();
