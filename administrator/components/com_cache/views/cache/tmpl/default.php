@@ -22,7 +22,12 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 	<div id="j-main-container">
 	<?php endif; ?>
 		<?php if ($this->sharedHandler) : ?>
-		<div class="alert alert-info"><?php echo JText::sprintf('COM_CACHE_SHARED_HANDLER', $this->escape($this->sharedHandler)); ?></div>
+		<div class="alert alert-info"><?php echo JText::sprintf('COM_CACHE_SHARED_HANDLER', $this->escape($this->sharedHandler)); ?>
+			<?php if (!$this->canPurgeExpired) : ?>
+			<br />
+			<?php echo JText::sprintf('COM_CACHE_EXPIRES_BY_ITSELF', $this->escape($this->sharedHandler)); ?>
+			<?php endif; ?>
+		</div>
 		<?php endif; ?>
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<?php if ($this->total > 0) : ?>

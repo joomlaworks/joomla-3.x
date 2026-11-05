@@ -933,6 +933,10 @@ table {max-width:100%;background-color:transparent;border-collapse:collapse;bord
 .table th input[type="checkbox"],
 .table td input[type="checkbox"] {margin:-3px 0 0;}
 
+/* A checkbox in its own label (.checkbox) stays in the label's gutter, beside its text */
+.table th .checkbox input[type="checkbox"],
+.table td .checkbox input[type="checkbox"] {margin:4px 0 0 -22px;}
+
 .table th {font-weight:500;}
 .table thead th {vertical-align:bottom;color:var(--c-muted-fg);background-color:var(--c-subtle);}
 .table caption + thead tr:first-child th,

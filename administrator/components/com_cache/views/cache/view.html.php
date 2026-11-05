@@ -38,6 +38,14 @@ class CacheViewCache extends JViewLegacy
     protected $sharedHandler = '';
 
     /**
+     * Whether the handler has expired items to clear (Memcached and Redis remove them by themselves)
+     *
+     * @var    boolean
+     * @since  3.18.0
+     */
+    protected $canPurgeExpired = true;
+
+    /**
      * Display a view.
      *
      * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
@@ -50,7 +58,8 @@ class CacheViewCache extends JViewLegacy
         $this->pagination    = $this->get('Pagination');
         $this->total         = $this->get('Total');
         $this->state         = $this->get('State');
-        $this->sharedHandler = $this->get('SharedHandler');
+        $this->sharedHandler   = $this->get('SharedHandler');
+        $this->canPurgeExpired = $this->getModel()->canPurgeExpired();
         $this->filterForm    = $this->get('FilterForm');
         $this->activeFilters = $this->get('ActiveFilters');
 
@@ -87,7 +96,7 @@ class CacheViewCache extends JViewLegacy
         JToolbarHelper::custom('delete', 'delete.png', 'delete_f2.png', 'JTOOLBAR_DELETE', true);
         JToolbarHelper::custom('deleteAll', 'remove.png', 'delete_f2.png', 'JTOOLBAR_DELETE_ALL', false);
 
-        if ($this->getModel()->canPurgeExpired()) {
+        if ($this->canPurgeExpired) {
             JToolbar::getInstance('toolbar')->appendButton('Confirm', 'COM_CACHE_PURGE_CONFIRM', 'clock', 'COM_CACHE_PURGE_EXPIRED', 'purge', false);
         }
 

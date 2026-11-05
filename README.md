@@ -82,7 +82,7 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 **Improvements:**
 - Clean Cache tells you how much it removed: how many items and how much data
 - The Clear Cache page shows one list on Memcached, Redis, APCu and WinCache, which keep one cache for the site and the administrator, instead of two identical tabs
-- Clear Expired Cache is now a button on the Clear Cache page, not a page of its own
+- Clear Expired Cache is now a button on the Clear Cache page, not a page of its own. Memcached and Redis remove expired items by themselves, so there the page says that instead
 - Memcached compression is on by default for new sites: cached pages take far less memory
 - Plain JavaScript instead of jQuery, jQuery UI, MooTools and Bootstrap's scripts throughout the core: modals, tooltips, tabs, searchable lists (Chosen rewritten, same look), search tools, subforms, drag and drop reordering (with touch), date fields (the browser's date input; Jalali for Persian), colour fields (the browser's colour picker), show-on fields, the Media Manager and Joomla Update; old names and jQuery plugin calls keep working for extensions, and MooTools stays available for those that ask for it
 - Bootstrap Icons replace IcoMoon (the `icon-*` classes keep working), core icons are SVGs in the text's colour, and the language flags are redrawn
@@ -150,6 +150,23 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
   - Sample data no longer hides every module after an interrupted install
 - **PHP compatibility:** warnings that filled server logs on PHP 8.1–8.5 are gone, older extensions built on FOF work on PHP 8, two-factor logins set up in Joomla 3.2–3.6 work on PHP 8, and exporting the User Actions Log works on PHP 7
 - **Other:** small fixes in the code editor (CodeMirror), and missing texts that showed as codes were added
+
+**Joomla 3 bugs fixed:**
+
+Part of what this project does is fix what never got fixed in Joomla 3 itself. These are the ones site owners are most likely to have met, all already there in the Joomla 3.10 code this distribution started from, and also part of the list above. The [CHANGELOG](CHANGELOG.md) marks more than 70 fixes in this release as "stock Joomla 3".
+- An unreachable cache server, or a Redis server out of memory, took the whole site and its administrator down
+- With Redis or APCu, a traffic spike rebuilt the same page once per visitor instead of once
+- Cached pages could give a visitor someone else's form token, and a damaged cache entry showed an empty page until it expired
+- Clearing the cache could fail on large, busy sites, and Clear Expired Cache left the site's own cache untouched
+- Browser caching of cached pages never worked
+- Modules dragged to a new place in the Modules list went back on the next page load
+- Deleting a menu item could make a module disappear from every page
+- A module could lose its surrounding markup once caching was on
+- Smart Search's full reindex stopped with "table is full" on MySQL and MariaDB with default settings
+- Search dropped results when a word was typed without the accents of a non-Latin script, such as Greek
+- Common file types the default settings allow (icons, OpenDocument files, older Excel and PowerPoint files) couldn't be uploaded
+- Windows opened by the editor's buttons ran off the screen on phones, and administrator lists scrolled sideways on tablets
+- "User - Joomla!" could be uninstalled, after which nobody could log in
 
 ## Version 3.17 - released October 10th, 2026
 Summary of changes:

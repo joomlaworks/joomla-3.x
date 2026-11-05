@@ -619,11 +619,9 @@ class FileStorage extends CacheStorage
         // Check to make sure the path valid and clean
         $path = $this->_cleanPath($path);
 
-        // Is the path a folder?
+        // Another request may have just cleaned it: nothing to list, and no message for whoever happens to be asking
         if (!is_dir($path)) {
-            Log::add(__METHOD__ . ' ' . \JText::sprintf('JLIB_FILESYSTEM_ERROR_PATH_IS_NOT_A_FOLDER', $path), Log::WARNING, 'jerror');
-
-            return false;
+            return array();
         }
 
         // Read the source directory.
@@ -696,11 +694,9 @@ class FileStorage extends CacheStorage
         // Check to make sure the path valid and clean
         $path = $this->_cleanPath($path);
 
-        // Is the path a folder?
+        // Another request may have just cleaned it: nothing to list, and no message for whoever happens to be asking
         if (!is_dir($path)) {
-            Log::add(__METHOD__ . ' ' . \JText::sprintf('JLIB_FILESYSTEM_ERROR_PATH_IS_NOT_A_FOLDER', $path), Log::WARNING, 'jerror');
-
-            return false;
+            return array();
         }
 
         // Read the source directory
