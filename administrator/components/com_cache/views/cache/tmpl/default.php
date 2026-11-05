@@ -21,6 +21,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 	<?php else : ?>
 	<div id="j-main-container">
 	<?php endif; ?>
+		<?php if ($this->sharedHandler) : ?>
+		<div class="alert alert-info"><?php echo JText::sprintf('COM_CACHE_SHARED_HANDLER', $this->escape($this->sharedHandler)); ?></div>
+		<?php endif; ?>
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<?php if ($this->total > 0) : ?>
 		<table class="table table-striped">
@@ -33,7 +36,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						<?php echo JHtml::_('searchtools.sort', 'COM_CACHE_GROUP', 'group', $listDirn, $listOrder); ?>
 					</th>
 					<th width="5%" class="nowrap">
-						<?php echo JHtml::_('searchtools.sort', 'COM_CACHE_NUMBER_OF_FILES', 'count', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort', $this->sharedHandler ? 'COM_CACHE_NUMBER_OF_ITEMS' : 'COM_CACHE_NUMBER_OF_FILES', 'count', $listDirn, $listOrder); ?>
 					</th>
 					<th width="10%" class="nowrap">
 						<?php echo JHtml::_('searchtools.sort', 'COM_CACHE_SIZE', 'size', $listDirn, $listOrder); ?>

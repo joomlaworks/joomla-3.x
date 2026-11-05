@@ -30,6 +30,14 @@ class CacheViewCache extends JViewLegacy
     protected $state;
 
     /**
+     * The handler's name when it keeps one cache for the site and the administrator
+     *
+     * @var    string
+     * @since  3.18.0
+     */
+    protected $sharedHandler = '';
+
+    /**
      * Display a view.
      *
      * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
@@ -42,6 +50,7 @@ class CacheViewCache extends JViewLegacy
         $this->pagination    = $this->get('Pagination');
         $this->total         = $this->get('Total');
         $this->state         = $this->get('State');
+        $this->sharedHandler = $this->get('SharedHandler');
         $this->filterForm    = $this->get('FilterForm');
         $this->activeFilters = $this->get('ActiveFilters');
 
@@ -66,7 +75,9 @@ class CacheViewCache extends JViewLegacy
     {
         $state = $this->get('State');
 
-        if ($state->get('client_id') == 1) {
+        if ($this->sharedHandler) {
+            JToolbarHelper::title(JText::_('COM_CACHE_CLEAR_CACHE'), 'lightning clear');
+        } elseif ($state->get('client_id') == 1) {
             JToolbarHelper::title(JText::_('COM_CACHE_CLEAR_CACHE_ADMIN_TITLE'), 'lightning clear');
         } else {
             JToolbarHelper::title(JText::_('COM_CACHE_CLEAR_CACHE_SITE_TITLE'), 'lightning clear');

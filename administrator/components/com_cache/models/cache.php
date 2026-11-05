@@ -63,6 +63,51 @@ class CacheModelCache extends JModelList
     }
 
     /**
+     * The name of the cache handler when it keeps one cache for the site and the administrator: only the file handler has a
+     * folder for each, the others ignore the cache's folder.
+     *
+     * @return  string  The handler's name, empty for the file handler (and handlers of extensions, which may do either)
+     *
+     * @since   3.18.0
+     */
+    public function getSharedHandler()
+    {
+        $handlers = array('apcu' => 'APCu', 'memcached' => 'Memcached', 'redis' => 'Redis', 'wincache' => 'WinCache');
+        $handler  = (string) JFactory::getConfig()->get('cache_handler', '');
+
+        return isset($handlers[$handler]) ? $handlers[$handler] : '';
+    }
+
+    /**
+     * The search tools' form: with one cache for both, no choice of the site or the administrator, and items instead of files.
+     *
+     * @param   array    $data      The data for the form
+     * @param   boolean  $loadData  Whether the form loads its own data
+     *
+     * @return  JForm|boolean
+     *
+     * @since   3.18.0
+     */
+    public function getFilterForm($data = array(), $loadData = true)
+    {
+        $form = parent::getFilterForm($data, $loadData);
+
+        if ($form && $this->getSharedHandler()) {
+            $form->removeField('client_id');
+
+            $labels = array('count ASC' => 'COM_CACHE_HEADING_ITEMS_ASC', 'count DESC' => 'COM_CACHE_HEADING_ITEMS_DESC');
+
+            foreach ($labels as $value => $label) {
+                foreach ($form->getXml()->xpath('//option[@value="' . $value . '"]') as $option) {
+                    $option[0] = $label;
+                }
+            }
+        }
+
+        return $form;
+    }
+
+    /**
      * Method to auto-populate the model state.
      *
      * Note. Calling getState in this method will result in recursion.
@@ -81,7 +126,7 @@ class CacheModelCache extends JModelList
 
         // Special case for client id.
         $clientId = (int) $this->getUserStateFromRequest($this->context . '.client_id', 'client_id', 0, 'int');
-        $clientId = (!in_array($clientId, array(0, 1))) ? 0 : $clientId;
+        $clientId = (!in_array($clientId, array(0, 1)) || $this->getSharedHandler()) ? 0 : $clientId;
         $this->setState('client_id', $clientId);
 
         parent::populateState($ordering, $direction);

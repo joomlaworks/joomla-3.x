@@ -81,6 +81,7 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 
 **Improvements:**
 - Clean Cache tells you how much it removed: how many items and how much data
+- The Clear Cache page shows one list on Memcached, Redis, APCu and WinCache, which keep one cache for the site and the administrator, instead of two identical tabs
 - Plain JavaScript instead of jQuery, jQuery UI, MooTools and Bootstrap's scripts throughout the core: modals, tooltips, tabs, searchable lists (Chosen rewritten, same look), search tools, subforms, drag and drop reordering (with touch), date fields (the browser's date input; Jalali for Persian), colour fields (the browser's colour picker), show-on fields, the Media Manager and Joomla Update; old names and jQuery plugin calls keep working for extensions, and MooTools stays available for those that ask for it
 - Bootstrap Icons replace IcoMoon (the `icon-*` classes keep working), core icons are SVGs in the text's colour, and the language flags are redrawn
 - Isis and Protostar are plain CSS (no more Less; Isis' stylesheets about a third of their former size), wider form fields in the administrator, and no files for old Internet Explorer anywhere
