@@ -119,6 +119,7 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
   - Searching by date works with only a start or an end date, and the "All" results setting shows results
   - Searches find words typed without accents, also in Greek and other alphabets, and search suggestions work on SQLite
 - **Caching** (bugs inherited from Joomla 3):
+  - Clearing the cache works on large, busy sites with file or Memcached caching, and Memcached no longer slows down as the cache grows
   - A damaged cache entry no longer shows visitors an empty page
   - Browsers can reuse cached pages they already have, and forms on cached pages work for every visitor
   - Visits from social media or newsletter links (with tracking codes) no longer change what cached pages show others

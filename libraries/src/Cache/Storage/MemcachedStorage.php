@@ -40,6 +40,22 @@ class MemcachedStorage extends CacheStorage
     protected $_compress = 0;
 
     /**
+     * The generations read: group => array(generation, the time read)
+     *
+     * @var    array
+     * @since  3.18.0
+     */
+    protected static $generations = array();
+
+    /**
+     * The groups known to be on the list of groups
+     *
+     * @var    array
+     * @since  3.18.0
+     */
+    protected static $knownGroups = array();
+
+    /**
      * Constructor
      *
      * @param   array  $options  Optional parameters.
@@ -122,7 +138,7 @@ class MemcachedStorage extends CacheStorage
     {
         $prefix   = Cache::getPlatformPrefix();
         $length   = strlen($prefix);
-        $cache_id = parent::_getCacheId($id, $group);
+        $cache_id = parent::_getCacheId($id, $group . '-' . $this->getGeneration($group));
 
         if ($length) {
             // Memcached use suffix instead of prefix
@@ -166,7 +182,7 @@ class MemcachedStorage extends CacheStorage
     }
 
     /**
-     * Get all cached data
+     * Get all cached data: the counters of each group, which count what was stored since it was last cleaned
      *
      * @return  mixed  Boolean false on failure or a cached data object
      *
@@ -174,33 +190,35 @@ class MemcachedStorage extends CacheStorage
      */
     public function getAll()
     {
-        $keys   = static::$_db->get($this->_hash . '-index');
-        $secret = $this->_hash;
+        $groups = static::$_db->get($this->_hash . '-groups');
+        $data   = array();
 
-        $data = array();
+        if (!is_array($groups) || !$groups) {
+            return $data;
+        }
 
-        if (is_array($keys)) {
-            foreach ($keys as $key) {
-                if (empty($key)) {
-                    continue;
-                }
+        $keys = array();
 
-                $namearr = explode('-', (string) $key->name);
+        foreach ($groups as $group) {
+            $keys[] = $this->_hash . '-count-' . $group;
+            $keys[] = $this->_hash . '-size-' . $group;
+        }
 
-                if ($namearr !== false && $namearr[0] == $secret && $namearr[1] == 'cache') {
-                    $group = $namearr[2];
+        $values = static::$_db->getMulti($keys) ?: array();
 
-                    if (!isset($data[$group])) {
-                        $item = new CacheStorageHelper($group);
-                    } else {
-                        $item = $data[$group];
-                    }
+        foreach ($groups as $group) {
+            $count = $this->_hash . '-count-' . $group;
 
-                    $item->updateSize($key->size);
-
-                    $data[$group] = $item;
-                }
+            // A cleaned group counts 0; one whose counter the server dropped may still hold entries
+            if (isset($values[$count]) && (int) $values[$count] <= 0) {
+                continue;
             }
+
+            $item        = new CacheStorageHelper($group);
+            $item->count = isset($values[$count]) ? (int) $values[$count] : 0;
+            $item->size  = (int) ($values[$this->_hash . '-size-' . $group] ?? 0);
+
+            $data[$group] = $item;
         }
 
         return $data;
@@ -219,30 +237,13 @@ class MemcachedStorage extends CacheStorage
      */
     public function store($id, $group, $data)
     {
-        $cache_id = $this->_getCacheId($id, $group);
-
-        if (!$this->lockindex()) {
+        if (!static::$_db->set($this->_getCacheId($id, $group), $data, $this->_lifetime)) {
             return false;
         }
 
-        try {
-            $index = static::$_db->get($this->_hash . '-index');
-
-            if (!is_array($index)) {
-                $index = array();
-            }
-
-            $tmparr       = new \stdClass();
-            $tmparr->name = $cache_id;
-            $tmparr->size = strlen($data);
-
-            $index[] = $tmparr;
-            static::$_db->set($this->_hash . '-index', $index, 0);
-        } finally {
-            $this->unlockindex();
-        }
-
-        static::$_db->set($cache_id, $data, $this->_lifetime);
+        $this->addGroup($group);
+        $this->addToCounter($this->_hash . '-count-' . $group, 1);
+        $this->addToCounter($this->_hash . '-size-' . $group, strlen((string) $data));
 
         return true;
     }
@@ -259,33 +260,18 @@ class MemcachedStorage extends CacheStorage
      */
     public function remove($id, $group)
     {
-        $cache_id = $this->_getCacheId($id, $group);
+        $removed = static::$_db->delete($this->_getCacheId($id, $group));
 
-        if (!$this->lockindex()) {
-            return false;
+        if ($removed) {
+            static::$_db->decrement($this->_hash . '-count-' . $group);
         }
 
-        try {
-            $index = static::$_db->get($this->_hash . '-index');
-
-            if (is_array($index)) {
-                foreach ($index as $key => $value) {
-                    if ($value->name == $cache_id) {
-                        unset($index[$key]);
-                        static::$_db->set($this->_hash . '-index', $index, 0);
-                        break;
-                    }
-                }
-            }
-        } finally {
-            $this->unlockindex();
-        }
-
-        return static::$_db->delete($cache_id);
+        return $removed;
     }
 
     /**
-     * Clean cache for a group given a mode.
+     * Clean cache for a group given a mode: a group's entries are out of reach as soon as it has a new generation, and expire
+     * by themselves, however many there are.
      *
      * group mode    : cleans all cache in the group
      * notgroup mode : cleans all cache not in the group
@@ -299,34 +285,33 @@ class MemcachedStorage extends CacheStorage
      */
     public function clean($group, $mode = null)
     {
-        if (!$this->lockindex()) {
-            return false;
+        $groups = array((string) $group);
+
+        if ($mode === 'notgroup') {
+            $groups = array_diff((array) static::$_db->get($this->_hash . '-groups'), $groups);
         }
 
-        try {
-            $index = static::$_db->get($this->_hash . '-index');
+        $cleaned = true;
 
-            if (is_array($index)) {
-                $prefix = $this->_hash . '-cache-' . $group . '-';
+        foreach ($groups as $name) {
+            $generation = bin2hex(random_bytes(6));
 
-                foreach ($index as $key => $value) {
-                    if (strpos((string) $value->name, $prefix) === 0 xor $mode != 'group') {
-                        static::$_db->delete($value->name);
-                        unset($index[$key]);
-                    }
-                }
+            if (!static::$_db->set($this->_hash . '-generation-' . $name, $generation, 0)) {
+                $cleaned = false;
 
-                static::$_db->set($this->_hash . '-index', $index, 0);
+                continue;
             }
-        } finally {
-            $this->unlockindex();
+
+            static::$generations[$name] = array($generation, $this->_now);
+            static::$_db->set($this->_hash . '-count-' . $name, 0, 0);
+            static::$_db->set($this->_hash . '-size-' . $name, 0, 0);
         }
 
-        return true;
+        return $cleaned;
     }
 
     /**
-     * Flush all existing items in storage.
+     * Flush the cache
      *
      * @return  boolean
      *
@@ -339,6 +324,9 @@ class MemcachedStorage extends CacheStorage
         }
 
         try {
+            static::$generations = array();
+            static::$knownGroups = array();
+
             return static::$_db->flush();
         } finally {
             $this->unlockindex();
@@ -421,6 +409,103 @@ class MemcachedStorage extends CacheStorage
     {
         $cache_id = $this->_getCacheId($id, $group) . '_lock';
         return static::$_db->delete($cache_id);
+    }
+
+    /**
+     * The generation of a group, part of its entries' keys. It's a random value, never a number counted up: if the server drops
+     * it, a new one leaves the old entries out of reach instead of bringing old ones back.
+     *
+     * @param   string  $group  The cache data group
+     *
+     * @return  string
+     *
+     * @since   3.18.0
+     */
+    protected function getGeneration($group)
+    {
+        $group = (string) $group;
+
+        // Read once a second at most: long-running processes must see another process' clean
+        if (isset(static::$generations[$group]) && static::$generations[$group][1] === $this->_now) {
+            return static::$generations[$group][0];
+        }
+
+        $key        = $this->_hash . '-generation-' . $group;
+        $generation = static::$_db->get($key);
+
+        if (!$generation) {
+            static::$_db->add($key, bin2hex(random_bytes(6)), 0);
+            $generation = static::$_db->get($key) ?: '0';
+        }
+
+        static::$generations[$group] = array($generation, $this->_now);
+
+        return $generation;
+    }
+
+    /**
+     * Keep a group on the list of groups, which the Clear Cache page reads. The list is written only for a new group, so the
+     * lock is rarely taken; a group missed here is added by its next store.
+     *
+     * @param   string  $group  The cache data group
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    protected function addGroup($group)
+    {
+        $group = (string) $group;
+
+        if (isset(static::$knownGroups[$group])) {
+            return;
+        }
+
+        $key    = $this->_hash . '-groups';
+        $groups = static::$_db->get($key);
+
+        if (!is_array($groups) || !in_array($group, $groups, true)) {
+            if (!$this->lockindex()) {
+                return;
+            }
+
+            try {
+                $groups = static::$_db->get($key);
+
+                if (!is_array($groups)) {
+                    $groups = array();
+
+                    // The index of entries versions before 3.18 kept
+                    static::$_db->delete($this->_hash . '-index');
+                }
+
+                if (!in_array($group, $groups, true)) {
+                    $groups[] = $group;
+                    static::$_db->set($key, $groups, 0);
+                }
+            } finally {
+                $this->unlockindex();
+            }
+        }
+
+        static::$knownGroups[$group] = true;
+    }
+
+    /**
+     * Add to a counter, without a lock.
+     *
+     * @param   string   $key    The counter's key
+     * @param   integer  $value  What to add
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    protected function addToCounter($key, $value)
+    {
+        if (static::$_db->increment($key, $value) === false && !static::$_db->add($key, $value, 0)) {
+            static::$_db->increment($key, $value);
+        }
     }
 
     /**
