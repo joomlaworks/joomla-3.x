@@ -38,7 +38,7 @@ class CacheCleanCommand extends AbstractCommand
      * @since  3.17.0
      */
     protected $help = 'Deletes every cache group of the site and the administrator, like System > Clear Cache > Delete All. '
-        . 'With the "expired" argument it only removes expired entries, like System > Clear Expired Cache. '
+        . 'With the "expired" argument it only removes expired entries, like the Clear Expired Cache button. '
         . 'A cache kept in APCu or WinCache is in the web server\'s own memory, which the command line can\'t reach: the '
         . 'command asks the web server to clean it, which it does on its next request ("expired" has nothing to do there: '
         . 'they remove expired entries themselves).';

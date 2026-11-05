@@ -29,6 +29,13 @@ class CacheController extends JControllerLegacy
      */
     public function display($cachable = false, $urlparams = false)
     {
+        // Clear Expired Cache is a button of the main page since 3.18: old links and menu items
+        if ($this->input->get('view') === 'purge') {
+            $this->setRedirect('index.php?option=com_cache');
+
+            return $this;
+        }
+
         JLoader::register('CacheHelper', JPATH_ADMINISTRATOR . '/components/com_cache/helpers/cache.php');
 
         // Get the document object.
@@ -41,15 +48,7 @@ class CacheController extends JControllerLegacy
 
         // Get and render the view.
         if ($view = $this->getView($vName, $vFormat)) {
-            switch ($vName) {
-                case 'purge':
-                    break;
-                case 'cache':
-                default:
-                    $model = $this->getModel($vName);
-                    $view->setModel($model, true);
-                    break;
-            }
+            $view->setModel($this->getModel($vName), true);
 
             $view->setLayout($lName);
 
@@ -145,6 +144,6 @@ class CacheController extends JControllerLegacy
             JFactory::getApplication()->enqueueMessage(JText::_('COM_CACHE_EXPIRED_ITEMS_HAVE_BEEN_PURGED'), 'message');
         }
 
-        $this->setRedirect('index.php?option=com_cache&view=purge');
+        $this->setRedirect('index.php?option=com_cache');
     }
 }

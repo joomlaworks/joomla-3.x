@@ -85,6 +85,11 @@ class CacheViewCache extends JViewLegacy
 
         JToolbarHelper::custom('delete', 'delete.png', 'delete_f2.png', 'JTOOLBAR_DELETE', true);
         JToolbarHelper::custom('deleteAll', 'remove.png', 'delete_f2.png', 'JTOOLBAR_DELETE_ALL', false);
+
+        if ($this->getModel()->canPurgeExpired()) {
+            JToolbar::getInstance('toolbar')->appendButton('Confirm', 'COM_CACHE_PURGE_CONFIRM', 'clock', 'COM_CACHE_PURGE_EXPIRED', 'purge', false);
+        }
+
         JToolbarHelper::divider();
 
         if (JFactory::getUser()->authorise('core.admin', 'com_cache')) {

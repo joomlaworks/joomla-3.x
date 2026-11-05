@@ -313,14 +313,28 @@ class CacheModelCache extends JModelList
     }
 
     /**
-     * Purge all cache items.
+     * Whether the cache handler leaves expired entries to clear. Memcached and Redis drop them by themselves.
      *
-     * @return  boolean  True if successful; false otherwise.
+     * @return  boolean
+     *
+     * @since   3.18.0
+     */
+    public function canPurgeExpired()
+    {
+        return !in_array((string) JFactory::getConfig()->get('cache_handler', ''), array('memcached', 'redis'), true);
+    }
+
+    /**
+     * Clear the expired entries of the site's and the administrator's cache
+     *
+     * @return  boolean  True on success
      */
     public function purge()
     {
         try {
-            JFactory::getCache('')->gc();
+            foreach ($this->getSharedHandler() ? array(0) : array(0, 1) as $clientId) {
+                $this->getCache($clientId)->gc();
+            }
         } catch (JCacheExceptionConnecting $exception) {
             return false;
         } catch (JCacheExceptionUnsupported $exception) {

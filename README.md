@@ -82,6 +82,8 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 **Improvements:**
 - Clean Cache tells you how much it removed: how many items and how much data
 - The Clear Cache page shows one list on Memcached, Redis, APCu and WinCache, which keep one cache for the site and the administrator, instead of two identical tabs
+- Clear Expired Cache is now a button on the Clear Cache page, not a page of its own
+- Memcached compression is on by default for new sites: cached pages take far less memory
 - Plain JavaScript instead of jQuery, jQuery UI, MooTools and Bootstrap's scripts throughout the core: modals, tooltips, tabs, searchable lists (Chosen rewritten, same look), search tools, subforms, drag and drop reordering (with touch), date fields (the browser's date input; Jalali for Persian), colour fields (the browser's colour picker), show-on fields, the Media Manager and Joomla Update; old names and jQuery plugin calls keep working for extensions, and MooTools stays available for those that ask for it
 - Bootstrap Icons replace IcoMoon (the `icon-*` classes keep working), core icons are SVGs in the text's colour, and the language flags are redrawn
 - Isis and Protostar are plain CSS (no more Less; Isis' stylesheets about a third of their former size), wider form fields in the administrator, and no files for old Internet Explorer anywhere
@@ -123,6 +125,7 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
   - Searches find words typed without accents, also in Greek and other alphabets, and search suggestions work on SQLite
 - **Caching** (bugs inherited from Joomla 3):
   - Clearing the cache works on large, busy sites with file or Memcached caching, Memcached no longer slows down as the cache grows, and Redis clears faster and shows true sizes
+  - Clear Expired Cache also cleans the site's cache (it only cleaned the administrator's)
   - A damaged cache entry no longer shows visitors an empty page
   - Browsers can reuse cached pages they already have, and forms on cached pages work for every visitor
   - Visits from social media or newsletter links (with tracking codes) no longer change what cached pages show others

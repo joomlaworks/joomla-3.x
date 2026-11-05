@@ -5731,6 +5731,8 @@ class JoomlaInstallerScript
             '/libraries/vendor/psr/container',
             // PHP 5.3 polyfills (3.18)
             '/libraries/vendor/joomla/compat',
+            // Clear Expired Cache is a button of the Clear Cache page (3.18)
+            '/administrator/components/com_cache/views/purge',
             // MySQL on SQLite 3.1.2 dropped its optional native (Rust) parser
             '/libraries/vendor/wordpress/mysql-on-sqlite/src/mysql/native',
             '/libraries/phputf8',
