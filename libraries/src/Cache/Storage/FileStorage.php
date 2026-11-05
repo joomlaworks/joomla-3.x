@@ -531,22 +531,17 @@ class FileStorage extends CacheStorage
         }
 
         // Remove all the files in folder if they exist; disable all filtering
-        $files = $this->_filesInFolder($path, '.', false, true, array(), array());
+        $files   = $this->_filesInFolder($path, '.', false, true, array(), array());
+        $deleted = true;
 
-        if (!empty($files) && !is_array($files)) {
-            if (@unlink($files) !== true) {
-                return false;
-            }
-        } elseif (!empty($files) && is_array($files)) {
-            foreach ($files as $file) {
-                $file = $this->_cleanPath($file);
+        foreach (is_array($files) ? $files : array() as $file) {
+            $file = $this->_cleanPath($file);
 
-                // In case of restricted permissions we zap it one way or the other as long as the owner is either the webserver or the ftp
-                if (@unlink($file) !== true) {
-                    Log::add(__METHOD__ . ' ' . \JText::sprintf('JLIB_FILESYSTEM_DELETE_FAILED', basename($file)), Log::WARNING, 'jerror');
-
-                    return false;
-                }
+            // Another request may have removed it since the folder was read: only a file still there is a failure. Carry on, so
+            // that one file doesn't leave the rest of the group behind
+            if (@unlink($file) !== true && file_exists($file)) {
+                Log::add(__METHOD__ . ' ' . \JText::sprintf('JLIB_FILESYSTEM_DELETE_FAILED', basename($file)), Log::WARNING, 'jerror');
+                $deleted = false;
             }
         }
 
@@ -556,22 +551,18 @@ class FileStorage extends CacheStorage
         foreach ($folders as $folder) {
             if (is_link($folder)) {
                 // Don't descend into linked directories, just delete the link.
-                if (@unlink($folder) !== true) {
-                    return false;
+                if (@unlink($folder) !== true && is_link($folder)) {
+                    $deleted = false;
                 }
             } elseif ($this->_deleteFolder($folder) !== true) {
-                return false;
+                $deleted = false;
             }
         }
 
-        // In case of restricted permissions we zap it one way or the other as long as the owner is either the webserver or the ftp
-        if (@rmdir($path)) {
-            return true;
-        }
+        // A folder left is no failure in itself: on a busy site a request may just have written a new entry into it
+        @rmdir($path);
 
-        Log::add(__METHOD__ . ' ' . \JText::sprintf('JLIB_FILESYSTEM_ERROR_FOLDER_DELETE', $path), Log::WARNING, 'jerror');
-
-        return false;
+        return $deleted;
     }
 
     /**

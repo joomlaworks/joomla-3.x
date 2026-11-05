@@ -22,13 +22,9 @@
 
 		// A message over the page: green or red, announced to screen readers, gone after a few seconds or when clicked
 		const toast = (text, ok) => {
-			let bubble = document.querySelector('.hkToast');
+			document.querySelectorAll('.hkToast').forEach((old) => old.remove());
 
-			if (bubble) {
-				bubble.remove();
-			}
-
-			bubble = document.createElement('div');
+			const bubble = document.createElement('div');
 			bubble.className = `hkToast ${ok ? 'hkToastSuccess' : 'hkToastFailure'}`;
 			bubble.setAttribute('role', ok ? 'status' : 'alert');
 			bubble.textContent = text;

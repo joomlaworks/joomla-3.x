@@ -117,7 +117,16 @@ abstract class ModHousekeepingHelper
                 'items' => $items);
         }
 
-        $groups  = static::cleanCache(true);
+        // Empty the folders whatever the cache's clean found, and report it after them
+        $failure = null;
+
+        try {
+            $groups = static::cleanCache(true);
+        } catch (RuntimeException $exception) {
+            $failure = $exception;
+            $groups  = 0;
+        }
+
         $deleted = 0;
         $bytes   = 0;
         $skipped = array();
@@ -141,6 +150,10 @@ abstract class ModHousekeepingHelper
             }
 
             static::emptyFolder($folder, $folder, $deleted, $bytes);
+        }
+
+        if ($failure) {
+            throw $failure;
         }
 
         $message = JText::sprintf('MOD_HOUSEKEEPING_ALL_CLEANED', $groups, $deleted, static::size($bytes));
@@ -173,24 +186,27 @@ abstract class ModHousekeepingHelper
         JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_cache/models', 'CacheModel');
         $model   = JModelLegacy::getInstance('Cache', 'CacheModel', array('ignore_request' => true));
         $groups  = 0;
-        $cleaned = true;
+        $failed  = array();
 
         foreach (array(0, 1) as $clientId) {
             $cache = $model->getCache($clientId);
 
             // Group by group: the Redis, Memcached, APCu and WinCache handlers clean nothing for an empty group name
             foreach ($cache->getAll() ?: array() as $group) {
-                $cleaned = $cache->clean($group->group) !== false && $cleaned;
+                if ($cache->clean($group->group) === false) {
+                    $failed[$group->group] = $group->group;
+                }
+
                 $groups++;
             }
 
             if ($expired) {
-                $cleaned = $cache->gc() !== false && $cleaned;
+                $cache->gc();
             }
         }
 
-        if (!$cleaned) {
-            throw new RuntimeException(JText::_('MOD_HOUSEKEEPING_CACHE_NOT_CLEANED'), 500);
+        if ($failed) {
+            throw new RuntimeException(JText::sprintf('MOD_HOUSEKEEPING_CACHE_NOT_CLEANED', implode(', ', $failed)), 500);
         }
 
         // As the Clear Cache manager does after a purge
