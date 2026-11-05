@@ -880,6 +880,33 @@ class WP_SQLite_Information_Schema_Builder {
 	}
 
 	/**
+	 * Get the bytes of a BINARY or VARBINARY default from a hex or bit literal.
+	 *
+	 * Older driver versions stored these defaults as written, so this also reads
+	 * any other value as the bytes of a text default, for their migration.
+	 *
+	 * @param  string $default_value A hex or bit literal, or a default stored by an older version.
+	 * @return string                The default value bytes.
+	 */
+	public static function get_binary_default_bytes( string $default_value ): string {
+		if ( 1 === preg_match( "/\A(?|0x([0-9a-fA-F]+)|[xX]'([0-9a-fA-F]*)')\z/", $default_value, $matches ) ) {
+			// MySQL pads odd-length 0x literals with a leading zero.
+			return hex2bin( 1 === strlen( $matches[1] ) % 2 ? '0' . $matches[1] : $matches[1] );
+		}
+
+		if ( 1 === preg_match( "/\A(?|0b([01]+)|[bB]'([01]*)')\z/", $default_value, $matches ) ) {
+			$bits  = str_pad( $matches[1], (int) ceil( strlen( $matches[1] ) / 8 ) * 8, '0', STR_PAD_LEFT );
+			$bytes = '';
+			for ( $i = 0; $i < strlen( $bits ); $i += 8 ) {
+				$bytes .= chr( bindec( substr( $bits, $i, 8 ) ) );
+			}
+			return $bytes;
+		}
+
+		return $default_value;
+	}
+
+	/**
 	 * Analyze ADD COLUMN definition and record data in the information schema.
 	 *
 	 * @param bool           $table_is_temporary Whether the table is temporary.
@@ -2316,6 +2343,10 @@ class WP_SQLite_Information_Schema_Builder {
 			return null;
 		}
 
+		if ( 'binary' === $data_type || 'varbinary' === $data_type ) {
+			return $this->get_binary_literal_default( $literal );
+		}
+
 		// DEFAULT TRUE or DEFAULT FALSE
 		if ( $literal->has_child_node( 'boolLiteral' ) ) {
 			$bool_literal = $literal->get_first_child_node( 'boolLiteral' );
@@ -2357,17 +2388,55 @@ class WP_SQLite_Information_Schema_Builder {
 			return $bit_default;
 		}
 
+		if ( 'binary' === $data_type || 'varbinary' === $data_type ) {
+			return $this->format_binary_default( $default_value );
+		}
+
 		/*
-		 * @TODO: Non-BIT literal defaults, except for temporal zero values, are
+		 * @TODO: Other literal defaults, except for temporal zero values, are
 		 * currently stored verbatim. To match MySQL, they should be normalized.
 		 * For example:
-		 *  - BINARY/VARBINARY defaults stored as 0x hex literals.
 		 *  - Hex and bit literals coerced to raw bytes for text columns and to
 		 *    their decimal value for numeric columns.
-		 *  - The charset introducer dropped from text-literal defaults.
 		 *  - Numeric defaults normalized, e.g. 1.0 to 1 or 1e3 to 1000.
 		 */
 		return $default_value;
+	}
+
+	/**
+	 * Get the default of a BINARY or VARBINARY column from a literal.
+	 *
+	 * Hex and bit literals are byte strings. Other literals give the bytes of
+	 * their text, so the text '0x41' stays distinct from the hex literal 0x41.
+	 *
+	 * @param  WP_Parser_Node $literal The "literal" AST node.
+	 * @return string                  The default value as stored in information schema.
+	 */
+	private function get_binary_literal_default( WP_Parser_Node $literal ): string {
+		$byte_string = $literal->get_first_child_token( WP_MySQL_Lexer::HEX_NUMBER )
+			?? $literal->get_first_child_token( WP_MySQL_Lexer::BIN_NUMBER );
+		if ( null !== $byte_string ) {
+			return $this->format_binary_default( self::get_binary_default_bytes( $byte_string->get_value() ) );
+		}
+
+		$bool_literal = $literal->get_first_child_node( 'boolLiteral' );
+		if ( null !== $bool_literal ) {
+			return $this->format_binary_default( $bool_literal->has_child_token( WP_MySQL_Lexer::TRUE_SYMBOL ) ? '1' : '0' );
+		}
+
+		return $this->format_binary_default( $this->get_value( $literal ) );
+	}
+
+	/**
+	 * Format the bytes of a BINARY or VARBINARY default for the information schema.
+	 *
+	 * Like in MySQL, the bytes are shown in hex, except for an empty default.
+	 *
+	 * @param  string $bytes The default value bytes.
+	 * @return string        The default value as stored in information schema.
+	 */
+	private function format_binary_default( string $bytes ): string {
+		return '' === $bytes ? '' : '0x' . strtoupper( bin2hex( $bytes ) );
 	}
 
 	/**
@@ -3364,6 +3433,9 @@ class WP_SQLite_Information_Schema_Builder {
 						}
 					}
 				}
+			} elseif ( WP_MySQL_Lexer::UNDERSCORE_CHARSET === $child->id ) {
+				// A charset introducer isn't part of the value.
+				continue;
 			} else {
 				$value = $child->get_value();
 			}
@@ -3378,8 +3450,9 @@ class WP_SQLite_Information_Schema_Builder {
 	 * This is used for storing DEFAULT and CHECK expressions in the database.
 	 *
 	 * The current implementation is using a naive approach based on directly
-	 * joining the original expression token bytes. This is safe, beacuase the
-	 * original tokens must comprise a valid expression. While functionally
+	 * joining the original expression token bytes. This is safe, because the
+	 * original tokens must comprise a valid expression, and they are joined so
+	 * that they are lexed the same way when parsed again. While functionally
 	 * equivalent, it is not strictly identical to what MySQL stores, because
 	 * MySQL normalizes and prints the expression in a specific format.
 	 *
@@ -3401,23 +3474,22 @@ class WP_SQLite_Information_Schema_Builder {
 		}
 
 		$value         = '';
-		$last_token_id = null;
-		foreach ( $node->get_descendant_tokens() as $i => $token ) {
-			// Do not insert whitespace around parentheses. This is primarily to
-			// avoid inserting whitespace before '(', which may break function
-			// calls, depending on the value of the "IGNORE_SPACE" SQL mode.
-			if (
-				0 === $i
-				|| WP_MySQL_Lexer::OPEN_PAR_SYMBOL === $token->id
+		$last_no_space = true;
+		foreach ( $node->get_descendant_tokens() as $token ) {
+			// Do not insert whitespace around parentheses and dots, and after "@@".
+			// Before '(', whitespace may break function calls, depending on the
+			// value of the "IGNORE_SPACE" SQL mode. Around '.', it changes how
+			// qualified names are lexed: "t . 1" has a number, and "order . id"
+			// has a keyword. After "@@", it leaves the variable name empty.
+			$no_space = WP_MySQL_Lexer::OPEN_PAR_SYMBOL === $token->id
 				|| WP_MySQL_Lexer::CLOSE_PAR_SYMBOL === $token->id
-				|| WP_MySQL_Lexer::OPEN_PAR_SYMBOL === $last_token_id
-				|| WP_MySQL_Lexer::CLOSE_PAR_SYMBOL === $last_token_id
-			) {
-				$value .= $token->get_bytes();
-			} else {
-				$value .= ' ' . $token->get_bytes();
+				|| WP_MySQL_Lexer::DOT_SYMBOL === $token->id;
+
+			if ( ! $no_space && ! $last_no_space ) {
+				$value .= ' ';
 			}
-			$last_token_id = $token->id;
+			$value        .= $token->get_bytes();
+			$last_no_space = $no_space || WP_MySQL_Lexer::AT_AT_SIGN_SYMBOL === $token->id;
 		}
 		return $value;
 	}

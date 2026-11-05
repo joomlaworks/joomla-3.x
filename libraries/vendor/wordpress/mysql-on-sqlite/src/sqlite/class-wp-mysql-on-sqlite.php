@@ -2301,7 +2301,10 @@ class WP_MySQL_On_SQLite extends PDO {
 							* can handle persistent and temporary tables in one query.
 							*/
 							$this->execute_sqlite_query(
-								sprintf( 'SELECT 1 FROM %s LIMIT 0', $table_name )
+								sprintf(
+									'SELECT 1 FROM %s LIMIT 0',
+									$this->quote_sqlite_identifier( $table_name )
+								)
 							);
 						} catch ( PDOException $e ) {
 							throw $this->new_table_not_found_exception(
@@ -3005,6 +3008,8 @@ class WP_MySQL_On_SQLite extends PDO {
 			}
 		}
 
+		$this->validate_foreign_key_references( $node );
+
 		// Save information to information schema tables.
 		$this->information_schema_builder->record_create_table( $node );
 
@@ -3104,6 +3109,7 @@ class WP_MySQL_On_SQLite extends PDO {
 		 * change the schema, so the recreate would be a pointless full copy.
 		 */
 		if ( count( $node->get_descendant_nodes( 'alterListItem' ) ) > 0 ) {
+			$this->validate_foreign_key_references( $node );
 			$this->information_schema_builder->record_alter_table( $node );
 			$this->recreate_table_from_information_schema( $table_is_temporary, $table_name, $column_map );
 		}
@@ -3719,19 +3725,20 @@ class WP_MySQL_On_SQLite extends PDO {
 		$is_full      = $command_type && $command_type->has_child_token( WP_MySQL_Lexer::FULL_SYMBOL );
 
 		// Fetch table information.
-		$table_tables = $this->information_schema_builder->get_table_name(
+		$table_tables        = $this->information_schema_builder->get_table_name(
 			false, // SHOW TABLES lists only non-temporary tables.
 			'tables'
 		);
-		$query        = sprintf(
+		$tables_column_alias = $this->quote_sqlite_identifier( 'Tables_in_' . $database );
+		$query               = sprintf(
 			'SELECT %s FROM %s WHERE table_schema = ? %s ORDER BY table_name',
 			$is_full
-				? sprintf( 'table_name AS `Tables_in_%s`, table_type AS `Table_type`', $database )
-				: sprintf( 'table_name AS `Tables_in_%s`', $database ),
+				? sprintf( 'table_name AS %s, table_type AS `Table_type`', $tables_column_alias )
+				: sprintf( 'table_name AS %s', $tables_column_alias ),
 			$this->quote_sqlite_identifier( $table_tables ),
 			$condition ?? ''
 		);
-		$params       = array(
+		$params              = array(
 			$this->get_saved_db_name( $database ),
 		);
 
@@ -4376,7 +4383,7 @@ class WP_MySQL_On_SQLite extends PDO {
 				}
 				return $value;
 			case 'textStringLiteral':
-				return $this->translate_string_literal( $node );
+				return $this->translate_string_literal( $node->get_first_child_token() );
 			case 'dataType':
 			case 'nchar':
 				$child = $node->get_first_child();
@@ -4641,6 +4648,9 @@ class WP_MySQL_On_SQLite extends PDO {
 					return sprintf( "x'%s'", $hex );
 				}
 				return $value;
+			case WP_MySQL_Lexer::NCHAR_TEXT:
+				// A national string, such as N'abc', is a regular string in SQLite.
+				return $this->translate_string_literal( $token );
 			case WP_MySQL_Lexer::AUTO_INCREMENT_SYMBOL:
 				return 'AUTOINCREMENT';
 			case WP_MySQL_Lexer::BINARY_SYMBOL:
@@ -4728,11 +4738,10 @@ class WP_MySQL_On_SQLite extends PDO {
 	/**
 	 * Translate a MySQL string literal to SQLite.
 	 *
-	 * @param  WP_Parser_Node $node The "textStringLiteral" AST node.
-	 * @return string               The translated value.
+	 * @param  WP_MySQL_Token $token The string literal token.
+	 * @return string                The translated value.
 	 */
-	private function translate_string_literal( WP_Parser_Node $node ): string {
-		$token = $node->get_first_child_token();
+	private function translate_string_literal( WP_MySQL_Token $token ): string {
 		$value = $token->get_value();
 
 		/*
@@ -4787,7 +4796,8 @@ class WP_MySQL_On_SQLite extends PDO {
 		$token = $node->get_first_child_token();
 		$value = $token->get_value();
 
-		if ( str_starts_with( $value, self::RESERVED_PREFIX ) ) {
+		// SQLite resolves ASCII identifiers case insensitively.
+		if ( 0 === strncasecmp( $value, self::RESERVED_PREFIX, strlen( self::RESERVED_PREFIX ) ) ) {
 			throw $this->new_driver_exception(
 				sprintf(
 					"Invalid identifier '%s', prefix '%s' is reserved",
@@ -5696,6 +5706,7 @@ class WP_MySQL_On_SQLite extends PDO {
 		 *
 		 * Descend the AST until we reach a textStringLiteral. If at any level
 		 * we don't have a single child node, bail out; it's not a bare literal.
+		 * A national string, such as N'abc', is a single NCHAR_TEXT token.
 		 */
 		$current = $node;
 		while ( 'textStringLiteral' !== $current->rule_name ) {
@@ -5705,7 +5716,10 @@ class WP_MySQL_On_SQLite extends PDO {
 			}
 			$current = $children[0];
 		}
-		if ( 'textStringLiteral' === $current->rule_name ) {
+		if (
+			'textStringLiteral' === $current->rule_name
+			|| ( 1 === count( $current->get_children() ) && $current->has_child_token( WP_MySQL_Lexer::NCHAR_TEXT ) )
+		) {
 			$alias = $current->get_first_child_token()->get_value();
 
 			// When the literal value contains a NULL byte, MySQL truncates the
@@ -7126,6 +7140,22 @@ class WP_MySQL_On_SQLite extends PDO {
 	}
 
 	/**
+	 * Validate foreign key identifiers before recording their metadata.
+	 *
+	 * REFERENCES clauses are reconstructed from metadata rather than translated.
+	 *
+	 * @param WP_Parser_Node $node The CREATE TABLE or ALTER TABLE AST node.
+	 */
+	private function validate_foreign_key_references( WP_Parser_Node $node ): void {
+		foreach ( $node->get_descendant_nodes( 'references' ) as $reference ) {
+			foreach ( $reference->get_descendant_nodes( 'pureIdentifier' ) as $identifier ) {
+				// Translation validates the identifier, including the reserved prefix.
+				$this->translate( $identifier );
+			}
+		}
+	}
+
+	/**
 	 * Emulate MySQL type casting for values to be saved to the database
 	 * using INSERT, REPLACE, or UPDATE statements.
 	 *
@@ -7515,7 +7545,11 @@ class WP_MySQL_On_SQLite extends PDO {
 					$ast            = $this->create_parser( 'SELECT ' . $column['COLUMN_DEFAULT'] )->parse();
 					$expr           = $ast->get_first_descendant_node( 'selectItem' )->get_first_child_node();
 					$default_clause = $this->translate( $expr );
-					$query         .= sprintf( ' DEFAULT (%s)', $default_clause );
+					if ( 'BLOB' === $type ) {
+						// STRICT tables reject a TEXT default in a BLOB column.
+						$default_clause = sprintf( 'CAST(%s AS BLOB)', $default_clause );
+					}
+					$query .= sprintf( ' DEFAULT (%s)', $default_clause );
 				} else {
 					$query .= ' DEFAULT ' . $this->format_sqlite_column_default( $column );
 				}
@@ -7557,7 +7591,7 @@ class WP_MySQL_On_SQLite extends PDO {
 						$sqlite_index_name      = $this->get_sqlite_index_name( $table_name, 'primary' );
 						$create_index_queries[] = sprintf(
 							'CREATE UNIQUE INDEX %s ON %s (%s)',
-							self::RESERVED_PREFIX . $sqlite_index_name,
+							$this->quote_sqlite_identifier( self::RESERVED_PREFIX . $sqlite_index_name ),
 							$this->quote_sqlite_identifier( $table_name ),
 							implode( ', ', $column_list )
 						);
@@ -8007,6 +8041,12 @@ class WP_MySQL_On_SQLite extends PDO {
 			return (string) bindec( substr( $column['COLUMN_DEFAULT'], 2, -1 ) );
 		}
 
+		// A BLOB column in a STRICT table only accepts a BLOB default.
+		$bytes = $this->get_binary_column_default_bytes( $column );
+		if ( null !== $bytes ) {
+			return sprintf( "x'%s'", bin2hex( $bytes ) );
+		}
+
 		return $this->quote_sqlite_value( $column['COLUMN_DEFAULT'] );
 	}
 
@@ -8022,7 +8062,36 @@ class WP_MySQL_On_SQLite extends PDO {
 			return $column['COLUMN_DEFAULT'];
 		}
 
+		// Like MySQL, keep the hex literal for bytes that aren't valid utf8mb3,
+		// i.e., UTF-8 with no characters above U+FFFF.
+		$bytes = $this->get_binary_column_default_bytes( $column );
+		if ( null !== $bytes ) {
+			return 1 === preg_match( '/\A[\x{0}-\x{FFFF}]*\z/u', $bytes )
+				? $this->quote_mysql_utf8_string_literal( $bytes )
+				: $column['COLUMN_DEFAULT'];
+		}
+
 		return $this->quote_mysql_utf8_string_literal( $column['COLUMN_DEFAULT'] );
+	}
+
+	/**
+	 * Get the bytes of a BINARY or VARBINARY column default.
+	 *
+	 * These defaults are stored as "0x..." hex literals, or as an empty string.
+	 * The forms that older driver versions stored are migrated to this format.
+	 *
+	 * @param  array       $column The information schema column data.
+	 * @return string|null         The default value bytes, or null when the column
+	 *                             is not binary or its default is not migrated.
+	 */
+	private function get_binary_column_default_bytes( array $column ): ?string {
+		if (
+			( 'binary' !== $column['DATA_TYPE'] && 'varbinary' !== $column['DATA_TYPE'] )
+			|| 1 !== preg_match( '/\A(?:0x((?:[0-9A-F]{2})+))?\z/', $column['COLUMN_DEFAULT'], $matches )
+		) {
+			return null;
+		}
+		return hex2bin( $matches[1] ?? '' );
 	}
 
 	/**
