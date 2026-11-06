@@ -38,7 +38,7 @@ class CoreUpdateCheckCommand extends AbstractCommand
      * @since  3.17.0
      */
     protected $help = 'Fetches the update feed of the configured update channel and reports whether a newer Joomla version is available. '
-        . 'It replaces the cached update information (as the Joomla Update screen does); with --dry-run it reports the result of the last check instead.';
+        . 'It replaces the cached update information (as the System Update screen does); with --dry-run it reports the result of the last check instead.';
 
     /**
      * It refreshes the cached update information (and the update site's address), so it isn't read-only
@@ -81,7 +81,7 @@ class CoreUpdateCheckCommand extends AbstractCommand
         $channel = $params->get('updatesource', 'default');
         $current = (new Version())->getShortVersion();
 
-        $io->title('Joomla! Update Status');
+        $io->title('System Update Status');
 
         if ($channel === 'custom') {
             $io->text('You are on a custom update channel with the URL ' . $params->get('customurl') . '.');

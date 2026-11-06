@@ -49,6 +49,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - The editors grow with your text, as in WordPress' Classic Editor: TinyMCE (with its toolbar staying at the top of the window), TinyMCE (legacy) and the plain text box no longer scroll inside a fixed box. Markdown and Blocks already did. Each editor has a Grow with Content option to turn it off
 
 **Improvements:**
+- Joomla! Update is now **System Update**, in the System menu above System Information (it's no longer listed under Components), with the new name everywhere in the administrator, its update notifications included
 - A contact's Miscellaneous Information is edited in the first tab, below the other details, instead of a tab of its own
 - Prothero and Isis have a Page Transitions option, on by default, to turn off the fade between administrator pages
 - The installer and Joomla Update no longer advise turning PHP's output buffering off: it's on at most hosts and does Joomla no harm. System Information shows how it's set (off, on in pieces of a given size, or on without a limit)
@@ -354,8 +355,8 @@ For detailed changelog, please visit: https://github.com/joomlaworks/joomla-3.x/
 
 ## HOW TO UPGRADE FOR EXISTING JOOMLA 3.X SITES
 
-### Using the Joomla Update component in the backend (Web UI method)
-In the Joomla backend, adjust the options for the Joomla Update component (either from the component's "Options" or through Joomla's "Global Configuration") and use the following update URL in the "Custom URL" field, along with these settings:
+### Using System Update in the backend (Web UI method)
+In the Joomla backend, adjust the options of System Update (System → System Update; on stock Joomla 3 and releases before 3.19 it is the Joomla! Update component under Components) (either from the component's "Options" or through Joomla's "Global Configuration") and use the following update URL in the "Custom URL" field, along with these settings:
 
 - Update Channel: Custom URL
 - Minimum Stability: Stable
@@ -399,7 +400,7 @@ Installing sites like this needs PHP 7.4 or newer with the `pdo_sqlite` extensio
 ## PHP COMPATIBILITY
 This distribution targets at least PHP 7.4. This is the baseline version we use for broader compatibility with hosts and the Joomla 3.x ecosystem (e.g. other extensions and templates that are actively maintained). Using at least PHP 7.4 we can also guarantee compatibility with all supported databases (as of v3.17): MySQL/MariaDB, Postgres & SQLite.
 
-Sites on PHP 7.1 through 7.3 will still be offered updates to this distribution through the Joomla Update component - 7.4 is our recommended baseline, not a hard cutoff - so these sites can keep receiving security patches even before upgrading their PHP version. PHP 7.0 and below is not supported; the update won't be offered and installing manually isn't recommended.
+Sites on PHP 7.1 through 7.3 will still be offered updates to this distribution through System Update (Joomla! Update before 3.19) - 7.4 is our recommended baseline, not a hard cutoff - so these sites can keep receiving security patches even before upgrading their PHP version. PHP 7.0 and below is not supported; the update won't be offered and installing manually isn't recommended.
 
 **For end users:**
 If your site's server/webspace is configured with PHP 7.0 to 7.3, upgrading to PHP 7.4 is typically a safe switch. The same applies to sites on PHP 5.6, just make sure your extensions and templates are not holding you back.
@@ -447,7 +448,7 @@ sql_mode = ""
 Joomla 3 has always had PostgreSQL drivers, but they fell behind: the main one stopped working on PHP 8.1, and parts of Joomla broke on recent PostgreSQL versions. Since 3.17, PostgreSQL is fully supported again and tested against PostgreSQL 18, with both drivers: "PostgreSQL" (PHP's `pgsql` extension) and "PostgreSQL (PDO)" (`pdo_pgsql`).
 
 - **Versions:** PostgreSQL 9.5 is the minimum (9.0 until 3.17), but use a recent version: 16 or newer, preferably 18.
-- **Installing and updating:** choose either PostgreSQL driver in the installer. Joomla Update, Extensions: Database and the "Restore uninstalled core extensions" option work as on MySQL.
+- **Installing and updating:** choose either PostgreSQL driver in the installer. System Update, Extensions: Database and the "Restore uninstalled core extensions" option work as on MySQL.
 - **Command line:** `php cli/joomla.php database:export` and `database:import` work on PostgreSQL, and `database:convert` moves a site between MySQL/MariaDB, PostgreSQL and SQLite, in any direction (e.g. `php cli/joomla.php database:convert --to=postgresql --user=... --password=... --database=...`). Converting translates column types and Joomla's "no date" values, which differ between MySQL and PostgreSQL, checks that every table has all its rows, and fixes the new database's structure as Extensions: Database would. The site is offline while its database is copied, and the old database is left as it is. Tables of MySQL-only extensions get the defaults MySQL would apply, so their code keeps working on PostgreSQL.
 - **Core extensions:** we've gone the extra mile and added the PostgreSQL install scripts that Banners, Contacts and News Feeds never had, so these can be uninstalled and installed again on PostgreSQL too.
 - **Usernames:** checks that a username or email address isn't taken ignore case, as on MySQL, but not accents: `Àdmin` and `admin` are two users on PostgreSQL (and SQL Server), one on MySQL/MariaDB.

@@ -46,11 +46,11 @@ class CoreUpdateCommand extends AbstractCommand
      * @var    string
      * @since  3.17.0
      */
-    protected $help = 'Downloads the latest version from the update channel of Joomla Update, verifies its checksum when the update feed '
+    protected $help = 'Downloads the latest version from the update channel of System Update, verifies its checksum when the update feed '
         . 'gives one, copies its files over the site and finalises the update (database changes, removal of obsolete files) in a new PHP '
-        . 'process, so the new code does it, like the separate requests of Joomla Update. With --reinstall, the files of the current '
+        . 'process, so the new code does it, like the separate requests of System Update. With --reinstall, the files of the current '
         . 'version are installed again when there is no newer one. With --restore-core, core extensions which were uninstalled are '
-        . 'installed again, like the "Restore uninstalled core extensions" option of Joomla Update. The progress is logged to '
+        . 'installed again, like the "Restore uninstalled core extensions" option of System Update. The progress is logged to '
         . 'joomla_update.php in the log folder. With --file, a local Joomla package (.zip, .tar, .tar.gz/.tgz or .tar.bz2, also '
         . 'one with all files in a single top folder, like a GitHub download) is installed instead of the update channel\'s, e.g. to test '
         . 'a newer or customised build; its version must not be older than the installed one. Zip files need the least memory. If PHP-FPM runs with opcache.validate_timestamps=0, reload it afterwards, '

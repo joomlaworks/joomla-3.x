@@ -37,7 +37,7 @@ class CoreUpdateChannelCommand extends AbstractCommand
      * @var    string
      * @since  3.17.0
      */
-    protected $help = 'Without an argument, shows the update channel of Joomla Update. With one, sets it: default, next, testing or custom '
+    protected $help = 'Without an argument, shows the update channel of System Update. With one, sets it: default, next, testing or custom '
         . '(with --url, the URL of the custom update feed).';
 
     /**

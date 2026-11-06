@@ -8,6 +8,7 @@
     <menuitem title="MOD_MENU_GLOBAL_CHECKIN" type="component" element="com_checkin" link="index.php?option=com_checkin" class="class:checkin" />
     <menuitem title="MOD_MENU_CLEAR_CACHE" type="component" element="com_cache" link="index.php?option=com_cache" class="class:clear" />
     <menuitem type="separator" />
+    <menuitem title="COM_JOOMLAUPDATE" type="component" element="com_joomlaupdate" link="index.php?option=com_joomlaupdate" class="class:joomlaupdate" />
     <menuitem title="MOD_MENU_SYSTEM_INFORMATION" type="component" element="com_admin" link="index.php?option=com_admin&amp;view=sysinfo" class="class:info" />
     </menuitem>
     <menuitem title="MOD_MENU_COM_USERS_USERS" type="heading">
@@ -78,7 +79,6 @@
     </params>
     </menuitem>
     <menuitem title="MOD_MENU_EXTENSIONS_EXTENSION_MANAGER" type="heading">
-    <menuitem title="COM_JOOMLAUPDATE" type="component" element="com_joomlaupdate" link="index.php?option=com_joomlaupdate" class="class:component" />
     <menuitem title="COM_POSTINSTALL" type="component" element="com_postinstall" link="index.php?option=com_postinstall" class="class:component" />
     <menuitem type="separator" />
     <menuitem title="MOD_MENU_SYSTEM" type="component" element="com_installer" link="index.php?option=com_installer&amp;view=database" class="class:install">
