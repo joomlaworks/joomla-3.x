@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version 3.19 - unreleased [pending]
+
+### Bug fixes
+#### Administrator
+- **Rebuild puts back a missing menu root.** Without the tree's root (`#__menu` ID 1), no menu item could be saved ("MenusTableMenu::_getNode(1, ) failed", as the form's default parent is 1) and Rebuild failed ("Failed rebuilding Menu Items list.", `getRootId()` found nothing), in stock Joomla 3 too. `MenusModelItem::rebuild()` (both Rebuild buttons) first calls `restoreRootItem()`: only when no row has ID 1, `parent_id` 0 or alias `root`, it inserts the stock root (the driver's null date; `insert($table, true)` for SQL Server's identity column), shows a warning and rebuilds the tree from it. A root under another ID (old migrations) is left alone, as a second root would break the tree.
+
 ## Version 3.18 - released November 5th, 2026
 
 ### New features

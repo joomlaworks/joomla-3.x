@@ -1138,7 +1138,7 @@ class MenusModelItem extends JModelAdmin
      *
      * @return  void
      *
-     * @since   3.18.0
+     * @since   3.19.0
      */
     protected function restoreRootItem()
     {

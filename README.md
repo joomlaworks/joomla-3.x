@@ -15,6 +15,7 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 
 ## CONTENTS
 - [Changelog](#changelog)
+  - [Version 3.19 - unreleased [pending]](#version-319---unreleased-pending)
   - [Version 3.18 - released November 5th, 2026](#version-318---released-november-5th-2026)
   - [Version 3.17 - released October 10th, 2026](#version-317---released-october-10th-2026)
   - [Version 3.16 - released October 3rd, 2026](#version-316---released-october-3rd-2026)
@@ -41,6 +42,15 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 ## CHANGELOG
 
 A short overview of each release. Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
+
+## Version 3.19 - unreleased [pending]
+
+**Bug fixes:**
+- **Administrator:**
+  - Menus whose top level item went missing from the database (no new menu item could be saved, and Rebuild failed) are repaired by clicking Rebuild
+
+**Joomla 3 bugs fixed:**
+- **Administrator:** Rebuild repairs menus that lost their top level item, which stopped new menu items from being saved
 
 ## Version 3.18 - released November 5th, 2026
 Summary of changes:
