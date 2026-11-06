@@ -12,6 +12,10 @@
         <option value="wrap">PLG_TINYMCE_LATEST_FIELD_TOOLBAR_MODE_WRAP</option>
     </field>
     <field name="heading_area" type="note" class="tinymceHeading" label="PLG_TINYMCE_LATEST_FIELD_HEADING_AREA" description="PLG_TINYMCE_LATEST_FIELD_HEADING_AREA_DESC" />
+    <field name="autoresize" type="radio" label="PLG_TINYMCE_LATEST_FIELD_AUTORESIZE_LABEL" description="PLG_TINYMCE_LATEST_FIELD_AUTORESIZE_DESC" class="btn-group btn-group-yesno" default="1">
+        <option value="1">JON</option>
+        <option value="0">JOFF</option>
+    </field>
     <field name="resizing" type="radio" label="PLG_TINYMCE_LATEST_FIELD_RESIZING_LABEL" description="PLG_TINYMCE_LATEST_FIELD_RESIZING_DESC" class="btn-group btn-group-yesno" default="1">
         <option value="1">JON</option>
         <option value="0">JOFF</option>

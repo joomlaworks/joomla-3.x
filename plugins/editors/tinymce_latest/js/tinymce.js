@@ -340,6 +340,19 @@
 			options.base_url = joomla.baseURL;
 			options.suffix = '.min';
 
+			// Growing with the text, from the Height option (any CSS length; autoresize needs pixels) up; the toolbar stays pinned
+			if (joomla.autoresize) {
+				const probe = document.createElement('div');
+
+				probe.style.cssText = 'position:absolute;visibility:hidden;height:' + (options.height || '500px');
+				document.body.appendChild(probe);
+				options.min_height = probe.offsetHeight || 500;
+				probe.remove();
+				options.plugins = ((options.plugins || '') + ' autoresize').trim();
+				options.autoresize_bottom_margin = 20;
+				delete options.height;
+			}
+
 			const sources = new Map();
 
 			if (joomla.upload) {

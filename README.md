@@ -45,6 +45,9 @@ A short overview of each release. Every change is described in detail in [CHANGE
 
 ## Version 3.19 - unreleased [pending]
 
+**New features:**
+- The editors grow with your text, as in WordPress' Classic Editor: TinyMCE (with its toolbar staying at the top of the window), TinyMCE (legacy) and the plain text box no longer scroll inside a fixed box. Markdown and Blocks already did. Each editor has a Grow with Content option to turn it off
+
 **Improvements:**
 - Prothero and Isis have a Page Transitions option, on by default, to turn off the fade between administrator pages
 - The installer and Joomla Update no longer advise turning PHP's output buffering off: it's on at most hosts and does Joomla no harm. System Information shows how it's set (off, on in pieces of a given size, or on without a limit)

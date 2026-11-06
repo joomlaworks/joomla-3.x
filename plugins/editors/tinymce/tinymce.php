@@ -516,6 +516,13 @@ class PlgEditorTinymce extends JPlugin
             }
         }
 
+        // Growing with the text, from the HTML Height up (in pixels; other lengths leave the plugin's own minimum)
+        $autoresize = (bool) $levelParams->get('autoresize', 1);
+
+        if ($autoresize) {
+            $plugins[] = 'autoresize';
+        }
+
         // User custom plugins and buttons
         $custom_plugin = trim((string) $levelParams->get('custom_plugin', ''));
         $custom_button = trim((string) $levelParams->get('custom_button', ''));
@@ -607,6 +614,8 @@ class PlgEditorTinymce extends JPlugin
             'height'             => $html_height,
             'width'              => $html_width,
             'resize'             => $resizing,
+            'autoresize_min_height'    => $autoresize && preg_match('/^\s*(\d+)\s*(px)?\s*$/', (string) $html_height, $px) ? (int) $px[1] : null,
+            'autoresize_bottom_margin' => $autoresize ? 20 : null,
             'templates'          => $templates,
             'image_advtab'       => (bool) $levelParams->get('image_advtab', false),
             'external_plugins'   => empty($externalPlugins) ? null : $externalPlugins,

@@ -345,6 +345,9 @@ class PlgEditorTinymce_latest extends JPlugin
 
         $joomla['baseURL'] = JUri::root(true) . '/' . self::MEDIA;
 
+        // The editor grows with its text, from the Height option up (TinyMCE's autoresize plugin, started by js/tinymce.js)
+        $joomla['autoresize'] = (bool) $levelParams->get('autoresize', 1);
+
         // Iframes keep working from TinyMCE's trusted domains, this site and the set's extra domains; others are sandboxed
         $trusted = array(
             'youtube.com', 'youtu.be', 'vimeo.com', 'player.vimeo.com', 'dailymotion.com', 'embed.music.apple.com', 'open.spotify.com',

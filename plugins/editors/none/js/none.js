@@ -39,6 +39,23 @@
 		Joomla.editors.instances[editor].replaceSelection(text);
 	};
 
+	// Text boxes growing with their text where the browser can't by CSS (field-sizing: content)
+	function grow(textarea) {
+		var style = window.getComputedStyle(textarea);
+		var borders = parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
+
+		textarea.style.height = 'auto';
+		textarea.style.height = (textarea.scrollHeight + (style.boxSizing === 'border-box' ? borders : 0)) + 'px';
+	}
+
+	if (!(window.CSS && CSS.supports && CSS.supports('field-sizing', 'content'))) {
+		document.addEventListener('input', function(event) {
+			if (event.target.matches && event.target.matches('.js-editor-none textarea[data-grow]')) {
+				grow(event.target);
+			}
+		});
+	}
+
 	document.addEventListener('DOMContentLoaded', function() {
 		var editors = document.querySelectorAll('.js-editor-none');
 
@@ -50,9 +67,13 @@
 				'getValue': function () { return this.element.value; },
 				'setValue': function (text) { return this.element.value = text; },
 				'getSelection': function () { return getSelection(this.element); },
-				'replaceSelection': function (text) { return insertAtCursor(this.element, text); },
+				'replaceSelection': function (text) { var result = insertAtCursor(this.element, text); if (this.element.hasAttribute('data-grow') && !(window.CSS && CSS.supports && CSS.supports('field-sizing', 'content'))) { grow(this.element); } return result; },
 				'onSave': function() { return ''; }
 			};
+
+			if (editors[i].childNodes[0].hasAttribute('data-grow') && !(window.CSS && CSS.supports && CSS.supports('field-sizing', 'content'))) {
+				grow(editors[i].childNodes[0]);
+			}
 		}
 	});
 }(Joomla, window, document));
