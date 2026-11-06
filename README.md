@@ -49,6 +49,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - The editors grow with your text, as in WordPress' Classic Editor: TinyMCE (with its toolbar staying at the top of the window), TinyMCE (legacy) and the plain text box no longer scroll inside a fixed box. Markdown and Blocks already did. Each editor has a Grow with Content option to turn it off
 
 **Improvements:**
+- A contact's Miscellaneous Information is edited in the first tab, below the other details, instead of a tab of its own
 - Prothero and Isis have a Page Transitions option, on by default, to turn off the fade between administrator pages
 - The installer and Joomla Update no longer advise turning PHP's output buffering off: it's on at most hosts and does Joomla no harm. System Information shows how it's set (off, on in pieces of a given size, or on without a limit)
 - Templates: Options accept WebP, AVIF, SVG and ICO images and WOFF2 fonts, and uploads of up to 8 MB (updated sites get these once; BMP, an outdated format, comes off the list)

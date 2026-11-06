@@ -61,18 +61,13 @@ $tmpl    = $isModal || $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=c
 						<?php echo $this->form->renderField('sortname3'); ?>
 					</div>
 				</div>
+				<div class="form-vertical">
+					<?php echo $this->form->renderField('misc'); ?>
+				</div>
 			</div>
 			<div class="span3">
 				<?php echo JLayoutHelper::render('joomla.edit.global', $this); ?>
 			</div>
-		</div>
-		<?php echo JHtml::_('bootstrap.endTab'); ?>
-
-		<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'misc', JText::_('JGLOBAL_FIELDSET_MISCELLANEOUS')); ?>
-		<div class="row-fluid form-horizontal-desktop">
-				<div class="form-vertical">
-					<?php echo $this->form->renderField('misc'); ?>
-				</div>
 		</div>
 		<?php echo JHtml::_('bootstrap.endTab'); ?>
 
