@@ -55,6 +55,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
   - The list for picking a contact (for a menu item or in an editor) no longer shows each contact's name twice
   - The Joomla logo at the top right stays in the middle of the header when an extension makes its title taller, and the icons of large buttons (such as Reset Messages) and of Log out in the status bar line up with their text (Prothero and Isis)
 - **Installing and uninstalling:**
+  - Extensions with long descriptions (such as AllVideos) no longer show a tooltip running off the screen in Extensions: Manage, Discover, Update and Update Sites: it shows the first few lines as plain text
   - Uninstalling a package removes all the extensions it installed, also those its own list names wrongly (the Web Links package left its editor button plugin behind)
   - Packages whose install script checks the minimum PHP version (such as Web Links) can be installed from the command line
 - **Templates:**
@@ -65,7 +66,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 **Joomla 3 bugs fixed:**
 - **Administrator:** Rebuild repairs menus that lost their top level item, which stopped new menu items from being saved
 - **Administrator:** the list for picking a contact showed each contact's name twice
-- **Installing and uninstalling:** a package whose list of extensions misnames one leaves it behind when uninstalled
+- **Installing and uninstalling:** a package whose list of extensions misnames one leaves it behind when uninstalled; long extension descriptions made the installer's tooltips run off the screen
 - **Templates:** template images other than GIF, JPEG and PNG (BMP was even in the default list) opened on an error page instead of the image
 
 ## Version 3.18 - released November 5th, 2026

@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\String\StringHelper;
+
 /**
  * Installer helper.
  *
@@ -72,6 +74,36 @@ class InstallerHelper
             'index.php?option=com_installer&view=updatesites',
             $vName == 'updatesites'
         );
+    }
+
+    /**
+     * An extension's description for a list's tooltip: plain text, at most $length characters, cut at a word. Descriptions
+     * are HTML (headings, logos, lists): whole, a tooltip ran past the screen, and it closes before it can be scrolled. The
+     * full description stays on the extension's own page.
+     *
+     * @param   string   $description  The translated description
+     * @param   integer  $length       Its greatest length
+     *
+     * @return  string  Plain text (not escaped)
+     *
+     * @since   3.19.0
+     */
+    public static function shortDescription($description, $length = 300)
+    {
+        // Tags go before entities are decoded, or a "&lt;" in the text would start a tag and lose what follows
+        $text = preg_replace('#<(script|style)\b[^>]*>.*?</\1>#is', ' ', (string) $description);
+        $text = strip_tags(str_replace('>', '> ', (string) $text));
+        $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+        $text = trim(preg_replace('#[\s\x{00A0}]+#u', ' ', $text));
+
+        if (StringHelper::strlen($text) <= $length) {
+            return $text;
+        }
+
+        $cut   = StringHelper::substr($text, 0, $length);
+        $space = StringHelper::strrpos($cut, ' ');
+
+        return rtrim($space > $length / 2 ? StringHelper::substr($cut, 0, $space) : $cut, " .,;:") . '…';
     }
 
     /**

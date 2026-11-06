@@ -86,7 +86,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						</td>
 						<td>
 							<label for="cb<?php echo $i;?>">
-								<span class="bold hasTooltip" title="<?php echo JHtml::_('tooltipText', $item->name, $item->description, 0); ?>"><?php echo $item->name; ?></span>
+								<span class="bold hasTooltip" title="<?php echo JHtml::_('tooltipText', $this->escape($item->name), $this->escape(InstallerHelper::shortDescription($item->description)), 0); ?>"><?php echo $item->name; ?></span>
 							</label>
 						</td>
 						<td>
