@@ -239,7 +239,7 @@ class AdminModelSysInfo extends JModelLegacy
             'file_uploads'       => ini_get('file_uploads') == '1',
             'magic_quotes_gpc'   => ini_get('magic_quotes_gpc') == '1',
             'register_globals'   => ini_get('register_globals') == '1',
-            'output_buffering'   => (int) ini_get('output_buffering') !== 0,
+            'output_buffering'   => (int) ini_get('output_buffering'),
             'open_basedir'       => ini_get('open_basedir'),
             'session.save_path'  => ini_get('session.save_path'),
             'session.auto_start' => ini_get('session.auto_start'),

@@ -1322,12 +1322,6 @@ ENDDATA;
             $settings[] = $setting;
         }
 
-        // Check for output buffering.
-        $setting = new stdClass();
-        $setting->label = JText::_('INSTL_OUTPUT_BUFFERING');
-        $setting->state = (int) ini_get('output_buffering') !== 0;
-        $setting->recommended = false;
-        $settings[] = $setting;
 
         // Check for session auto-start.
         $setting = new stdClass();

@@ -46,6 +46,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 ## Version 3.19 - unreleased [pending]
 
 **Improvements:**
+- The installer and Joomla Update no longer advise turning PHP's output buffering off: it's on at most hosts and does Joomla no harm. System Information shows how it's set (off, on in pieces of a given size, or on without a limit)
 - Templates: Options accept WebP, AVIF, SVG and ICO images and WOFF2 fonts, and uploads of up to 8 MB (updated sites get these once; BMP, an outdated format, comes off the list)
 
 **Bug fixes:**

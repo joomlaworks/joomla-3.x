@@ -90,7 +90,7 @@ defined('_JEXEC') or die;
 					<?php echo JText::_('COM_ADMIN_OUTPUT_BUFFERING'); ?>
 				</td>
 				<td>
-					<?php echo JHtml::_('phpsetting.boolean', $this->php_settings['output_buffering']); ?>
+					<?php echo $this->php_settings['output_buffering'] > 1 ? JText::sprintf('COM_ADMIN_OUTPUT_BUFFERING_SIZE', (int) $this->php_settings['output_buffering']) : JText::_($this->php_settings['output_buffering'] ? 'COM_ADMIN_OUTPUT_BUFFERING_UNLIMITED' : 'JOFF'); ?>
 				</td>
 			</tr>
 			<tr>
