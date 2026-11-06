@@ -19,7 +19,9 @@ $page = require __DIR__ . '/includes/helper.php';
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<?php if ($page->viewTransitions) : ?>
 	<style>@view-transition {navigation:auto;}</style>
+	<?php endif; ?>
 	<title><?php echo $this->title; ?> <?php echo htmlspecialchars((string) $this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
 	<?php if ($page->app->get('debug_lang', '0') == '1' || $page->app->get('debug', '0') == '1') : ?>
 	<!-- Load additional CSS styles for debug mode-->

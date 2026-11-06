@@ -34,16 +34,42 @@ if (!class_exists('IsisHelper', false)) {
 
             switch ($file) {
                 case 'component':
-                    return static::component($document);
+                    $page = static::component($document);
+                    break;
 
                 case 'login':
-                    return static::login($document);
+                    $page = static::login($document);
+                    break;
 
                 case 'error':
-                    return static::error($document);
+                    $page = static::error($document);
+                    break;
 
                 default:
-                    return static::index($document);
+                    $page = static::index($document);
+            }
+
+            $page->viewTransitions = static::viewTransitions(isset($page->params) ? $page->params : (isset($document->params) ? $document->params : null));
+
+            return $page;
+        }
+
+        /**
+         * Whether pages fade into each other (the Page Transitions option, on by default; also when the options can't be read,
+         * as on the error page after a database failure)
+         *
+         * @param   Joomla\Registry\Registry|null  $params  The template's options
+         *
+         * @return  boolean
+         *
+         * @since   3.19.0
+         */
+        public static function viewTransitions($params)
+        {
+            try {
+                return !$params || (string) $params->get('viewTransitions', '1') !== '0';
+            } catch (Throwable $e) {
+                return true;
             }
         }
 

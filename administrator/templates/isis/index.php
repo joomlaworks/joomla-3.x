@@ -18,7 +18,9 @@ $page = require __DIR__ . '/includes/helper.php';
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<?php if ($page->viewTransitions) : ?>
 	<style>@view-transition {navigation:auto;}</style>
+	<?php endif; ?>
 	<jdoc:include type="header" />
 </head>
 <body class="admin <?php echo $page->option . ' view-' . $page->view . ' layout-' . $page->layout . ' task-' . $page->task . ' itemid-' . $page->itemid . $page->optionColors['classes']; ?>" data-basepath="<?php echo JURI::root(true); ?>">

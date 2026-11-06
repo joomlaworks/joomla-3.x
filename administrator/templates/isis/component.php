@@ -17,7 +17,9 @@ $page = require __DIR__ . '/includes/helper.php';
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
+	<?php if ($page->viewTransitions) : ?>
 	<style>@view-transition {navigation:auto;}</style>
+	<?php endif; ?>
 	<jdoc:include type="header" />
 </head>
 <body class="contentpane component<?php echo $page->optionColors['classes']; ?>">

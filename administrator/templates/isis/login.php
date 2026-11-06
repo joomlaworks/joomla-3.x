@@ -19,7 +19,9 @@ $page = require __DIR__ . '/includes/helper.php';
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta name="color-scheme" content="light dark" />
+	<?php if ($page->viewTransitions) : ?>
 	<style>@view-transition {navigation:auto;}</style>
+	<?php endif; ?>
 	<jdoc:include type="header" />
 </head>
 <body class="loginPage <?php echo IsisHelper::escape($page->option . ' view-' . $page->view); ?>">
