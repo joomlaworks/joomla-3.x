@@ -5,6 +5,8 @@
 ### Bug fixes
 #### Administrator
 - **Rebuild puts back a missing menu root.** Without the tree's root (`#__menu` ID 1), no menu item could be saved ("MenusTableMenu::_getNode(1, ) failed", as the form's default parent is 1) and Rebuild failed ("Failed rebuilding Menu Items list.", `getRootId()` found nothing), in stock Joomla 3 too. `MenusModelItem::rebuild()` (both Rebuild buttons) first calls `restoreRootItem()`: only when no row has ID 1, `parent_id` 0 or alias `root`, it inserts the stock root (the driver's null date; `insert($table, true)` for SQL Server's identity column), shows a warning and rebuilds the tree from it. A root under another ID (old migrations) is left alone, as a second root would break the tree.
+#### Editors
+- **TinyMCE 8 came up broken in a tab that wasn't open at load** (a contact's Miscellaneous Information, or any editor field on a later tab): the editor has no size there, so TinyMCE put every toolbar button behind "more", and its sticky toolbar took the 0-pixel box for a page scrolled past it and docked the menu bar at the window's left edge, 0 pixels wide (one menu per line). A window resize undocked it, but the toolbar's overflow is worked out only once, at start-up. `js/tinymce.js` now starts an editor whose field has no width (`.js-editor-tinymce-latest` `offsetWidth` 0) only when a `ResizeObserver` sees it shown; until then the textarea holds the content, which the editor API (`Joomla.editors.instances`) already read and wrote before start-up, so forms saved without opening the tab keep it. A second `setupEditor()` for the same field drops a waiting observer. TinyMCE 4 (legacy) wasn't affected.
 
 ## Version 3.18 - released November 5th, 2026
 

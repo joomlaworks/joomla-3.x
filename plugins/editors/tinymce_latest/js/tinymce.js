@@ -301,6 +301,9 @@
 		editor.on('init', ready);
 	};
 
+	// Editors waiting to be shown before they start, by textarea ID
+	const waiting = new Map();
+
 	Joomla.JoomlaTinyMCELatest = {
 		/**
 		 * Start the editors in a part of the page
@@ -363,6 +366,7 @@
 
 					editor.dom.addStyle(PDF_CSS);
 					drawPdfBlocks(editor);
+
 				});
 
 				editor.on('BeforeSetContent', (event) => {
@@ -417,7 +421,29 @@
 				options.toolbar_sticky_offset = offset;
 			}
 
-			tinymce.init(options);
+			// An editor started where it isn't shown (a tab not open yet) gets no size: its toolbar would put every button behind
+			// "more" and its sticky toolbar would dock at the window's edge, 0 pixels wide. It starts once its field is shown.
+			const box = element.closest('.js-editor-tinymce-latest') || element;
+
+			if (waiting.has(element.id)) {
+				waiting.get(element.id).disconnect();
+				waiting.delete(element.id);
+			}
+
+			if (box.offsetWidth === 0 && window.ResizeObserver) {
+				const observer = new ResizeObserver(() => {
+					if (box.offsetWidth > 0) {
+						observer.disconnect();
+						waiting.delete(element.id);
+						tinymce.init(options);
+					}
+				});
+
+				waiting.set(element.id, observer);
+				observer.observe(box);
+			} else {
+				tinymce.init(options);
+			}
 
 			// Until TinyMCE has started, the textarea holds the content
 			Joomla.editors.instances[element.id] = {

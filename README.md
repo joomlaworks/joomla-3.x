@@ -48,6 +48,8 @@ A short overview of each release. Every change is described in detail in [CHANGE
 **Bug fixes:**
 - **Administrator:**
   - Menus whose top level item went missing from the database (no new menu item could be saved, and Rebuild failed) are repaired by clicking Rebuild
+- **Editors:**
+  - TinyMCE in a tab that isn't open when the page loads (such as a contact's Miscellaneous Information) no longer comes up broken, with its menu stacked at the window's edge and its buttons missing
 
 **Joomla 3 bugs fixed:**
 - **Administrator:** Rebuild repairs menus that lost their top level item, which stopped new menu items from being saved
