@@ -1112,7 +1112,7 @@ button.close {padding:3;cursor:pointer;background:transparent;border:0;appearanc
 .btn[disabled] {cursor:default;opacity:0.5;box-shadow:none;}
 .btn-large {padding:9px 22px;font-size:var(--fs-lg);border-radius:var(--radius);}
 .btn-large [class^="icon-"],
-.btn-large [class*=" icon-"] {margin-top:4px;}
+.btn-large [class*=" icon-"] {margin-top:4px;vertical-align:-0.125em;}
 .btn-small {padding:2px 10px;font-size:var(--fs-sm-plus);border-radius:var(--radius);}
 .btn-small [class^="icon-"],
 .btn-small [class*=" icon-"] {margin-top:0;}
@@ -2881,7 +2881,7 @@ input[type="file"]::file-selector-button:hover {background:var(--c-muted);}
 .form-validate .span3 > fieldset.form-vertical .control-group:last-child {margin-bottom:0;}
 
 /* --- Prothero: Header --- */
-.header {background-color:var(--c-bg);border-bottom:1px solid var(--c-border);padding:14px 20px;}
+.header {background-color:var(--c-bg);border-bottom:1px solid var(--c-border);padding:14px 20px;display:flex;align-items:center;}
 @media (max-width:767px) {
     .header {padding:10px 18px;margin-left:-20px;margin-right:-20px;}
 }
@@ -2889,7 +2889,8 @@ input[type="file"]::file-selector-button:hover {background:var(--c-muted);}
 @media (max-width:979px) {
     .header .navbar-search {border-top:0;border-bottom:0;box-shadow:none;}
 }
-.container-logo {float:right;text-align:right;color:var(--c-muted-fg);}
+.container-logo {order:1;flex:none;margin-left:auto;text-align:right;color:var(--c-muted-fg);}
+.container-title {flex:1 1 auto;min-width:0;}
 .logo {width:auto;max-width:100%;max-height:36px;height:auto;}
 /* The default logo: Joomla's, inline, in its colours as in the installer; the wordmark in the text colour (dark mode) */
 span.logo {display:inline-block;height:24px;color:var(--c-fg-soft);}
@@ -3258,6 +3259,8 @@ html[dir="rtl"] .quick-icons .nav-list [class*=" icon-"] {margin-left:9px;margin
 /* --- Prothero: Status --- */
 #status {background:var(--c-subtle);border-top:1px solid var(--c-border);padding:5px 12px;color:var(--c-muted-fg);}
 #status .btn-group {margin:0;}
+#status .logout [class^="icon-"],
+#status .logout [class*=" icon-"] {vertical-align:-2px;}
 #status .btn-group.separator:after {content:" ";display:block;float:left;background:var(--c-border);margin:0 10px;height:15px;width:1px;}
 #status .btn-toolbar,
 #status p {margin:0px;}

@@ -911,7 +911,7 @@ button.close {padding:3;cursor:pointer;background:transparent;border:0;appearanc
 .btn[disabled] {cursor:default;background-image:none;opacity:0.65;box-shadow:none;}
 .btn-large {padding:11px 19px;font-size:16.25px;border-radius:6px;}
 .btn-large [class^="icon-"],
-.btn-large [class*=" icon-"] {margin-top:4px;}
+.btn-large [class*=" icon-"] {margin-top:4px;vertical-align:-0.125em;}
 .btn-small {padding:2px 10px;font-size:12px;border-radius:3px;}
 .btn-small [class^="icon-"],
 .btn-small [class*=" icon-"] {margin-top:0;}
@@ -2669,7 +2669,7 @@ textarea.noResize {resize:none;}
 input.field-media-input {width:auto;}
 
 /* --- Isis: Header --- */
-.header {background-color:var(--c-header);border-top:1px solid rgba(255,255,255,0.2);padding:8px 25px;}
+.header {background-color:var(--c-header);border-top:1px solid rgba(255,255,255,0.2);padding:8px 25px;display:flex;align-items:center;}
 @media (max-width:767px) {
     .header {padding:4px 18px;margin-left:-20px;margin-right:-20px;}
 }
@@ -2677,7 +2677,8 @@ input.field-media-input {width:auto;}
 @media (max-width:979px) {
     .header .navbar-search {border-top:0;border-bottom:0;box-shadow:none;}
 }
-.container-logo {float:right;text-align:right;}
+.container-logo {order:1;flex:none;margin-left:auto;text-align:right;}
+.container-title {flex:1 1 auto;min-width:0;}
 .logo {width:auto;max-width:100%;max-height:36px;height:auto;}
 /* The default logo: Joomla's, inline, its wordmark white on the header, dark on a light Header Colour */
 span.logo {display:inline-block;height:36px;color:#fff;}
@@ -2934,6 +2935,8 @@ html[dir="rtl"] .quick-icons .nav-list [class*=" icon-"] {margin-left:9px;margin
 /* --- Isis: Status --- */
 #status {background:#ebebeb;border-top:1px solid #dedede;padding:4px 10px;box-shadow:0 0 3px rgba(0,0,0,0.08);color:#626262;}
 #status .btn-group {margin:0;}
+#status .logout [class^="icon-"],
+#status .logout [class*=" icon-"] {vertical-align:-3px;}
 #status .btn-group.separator:after {content:" ";display:block;float:left;background:#adadad;margin:0 10px;height:15px;width:1px;}
 #status .btn-toolbar,
 #status p {margin:0px;}
