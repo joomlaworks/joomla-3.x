@@ -22,6 +22,14 @@ if (PHP_SAPI !== 'cli' && PHP_SAPI !== 'phpdbg') {
     exit(1);
 }
 
+// As in the web entry points: install scripts of extensions read it (Web Links' package, Joomla's JInstallerScript users)
+define('JOOMLA_MINIMUM_PHP', '7.1.0');
+
+if (version_compare(PHP_VERSION, JOOMLA_MINIMUM_PHP, '<')) {
+    echo 'Your host needs to use PHP ' . JOOMLA_MINIMUM_PHP . ' or higher to run this version of Joomla!' . PHP_EOL;
+    exit(1);
+}
+
 // Initialize Joomla framework
 const _JEXEC = 1;
 

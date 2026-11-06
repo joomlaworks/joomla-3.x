@@ -614,6 +614,18 @@ class PackageAdapter extends InstallerAdapter
             }
         }
 
+        // Extensions installed with the package which its manifest doesn't name as installed (Web Links lists its editor button
+        // plugin "weblink" as "weblinks"): the package_id set at install time tells
+        foreach ($this->getRemainingChildren((int) $row->extension_id) as $child) {
+            $tmpInstaller = new Installer();
+            $tmpInstaller->setPackageUninstall(true);
+
+            if (!$tmpInstaller->uninstall($child->type, (int) $child->extension_id, (int) $child->client_id)) {
+                $error = true;
+                \JLog::add(\JText::sprintf('JLIB_INSTALLER_ERROR_PACK_UNINSTALL_NOT_PROPER', $child->name), \JLog::WARNING, 'jerror');
+            }
+        }
+
         // Remove any language files
         $this->parent->removeFiles($xml->languages);
 
@@ -633,6 +645,38 @@ class PackageAdapter extends InstallerAdapter
 
         // Return the result up the line
         return $retval;
+    }
+
+    /**
+     * The extensions still linked to a package (package_id) after its manifest's members were uninstalled; never protected
+     * (core) ones.
+     *
+     * @param   integer  $packageId  The package's extension ID
+     *
+     * @return  object[]  extension_id, type, client_id and name of each
+     *
+     * @since   3.19.0
+     */
+    protected function getRemainingChildren($packageId)
+    {
+        if ($packageId <= 0) {
+            return array();
+        }
+
+        $db = $this->parent->getDbo();
+
+        try {
+            return $db->setQuery(
+                $db->getQuery(true)
+                    ->select($db->quoteName(array('extension_id', 'type', 'client_id', 'name')))
+                    ->from($db->quoteName('#__extensions'))
+                    ->where($db->quoteName('package_id') . ' = ' . (int) $packageId)
+                    ->where($db->quoteName('protected') . ' = 0')
+                    ->where($db->quoteName('extension_id') . ' <> ' . (int) $packageId)
+            )->loadObjectList();
+        } catch (\RuntimeException $e) {
+            return array();
+        }
     }
 
     /**
