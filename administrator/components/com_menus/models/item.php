@@ -1132,6 +1132,48 @@ class MenusModelItem extends JModelAdmin
     }
 
     /**
+     * Put back the menu tree's root (ID 1) when the table has no root at all: without it no item can be saved
+     * ("_getNode(1, ) failed") and the tree can't be rebuilt. A root under another ID (old migrations) is left alone, as a
+     * second root would break the tree.
+     *
+     * @return  void
+     *
+     * @since   3.18.0
+     */
+    protected function restoreRootItem()
+    {
+        $db = $this->getDbo();
+
+        $query = $db->getQuery(true)
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__menu'))
+            ->where(
+                '(' . $db->quoteName('id') . ' = 1 OR ' . $db->quoteName('parent_id') . ' = 0 OR '
+                . $db->quoteName('alias') . ' = ' . $db->quote('root') . ')'
+            );
+
+        if ((int) $db->setQuery($query)->loadResult() > 0) {
+            return;
+        }
+
+        $columns = array(
+            'id' => 1, 'menutype' => '', 'title' => 'Menu_Item_Root', 'alias' => 'root', 'note' => '', 'path' => '', 'link' => '',
+            'type' => '', 'published' => 1, 'parent_id' => 0, 'level' => 0, 'component_id' => 0, 'checked_out' => 0,
+            'checked_out_time' => $db->getNullDate(), 'browserNav' => 0, 'access' => 0, 'img' => '', 'template_style_id' => 0,
+            'params' => '', 'lft' => 0, 'rgt' => 1, 'home' => 0, 'language' => '*', 'client_id' => 0,
+        );
+
+        $query = $db->getQuery(true)
+            ->insert($db->quoteName('#__menu'), true)
+            ->columns($db->quoteName(array_keys($columns)))
+            ->values(implode(',', array_map(array($db, 'quote'), array_values($columns))));
+
+        $db->setQuery($query)->execute();
+
+        JFactory::getApplication()->enqueueMessage(JText::_('COM_MENUS_ITEMS_REBUILD_ROOT_RESTORED'), 'warning');
+    }
+
+    /**
      * Method rebuild the entire nested set tree.
      *
      * @return  boolean|JException  Boolean true on success, boolean false or JException instance on error
@@ -1146,6 +1188,8 @@ class MenusModelItem extends JModelAdmin
         $table = $this->getTable();
 
         try {
+            $this->restoreRootItem();
+
             $rebuildResult = $table->rebuild();
         } catch (Exception $e) {
             $this->setError($e->getMessage());
