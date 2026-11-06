@@ -113,7 +113,6 @@ if (!empty($editor)) {
 							<a class="select-link" href="javascript:void(0)" data-function="<?php echo $this->escape($onclick); ?>" data-id="<?php echo $item->id; ?>" data-title="<?php echo $this->escape($item->name); ?>" data-uri="<?php echo $this->escape(ContactHelperRoute::getContactRoute($item->id, $item->catid, $item->language)); ?>" data-language="<?php echo $this->escape($lang); ?>">
 								<?php echo $this->escape($item->name); ?>
 							</a>
-							<?php echo $this->escape($item->name); ?>
 							<div class="small">
 								<?php echo JText::_('JCATEGORY') . ': ' . $this->escape($item->category_title); ?>
 							</div>

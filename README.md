@@ -51,6 +51,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 **Bug fixes:**
 - **Administrator:**
   - Menus whose top level item went missing from the database (no new menu item could be saved, and Rebuild failed) are repaired by clicking Rebuild
+  - The list for picking a contact (for a menu item or in an editor) no longer shows each contact's name twice
   - The Joomla logo at the top right stays in the middle of the header when an extension makes its title taller, and the icons of large buttons (such as Reset Messages) and of Log out in the status bar line up with their text (Prothero and Isis)
 - **Templates:**
   - Opening a BMP, WebP, AVIF or SVG image in a template's files no longer gives an error page: images are shown whatever their format, and WebP and AVIF can be cropped and resized too (AVIF with PHP 8.1 or newer)
@@ -59,6 +60,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 
 **Joomla 3 bugs fixed:**
 - **Administrator:** Rebuild repairs menus that lost their top level item, which stopped new menu items from being saved
+- **Administrator:** the list for picking a contact showed each contact's name twice
 - **Templates:** template images other than GIF, JPEG and PNG (BMP was even in the default list) opened on an error page instead of the image
 
 ## Version 3.18 - released November 5th, 2026
