@@ -182,7 +182,7 @@ class TemplatesViewTemplate extends JViewLegacy
                 JToolbarHelper::save('template.save');
             }
             // Add a Crop and Resize button
-            elseif ($this->type == 'image') {
+            elseif ($this->type == 'image' && !empty($this->image['editable'])) {
                 JToolbarHelper::custom('template.cropImage', 'move', 'move', 'COM_TEMPLATES_BUTTON_CROP', false);
                 JToolbarHelper::modal('resizeModal', 'icon-refresh', 'COM_TEMPLATES_BUTTON_RESIZE');
             }

@@ -1016,11 +1016,29 @@ class TemplatesModelTemplate extends JModelForm
             $uri = JUri::root(true) . $folder . $template->element;
 
             if (file_exists(JPath::clean($path . $fileName))) {
-                $JImage = new JImage(JPath::clean($path . $fileName));
-                $image['address'] = $uri . $fileName;
-                $image['path']    = $fileName;
-                $image['height']  = $JImage->getHeight();
-                $image['width']   = $JImage->getWidth();
+                $image['address']  = $uri . $fileName;
+                $image['path']     = $fileName;
+                $image['height']   = 0;
+                $image['width']    = 0;
+                $image['editable'] = false;
+
+                // Shown whatever its format; cropped and resized only when GD reads it (not SVG, nor AVIF before PHP 8.1)
+                if (strtolower(JFile::getExt($fileName)) !== 'svg') {
+                    try {
+                        $JImage = new JImage(JPath::clean($path . $fileName));
+
+                        $image['height']   = $JImage->getHeight();
+                        $image['width']    = $JImage->getWidth();
+                        $image['editable'] = true;
+                    } catch (Exception $e) {
+                        $size = @getimagesize(JPath::clean($path . $fileName));
+
+                        if ($size) {
+                            $image['width']  = (int) $size[0];
+                            $image['height'] = (int) $size[1];
+                        }
+                    }
+                }
             } else {
                 $app->enqueueMessage(JText::_('COM_TEMPLATES_ERROR_IMAGE_FILE_NOT_FOUND'), 'error');
 
@@ -1056,16 +1074,8 @@ class TemplatesModelTemplate extends JModelForm
                 $image      = new \JImage($path);
                 $properties = $image->getImageFileProperties($path);
 
-                switch ($properties->mime) {
-                    case 'image/png':
-                        $imageType = \IMAGETYPE_PNG;
-                        break;
-                    case 'image/gif':
-                        $imageType = \IMAGETYPE_GIF;
-                        break;
-                    default:
-                        $imageType = \IMAGETYPE_JPEG;
-                }
+                // Written back in its own format (WebP and AVIF too)
+                $imageType = (int) $properties->type;
 
                 $image->crop($w, $h, $x, $y, false);
                 $image->toFile($path, $imageType);
@@ -1100,16 +1110,8 @@ class TemplatesModelTemplate extends JModelForm
                 $image      = new \JImage($path);
                 $properties = $image->getImageFileProperties($path);
 
-                switch ($properties->mime) {
-                    case 'image/png':
-                        $imageType = \IMAGETYPE_PNG;
-                        break;
-                    case 'image/gif':
-                        $imageType = \IMAGETYPE_GIF;
-                        break;
-                    default:
-                        $imageType = \IMAGETYPE_JPEG;
-                }
+                // Written back in its own format (WebP and AVIF too)
+                $imageType = (int) $properties->type;
 
                 $image->resize($width, $height, false, \JImage::SCALE_FILL);
                 $image->toFile($path, $imageType);

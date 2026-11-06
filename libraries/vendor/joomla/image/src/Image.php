@@ -130,6 +130,14 @@ class Image implements LoggerAwareInterface
 			static::$formats[IMAGETYPE_JPEG] = ($info['JPEG Support']) ? true : false;
 			static::$formats[IMAGETYPE_PNG]  = ($info['PNG Support']) ? true : false;
 			static::$formats[IMAGETYPE_GIF]  = ($info['GIF Read Support']) ? true : false;
+
+			// Joomla 3.x UTD patch: WebP and AVIF (PHP 8.1+), when GD has them
+			static::$formats[IMAGETYPE_WEBP] = !empty($info['WebP Support']) && \function_exists('imagecreatefromwebp');
+
+			if (\defined('IMAGETYPE_AVIF'))
+			{
+				static::$formats[IMAGETYPE_AVIF] = !empty($info['AVIF Support']) && \function_exists('imagecreatefromavif');
+			}
 		}
 
 		// If the source input is a resource, set it as the image handle.
@@ -714,6 +722,30 @@ class Image implements LoggerAwareInterface
 
 				break;
 
+			// Joomla 3.x UTD patch: WebP and AVIF
+			case 'image/webp':
+			case 'image/avif':
+				$type = $properties->mime === 'image/webp' ? IMAGETYPE_WEBP : (\defined('IMAGETYPE_AVIF') ? IMAGETYPE_AVIF : 0);
+				$name = $properties->mime === 'image/webp' ? 'WebP' : 'AVIF';
+
+				if (empty(static::$formats[$type]))
+				{
+					$this->getLogger()->error('Attempting to load an image of unsupported type ' . $name . '.');
+
+					throw new \RuntimeException('Attempting to load an image of unsupported type ' . $name . '.');
+				}
+
+				$handle = $type === IMAGETYPE_WEBP ? imagecreatefromwebp($path) : imagecreatefromavif($path);
+
+				if (!$this->isValidImage($handle))
+				{
+					throw new \RuntimeException('Unable to process ' . $name . ' image.');
+				}
+
+				$this->handle = $handle;
+
+				break;
+
 			default:
 				$this->getLogger()->error('Attempting to load an image of unsupported type ' . $properties->mime);
 
@@ -1022,6 +1054,19 @@ class Image implements LoggerAwareInterface
 
 			case IMAGETYPE_PNG:
 				return imagepng($this->getHandle(), $path, (array_key_exists('quality', $options)) ? $options['quality'] : 0);
+
+			// Joomla 3.x UTD patch: WebP and AVIF (quality 0..100), keeping their transparency
+			case IMAGETYPE_WEBP:
+				imagesavealpha($this->getHandle(), true);
+
+				return imagewebp($this->getHandle(), $path, (array_key_exists('quality', $options)) ? $options['quality'] : 90);
+		}
+
+		if (\defined('IMAGETYPE_AVIF') && $type === IMAGETYPE_AVIF)
+		{
+			imagesavealpha($this->getHandle(), true);
+
+			return imageavif($this->getHandle(), $path, (array_key_exists('quality', $options)) ? $options['quality'] : 80);
 		}
 
 		// Case IMAGETYPE_JPEG & default

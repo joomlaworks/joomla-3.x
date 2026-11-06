@@ -86,6 +86,7 @@ class JoomlaInstallerScript
         $this->updateMediaUploadDefaults();
         $this->updateMediaUploadMaxSize();
         $this->addMediaUploadAvTypes();
+        $this->updateTemplateUploadDefaults();
         $this->updateCodeMirrorTheme();
         $this->enableLittleWaf();
         $this->useProtheroAsAdminTemplate();
@@ -2019,6 +2020,76 @@ class JoomlaInstallerScript
             $this->markUpdateStepDone('media-upload-av-types');
         } catch (Exception $e) {
             // Not worth failing the update for: the lists stay as they were
+        }
+    }
+
+    /**
+     * Brings Templates: Options' upload settings up to date, once: the image formats lose BMP and TIFF (the template manager
+     * never opened them: they gave an error page) and gain WebP, AVIF, SVG and ICO, the font formats gain WOFF2, and an upload
+     * limit below 8 MB (stock Joomla 3 had 2) becomes 8. Other entries stay as the administrator set them; an empty list or a
+     * limit of 0 (none) keeps its meaning.
+     *
+     * @return  void
+     *
+     * @since   3.19.0
+     */
+    protected function updateTemplateUploadDefaults()
+    {
+        if ($this->isUpdateStepDone('template-upload-defaults')) {
+            return;
+        }
+
+        try {
+            $db  = JFactory::getDbo();
+            $row = $db->setQuery(
+                $db->getQuery(true)
+                    ->select($db->quoteName(array('extension_id', 'params')))
+                    ->from($db->quoteName('#__extensions'))
+                    ->where($db->quoteName('type') . ' = ' . $db->quote('component'))
+                    ->where($db->quoteName('element') . ' = ' . $db->quote('com_templates'))
+            )->loadObject();
+
+            if (!$row) {
+                return;
+            }
+
+            $params = new JRegistry($row->params);
+            $lists  = array(
+                'image_formats' => array(array('webp', 'avif', 'svg', 'ico'), array('bmp', 'tif', 'tiff')),
+                'font_formats'  => array(array('woff2'), array()),
+            );
+
+            foreach ($lists as $name => $change) {
+                $list = trim((string) $params->get($name, ''));
+
+                if ($list === '') {
+                    continue;
+                }
+
+                $current = array_values(array_filter(array_map('trim', explode(',', $list)), function ($type) use ($change) {
+                    return $type !== '' && !in_array(strtolower($type), $change[1], true);
+                }));
+                $missing = array_diff($change[0], array_map('strtolower', $current));
+
+                $params->set($name, implode(',', array_merge($current, $missing)));
+            }
+
+            $limit = (float) $params->get('upload_limit', 0);
+
+            if ($limit > 0 && $limit < 8) {
+                $params->set('upload_limit', '8');
+            }
+
+            $db->setQuery(
+                $db->getQuery(true)
+                    ->update($db->quoteName('#__extensions'))
+                    ->set($db->quoteName('params') . ' = ' . $db->quote($params->toString()))
+                    ->where($db->quoteName('extension_id') . ' = ' . (int) $row->extension_id)
+            )->execute();
+
+            $this->markUpdateStepDone('template-upload-defaults');
+        } catch (Exception $e) {
+            // Not worth failing the update for: the options stay as they were
         }
     }
 

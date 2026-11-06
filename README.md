@@ -45,14 +45,20 @@ A short overview of each release. Every change is described in detail in [CHANGE
 
 ## Version 3.19 - unreleased [pending]
 
+**Improvements:**
+- Templates: Options accept WebP, AVIF, SVG and ICO images and WOFF2 fonts, and uploads of up to 8 MB (updated sites get these once; BMP, an outdated format, comes off the list)
+
 **Bug fixes:**
 - **Administrator:**
   - Menus whose top level item went missing from the database (no new menu item could be saved, and Rebuild failed) are repaired by clicking Rebuild
+- **Templates:**
+  - Opening a BMP, WebP, AVIF or SVG image in a template's files no longer gives an error page: images are shown whatever their format, and WebP and AVIF can be cropped and resized too (AVIF with PHP 8.1 or newer)
 - **Editors:**
   - TinyMCE in a tab that isn't open when the page loads (such as a contact's Miscellaneous Information) no longer comes up broken, with its menu stacked at the window's edge and its buttons missing
 
 **Joomla 3 bugs fixed:**
 - **Administrator:** Rebuild repairs menus that lost their top level item, which stopped new menu items from being saved
+- **Templates:** template images other than GIF, JPEG and PNG (BMP was even in the default list) opened on an error page instead of the image
 
 ## Version 3.18 - released November 5th, 2026
 Summary of changes:

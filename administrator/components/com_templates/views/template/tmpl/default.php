@@ -55,7 +55,8 @@ JFactory::getDocument()->addStyleDeclaration('
 		margin: 0;
 	}
 
-	#image-crop{
+	#image-crop,
+	#image-preview{
 		max-width: 100% !important;
 		width: auto;
 		height: auto;
@@ -159,7 +160,7 @@ if ($this->type == 'font') {
 			</form>
 		<?php endif; ?>
 		<?php if ($this->type == 'image') : ?>
-			<img id="image-crop" src="<?php echo $this->image['address'] . '?' . time(); ?>" data-width="<?php echo (int) $this->image['width']; ?>" data-height="<?php echo (int) $this->image['height']; ?>" />
+			<img id="<?php echo empty($this->image['editable']) ? 'image-preview' : 'image-crop'; ?>" src="<?php echo $this->image['address'] . '?' . time(); ?>" data-width="<?php echo (int) $this->image['width']; ?>" data-height="<?php echo (int) $this->image['height']; ?>" />
 			<form action="<?php echo JRoute::_('index.php?option=com_templates&view=template&id=' . $input->getInt('id') . '&file=' . $this->file); ?>" method="post" name="adminForm" id="adminForm" class="form-horizontal">
 				<fieldset class="adminform">
 					<input type ="hidden" id="x" name="x" />
