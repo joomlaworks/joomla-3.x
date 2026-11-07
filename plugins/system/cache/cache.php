@@ -357,8 +357,9 @@ class PlgSystemCache extends JPlugin
         $root    = JUri::root(true);
         $folders = array();
 
-        // Only the folders pages link to (files): the rules are in every page's source, so they name nothing else
-        foreach (array('components', 'images', 'media', 'modules', 'plugins', 'templates') as $folder) {
+        // Only the folders pages link to files in (cache: extensions' generated images and files): the rules are in every page's
+        // source, so they name nothing else
+        foreach (array('cache', 'components', 'images', 'media', 'modules', 'plugins', 'templates') as $folder) {
             $folders[] = $root . '/' . $folder . '/*';
         }
 
