@@ -327,7 +327,7 @@ class PlgSystemCache extends JPlugin
     /**
      * Speculation rules for the stored page (guests' pages only, so logged-in users never prerender): links on the page to
      * the site's own pages are prerendered (or prefetched) when the visitor is about to follow them, and as they're stored
-     * pages, opening one costs the server next to nothing. Left out: the site's file folders, links with a task, format or
+     * pages, opening one costs the server next to nothing. Left out: the folders of the files pages link to, links with a task, format or
      * tmpl (actions, feeds, print views), rel="nofollow" links and anything inside class "no-prerender".
      *
      * @return  void
@@ -357,7 +357,8 @@ class PlgSystemCache extends JPlugin
         $root    = JUri::root(true);
         $folders = array();
 
-        foreach (array('administrator', 'cache', 'cli', 'components', 'images', 'includes', 'language', 'layouts', 'libraries', 'logs', 'media', 'modules', 'plugins', 'templates', 'tmp') as $folder) {
+        // Only the folders pages link to (files): the rules are in every page's source, so they name nothing else
+        foreach (array('components', 'images', 'media', 'plugins', 'templates') as $folder) {
             $folders[] = $root . '/' . $folder . '/*';
         }
 
