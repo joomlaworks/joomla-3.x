@@ -249,7 +249,8 @@ class PlgSystemCache extends JPlugin
         $results = JEventDispatcher::getInstance()->trigger('onPageCacheSetCaching');
         $caching = !in_array(false, $results, true);
 
-        if ($caching && JFactory::getUser()->guest && $this->app->input->getMethod() === 'GET') {
+        // HEAD too: its answer must carry the headers a GET would (curl -I, monitors and caches ask with it)
+        if ($caching && JFactory::getUser()->guest && in_array($this->app->input->getMethod(), array('GET', 'HEAD'), true)) {
             $this->_cache->setCaching(true);
         }
 

@@ -67,6 +67,8 @@ A short overview of each release. Every change is described in detail in [CHANGE
   - Hammond: the menu button can be read by screen readers on phones, World's and Energy's category labels are darker for readability, the "Most read" list's labels are easier to tap, and each "More" link says what it leads to for screen readers and search engines
   - Rookwood: the violet sections (such as the Studio set's figures) are a little deeper in the dark theme, so their white text is easier to read, and each "View all" link says what it leads to for screen readers
   - Hammond, Finch and Rookwood: screen readers are told which page links can't be used (Start and Prev on the first page)
+- **Caching:**
+  - The Page Cache also answers header-only requests (as `curl -I` and uptime monitors send), which got "don't cache" headers while the page itself was cached
 - **Installing and uninstalling:**
   - Extensions with long descriptions (such as AllVideos) no longer show a tooltip running off the screen in Extensions: Manage, Discover, Update and Update Sites: it shows the first few lines as plain text
   - Uninstalling a package removes all the extensions it installed, also those its own list names wrongly (the Web Links package left its editor button plugin behind)
@@ -77,6 +79,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
   - TinyMCE in a tab that isn't open when the page loads (such as a contact's Miscellaneous Information) no longer comes up broken, with its menu stacked at the window's edge and its buttons missing
 
 **Joomla 3 bugs fixed:**
+- **Caching:** header-only requests (HEAD) bypassed the Page Cache and were told not to cache the page
 - **Administrator:** Rebuild repairs menus that lost their top level item, which stopped new menu items from being saved
 - **Administrator:** the list for picking a contact showed each contact's name twice
 - **Installing and uninstalling:** a package whose list of extensions misnames one leaves it behind when uninstalled; long extension descriptions made the installer's tooltips run off the screen
