@@ -35,6 +35,17 @@
                 </field>
                 <field name="browsercache_home" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_HOME_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_HOME_DESC" default="60" min="0" filter="integer" showon="browsercache_send:1" />
                 <field name="browsercache_pages" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_PAGES_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_PAGES_DESC" default="180" min="0" filter="integer" showon="browsercache_send:1" />
+                <field name="heading_speculation" type="spacer" label="PLG_CACHE_HEADING_SPECULATION" description="PLG_CACHE_HEADING_SPECULATION_DESC" />
+                <field name="speculation" type="list" label="PLG_CACHE_FIELD_SPECULATION_LABEL" description="PLG_CACHE_FIELD_SPECULATION_DESC" default="prerender" filter="word">
+                    <option value="prerender">PLG_CACHE_FIELD_SPECULATION_PRERENDER</option>
+                    <option value="prefetch">PLG_CACHE_FIELD_SPECULATION_PREFETCH</option>
+                    <option value="off">JOFF</option>
+                </field>
+                <field name="speculation_eagerness" type="list" label="PLG_CACHE_FIELD_SPECULATION_EAGERNESS_LABEL" description="PLG_CACHE_FIELD_SPECULATION_EAGERNESS_DESC" default="moderate" filter="word" showon="speculation!:off">
+                    <option value="conservative">PLG_CACHE_FIELD_SPECULATION_EAGERNESS_CONSERVATIVE</option>
+                    <option value="moderate">PLG_CACHE_FIELD_SPECULATION_EAGERNESS_MODERATE</option>
+                    <option value="eager">PLG_CACHE_FIELD_SPECULATION_EAGERNESS_EAGER</option>
+                </field>
                 <field name="heading_advanced" type="spacer" label="PLG_CACHE_HEADING_ADVANCED" description="PLG_CACHE_HEADING_ADVANCED_DESC" />
                 <field name="sharedcache_home" type="number" label="PLG_CACHE_FIELD_SHAREDCACHE_HOME_LABEL" description="PLG_CACHE_FIELD_SHAREDCACHE_HOME_DESC" default="" min="0" filter="integer" />
                 <field name="sharedcache_pages" type="number" label="PLG_CACHE_FIELD_SHAREDCACHE_PAGES_LABEL" description="PLG_CACHE_FIELD_SHAREDCACHE_PAGES_DESC" default="" min="0" filter="integer" />

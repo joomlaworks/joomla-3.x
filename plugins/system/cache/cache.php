@@ -321,6 +321,74 @@ class PlgSystemCache extends JPlugin
         }
 
         $this->setBrowserCacheTime();
+        $this->addSpeculationRules();
+    }
+
+    /**
+     * Speculation rules for the stored page (guests' pages only, so logged-in users never prerender): links on the page to
+     * the site's own pages are prerendered (or prefetched) when the visitor is about to follow them, and as they're stored
+     * pages, opening one costs the server next to nothing. Left out: the site's file folders, links with a task, format or
+     * tmpl (actions, feeds, print views), rel="nofollow" links and anything inside class "no-prerender".
+     *
+     * @return  void
+     *
+     * @since   3.19.0
+     */
+    protected function addSpeculationRules()
+    {
+        $action    = (string) $this->params->get('speculation', 'prerender');
+        $eagerness = (string) $this->params->get('speculation_eagerness', 'moderate');
+
+        if (!in_array($action, array('prerender', 'prefetch'), true) || JFactory::getDocument()->getType() !== 'html') {
+            return;
+        }
+
+        if (!in_array($eagerness, array('conservative', 'moderate', 'eager'), true)) {
+            $eagerness = 'moderate';
+        }
+
+        $body = $this->app->getBody();
+        $end  = strripos($body, '</body>');
+
+        if ($end === false) {
+            return;
+        }
+
+        $root    = JUri::root(true);
+        $folders = array();
+
+        foreach (array('administrator', 'cache', 'cli', 'components', 'images', 'includes', 'language', 'layouts', 'libraries', 'logs', 'media', 'modules', 'plugins', 'templates', 'tmp') as $folder) {
+            $folders[] = $root . '/' . $folder . '/*';
+        }
+
+        // A query alone would take the current page's path (URL patterns inherit what comes before the first part given)
+        $queries = array();
+
+        foreach (array('task', 'format', 'tmpl') as $name) {
+            $queries[] = array('pathname' => $root . '/*', 'search' => '*' . $name . '=*');
+        }
+
+        $rules = array(
+            $action => array(
+                array(
+                    'source'    => 'document',
+                    'where'     => array(
+                        'and' => array(
+                            array('href_matches' => $root . '/*'),
+                            array('not' => array('href_matches' => $folders)),
+                            array('not' => array('href_matches' => $queries)),
+                            array('not' => array('selector_matches' => 'a[rel~="nofollow"]')),
+                            array('not' => array('selector_matches' => '.no-prerender, .no-prerender *')),
+                        ),
+                    ),
+                    'eagerness' => $eagerness,
+                ),
+            ),
+        );
+
+        $script = '<script type="speculationrules">' . json_encode($rules, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) . '</script>' . "\n";
+
+        $this->app->setBody(substr_replace($body, $script, $end, 0));
     }
 
     /**

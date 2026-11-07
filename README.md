@@ -47,6 +47,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 
 **New features:**
 - The editors grow with your text, as in WordPress' Classic Editor: TinyMCE (with its toolbar staying at the top of the window), TinyMCE (legacy) and the plain text box no longer scroll inside a fixed box. Markdown and Blocks already did. Each editor has a Grow with Content option to turn it off
+- The Page Cache can load a page in the background when a visitor is about to open it (in Chrome, Edge and Opera), so it shows at once; on by default, for visitors who aren't logged in
 
 **Improvements:**
 - Joomla! Update is now **System Update**, in the System menu above System Information (it's no longer listed under Components), with the new name everywhere in the administrator, its update notifications included
