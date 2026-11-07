@@ -321,11 +321,26 @@ class PlgSystemCache extends JPlugin
         }
 
         $this->setBrowserCacheTime();
+    }
+
+    /**
+     * Before the head is written: the speculation rules of a page this plugin will store
+     *
+     * @return  void
+     *
+     * @since   3.19.0
+     */
+    public function onBeforeCompileHead()
+    {
+        if (!$this->app->isClient('site') || $this->_cache->getCaching() === false || !JFactory::getUser()->guest || $this->isExcluded() === true) {
+            return;
+        }
+
         $this->addSpeculationRules();
     }
 
     /**
-     * Speculation rules for the stored page (guests' pages only, so logged-in users never prerender): links on the page to
+     * Speculation rules in the head of the stored page (guests' pages only, so logged-in users never prerender): links on the page to
      * the site's own pages are prerendered (or prefetched) when the visitor is about to follow them, and as they're stored
      * pages, opening one costs the server next to nothing. Left out: the folders of the files pages link to, links with a task, format or
      * tmpl (actions, feeds, print views), rel="nofollow" links and anything inside class "no-prerender".
@@ -345,13 +360,6 @@ class PlgSystemCache extends JPlugin
 
         if (!in_array($eagerness, array('conservative', 'moderate', 'eager'), true)) {
             $eagerness = 'moderate';
-        }
-
-        $body = $this->app->getBody();
-        $end  = strripos($body, '</body>');
-
-        if ($end === false) {
-            return;
         }
 
         $root    = JUri::root(true);
@@ -388,9 +396,8 @@ class PlgSystemCache extends JPlugin
             ),
         );
 
-        $script = '<script type="speculationrules">' . json_encode($rules, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) . '</script>' . "\n";
-
-        $this->app->setBody(substr_replace($body, $script, $end, 0));
+        // A tag of its own: script declarations of one type are joined into one <script>, which would merge two rule sets
+        JFactory::getDocument()->addCustomTag('<script type="speculationrules">' . json_encode($rules, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) . '</script>');
     }
 
     /**

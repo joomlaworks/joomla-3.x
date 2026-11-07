@@ -1232,8 +1232,8 @@ class HtmlDocument extends Document
 
     /**
      * Whether something on the page might run code while it loads, using the shared script: a script declaration, a custom
-     * tag with a script, or an inline script in the HTML of the component or a module (data scripts, JSON-LD for example,
-     * don't count)
+     * tag with a script, or an inline script in the HTML of the component or a module. Only the types browsers run count
+     * (none, a JavaScript MIME type, module): anything else is data (JSON-LD, import maps, speculation rules, templates)
      *
      * @return  boolean
      *
@@ -1241,10 +1241,8 @@ class HtmlDocument extends Document
      */
     protected function hasInlineScripts()
     {
-        $data = array('application/json', 'application/ld+json', 'importmap', 'text/template', 'text/html', 'text/x-template');
-
         foreach ($this->_script as $type => $content) {
-            if (!in_array(strtolower((string) $type), $data, true) && trim((string) $content) !== '') {
+            if (static::isRunnableScriptType((string) $type) && trim((string) $content) !== '') {
                 return true;
             }
         }
@@ -1259,7 +1257,9 @@ class HtmlDocument extends Document
                     continue;
                 }
 
-                if (preg_match('#\\btype\\s*=\\s*["\']?([^"\'\\s>]+)#i', $attributes, $type) && in_array(strtolower($type[1]), $data, true)) {
+                if (preg_match('#(?<![\\w-])type\\s*=\\s*(?:"([^"]*)"|\'([^\']*)\'|([^\\s>]+))#i', $attributes, $type)
+                    && !static::isRunnableScriptType(implode('', array_slice($type, 1)))
+                ) {
                     continue;
                 }
 
@@ -1268,6 +1268,28 @@ class HtmlDocument extends Document
         }
 
         return false;
+    }
+
+    /**
+     * Whether a browser runs a script of this type: none (or empty), a JavaScript MIME type (the HTML standard's list,
+     * parameters such as a charset ignored) or module
+     *
+     * @param   string  $type  The script's type
+     *
+     * @return  boolean
+     *
+     * @since   3.19.0
+     */
+    public static function isRunnableScriptType($type)
+    {
+        $type = strtolower(trim(explode(';', (string) $type)[0]));
+
+        return in_array($type, array(
+            '', 'module', 'application/ecmascript', 'application/javascript', 'application/x-ecmascript', 'application/x-javascript',
+            'text/ecmascript', 'text/javascript', 'text/javascript1.0', 'text/javascript1.1', 'text/javascript1.2',
+            'text/javascript1.3', 'text/javascript1.4', 'text/javascript1.5', 'text/jscript', 'text/livescript',
+            'text/x-ecmascript', 'text/x-javascript',
+        ), true);
     }
 
     /**
