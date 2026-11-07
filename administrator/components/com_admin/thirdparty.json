@@ -500,6 +500,23 @@
             "seriesLatest": ""
         },
         {
+            "name": "PSR Container",
+            "version": "1.0.0",
+            "date": "2017.02.14",
+            "dateSource": "Composer (installed.json)",
+            "license": "MIT",
+            "url": "https://www.php-fig.org/psr/psr-11/",
+            "path": "libraries/vendor/psr/container",
+            "note": "",
+            "latest": "2.0.2",
+            "isLatest": false,
+            "checked": "2026.10.27",
+            "use": "shared",
+            "series": "",
+            "supported": "",
+            "seriesLatest": "1.x: 1.1.2 (2021.11.05)"
+        },
+        {
             "name": "PSR Log",
             "version": "1.1.4",
             "date": "2021.05.03",

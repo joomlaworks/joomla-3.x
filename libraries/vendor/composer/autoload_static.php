@@ -39,6 +39,7 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         array (
             'Psr\\Log\\' => 8,
             'PHPMailer\\PHPMailer\\' => 20,
+            'Psr\\Container\\' => 14,
         ),
         'J' => 
         array (
@@ -53,6 +54,7 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
             'Joomla\\Filesystem\\' => 18,
             'Joomla\\Event\\' => 13,
             'Joomla\\Data\\' => 12,
+            'Joomla\\DI\\' => 10,
             'Joomla\\Archive\\' => 15,
             'Joomla\\Application\\' => 19,
         ),
@@ -84,7 +86,9 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
+        'Psr\\Container\\' => 
         array (
+            0 => __DIR__ . '/..' . '/psr/container/src',
         ),
         'Joomla\\Utilities\\' => 
         array (
@@ -130,7 +134,9 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         array (
             0 => __DIR__ . '/..' . '/joomla/data/src',
         ),
+        'Joomla\\DI\\' => 
         array (
+            0 => __DIR__ . '/..' . '/joomla/di/src',
         ),
         'Joomla\\Archive\\' => 
         array (
@@ -182,6 +188,13 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'Joomla\\Archive\\Gzip' => __DIR__ . '/..' . '/joomla/archive/src/Gzip.php',
         'Joomla\\Archive\\Tar' => __DIR__ . '/..' . '/joomla/archive/src/Tar.php',
         'Joomla\\Archive\\Zip' => __DIR__ . '/..' . '/joomla/archive/src/Zip.php',
+        'Joomla\\DI\\Container' => __DIR__ . '/..' . '/joomla/di/src/Container.php',
+        'Joomla\\DI\\ContainerAwareInterface' => __DIR__ . '/..' . '/joomla/di/src/ContainerAwareInterface.php',
+        'Joomla\\DI\\ContainerAwareTrait' => __DIR__ . '/..' . '/joomla/di/src/ContainerAwareTrait.php',
+        'Joomla\\DI\\Exception\\DependencyResolutionException' => __DIR__ . '/..' . '/joomla/di/src/Exception/DependencyResolutionException.php',
+        'Joomla\\DI\\Exception\\KeyNotFoundException' => __DIR__ . '/..' . '/joomla/di/src/Exception/KeyNotFoundException.php',
+        'Joomla\\DI\\Exception\\ProtectedKeyException' => __DIR__ . '/..' . '/joomla/di/src/Exception/ProtectedKeyException.php',
+        'Joomla\\DI\\ServiceProviderInterface' => __DIR__ . '/..' . '/joomla/di/src/ServiceProviderInterface.php',
         'Joomla\\Data\\DataObject' => __DIR__ . '/..' . '/joomla/data/src/DataObject.php',
         'Joomla\\Data\\DataSet' => __DIR__ . '/..' . '/joomla/data/src/DataSet.php',
         'Joomla\\Data\\DumpableInterface' => __DIR__ . '/..' . '/joomla/data/src/DumpableInterface.php',
@@ -254,6 +267,9 @@ class ComposerStaticInitc14bde14f8c86840049f5c1809c453dd
         'Joomla\\Utilities\\IpHelper' => __DIR__ . '/..' . '/joomla/utilities/src/IpHelper.php',
         'PHPMailer' => __DIR__ . '/../../..' . '/libraries/src/Mail/phpmailer-aliases.php',
         'POP3' => __DIR__ . '/../../..' . '/libraries/src/Mail/phpmailer-aliases.php',
+        'Psr\\Container\\ContainerExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerExceptionInterface.php',
+        'Psr\\Container\\ContainerInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerInterface.php',
+        'Psr\\Container\\NotFoundExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/NotFoundExceptionInterface.php',
         'Psr\\Log\\AbstractLogger' => __DIR__ . '/..' . '/psr/log/Psr/Log/AbstractLogger.php',
         'Psr\\Log\\InvalidArgumentException' => __DIR__ . '/..' . '/psr/log/Psr/Log/InvalidArgumentException.php',
         'Psr\\Log\\LogLevel' => __DIR__ . '/..' . '/psr/log/Psr/Log/LogLevel.php',

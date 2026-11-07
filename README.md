@@ -56,6 +56,8 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - Templates: Options accept WebP, AVIF, SVG and ICO images and WOFF2 fonts, and uploads of up to 8 MB (updated sites get these once; BMP, an outdated format, comes off the list)
 
 **Bug fixes:**
+- **Extensions:**
+  - Extensions by Joomdonation (Payment Form, Events Booking, Membership Pro, Docman and others built on its OSL library) work again: 3.18 had removed a part of Joomla 3 they rely on (the Framework's "DI" container), and this update brings it back
 - **Administrator:**
   - Menus whose top level item went missing from the database (no new menu item could be saved, and Rebuild failed) are repaired by clicking Rebuild
   - The list for picking a contact (for a menu item or in an editor) no longer shows each contact's name twice

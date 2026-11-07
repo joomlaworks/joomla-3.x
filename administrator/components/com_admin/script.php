@@ -5805,11 +5805,10 @@ class JoomlaInstallerScript
             '/libraries/vendor/symfony/polyfill-php56',
             '/libraries/vendor/symfony/polyfill-php71',
             '/libraries/vendor/symfony/polyfill-util',
-            // Unused by core and its libraries (3.18): PHP 7.3 functions for 7.1/7.2, the Framework's DI container and its PSR interfaces
+            // Unused by core and its libraries (3.18): PHP 7.3 functions for 7.1/7.2. Never the Framework's DI container
+            // (libraries/vendor/joomla/di, psr/container): extensions build on it (Joomdonation's OSL library)
             '/libraries/vendor/symfony/polyfill-php73',
             '/libraries/vendor/symfony/polyfill-ctype',
-            '/libraries/vendor/joomla/di',
-            '/libraries/vendor/psr/container',
             // PHP 5.3 polyfills (3.18)
             '/libraries/vendor/joomla/compat',
             // Clear Expired Cache is a button of the Clear Cache page (3.18)
