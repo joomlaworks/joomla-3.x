@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Part of the Joomla Framework DI Package
  *
@@ -16,46 +17,45 @@ namespace Joomla\DI;
  */
 trait ContainerAwareTrait
 {
-	/**
-	 * DI Container
-	 *
-	 * @var    Container
-	 * @since  1.2
-	 */
-	private $container;
+    /**
+     * DI Container
+     *
+     * @var    Container
+     * @since  1.2
+     */
+    private $container;
 
-	/**
-	 * Get the DI container.
-	 *
-	 * @return  Container
-	 *
-	 * @since   1.2
-	 * @throws  \UnexpectedValueException May be thrown if the container has not been set.
-	 * @note    As of 2.0 this method will be protected.
-	 */
-	public function getContainer()
-	{
-		if ($this->container)
-		{
-			return $this->container;
-		}
+    /**
+     * Get the DI container.
+     *
+     * @return  Container
+     *
+     * @since   1.2
+     * @throws  \UnexpectedValueException May be thrown if the container has not been set.
+     * @note    As of 2.0 this method will be protected.
+     */
+    public function getContainer()
+    {
+        if ($this->container) {
+            return $this->container;
+        }
 
-		throw new \UnexpectedValueException('Container not set in ' . __CLASS__);
-	}
+        throw new \UnexpectedValueException('Container not set in ' . __CLASS__);
+    }
 
-	/**
-	 * Set the DI container.
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  mixed  Returns itself to support chaining.
-	 *
-	 * @since   1.2
-	 */
-	public function setContainer(Container $container)
-	{
-		$this->container = $container;
+    /**
+     * Set the DI container.
+     *
+     * @param   Container  $container  The DI container.
+     *
+     * @return  mixed  Returns itself to support chaining.
+     *
+     * @since   1.2
+     */
+    public function setContainer(Container $container)
+    {
+        $this->container = $container;
 
-		return $this;
-	}
+        return $this;
+    }
 }

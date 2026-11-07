@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Part of the Joomla Framework DI Package
  *
@@ -15,25 +16,25 @@ namespace Joomla\DI;
  */
 interface ContainerAwareInterface
 {
-	/**
-	 * Get the DI container.
-	 *
-	 * @return  Container
-	 *
-	 * @since   1.0
-	 * @throws  \UnexpectedValueException May be thrown if the container has not been set.
-	 * @deprecated  2.0  The getter will no longer be part of the interface.
-	 */
-	public function getContainer();
+    /**
+     * Get the DI container.
+     *
+     * @return  Container
+     *
+     * @since   1.0
+     * @throws  \UnexpectedValueException May be thrown if the container has not been set.
+     * @deprecated  2.0  The getter will no longer be part of the interface.
+     */
+    public function getContainer();
 
-	/**
-	 * Set the DI container.
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  mixed
-	 *
-	 * @since   1.0
-	 */
-	public function setContainer(Container $container);
+    /**
+     * Set the DI container.
+     *
+     * @param   Container  $container  The DI container.
+     *
+     * @return  mixed
+     *
+     * @since   1.0
+     */
+    public function setContainer(Container $container);
 }
