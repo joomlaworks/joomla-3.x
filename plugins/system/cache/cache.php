@@ -406,7 +406,7 @@ class PlgSystemCache extends JPlugin
         $browser = $this->params->get('browsercache_send', 0)
             ? max(0, $home ? (int) $this->params->get('browsercache_home', 60) : (int) $this->params->get('browsercache_pages', 180))
             : 0;
-        $shared  = max(0, (int) $this->params->get($home ? 'sharedcache_home' : 'sharedcache_pages', 0));
+        $shared  = max(0, $home ? (int) $this->params->get('sharedcache_home', 60) : (int) $this->params->get('sharedcache_pages', 180));
 
         if ($browser === 0 && $shared === 0) {
             return;

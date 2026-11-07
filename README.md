@@ -50,6 +50,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - The Page Cache can load a page in the background when a visitor is about to open it (in Chrome, Edge and Opera), so it shows at once; on by default, for visitors who aren't logged in
 
 **Improvements:**
+- The Page Cache tells caches in front of the site (a CDN, Varnish) how long they may keep each page (1 minute for the home page, 3 for the others), while browsers still check for a fresh copy every time; set it to 0 to turn it off
 - Joomla! Update is now **System Update**, in the System menu above System Information (it's no longer listed under Components), with the new name everywhere in the administrator, its update notifications included
 - A contact's Miscellaneous Information is edited in the first tab, below the other details, instead of a tab of its own
 - Prothero and Isis have a Page Transitions option, on by default, to turn off the fade between administrator pages

@@ -47,8 +47,8 @@
                     <option value="eager">PLG_CACHE_FIELD_SPECULATION_EAGERNESS_EAGER</option>
                 </field>
                 <field name="heading_advanced" type="spacer" label="PLG_CACHE_HEADING_ADVANCED" description="PLG_CACHE_HEADING_ADVANCED_DESC" />
-                <field name="sharedcache_home" type="number" label="PLG_CACHE_FIELD_SHAREDCACHE_HOME_LABEL" description="PLG_CACHE_FIELD_SHAREDCACHE_HOME_DESC" default="" min="0" filter="integer" />
-                <field name="sharedcache_pages" type="number" label="PLG_CACHE_FIELD_SHAREDCACHE_PAGES_LABEL" description="PLG_CACHE_FIELD_SHAREDCACHE_PAGES_DESC" default="" min="0" filter="integer" />
+                <field name="sharedcache_home" type="number" label="PLG_CACHE_FIELD_SHAREDCACHE_HOME_LABEL" description="PLG_CACHE_FIELD_SHAREDCACHE_HOME_DESC" default="60" min="0" filter="integer" />
+                <field name="sharedcache_pages" type="number" label="PLG_CACHE_FIELD_SHAREDCACHE_PAGES_LABEL" description="PLG_CACHE_FIELD_SHAREDCACHE_PAGES_DESC" default="180" min="0" filter="integer" />
                 <field name="browsercache_swr" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_SWR_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_SWR_DESC" default="" min="0" filter="string" />
                 <field name="browsercache_sie" type="number" label="PLG_CACHE_FIELD_BROWSERCACHE_SIE_LABEL" description="PLG_CACHE_FIELD_BROWSERCACHE_SIE_DESC" default="3600" min="0" filter="integer" />
                 <field name="logged_in_header" type="radio" label="PLG_CACHE_FIELD_LOGGED_IN_HEADER_LABEL" description="PLG_CACHE_FIELD_LOGGED_IN_HEADER_DESC" class="btn-group btn-group-yesno" default="1" filter="integer">
