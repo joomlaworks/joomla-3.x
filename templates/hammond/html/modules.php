@@ -44,7 +44,7 @@ function modChrome_hammond($module, &$params, &$attribs)
 
     if ($module->showtitle) {
         echo '<header class="moduleHeader"><h2 class="moduleTitle">' . ($link ? '<a href="' . $link . '">' . $title . '</a>' : $title) . '</h2>'
-            . ($link ? '<a class="moduleMore" href="' . $link . '">' . JText::_('TPL_HAMMOND_MORE') . HammondHelper::icon('arrow-right') . '</a>' : '') . '</header>';
+            . ($link ? '<a class="moduleMore" href="' . $link . '">' . '<span aria-hidden="true">' . JText::_('TPL_HAMMOND_MORE') . '</span><span class="visuallyHidden">' . JText::sprintf('TPL_HAMMOND_MORE_FROM', $title) . '</span>' . HammondHelper::icon('arrow-right') . '</a>' : '') . '</header>';
     }
 
     echo '<div class="moduleContent">' . HammondHelper::lazyImages($module->content) . '</div></section>';

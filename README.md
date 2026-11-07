@@ -62,6 +62,9 @@ A short overview of each release. Every change is described in detail in [CHANGE
   - Menus whose top level item went missing from the database (no new menu item could be saved, and Rebuild failed) are repaired by clicking Rebuild
   - The list for picking a contact (for a menu item or in an editor) no longer shows each contact's name twice
   - The Joomla logo at the top right stays in the middle of the header when an extension makes its title taller, and the icons of large buttons (such as Reset Messages) and of Log out in the status bar line up with their text (Prothero and Isis)
+- **Site and templates:**
+  - Hammond, Finch and Rookwood: their script no longer holds up the first view of the page on phones (PageSpeed counted it as blocking the page)
+  - Hammond: the menu button can be read by screen readers on phones, World's and Energy's category labels are darker for readability, the "Most read" list's labels are easier to tap, and each "More" link says what it leads to for screen readers and search engines
 - **Installing and uninstalling:**
   - Extensions with long descriptions (such as AllVideos) no longer show a tooltip running off the screen in Extensions: Manage, Discover, Update and Update Sites: it shows the first few lines as plain text
   - Uninstalling a package removes all the extensions it installed, also those its own list names wrongly (the Web Links package left its editor button plugin behind)

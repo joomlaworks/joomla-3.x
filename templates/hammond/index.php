@@ -38,7 +38,7 @@ $page = HammondHelper::prepare($this);
 			<div class="container">
 				<div class="mastheadToggles">
 					<?php if ($page->hasMenu) : ?>
-					<button type="button" class="iconButton menuToggle" aria-expanded="false" aria-controls="megaMenu" data-toggle="megaMenu">
+					<button type="button" class="iconButton menuToggle" aria-expanded="false" aria-controls="megaMenu" data-toggle="megaMenu" aria-label="<?php echo JText::_('TPL_HAMMOND_MENU_SEARCH'); ?>">
 						<?php echo HammondHelper::icon('menu-search') . HammondHelper::icon('close'); ?><span class="labelOpen"><?php echo JText::_('TPL_HAMMOND_MENU_SEARCH'); ?></span><span class="labelClose"><?php echo JText::_('TPL_HAMMOND_CLOSE'); ?></span>
 					</button>
 					<?php endif; ?>

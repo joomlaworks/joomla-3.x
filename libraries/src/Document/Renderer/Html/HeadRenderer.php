@@ -293,7 +293,8 @@ class HeadRenderer extends DocumentRenderer
      * @param   string    $src           The script's address
      * @param   array     $attribs       Its attributes and options
      * @param   string    $mediaVersion  The media version
-     * @param   boolean   $footer        Written in the footer: without defer (the end of the page already)
+     * @param   boolean   $footer        Written in the footer (unused: a deferred file keeps defer there, as a plain script
+     *                                   before </body> still holds the parser, DOMContentLoaded and the first paint)
      *
      * @return  string
      *
@@ -306,10 +307,6 @@ class HeadRenderer extends DocumentRenderer
         $defaultJsMimes         = array('text/javascript', 'application/javascript', 'text/x-javascript', 'application/x-javascript');
         $html5NoValueAttributes = array('defer', 'async');
         $buffer                 = '';
-
-        if ($footer) {
-            unset($attribs['defer']);
-        }
 
         // Check if script uses IE conditional statements.
         $conditional = isset($attribs['options']) && isset($attribs['options']['conditional']) ? $attribs['options']['conditional'] : null;

@@ -177,7 +177,7 @@ Each group keeps the order its items were added in. So the hints come right afte
 
 Templates write the end of the page with `<jdoc:include type="footer" />`, right before `</body>` (every core template since 3.18), after any module position such as `debug`. What goes there:
 
-- script files added with the option `'position' => 'footer'`, without `defer`, grouped by where they come from (core's `media/system`, plugins, modules, components, templates, anything else), in the order they were added within each group, (the end of the page is later than `defer` would run them anyway):
+- script files added with the option `'position' => 'footer'`, with their own attributes (`defer` included: a plain script before `</body>` still holds the first paint), grouped by where they come from (core's `media/system`, plugins, modules, components, templates, anything else), in the order they were added within each group:
 
 ```php
 JHtml::_('script', 'com_example/example.min.js', array('version' => 'auto', 'relative' => true, 'position' => 'footer'));

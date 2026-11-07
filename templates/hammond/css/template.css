@@ -26,10 +26,10 @@
     --c-white:       #fff;
 
     --c-politics:    #2a48c4;
-    --c-world:       #0c8a74;
+    --c-world:       #087563;
     --c-finance:     #1d7a39;
     --c-technology:  #6a3dd2;
-    --c-energy:      #d27a00;
+    --c-energy:      #a85f00;
     --c-education:   #0a76ae;
     --c-health:      #cf2f68;
     --c-sports:      #d2461b;
@@ -408,7 +408,8 @@ body.megaOpen {overflow:hidden;}
 .layout-ranked .item:first-child {padding-top:0;}
 .layout-ranked .rank {font-size:1.9rem;font-weight:900;line-height:1;color:var(--c-line-d);letter-spacing:-0.04em;}
 .layout-ranked .itemTitle {font-size:1.02rem;margin:0;}
-.layout-ranked .itemCategory {margin-bottom:2px;font-size:.72rem;}
+/* At least 24px high and apart from the title: a touch target of its own */
+.layout-ranked .itemCategory {display:inline-flex;align-items:center;min-height:24px;margin-bottom:4px;font-size:.72rem;}
 .layout-ranked .itemThumb img {aspect-ratio:1/1;}
 
 /* Ads (placeholders) */
