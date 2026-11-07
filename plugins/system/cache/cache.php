@@ -358,7 +358,7 @@ class PlgSystemCache extends JPlugin
         $folders = array();
 
         // Only the folders pages link to (files): the rules are in every page's source, so they name nothing else
-        foreach (array('components', 'images', 'media', 'plugins', 'templates') as $folder) {
+        foreach (array('components', 'images', 'media', 'modules', 'plugins', 'templates') as $folder) {
             $folders[] = $root . '/' . $folder . '/*';
         }
 
