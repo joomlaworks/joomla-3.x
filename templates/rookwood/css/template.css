@@ -22,6 +22,7 @@
     --c-muted:      #9aa1b2;
     --c-soft:       var(--c-surface); /* backgrounds of boxes in Joomla's stock layouts */
     --c-violet:     #8b6cff;
+    --c-band:       #6a4cf0; /* accent sections, behind white text */
     --c-lime:       #d7ff3d;
     --c-pink:       #ff5c8a;
     --c-aqua:       #2ee6d6;
@@ -51,6 +52,7 @@
     --c-ink:        #15171c;
     --c-muted:      #626674;
     --c-violet:     #5a3df0;
+    --c-band:       var(--c-violet);
     --c-lime:       #c6f000;
     --c-pink:       #e8326b;
     --c-aqua:       #0aa79b;
@@ -234,11 +236,11 @@ ul.menu.buttons {display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;ma
 .section.wide > .container > .sectionHeader {margin-inline:calc(max(0px, (100% - var(--container) - 2 * var(--gutter)) / 2) + var(--gutter));}
 
 .section.tone-alt {background:var(--c-surface);}
-.section.tone-accent {background:var(--c-violet);color:#fff;--c-ink:#fff;--c-text:rgba(255,255,255,.88);--c-muted:rgba(255,255,255,.75);}
+.section.tone-accent {background:var(--c-band);color:#fff;--c-ink:#fff;--c-text:#fff;--c-muted:rgba(255,255,255,.9);}
 .section.tone-lime {background:var(--c-lime);color:#0e1014;--c-ink:#0e1014;--c-text:#1d1f25;--c-muted:#3a3d45;}
 .sectionWave {position:absolute;left:0;right:0;bottom:100%;display:block;width:100%;height:clamp(28px, 4vw, 64px);margin-bottom:-1px;color:var(--c-bg);}
 .section.tone-alt .sectionWave {color:var(--c-surface);}
-.section.tone-accent .sectionWave {color:var(--c-violet);}
+.section.tone-accent .sectionWave {color:var(--c-band);}
 .section.tone-lime .sectionWave {color:var(--c-lime);}
 .sectionHeader {display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px;margin-bottom:clamp(32px, 4vw, 56px);}
 .sectionTitle {margin:0;font-size:var(--title);max-width:16ch;}

@@ -52,7 +52,7 @@ function modChrome_rookwood($module, &$params, &$attribs)
 
     if ($module->showtitle) {
         echo '<header class="sectionHeader"><h2 class="sectionTitle">' . RookwoodHelper::e($module->title) . '</h2>'
-            . ($link ? '<a class="sectionMore" href="' . $link . '">' . JText::_('TPL_ROOKWOOD_VIEW_ALL') . RookwoodHelper::icon('arrow-right') . '</a>' : '') . '</header>';
+            . ($link ? '<a class="sectionMore" href="' . $link . '">' . '<span aria-hidden="true">' . JText::_('TPL_ROOKWOOD_VIEW_ALL') . '</span><span class="visuallyHidden">' . JText::sprintf('TPL_ROOKWOOD_VIEW_ALL_FROM', RookwoodHelper::e($module->title)) . '</span>' . RookwoodHelper::icon('arrow-right') . '</a>' : '') . '</header>';
     }
 
     echo '<div class="sectionContent">' . RookwoodHelper::lazyImages($module->content) . '</div>' . ($full ? '' : '</div>') . '</section>';

@@ -65,6 +65,8 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - **Site and templates:**
   - Hammond, Finch and Rookwood: their script no longer holds up the first view of the page on phones (PageSpeed counted it as blocking the page)
   - Hammond: the menu button can be read by screen readers on phones, World's and Energy's category labels are darker for readability, the "Most read" list's labels are easier to tap, and each "More" link says what it leads to for screen readers and search engines
+  - Rookwood: the violet sections (such as the Studio set's figures) are a little deeper in the dark theme, so their white text is easier to read, and each "View all" link says what it leads to for screen readers
+  - Hammond, Finch and Rookwood: screen readers are told which page links can't be used (Start and Prev on the first page)
 - **Installing and uninstalling:**
   - Extensions with long descriptions (such as AllVideos) no longer show a tooltip running off the screen in Extensions: Manage, Discover, Update and Update Sites: it shows the first few lines as plain text
   - Uninstalling a package removes all the extensions it installed, also those its own list names wrongly (the Web Links package left its editor button plugin behind)

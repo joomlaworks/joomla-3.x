@@ -1185,7 +1185,7 @@ abstract class RookwoodHelper
             } elseif (!empty($item->active)) {
                 $html .= '<li class="' . trim($class . ' active') . '"><span class="pagenav" aria-current="page">' . $item->text . '</span></li>';
             } else {
-                $html .= '<li class="' . trim($class . ' disabled') . '"><span class="pagenav">' . $item->text . '</span></li>';
+                $html .= '<li class="' . trim($class . ' disabled') . '"><span class="pagenav" aria-disabled="true">' . $item->text . '</span></li>';
             }
         }
 
