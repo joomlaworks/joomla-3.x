@@ -48,6 +48,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 **New features:**
 - The editors grow with your text, as in WordPress' Classic Editor: TinyMCE (with its toolbar staying at the top of the window), TinyMCE (legacy) and the plain text box no longer scroll inside a fixed box. Markdown and Blocks already did. Each editor has a Grow with Content option to turn it off
 - The Page Cache can load a page in the background when a visitor is about to open it (in Chrome, Edge and Opera), so it shows at once; on by default, for visitors who aren't logged in
+- Command line: one command updates every extension and template that has an update (`extension:update --all`, with `--dry-run` to see first what it would do)
 
 **Improvements:**
 - The Page Cache tells caches in front of the site (a CDN, Varnish) how long they may keep each page (1 minute for the home page, 3 for the others), while browsers still check for a fresh copy every time; set it to 0 to turn it off

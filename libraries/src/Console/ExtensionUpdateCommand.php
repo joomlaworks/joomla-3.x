@@ -39,7 +39,10 @@ class ExtensionUpdateCommand extends AbstractExtensionCommand
      * @since  3.17.0
      */
     protected $help = 'Updates the given extensions, like Extensions: Update, using the updates found by update:extensions:check '
-        . '(which lists their extension IDs). Download keys set for an update site are used. Joomla itself is updated with core:update.';
+        . '(which lists their extension IDs). With --all instead of IDs, it fetches the update sites first, as update:extensions:check '
+        . 'does, and updates every installed extension which has an update (a dry run lists them as found at the last check, '
+        . 'without going online). Download keys set for an update site are used. Joomla itself is updated with core:update.';
+
 
     /**
      * @var    boolean
@@ -69,7 +72,8 @@ class ExtensionUpdateCommand extends AbstractExtensionCommand
      */
     protected function configure()
     {
-        $this->addArgument('extensionId', self::ARGUMENT_REQUIRED | self::ARGUMENT_ARRAY, 'IDs of the extensions to update (see update:extensions:check)');
+        $this->addArgument('extensionId', self::ARGUMENT_OPTIONAL | self::ARGUMENT_ARRAY, 'IDs of the extensions to update (see update:extensions:check)');
+        $this->addOption('all', null, self::OPTION_NONE, 'Fetch the update sites, then update every extension which has an update');
     }
 
     /**
@@ -85,8 +89,25 @@ class ExtensionUpdateCommand extends AbstractExtensionCommand
 
         $db      = Factory::getDbo();
         $updates = array();
+        $ids     = (array) $io->getArgument('extensionId');
 
-        foreach ((array) $io->getArgument('extensionId') as $id) {
+        if ($io->getOption('all')) {
+            if ($ids) {
+                $io->error('Give either extension IDs or --all, not both.');
+
+                return self::INVALID;
+            }
+
+            return $this->updateAll($io);
+        }
+
+        if (!$ids) {
+            $io->error('Give the IDs of the extensions to update (see update:extensions:check), or --all.');
+
+            return self::INVALID;
+        }
+
+        foreach ($ids as $id) {
             if (!ctype_digit((string) $id) || (int) $id === 0) {
                 $io->error(sprintf('"%s" is not an extension ID.', $id));
 
@@ -114,6 +135,73 @@ class ExtensionUpdateCommand extends AbstractExtensionCommand
             $updates[(int) $id] = $update;
         }
 
+        return $this->runUpdates($io, $updates);
+    }
+
+    /**
+     * --all: the update sites fetched again (not in a dry run, which reads the last check), then every installed extension with an
+     * update, by name; one update per extension, as for IDs
+     *
+     * @param   CommandIO  $io  The input values and the output
+     *
+     * @return  integer
+     *
+     * @since   3.19.0
+     */
+    protected function updateAll(CommandIO $io)
+    {
+        if ($io->isDryRun()) {
+            $io->plan('Clear the cached update information and fetch every enabled update site', array('action' => 'refresh'));
+            $io->text('As found at the last check:');
+        } else {
+            $io->text('Fetching extension updates ...');
+
+            /** @var \InstallerModelUpdate $check */
+            $check = $this->getAdministratorModel('com_installer', 'Update', 'InstallerModel');
+            $check->purge();
+
+            Updater::getInstance()->findUpdates(0, 0);
+        }
+
+        $db    = Factory::getDbo();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName(array('u.update_id', 'u.extension_id', 'u.name', 'u.version')))
+            ->from($db->quoteName('#__updates', 'u'))
+            ->join('INNER', $db->quoteName('#__extensions', 'e') . ' ON ' . $db->quoteName('e.extension_id') . ' = ' . $db->quoteName('u.extension_id'))
+            ->where($db->quoteName('u.extension_id') . ' NOT IN (0, 700)')
+            ->order($db->quoteName('u.name') . ', ' . $db->quoteName('u.update_id'));
+
+        $updates = array();
+
+        foreach ($db->setQuery($query)->loadObjectList() as $update) {
+            if (!isset($updates[(int) $update->extension_id])) {
+                $updates[(int) $update->extension_id] = $update;
+            }
+        }
+
+        if (!$updates) {
+            $io->setData('updated', array());
+            $io->setData('failed', array());
+            $io->success('There are no updates available.');
+
+            return self::SUCCESS;
+        }
+
+        return $this->runUpdates($io, $updates);
+    }
+
+    /**
+     * Installs the updates (planned in a dry run)
+     *
+     * @param   CommandIO  $io       The input values and the output
+     * @param   array      $updates  Extension ID => the update (update_id, name, version)
+     *
+     * @return  integer
+     *
+     * @since   3.19.0
+     */
+    protected function runUpdates(CommandIO $io, array $updates)
+    {
         /** @var \InstallerModelUpdate $model */
         if ($io->isDryRun()) {
             foreach ($updates as $id => $update) {

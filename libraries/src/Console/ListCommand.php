@@ -148,6 +148,7 @@ class ListCommand extends AbstractCommand
                     => array('core:update --file=/path/to/joomla-3.x-main.zip --restore-core'),
                 'Export the database to a ZIP file with a custom name'                     => array('database:export --folder=/path/to/backups --zip=mysite-backup.zip'),
                 'Check for extension updates, then update a single extension by its ID'   => array('update:extensions:check', 'extension:update 10188'),
+                'Update every extension which has an update (see first what it would do)' => array('extension:update --all --dry-run', 'extension:update --all'),
                 'Find a user, then block them'                                             => array('user:list \'*smith*\'', 'user:block --username=jsmith'),
             ) as $label => $lines) {
                 $io->writeln('  ' . $label . ':');

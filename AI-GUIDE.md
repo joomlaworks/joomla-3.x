@@ -273,6 +273,7 @@ php cli/joomla.php core:update:check
 php cli/joomla.php core:update                   # download and apply the latest Joomla 3.x UTD
 php cli/joomla.php update:extensions:check
 php cli/joomla.php extension:update 10023
+php cli/joomla.php extension:update --all          # fetch the update sites, then update every extension with an update (--dry-run first)
 php cli/joomla.php extension:list --type=plugin 'littlewaf'
 php cli/joomla.php extension:install --url=https://example.com/pkg_example.zip
 php cli/joomla.php extension:reinstall 10023     # restore an extension's original files (e.g. after a hack)
