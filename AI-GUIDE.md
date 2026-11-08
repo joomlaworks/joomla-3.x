@@ -23,6 +23,7 @@ This guide covers both: how to connect an AI assistant to your site, what it can
   - [The basics](#the-basics)
   - [Recipes](#recipes)
   - [Scripting with JSON](#scripting-with-json)
+  - [Several sites](#several-sites)
   - [Scheduled tasks (cron)](#scheduled-tasks-cron)
 - [Troubleshooting](#troubleshooting)
 - [Command reference](#command-reference)
@@ -276,6 +277,7 @@ php cli/joomla.php extension:update 10023
 php cli/joomla.php extension:update --all          # fetch the update sites, then update every extension with an update (--dry-run first)
 php cli/joomla.php extension:list --type=plugin 'littlewaf'
 php cli/joomla.php extension:install --url=https://example.com/pkg_example.zip
+php cli/joomla.php extension:install --path=/path/to/pkg_example.zip   # a package of an installed extension updates it, as Extensions: Install does
 php cli/joomla.php extension:reinstall 10023     # restore an extension's original files (e.g. after a hack)
 php cli/joomla.php extension:disable plg_system_k2   # by name too: com_k2, plg_<group>_<element>, tpl_<name> (enable, remove, reinstall)
 ```
@@ -329,6 +331,20 @@ done
 ```
 
 Check the exit code (or `success`) rather than parsing messages.
+
+### Several sites
+
+Each site has its own `cli/joomla.php`, so a loop over the sites' folders runs a command on all of them. Download a package once and install it from the local file on every site; run as each site's own user (or fix the files' owner afterwards), as files the command extracts belong to whoever runs it:
+
+```
+PKG=$(mktemp) && curl -fsSL -o "$PKG" https://example.com/pkg_example.zip
+for site in site1 site2 site3; do
+    (cd "/path/to/$site" && php cli/joomla.php extension:install --path="$PKG")   # --dry-run first to see what it would do
+done
+rm -f "$PKG"
+```
+
+For extensions with an update site, `extension:update --all` on each site does the same without a download of your own. Joomla itself: `core:update` on each site (or `core:update --file=joomla-latest.zip` with a package downloaded once). Copying the files over a site by other means (rsync, unzip) leaves its database as it was: finish such an update with `php cli/joomla.php core:update:finalise`.
 
 ### Scheduled tasks (cron)
 
