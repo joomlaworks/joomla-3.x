@@ -11,9 +11,18 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 
 **New in 3.17: work with your site through AI assistants and the command line.** Joomla 3.x UTD has a built-in MCP server and a command line with 100 commands. See the guide, **[AI Assistants & the Command Line](AI-GUIDE.md)**, to connect Claude, ChatGPT/Codex, Gemini, Copilot, Cursor, Devin Desktop and other assistants, and to use the command line for pretty much anything.
 
+## DOCUMENTATION
+- **[README.md](README.md)** (this file): what Joomla 3.x UTD is, a short summary of each release, upgrading and installing, supported PHP versions and databases.
+- **[CHANGELOG.md](CHANGELOG.md):** every change of every release in detail (security fixes, new features, improvements, bug fixes), for developers.
+- **[AI-GUIDE.md](AI-GUIDE.md):** AI assistants through the built-in MCP server, and the command line (`cli/joomla.php`): setting up a client, permissions, recipes, the command reference.
+- **[CLI-GUIDE.md](CLI-GUIDE.md):** for extension developers: adding your own commands to the command line (and the MCP server) through a console plugin.
+- **[API-GUIDE.md](API-GUIDE.md):** for extension and template developers: what this distribution adds to Joomla 3's PHP and JavaScript API (the document head, scripts at the end of the page, the shared `CMS` script, helpers).
+- **[LICENSE.txt](LICENSE.txt):** GNU General Public License, version 2 or later.
+
 ---
 
 ## CONTENTS
+- [Documentation](#documentation)
 - [Changelog](#changelog)
   - [Version 3.19 - unreleased [pending]](#version-319---unreleased-pending)
   - [Version 3.18 - released November 5th, 2026](#version-318---released-november-5th-2026)
@@ -383,14 +392,16 @@ Happy updating!
 
 
 ### Using a terminal (CLI method)
-Using your server's terminal, extract the latest rolling release https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip on top of an existing Joomla 3.x installation.
-
-Remember to remove the `/installation` folder afterwards.
-
-In a typical Linux based server, you can easily do the upgrade using the following one-liner command (after you "cd" into your Joomla site's folder):
+On a site already running Joomla 3.x UTD 3.17 or newer, one command does it all (from the site's folder):
 ```
-wget -qO- https://github.com/joomlaworks/joomla-3.x/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 && rm -rf installation .github .gitignore *.md
+php cli/joomla.php core:update
 ```
+
+On any other Joomla 3.x site (stock 3.10.x included), extract the latest release https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip on top of it, remove the `installation` folder, then finish the update, which applies the database changes and cleans up old files (copying the files alone leaves the database as it was):
+```
+wget -q https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip && unzip -oq joomla-latest.zip && rm -rf joomla-latest.zip installation && php cli/joomla.php core:update:finalise
+```
+Run it as the user the site's files belong to (or fix their owner afterwards).
 
 
 ## HOW TO INSTALL (FOR NEW SITES)

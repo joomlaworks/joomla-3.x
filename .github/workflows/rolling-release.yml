@@ -63,7 +63,7 @@ jobs:
 
           Install/upgrade via the Joomla backend updater, or manually:
           \`\`\`
-          wget -q https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip && unzip -o joomla-latest.zip && rm -f joomla-latest.zip && rm -rf installation/
+          wget -q https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip && unzip -o joomla-latest.zip && rm -f joomla-latest.zip && rm -rf installation/ && php cli/joomla.php core:update:finalise
           \`\`\`" \
             --latest \
             joomla-latest.zip
