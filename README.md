@@ -75,6 +75,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
   - The list for picking a contact (for a menu item or in an editor) no longer shows each contact's name twice
   - The Joomla logo at the top right stays in the middle of the header when an extension makes its title taller, and the icons of large buttons (such as Reset Messages) and of Log out in the status bar line up with their text (Prothero and Isis)
 - **Site and templates:**
+  - Templates using the name "collapse" for their own layout (such as Foundation-based templates' rows) no longer lose whole sections of the page
   - Hammond, Finch and Rookwood: their script no longer holds up the first view of the page on phones (PageSpeed counted it as blocking the page)
   - Hammond: the menu button can be read by screen readers on phones, World's and Energy's category labels are darker for readability, the "Most read" list's labels are easier to tap, and each "More" link says what it leads to for screen readers and search engines
   - Rookwood: the violet sections (such as the Studio set's figures) are a little deeper in the dark theme, so their white text is easier to read, and each "View all" link says what it leads to for screen readers

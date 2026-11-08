@@ -634,8 +634,11 @@ ul.btn-toolbar {margin:0 0 20px;padding:0;list-style:none;}
 /* Bootstrap's scripted parts, when an extension uses them */
 .fade {opacity:0;transition:opacity .15s linear;}
 .fade.in {opacity:1;}
-.collapse {position:relative;height:0;overflow:hidden;}
-.collapse.in {height:auto;}
+/* Core's collapsibles only (the accordion helper, the categories' subcategories): other frameworks use the name (Foundation's .row.collapse) */
+.accordion-body.collapse,
+.collapse.fade {position:relative;height:0;overflow:hidden;}
+.accordion-body.collapse.in,
+.collapse.fade.in {height:auto;}
 .accordion-group {margin-bottom:8px;border:1px solid var(--c-line);border-radius:0;}
 .accordion-heading a {display:block;padding:12px 16px;font-weight:700;}
 .accordion-inner {padding:16px;border-top:1px solid var(--c-line);}
