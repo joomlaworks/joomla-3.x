@@ -91,7 +91,7 @@ class LibraryManifest extends Manifest
         $this->libraryname  = (string) $xml->libraryname;
         $this->version      = (string) $xml->version;
         $this->description  = (string) $xml->description;
-        $this->creationdate = (string) $xml->creationDate;
+        $this->creationDate = (string) $xml->creationDate;
         $this->author       = (string) $xml->author;
         $this->authoremail  = (string) $xml->authorEmail;
         $this->authorurl    = (string) $xml->authorUrl;

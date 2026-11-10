@@ -47,6 +47,10 @@
 #### Editors
 - **TinyMCE 8 came up broken in a tab that wasn't open at load** (a contact's Miscellaneous Information, or any editor field on a later tab): the editor has no size there, so TinyMCE put every toolbar button behind "more", and its sticky toolbar took the 0-pixel box for a page scrolled past it and docked the menu bar at the window's left edge, 0 pixels wide (one menu per line). A window resize undocked it, but the toolbar's overflow is worked out only once, at start-up. `js/tinymce.js` now starts an editor whose field has no width (`.js-editor-tinymce-latest` `offsetWidth` 0) only when a `ResizeObserver` sees it shown; until then the textarea holds the content, which the editor API (`Joomla.editors.instances`) already read and wrote before start-up, so forms saved without opening the tab keep it. A second `setupEditor()` for the same field drops a waiting observer. TinyMCE 4 (legacy) wasn't affected.
 
+#### PHP compatibility
+- **PHP 8.1+ deprecation from lists of numbers** (stock Joomla 3): `JHtml::_('select.integerlist', ...)` called with its arguments one by one (the classic form, not an options array) leaves `id` null, which reached `str_replace()` in `JHtmlSelect::genericlist()` ("Passing null to parameter #3 ($subject)"; seen with Kunena 5.3). `genericlist()` and `groupedlist()` now treat a null id as no id attribute, which is what PHP 7 gave, so the HTML is unchanged (byte for byte, checked against the old code on PHP 7.1); `option()` no longer passes a null text to `trim()`.
+- **PHP 8.2+ deprecations when installing libraries and packages** (stock Joomla 3): `LibraryManifest::loadManifestFromData()` assigned `$this->creationdate`, while the property is `$creationDate`, which created a dynamic property and left the declared one empty; `PackageManifest` assigned `author`, `authoremail` and `authorurl` without declaring them. Both now fill declared properties (nothing in core read the lowercase name).
+
 ## Version 3.18 - released November 5th, 2026
 
 ### New features

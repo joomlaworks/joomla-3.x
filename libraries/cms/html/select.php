@@ -130,7 +130,8 @@ abstract class JHtmlSelect
             }
         }
 
-        $id = $options['id'] !== false ? $options['id'] : $name;
+        // A null id (integerlist()'s default) means no id attribute, as it did before PHP 8.1 deprecated null here
+        $id = $options['id'] !== false ? (string) $options['id'] : $name;
         $id = str_replace(array('[', ']', ' '), '', $id);
 
         $baseIndent = str_repeat($options['format.indent'], $options['format.depth']++);
@@ -251,7 +252,8 @@ abstract class JHtmlSelect
             }
         }
 
-        $id = $options['id'] !== false ? $options['id'] : $name;
+        // A null id (integerlist()'s default) means no id attribute, as it did before PHP 8.1 deprecated null here
+        $id = $options['id'] !== false ? (string) $options['id'] : $name;
         $id = str_replace(array('[', ']', ' '), '', $id);
 
         // Disable groups in the options.
@@ -458,7 +460,7 @@ abstract class JHtmlSelect
 
         $obj = new stdClass();
         $obj->{$options['option.key']}  = $value;
-        $obj->{$options['option.text']} = trim($text) ? $text : $value;
+        $obj->{$options['option.text']} = trim((string) $text) ? $text : $value;
 
         /*
          * If a label is provided, save it. If no label is provided and there is

@@ -30,6 +30,30 @@ class PackageManifest extends Manifest
     public $packagename = '';
 
     /**
+     * Author for the package
+     *
+     * @var    string
+     * @since  3.19.0
+     */
+    public $author = '';
+
+    /**
+     * Email address for the package author
+     *
+     * @var    string
+     * @since  3.19.0
+     */
+    public $authoremail = '';
+
+    /**
+     * URL for the package author
+     *
+     * @var    string
+     * @since  3.19.0
+     */
+    public $authorurl = '';
+
+    /**
      * Website for the package
      *
      * @var    string
