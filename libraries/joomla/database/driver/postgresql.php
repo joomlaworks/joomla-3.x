@@ -455,20 +455,17 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
             $keys = $this->getMysqlColumnKeys($tableSub, $schema);
 
             foreach ($fields as $field) {
-                if (stristr(strtolower((string) $field->type), 'character varying')) {
-                    $field->Default = '';
-                }
+                // Joomla 3.x UTD: the default as the MySQL drivers report it, the value instead of PostgreSQL's expression (Table::reset()
+                // copies it into new rows); Extra still from the expression
+                $default = JDatabaseDriverPostgresql::normaliseColumnDefault($field->Default, $field->type);
 
-                if (stristr(strtolower((string) $field->type), 'text')) {
-                    $field->Default = '';
-                }
                 // Do some dirty translation to MySQL output.
                 // TODO: Come up with and implement a standard across databases.
                 $result[$field->column_name] = (object) array(
                     'column_name' => $field->column_name,
                     'type' => $field->type,
                     'null' => $field->null,
-                    'Default' => $field->Default,
+                    'Default' => $default,
                     'comments' => '',
                     'Field' => $field->column_name,
                     'Type' => $field->type,
@@ -480,13 +477,6 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
                     'Privileges' => '',
                     'Comment' => (string) $field->comments,
                 );
-            }
-        }
-
-        /* Change Postgresql's NULL::* type with PHP's null one */
-        foreach ($fields as $field) {
-            if (preg_match('/^NULL::*/', (string) $field->Default)) {
-                $field->Default = null;
             }
         }
 
@@ -1456,6 +1446,44 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
         }
 
         return static::translateBackticks($replacedQuery);
+    }
+
+    /**
+     * Joomla 3.x UTD: a column's default as getTableColumns() reports it, a value as the MySQL drivers report it, from the
+     * expression PostgreSQL keeps ('0001-01-01'::date, (-1)::integer, NULL::character varying, nextval('x_seq'::regclass)):
+     * literals and numbers as their value, booleans as true/false, and null for NULL and for computed defaults (sequences,
+     * now(), other functions), which Table::store() then leaves to the database: reporting them as MySQL does (CURRENT_TIMESTAMP)
+     * would make Table::reset() write that text into the column. Character varying and text columns without a default (or
+     * with NULL) give '', as before: Table::reset() and inserts rely on it, as some NOT NULL text columns have no default.
+     *
+     * @param   string|null  $expression  The default's expression (pg_get_expr()), null for none
+     * @param   string       $type        The column's type (format_type())
+     *
+     * @return  string|null
+     *
+     * @since   3.19.0
+     */
+    public static function normaliseColumnDefault($expression, $type = '')
+    {
+        $value = $expression === null ? '' : trim((string) $expression);
+
+        // A literal, cast or not, its backslashes escaped: the drivers turn standard_conforming_strings off, and PostgreSQL then
+        // writes a backslash in a default as two ('a\\b'::text)
+        if (preg_match("/^E?'((?:[^']|'')*)'(?:::[a-z0-9_ .\"]+(?:\\(\\d+(?:,\\d+)?\\))?(?:\\[\\])?)*$/i", $value, $match)) {
+            return preg_replace('/\\\\(.)/s', '$1', str_replace("''", "'", $match[1]));
+        }
+
+        if (preg_match('/^\\(?(-?\\d+(?:\\.\\d+)?(?:e[+-]?\\d+)?)\\)?(?:::[a-z0-9_ ]+(?:\\(\\d+(?:,\\d+)?\\))?)*$/i', $value, $match)) {
+            return $match[1];
+        }
+
+        if (preg_match('/^(true|false)$/i', $value)) {
+            return strtolower($value);
+        }
+
+        $none = $value === '' || preg_match('/^NULL(?:::|$)/i', $value);
+
+        return $none && (stripos((string) $type, 'character varying') !== false || stripos((string) $type, 'text') !== false) ? '' : null;
     }
 
     /**

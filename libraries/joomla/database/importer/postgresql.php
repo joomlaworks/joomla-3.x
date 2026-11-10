@@ -146,7 +146,9 @@ class JDatabaseImporterPostgresql extends JDatabaseImporter
 
                 // Test whether there is a change.
                 $change = ((string) $field['Type'] != $column->Type) || ((string) $field['Null'] != $column->Null)
-                    || ((string) $field['Default'] != $column->Default);
+                    // Joomla 3.x UTD: the file has PostgreSQL's expression, getTableColumns() the value
+                    || ((string) JDatabaseDriverPostgresql::normaliseColumnDefault(isset($field['Default']) ? (string) $field['Default'] : null, (string) $field['Type'])
+                        != (string) $column->Default);
 
                 if ($change) {
                     $alters[] = $this->getChangeColumnSql($table, $field);

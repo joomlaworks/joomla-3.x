@@ -90,10 +90,13 @@ A short overview of each release. Every change is described in detail in [CHANGE
   - Opening a BMP, WebP, AVIF or SVG image in a template's files no longer gives an error page: images are shown whatever their format, and WebP and AVIF can be cropped and resized too (AVIF with PHP 8.1 or newer)
 - **Editors:**
   - TinyMCE in a tab that isn't open when the page loads (such as a contact's Miscellaneous Information) no longer comes up broken, with its menu stacked at the window's edge and its buttons missing
+- **Databases:**
+  - PostgreSQL: extensions that start new items from their table's defaults (such as Kunena, whose user profiles broke registration) work again, and text columns keep their own defaults
 - **PHP compatibility:**
   - No more PHP 8 deprecation notices from lists of numbers that extensions build (such as Kunena's) or when installing libraries and packages
 
 **Joomla 3 bugs fixed:**
+- **Databases:** on PostgreSQL, extensions starting new items from their table's defaults failed to save them
 - **PHP compatibility:** deprecation notices on PHP 8 from lists of numbers and when installing libraries and packages
 - **Caching:** header-only requests (HEAD) bypassed the Page Cache and were told not to cache the page
 - **Administrator:** Rebuild repairs menus that lost their top level item, which stopped new menu items from being saved

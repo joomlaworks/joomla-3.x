@@ -243,13 +243,9 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
             $keys = $this->getMysqlColumnKeys($tableSub, $defaultSchema);
 
             foreach ($fields as $field) {
-                if (stristr(strtolower((string) $field->type), 'character varying')) {
-                    $field->Default = '';
-                }
-
-                if (stristr(strtolower((string) $field->type), 'text')) {
-                    $field->Default = '';
-                }
+                // Joomla 3.x UTD: the default as the MySQL drivers report it, the value instead of PostgreSQL's expression (Table::reset()
+                // copies it into new rows); Extra still from the expression
+                $default = JDatabaseDriverPostgresql::normaliseColumnDefault($field->Default, $field->type);
 
                 // Do some dirty translation to MySQL output.
                 // @todo: Come up with and implement a standard across databases.
@@ -257,7 +253,7 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
                     'column_name' => $field->column_name,
                     'type' => $field->type,
                     'null' => $field->null,
-                    'Default' => $field->Default,
+                    'Default' => $default,
                     'comments' => '',
                     'Field' => $field->column_name,
                     'Type' => $field->type,
@@ -269,13 +265,6 @@ class JDatabaseDriverPgsql extends JDatabaseDriverPdo
                     'Privileges' => '',
                     'Comment' => (string) $field->comments,
                 );
-            }
-        }
-
-        // Change Postgresql's NULL::* type with PHP's null one
-        foreach ($fields as $field) {
-            if (preg_match('/^NULL::*/', (string) $field->Default)) {
-                $field->Default = null;
             }
         }
 
