@@ -457,7 +457,7 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
             foreach ($fields as $field) {
                 // Joomla 3.x UTD: the default as the MySQL drivers report it, the value instead of PostgreSQL's expression (Table::reset()
                 // copies it into new rows); Extra still from the expression
-                $default = JDatabaseDriverPostgresql::normaliseColumnDefault($field->Default, $field->type);
+                $default = JDatabaseDriverPostgresql::normaliseColumnDefault($field->Default, $field->type, $field->null === 'YES');
 
                 // Do some dirty translation to MySQL output.
                 // TODO: Come up with and implement a standard across databases.
@@ -1449,21 +1449,23 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
     }
 
     /**
-     * Joomla 3.x UTD: a column's default as getTableColumns() reports it, a value as the MySQL drivers report it, from the
-     * expression PostgreSQL keeps ('0001-01-01'::date, (-1)::integer, NULL::character varying, nextval('x_seq'::regclass)):
-     * literals and numbers as their value, booleans as true/false, and null for NULL and for computed defaults (sequences,
-     * now(), other functions), which Table::store() then leaves to the database: reporting them as MySQL does (CURRENT_TIMESTAMP)
-     * would make Table::reset() write that text into the column. Character varying and text columns without a default (or
-     * with NULL) give '', as before: Table::reset() and inserts rely on it, as some NOT NULL text columns have no default.
+     * Joomla 3.x UTD: a column's default as getTableColumns() reports it, matching what the MySQL drivers give, from the expression
+     * PostgreSQL keeps ('0001-01-01'::date, (-1)::integer, NULL::character varying, nextval('x_seq'::regclass)): literals and
+     * numbers as their value, booleans as t/f (as PostgreSQL returns them and sqlValue() writes them), null for computed defaults (sequences, now(), other functions), which
+     * Table::store() leaves out so the database computes them (MySQL's CURRENT_TIMESTAMP, written as text, would be refused).
+     * A column without a default (or with NULL) gives null when it's nullable, as MySQL reports it, and when it's NOT NULL the
+     * value MySQL fills in for an insert leaving it out (the drivers turn its strict mode off): '' for text, 0 for numbers,
+     * f for booleans, Joomla's "no date" for dates and times. PostgreSQL has no such mode, and refuses those inserts.
      *
      * @param   string|null  $expression  The default's expression (pg_get_expr()), null for none
      * @param   string       $type        The column's type (format_type())
+     * @param   boolean      $nullable    Whether the column takes NULL
      *
      * @return  string|null
      *
      * @since   3.19.0
      */
-    public static function normaliseColumnDefault($expression, $type = '')
+    public static function normaliseColumnDefault($expression, $type = '', $nullable = true)
     {
         $value = $expression === null ? '' : trim((string) $expression);
 
@@ -1478,12 +1480,45 @@ class JDatabaseDriverPostgresql extends JDatabaseDriver
         }
 
         if (preg_match('/^(true|false)$/i', $value)) {
-            return strtolower($value);
+            return strtolower($value) === 'true' ? 't' : 'f';
         }
 
-        $none = $value === '' || preg_match('/^NULL(?:::|$)/i', $value);
+        // Computed (sequences, functions), or a nullable column without a value: none
+        if (($value !== '' && !preg_match('/^NULL(?:::|$)/i', $value)) || $nullable) {
+            return null;
+        }
 
-        return $none && (stripos((string) $type, 'character varying') !== false || stripos((string) $type, 'text') !== false) ? '' : null;
+        $type = strtolower(trim((string) $type));
+
+        if (substr($type, -2) === '[]') {
+            return null;
+        }
+
+        if (preg_match('/^(?:character|char|varchar|text|bytea|citext)\\b/', $type)) {
+            return '';
+        }
+
+        if (preg_match('/^(?:smallint|integer|int|bigint|numeric|decimal|real|double precision|money)\\b/', $type)) {
+            return '0';
+        }
+
+        if ($type === 'boolean') {
+            return 'f';
+        }
+
+        if (strpos($type, 'timestamp') === 0) {
+            return '1970-01-01 00:00:00';
+        }
+
+        if ($type === 'date') {
+            return '1970-01-01';
+        }
+
+        if (strpos($type, 'time') === 0) {
+            return '00:00:00';
+        }
+
+        return null;
     }
 
     /**

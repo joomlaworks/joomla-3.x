@@ -418,7 +418,7 @@ class FOFDatabaseDriverPostgresql extends FOFDatabaseDriver
             foreach ($fields as $field) {
                 // Joomla 3.x UTD: the default as the MySQL drivers report it, the value instead of PostgreSQL's expression (Table::reset()
                 // copies it into new rows); Extra still from the expression
-                $default = JDatabaseDriverPostgresql::normaliseColumnDefault($field->Default, $field->type);
+                $default = JDatabaseDriverPostgresql::normaliseColumnDefault($field->Default, $field->type, $field->null === 'YES');
 
                 // Do some dirty translation to MySQL output.
                 // TODO: Come up with and implement a standard across databases.
