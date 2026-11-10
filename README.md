@@ -71,6 +71,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - **Extensions:**
   - Extensions by Joomdonation (Payment Form, Events Booking, Membership Pro, Docman and others built on its OSL library) work again: 3.18 had removed a part of Joomla 3 they rely on (the Framework's "DI" container), and this update brings it back
 - **Administrator:**
+  - Prothero: the filters shown by Search Tools are lined up in even columns, as many to a line as fit, instead of wide lists out of line; the ordering and number of items sit at the right of the search bar
   - Menus whose top level item went missing from the database (no new menu item could be saved, and Rebuild failed) are repaired by clicking Rebuild
   - The list for picking a contact (for a menu item or in an editor) no longer shows each contact's name twice
   - The Joomla logo at the top right stays in the middle of the header when an extension makes its title taller, and the icons of large buttons (such as Reset Messages) and of Log out in the status bar line up with their text (Prothero and Isis)

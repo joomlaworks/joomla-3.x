@@ -2739,6 +2739,36 @@ h6 {font-size:var(--fs-h6);line-height:var(--lh-h6);}
 .js-stools-container-bar .btn-wrapper.prothero-reorder {display:none;}
 /* Lists: space between the search tools and the list */
 .js-stools {margin-bottom:12px;}
+/* The search tools' filters: equal columns about as wide as a filter needs, as many to a line as fit (searchtools shows the row with an inline display:block); each list fills its column, not the 550px of form fields */
+.js-stools .js-stools-container-filters.shown {display:grid !important;grid-template-columns:repeat(auto-fill, minmax(14rem, 1fr));gap:8px;margin:12px 0 0;}
+/* Its clearfix's pseudo-elements would be grid items, the first taking a cell */
+.js-stools .js-stools-container-filters.shown::before,
+.js-stools .js-stools-container-filters.shown::after {display:none;}
+.js-stools .js-stools-container-filters .js-stools-field-filter {display:block;min-width:0;max-width:none;margin:0;}
+.js-stools .js-stools-container-filters .js-stools-field-filter > select,
+.js-stools .js-stools-container-filters .js-stools-field-filter > .chzn-container {width:100% !important;max-width:100%;}
+/* The row above them: search and buttons, then (right-aligned) the ordering and the number of items, wrapping as a whole instead of floating */
+.js-stools > .clearfix:first-child {display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;}
+.js-stools > .clearfix:first-child::before,
+.js-stools > .clearfix:first-child::after {display:none;}
+.js-stools > .clearfix:first-child > div {float:none;margin:0;}
+.js-stools > .clearfix:first-child > .js-stools-container-list {margin-inline-start:auto;}
+.js-stools .js-stools-container-bar {display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;}
+.js-stools .js-stools-container-bar > .btn-wrapper,
+.js-stools .js-stools-container-bar > .js-stools-menutype {margin:0;}
+.js-stools .js-stools-container-list .ordering-select {display:flex;gap:8px;}
+.js-stools .js-stools-container-list .js-stools-field-list {margin:0;}
+.js-stools .js-stools-container-selector {min-width:0;}
+.js-stools .js-stools-container-selector select,
+.js-stools .js-stools-container-selector .chzn-container,
+.js-stools .js-stools-menutype select,
+.js-stools .js-stools-menutype .chzn-container,
+#list_fullordering,
+#list_fullordering_chzn {width:14rem !important;max-width:100%;}
+/* A text longer than its list ends with an ellipsis (global.css lets it run over the arrow) */
+.js-stools .chzn-container-single .chzn-single span {overflow:hidden;text-overflow:ellipsis;}
+#list_limit,
+#list_limit_chzn {width:5.5rem !important;}
 /* Status lists (published, unpublished): tinted as their state */
 .chzn-color-state.chzn-single div,
 .chzn-color.chzn-single[rel="value_0"] div,
