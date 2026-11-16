@@ -173,6 +173,10 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
+        <field name="link_headers" type="radio" label="COM_CONFIG_FIELD_LINK_HEADERS_LABEL" description="COM_CONFIG_FIELD_LINK_HEADERS_DESC" class="btn-group btn-group-yesno" default="1" filter="integer">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
         <field name="error_reporting" type="list" label="COM_CONFIG_FIELD_ERROR_REPORTING_LABEL" description="COM_CONFIG_FIELD_ERROR_REPORTING_DESC" default="default" filter="cmd">
             <option value="default">COM_CONFIG_FIELD_VALUE_SYSTEM_DEFAULT</option>
             <option value="none">COM_CONFIG_FIELD_VALUE_NONE</option>

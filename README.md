@@ -69,6 +69,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 
 - Extensions: Manage and Discover also find extensions by their author or copyright, not only by name
 - The Image and PDF buttons and image fields open the Media Manager itself, showing only images (or only PDF files): its folder tree, uploads, new folders, renaming, cropping and thumbnail sizes are there while you pick; a click picks a file, a double click inserts it. It works the same when editing on the site, where it looks the same whatever the template
+- Global Configuration can turn off the hints the site sends to browsers ahead of each page (Resource Hints in HTTP Headers, on by default), for servers, CDNs or optimising extensions that send their own
 **Bug fixes:**
 - **Extensions:**
   - Extensions by Joomdonation (Payment Form, Events Booking, Membership Pro, Docman and others built on its OSL library) work again: 3.18 had removed a part of Joomla 3 they rely on (the Framework's "DI" container), and this update brings it back
@@ -91,15 +92,18 @@ A short overview of each release. Every change is described in detail in [CHANGE
   - The Media Manager and its pickers open in the folder you used last, so adding several images from one folder no longer means finding it each time
   - Long folder names wrap in the folder tree instead of running over the list
 - **Caching:**
+  - Browsers are no longer told to download a page's files in advance when another extension removed or replaced them after the page was put together (such as Regular Labs' extensions or optimisers), which wasted downloads and filled Chrome's console with warnings
   - The Page Cache also answers header-only requests (as `curl -I` and uptime monitors send), which got "don't cache" headers while the page itself was cached
 - **Installing and uninstalling:**
   - Extensions with long descriptions (such as AllVideos) no longer show a tooltip running off the screen in Extensions: Manage, Discover, Update and Update Sites: it shows the first few lines as plain text
   - Uninstalling a package removes all the extensions it installed, also those its own list names wrongly (the Web Links package left its editor button plugin behind)
   - Packages whose install script checks the minimum PHP version (such as Web Links) can be installed from the command line
+- **Command line:**
+  - `config:set` can set options a recent update added, before Global Configuration has been saved
 - **Templates:**
   - Opening a BMP, WebP, AVIF or SVG image in a template's files no longer gives an error page: images are shown whatever their format, and WebP and AVIF can be cropped and resized too (AVIF with PHP 8.1 or newer)
 - **Editors:**
-  - TinyMCE now starts in K2's extra fields that use an editor (it stayed a plain text box)
+  - TinyMCE now starts in K2's extra fields that use an editor (it stayed a plain text box), and K2 items with such fields no longer jump down to the full text editor a second after opening
   - TinyMCE in a tab that isn't open when the page loads (such as a contact's Miscellaneous Information) no longer comes up broken, with its menu stacked at the window's edge and its buttons missing
 - **Databases:**
   - PostgreSQL: extensions that start new items from their table's defaults (such as Kunena, whose user profiles broke registration) work again, and text columns keep their own defaults

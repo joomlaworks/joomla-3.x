@@ -736,6 +736,42 @@ class WebApplication extends BaseApplication
     }
 
     /**
+     * Leaves out the `Link:` headers preloading an address the response's body doesn't contain. The head's hints are worked
+     * out from the document's lists, but plugins may still change the page in onAfterRender (optimisers combining or moving
+     * files, CDN rewriting, extensions removing their unused files), and a preload of a file the page doesn't use is a
+     * download for nothing (Chrome warns about it). Hints the head also writes as tags are in the body, so only the header-only
+     * preloads of stylesheets and scripts can fail the check, and they fail it exactly when the page no longer loads them.
+     * Other relations (preconnect, dns-prefetch) are kept.
+     *
+     * @return  void
+     *
+     * @since   3.19.0
+     */
+    public function pruneLinkHeaders()
+    {
+        $body = $this->getBody();
+
+        if (!is_string($body) || $body === '' || !$this->response->headers) {
+            return;
+        }
+
+        $kept = array();
+
+        foreach ($this->response->headers as $header) {
+            if (isset($header['name'], $header['value']) && strtolower($header['name']) === 'link'
+                && preg_match('/^<([^>]*)>\s*;\s*rel="?(preload|modulepreload)"?\s*(;|$)/i', (string) $header['value'], $match)
+                && strpos($body, $match[1]) === false
+                && strpos($body, htmlspecialchars($match[1], ENT_QUOTES, 'UTF-8')) === false) {
+                continue;
+            }
+
+            $kept[] = $header;
+        }
+
+        $this->response->headers = $kept;
+    }
+
+    /**
      * Method to get the array of response headers to be sent when the response is sent
      * to the client.
      *

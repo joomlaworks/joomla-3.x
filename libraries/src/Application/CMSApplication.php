@@ -239,6 +239,9 @@ class CMSApplication extends WebApplication
         if ($this->document instanceof \JDocument) {
             // Render the application output.
             $this->render();
+
+            // Preload hints of files the finished page no longer has (plugins rewrite it after the head was rendered)
+            $this->pruneLinkHeaders();
         }
 
         // If gzip compression is enabled in configuration and the server is compliant, compress the output.

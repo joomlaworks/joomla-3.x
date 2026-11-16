@@ -187,6 +187,13 @@ class HtmlDocument extends Document
 
         // Set default mime type and document metadata (metadata syncs with mime type by default)
         $this->setMimeEncoding('text/html');
+
+        // Global Configuration's Resource Hints in HTTP Headers (on unless set to No)
+        try {
+            $this->linkHeaders = (bool) \JFactory::getConfig()->get('link_headers', 1);
+        } catch (\Throwable $e) {
+            $this->linkHeaders = true;
+        }
     }
 
     /**
@@ -522,7 +529,7 @@ class HtmlDocument extends Document
     /**
      * Sets whether resource hints (preconnect, dns-prefetch, preload and modulepreload links) are also sent as HTTP `Link:`
      * headers, which reach the browser before the page (and which some servers and CDNs turn into 103 Early Hints). On by
-     * default.
+     * default; Global Configuration's Resource Hints in HTTP Headers (`link_headers`) sets it for every page.
      *
      * @param   boolean  $enabled  Whether to send them
      *

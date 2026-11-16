@@ -92,6 +92,7 @@ class InstallationModelConfiguration extends JModelBase
         $registry->set('live_site', '');
         $registry->set('secret', JUserHelper::genRandomPassword(16));
         $registry->set('gzip', 0);
+        $registry->set('link_headers', 1);
         $registry->set('error_reporting', 'default');
         $registry->set('helpurl', $options->helpurl);
         $registry->set('ftp_host', '');

@@ -99,7 +99,8 @@ class ConfigSetCommand extends AbstractCommand
 
             list($option, $value) = explode('=', $pair, 2);
 
-            if (!array_key_exists($option, $current)) {
+            // An option of Global Configuration's form counts too: one added by an update is written when it's first saved
+            if (!array_key_exists($option, $current) && !in_array($option, static::formOptions(), true)) {
                 $io->error(sprintf('Can\'t find option "%s" in the configuration.', $option));
 
                 return self::NOT_FOUND;
@@ -186,6 +187,25 @@ class ConfigSetCommand extends AbstractCommand
         }
 
         return (string) $value;
+    }
+
+    /**
+     * The options of Global Configuration's form (com_config's application.xml), which configuration.php may not have yet
+     *
+     * @return  string[]
+     *
+     * @since   3.19.0
+     */
+    protected static function formOptions()
+    {
+        $file = JPATH_ADMINISTRATOR . '/components/com_config/model/form/application.xml';
+        $xml  = is_file($file) ? simplexml_load_file($file) : false;
+
+        if (!$xml) {
+            return array();
+        }
+
+        return array_values(array_unique(array_map('strval', $xml->xpath('//fieldset/field/@name') ?: array())));
     }
 
     /**
