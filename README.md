@@ -71,6 +71,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - The Image and PDF buttons and image fields open the Media Manager itself, showing only images (or only PDF files): its folder tree, uploads, new folders, renaming, cropping and thumbnail sizes are there while you pick; a click picks a file, a double click inserts it. It works the same when editing on the site, where it looks the same whatever the template
 - Global Configuration can turn off the hints the site sends to browsers ahead of each page (Resource Hints in HTTP Headers, on by default), for servers, CDNs or optimising extensions that send their own
 - Global Configuration has a Frontend Settings section on its first tab, gathering the settings that only concern the site: Site Offline, Inline Editing, the site's default editor, the default CAPTCHA and the feed settings
+- The windows for choosing an article, category, contact, news feed, menu item or module position share one piece of code instead of a copy each, and 15 files Joomla 3 hadn't used since 2016 are gone; they work as before
 **Bug fixes:**
 - **Extensions:**
   - Extensions by Joomdonation (Payment Form, Events Booking, Membership Pro, Docman and others built on its OSL library) work again: 3.18 had removed a part of Joomla 3 they rely on (the Framework's "DI" container), and this update brings it back

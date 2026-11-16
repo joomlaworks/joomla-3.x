@@ -545,7 +545,34 @@ CMS.modal.open(url, {
 
 The fields `modal_article`, `modal_category`, `modal_contact`, `modal_menu` and `modal_newsfeed` render the layout `joomla.form.field.modal`, which templates may override. Their lists and forms open in the CMS's modal at the pickers' size: Select opens the list, Create and Edit the item's form with Close, Save & Close and Save below it. The script is `CMS.modalField` in `global.js` (`JHtml::_('behavior.cms')`); jQuery and Bootstrap's modal are no longer needed, and `media/system/js/modal-fields.js` was removed (asking for it through `JHtml` loads `global.js`).
 
-The markup keeps the old ids (`<id>_name`, `<id>_select`, `<id>_new`, `<id>_edit`, `<id>_clear`, `<id>_propagate`, `<id>_id`), and the lists still call the field's function by name (`function=jSelectArticle_<id>` in the list's address), which the script defines for each field. A field of your own can use the layout with the same data the core fields pass (see `administrator/components/com_content/models/fields/modal/article.php`): the urls (`{id}` in the edit address is replaced with the field's value), titles, tooltips, the buttons allowed, the form's task prefix (`article`), its id and its id and title fields.
+The markup keeps the old ids (`<id>_name`, `<id>_select`, `<id>_new`, `<id>_edit`, `<id>_clear`, `<id>_propagate`, `<id>_id`), and the lists still call the field's function by name (`function=jSelectArticle_<id>` in the list's address), which the script defines for each field. A field of your own can use the layout with the same data the core fields pass: the urls (`{id}` in the edit address is replaced with the field's value), titles, tooltips, the buttons allowed, the form's task prefix (`article`), its id and its id and title fields.
+
+The core fields extend `Joomla\CMS\Form\ModalItemField`, which builds that data from one array; a picker for your own component's items can too, if it has a list layout `modal` and an edit layout `modal` as core's components do:
+
+```php
+class JFormFieldModal_Recipe extends Joomla\CMS\Form\ModalItemField
+{
+    protected $type = 'Modal_Recipe';
+
+    protected $picker = array(
+        'component'   => 'com_recipes',
+        'listView'    => 'recipes',
+        'itemView'    => 'recipe',
+        'task'        => 'recipe',              // recipe.add, recipe.edit
+        'table'       => '#__recipes',
+        'titleColumn' => 'title',               // default
+        'callback'    => 'jSelectRecipe',       // the list calls jSelectRecipe_<field id>
+        'form'        => 'item-form',           // default: the edit form's id
+        'titleField'  => 'jform_title',         // default
+        'strings'     => array('change' => 'COM_RECIPES_CHANGE_RECIPE', 'select' => 'COM_RECIPES_SELECT_A_RECIPE',
+            'new' => 'COM_RECIPES_NEW_RECIPE', 'edit' => 'COM_RECIPES_EDIT_RECIPE'),
+    );
+}
+```
+
+`getLinkQuery()` adds to the addresses' query (Categories: `&extension=`), `getAllowed()` decides the buttons (by default from the `select`, `new`, `edit`, `clear` and `propagate` attributes) and `getEmptyText()` what shows while nothing is chosen.
+
+In the list, a row's link needs no script of its own: `<a class="select-link" data-function="..." data-id="..." data-title="..." data-cat-id="..." data-uri="..." data-language="...">` is handled by `frontend.js` (`behavior.core`), which calls the function in the list's frame if it defines one (an editor button's), else in the page around it, with `(id, title, catid, null, uri, language)`. `data-select-args` sets another order, attribute names without `data-` and `null` for none (Categories: `"id title null uri language null"`; Module Positions: `"id"`).
 
 `processModalParent()`, `processModalSelect()` and `processModalEdit()` still work, also from fields that write their own Bootstrap modals: `processModalEdit()` runs the form in the modal its button is in.
 

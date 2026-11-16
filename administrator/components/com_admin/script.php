@@ -5491,6 +5491,22 @@ class JoomlaInstallerScript
             '/templates/finch/images/icons.svg',
             '/templates/hammond/images/icons.svg',
             '/templates/rookwood/images/icons.svg',
+            // The edit modals' sublayouts: unused since Joomla 3.6, when the modals started loading the edit layout
+            '/administrator/components/com_categories/views/category/tmpl/modal_associations.php',
+            '/administrator/components/com_categories/views/category/tmpl/modal_extrafields.php',
+            '/administrator/components/com_categories/views/category/tmpl/modal_metadata.php',
+            '/administrator/components/com_categories/views/category/tmpl/modal_options.php',
+            '/administrator/components/com_contact/views/contact/tmpl/modal_associations.php',
+            '/administrator/components/com_contact/views/contact/tmpl/modal_metadata.php',
+            '/administrator/components/com_contact/views/contact/tmpl/modal_params.php',
+            '/administrator/components/com_content/views/article/tmpl/modal_associations.php',
+            '/administrator/components/com_content/views/article/tmpl/modal_metadata.php',
+            '/administrator/components/com_menus/views/item/tmpl/modal_associations.php',
+            '/administrator/components/com_menus/views/item/tmpl/modal_options.php',
+            '/administrator/components/com_newsfeeds/views/newsfeed/tmpl/modal_associations.php',
+            '/administrator/components/com_newsfeeds/views/newsfeed/tmpl/modal_display.php',
+            '/administrator/components/com_newsfeeds/views/newsfeed/tmpl/modal_metadata.php',
+            '/administrator/components/com_newsfeeds/views/newsfeed/tmpl/modal_params.php',
         );
 
         // TODO There is an issue while deleting folders using the ftp mode

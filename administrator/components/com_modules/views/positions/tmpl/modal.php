@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
+JHtml::_('behavior.core');
 JHtml::_('formbehavior.chosen', 'select');
 
 $function  = JFactory::getApplication()->input->getCmd('function', 'jSelectPosition');
@@ -79,11 +80,11 @@ $type      = $this->state->get('filter.type');
 foreach ($this->items as $value => $templates) : ?>
 			<tr class="row<?php echo $i = 1 - $i; ?>">
 				<td>
-					<a class="pointer" onclick="if (window.parent) window.parent.<?php echo $function; ?>('<?php echo $value; ?>');"><?php echo $this->escape($value); ?></a>
+					<a class="pointer select-link" data-function="<?php echo $this->escape($function); ?>" data-id="<?php echo $this->escape($value); ?>" data-select-args="id"><?php echo $this->escape($value); ?></a>
 				</td>
 				<td>
 					<?php if (!empty($templates)) : ?>
-					<a class="pointer" onclick="if (window.parent) window.parent.<?php echo $function; ?>('<?php echo $value; ?>');">
+					<a class="pointer select-link" data-function="<?php echo $this->escape($function); ?>" data-id="<?php echo $this->escape($value); ?>" data-select-args="id">
 						<ul>
 						<?php foreach ($templates as $template => $label) : ?>
 							<li><?php echo $lang->hasKey($label) ? JText::sprintf('COM_MODULES_MODULE_TEMPLATE_POSITION', JText::_($template), JText::_($label)) : JText::_($template); ?></li>

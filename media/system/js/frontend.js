@@ -280,7 +280,35 @@
 			form.filter_order_Dir.value = dir;
 			Joomla.submitform(task, form);
 		},
+
+		// A picker's list (layout=modal): a.select-link calls data-function, the editor button's function of this page or the
+		// field's in the page around the frame, with data-select-args in each list's own order ("null" for none)
+		pick(link) {
+			const name = link.getAttribute('data-function');
+			const target = typeof window[name] === 'function' ? window : window.parent;
+
+			if (!/^[\w$]+$/.test(name) || !target || typeof target[name] !== 'function') {
+				return false;
+			}
+
+			const args = (link.getAttribute('data-select-args') || 'id title cat-id null uri language').split(' ')
+				.map((key) => (key === 'null' || !link.hasAttribute('data-' + key) ? null : link.getAttribute('data-' + key)));
+
+			target[name](...args);
+
+			return true;
+		},
 	};
+
+	// Delegated, after any listener of the link itself (an override's own script prevents the default)
+	document.addEventListener('click', (event) => {
+		const link = event.defaultPrevented || !event.target.closest ? null : event.target.closest('a.select-link[data-function]');
+
+		if (link) {
+			event.preventDefault();
+			CMS.list.pick(link);
+		}
+	});
 
 	/* --- System messages (#system-message-container) --- */
 

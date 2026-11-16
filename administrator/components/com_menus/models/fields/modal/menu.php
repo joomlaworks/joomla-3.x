@@ -5,19 +5,20 @@
  * @subpackage  com_menus
  *
  * @copyright   (C) 2016 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright   (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Form\ModalItemField;
 
 /**
  * Supports a modal menu item picker.
  *
  * @since  3.7.0
  */
-class JFormFieldModal_Menu extends JFormField
+class JFormFieldModal_Menu extends ModalItemField
 {
     /**
      * The form field type.
@@ -26,6 +27,30 @@ class JFormFieldModal_Menu extends JFormField
      * @since   3.7.0
      */
     protected $type = 'Modal_Menu';
+
+    /**
+     * What the picker opens and shows.
+     *
+     * @var    array
+     * @since  3.19.0
+     */
+    protected $picker = array(
+        'component'   => 'com_menus',
+        'listView'    => 'items',
+        'itemView'    => 'item',
+        'task'        => 'item',
+        'table'       => '#__menu',
+        'titleColumn' => 'title',
+        'callback'    => 'jSelectMenu',
+        'form'        => 'item-form',
+        'titleField'  => 'jform_title',
+        'strings'     => array(
+            'change' => 'COM_MENUS_CHANGE_MENUITEM',
+            'select' => 'COM_MENUS_SELECT_A_MENUITEM',
+            'new'    => 'COM_MENUS_NEW_MENUITEM',
+            'edit'   => 'COM_MENUS_EDIT_MENUITEM',
+        ),
+    );
 
     /**
      * Determinate, if the select button is shown
@@ -150,109 +175,48 @@ class JFormFieldModal_Menu extends JFormField
     }
 
     /**
-     * Method to get the field input markup.
+     * The menu items' client
      *
-     * @return  string  The field input markup.
+     * @return  string
      *
-     * @since   3.7.0
+     * @since   3.19.0
      */
-    protected function getInput()
+    protected function getLinkQuery()
     {
-        $clientId    = (int) $this->element['clientid'];
-        $languages   = LanguageHelper::getContentLanguages(array(0, 1));
-
-        // Load language
-        JFactory::getLanguage()->load('com_menus', JPATH_ADMINISTRATOR);
-
-        // The active article id field.
-        $value = (int) $this->value > 0 ? (int) $this->value : '';
-
-        // Setup variables for display.
-        $linkSuffix = '&layout=modal&client_id=' . $clientId . '&tmpl=component&' . JSession::getFormToken() . '=1';
-        $linkItems  = 'index.php?option=com_menus&view=items' . $linkSuffix;
-        $linkItem   = 'index.php?option=com_menus&view=item' . $linkSuffix;
-        $modalTitle = JText::_('COM_MENUS_CHANGE_MENUITEM');
-
-        if (isset($this->element['language'])) {
-            $linkItems  .= '&forcedLanguage=' . $this->element['language'];
-            $linkItem   .= '&forcedLanguage=' . $this->element['language'];
-            $modalTitle .= " \u{2014} " . $this->element['label'];
-        }
-
-        if ($value) {
-            $db    = JFactory::getDbo();
-            $query = $db->getQuery(true)
-                ->select($db->quoteName('title'))
-                ->from($db->quoteName('#__menu'))
-                ->where($db->quoteName('id') . ' = ' . (int) $value);
-
-            $db->setQuery($query);
-
-            try {
-                $title = $db->loadResult();
-            } catch (RuntimeException $e) {
-                JError::raiseWarning(500, $e->getMessage());
-            }
-        }
-
-        // Placeholder if option is present or not
-        if ($this->element->option && (string) $this->element->option['value'] == '') {
-            $titleHolder = JText::_($this->element->option);
-        } else {
-            $titleHolder = JText::_('COM_MENUS_SELECT_A_MENUITEM');
-        }
-
-        $title = empty($title) ? $titleHolder : htmlspecialchars((string) $title, ENT_QUOTES, 'UTF-8');
-
-        // The field's markup and script are shared by the item pickers (global.js: CMS.modalField)
-        return JLayoutHelper::render('joomla.form.field.modal', array(
-            'id'         => $this->id,
-            'name'       => $this->name,
-            'value'      => $value,
-            'required'   => $this->required,
-            'title'      => $title,
-            'empty'      => $titleHolder,
-            'function'   => 'jSelectMenu_' . $this->id,
-            'urls'       => array(
-                'select' => $linkItems . '&function=jSelectMenu_' . $this->id,
-                'new'    => $linkItem . '&task=item.add',
-                'edit'   => $linkItem . '&task=item.edit&id={id}',
-            ),
-            'titles'     => array(
-                'select' => $modalTitle,
-                'new'    => JText::_('COM_MENUS_NEW_MENUITEM'),
-                'edit'   => JText::_('COM_MENUS_EDIT_MENUITEM'),
-            ),
-            'tips'       => array(
-                'select' => 'COM_MENUS_CHANGE_MENUITEM',
-                'new'    => 'COM_MENUS_NEW_MENUITEM',
-                'edit'   => 'COM_MENUS_EDIT_MENUITEM',
-            ),
-            'allow'      => array(
-                'select'    => $this->allowSelect,
-                'new'       => $this->allowNew,
-                'edit'      => $this->allowEdit,
-                'clear'     => $this->allowClear,
-                'propagate' => $this->allowPropagate && count($languages) > 2,
-            ),
-            // The callbacks of the other languages' fields: this one's without its language tag
-            'propagate'  => substr('jSelectMenu_' . $this->id, 0, -strlen((string) $this->element['language'])),
-            'task'       => 'item',
-            'form'       => 'item-form',
-            'idField'    => 'jform_id',
-            'titleField' => 'jform_title',
-        ));
+        return '&client_id=' . (int) $this->element['clientid'];
     }
 
     /**
-     * Method to get the field label markup.
+     * Which of the buttons the field shows, from its properties
      *
-     * @return  string  The field label markup.
+     * @return  array  select, new, edit, clear, propagate
      *
-     * @since   3.7.0
+     * @since   3.19.0
      */
-    protected function getLabel()
+    protected function getAllowed()
     {
-        return str_replace($this->id, $this->id . '_id', parent::getLabel());
+        return array(
+            'select'    => $this->allowSelect,
+            'new'       => $this->allowNew,
+            'edit'      => $this->allowEdit,
+            'clear'     => $this->allowClear,
+            'propagate' => $this->allowPropagate,
+        );
+    }
+
+    /**
+     * The text shown while no item is chosen: the field's empty option, if it has one
+     *
+     * @return  string
+     *
+     * @since   3.19.0
+     */
+    protected function getEmptyText()
+    {
+        if ($this->element->option && (string) $this->element->option['value'] == '') {
+            return JText::_($this->element->option);
+        }
+
+        return parent::getEmptyText();
     }
 }
