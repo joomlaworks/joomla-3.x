@@ -15,7 +15,7 @@ $path   = 'file_path';
 JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
 
 ?>
-<form target="_parent" action="index.php?option=com_media&amp;tmpl=index&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>" method="post" id="mediamanager-form" name="mediamanager-form">
+<form target="_parent" action="index.php?option=com_media&amp;tmpl=index&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>" method="post" id="mediamanager-form" name="mediamanager-form"<?php echo $this->siteClass; ?>>
 	<div class="muted">
 		<p>
 			<span class="icon-folder"></span>

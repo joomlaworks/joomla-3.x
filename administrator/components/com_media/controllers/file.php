@@ -270,7 +270,10 @@ class MediaControllerFile extends JControllerLegacy
 
         $redirect = 'index.php?option=com_media&folder=' . $folder;
 
-        if ($tmpl == 'component') {
+        if (MediaHelper::pickUrl() !== '') {
+            // Picking: back to the picker's page
+            $redirect = MediaHelper::pickUrl($folder);
+        } elseif ($tmpl == 'component') {
             // We are inside the iframe
             $redirect .= '&view=mediaList&tmpl=component';
         }

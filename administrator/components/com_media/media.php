@@ -33,7 +33,8 @@ $popup_upload = $input->get('pop_up', null);
 $path         = 'file_path';
 $view         = $input->get('view');
 
-if (substr(strtolower((string) $view), 0, 6) == 'images' || $popup_upload == 1) {
+// Picking (the editors' Image and PDF buttons, image fields: MediaHelper::pickType()) uses the images folder, as the picker did
+if (substr(strtolower((string) $view), 0, 6) == 'images' || $popup_upload == 1 || in_array($input->getCmd('pick'), array('image', 'pdf'), true)) {
     $path = 'image_path';
 }
 

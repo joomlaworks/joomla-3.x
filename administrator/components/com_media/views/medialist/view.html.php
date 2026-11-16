@@ -30,7 +30,17 @@ class MediaViewMediaList extends JViewLegacy
     {
         $app = JFactory::getApplication();
 
-        if (!$app->isClient('administrator')) {
+        // Picking (MediaHelper::pickType()) also runs on the site (front-end editing)
+        $this->pick = MediaHelper::pickType();
+
+        // On the site the list has a look of its own (media.css), the same in every template
+        $this->siteClass = $app->isClient('site') ? ' class="media-site"' : '';
+
+        if ($app->isClient('site')) {
+            JHtml::_('stylesheet', 'system/icomoon.css', array('version' => 'auto', 'relative' => true));
+        }
+
+        if (!$app->isClient('administrator') && $this->pick === '') {
             return $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
         }
 
@@ -39,6 +49,20 @@ class MediaViewMediaList extends JViewLegacy
 
         $this->images    = $this->get('images');
         $this->documents = $this->get('documents');
+        $this->folders   = $this->get('folders');
+        $this->videos    = $this->get('videos');
+        $this->audios    = $this->get('audios');
+        $this->state     = $this->get('state');
+
+        // Picking lists only what can be picked: images, or PDF files
+        if ($this->pick === 'image') {
+            $this->documents = $this->videos = $this->audios = array();
+        } elseif ($this->pick === 'pdf') {
+            $this->images    = $this->videos = $this->audios = array();
+            $this->documents = array_values(array_filter($this->documents, function ($document) {
+                return strtolower(JFile::getExt($document->name)) === 'pdf';
+            }));
+        }
 
         // PDF files: their first pages as the tiles' pictures, a click shows them (JHtml behavior.pdf)
         foreach ($this->documents as $document) {
@@ -48,10 +72,17 @@ class MediaViewMediaList extends JViewLegacy
                 break;
             }
         }
-        $this->folders   = $this->get('folders');
-        $this->videos    = $this->get('videos');
-        $this->audios    = $this->get('audios');
-        $this->state     = $this->get('state');
+
+        // The folder pages opened without one show next (the Media Manager, the picker)
+        MediaHelper::rememberFolder((string) $this->state->folder);
+
+        // Picking: the list's links and forms carry the picker's values (media.js), a click picks
+        if ($this->pick !== '') {
+            JFactory::getDocument()->addScriptOptions('com_media.pick', array(
+                'values'  => MediaHelper::pickValues(),
+                'baseurl' => COM_MEDIA_BASEURL,
+            ));
+        }
 
         // Check for invalid folder name
         if (empty($this->state->folder)) {

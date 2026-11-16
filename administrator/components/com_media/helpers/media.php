@@ -234,6 +234,8 @@ abstract class MediaHelper
             return;
         }
 
+        $picker = $picker || self::pickType() !== '';
+
         $params  = JComponentHelper::getParams('com_media');
         $base    = trim(str_replace(array(JPATH_ROOT, '\\'), array('', '/'), COM_MEDIA_BASE), '/');
         $keys    = array('HINT', 'UPLOADING', 'DONE', 'FAILED', 'TOO_LARGE', 'SUMMARY', 'CLOSE');
@@ -246,7 +248,7 @@ abstract class MediaHelper
         JFactory::getDocument()->addScriptOptions(
             'com_media.dropUpload',
             array(
-                'url'      => JUri::base(true) . '/index.php?option=com_media&task=file.upload&format=json&context=mediamanager',
+                'url'      => JUri::base(true) . '/index.php?option=com_media&task=file.upload&format=json&context=mediamanager' . self::pickQuery(),
                 'token'    => JSession::getFormToken(),
                 'folder'   => (string) $folder,
                 'shown'    => $base . ($folder !== '' ? '/' . $folder : ''),
@@ -284,7 +286,7 @@ abstract class MediaHelper
         JFactory::getDocument()->addScriptOptions(
             'com_media.rename',
             array(
-                'url'    => JUri::base(true) . '/index.php?option=com_media&task=file.rename&format=json',
+                'url'    => JUri::base(true) . '/index.php?option=com_media&task=file.rename&format=json' . self::pickQuery(),
                 'folder' => (string) $folder,
                 'icons'  => array('pencil' => $icon('pencil'), 'save' => $icon('check-lg'), 'cancel' => $icon('x-lg')),
                 'text'   => array(
@@ -314,5 +316,152 @@ abstract class MediaHelper
     public static function typeIcon($icon, $size, $label)
     {
         return JHtml::_('icons.svg', $icon ?: 'file-earmark', $label, array('path' => 'media/com_media/images/icons', 'size' => $size, 'class' => 'media-type-icon'));
+    }
+
+    /**
+     * What the Media Manager is picking for: 'image' (the editors' Image button, image fields), 'pdf' (the PDF button) or ''
+     * (managing). The picker's old addresses (view=images, view=imagesList; type=pdf) count as picking.
+     *
+     * @return  string
+     *
+     * @since   3.19.0
+     */
+    public static function pickType()
+    {
+        $input = JFactory::getApplication()->input;
+        $pick  = $input->getCmd('pick');
+        $view  = strtolower((string) $input->getCmd('view'));
+
+        if ($pick === 'image' || $pick === 'pdf') {
+            return $pick;
+        }
+
+        if ($view === 'images' || $view === 'imageslist') {
+            return $input->getCmd('type') === 'pdf' ? 'pdf' : 'image';
+        }
+
+        return '';
+    }
+
+    /**
+     * The picker's values from the request, which its pages pass on: what it picks, for which editor or field, and the
+     * asset and author media.php's access check reads
+     *
+     * @param   boolean  $page  The picker's page too (the editor or field it fills); else only what its list needs
+     *
+     * @return  array  Empty when not picking
+     *
+     * @since   3.19.0
+     */
+    public static function pickValues($page = true)
+    {
+        $type = self::pickType();
+
+        if ($type === '') {
+            return array();
+        }
+
+        $input  = JFactory::getApplication()->input;
+        $values = array(
+            'pick'   => $type,
+            'asset'  => (string) $input->getCmd('asset'),
+            'author' => (string) $input->getCmd('author'),
+        );
+
+        if ($page) {
+            $values['e_name']  = (string) $input->getCmd('e_name');
+            $values['fieldid'] = (string) $input->getCmd('fieldid');
+            $values['ismoo']   = (string) $input->getInt('ismoo', 1);
+        }
+
+        return $values;
+    }
+
+    /**
+     * The picker's values as a query string to add to an address ('&pick=image&asset=...'), '' when not picking
+     *
+     * @param   boolean  $page  See pickValues()
+     *
+     * @return  string
+     *
+     * @since   3.19.0
+     */
+    public static function pickQuery($page = true)
+    {
+        $values = self::pickValues($page);
+
+        return $values ? '&' . http_build_query($values, '', '&') : '';
+    }
+
+    /**
+     * The picker's page for a folder (where uploading, creating a folder and deleting come back to while picking)
+     *
+     * @param   string  $folder  Relative to the media folder
+     *
+     * @return  string  '' when not picking
+     *
+     * @since   3.19.0
+     */
+    public static function pickUrl($folder = null)
+    {
+        $query = self::pickQuery(true);
+
+        if ($query === '') {
+            return '';
+        }
+
+        return 'index.php?option=com_media&view=media&tmpl=component' . $query . ($folder === null ? '' : '&folder=' . rawurlencode((string) $folder));
+    }
+
+    /**
+     * The folder last shown in this session, for pages opened without one (the Media Manager, the picker), so picking
+     * several files from one folder doesn't mean finding it each time. One per media folder (the Media Manager's and the
+     * picker's may differ) and for each of managing, picking images and picking PDF files; a folder gone since is forgotten.
+     *
+     * @return  string  Relative to the media folder ('' for the media folder itself)
+     *
+     * @since   3.19.0
+     */
+    public static function lastFolder()
+    {
+        $folder = (string) JFactory::getApplication()->getUserState(self::lastFolderKey(), '');
+
+        if ($folder === '' || in_array('..', preg_split('#[\\\\/]+#', $folder), true) || !is_dir(COM_MEDIA_BASE . '/' . $folder)) {
+            return '';
+        }
+
+        return $folder;
+    }
+
+    /**
+     * Remembers the folder shown (see lastFolder())
+     *
+     * @param   string  $folder  Relative to the media folder
+     *
+     * @return  void
+     *
+     * @since   3.19.0
+     */
+    public static function rememberFolder($folder)
+    {
+        $folder = trim(str_replace('\\', '/', (string) $folder), '/');
+
+        if ($folder !== '' && (in_array('..', explode('/', $folder), true) || !is_dir(COM_MEDIA_BASE . '/' . $folder))) {
+            return;
+        }
+
+        JFactory::getApplication()->setUserState(self::lastFolderKey(), $folder);
+    }
+
+    /**
+     * The session key of the last folder: one for managing, one for picking images, one for PDF files, each per media folder
+     *
+     * @return  string
+     *
+     * @since   3.19.0
+     */
+    protected static function lastFolderKey()
+    {
+        return 'com_media.lastfolder.' . (self::pickType() ?: 'manage') . '.' . md5(str_replace('\\', '/', COM_MEDIA_BASE));
     }
 }

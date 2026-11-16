@@ -4,92 +4,69 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
-/* --- Image picker --- */
-:where(:root:has(#imageForm)) img {border:0 none;}
-:where(:root:has(#imageForm)) form {padding:0;margin:0 auto;width:100%;}
-:where(:root:has(#imageForm)) button {padding:3px;border:1px solid #ccc;font-weight:bold;color:#0b55c4;background-color:white;}
-:where(:root:has(#imageForm)) button:hover {border:1px solid #0b55c4;}
-:where(:root:has(#imageForm)) iframe {width:100%;border:0 none;margin:0 0 0.5em 0;padding:0;}
-:where(:root:has(#imageForm)) iframe#imageframe {height:350px;}
-:where(:root:has(#imageForm)) a:hover {border-color:ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;}
-:where(:root:has(#imageForm)) .buttons {width:70px;text-align:center;}
-:where(:root:has(#imageForm)) .hide {display:none;}
-:where(:root:has(#imageForm)) label.hidelabeltxt {text-indent:-9999em;}
-#uploadform.well {margin-bottom:-26px;}
-:where(:root:has(#imageForm)) #messages {position:relative;left:175px;top:115px;background-color:white;width:200px;float:left;margin-top:-52px;border:1px solid #ccc;text-align:center;padding:15px;}
-:where(:root:has(#imageForm)) #message {font-size:15px;font-weight:bold;color:#69c;}
+/* --- The upload form --- */
 #uploads .upload {padding:4px;}
 #upload-noflash {border:0;}
-/* Shown while the picker works (what dots.gif was) */
-#imageForm .media-loading-dots {display:inline-flex;gap:3px;margin-left:4px;vertical-align:middle;}
-#imageForm .media-loading-dots span {width:5px;height:5px;border-radius:50%;background:currentColor;animation:media-loading-dots 1s ease-in-out infinite;}
-#imageForm .media-loading-dots span:nth-child(2) {animation-delay:0.15s;}
-#imageForm .media-loading-dots span:nth-child(3) {animation-delay:0.3s;}
 /* The file field fits narrow windows (phones) instead of widening the page past them */
 #upload-file {max-width:100%;box-sizing:border-box;}
-
-@media only screen and (min-width: 768px) {
-    #imageForm .control-group,
-    #uploadform .control-group {margin-bottom:0;}
-}
-
-:where([dir="rtl"]:has(#imageForm)) #messages {right:175px;float:right;}
-:where([dir="rtl"]) #imageForm fieldset,
 :where([dir="rtl"]) #uploadform,
 :where([dir="rtl"]) #upload-noflash {text-align:right;}
-:where([dir="rtl"]:has(#imageForm)) .fltrt {float:left;}
-:where([dir="rtl"]:has(#imageForm)) .fltlft {float:right;}
-:where([dir="rtl"]:has(#imageForm)) fieldset input,
-:where([dir="rtl"]:has(#imageForm)) fieldset textarea,
-:where([dir="rtl"]:has(#imageForm)) fieldset select,
-:where([dir="rtl"]:has(#imageForm)) fieldset img,
-:where([dir="rtl"]:has(#imageForm)) fieldset button {float:right;margin:5px 0 5px 5px;}
-:where([dir="rtl"]) #imageForm fieldset label,
 :where([dir="rtl"]) #uploadform fieldset label {float:right;clear:right;}
 
-/* --- Image picker: list --- */
-.contentpane:where(:has(.media-picker)) {padding:0 !important;overflow-x:hidden;}
-.thumbnails.thumbnails-media:where(.media-picker) {display:flex;flex-wrap:wrap;margin:0 -8px;padding:0;list-style:none;}
-/* Tiles in their own colours: the site's templates may be dark, and don't load Bootstrap's floats or the icon font */
-.thumbnails-media:where(.media-picker) > li {float:none;color:#333;}
-.thumbnails-media:where(.media-picker) .height-50 {display:grid;place-items:center;height:60px;color:#8a8a8a;}
-.thumbnails-media:where(.media-picker) .small {color:#333;font-size:12px;line-height:1.3;}
-.thumbnails-media:where(.media-picker) .thumbnail {background-color:#f4f4f4;border-radius:3px;border:0;box-shadow:0 0 0 1px rgba(0, 0, 0, 0.05) inset;padding:0;height:100px;width:100px;margin:8px;position:relative;text-align:center;overflow:hidden;}
-.thumbnails-media:where(.media-picker) .thumbnail .close {background-color:#ccc;border-left:1px solid rgba(0, 0, 0, 0.1);height:22px;line-height:22px;opacity:0.3;text-align:center;width:22px;top:0;right:0;}
-.thumbnails-media:where(.media-picker) .thumbnail .close:hover {background-color:#bbb;}
-.thumbnails-media:where(.media-picker) .thumbnail *,
-.thumbnails-media:where(.media-picker) .thumbnail *:before {transition:all 0.2s ease;background-clip:padding-box;box-sizing:border-box;}
-.thumbnails-media:where(.media-picker) .thumbnail input[type="radio"],
-.thumbnails-media:where(.media-picker) .thumbnail input[type="checkbox"] {margin:0;opacity:0.55;position:absolute;top:5px;left:5px;}
-.thumbnails-media:where(.media-picker) .thumbnail .controls,
-.thumbnails-media:where(.media-picker) .thumbnail .imginfoBorder {display:none;}
-.thumbnails-media:where(.media-picker) .imgThumb {position:relative;z-index:1;width:100%;display:inline-block;}
-.thumbnails-media:where(.media-picker) .imgThumb input {display:none;}
-.thumbnails-media:where(.media-picker) .imgThumb label,
-.thumbnails-media:where(.media-picker) .imgThumb .imgThumbInside {display:block;line-height:100px;position:relative;width:100%;border-radius:3px;overflow:hidden;}
-.thumbnails-media:where(.media-picker) .imgThumb label:before,
-.thumbnails-media:where(.media-picker) .imgThumb .imgThumbInside:before {font-family:"bootstrap-icons";font-style:normal;content:'\f633';position:absolute;top:0;right:0;background-color:#46a546;color:#fff;line-height:26px;width:26px;transform:scale(0.5);opacity:0;border-color:rgba(0, 0, 0, 0.2);box-shadow:0 1px 2px rgba(0, 0, 0, 0.05);border-radius:0 3px;}
-.thumbnails-media:where(.media-picker) .imgThumb img {width:auto;}
-.thumbnails-media:where(.media-picker) .selected :checked + label,
-.thumbnails-media:where(.media-picker) .selected .imgThumbInside,
-.thumbnails-media:where(.media-picker) .imgInput :checked + label,
-.thumbnails-media:where(.media-picker) .imgInput .imgThumbInside {background-color:#ddd;}
-.thumbnails-media:where(.media-picker) .selected :checked + label:before,
-.thumbnails-media:where(.media-picker) .selected .imgThumbInside:before,
-.thumbnails-media:where(.media-picker) .imgInput :checked + label:before,
-.thumbnails-media:where(.media-picker) .imgInput .imgThumbInside:before {transform:scale(1);opacity:1;}
-.thumbnails-media:where(.media-picker) .selected :checked + label:after,
-.thumbnails-media:where(.media-picker) .selected .imgThumbInside:after,
-.thumbnails-media:where(.media-picker) .imgInput :checked + label:after,
-.thumbnails-media:where(.media-picker) .imgInput .imgThumbInside:after {position:absolute;top:0;left:0;right:0;bottom:0;content:'';border:3px solid #46a546;border-radius:5px;}
-.thumbnails-media:where(.media-picker) .imgPreview a {padding:0;position:absolute;left:0;z-index:1;height:26px;width:26px;}
-.thumbnails-media:where(.media-picker) .imgPreview a,
-.thumbnails-media:where(.media-picker) .imgDetails {position:absolute;left:0;background-color:#fff;border-color:rgba(0, 0, 0, 0.2);bottom:0;line-height:26px;border:1px solid rgba(0, 0, 0, 0.1);border-width:1px 1px 0 0;border-radius:0 3px 0 0;z-index:1;}
-.thumbnails-media:where(.media-picker) .imgPreview a:hover,
-.thumbnails-media:where(.media-picker) .imgDetails:hover {background-color:#eee;}
-.thumbnails-media:where(.media-picker) .imgDetails {padding:0 5px;line-height:20px;color:#555;}
-.thumbnails-media:where(.media-picker) .imgFolder span {line-height:90px;font-size:38px;margin:0;width:auto;}
-.thumbnails-media:where(.media-picker) .imgFolder + .imgDetails {color:inherit;}
+/* --- Picking (the Media Manager in the Image and PDF buttons' and image fields' modals) --- */
+/* Grid and form layout of its own: the site's templates (front-end editing) have no Bootstrap grid or form styles */
+.media-pick-toolbar {margin:0 0 12px;}
+.media-pick-toolbar .btn-toolbar {display:flex;flex-wrap:wrap;gap:6px;margin:0;}
+.media-pick-toolbar .btn-wrapper {margin:0;}
+/* The page fills its window as a column (the toolbar, then the tree and the list taking the rest), so it never runs past it:
+   the tree scrolls in its column, the list's frame fills what the fields under it leave (media.js doesn't size it here) */
+:root:has(#media-picker),
+:root:has(#media-picker) body,
+:root:has(#media-picker) body :has(#media-picker) {height:100%;}
+:root:has(#media-picker) {overflow:hidden;scrollbar-gutter:auto;}
+:root:has(#media-picker) body {box-sizing:border-box;margin:0;overflow:hidden;}
+#media-picker {display:flex;flex-direction:column;box-sizing:border-box;height:100%;min-height:0;}
+#media-picker > .media-pick-toolbar {flex:none;}
+#media-picker > .row-fluid.media-pick {flex:1 1 auto;min-height:0;grid-template-rows:minmax(0, 1fr);}
+#media-picker #j-sidebar-container,
+#media-picker #j-main-container {display:flex;flex-direction:column;min-height:0;}
+#media-picker #treeview {flex:1 1 auto;min-height:0;max-height:none;overflow:auto;}
+#media-picker #j-main-container > * {flex:none;}
+#media-picker #j-main-container > form:has(#folderframe),
+#media-picker #folderview,
+#media-picker #folderview > .view {display:flex;flex:1 1 auto;flex-direction:column;min-height:0;margin:0;}
+#media-picker #folderframe {flex:1 1 auto;height:auto;min-height:120px;}
+.row-fluid.media-pick {display:grid;grid-template-columns:minmax(160px, 240px) minmax(0, 1fr);gap:16px;}
+.row-fluid.media-pick::before,
+.row-fluid.media-pick::after {display:none;}
+.row-fluid.media-pick > [class*="span"] {float:none;width:auto;min-width:0;margin:0;}
+/* The site's templates: a plain list (the administrator templates style the tree) */
+:where(.media-pick .tree-holder) ul {margin:0;padding:0;list-style:none;}
+:where(.media-pick .tree-holder ul) ul {padding-inline-start:12px;}
+.media-pick #folderframe {display:block;width:100%;border:1px solid var(--c-border, #d9dbe0);border-radius:6px;}
+.media-pick-panel {display:grid;gap:8px;margin:12px 0 0;}
+.media-pick-row {display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 12px;}
+.media-pick-panel .media-pick-field {display:flex;flex:1 1 160px;flex-direction:column;gap:4px;min-width:0;margin:0;font-weight:normal;}
+.media-pick-panel .media-pick-url {flex:1 1 320px;}
+.media-pick-panel .media-pick-align {flex:0 1 144px;}
+.media-pick-panel .media-pick-field input,
+.media-pick-panel .media-pick-field select {width:100%;max-width:none;height:auto;margin:0;box-sizing:border-box;}
+.media-pick-buttons {display:flex;gap:6px;}
+/* The file chosen in the list (ImageManager.populateFields()) */
+.media-picked.thumbnail,
+li.media-picked {outline:3px solid var(--c-primary, #46a546);outline-offset:2px;}
+tr.media-picked > td {background-color:var(--c-muted, #e8f0e8);}
+
+/* The details view's table where the template doesn't style it */
+:where(#mediamanager-form table:not(.table)) {width:100%;border-collapse:collapse;}
+:where(#mediamanager-form table:not(.table)) td,
+:where(#mediamanager-form table:not(.table)) th {padding:4px 6px;text-align:start;border-bottom:1px solid rgba(128, 128, 128, 0.25);}
+
+@media (max-width: 640px) {
+    .row-fluid.media-pick {grid-template-columns:minmax(0, 1fr);}
+    #media-picker > .row-fluid.media-pick {grid-template-rows:auto minmax(0, 1fr);}
+    #media-picker #treeview {max-height:25vh;}
+}
 
 /* --- Media Manager: previews --- */
 #videoPreviewPlayer {display:block;width:100%;max-height:60vh;background:#000;}
@@ -132,29 +109,29 @@
 /* --- Media Manager: list --- */
 /* The whole tile opens what its name links to (image, video, audio, folder, up); the checkbox and delete button stay
    above it */
-.manager:not(.media-picker) > .imgOutline {position:relative;}
-.manager:not(.media-picker) > .imgOutline > :is(.small:not(.imgPreview), .imgTotal) a {position:static;text-decoration:none;}
-.manager:not(.media-picker) > .imgOutline > :is(.small:not(.imgPreview), .imgTotal) a::after {content:"";position:absolute;inset:0;z-index:1;}
+.manager.thumbnails-media > .imgOutline {position:relative;}
+.manager.thumbnails-media > .imgOutline > :is(.small:not(.imgPreview), .imgTotal) a {position:static;text-decoration:none;}
+.manager.thumbnails-media > .imgOutline > :is(.small:not(.imgPreview), .imgTotal) a::after {content:"";position:absolute;inset:0;z-index:1;}
 /* Every tile's checkbox, larger, in its top corner: only the box selects, the rest of the tile opens the file */
-.manager:not(.media-picker) > .imgOutline input[type="checkbox"] {display:block;position:absolute;top:3px;left:3px;z-index:2;width:20px;height:20px;margin:0;opacity:1;cursor:pointer;}
-:where([dir="rtl"]) .manager:not(.media-picker) > .imgOutline input[type="checkbox"] {left:auto;right:3px;}
-.manager:not(.media-picker) > .imgOutline:has(input[type="checkbox"]:checked) {outline:2px solid var(--c-primary, #46a546);outline-offset:-2px;}
+.manager.thumbnails-media > .imgOutline input[type="checkbox"] {display:block;position:absolute;top:3px;left:3px;z-index:2;width:20px;height:20px;margin:0;opacity:1;cursor:pointer;}
+:where([dir="rtl"]) .manager.thumbnails-media > .imgOutline input[type="checkbox"] {left:auto;right:3px;}
+.manager.thumbnails-media > .imgOutline:has(input[type="checkbox"]:checked) {outline:2px solid var(--c-primary, #46a546);outline-offset:-2px;}
 /* Images: the picture opens the preview, as the name does */
-.manager:not(.media-picker) > .imgOutline .imgPreview a {text-decoration:none;text-align:center;}
+.manager.thumbnails-media > .imgOutline .imgPreview a {text-decoration:none;text-align:center;}
 /* Image tiles' name: a see-through bar over the picture's foot */
-.manager:not(.media-picker) > .imgOutline > .imgPreview a,
-.manager:not(.media-picker) > .imgOutline > .imgPreview a:hover {border:0;border-radius:0;background-color:rgba(0, 0, 0, 0.55);color:#fff;}
-.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]):hover,
-.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]:focus-visible),
-.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]):hover .imgPreview a,
-.manager:not(.media-picker) > .imgOutline:has(> .imgPreview a[href]:focus-visible) .imgPreview a {background-image:linear-gradient(rgba(128, 128, 128, 0.16), rgba(128, 128, 128, 0.16));}
+.manager.thumbnails-media > .imgOutline > .imgPreview a,
+.manager.thumbnails-media > .imgOutline > .imgPreview a:hover {border:0;border-radius:0;background-color:rgba(0, 0, 0, 0.55);color:#fff;}
+.manager.thumbnails-media > .imgOutline:has(> .imgPreview a[href]):hover,
+.manager.thumbnails-media > .imgOutline:has(> .imgPreview a[href]:focus-visible),
+.manager.thumbnails-media > .imgOutline:has(> .imgPreview a[href]):hover .imgPreview a,
+.manager.thumbnails-media > .imgOutline:has(> .imgPreview a[href]:focus-visible) .imgPreview a {background-image:linear-gradient(rgba(128, 128, 128, 0.16), rgba(128, 128, 128, 0.16));}
 /* Names in full on up to two lines (the link's title has the whole name) */
-.manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview) {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;line-height:1.3;padding:0 6px;}
-.manager:not(.media-picker) > .imgOutline .imgPreview a {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;height:auto;max-height:none;padding:3px 6px;white-space:normal;overflow:hidden;overflow-wrap:anywhere;line-height:1.3;}
-.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]):hover,
-.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]:focus-visible),
-.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]):hover > .height-50,
-.manager:not(.media-picker) > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]:focus-visible) > .height-50 {background-image:linear-gradient(rgba(128, 128, 128, 0.16), rgba(128, 128, 128, 0.16));}
+.manager.thumbnails-media > .imgOutline > .small:not(.imgPreview) {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;line-height:1.3;padding:0 6px;}
+.manager.thumbnails-media > .imgOutline .imgPreview a {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;height:auto;max-height:none;padding:3px 6px;white-space:normal;overflow:hidden;overflow-wrap:anywhere;line-height:1.3;}
+.manager.thumbnails-media > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]):hover,
+.manager.thumbnails-media > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]:focus-visible),
+.manager.thumbnails-media > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]):hover > .height-50,
+.manager.thumbnails-media > .imgOutline:has(> :is(.small:not(.imgPreview), .imgTotal) a[href]:focus-visible) > .height-50 {background-image:linear-gradient(rgba(128, 128, 128, 0.16), rgba(128, 128, 128, 0.16));}
 
 /* --- Dropping files on the Media Manager's lists --- */
 .media-drop-overlay {position:fixed;inset:8px;z-index:1050;display:flex;align-items:center;justify-content:center;padding:24px;border:3px dashed currentColor;border-radius:10px;background:rgba(128, 128, 128, 0.18);backdrop-filter:blur(2px);pointer-events:none;}
@@ -203,10 +180,10 @@
 .media-rename-input {flex:1 1 auto;width:12em;min-width:0;height:24px;margin:0;padding:0 4px;box-sizing:border-box;font-size:13px;line-height:22px;}
 /* Tiles: the name (clamped to two lines) and the field fill the name bar; the pencil, and then saving and cancelling, sit on
    the bar's top edge, flush with the tile's side, as the checkbox and the delete button are at its top */
-.manager:not(.media-picker) > .imgOutline > :is(.small, .imgPreview).media-rename {display:block;padding:0;overflow:visible;}
-.manager:not(.media-picker) > .imgOutline > .media-rename > .media-rename-label:not([hidden]) {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
-.manager:not(.media-picker) > .imgOutline > .small.media-rename:not(.imgPreview) > .media-rename-label {padding:3px 6px;}
-.manager:not(.media-picker) > .imgOutline > .imgPreview.media-rename a {position:relative;left:auto;bottom:auto;}
+.manager.thumbnails-media > .imgOutline > :is(.small, .imgPreview).media-rename {display:block;padding:0;overflow:visible;}
+.manager.thumbnails-media > .imgOutline > .media-rename > .media-rename-label:not([hidden]) {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
+.manager.thumbnails-media > .imgOutline > .small.media-rename:not(.imgPreview) > .media-rename-label {padding:3px 6px;}
+.manager.thumbnails-media > .imgOutline > .imgPreview.media-rename a {position:relative;left:auto;bottom:auto;}
 .imgOutline .media-rename-form {display:flex;width:100%;box-sizing:border-box;min-height:26px;padding:1px 2px;background:rgba(0, 0, 0, 0.55);color:#fff;}
 .imgOutline .media-rename-input {width:auto;}
 .media-rename-actions {display:inline-flex;flex:none;gap:2px;}
@@ -224,29 +201,29 @@
 td.media-rename .media-rename-pencil {margin-inline-start:4px;}
 
 /* --- Thumbnail sizes and tiles (--media-tile, set by the size buttons next to the views' buttons; tiles are square) --- */
-#mediamanager-form .manager:not(.media-picker) > .imgOutline.thumbnail {width:var(--media-tile, 163px);height:var(--media-tile, 163px);overflow:hidden;}
+#mediamanager-form .manager.thumbnails-media > .imgOutline.thumbnail {width:var(--media-tile, 163px);height:var(--media-tile, 163px);overflow:hidden;}
 /* Every tile is its picture or icon, with the name on a see-through bar over its foot (the checkbox and the delete button
    float over its top corners) */
-.manager:not(.media-picker) > .imgOutline > :is(.small, .imgPreview) {position:absolute;left:0;right:0;bottom:0;z-index:2;}
-.manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview) {background:rgba(0, 0, 0, 0.55);color:#fff;text-align:center;}
-.manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview, .media-rename) {padding:3px 6px;}
-.manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview) a {color:inherit;}
+.manager.thumbnails-media > .imgOutline > :is(.small, .imgPreview) {position:absolute;left:0;right:0;bottom:0;z-index:2;}
+.manager.thumbnails-media > .imgOutline > .small:not(.imgPreview) {background:rgba(0, 0, 0, 0.55);color:#fff;text-align:center;}
+.manager.thumbnails-media > .imgOutline > .small:not(.imgPreview, .media-rename) {padding:3px 6px;}
+.manager.thumbnails-media > .imgOutline > .small:not(.imgPreview) a {color:inherit;}
 /* The name's link still opens the item from anywhere on the tile (the tile clips the cover) */
-.manager:not(.media-picker) > .imgOutline > .small:not(.imgPreview) a::after {inset:-1000px 0 0;}
-.manager:not(.media-picker) > .imgOutline > .close {position:absolute;top:0;inset-inline-end:0;z-index:3;}
-.manager:not(.media-picker) > .imgOutline:has(> .small:not(.imgPreview)) input[type="checkbox"] {z-index:3;}
+.manager.thumbnails-media > .imgOutline > .small:not(.imgPreview) a::after {inset:-1000px 0 0;}
+.manager.thumbnails-media > .imgOutline > .close {position:absolute;top:0;inset-inline-end:0;z-index:3;}
+.manager.thumbnails-media > .imgOutline:has(> .small:not(.imgPreview)) input[type="checkbox"] {z-index:3;}
 /* Folders, documents, videos and audio: the icon (larger) or cover fills the tile */
-#mediamanager-form .manager:not(.media-picker) > .imgOutline > .height-50 {position:absolute;inset:0;display:grid;place-content:center;box-sizing:border-box;width:auto;height:auto;padding-bottom:22px;}
-#mediamanager-form .manager:not(.media-picker) > .imgOutline > .height-50 a {display:grid;place-content:center;width:100%;height:100%;margin:0;line-height:1;}
-#mediamanager-form .manager:not(.media-picker) > .imgOutline > .height-50 a::after {box-shadow:none;}
-#mediamanager-form .manager:not(.media-picker) > .imgOutline > .height-50 .icon-folder-2 {width:auto;height:auto;margin:0;font-size:calc(var(--media-tile, 163px) * 0.36);line-height:1;}
-#mediamanager-form .manager:not(.media-picker) > .imgOutline > .height-50 .media-type-icon {width:calc(var(--media-tile, 163px) * 0.28);height:calc(var(--media-tile, 163px) * 0.28);}
+#mediamanager-form .manager.thumbnails-media > .imgOutline > .height-50 {position:absolute;inset:0;display:grid;place-content:center;box-sizing:border-box;width:auto;height:auto;padding-bottom:22px;}
+#mediamanager-form .manager.thumbnails-media > .imgOutline > .height-50 a {display:grid;place-content:center;width:100%;height:100%;margin:0;line-height:1;}
+#mediamanager-form .manager.thumbnails-media > .imgOutline > .height-50 a::after {box-shadow:none;}
+#mediamanager-form .manager.thumbnails-media > .imgOutline > .height-50 .icon-folder-2 {width:auto;height:auto;margin:0;font-size:calc(var(--media-tile, 163px) * 0.36);line-height:1;}
+#mediamanager-form .manager.thumbnails-media > .imgOutline > .height-50 .media-type-icon {width:calc(var(--media-tile, 163px) * 0.28);height:calc(var(--media-tile, 163px) * 0.28);}
 /* A video's or audio file's cover (sized inline by the layout) as the picture */
-#mediamanager-form .manager:not(.media-picker) > .imgOutline > .height-50 > img {position:absolute;inset:0;width:100%;height:100%;max-width:none !important;max-height:none !important;object-fit:cover;}
+#mediamanager-form .manager.thumbnails-media > .imgOutline > .height-50 > img {position:absolute;inset:0;width:100%;height:100%;max-width:none !important;max-height:none !important;object-fit:cover;}
 /* Image tiles (Isis, Prothero): the picture fills the tile, cropped to it (the preview shows it whole) */
-#mediamanager-form .manager:not(.media-picker) > .imgOutline > .imgThumb:has(> a.img-preview) {position:absolute;inset:0;display:block;}
-#mediamanager-form .manager:not(.media-picker) > .imgOutline > .imgThumb > a.img-preview {position:absolute;inset:0;line-height:0;}
-#mediamanager-form .manager:not(.media-picker) > .imgOutline > .imgThumb > a.img-preview > img {width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;}
+#mediamanager-form .manager.thumbnails-media > .imgOutline > .imgThumb:has(> a.img-preview) {position:absolute;inset:0;display:block;}
+#mediamanager-form .manager.thumbnails-media > .imgOutline > .imgThumb > a.img-preview {position:absolute;inset:0;line-height:0;}
+#mediamanager-form .manager.thumbnails-media > .imgOutline > .imgThumb > a.img-preview > img {width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;}
 /* The page's bar above the list: Check All Items at the left, the sizes and the views at the right */
 .media-bar {display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px;}
 .media-bar > .btn-group,
@@ -286,7 +263,149 @@ td.media-rename .media-rename-pencil {margin-inline-start:4px;}
 .media-preview-size {font-variant-numeric:tabular-nums;text-align:end;white-space:nowrap;}
 
 /* --- PDF files --- */
-#mediamanager-form .manager:not(.media-picker) > .imgOutline > .height-50.has-pdf-thumb > canvas {position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;object-position:top;box-shadow:none;}
-.thumbnails-media:where(.media-picker) .has-pdf-thumb > canvas {width:auto;max-height:100%;margin:0 auto;}
+#mediamanager-form .manager.thumbnails-media > .imgOutline > .height-50.has-pdf-thumb > canvas {position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;object-position:top;box-shadow:none;}
 #sbox-content:has(> .media-pdf-preview) {display:flex;overflow:hidden;}
 .media-pdf-preview {--cms-pdf-height:100%;flex:1 1 auto;min-width:0;min-height:0;margin:0;}
+
+/* --- Media Manager: tiles, the list and the folders' page in every template (Isis' and Prothero's until 3.19); a template
+   sets the --media-* colours (the fallbacks suit the others, the site's included) --- */
+.ventral-space {margin-bottom:5px;}
+ul.manager .height-50 .icon-folder-2 {height:35px;width:35px;line-height:35px;font-size:30px;}
+.thumbnails-media .thumbnail {background-color:var(--media-tile-bg, rgba(128, 128, 128, 0.12));border-radius:var(--media-radius-lg, 4px);border:0;box-shadow:0 0 0 1px var(--media-border, rgba(128, 128, 128, 0.3)) inset;padding:0px;height:100px;width:100px;margin:8px;position:relative;text-align:center;overflow:hidden;}
+.thumbnails-media .thumbnail .close {background-color:var(--media-hover, rgba(128, 128, 128, 0.22));height:22px;line-height:22px;opacity:0.6;text-align:center;width:22px;top:0;right:0;}
+.thumbnails-media .thumbnail .close:hover {background-color:var(--media-border, rgba(128, 128, 128, 0.3));}
+.thumbnails-media .thumbnail *,
+.thumbnails-media .thumbnail *:before {transition:all 0.2s ease;box-sizing:border-box;}
+.thumbnails-media .thumbnail input[type="radio"],
+.thumbnails-media .thumbnail input[type="checkbox"] {margin:0;opacity:0.55;position:absolute;top:5px;left:5px;}
+.thumbnails-media .thumbnail .controls,
+.thumbnails-media .thumbnail .imginfoBorder {display:none;}
+.thumbnails-media .imgThumb {position:relative;z-index:1;width:100%;display:inline-block;}
+.thumbnails-media .imgThumb input {display:none;}
+.thumbnails-media .imgThumb label,
+.thumbnails-media .imgThumb .imgThumbInside,
+.thumbnails-media .imgThumb > a.img-preview {display:block;line-height:100px;position:relative;width:100%;border-radius:var(--media-radius-lg, 4px);overflow:hidden;}
+.thumbnails-media .imgThumb label:before,
+.thumbnails-media .imgThumb .imgThumbInside:before {font-family:"bootstrap-icons";font-style:normal;content:"\f633";position:absolute;top:0;left:0;background-color:var(--media-accent, #46a546);color:var(--media-on-accent, #ffffff);line-height:26px;width:26px;transform:scale(0.5);opacity:0;border-radius:var(--media-radius-lg, 4px) 0 var(--media-radius, 3px) 0;}
+.thumbnails-media .imgThumb img {width:auto;}
+.thumbnails-media .selected :checked + label,
+.thumbnails-media .selected .imgThumbInside,
+.thumbnails-media .imgInput :checked + label,
+.thumbnails-media .imgInput .imgThumbInside {background-color:var(--media-hover, rgba(128, 128, 128, 0.22));}
+.thumbnails-media .selected :checked + label:before,
+.thumbnails-media .selected .imgThumbInside:before,
+.thumbnails-media .imgInput :checked + label:before,
+.thumbnails-media .imgInput .imgThumbInside:before {transform:scale(1);opacity:1;}
+.thumbnails-media .selected :checked + label:after,
+.thumbnails-media .selected .imgThumbInside:after,
+.thumbnails-media .imgInput :checked + label:after,
+.thumbnails-media .imgInput .imgThumbInside:after {position:absolute;top:0;left:0;right:0;bottom:0;content:"";border:2px solid var(--media-accent, #46a546);border-radius:var(--media-radius-lg, 4px);}
+.thumbnails-media .imgDelete a.close,
+.thumbnails-media .imgPreview a {padding:0;position:absolute;left:0;z-index:1;height:26px;width:26px;}
+.thumbnails-media .imgPreview a {width:100%;}
+.thumbnails-media .imgDelete a.close {background-color:var(--media-danger, #bd362f);top:0;line-height:28px;font-size:12px;padding-left:1px;color:var(--media-on-danger, #ffffff);border-bottom-left-radius:var(--media-radius, 3px);border-top-right-radius:var(--media-radius-lg, 4px);z-index:10;opacity:0;transform:scale(0.5);left:auto;right:0;}
+.thumbnails-media .imgDelete a.close:hover {background-color:var(--media-danger-hover, #802420);}
+.thumbnails-media .thumbnail:hover .imgDelete a.close {opacity:1;transform:scale(1);}
+.thumbnails-media .imgPreview a,
+.thumbnails-media .imgDetails {position:absolute;left:0;text-align:left;background-color:var(--media-card, #ffffff);bottom:0;line-height:26px;border:1px solid var(--media-border, rgba(128, 128, 128, 0.3));border-width:1px;border-radius:0 var(--media-radius, 3px) 0 0;z-index:1;}
+.thumbnails-media .imgPreview a:hover,
+.thumbnails-media .imgDetails:hover {background-color:var(--media-hover, rgba(128, 128, 128, 0.22));}
+.thumbnails-media .imgDetails {padding:0 5px;line-height:20px;color:var(--media-fg-soft, #555555);}
+.thumbnails-media .imgFolder span {line-height:90px;font-size:38px;margin:0;width:auto;color:var(--media-muted-fg, #777777);}
+.thumbnails-media .imgFolder + .imgDetails {color:inherit;}
+.com_media .media a + a {margin-left:-1px;}
+#folderframe.thumbnail {border:0;box-shadow:none;padding:0;}
+#mediamanager-form {margin:0;overflow-x:hidden;}
+#mediamanager-form > .muted {padding:0px;}
+#mediamanager-form .checkbox {padding-left:30px;margin-bottom:15px;}
+#mediamanager-form .checkbox input {margin-top:3px;}
+#mediamanager-form .thumbnails {margin:0 -8px;overflow-x:hidden;}
+#mediamanager-form .thumbnails .thumbnail {height:136px;width:136px;margin:8px;}
+#mediamanager-form .thumbnails .imgThumb label,
+#mediamanager-form .thumbnails .imgThumb > a.img-preview,
+#mediamanager-form .thumbnails .imgTotal {line-height:136px;}
+#mediamanager-form .height-50 {background-color:var(--media-tile-bg, rgba(128, 128, 128, 0.12));height:77px;position:relative;z-index:1;width:100%;display:inline-block;}
+#mediamanager-form .height-50 a,
+#mediamanager-form .height-50 .icon-folder-2 {display:inline-block;line-height:75px;margin-top:-1px;}
+#mediamanager-form .height-50 a:after {bottom:0;box-shadow:0 0 0 1px var(--media-border, rgba(128, 128, 128, 0.3)) inset;content:"";display:block;left:0;overflow:hidden;position:absolute;right:0;top:0;}
+#mediamanager-form .height-50 .icon-folder-2 {font-size:40px;}
+/* The upload and new folder forms, hidden until their buttons open them (not every template hides Bootstrap's .collapse) */
+#collapseUpload.collapse:not(.in),
+#collapseFolder.collapse:not(.in) {display:none;}
+/* The folder tree: the Media Manager's own (the templates' .tree-holder rules are the template manager's file tree's too) */
+#treeview .tree-holder {padding:0 15px;}
+#treeview .tree-holder ul {margin:0;padding:0;list-style:none;}
+#treeview .tree-holder ul ul {padding-inline-start:15px;}
+#treeview .tree-holder li {margin:0;padding:0;border:0;background:none;}
+#treeview .tree-holder .folder-url {display:flex;align-items:baseline;gap:0.25em;margin:0 0 4px;padding:5px 10px;font-weight:600;line-height:22px;overflow-wrap:anywhere;text-decoration:none;color:var(--media-tree-fg, inherit);background:var(--media-tree-bg, rgba(128, 128, 128, 0.12));border:1px solid var(--media-border, rgba(128, 128, 128, 0.3));border-radius:var(--media-radius, 3px);box-shadow:none;}
+#treeview .tree-holder .folder-url:hover,
+#treeview .tree-holder .folder-url:focus {color:var(--media-tree-fg, inherit);background:var(--media-hover, rgba(128, 128, 128, 0.22));}
+#treeview .tree-holder ul ul .folder-url {box-shadow:-2px 0 0 var(--media-tree-line, rgba(128, 128, 128, 0.3));}
+:where([dir="rtl"]) #treeview .tree-holder ul ul .folder-url {box-shadow:2px 0 0 var(--media-tree-line, rgba(128, 128, 128, 0.3));}
+/* The tiles in a row that wraps, as Bootstrap's floats placed them (the site's templates have no Bootstrap) */
+#mediamanager-form .thumbnails-media {display:flex;flex-wrap:wrap;padding:0;list-style:none;}
+#mediamanager-form .thumbnails-media::before,
+#mediamanager-form .thumbnails-media::after {display:none;}
+#mediamanager-form .thumbnails-media > li {float:none;}
+
+/* --- Picking on the site: a look of its own, the same in every template (the administrator's follows Isis or Prothero) --- */
+:root:has(#media-picker.media-site) body,
+:root:has(#mediamanager-form.media-site) body {margin:0;padding:12px 16px;color:#1d202b;background:#ffffff;font:14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;}
+:root:has(#mediamanager-form.media-site) body {padding:0 4px;}
+/* Light, whatever the template's scheme (the browser's own controls follow color-scheme); the list's page scrolls without
+   keeping a scrollbar's place (the site's templates keep it, for their pages not to shift) */
+:root:has(#media-picker.media-site),
+:root:has(#mediamanager-form.media-site) {color-scheme:light;scrollbar-gutter:auto;}
+/* The template's own wrappers around the component (containers, columns) leave the picker its window's width */
+:root:has(#media-picker.media-site) body :has(#media-picker),
+:root:has(#mediamanager-form.media-site) body :has(#mediamanager-form) {width:auto;max-width:none;margin:0;padding:0;border:0;background:none;box-shadow:none;}
+#media-picker.media-site,
+#mediamanager-form.media-site {--media-tree-fg:#1d202b;--media-tree-bg:#f3f4f6;--media-hover:#e5e7eb;--media-border:#d9dbe0;--media-accent:#1d202b;color:#1d202b;font-family:inherit;}
+#media-picker.media-site h3 {margin:0 0 10px;font-size:16px;font-weight:600;line-height:1.3;color:inherit;}
+#media-picker.media-site #treeview,
+#media-picker.media-site .j-toggle-sidebar-header {margin:0;padding:0;color:inherit;background:none;border:0;box-shadow:none;}
+#media-picker.media-site .j-toggle-sidebar-header {padding:0 15px;}
+#media-picker.media-site label,
+#media-picker.media-site .media-pick-field > span {margin:0;color:#4a4f5c;font-size:13px;font-weight:500;line-height:1.4;text-transform:none;letter-spacing:normal;}
+#media-picker.media-site .btn,
+#mediamanager-form.media-site .btn {display:inline-flex;align-items:center;justify-content:center;gap:6px;width:auto;height:auto;min-height:0;margin:0;padding:5px 12px;color:#1d202b;background:#ffffff;border:1px solid #c9ccd3;border-radius:6px;box-shadow:none;font-family:inherit;font-size:13px;font-weight:500;line-height:20px;text-decoration:none;text-transform:none;letter-spacing:normal;cursor:pointer;}
+#media-picker.media-site .btn:hover,
+#mediamanager-form.media-site .btn:hover {color:#1d202b;background:#f2f3f5;}
+#media-picker.media-site .btn:disabled {opacity:0.5;cursor:default;}
+#media-picker.media-site .btn.active {background:#e5e7eb;}
+#media-picker.media-site .btn-success,
+#media-picker.media-site .btn-primary,
+#media-picker.media-site .btn-success:hover,
+#media-picker.media-site .btn-primary:hover {color:#ffffff;background:#1d202b;border-color:#1d202b;}
+#media-picker.media-site .btn-link {border-color:transparent;background:none;}
+#media-picker.media-site .btn-group {display:inline-flex;gap:4px;margin:0;}
+#media-picker.media-site input[type="text"],
+#media-picker.media-site input:not([type]),
+#media-picker.media-site select {width:100%;height:auto;min-height:32px;margin:0;padding:5px 8px;color:#1d202b;background:#ffffff;border:1px solid #c9ccd3;border-radius:6px;box-shadow:none;font-family:inherit;font-size:14px;line-height:20px;box-sizing:border-box;}
+#media-picker.media-site input[type="file"] {font-family:inherit;font-size:13px;}
+#media-picker.media-site input[type="checkbox"],
+#mediamanager-form.media-site input[type="checkbox"] {width:auto;height:auto;margin:0;accent-color:#1d202b;}
+#media-picker.media-site #folderframe {border-color:#d9dbe0;}
+/* The icon font is loaded here: the site templates' rule hiding empty icons (for pages without it) doesn't apply */
+#media-picker.media-site [class^="icon-"],
+#media-picker.media-site [class*=" icon-"],
+#mediamanager-form.media-site [class^="icon-"],
+#mediamanager-form.media-site [class*=" icon-"] {display:inline-block;}
+#mediamanager-form.media-site .media-path p {color:#4a4f5c;font-size:13px;}
+#mediamanager-form.media-site .imgOutline > .small,
+#mediamanager-form.media-site .imgOutline > .imgPreview a {font-size:12px;}
+
+/* --- Media Manager: right to left --- */
+:where([dir="rtl"]) .com_media .container-main .media {display:inline-block;}
+:where([dir="rtl"]) #mediamanager-form .description,
+:where([dir="rtl"]) #mediamanager-form .filesize,
+:where([dir="rtl"]) #mediamanager-form .dimensions {direction:ltr;}
+:where([dir="rtl"]) #mediamanager-form .thumbnails-media .thumbnail {margin-left:18px !important;margin-right:0;direction:ltr;text-align:center;}
+:where([dir="rtl"]) .thumbnails-media .imgThumb label::before,
+:where([dir="rtl"]) .thumbnails-media .imgThumb .imgThumbInside::before {left:auto;right:0;border-radius:0 var(--media-radius-lg, 4px) 0 var(--media-radius, 3px);}
+:where([dir="rtl"]) .thumbnails-media .thumbnail input[type="radio"],
+:where([dir="rtl"]) .thumbnails-media .thumbnail input[type="checkbox"] {left:auto;right:5px;}
+:where([dir="rtl"]) .thumbnails-media .imgDelete a.close {left:0;right:auto;border-radius:var(--media-radius-lg, 4px) 0 var(--media-radius, 3px) 0;}
+:where([dir="rtl"]) .thumbnails-media .imgPreview a,
+:where([dir="rtl"]) .thumbnails-media .imgDetails {border-radius:var(--media-radius, 3px) 0;border-width:1px;left:0;right:0;text-align:left;direction:ltr;}
+:where([dir="rtl"]) .thumbnails-media .imgPreview a {width:100%;}

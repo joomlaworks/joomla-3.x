@@ -56,7 +56,10 @@ class MediaControllerFolder extends JControllerLegacy
 
         $redirect = 'index.php?option=com_media&folder=' . $folder;
 
-        if ($tmpl == 'component') {
+        if (MediaHelper::pickUrl() !== '') {
+            // Picking: back to the picker's page
+            $redirect = MediaHelper::pickUrl($folder);
+        } elseif ($tmpl == 'component') {
             // We are inside the iframe
             $redirect .= '&view=mediaList&tmpl=component';
         }
@@ -176,7 +179,7 @@ class MediaControllerFolder extends JControllerLegacy
         $folderCheck = (string) $this->input->get('foldername', null, 'raw');
         $parent      = $this->input->get('folderbase', '', 'path');
 
-        $this->setRedirect('index.php?option=com_media&folder=' . $parent . '&tmpl=' . $this->input->get('tmpl', 'index'));
+        $this->setRedirect(MediaHelper::pickUrl($parent) ?: 'index.php?option=com_media&folder=' . $parent . '&tmpl=' . $this->input->get('tmpl', 'index'));
 
         if (strlen((string) $folder) > 0) {
             if (!$user->authorise('core.create', 'com_media')) {

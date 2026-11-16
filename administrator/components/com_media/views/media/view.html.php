@@ -31,7 +31,11 @@ class MediaViewMedia extends JViewLegacy
         $app    = JFactory::getApplication();
         $config = JComponentHelper::getParams('com_media');
 
-        if (!$app->isClient('administrator')) {
+        // What it picks for (the editors' Image and PDF buttons, image fields), '' when managing: picking also runs on the site
+        // (front-end editing)
+        $this->pick = MediaHelper::pickType();
+
+        if (!$app->isClient('administrator') && $this->pick === '') {
             return $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
         }
 
@@ -50,10 +54,15 @@ class MediaViewMedia extends JViewLegacy
         $this->folders_id  = ' id="media-tree"';
         $this->folders     = $this->get('folderTree');
 
-        $this->sidebar = JHtmlSidebar::render();
+        if ($this->pick === '') {
+            $this->sidebar = JHtmlSidebar::render();
 
-        // Set the toolbar
-        $this->addToolbar();
+            // Set the toolbar
+            $this->addToolbar();
+        } else {
+            $this->sidebar = '';
+            $this->toolbar = $this->getPickToolbar();
+        }
 
         parent::display($tpl);
     }
@@ -116,6 +125,40 @@ class MediaViewMedia extends JViewLegacy
         }
 
         JToolbarHelper::help('JHELP_CONTENT_MEDIA_MANAGER');
+    }
+
+    /**
+     * The picker's toolbar, drawn in its page (pages in a modal have no toolbar of the template's): the Media Manager's
+     * buttons the user may use, without Options and Help. JToolbarHelper is the administrator's only.
+     *
+     * @return  string
+     *
+     * @since   3.19.0
+     */
+    protected function getPickToolbar()
+    {
+        $user    = JFactory::getUser();
+        $bar     = new JToolbar('media-pick');
+        $buttons = array();
+
+        if ($user->authorise('core.create', 'com_media')) {
+            $buttons['upload'] = 'toolbar.uploadmedia';
+            $buttons['create'] = 'toolbar.newfolder';
+        }
+
+        if ($user->authorise('core.create', 'com_media') && $user->authorise('core.delete', 'com_media')) {
+            $buttons['crop'] = 'toolbar.cropmedia';
+        }
+
+        if ($user->authorise('core.delete', 'com_media')) {
+            $buttons['delete'] = 'toolbar.deletemedia';
+        }
+
+        foreach ($buttons as $name => $layout) {
+            $bar->appendButton('Custom', JLayoutHelper::render($layout, array(), JPATH_ADMINISTRATOR . '/components/com_media/layouts'), $name);
+        }
+
+        return $buttons ? $bar->render() : '';
     }
 
     /**

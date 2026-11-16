@@ -14,6 +14,9 @@ $input = JFactory::getApplication()->input;
 $lang  = JFactory::getLanguage();
 $style = JFactory::getApplication()->getUserStateFromRequest('media.list.layout', 'layout', 'thumbs', 'word');
 
+// Picking (the editors' Image and PDF buttons, image fields): the picker's values on every address of the page
+$pick = MediaHelper::pickQuery();
+
 // The files folder relative to the site (e.g. "images"), shown before a new folder's name: COM_MEDIA_BASE is the server's path to it
 $base = trim(str_replace('\\', '/', (string) JComponentHelper::getParams('com_media')->get('file_path', 'images')), '/');
 
@@ -46,7 +49,7 @@ JText::script('COM_MEDIA_PREVIEW_POSITION');
 // The Crop button's window (media.js, global.js' cropper)
 if ($user->authorise('core.create', 'com_media') && $user->authorise('core.delete', 'com_media')) {
     JFactory::getDocument()->addScriptOptions('com_media.crop', array(
-        'url'  => JUri::base(true) . '/index.php?option=com_media&task=file.crop&format=json',
+        'url'  => JUri::base(true) . '/index.php?option=com_media&task=file.crop&format=json' . $pick,
         'base' => COM_MEDIA_BASEURL,
     ));
 
@@ -55,8 +58,32 @@ if ($user->authorise('core.create', 'com_media') && $user->authorise('core.delet
     }
 }
 
+// Picking: the chosen file goes into the editor or field (media.js' ImageManager, the old picker's names); on the site with
+// the icon font, which the site's templates may not load
+if ($this->pick !== '') {
+    if (JFactory::getApplication()->isClient('site')) {
+        JHtml::_('stylesheet', 'system/icomoon.css', array('version' => 'auto', 'relative' => true));
+    }
+
+    JFactory::getDocument()->addScriptOptions('com_media.pick', array(
+        'values'  => MediaHelper::pickValues(),
+        'baseurl' => COM_MEDIA_BASEURL,
+    ));
+    JFactory::getDocument()->addScriptOptions('mediamanager', array(
+        'base'   => JComponentHelper::getParams('com_media')->get('image_path', 'images') . '/',
+        'asset'  => $input->getCmd('asset'),
+        'author' => $input->getCmd('author'),
+        'type'   => $this->pick === 'pdf' ? 'pdf' : '',
+    ));
+}
+
 ?>
-<div class="row-fluid">
+<?php if ($this->pick !== '') : ?>
+<?php // On the site the picker has a look of its own (media.css), the same in every template?>
+<div id="media-picker" class="media-picker-page<?php echo JFactory::getApplication()->isClient('site') ? ' media-site' : ''; ?>">
+<div class="media-pick-toolbar"><?php echo $this->toolbar; ?></div>
+<?php endif; ?>
+<div class="row-fluid<?php echo $this->pick !== '' ? ' media-pick' : ''; ?>">
 	<!-- Begin Sidebar -->
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
@@ -97,7 +124,7 @@ if ($user->authorise('core.create', 'com_media') && $user->authorise('core.delet
 		<?php if ($user->authorise('core.create', 'com_media')) : ?>
 		<!-- File Upload Form -->
 		<div id="collapseUpload" class="collapse">
-			<form action="<?php echo JUri::base(); ?>index.php?option=com_media&amp;task=file.upload&amp;tmpl=component&amp;<?php echo $this->session->getName() . '=' . $this->session->getId(); ?>&amp;<?php echo JSession::getFormToken(); ?>=1&amp;format=html" id="uploadForm" class="form-inline" name="uploadForm" method="post" enctype="multipart/form-data">
+			<form action="<?php echo JUri::base(); ?>index.php?option=com_media&amp;task=file.upload&amp;tmpl=component&amp;<?php echo $this->session->getName() . '=' . $this->session->getId(); ?>&amp;<?php echo JSession::getFormToken(); ?>=1&amp;format=html<?php echo $this->escape($pick); ?>" id="uploadForm" class="form-inline" name="uploadForm" method="post" enctype="multipart/form-data">
 				<div id="uploadform" class="uploadform">
 					<fieldset id="upload-noflash" class="actions">
 							<label for="upload-file" class="control-label"><?php echo JText::_('COM_MEDIA_UPLOAD_FILE'); ?></label>
@@ -109,12 +136,12 @@ if ($user->authorise('core.create', 'com_media') && $user->authorise('core.delet
 							</p>
 					</fieldset>
 					<input class="update-folder" type="hidden" name="folder" id="folder" value="<?php echo $this->escape($this->state->folder); ?>" />
-					<?php JFactory::getSession()->set('com_media.return_url', 'index.php?option=com_media'); ?>
+					<?php JFactory::getSession()->set('com_media.return_url', MediaHelper::pickUrl() ?: 'index.php?option=com_media'); ?>
 				</div>
 			</form>
 		</div>
 		<div id="collapseFolder" class="collapse">
-			<form action="index.php?option=com_media&amp;task=folder.create&amp;tmpl=<?php echo $input->getCmd('tmpl', 'index'); ?>" name="folderForm" id="folderForm" class="form-inline" method="post">
+			<form action="index.php?option=com_media&amp;task=folder.create&amp;tmpl=<?php echo $input->getCmd('tmpl', 'index'); ?><?php echo $this->escape($pick); ?>" name="folderForm" id="folderForm" class="form-inline" method="post">
 					<div class="path">
 						<input type="text" id="folderpath" readonly="readonly" class="update-folder" />
 						<input required type="text" id="foldername" name="foldername" />
@@ -126,38 +153,46 @@ if ($user->authorise('core.create', 'com_media') && $user->authorise('core.delet
 		</div>
 		<?php endif; ?>
 
-		<form action="index.php?option=com_media&amp;task=folder.create&amp;tmpl=<?php echo $input->getCmd('tmpl', 'index'); ?>" name="folderForm" id="folderForm" method="post">
+		<form action="index.php?option=com_media&amp;task=folder.create&amp;tmpl=<?php echo $input->getCmd('tmpl', 'index'); ?><?php echo $this->escape($pick); ?>" name="folderForm" id="folderForm" method="post">
 			<div id="folderview">
 				<div class="view">
-					<iframe class="thumbnail" src="index.php?option=com_media&amp;view=mediaList&amp;tmpl=component&amp;folder=<?php echo $this->escape($this->state->folder); ?>" id="folderframe" name="folderframe" width="100%" height="500px" marginwidth="0" marginheight="0" scrolling="auto"></iframe>
+					<iframe class="thumbnail" src="index.php?option=com_media&amp;view=mediaList&amp;tmpl=component&amp;folder=<?php echo $this->escape(rawurlencode((string) $this->state->folder)); ?><?php echo $this->escape($pick); ?>" id="folderframe" name="folderframe" width="100%" height="500px" marginwidth="0" marginheight="0" scrolling="auto"></iframe>
 				</div>
 				<?php echo JHtml::_('form.token'); ?>
 			</div>
 		</form>
+		<?php if ($this->pick !== '') : ?>
+		<?php echo $this->loadTemplate('pick'); ?>
+		<?php endif; ?>
 	</div>
-<?php // Pre render all the bootstrap modals on the parent window
+<?php // Pre render all the bootstrap modals on the parent window (not when picking, which lists no audio or video)
+if ($this->pick === '') :
 
-echo JHtml::_(
-    'bootstrap.renderModal',
-    'videoPreview',
-    array(
-        'title'  => JText::_('COM_MEDIA_PREVIEW'),
-        'footer' => '<button type="button" class="btn" data-dismiss="modal">'
-            . JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>',
-    ),
-    '<div id="videoPlayer"><video id="videoPreviewPlayer" controls="controls" preload="metadata"></video></div>'
-);
+    echo JHtml::_(
+        'bootstrap.renderModal',
+        'videoPreview',
+        array(
+            'title'  => JText::_('COM_MEDIA_PREVIEW'),
+            'footer' => '<button type="button" class="btn" data-dismiss="modal">'
+                . JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>',
+        ),
+        '<div id="videoPlayer"><video id="videoPreviewPlayer" controls="controls" preload="metadata"></video></div>'
+    );
 
-echo JHtml::_(
-    'bootstrap.renderModal',
-    'audioPreview',
-    array(
-        'title'  => JText::_('COM_MEDIA_PREVIEW'),
-        'footer' => '<button type="button" class="btn" data-dismiss="modal">'
-            . JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>',
-    ),
-    '<div id="audioPlayer"><img id="audioPreviewCover" src="" alt="" hidden="hidden" /><svg class="media-audio-wave" viewBox="0 0 102 60" fill="currentColor" aria-hidden="true" focusable="false"><rect x="0" y="19" width="6" height="22" rx="3"></rect><rect x="12" y="11" width="6" height="38" rx="3"></rect><rect x="24" y="3" width="6" height="54" rx="3"></rect><rect x="36" y="14" width="6" height="32" rx="3"></rect><rect x="48" y="7" width="6" height="46" rx="3"></rect><rect x="60" y="17" width="6" height="26" rx="3"></rect><rect x="72" y="5" width="6" height="50" rx="3"></rect><rect x="84" y="15" width="6" height="30" rx="3"></rect><rect x="96" y="21" width="6" height="18" rx="3"></rect></svg><audio id="audioPreviewPlayer" controls="controls" preload="metadata"></audio></div>'
-);
+    echo JHtml::_(
+        'bootstrap.renderModal',
+        'audioPreview',
+        array(
+            'title'  => JText::_('COM_MEDIA_PREVIEW'),
+            'footer' => '<button type="button" class="btn" data-dismiss="modal">'
+                . JText::_('JLIB_HTML_BEHAVIOR_CLOSE') . '</button>',
+        ),
+        '<div id="audioPlayer"><img id="audioPreviewCover" src="" alt="" hidden="hidden" /><svg class="media-audio-wave" viewBox="0 0 102 60" fill="currentColor" aria-hidden="true" focusable="false"><rect x="0" y="19" width="6" height="22" rx="3"></rect><rect x="12" y="11" width="6" height="38" rx="3"></rect><rect x="24" y="3" width="6" height="54" rx="3"></rect><rect x="36" y="14" width="6" height="32" rx="3"></rect><rect x="48" y="7" width="6" height="46" rx="3"></rect><rect x="60" y="17" width="6" height="26" rx="3"></rect><rect x="72" y="5" width="6" height="50" rx="3"></rect><rect x="84" y="15" width="6" height="30" rx="3"></rect><rect x="96" y="21" width="6" height="18" rx="3"></rect></svg><audio id="audioPreviewPlayer" controls="controls" preload="metadata"></audio></div>'
+    );
+endif;
 ?>
 	<!-- End Content -->
 </div>
+<?php if ($this->pick !== '') : ?>
+</div>
+<?php endif; ?>

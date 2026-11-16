@@ -35,6 +35,13 @@ class MediaModelManager extends JModelLegacy
             $input = JFactory::getApplication()->input;
 
             $folder = $input->get('folder', '', 'path');
+
+            // Without a folder of its own (an image field without a directory sends an empty one), the one last shown
+            if ($folder === '' || $folder === null) {
+                JLoader::register('MediaHelper', JPATH_ADMINISTRATOR . '/components/com_media/helpers/media.php');
+                $folder = MediaHelper::lastFolder();
+            }
+
             $this->setState('folder', $folder);
 
             $fieldid = $input->get('fieldid', '');

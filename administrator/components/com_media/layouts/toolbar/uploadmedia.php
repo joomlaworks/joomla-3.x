@@ -9,7 +9,8 @@
 
 defined('_JEXEC') or die;
 
-$title = JText::_('JTOOLBAR_UPLOAD');
+// The site (picking while editing there) has no administrator strings
+$title = JText::_(JFactory::getLanguage()->hasKey('JTOOLBAR_UPLOAD') ? 'JTOOLBAR_UPLOAD' : 'COM_MEDIA_UPLOAD');
 ?>
 <button data-toggle="collapse" data-target="#collapseUpload" class="btn btn-small btn-success">
 	<span class="icon-plus icon-white" title="<?php echo $title; ?>"></span> <?php echo $title; ?>

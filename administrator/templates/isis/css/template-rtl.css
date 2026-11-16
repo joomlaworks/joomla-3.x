@@ -138,11 +138,7 @@ body {direction:rtl;}
 .form-search .checkbox input[type="checkbox"],
 .form-inline .radio input[type="radio"],
 .form-inline .checkbox input[type="checkbox"] {float:right;margin-left:3px;margin-right:0;}
-.com_media .container-main .media {display:inline-block;}
 .thumbnails > li {float:right;margin-bottom:18px;margin-right:20px;}
-#mediamanager-form .description,
-#mediamanager-form .filesize,
-#mediamanager-form .dimensions {direction:ltr;}
 .popover,
 .tooltip-inner {text-align:right;}
 .popover.top .arrow,
@@ -252,15 +248,6 @@ input[type="url"] {text-align:left;direction:ltr;}
 .js-pstats-data-details dd {margin-right:240px;}
 .modal-footer button {float:left;}
 .modal-header {text-align:right;}
-#mediamanager-form .thumbnails-media .thumbnail {margin-left:18px !important;margin-right:0;direction:ltr;text-align:center;}
-.thumbnails-media .imgThumb label::before,
-.thumbnails-media .imgThumb .imgThumbInside::before {left:auto;right:0;border-radius:0 3px;}
-.thumbnails-media .thumbnail input[type="radio"],
-.thumbnails-media .thumbnail input[type="checkbox"] {left:auto;right:5px;}
-.thumbnails-media .imgDelete a.close {left:0;right:auto;border-radius:3px 0;}
-.thumbnails-media .imgPreview a,
-.thumbnails-media .imgDetails {border-radius:3px 0;border-width:1px;left:0;right:0;text-align:left;direction:ltr;}
-.thumbnails-media .imgPreview a {width:100%;}
 .subform-table-layout td {padding-left:10px;}
 .subform-table-layout td::before {content:attr(data-column);left:auto;right:10px;padding-left:10px;padding-right:0;}
 .subform-table-layout .subform-repeatable tbody td:last-of-type {text-align:left;}

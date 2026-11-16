@@ -7,7 +7,8 @@
 
 /* --- Modal --- */
 #sbox-overlay {position:fixed;top:0;left:0;background-color:#000;}
-#sbox-window {position:absolute;padding:10px;background-color:#fff;text-align:left;overflow:visible;border-radius:3px;}
+/* Sized by the script for its content (templates' universal border-box would make it narrower than its frame) */
+#sbox-window {position:absolute;box-sizing:content-box;padding:10px;background-color:#fff;text-align:left;overflow:visible;border-radius:3px;}
 #sbox-window.shadow {box-shadow:0 0 10px rgba(0, 0, 0, 0.7);}
 #sbox-window[aria-hidden=true],
 #sbox-overlay[aria-hidden=true] {display:none;}

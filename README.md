@@ -68,6 +68,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - Templates: Options accept WebP, AVIF, SVG and ICO images and WOFF2 fonts, and uploads of up to 8 MB (updated sites get these once; BMP, an outdated format, comes off the list)
 
 - Extensions: Manage and Discover also find extensions by their author or copyright, not only by name
+- The Image and PDF buttons and image fields open the Media Manager itself, showing only images (or only PDF files): its folder tree, uploads, new folders, renaming, cropping and thumbnail sizes are there while you pick; a click picks a file, a double click inserts it. It works the same when editing on the site, where it looks the same whatever the template
 **Bug fixes:**
 - **Extensions:**
   - Extensions by Joomdonation (Payment Form, Events Booking, Membership Pro, Docman and others built on its OSL library) work again: 3.18 had removed a part of Joomla 3 they rely on (the Framework's "DI" container), and this update brings it back
@@ -79,6 +80,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
   - The list for picking a contact (for a menu item or in an editor) no longer shows each contact's name twice
   - The Joomla logo at the top right stays in the middle of the header when an extension makes its title taller, and the icons of large buttons (such as Reset Messages) and of Log out in the status bar line up with their text (Prothero and Isis)
 - **Site and templates:**
+  - Windows opened over a page (such as the image picker) are no longer cut off at their right edge on Hammond, Finch and Rookwood
   - Long tooltips (such as an extension's preview of a list item) open above the pointer when there's no room below, instead of making the page jump
   - Templates using the name "collapse" for their own layout (such as Foundation-based templates' rows) no longer lose whole sections of the page
   - Hammond, Finch and Rookwood: their script no longer holds up the first view of the page on phones (PageSpeed counted it as blocking the page)
@@ -86,6 +88,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
   - Rookwood: the violet sections (such as the Studio set's figures) are a little deeper in the dark theme, so their white text is easier to read, and each "View all" link says what it leads to for screen readers
   - Hammond, Finch and Rookwood: screen readers are told which page links can't be used (Start and Prev on the first page)
 - **Media Manager:**
+  - The Media Manager and its pickers open in the folder you used last, so adding several images from one folder no longer means finding it each time
   - Long folder names wrap in the folder tree instead of running over the list
 - **Caching:**
   - The Page Cache also answers header-only requests (as `curl -I` and uptime monitors send), which got "don't cache" headers while the page itself was cached
@@ -104,6 +107,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
   - No more PHP 8 deprecation notices from lists of numbers that extensions build (such as Kunena's) or when installing libraries and packages
 
 **Joomla 3 bugs fixed:**
+- **Media Manager:** it forgot the folder you used, so picking several images from one folder meant finding it each time
 - **Media Manager:** long folder names ran out of the folder tree
 - **Databases:** on PostgreSQL, extensions starting new items from their table's defaults failed to save them
 - **PHP compatibility:** deprecation notices on PHP 8 from lists of numbers and when installing libraries and packages

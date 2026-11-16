@@ -53,10 +53,10 @@
 
 		window.parent.ImageManager.populateFields(path);
 
-		const link = document.querySelector('a.img-preview.selected');
+		const picked = document.querySelector('.media-picked');
 
-		if (link) {
-			link.scrollIntoView({ block: 'nearest' });
+		if (picked) {
+			picked.scrollIntoView({ block: 'nearest' });
 		}
 	};
 
@@ -803,7 +803,7 @@ function jMediaRefreshImgpathTip(tip, element) {
 		// Without an address (refreshFrame()) the list reloads
 		setFrameUrl(url) {
 			if (url) {
-				this.frameurl = url;
+				this.frameurl = window.MediaPick ? window.MediaPick.withPick(url) : url;
 			}
 
 			this.frame.location.href = this.frameurl;
@@ -841,36 +841,97 @@ function jMediaRefreshImgpathTip(tip, element) {
 	}
 })(window);
 
+/* --- Picking (the Media Manager in the editors' Image and PDF buttons' and the image fields' modals) --- */
+/*
+ * The picker's values (com_media.pick: what it picks, for which editor or field, the asset and author of the access check)
+ * go on every Media Manager address of its pages, so folders, uploads, new folders and deletes stay in the picker; links
+ * to the top window (a list's delete) open in the picker's page instead. Templates' own list layouts are covered too.
+ */
+(() => {
+	'use strict';
+
+	const options = window.Joomla && Joomla.getOptions ? Joomla.getOptions('com_media.pick') : null;
+
+	if (!options || !options.values) {
+		return;
+	}
+
+	// An address of the Media Manager with the picker's values (null for any other)
+	const withPick = (address) => {
+		let url;
+
+		try {
+			url = new URL(address, window.location.href);
+		} catch (error) {
+			return null;
+		}
+
+		if (url.origin !== window.location.origin || url.searchParams.get('option') !== 'com_media') {
+			return null;
+		}
+
+		Object.keys(options.values).forEach((name) => {
+			if (!url.searchParams.has(name)) {
+				url.searchParams.set(name, options.values[name]);
+			}
+		});
+
+		if (url.searchParams.get('tmpl') === 'index') {
+			url.searchParams.set('tmpl', 'component');
+		}
+
+		return url.href;
+	};
+
+	window.MediaPick = { withPick };
+
+	const start = () => {
+		Array.prototype.forEach.call(document.querySelectorAll('a[href], form[action]'), (element) => {
+			const attribute = element.tagName === 'FORM' ? 'action' : 'href';
+			const address = withPick(element.getAttribute(attribute));
+
+			if (address) {
+				element.setAttribute(attribute, address);
+			}
+
+			if (element.getAttribute('target') === '_top') {
+				element.setAttribute('target', '_parent');
+			}
+		});
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', start);
+	} else {
+		start();
+	}
+})();
+
 /* --- Image picker --- */
 /*
- * The image picker (view images: the editors' Image button, the image field's modal): its list in a frame (#imageframe),
- * the folder list and Up button, the upload form following the folder, the chosen image's fields, and Insert (onok()),
- * which writes the image into the editor. The list's frame uses its parent's ImageManager.
+ * The Media Manager's page while picking (ImageManager, the old picker's names): the file clicked in its list (#folderframe)
+ * fills the address field, and Insert (onok()) writes the image, with its description, title, caption and alignment, or a
+ * PDF's shortcode into the editor; image fields read the address themselves. The list's frame uses its parent's.
  */
 ((doc) => {
 	'use strict';
 
-	// Defined by the image picker only (its list's iframe uses the parent's, set before this deferred file runs)
+	// Defined by the picker's page only (its list's iframe uses the parent's)
 	if (window.ImageManager) {
 		return;
 	}
-
-	// A query string of these values (missing ones empty, as jQuery's $.param() wrote them)
-	const query = (values) => Object.keys(values)
-		.map((name) => encodeURIComponent(name) + '=' + encodeURIComponent(values[name] === undefined || values[name] === null ? '' : values[name]))
-		.join('&');
 
 	window.ImageManager = {
 		// Initialization
 		initialize() {
 			const options = Joomla.getOptions('mediamanager') || {};
-			const frame = doc.getElementById('imageframe');
-			const up = doc.getElementById('upbutton');
+			const pick = Joomla.getOptions('com_media.pick') || {};
 
 			this.author = options.author;
 			this.base = options.base;
 			this.asset = options.asset;
 			this.type = options.type || '';
+			this.baseurl = pick.baseurl || '';
 			this.editor = new URLSearchParams(window.self.location.search).get('e_name');
 
 			// Setup image manager fields object
@@ -883,43 +944,7 @@ function jMediaRefreshImgpathTip(tip, element) {
 				c_class: doc.getElementById('f_caption_class'),
 			};
 
-			// Setup image listing objects
-			this.folderlist = doc.getElementById('folderlist');
-			this.frame = window.frames.imageframe;
-			this.frameurl = this.frame.location.href;
-
-			// Setup image listing frame
-			frame.addEventListener('load', () => this.onloadimageview());
-
-			// Setup folder up button
-			if (up) {
-				up.addEventListener('click', () => this.upFolder());
-			}
-		},
-
-		// The list's frame loaded a folder: the folder list and the upload form follow it
-		onloadimageview() {
-			const folder = this.getImageFolder();
-			const form = doc.getElementById('uploadForm');
-
-			// A folder link without the picker's type (a template's own list layout): that folder again, with it
-			if (this.type && new URLSearchParams(this.frame.location.search).get('type') !== this.type) {
-				this.setFrameUrl(folder, this.asset, this.author);
-
-				return;
-			}
-
-			// Update the frame url
-			this.frameurl = this.frame.location.href;
-			this.setFolder(folder);
-
-			if (form) {
-				const action = new URL(form.getAttribute('action'), window.location.href);
-
-				action.searchParams.set('folder', folder === null ? '' : folder);
-				action.hash = '';
-				form.setAttribute('action', action.href);
-			}
+			this.frame = window.frames.folderframe;
 		},
 
 		// The folder shown in the list's frame
@@ -981,24 +1006,13 @@ function jMediaRefreshImgpathTip(tip, element) {
 		},
 
 		/**
-		 * Called from outside when the directory selector is used.
+		 * Shows a folder in the list (the old picker's folder list and Up button are the Media Manager's tree and Back now)
 		 *
 		 * @param   {string}  folder  The folder to switch to
 		 * @param   {mixed}   asset   Probably an integer or undefined, optional
 		 * @param   {mixed}   author  Probably an integer or undefined, optional
 		 */
 		setFolder(folder, asset, author) {
-			for (let i = 0; i < this.folderlist.length; i += 1) {
-				if (folder == this.folderlist.options[i].value) { // eslint-disable-line eqeqeq
-					this.folderlist.selectedIndex = i;
-
-					// Its searchable list is drawn again (Chosen hears it natively and through jQuery)
-					this.folderlist.dispatchEvent(new CustomEvent('liszt:updated'));
-
-					break;
-				}
-			}
-
 			if (!!asset || !!author) {
 				this.setFrameUrl(folder, asset, author);
 			}
@@ -1006,32 +1020,65 @@ function jMediaRefreshImgpathTip(tip, element) {
 
 		// Move up one directory
 		upFolder() {
-			const path = this.folderlist.value.split('/');
+			const path = (this.getImageFolder() || '').split('/');
 
 			path.pop();
-
-			const search = path.join('/');
-
-			this.setFolder(search);
-			this.setFrameUrl(search, this.asset, this.author);
+			this.setFrameUrl(path.join('/'), this.asset, this.author);
 		},
 
 		/**
-		 * Called from outside when a file is selected
+		 * The path of a file in the list, from its address (null for an address outside the media folder)
+		 *
+		 * @param   {string}  href
+		 *
+		 * @return  {string|null}
+		 */
+		pathOf(href) {
+			try {
+				const base = new URL(this.baseurl + '/', window.location.href).pathname;
+				const path = new URL(href, this.frame.location.href).pathname;
+
+				return path.indexOf(base) === 0 ? decodeURIComponent(path.substring(base.length)) : null;
+			} catch (error) {
+				return null;
+			}
+		},
+
+		/**
+		 * A file chosen in the list: its address in the field, its tile or row marked
 		 *
 		 * @param   {string}  file  Relative path to the file.
 		 */
 		populateFields(file) {
-			const list = doc.getElementById('imageframe');
-			const call = "javascript:ImageManager.populateFields('" + file + "')";
+			let list = null;
 
-			if (list && list.contentDocument) {
-				Array.prototype.forEach.call(list.contentDocument.querySelectorAll('a.img-preview'), (link) => {
-					link.classList.toggle('selected', link.href === call || link.getAttribute('href') === call);
+			try {
+				list = this.frame.document;
+			} catch (error) {
+				list = null;
+			}
+
+			if (list) {
+				Array.prototype.forEach.call(list.querySelectorAll('.media-picked'), (item) => item.classList.remove('media-picked'));
+				Array.prototype.forEach.call(list.querySelectorAll('a.img-preview[href], a.preview[href], a.pdf-preview[href]'), (link) => {
+					const item = link.closest('li, tr');
+
+					if (item && this.pathOf(link.getAttribute('href')) === file) {
+						item.classList.add('media-picked');
+					}
 				});
 			}
 
 			this.fields.url.value = this.base + file;
+		},
+
+		// Inserts what's chosen, as the Insert button does (a double click in the list)
+		insert() {
+			const button = doc.querySelector('.media-pick-panel .button-save-selected');
+
+			if (button && this.fields.url.value) {
+				button.click();
+			}
 		},
 
 		/**
@@ -1056,29 +1103,20 @@ function jMediaRefreshImgpathTip(tip, element) {
 			}
 		},
 
-		// Not used. Refreshes the iframe
+		// Reloads the list
 		refreshFrame() {
-			this.frame.location.href = this.frameurl;
+			this.frame.location.reload();
 		},
 
 		/**
 		 * Sets the iframe url, loading a new page. Usually for changing directory.
 		 *
 		 * @param  {string}  folder  Relative path to directory
-		 * @param  {mixed}   asset   Probably an integer or undefined, optional
-		 * @param  {mixed}   author  Probably an integer or undefined, optional
 		 */
-		setFrameUrl(folder, asset, author) {
-			this.frameurl = 'index.php?' + query({
-				option: 'com_media',
-				view: 'imagesList',
-				tmpl: 'component',
-				type: this.type,
-				asset,
-				author,
-				folder,
-			});
-			this.frame.location.href = this.frameurl;
+		setFrameUrl(folder) {
+			const address = 'index.php?option=com_media&view=mediaList&tmpl=component&folder=' + encodeURIComponent(folder || '');
+
+			this.frame.location.href = window.MediaPick ? window.MediaPick.withPick(address) : address;
 		},
 
 		/**
@@ -1102,8 +1140,10 @@ function jMediaRefreshImgpathTip(tip, element) {
 	};
 
 	const start = () => {
-		if (doc.getElementById('imageframe')) {
+		if (doc.getElementById('folderframe') && Joomla.getOptions('com_media.pick')) {
 			window.ImageManager.initialize();
+		} else {
+			delete window.ImageManager;
 		}
 	};
 
@@ -1737,6 +1777,11 @@ function jMediaRefreshImgpathTip(tip, element) {
 		// The list's frame as tall as the window allows below its top (it was 500 pixels), less a status bar fixed at the
 		// window's foot (Prothero's)
 		const fitFrame = () => {
+			// Picking: the page's CSS fits it (media.css, #media-picker)
+			if (document.getElementById('media-picker')) {
+				return;
+			}
+
 			const status = document.getElementById('status');
 			const fixed = status && window.getComputedStyle(status).position === 'fixed' ? status.offsetHeight : 0;
 			const top = frame.getBoundingClientRect().top + window.pageYOffset;
@@ -1990,6 +2035,38 @@ function jMediaRefreshImgpathTip(tip, element) {
 
 		if (parent.document.updateUploader) {
 			parent.document.updateUploader();
+		}
+
+		// Picking (the picker's page): a click on an image or PDF chooses it, a double click also inserts it
+		if (window.Joomla.getOptions && window.Joomla.getOptions('com_media.pick')) {
+			// The picker's page sets its ImageManager up when it's ready, which may be after this frame
+			const choose = (event) => {
+				const link = event.target.closest ? event.target.closest('a.pdf-preview[href], a.img-preview[href], a.preview[href]') : null;
+				const picker = parent.ImageManager && parent.ImageManager.fields ? parent.ImageManager : null;
+
+				if (!link) {
+					return null;
+				}
+
+				event.preventDefault();
+
+				const path = picker ? picker.pathOf(link.getAttribute('href')) : null;
+
+				if (path !== null) {
+					picker.populateFields(path);
+				}
+
+				return path;
+			};
+
+			document.addEventListener('click', choose);
+			document.addEventListener('dblclick', (event) => {
+				if (choose(event) !== null) {
+					parent.ImageManager.insert();
+				}
+			});
+
+			return;
 		}
 
 		document.addEventListener('click', (event) => {

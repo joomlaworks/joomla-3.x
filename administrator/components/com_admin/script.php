@@ -5842,6 +5842,13 @@ class JoomlaInstallerScript
             '/templates/protostar/less',
             '/templates/protostar/img',
             '/templates/protostar/images/system',
+            // The image picker's own views and the templates' Media Manager overrides: the Media Manager picks since 3.19, in
+            // the same layouts in every template
+            '/administrator/components/com_media/views/images',
+            '/administrator/components/com_media/views/imageslist',
+            '/administrator/templates/isis/html/com_media',
+            '/administrator/templates/prothero/html/com_media',
+            '/templates/protostar/html/com_media',
         );
 
         jimport('joomla.filesystem.file');

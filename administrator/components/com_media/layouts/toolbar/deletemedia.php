@@ -9,7 +9,8 @@
 
 defined('_JEXEC') or die;
 
-$title = JText::_('JTOOLBAR_DELETE');
+// The site (picking while editing there) has no administrator strings
+$title = JText::_(JFactory::getLanguage()->hasKey('JTOOLBAR_DELETE') ? 'JTOOLBAR_DELETE' : 'JACTION_DELETE');
 
 // deleteMedia() is the Media Manager's (media.js)
 JText::script('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST');

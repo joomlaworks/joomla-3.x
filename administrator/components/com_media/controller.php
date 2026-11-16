@@ -34,19 +34,13 @@ class MediaController extends JControllerLegacy
         $vType    = JFactory::getDocument()->getType();
         $vName    = $this->input->get('view', 'media');
 
+        // The picker's old addresses (the editors' Image and PDF buttons, image fields, extensions): the Media Manager, picking
+        if ($vName === 'images' || $vName === 'imagesList') {
+            $this->input->set('pick', MediaHelper::pickType());
+            $vName = $vName === 'images' ? 'media' : 'mediaList';
+        }
+
         switch ($vName) {
-            case 'images':
-                $vLayout = $this->input->get('layout', 'default', 'string');
-                $mName   = 'manager';
-
-                break;
-
-            case 'imagesList':
-                $mName   = 'list';
-                $vLayout = $this->input->get('layout', 'default', 'string');
-
-                break;
-
             case 'mediaList':
                 $app     = JFactory::getApplication();
                 $mName   = 'list';

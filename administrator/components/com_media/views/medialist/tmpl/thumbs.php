@@ -15,13 +15,13 @@ $path   = 'file_path';
 JHtml::_('script', 'com_media/media.min.js', array('version' => 'auto', 'relative' => true), array('defer' => true));
 JHtml::_('stylesheet', 'com_media/media.min.css', array('version' => 'auto', 'relative' => true));
 ?>
-<form target="_parent" action="index.php?option=com_media&amp;tmpl=index&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>" method="post" id="mediamanager-form" name="mediamanager-form">
+<form target="_parent" action="index.php?option=com_media&amp;tmpl=index&amp;folder=<?php echo rawurlencode((string) $this->state->folder); ?>" method="post" id="mediamanager-form" name="mediamanager-form"<?php echo $this->siteClass; ?>>
 	<div class="muted breadcrumbs media-path">
 		<?php // The folder above (in the thumbnails' place until 3.18)?>
 		<?php if ($this->state->folder != '') : ?>
 			<a class="btn btn-small media-back" href="index.php?option=com_media&amp;view=mediaList&amp;tmpl=component&amp;folder=<?php echo rawurlencode((string) $this->state->parent); ?>" target="folderframe">
 				<?php echo JHtml::_('icons.svg', 'arrow-left', '', array('path' => 'media/com_media/images/icons', 'size' => 16)); ?>
-				<?php echo JText::_('JTOOLBAR_BACK'); ?>
+				<?php echo JText::_(JFactory::getLanguage()->hasKey('JTOOLBAR_BACK') ? 'JTOOLBAR_BACK' : 'COM_MEDIA_UP'); ?>
 			</a>
 		<?php endif; ?>
 		<p>
