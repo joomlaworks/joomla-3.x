@@ -79,8 +79,7 @@ $onClick = 'window.parent.jSelectUser(this);';
 				</tr>
 			</tfoot>
 			<tbody>
-				<?php $i = 0; ?>
-				<?php foreach ($this->items as $item) : ?>
+				<?php foreach ($this->items as $i => $item) : ?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td>
 							<a class="pointer button-select" href="#" data-user-value="<?php echo $item->id; ?>" data-user-name="<?php echo $this->escape($item->name); ?>"

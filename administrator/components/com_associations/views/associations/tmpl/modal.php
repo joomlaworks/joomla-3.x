@@ -161,7 +161,7 @@ JHtml::_('script', 'administrator/components/com_associations/js/associations.js
 	<?php endif; ?>
 
 		<input type="hidden" name="task" value=""/>
-		<input type="hidden" name="forcedItemType" value="<?php echo $app->input->get('forcedItemType', '', 'string'); ?>" />
+		<input type="hidden" name="forcedItemType" value="<?php echo $this->escape($app->input->get('forcedItemType', '', 'string')); ?>" />
 		<input type="hidden" name="forcedLanguage" value="<?php echo $app->input->get('forcedLanguage', '', 'cmd'); ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</div>

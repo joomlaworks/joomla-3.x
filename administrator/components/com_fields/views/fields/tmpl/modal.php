@@ -65,7 +65,7 @@ $editor    = JFactory::getApplication()->input->get('editor', '', 'cmd');
 				</thead>
 				<tfoot>
 					<tr>
-						<td colspan="8">
+						<td colspan="7">
 							<?php echo $this->pagination->getListFooter(); ?>
 						</td>
 					</tr>
@@ -91,7 +91,7 @@ $editor    = JFactory::getApplication()->input->get('editor', '', 'cmd');
 							<a class="btn btn-small btn-block btn-warning" href="#" onclick="Joomla.fieldgroupIns('<?php echo $this->escape($item->group_id); ?>', '<?php echo $this->escape($editor); ?>');"><?php echo $item->group_id ? $this->escape($item->group_title) : JText::_('JNONE'); ?></a>
 						</td>
 						<td class="small hidden-phone">
-							<?php echo $item->type; ?>
+							<?php echo $this->escape($item->type); ?>
 						</td>
 						<td class="small hidden-phone">
 							<?php echo $this->escape($item->access_level); ?>

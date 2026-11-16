@@ -14,6 +14,25 @@ document.addEventListener('DOMContentLoaded', () => {
 		return;
 	}
 
+	// Select/Change Target lists the target language's items: the modal's frame (a <template>, cloned when it opens) gets
+	// that language in its address before the button opens it
+	const selectButton = byId('select-change');
+
+	if (selectButton) {
+		selectButton.addEventListener('click', () => {
+			const modal = document.querySelector(selectButton.getAttribute('data-target'));
+			const template = modal ? modal.querySelector('template.modal-iframe') : null;
+			const frame = template ? template.content.querySelector('iframe') : null;
+
+			if (frame) {
+				const url = new URL(frame.getAttribute('src'), document.baseURI);
+
+				url.searchParams.set('forcedLanguage', target.getAttribute('data-language') || '');
+				frame.setAttribute('src', url.href);
+			}
+		});
+	}
+
 	const code = (language) => String(language).replace(/-/, '_');
 	const show = (id, shown) => {
 		const element = byId(id);

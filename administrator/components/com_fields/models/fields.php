@@ -72,6 +72,11 @@ class FieldsModelFields extends JModelList
      */
     protected function populateState($ordering = null, $direction = null)
     {
+        // The picker (layout=modal, the editors' Fields button) keeps filters of its own, as the other lists' pickers do
+        if ($layout = JFactory::getApplication()->input->get('layout')) {
+            $this->context .= '.' . $layout;
+        }
+
         // List state information.
         parent::populateState('a.ordering', 'asc');
 

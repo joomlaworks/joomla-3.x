@@ -86,16 +86,7 @@ if (!empty($editor)) {
 				<tbody>
 				<?php foreach ($this->items as $i => $item) : ?>
 				<?php $uselessMenuItem = in_array($item->type, array('separator', 'heading', 'alias', 'url', 'container')); ?>
-					<?php if ($item->language && JLanguageMultilang::isEnabled()) {
-					    if ($item->language !== '*') {
-					        $language = $item->language;
-					    } else {
-					        $language = '';
-					    }
-					} elseif (!JLanguageMultilang::isEnabled()) {
-					    $language = '';
-					}
-				    ?>
+					<?php $language = JLanguageMultilang::isEnabled() && $item->language !== '*' ? (string) $item->language : ''; ?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="center">
 							<?php echo JHtml::_('MenusHtml.Menus.state', $item->published, $i, 0); ?>

@@ -72,6 +72,9 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - Global Configuration can turn off the hints the site sends to browsers ahead of each page (Resource Hints in HTTP Headers, on by default), for servers, CDNs or optimising extensions that send their own
 - Global Configuration has a Frontend Settings section on its first tab, gathering the settings that only concern the site: Site Offline, Inline Editing, the site's default editor, the default CAPTCHA and the feed settings
 - The windows for choosing an article, category, contact, news feed, menu item or module position, and those for creating or editing one from a field, share one piece of code instead of a copy each, and 15 files Joomla 3 hadn't used since 2016 are gone; they work as before
+**Security fixes:**
+- Multilingual Associations: a crafted link opened by a logged-in administrator could add code to the page that picks an item to associate (an old Joomla 3 issue)
+
 **Bug fixes:**
 - **Extensions:**
   - Extensions by Joomdonation (Payment Form, Events Booking, Membership Pro, Docman and others built on its OSL library) work again: 3.18 had removed a part of Joomla 3 they rely on (the Framework's "DI" container), and this update brings it back
@@ -81,6 +84,9 @@ A short overview of each release. Every change is described in detail in [CHANGE
   - Isis and Prothero: the filters shown by Search Tools are lined up in even columns, as many to a line as fit, instead of wide lists out of line; the ordering and number of items sit at the right of the search bar
   - Menus whose top level item went missing from the database (no new menu item could be saved, and Rebuild failed) are repaired by clicking Rebuild
   - The list for picking a contact (for a menu item or in an editor) no longer shows each contact's name twice
+  - Multilingual Associations: Select Target and Change Target list the target language's items again (they showed nothing since 3.18)
+  - The editors' Fields button no longer shares its search and filters with Fields: Manage
+  - The list for picking a menu item no longer gives an item without a language the language of the item above it
   - The Joomla logo at the top right stays in the middle of the header when an extension makes its title taller, and the icons of large buttons (such as Reset Messages) and of Log out in the status bar line up with their text (Prothero and Isis)
 - **Site and templates:**
   - Windows opened over a page (such as the image picker) are no longer cut off at their right edge on Hammond, Finch and Rookwood
@@ -120,6 +126,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - **Caching:** header-only requests (HEAD) bypassed the Page Cache and were told not to cache the page
 - **Administrator:** Rebuild repairs menus that lost their top level item, which stopped new menu items from being saved
 - **Administrator:** the list for picking a contact showed each contact's name twice
+- **Administrator:** the editors' Fields button shared its search and filters with Fields: Manage; the list for picking a menu item could give an item another item's language
 - **Installing and uninstalling:** a package whose list of extensions misnames one leaves it behind when uninstalled; long extension descriptions made the installer's tooltips run off the screen
 - **Templates:** template images other than GIF, JPEG and PNG (BMP was even in the default list) opened on an error page instead of the image
 
