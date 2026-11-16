@@ -495,6 +495,36 @@
 		},
 	};
 
+	// Editors extensions add as they did for TinyMCE 3 (tinyMCE.execCommand('mceAddControl', false, id): K2's extra fields), commands
+	// TinyMCE 8 no longer has: started like the form's own editors, with the site's options
+	const execCommand = tinymce.execCommand;
+
+	tinymce.execCommand = function (command, ui, value) {
+		if ((command === 'mceAddControl' || command === 'mceRemoveControl') && typeof value === 'string') {
+			const element = document.getElementById(value);
+
+			if (command === 'mceRemoveControl') {
+				const editor = tinymce.get(value);
+
+				if (editor) {
+					editor.remove();
+				}
+
+				return true;
+			}
+
+			if (element && element.tagName === 'TEXTAREA') {
+				Joomla.JoomlaTinyMCELatest.setupEditor(element);
+
+				return true;
+			}
+
+			return false;
+		}
+
+		return execCommand.apply(this, arguments);
+	};
+
 	document.addEventListener('DOMContentLoaded', () => {
 		Joomla.JoomlaTinyMCELatest.setupEditors(document);
 

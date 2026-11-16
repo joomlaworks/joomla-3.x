@@ -3136,7 +3136,7 @@ body .navbar-fixed-top {margin-bottom:0;}
     .navbar .nav-collapse {position:absolute;top:100%;left:0;right:0;z-index:1040;background:var(--c-nav-bg);box-shadow:0 16px 24px rgba(0,0,0,0.25);}
     .navbar .nav-collapse.collapse {display:none;height:auto !important;transition:none;}
     .navbar .nav-collapse.collapse.in {display:block;}
-    .navbar .nav-collapse.in {max-height:calc(100vh - 48px - 34px);max-height:calc(100dvh - 48px - 34px);overflow-y:auto !important;overscroll-behavior:contain;}
+    .navbar .nav-collapse.in {max-height:calc(100vh - 48px - var(--status-h, 34px));max-height:calc(100dvh - 48px - var(--status-h, 34px));overflow-y:auto !important;overscroll-behavior:contain;}
     /* The menu: every section open, in two balanced columns (each section follows the one above it, whole), the section
        names as headings (no more opening each one) */
     .navbar .nav-collapse #menu {display:block;columns:2;column-gap:20px;margin:0;padding:8px 16px 16px;border-top:1px solid var(--c-nav-border);}
@@ -3199,7 +3199,7 @@ body .navbar-fixed-top {margin-bottom:0;}
     #status .btn-group.separator,
     #status .loggedin-users,
     #status .backloggedin-users {display:none;}
-    body.admin {padding-bottom:40px;}
+    body.admin {padding-bottom:calc(var(--status-h, 34px) + 6px);}
 }
 
 /* --- Prothero: Quick icons --- */
@@ -3237,8 +3237,9 @@ html[dir="rtl"] .quick-icons .nav-list [class*=" icon-"] {margin-left:9px;margin
 @media (min-width:980px) {
     :has(> .j-sidebar-container) {position:relative;}
     :has(> .j-sidebar-container)::after {display:table;clear:both;content:"";}
-    /* The positioned form would paint over the floated system message before it and take its clicks (e.g. a message's link) */
-    #system-message-container {position:relative;z-index:1;}
+    /* The positioned form would paint over the floated system message before it and take its clicks (e.g. a message's link); on the
+       messages, not their container, whose stacking context would hold messages extensions pin over the page (K2's) under the toolbar */
+    #system-message-container .alert {position:relative;z-index:1;}
     .j-sidebar-container {top:0;bottom:0;min-height:max-content;width:calc(16.5% + 6.6px);margin-left:-21px;}
     .j-sidebar-container,
     .j-sidebar-container.j-sidebar-hidden {left:calc(-16.5% - 6.6px);}
@@ -3249,8 +3250,9 @@ html[dir="rtl"] .quick-icons .nav-list [class*=" icon-"] {margin-left:9px;margin
 @media (min-width:768px) and (max-width:979px) {
     :has(> .j-sidebar-container) {position:relative;}
     :has(> .j-sidebar-container)::after {display:table;clear:both;content:"";}
-    /* The positioned form would paint over the floated system message before it and take its clicks (e.g. a message's link) */
-    #system-message-container {position:relative;z-index:1;}
+    /* The positioned form would paint over the floated system message before it and take its clicks (e.g. a message's link); on the
+       messages, not their container, whose stacking context would hold messages extensions pin over the page (K2's) under the toolbar */
+    #system-message-container .alert {position:relative;z-index:1;}
     .j-sidebar-container {top:0;bottom:0;min-height:max-content;width:calc(16.5% + 3.3px);margin-left:-11px;}
     .j-sidebar-container,
     .j-sidebar-container.j-sidebar-hidden {left:calc(-16.5% - 3.3px);}
@@ -3390,7 +3392,9 @@ ul.treeselect .treeselect-menu {margin:0 6px;}
 ul.treeselect ul.dropdown-menu {margin:0;}
 ul.treeselect ul.dropdown-menu li {padding:0 5px;border:none;}
 .tree-holder .folder-url,
-.tree-holder .file {position:relative;background-color:var(--c-card);margin-bottom:4px;padding:0 10px;line-height:32px;border:1px solid var(--c-border);border-radius:var(--radius);}
+.tree-holder .file {position:relative;background-color:var(--c-card);margin-bottom:4px;padding:5px 10px;line-height:22px;overflow-wrap:anywhere;border:1px solid var(--c-border);border-radius:var(--radius);}
+/* The folder's icon beside its name, which wraps beside it (even a name without spaces) */
+.tree-holder .folder-url {display:flex;align-items:baseline;gap:0.25em;}
 .tree-holder .folder-url,
 .tree-holder .folder-url:hover,
 .tree-holder .folder-url:focus {font-weight:600;background-color:var(--c-muted);color:var(--c-fg);}

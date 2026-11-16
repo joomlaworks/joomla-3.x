@@ -67,20 +67,26 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - The installer and Joomla Update no longer advise turning PHP's output buffering off: it's on at most hosts and does Joomla no harm. System Information shows how it's set (off, on in pieces of a given size, or on without a limit)
 - Templates: Options accept WebP, AVIF, SVG and ICO images and WOFF2 fonts, and uploads of up to 8 MB (updated sites get these once; BMP, an outdated format, comes off the list)
 
+- Extensions: Manage and Discover also find extensions by their author or copyright, not only by name
 **Bug fixes:**
 - **Extensions:**
   - Extensions by Joomdonation (Payment Form, Events Booking, Membership Pro, Docman and others built on its OSL library) work again: 3.18 had removed a part of Joomla 3 they rely on (the Framework's "DI" container), and this update brings it back
 - **Administrator:**
+  - Prothero: messages that extensions show over the page (such as K2's) are no longer faint and half hidden under the toolbar
+  - Prothero on phones: the end of the opened menu is no longer hidden when the status bar at the bottom takes two lines
   - Isis and Prothero: the filters shown by Search Tools are lined up in even columns, as many to a line as fit, instead of wide lists out of line; the ordering and number of items sit at the right of the search bar
   - Menus whose top level item went missing from the database (no new menu item could be saved, and Rebuild failed) are repaired by clicking Rebuild
   - The list for picking a contact (for a menu item or in an editor) no longer shows each contact's name twice
   - The Joomla logo at the top right stays in the middle of the header when an extension makes its title taller, and the icons of large buttons (such as Reset Messages) and of Log out in the status bar line up with their text (Prothero and Isis)
 - **Site and templates:**
+  - Long tooltips (such as an extension's preview of a list item) open above the pointer when there's no room below, instead of making the page jump
   - Templates using the name "collapse" for their own layout (such as Foundation-based templates' rows) no longer lose whole sections of the page
   - Hammond, Finch and Rookwood: their script no longer holds up the first view of the page on phones (PageSpeed counted it as blocking the page)
   - Hammond: the menu button can be read by screen readers on phones, World's and Energy's category labels are darker for readability, the "Most read" list's labels are easier to tap, and each "More" link says what it leads to for screen readers and search engines
   - Rookwood: the violet sections (such as the Studio set's figures) are a little deeper in the dark theme, so their white text is easier to read, and each "View all" link says what it leads to for screen readers
   - Hammond, Finch and Rookwood: screen readers are told which page links can't be used (Start and Prev on the first page)
+- **Media Manager:**
+  - Long folder names wrap in the folder tree instead of running over the list
 - **Caching:**
   - The Page Cache also answers header-only requests (as `curl -I` and uptime monitors send), which got "don't cache" headers while the page itself was cached
 - **Installing and uninstalling:**
@@ -90,6 +96,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - **Templates:**
   - Opening a BMP, WebP, AVIF or SVG image in a template's files no longer gives an error page: images are shown whatever their format, and WebP and AVIF can be cropped and resized too (AVIF with PHP 8.1 or newer)
 - **Editors:**
+  - TinyMCE now starts in K2's extra fields that use an editor (it stayed a plain text box)
   - TinyMCE in a tab that isn't open when the page loads (such as a contact's Miscellaneous Information) no longer comes up broken, with its menu stacked at the window's edge and its buttons missing
 - **Databases:**
   - PostgreSQL: extensions that start new items from their table's defaults (such as Kunena, whose user profiles broke registration) work again, and text columns keep their own defaults
@@ -97,6 +104,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
   - No more PHP 8 deprecation notices from lists of numbers that extensions build (such as Kunena's) or when installing libraries and packages
 
 **Joomla 3 bugs fixed:**
+- **Media Manager:** long folder names ran out of the folder tree
 - **Databases:** on PostgreSQL, extensions starting new items from their table's defaults failed to save them
 - **PHP compatibility:** deprecation notices on PHP 8 from lists of numbers and when installing libraries and packages
 - **Caching:** header-only requests (HEAD) bypassed the Page Cache and were told not to cache the page

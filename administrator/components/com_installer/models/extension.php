@@ -91,12 +91,18 @@ class InstallerModel extends JModelList
                     $searchFields[] = 'update_site_name';
                 }
 
+                // Installed and discovered extensions: also their author and copyright, from the manifest cache
+                if ($this instanceof InstallerModelManage || $this instanceof InstallerModelDiscover) {
+                    $searchFields[] = 'author';
+                    $searchFields[] = 'copyright';
+                }
+
                 foreach ($result as $i => $item) {
                     // Check if search string exists in any of the fields to be searched.
                     $found = 0;
 
                     foreach ($searchFields as $key => $field) {
-                        if (!$found && preg_match('/' . $escapedSearchString . '/i', (string) $item->{$field})) {
+                        if (!$found && isset($item->{$field}) && preg_match('/' . $escapedSearchString . '/i', (string) $item->{$field})) {
                             $found = 1;
                         }
                     }

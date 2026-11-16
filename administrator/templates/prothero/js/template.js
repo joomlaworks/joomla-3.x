@@ -263,6 +263,32 @@
 		}
 	}
 
+	/* --- The status bar's height: two rows on phones when modules of other extensions add to it --- */
+
+	function initStatusHeight() {
+		var status = $('#status');
+
+		if (!status) {
+			return;
+		}
+
+		// For the phone menu's height and the page's bottom padding, which end at the fixed bar
+		var update = function () {
+			if (getComputedStyle(status).position === 'fixed') {
+				document.documentElement.style.setProperty('--status-h', status.offsetHeight + 'px');
+			} else {
+				document.documentElement.style.removeProperty('--status-h');
+			}
+		};
+
+		update();
+		window.addEventListener('resize', update);
+
+		if (window.ResizeObserver) {
+			new ResizeObserver(update).observe(status);
+		}
+	}
+
 	/* --- The pinned toolbar --- */
 
 	function initStickyToolbar() {
@@ -644,6 +670,7 @@
 		initMenu();
 		initMenuButton();
 		initNavHeight();
+		initStatusHeight();
 		initStickyToolbar();
 		initTabRows();
 		initReorder();

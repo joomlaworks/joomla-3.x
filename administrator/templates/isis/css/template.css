@@ -3071,7 +3071,9 @@ ul.treeselect .treeselect-menu {margin:0 6px;}
 ul.treeselect ul.dropdown-menu {margin:0;}
 ul.treeselect ul.dropdown-menu li {padding:0 5px;border:none;}
 .tree-holder .folder-url,
-.tree-holder .file {position:relative;background-color:#fefefe;margin-bottom:4px;padding:0 10px;line-height:32px;border:1px solid rgba(0,0,0,0.08);}
+.tree-holder .file {position:relative;background-color:#fefefe;margin-bottom:4px;padding:5px 10px;line-height:22px;overflow-wrap:anywhere;border:1px solid rgba(0,0,0,0.08);}
+/* The folder's icon beside its name, which wraps beside it (even a name without spaces) */
+.tree-holder .folder-url {display:flex;align-items:baseline;gap:0.25em;}
 .tree-holder .folder-url,
 .tree-holder .folder-url:hover,
 .tree-holder .folder-url:focus {font-weight:bold;background-color:var(--c-soft);color:var(--c-link);}

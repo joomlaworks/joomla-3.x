@@ -814,14 +814,24 @@
 		const x = options.fixed || !event || event.pageX === undefined ? rect.left + window.pageXOffset : event.pageX;
 		const y = options.fixed || !event || event.pageY === undefined ? rect.bottom + window.pageYOffset : event.pageY;
 		const room = document.documentElement.clientWidth + window.pageXOffset;
+		const bottom = document.documentElement.clientHeight + window.pageYOffset;
 		let left = x + offset.x;
+		let top = y + offset.y;
 
 		if (left + wrap.offsetWidth > room) {
 			left = Math.max(window.pageXOffset, x - offset.x - wrap.offsetWidth);
 		}
 
+		// Above the pointer (or the element) when it would run past the window's bottom, as MooTools' Tips did: a
+		// bubble below it made short pages taller, and the scrollbar that came with it reflowed the page
+		if (top + wrap.offsetHeight > bottom) {
+			const above = (options.fixed || !event || event.pageY === undefined ? rect.top + window.pageYOffset : y) - offset.y - wrap.offsetHeight;
+
+			top = Math.max(window.pageYOffset, Math.min(above, bottom - wrap.offsetHeight));
+		}
+
 		wrap.style.left = left + 'px';
-		wrap.style.top = (y + offset.y) + 'px';
+		wrap.style.top = top + 'px';
 	};
 
 	const tipHide = () => {
