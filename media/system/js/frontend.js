@@ -310,6 +310,32 @@
 		}
 	});
 
+	// An item's form in a modal (layout joomla.edit.modal): the hidden buttons the modal's own buttons click; after Save and
+	// Save & Close, the opening page's function (fields made before Joomla 3.7) gets the title if the form is valid
+	document.addEventListener('click', (event) => {
+		const button = event.target.closest ? event.target.closest('button[data-modal-submit]') : null;
+
+		if (!button) {
+			return;
+		}
+
+		Joomla.submitbutton(button.getAttribute('data-modal-submit'));
+
+		const name = button.getAttribute('data-modal-function');
+		const parent = window.parent;
+
+		if (!name || !/^[\w$]+$/.test(name) || parent === window || typeof parent[name] !== 'function') {
+			return;
+		}
+
+		const form = document.getElementById(button.getAttribute('data-modal-form'));
+		const title = document.getElementById(button.getAttribute('data-modal-title-field'));
+
+		if (form && document.formvalidator && document.formvalidator.isValid(form)) {
+			parent[name](title ? title.value : '');
+		}
+	});
+
 	/* --- System messages (#system-message-container) --- */
 
 	CMS.messages = {

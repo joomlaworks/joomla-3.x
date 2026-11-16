@@ -100,32 +100,13 @@ if (!empty($editor)) {
                 );
 		    ?>
 				<?php foreach ($this->items as $i => $item) : ?>
-					<?php if ($item->language && JLanguageMultilang::isEnabled()) {
-					    $tag = strlen((string) $item->language);
-					    if ($tag == 5) {
-					        $lang = substr((string) $item->language, 0, 2);
-					    } elseif ($tag == 6) {
-					        $lang = substr((string) $item->language, 0, 3);
-					    } else {
-					        $lang = '';
-					    }
-					} elseif (!JLanguageMultilang::isEnabled()) {
-					    $lang = '';
-					}
-				    ?>
+					<?php $lang = Joomla\CMS\Language\LanguageHelper::getShortTag($item->language); ?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="center">
 							<span class="<?php echo $iconStates[$this->escape($item->state)]; ?>" aria-hidden="true"></span>
 						</td>
 						<td>
-							<?php $attribs = 'data-function="' . $this->escape($onclick) . '"'
-				                . ' data-id="' . $item->id . '"'
-				                . ' data-title="' . $this->escape($item->title) . '"'
-				                . ' data-cat-id="' . $this->escape($item->catid) . '"'
-				                . ' data-uri="' . $this->escape(ContentHelperRoute::getArticleRoute($item->id, $item->catid, $item->language)) . '"'
-				                . ' data-language="' . $this->escape($lang) . '"';
-				    ?>
-							<a class="select-link" href="javascript:void(0)" <?php echo $attribs; ?>>
+							<a class="select-link" href="javascript:void(0)" data-function="<?php echo $this->escape($onclick); ?>" data-id="<?php echo $item->id; ?>" data-title="<?php echo $this->escape($item->title); ?>" data-cat-id="<?php echo $this->escape($item->catid); ?>" data-uri="<?php echo $this->escape(ContentHelperRoute::getArticleRoute($item->id, $item->catid, $item->language)); ?>" data-language="<?php echo $this->escape($lang); ?>">
 								<?php echo $this->escape($item->title); ?></a>
 							<span class="small break-word">
 								<?php if (empty($item->note)) : ?>

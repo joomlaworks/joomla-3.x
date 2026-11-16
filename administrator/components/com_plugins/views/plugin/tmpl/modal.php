@@ -29,9 +29,7 @@ JFactory::getDocument()->addScriptDeclaration('
 	})(window.parent);
 ');
 ?>
-<button id="applyBtn" type="button" class="hidden" onclick="Joomla.submitbutton('plugin.apply');"></button>
-<button id="saveBtn" type="button" class="hidden" onclick="Joomla.submitbutton('plugin.save');"></button>
-<button id="closeBtn" type="button" class="hidden" onclick="Joomla.submitbutton('plugin.cancel');"></button>
+<?php echo JLayoutHelper::render('joomla.edit.modal', array('task' => 'plugin')); ?>
 
 <div class="container-popup">
 	<?php $this->setLayout('edit'); ?>

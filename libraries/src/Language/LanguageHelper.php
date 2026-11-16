@@ -4,6 +4,7 @@
  * Joomla! Content Management System
  *
  * @copyright  (C) 2007 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright  (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license    GNU General Public License version 2 or later; see LICENSE.md
  */
 
@@ -624,5 +625,35 @@ class LanguageHelper
         }
 
         return $metadata;
+    }
+
+    /**
+     * The language part of a content language tag ("en" for "en-GB", "ast" for "ast-ES"), as the item pickers' lists
+     * give it to the links they insert; empty for all languages ("*") or when the site isn't multilingual
+     *
+     * @param   string  $tag  The item's language tag
+     *
+     * @return  string
+     *
+     * @since   3.19.0
+     */
+    public static function getShortTag($tag)
+    {
+        $tag = (string) $tag;
+
+        if (!Multilanguage::isEnabled()) {
+            return '';
+        }
+
+        switch (strlen($tag)) {
+            case 5:
+                return substr($tag, 0, 2);
+
+            case 6:
+                return substr($tag, 0, 3);
+
+            default:
+                return '';
+        }
     }
 }
