@@ -8,8 +8,6 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
-// @deprecated  4.0 without replacement only used in hathor
-
 defined('_JEXEC') or die;
 
 /**
@@ -25,6 +23,12 @@ class ModulesViewPositions extends JViewLegacy
 
     protected $state;
 
+    protected $total;
+
+    public $filterForm;
+
+    public $activeFilters;
+
     /**
      * Display the view
      *
@@ -34,9 +38,12 @@ class ModulesViewPositions extends JViewLegacy
      */
     public function display($tpl = null)
     {
-        $this->items      = $this->get('Items');
-        $this->pagination = $this->get('Pagination');
-        $this->state      = $this->get('State');
+        $this->items         = $this->get('Items');
+        $this->pagination    = $this->get('Pagination');
+        $this->state         = $this->get('State');
+        $this->total         = $this->get('Total');
+        $this->filterForm    = $this->get('FilterForm');
+        $this->activeFilters = $this->get('ActiveFilters');
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {

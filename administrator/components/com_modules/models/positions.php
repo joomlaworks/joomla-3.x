@@ -96,10 +96,15 @@ class ModulesModelPositions extends JModelList
             $filter_template = $this->getState('filter.template');
             $type            = $this->getState('filter.type');
             $ordering        = $this->getState('list.ordering');
-            $direction       = $this->getState('list.direction');
+            $direction       = strtolower((string) $this->getState('list.direction'));
             $limitstart      = $this->getState('list.start');
             $limit           = $this->getState('list.limit');
             $client          = JApplicationHelper::getClientInfo($clientId);
+
+            // Template positions match the search as the database's do (LIKE, spaces standing for anything)
+            $searchPattern = '#' . implode('.*', array_map(function ($word) {
+                return preg_quote($word, '#');
+            }, explode(' ', trim((string) $search)))) . '#i';
 
             if ($type != 'template') {
                 // Get the database object and a new query object.
@@ -109,8 +114,7 @@ class ModulesModelPositions extends JModelList
                     ->where($this->_db->quoteName('client_id') . ' = ' . (int) $clientId);
 
                 if ($search) {
-                    $search = $this->_db->quote('%' . str_replace(' ', '%', $this->_db->escape(trim($search), true) . '%'));
-                    $query->where('position LIKE ' . $search);
+                    $query->where('position LIKE ' . $this->_db->quote('%' . str_replace(' ', '%', $this->_db->escape(trim($search), true) . '%')));
                 }
 
                 $this->_db->setQuery($query);
@@ -157,7 +161,7 @@ class ModulesModelPositions extends JModelList
 
                             if ($type == 'user' || ($state != '' && $state != $template->enabled)) {
                                 unset($positions[$value]);
-                            } elseif (preg_match(chr(1) . $search . chr(1) . 'i', $value) && ($filter_template == '' || $filter_template == $template->element)) {
+                            } elseif (preg_match($searchPattern, $value) && ($filter_template == '' || $filter_template == $template->element)) {
                                 if (!isset($positions[$value])) {
                                     $positions[$value] = array();
                                 }

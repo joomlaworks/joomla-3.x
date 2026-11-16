@@ -71,6 +71,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - The Image and PDF buttons and image fields open the Media Manager itself, showing only images (or only PDF files): its folder tree, uploads, new folders, renaming, cropping and thumbnail sizes are there while you pick; a click picks a file, a double click inserts it. It works the same when editing on the site, where it looks the same whatever the template
 - Global Configuration can turn off the hints the site sends to browsers ahead of each page (Resource Hints in HTTP Headers, on by default), for servers, CDNs or optimising extensions that send their own
 - Global Configuration has a Frontend Settings section on its first tab, gathering the settings that only concern the site: Site Offline, Inline Editing, the site's default editor, the default CAPTCHA and the feed settings
+- The window for choosing a module position (used by extensions) looks and works like the other pickers in Isis and Prothero, with Search Tools and a larger window
 - The windows for choosing an article, category, contact, news feed, menu item or module position, and those for creating or editing one from a field, share one piece of code instead of a copy each, and 15 files Joomla 3 hadn't used since 2016 are gone; they work as before
 **Security fixes:**
 - Multilingual Associations: a crafted link opened by a logged-in administrator could add code to the page that picks an item to associate (an old Joomla 3 issue)
@@ -87,6 +88,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
   - Multilingual Associations: Select Target and Change Target list the target language's items again (they showed nothing since 3.18)
   - The editors' Fields button no longer shares its search and filters with Fields: Manage
   - The list for picking a menu item no longer gives an item without a language the language of the item above it
+  - Searching the list of module positions also finds the positions templates declare
   - The Joomla logo at the top right stays in the middle of the header when an extension makes its title taller, and the icons of large buttons (such as Reset Messages) and of Log out in the status bar line up with their text (Prothero and Isis)
 - **Site and templates:**
   - Windows opened over a page (such as the image picker) are no longer cut off at their right edge on Hammond, Finch and Rookwood
@@ -126,6 +128,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - **Caching:** header-only requests (HEAD) bypassed the Page Cache and were told not to cache the page
 - **Administrator:** Rebuild repairs menus that lost their top level item, which stopped new menu items from being saved
 - **Administrator:** the list for picking a contact showed each contact's name twice
+- **Administrator:** searching the list of module positions missed the positions templates declare
 - **Administrator:** the editors' Fields button shared its search and filters with Fields: Manage; the list for picking a menu item could give an item another item's language
 - **Installing and uninstalling:** a package whose list of extensions misnames one leaves it behind when uninstalled; long extension descriptions made the installer's tooltips run off the screen
 - **Templates:** template images other than GIF, JPEG and PNG (BMP was even in the default list) opened on an error page instead of the image

@@ -1,108 +1,78 @@
 <?php
+
 /**
  * @package     Joomla.Administrator
  * @subpackage  com_modules
  *
  * @copyright   (C) 2010 Open Source Matters, Inc. <https://www.joomla.org>
+ * @copyright   (C) 2026 JoomlaWorks Ltd. and this project's contributors
  * @license     GNU General Public License version 2 or later; see LICENSE.md
  */
 
-// @deprecated  4.0 without replacement only used in hathor
-
 defined('_JEXEC') or die;
-
-JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 
 JHtml::_('behavior.core');
 JHtml::_('formbehavior.chosen', 'select');
 
 $function  = JFactory::getApplication()->input->getCmd('function', 'jSelectPosition');
+$listOrder = $this->escape($this->state->get('list.ordering'));
+$listDirn  = $this->escape($this->state->get('list.direction'));
+$clientId  = (int) $this->state->get('client_id');
 $lang      = JFactory::getLanguage();
-$ordering  = $this->escape($this->state->get('list.ordering'));
-$direction = $this->escape($this->state->get('list.direction'));
-$clientId  = $this->state->get('client_id');
-$state     = $this->state->get('filter.state');
-$template  = $this->state->get('filter.template');
-$type      = $this->state->get('filter.type');
+$i         = 0;
 ?>
-<form action="<?php echo JRoute::_('index.php?option=com_modules&view=positions&layout=modal&tmpl=component&function=' . $function . '&client_id=' . $clientId); ?>" method="post" name="adminForm" id="adminForm">
-	<fieldset class="filter clearfix">
-		<div class="left">
-			<label for="filter_search">
-				<?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>
-			</label>
-			<input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" size="30" title="<?php echo JText::_('COM_MODULES_FILTER_SEARCH_DESC'); ?>" />
+<div class="container-popup">
 
-			<button type="submit">
-				<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-			<button type="button" onclick="document.getElementById('filter_search').value='';this.form.submit();">
-				<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
-		</div>
+	<form action="<?php echo JRoute::_('index.php?option=com_modules&view=positions&layout=modal&tmpl=component&function=' . $function . '&client_id=' . $clientId); ?>" method="post" name="adminForm" id="adminForm">
 
-		<div class="right">
-			<select name="filter_state" onchange="this.form.submit()">
-				<option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED'); ?></option>
-				<?php echo JHtml::_('select.options', JHtml::_('modules.templateStates'), 'value', 'text', $state, true); ?>
-			</select>
+		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 
-			<select name="filter_type" onchange="this.form.submit()">
-				<option value=""><?php echo JText::_('COM_MODULES_OPTION_SELECT_TYPE'); ?></option>
-				<?php echo JHtml::_('select.options', JHtml::_('modules.types'), 'value', 'text', $type, true); ?>
-			</select>
+		<div class="clearfix"></div>
 
-			<select name="filter_template" onchange="this.form.submit()">
-				<option value=""><?php echo JText::_('JOPTION_SELECT_TEMPLATE'); ?></option>
-				<?php echo JHtml::_('select.options', JHtml::_('modules.templates', $clientId), 'value', 'text', $template, true); ?>
-			</select>
-		</div>
-	</fieldset>
+		<?php if (empty($this->items)) : ?>
+			<div class="alert alert-no-items">
+				<?php echo JText::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
+			</div>
+		<?php else : ?>
+			<table class="table table-striped table-condensed">
+				<thead>
+					<tr>
+						<th class="title" width="35%">
+							<?php echo JHtml::_('searchtools.sort', 'COM_MODULES_HEADING_POSITION', 'value', $listDirn, $listOrder); ?>
+						</th>
+						<th class="hidden-phone">
+							<?php echo JHtml::_('searchtools.sort', 'COM_MODULES_HEADING_TEMPLATES', 'templates', $listDirn, $listOrder); ?>
+						</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<td colspan="2">
+							<?php echo $this->pagination->getListFooter(); ?>
+						</td>
+					</tr>
+				</tfoot>
+				<tbody>
+				<?php foreach ($this->items as $value => $templates) : ?>
+					<tr class="row<?php echo $i++ % 2; ?>">
+						<td>
+							<a class="select-link" href="javascript:void(0)" data-function="<?php echo $this->escape($function); ?>" data-id="<?php echo $this->escape((string) $value); ?>" data-select-args="id">
+								<?php echo (string) $value === '' ? JText::_('JNONE') : $this->escape((string) $value); ?></a>
+						</td>
+						<td class="small hidden-phone">
+							<?php foreach ($templates as $template => $label) : ?>
+								<div><?php echo $this->escape($lang->hasKey($label) ? JText::sprintf('COM_MODULES_MODULE_TEMPLATE_POSITION', JText::_($template), JText::_($label)) : JText::_($template)); ?></div>
+							<?php endforeach; ?>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+				</tbody>
+			</table>
+		<?php endif; ?>
 
-	<table class="adminlist">
-		<thead>
-			<tr>
-				<th class="title" width="20%">
-					<?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'value', $direction, $ordering); ?>
-				</th>
-				<th>
-					<?php echo JHtml::_('grid.sort', 'COM_MODULES_HEADING_TEMPLATES', 'templates', $direction, $ordering); ?>
-				</th>
-			</tr>
-		</thead>
-		<tfoot>
-			<tr>
-				<td colspan="15">
-					<?php echo $this->pagination->getListFooter(); ?>
-				</td>
-			</tr>
-		</tfoot>
-		<tbody>
-		<?php $i = 1;
-foreach ($this->items as $value => $templates) : ?>
-			<tr class="row<?php echo $i = 1 - $i; ?>">
-				<td>
-					<a class="pointer select-link" data-function="<?php echo $this->escape($function); ?>" data-id="<?php echo $this->escape($value); ?>" data-select-args="id"><?php echo $this->escape($value); ?></a>
-				</td>
-				<td>
-					<?php if (!empty($templates)) : ?>
-					<a class="pointer select-link" data-function="<?php echo $this->escape($function); ?>" data-id="<?php echo $this->escape($value); ?>" data-select-args="id">
-						<ul>
-						<?php foreach ($templates as $template => $label) : ?>
-							<li><?php echo $lang->hasKey($label) ? JText::sprintf('COM_MODULES_MODULE_TEMPLATE_POSITION', JText::_($template), JText::_($label)) : JText::_($template); ?></li>
-						<?php endforeach; ?>
-						</ul>
-					</a>
-					<?php endif; ?>
-				</td>
-			</tr>
-			<?php endforeach; ?>
-		</tbody>
-	</table>
-
-	<div>
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
-		<input type="hidden" name="filter_order" value="<?php echo $ordering; ?>" />
-		<input type="hidden" name="filter_order_Dir" value="<?php echo $direction; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
-	</div>
-</form>
+
+	</form>
+</div>

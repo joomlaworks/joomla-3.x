@@ -135,6 +135,9 @@ class ModulepositionField extends \JFormFieldText
         // Load the modal behavior script.
         \JHtml::_('behavior.modal', 'a.modal');
 
+        // The button's texts, also in other components' forms
+        Factory::getLanguage()->load('com_modules', JPATH_ADMINISTRATOR);
+
         // Build the script.
         $script = array();
         $script[] = '	function jSelectPosition_' . $this->id . '(name) {';
@@ -154,7 +157,7 @@ class ModulepositionField extends \JFormFieldText
         $html[] = '<div class="input-append">';
         $html[] = parent::getInput()
             . '<a class="btn modal" title="' . \JText::_('COM_MODULES_CHANGE_POSITION_TITLE') . '"  href="' . $link
-            . '" rel="{handler: \'iframe\', size: {x: 800, y: 450}}">'
+            . '" rel="{handler: \'iframe\', size: {x: Math.min(1000, window.innerWidth - 80), y: Math.min(700, window.innerHeight - 140)}}">'
             . \JText::_('COM_MODULES_CHANGE_POSITION_BUTTON') . '</a>';
         $html[] = '</div>';
 
