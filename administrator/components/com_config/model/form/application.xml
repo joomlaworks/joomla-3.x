@@ -210,6 +210,22 @@
     </fieldset>
     <fieldset name="site" label="CONFIG_SITE_SETTINGS_LABEL">
         <field name="sitename" type="text" label="COM_CONFIG_FIELD_SITE_NAME_LABEL" description="COM_CONFIG_FIELD_SITE_NAME_DESC" required="true" filter="string" size="50" />
+        <field name="editor" type="plugins" label="COM_CONFIG_FIELD_DEFAULT_EDITOR_LABEL" description="COM_CONFIG_FIELD_DEFAULT_EDITOR_DESC" folder="editors" default="tinymce_latest" filter="cmd" />
+        <field name="access" type="accesslevel" label="COM_CONFIG_FIELD_DEFAULT_ACCESS_LEVEL_LABEL" description="COM_CONFIG_FIELD_DEFAULT_ACCESS_LEVEL_DESC" default="1" filter="integer" />
+        <field name="list_limit" type="list" label="COM_CONFIG_FIELD_DEFAULT_LIST_LIMIT_LABEL" description="COM_CONFIG_FIELD_DEFAULT_LIST_LIMIT_DESC" default="20" filter="integer">
+            <option value="5">J5</option>
+            <option value="10">J10</option>
+            <option value="15">J15</option>
+            <option value="20">J20</option>
+            <option value="25">J25</option>
+            <option value="30">J30</option>
+            <option value="50">J50</option>
+            <option value="100">J100</option>
+            <option value="200">J200</option>
+            <option value="500">J500</option>
+        </field>
+    </fieldset>
+    <fieldset name="frontend" label="COM_CONFIG_FRONTEND_SETTINGS">
         <field name="offline" type="radio" label="COM_CONFIG_FIELD_SITE_OFFLINE_LABEL" description="COM_CONFIG_FIELD_SITE_OFFLINE_DESC" class="btn-group btn-group-yesno btn-group-reversed" default="0" filter="integer">
             <option value="1">JYES</option>
             <option value="0">JNO</option>
@@ -226,25 +242,11 @@
             <option value="1">COM_CONFIG_FRONTEDITING_MODULES</option>
             <option value="0">JNONE</option>
         </field>
-        <field name="editor" type="plugins" label="COM_CONFIG_FIELD_DEFAULT_EDITOR_LABEL" description="COM_CONFIG_FIELD_DEFAULT_EDITOR_DESC" folder="editors" default="tinymce_latest" filter="cmd" />
         <field name="editor_site" type="plugins" label="COM_CONFIG_FIELD_DEFAULT_EDITOR_SITE_LABEL" description="COM_CONFIG_FIELD_DEFAULT_EDITOR_SITE_DESC" folder="editors" default="" filter="cmd">
             <option value="">JOPTION_USE_DEFAULT</option>
         </field>
         <field name="captcha" type="plugins" label="COM_CONFIG_FIELD_DEFAULT_CAPTCHA_LABEL" description="COM_CONFIG_FIELD_DEFAULT_CAPTCHA_DESC" folder="captcha" showdisabled="true" default="0" filter="cmd">
             <option value="0">JOPTION_DO_NOT_USE</option>
-        </field>
-        <field name="access" type="accesslevel" label="COM_CONFIG_FIELD_DEFAULT_ACCESS_LEVEL_LABEL" description="COM_CONFIG_FIELD_DEFAULT_ACCESS_LEVEL_DESC" default="1" filter="integer" />
-        <field name="list_limit" type="list" label="COM_CONFIG_FIELD_DEFAULT_LIST_LIMIT_LABEL" description="COM_CONFIG_FIELD_DEFAULT_LIST_LIMIT_DESC" default="20" filter="integer">
-            <option value="5">J5</option>
-            <option value="10">J10</option>
-            <option value="15">J15</option>
-            <option value="20">J20</option>
-            <option value="25">J25</option>
-            <option value="30">J30</option>
-            <option value="50">J50</option>
-            <option value="100">J100</option>
-            <option value="200">J200</option>
-            <option value="500">J500</option>
         </field>
         <field name="feed_limit" type="list" label="COM_CONFIG_FIELD_DEFAULT_FEED_LIMIT_LABEL" description="COM_CONFIG_FIELD_DEFAULT_FEED_LIMIT_DESC" default="10" filter="integer">
             <option value="5">J5</option>

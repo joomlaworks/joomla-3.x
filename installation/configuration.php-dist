@@ -25,129 +25,99 @@
  */
 class JConfig
 {
-	/* Site Settings */
-	public $offline = '0';
-	public $offline_message = 'This site is down for maintenance.<br /> Please check back again soon.';
-	public $display_offline_message = '1';
-	public $offline_image = '';
-	public $sitename = 'Joomla!';            // Name of Joomla site
-	public $editor = 'tinymce_latest';
-	public $editor_site = '';
-	public $captcha = '0';
-	public $list_limit = '50';
 	public $access = '1';
-	public $frontediting = '0';
-
-	/* Database Settings */
-	public $dbtype = 'mysqli';               // Normally mysqli
-	public $host = 'localhost';              // This is normally set to localhost
-	public $user = '';                       // DB username
-	public $password = '';                   // DB password
-	public $db = '';                         // DB database name
-	public $dbprefix = 'jos_';               // Do not change unless you need to!
-
-	/* Server Settings */
-	public $secret = 'FBVtggIk5lAzEU9H';     // Change this to something more secure
-	public $gzip = '0';
-	public $link_headers = '1';
-	public $error_reporting = 'default';
-	public $helpurl = 'https://help.joomla.org/proxy?keyref=Help{major}{minor}:{keyref}&lang={langcode}';
-	public $ftp_host = '';
-	public $ftp_port = '';
-	public $ftp_user = '';
-	public $ftp_pass = '';
-	public $ftp_root = '';
-	public $ftp_enable = '0';
-	public $tmp_path = '/tmp';                // This path needs to be writable by Joomla!
-	public $log_path = '/administrator/logs'; // This path needs to be writable by Joomla!
-	public $live_site = '';                   // Optional, full URL to Joomla install.
-	public $force_ssl = 0;                    // Force areas of the site to be SSL ONLY.  0 = None, 1 = Administrator, 2 = Both Site and Administrator
-
-	/* Locale Settings */
-	public $offset = 'UTC';
-
-	/* Session settings */
-	public $lifetime = '15';                  // Session time
-	public $session_handler = 'database';
-	public $shared_session = '0';
-	public $session_memcached_server_host = 'localhost';
-	public $session_memcached_server_port = '11211';
-	public $session_redis_server_host = 'localhost';
-	public $session_redis_server_port = '6379';
-	public $session_redis_server_db = '0';
-
-
-	/* Mail Settings */
-	public $mailonline = '1';
-	public $mailer      = 'mail';
-	public $mailfrom    = '';
-	public $fromname    = '';
-	public $massmailoff = '0';
-	public $replyto     = '';
-	public $replytoname = '';
-	public $sendmail    = '/usr/sbin/sendmail';
-	public $smtpauth    = '0';
-	public $smtpuser    = '';
-	public $smtppass    = '';
-	public $smtphost    = 'localhost';
-	public $smtpsecure = 'none';
-	public $smtpport = '25';
-
-	/* Cache Settings */
-	public $caching = '0';
-	public $cachetime = '15';
+	public $asset_id = '1';
 	public $cache_handler = 'file';
-	public $cache_platformprefix = '0';
 	public $cache_ignored_params = 'aznpid, campid, cof, customid, cx, dclid, dm_i, ef_id, epik, fb_*, fbclid, gad_source, gbraid, gclid, gclsrc, gdffi, gdfms, gdftrk, hsa_*, ie, igshid, irclickid, ito, li_fat_id, matomo_*, mc_*, mkcid, mkevt, mkrid, mkwid, ml_subscriber*, msclkid, mtm_*, nb_klid, ndclid, origin, pcrid, piwik_*, pk_*, redirect_log_mongo_id, redirect_mongo_id, rtid, s_kwcid, sb_referer_host, sccid, siteurl, si, sms_*, srsltid, toolid, trk_*, ttclid, twclid, utm_*, wbraid, yclid, zanpid';
-	public $memcached_persist = '1';
-	public $memcached_compress = '1';
-	public $memcached_server_host = 'localhost';
-	public $memcached_server_port = '11211';
-	public $redis_persist = '1';
-	public $redis_server_host = 'localhost';
-	public $redis_server_port = '6379';
-	public $redis_server_auth = '';
-	public $redis_server_db = '0';
-
-	/* Proxy Settings */
-	public $proxy_enable = '0';
-	public $proxy_host = '';
-	public $proxy_port = '';
-	public $proxy_user = '';
-	public $proxy_pass = '';
-
-	/* Debug Settings */
+	public $cache_platformprefix = '0';
+	public $cachetime = '15';
+	public $caching = '0';
+	public $captcha = '0';
+	public $cookie_domain = '';
+	public $cookie_path = '';
+	public $date_fields = 'browser';
+	public $db = '';                          // DB database name
+	public $dbprefix = 'jos_';                // Do not change unless you need to!
+	public $dbtype = 'mysqli';                // Normally mysqli
 	public $debug = '0';
 	public $debug_lang = '0';
 	public $debug_lang_const = '1';
-
-	/* Meta Settings */
+	public $display_offline_message = '1';
+	public $editor = 'tinymce_latest';
+	public $editor_site = '';
+	public $error_reporting = 'default';
+	public $feed_email = 'none';
+	public $feed_limit = 10;
+	public $force_ssl = 0;                    // Force areas of the site to be SSL ONLY.  0 = None, 1 = Administrator, 2 = Both Site and Administrator
+	public $fromname = '';
+	public $frontediting = '0';
+	public $ftp_enable = '0';
+	public $ftp_host = '';
+	public $ftp_pass = '';
+	public $ftp_port = '';
+	public $ftp_root = '';
+	public $ftp_user = '';
+	public $gzip = '0';
+	public $helpurl = 'https://help.joomla.org/proxy?keyref=Help{major}{minor}:{keyref}&lang={langcode}';
+	public $host = 'localhost';               // This is normally set to localhost
+	public $lifetime = '15';                  // Session time
+	public $link_headers = '1';
+	public $list_limit = '50';
+	public $live_site = '';                   // Optional, full URL to Joomla install.
+	public $log_path = '/administrator/logs'; // This path needs to be writable by Joomla!
+	public $mailer = 'mail';
+	public $mailfrom = '';
+	public $mailonline = '1';
+	public $massmailoff = '0';
+	public $memcached_compress = '1';
+	public $memcached_persist = '1';
+	public $memcached_server_host = 'localhost';
+	public $memcached_server_port = '11211';
+	public $MetaAuthor = '1';
 	public $MetaDesc = 'Joomla! - the dynamic portal engine and content management system';
 	public $MetaKeys = 'joomla, Joomla';
-	public $MetaTitle = '1';
-	public $MetaAuthor = '1';
-	public $MetaVersion = '0';
 	public $MetaRights = '';
+	public $MetaTitle = '1';
+	public $MetaVersion = '0';
+	public $offline = '0';
+	public $offline_image = '';
+	public $offline_message = 'This site is down for maintenance.<br /> Please check back again soon.';
+	public $offset = 'UTC';
+	public $password = '';                    // DB password
+	public $proxy_enable = '0';
+	public $proxy_host = '';
+	public $proxy_pass = '';
+	public $proxy_port = '';
+	public $proxy_user = '';
+	public $redis_persist = '1';
+	public $redis_server_auth = '';
+	public $redis_server_db = '0';
+	public $redis_server_host = 'localhost';
+	public $redis_server_port = '6379';
+	public $replyto = '';
+	public $replytoname = '';
 	public $robots = '';
-	public $sitename_pagetitles = '0';
-
-	/* UI Settings */
-	public $date_fields = 'browser';
-
-	/* SEO Settings */
+	public $secret = 'FBVtggIk5lAzEU9H';      // Change this to something more secure
 	public $sef = '1';
 	public $sef_rewrite = '0';
 	public $sef_suffix = '0';
+	public $sendmail = '/usr/sbin/sendmail';
+	public $session_handler = 'database';
+	public $session_memcached_server_host = 'localhost';
+	public $session_memcached_server_port = '11211';
+	public $session_redis_server_db = '0';
+	public $session_redis_server_host = 'localhost';
+	public $session_redis_server_port = '6379';
+	public $shared_session = '0';
+	public $sitename = 'Joomla!';             // Name of Joomla site
+	public $sitename_pagetitles = '0';
+	public $smtpauth = '0';
+	public $smtphost = 'localhost';
+	public $smtppass = '';
+	public $smtpport = '25';
+	public $smtpsecure = 'none';
+	public $smtpuser = '';
+	public $tmp_path = '/tmp';                // This path needs to be writable by Joomla!
 	public $unicodeslugs = '0';
-
-	/* Feed Settings */
-	public $feed_limit = 10;
-	public $feed_email = 'none';
-
-	/* Cookie Settings */
-	public $cookie_domain = '';
-	public $cookie_path = '';
-
-	/* Miscellaneous Settings */
-	public $asset_id = '1';
+	public $user = '';                        // DB username
 }

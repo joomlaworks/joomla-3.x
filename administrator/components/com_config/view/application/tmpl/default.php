@@ -56,6 +56,7 @@ foreach ($this->submenumodules as $submenumodule) {
 					<div class="row-fluid">
 						<div class="span6">
 							<?php echo $this->loadTemplate('site'); ?>
+							<?php echo $this->loadTemplate('frontend'); ?>
 							<?php echo $this->loadTemplate('metadata'); ?>
 							<?php echo $this->loadTemplate('ui'); ?>
 						</div>
