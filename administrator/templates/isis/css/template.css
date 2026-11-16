@@ -2619,6 +2619,13 @@ h6 {font-size:12px;line-height:14px;}
 
 /* --- Isis: Editors --- */
 .CodeMirror {height:calc(100vh - 400px);min-height:400px;max-height:800px;}
+/* An editor taller than the window (Grow with Content) keeps its buttons in view: the row and "Toggle editor" stay at the
+   window's foot, above a fixed status bar, as one band under the editor */
+:has(> #editor-xtd-buttons) {display:grid;grid-template-columns:minmax(0, 1fr) auto;align-items:start;}
+:has(> #editor-xtd-buttons) > * {grid-column:1 / -1;}
+:has(> #editor-xtd-buttons) > #editor-xtd-buttons,
+:has(> #editor-xtd-buttons) > .toggle-editor {position:sticky;bottom:var(--status-h, 0px);z-index:10;grid-column:auto;float:none;margin:0;padding:8px 0;background-color:#fff;}
+:has(> #editor-xtd-buttons) > .toggle-editor {padding-inline-start:8px;}
 
 /* --- Isis: Forms --- */
 .form-horizontal .control-label {padding-right:5px;text-align:left;}

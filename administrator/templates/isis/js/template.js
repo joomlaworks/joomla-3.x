@@ -428,6 +428,31 @@
 		});
 	}
 
+	/* --- The fixed status bar's height: what stays above it (the editors' buttons) --- */
+
+	function initStatusHeight() {
+		var status = $('#status');
+
+		if (!status) {
+			return;
+		}
+
+		var update = function () {
+			if (getComputedStyle(status).position === 'fixed') {
+				document.documentElement.style.setProperty('--status-h', status.offsetHeight + 'px');
+			} else {
+				document.documentElement.style.removeProperty('--status-h');
+			}
+		};
+
+		update();
+		window.addEventListener('resize', update);
+
+		if (window.ResizeObserver) {
+			new ResizeObserver(update).observe(status);
+		}
+	}
+
 	/* --- Start --- */
 
 	function init() {
@@ -436,6 +461,7 @@
 		initMenu();
 		initStickyToolbar();
 		initFitTables();
+		initStatusHeight();
 
 		// Events only jQuery hears: Chosen ready (and changed through its API), subform rows added
 		if (jq()) {

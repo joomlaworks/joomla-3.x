@@ -86,6 +86,12 @@
 			var ed = new tinyMCE.Editor(element.id, options, tinymce.EditorManager);
 			ed.render();
 
+			// Grown with its content, the editor can be taller than the window: its menu bar and toolbar (with the editor buttons)
+			// stay in view under what stays at the top of the page, as TinyMCE 8's sticky toolbar does
+			ed.on('init', function () {
+				Joomla.JoomlaTinyMCE.stickToolbar(ed);
+			});
+
 			/** Register the editor's instance to Joomla Object */
 			Joomla.editors.instances[element.id] = {
 				// Required by Joomla's API for the XTD-Buttons
@@ -103,6 +109,85 @@
 			document.getElementById(ed.id).form.addEventListener('submit', function() {
 				Joomla.editors.instances[ed.targetElm.id].onSave();
 			})
+		},
+
+		/**
+		 * Keeps the editor's menu bar and toolbar at the top of the window while the editor scrolls past
+		 *
+		 * @param {Object}  ed  The editor
+		 *
+		 * @since 3.19.0
+		 */
+		stickToolbar: function ( ed ) {
+			var container = ed.getContainer(),
+			    body = container ? container.querySelector('.mce-container-body.mce-stack-layout') : null,
+			    parts = body ? Array.prototype.filter.call(body.children, function (el) { return /\bmce-(menubar|toolbar-grp)\b/.test(el.className); }) : [];
+
+			if (!parts.length) {
+				return;
+			}
+
+			// The container's overflow:hidden would make it the sticky parts' scroller; clip cuts the same without being one
+			container.style.overflow = 'clip';
+
+			// A part without a background of its own (the menu bar) would show the text scrolling under it
+			var opaque = function (el) {
+				var colour = el ? getComputedStyle(el).backgroundColor : '';
+
+				return colour && colour !== 'transparent' && !/^rgba\(.*,\s*0\)$/.test(colour) ? colour : '';
+			};
+			var background = opaque(body.querySelector('.mce-toolbar-grp')) || opaque(container) || opaque(document.body) || '#fff';
+
+			parts.forEach(function (part) {
+				if (!opaque(part)) {
+					part.style.backgroundColor = background;
+				}
+			});
+
+			var place = function () {
+				var top = Joomla.JoomlaTinyMCE.stickyOffset();
+
+				parts.forEach(function (part) {
+					part.style.position = 'sticky';
+					part.style.top = top + 'px';
+					part.style.zIndex = '3';
+					top += part.offsetHeight;
+				});
+			};
+
+			place();
+			window.addEventListener('resize', place);
+
+			// The skin may lay the parts out after the editor started: each sticks under the others' current heights
+			if (window.ResizeObserver) {
+				var observer = new ResizeObserver(place);
+
+				parts.forEach(function (part) {
+					observer.observe(part);
+				});
+			}
+		},
+
+		/**
+		 * The height of what stays at the top of the page: Isis' and Prothero's top bar, and their pinned toolbar when that's on
+		 * (as TinyMCE 8's toolbar_sticky_offset)
+		 *
+		 * @return {Number}
+		 *
+		 * @since 3.19.0
+		 */
+		stickyOffset: function () {
+			var fixed = function (el) { return el && ['fixed', 'sticky'].indexOf(getComputedStyle(el).position) !== -1 ? el.offsetHeight : 0; },
+			    pinned = document.getElementById('isisJsData'),
+			    offset = fixed(document.querySelector('nav.navbar-fixed-top'));
+
+			if (pinned && pinned.getAttribute('data-tmpl-sticky') === 'true' && window.innerWidth > 767) {
+				var subhead = document.querySelector('.subhead');
+
+				offset += subhead ? subhead.offsetHeight : 0;
+			}
+
+			return offset;
 		}
 
 	};

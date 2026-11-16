@@ -1349,6 +1349,21 @@ input[type="button"].btn-block {width:100%;}
 #editor-xtd-buttons.btn-toolbar::before,
 #editor-xtd-buttons.btn-toolbar::after {display:none;}
 #editor-xtd-buttons .btn {flex:none;margin:0;font-size:var(--fs-sm-plus);font-weight:600;white-space:nowrap;}
+/* An editor taller than the window (Grow with Content) keeps its buttons in view: the row and "Toggle editor" stay at the
+   window's foot, above a fixed status bar, as one band under the editor */
+:has(> #editor-xtd-buttons) {display:grid;grid-template-columns:minmax(0, 1fr) auto;align-items:start;}
+:has(> #editor-xtd-buttons) > * {grid-column:1 / -1;}
+:has(> #editor-xtd-buttons) > #editor-xtd-buttons,
+:has(> #editor-xtd-buttons) > .toggle-editor {position:sticky;bottom:var(--status-h, 0px);z-index:10;grid-column:auto;float:none;margin:0;padding:8px 0;background-color:var(--c-bg);}
+:has(> #editor-xtd-buttons) > .toggle-editor {padding-inline-start:8px;}
+/* A mask would fade the band's background too: the ends of a row with more buttons fade under a gradient of the page's colour */
+:has(> #editor-xtd-buttons) > #editor-xtd-buttons {mask-image:none;}
+:has(> #editor-xtd-buttons) > #editor-xtd-buttons.tabs-more-start::before,
+:has(> #editor-xtd-buttons) > #editor-xtd-buttons.tabs-more-end::after {content:"";display:block;position:sticky;z-index:1;flex:none;width:48px;pointer-events:none;}
+:has(> #editor-xtd-buttons) > #editor-xtd-buttons.tabs-more-start::before {inset-inline-start:0;margin-inline-end:-54px;background:linear-gradient(to right, var(--c-bg), transparent);}
+:has(> #editor-xtd-buttons) > #editor-xtd-buttons.tabs-more-end::after {inset-inline-end:0;margin-inline-start:-54px;background:linear-gradient(to left, var(--c-bg), transparent);}
+:has(> #editor-xtd-buttons) > #editor-xtd-buttons.tabs-rtl.tabs-more-start::before {background:linear-gradient(to left, var(--c-bg), transparent);}
+:has(> #editor-xtd-buttons) > #editor-xtd-buttons.tabs-rtl.tabs-more-end::after {background:linear-gradient(to right, var(--c-bg), transparent);}
 fieldset {min-width:0;}
 :not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked)::before,
 :not(.tabs-left):not(.tabs-right) > .nav-tabs:not(.nav-stacked)::after {display:none;}
