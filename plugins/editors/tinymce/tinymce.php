@@ -517,7 +517,8 @@ class PlgEditorTinymce extends JPlugin
         }
 
         // Growing with the text, from the HTML Height up (in pixels; other lengths leave the plugin's own minimum)
-        $autoresize = (bool) $levelParams->get('autoresize', 1);
+        // Only in the administrator: on the site (front-end editing) nothing keeps the editor's buttons in view
+        $autoresize = (bool) $levelParams->get('autoresize', 1) && JFactory::getApplication()->isClient('administrator');
 
         if ($autoresize) {
             $plugins[] = 'autoresize';

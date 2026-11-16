@@ -346,7 +346,8 @@ class PlgEditorTinymce_latest extends JPlugin
         $joomla['baseURL'] = JUri::root(true) . '/' . self::MEDIA;
 
         // The editor grows with its text, from the Height option up (TinyMCE's autoresize plugin, started by js/tinymce.js)
-        $joomla['autoresize'] = (bool) $levelParams->get('autoresize', 1);
+        // Only in the administrator: on the site (front-end editing) nothing keeps the editor's buttons in view
+        $joomla['autoresize'] = (bool) $levelParams->get('autoresize', 1) && JFactory::getApplication()->isClient('administrator');
 
         // Iframes keep working from TinyMCE's trusted domains, this site and the set's extra domains; others are sandboxed
         $trusted = array(

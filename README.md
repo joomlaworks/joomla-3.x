@@ -55,7 +55,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 ## Version 3.19 - unreleased [pending]
 
 **New features:**
-- The editors grow with your text, as in WordPress' Classic Editor: TinyMCE, TinyMCE (legacy) and the plain text box no longer scroll inside a fixed box. Markdown and Blocks already did. The editors' toolbars stay at the top of the window and the row of editor buttons (Article, Image, Read More...) at its foot, so they're at hand in long texts. Each editor has a Grow with Content option to turn it off
+- The editors grow with your text, as in WordPress' Classic Editor: TinyMCE, TinyMCE (legacy) and the plain text box no longer scroll inside a fixed box. Markdown and Blocks already did. The editors' toolbars stay at the top of the window and the row of editor buttons (Article, Image, Read More...) at its foot, so they're at hand in long texts. Each editor has a Grow with Content option to turn it off. This is for the administrator: when editing on the site, the editors keep their fixed height
 - The Page Cache can load a page in the background when a visitor is about to open it (in Chrome, Edge and Opera), so it shows at once; on by default, for visitors who aren't logged in
 - Command line: one command updates every extension and template that has an update (`extension:update --all`, with `--dry-run` to see first what it would do)
 

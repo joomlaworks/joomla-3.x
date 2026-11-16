@@ -133,7 +133,8 @@ class PlgEditorNone extends JPlugin
         $readonly = !empty($params['readonly']) ? ' readonly disabled' : '';
 
         // Growing with the text from the field's height up: CSS where the browser can (field-sizing), js/none.js elsewhere
-        $grow = (bool) $this->params->get('autoresize', 1);
+        // Only in the administrator: on the site (front-end editing) nothing keeps the editor's buttons in view
+        $grow = (bool) $this->params->get('autoresize', 1) && JFactory::getApplication()->isClient('administrator');
         $size = $grow ? 'min-height: ' . $height . '; field-sizing: content;' : 'height: ' . $height . ';';
 
         $editor = '<div class="js-editor-none">'
