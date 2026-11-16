@@ -82,7 +82,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - **Administrator:**
   - Prothero: messages that extensions show over the page (such as K2's) are no longer faint and half hidden under the toolbar
   - Prothero on phones: the end of the opened menu is no longer hidden when the status bar at the bottom takes two lines
-  - Isis and Prothero: the filters shown by Search Tools are lined up in even columns, as many to a line as fit, instead of wide lists out of line; the ordering and number of items sit at the right of the search bar
+  - Isis and Prothero: the filters shown by Search Tools are lined up in even columns, as many to a line as fit, instead of wide lists out of line, with the search field as wide as one of them; the ordering and number of items sit at the right of the search bar, on the same line in the windows for picking items
   - Menus whose top level item went missing from the database (no new menu item could be saved, and Rebuild failed) are repaired by clicking Rebuild
   - The list for picking a contact (for a menu item or in an editor) no longer shows each contact's name twice
   - Multilingual Associations: Select Target and Change Target list the target language's items again (they showed nothing since 3.18)
