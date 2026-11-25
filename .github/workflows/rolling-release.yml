@@ -7,13 +7,30 @@ name: Rolling Release
 # com_joomlaupdate compares the version in docs/list.xml against the site's
 # current Joomla version. To publish a new release, bump the rows' version in
 # docs/list.xml (and Version.php) and push — this workflow does the rest.
+#
+# Sites download from the URL above, so the published package is never removed before its replacement is in place:
+# the new zip is uploaded next to the old one under a temporary name, and only then swapped in (the old asset deleted,
+# the new one renamed, a moment apart). The release itself is updated, never deleted and recreated. A run that fails
+# (GitHub answering 500, as on 2026-11-25) leaves the previous package downloadable; run the workflow again (it can also
+# be started by hand). GitHub API calls are retried. The last step checks that the URL serves the new package.
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
+
+# Two pushes in quick succession must not swap assets at the same time
+concurrency:
+  group: rolling-release
+  cancel-in-progress: false
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  REPO: ${{ github.repository }}
+  ASSET: joomla-latest.zip
 
 jobs:
   release:
@@ -30,17 +47,9 @@ jobs:
         # subdirectory prefix. This is required by com_joomlaupdate / Kickstart.
         # docs/, .github/, *.md and .gitignore are excluded — repository
         # infrastructure and meta files that have no place on a live Joomla site.
-        run: git archive --format=zip -o joomla-latest.zip HEAD -- ':(exclude)docs' ':(exclude).github' ':(exclude)*.md' ':(exclude).gitignore'
-
-      - name: Delete existing rolling release (if any)
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release delete rolling --yes 2>/dev/null || true
-
-      - name: Delete rolling tag (if any)
         run: |
-          git push origin :refs/tags/rolling 2>/dev/null || true
-          git tag -d rolling 2>/dev/null || true
+          git archive --format=zip -o "$ASSET" HEAD -- ':(exclude)docs' ':(exclude).github' ':(exclude)*.md' ':(exclude).gitignore'
+          unzip -tq "$ASSET"
 
       - name: Read version from list.xml
         id: version
@@ -51,19 +60,80 @@ jobs:
             echo "::error::No version found in docs/list.xml"
             exit 1
           fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Create rolling release with zip
+      - name: Publish the zip on the rolling release
         env:
-          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          gh release create rolling \
-            --title "Rolling Release (v${{ steps.version.outputs.version }})" \
-            --notes "Latest build from the \`main\` branch — Joomla! ${{ steps.version.outputs.version }} (JoomlaWorks Security Distribution).
+          set -euo pipefail
 
-          Install/upgrade via the Joomla backend updater, or manually:
-          \`\`\`
-          wget -q https://github.com/joomlaworks/joomla-3.x/releases/download/rolling/joomla-latest.zip && unzip -o joomla-latest.zip && rm -f joomla-latest.zip && rm -rf installation/ && php cli/joomla.php core:update:finalise
-          \`\`\`" \
-            --latest \
-            joomla-latest.zip
+          # A GitHub API call, tried up to five times (GitHub answers 500/502 when degraded)
+          retry() {
+            for attempt in 1 2 3 4 5; do
+              if "$@"; then
+                return 0
+              fi
+              echo "::warning::Attempt $attempt failed: $*"
+              sleep $((attempt * 15))
+            done
+            return 1
+          }
+
+          TITLE="Rolling Release (v$VERSION)"
+          printf '%s\n' \
+            "Latest build from the \`main\` branch — Joomla! $VERSION (JoomlaWorks Security Distribution)." \
+            "" \
+            "Install/upgrade via the Joomla backend updater, or manually:" \
+            '```' \
+            "wget -q https://github.com/$REPO/releases/download/rolling/$ASSET && unzip -o $ASSET && rm -f $ASSET && rm -rf installation/ && php cli/joomla.php core:update:finalise" \
+            '```' > notes.md
+
+          # The rolling tag follows main; the release is attached to the tag's name, so it follows too
+          git tag -f rolling HEAD
+          retry git push -f origin refs/tags/rolling
+
+          if ! gh release view rolling --repo "$REPO" >/dev/null 2>&1; then
+            # First run, or the release was removed: nothing is being served, so create it directly
+            retry gh release create rolling --repo "$REPO" --verify-tag --title "$TITLE" --notes-file notes.md --latest "$ASSET"
+            exit 0
+          fi
+
+          # Upload next to the published asset, under a temporary name (a leftover of a failed run is replaced)
+          NEW="joomla-latest-$GITHUB_RUN_ID.zip"
+          cp "$ASSET" "$NEW"
+          retry gh release upload rolling --repo "$REPO" --clobber "$NEW"
+          NEW_ID=$(gh release view rolling --repo "$REPO" --json assets --jq ".assets[] | select(.name == \"$NEW\") | .apiUrl" | sed 's#.*/##')
+          OLD_ID=$(gh release view rolling --repo "$REPO" --json assets --jq ".assets[] | select(.name == \"$ASSET\") | .apiUrl" | sed 's#.*/##')
+
+          if [ -z "$NEW_ID" ]; then
+            echo "::error::The new asset isn't on the release; the previous package is still served"
+            exit 1
+          fi
+
+          # The swap: the old asset deleted, the new one renamed (GitHub refuses two assets of one name)
+          if [ -n "$OLD_ID" ]; then
+            retry gh api -X DELETE "repos/$REPO/releases/assets/$OLD_ID"
+          fi
+          retry gh api -X PATCH "repos/$REPO/releases/assets/$NEW_ID" -f name="$ASSET" >/dev/null
+
+          # Leftover temporary assets of earlier failed runs
+          for name in $(gh release view rolling --repo "$REPO" --json assets --jq '.assets[].name' | grep -E '^joomla-latest-[0-9]+\.zip$' || true); do
+            id=$(gh release view rolling --repo "$REPO" --json assets --jq ".assets[] | select(.name == \"$name\") | .apiUrl" | sed 's#.*/##')
+            retry gh api -X DELETE "repos/$REPO/releases/assets/$id" || true
+          done
+
+          # Title, notes, and published as the latest release (also a draft a failed run of the old workflow left)
+          retry gh release edit rolling --repo "$REPO" --title "$TITLE" --notes-file notes.md --draft=false --latest
+
+      - name: Check the download URL serves the new package
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if curl -fsSL -o served.zip "https://github.com/$REPO/releases/download/rolling/$ASSET" && cmp -s served.zip "$ASSET"; then
+              echo "The download URL serves this build ($(stat -c %s "$ASSET") bytes)"
+              exit 0
+            fi
+            sleep $((attempt * 10))
+          done
+          echo "::error::https://github.com/$REPO/releases/download/rolling/$ASSET doesn't serve this build; run the workflow again"
+          exit 1
