@@ -52,7 +52,17 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 
 A short overview of each release. Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 
-## Version 3.19 - unreleased [pending]
+## Version 3.19 - released November 25th, 2026
+Summary of changes:
+- **Joomla's November 2026 security release, for Joomla 3:** all 58 issues of Joomla 6.2.1 and 5.4.11 were checked, and the 32 that also affect Joomla 3 are fixed (harmful code in names and pages, missing access checks, slowdowns from specially made texts and more), most of them old Joomla 3 issues that Joomla listed only for its newer versions
+- **Editors that grow with your text** in the administrator, with their toolbars at the top of the window and the editor buttons at its foot
+- **Instant pages:** the Page Cache lets Chrome, Edge and Opera load a page in the background when a visitor is about to open it, and tells CDNs and Varnish how long to keep it
+- **Prothero:** switch between light and dark from the user menu, as in Joomla 6
+- **Picking images and PDF files with the Media Manager itself**, in the folder you used last
+- **System Update** (formerly Joomla! Update), in the System menu
+- **Extensions by Joomdonation work again** (3.18 had removed a part of Joomla 3 they use), and many more fixes for extensions such as K2 and Kunena, PostgreSQL, PHP 8 and the administrator templates
+
+Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 
 **New features:**
 - The editors grow with your text, as in WordPress' Classic Editor: TinyMCE, TinyMCE (legacy) and the plain text box no longer scroll inside a fixed box. Markdown and Blocks already did. The editors' toolbars stay at the top of the window and the row of editor buttons (Article, Image, Read More...) at its foot, so they're at hand in long texts. Each editor has a Grow with Content option to turn it off. This is for the administrator: when editing on the site, the editors keep their fixed height
@@ -67,13 +77,13 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - Prothero and Isis have a Page Transitions option, on by default, to turn off the fade between administrator pages
 - The installer and Joomla Update no longer advise turning PHP's output buffering off: it's on at most hosts and does Joomla no harm. System Information shows how it's set (off, on in pieces of a given size, or on without a limit)
 - Templates: Options accept WebP, AVIF, SVG and ICO images and WOFF2 fonts, and uploads of up to 8 MB (updated sites get these once; BMP, an outdated format, comes off the list)
-
 - Extensions: Manage and Discover also find extensions by their author or copyright, not only by name
 - The Image and PDF buttons and image fields open the Media Manager itself, showing only images (or only PDF files): its folder tree, uploads, new folders, renaming, cropping and thumbnail sizes are there while you pick; a click picks a file, a double click inserts it. It works the same when editing on the site, where it looks the same whatever the template
 - Global Configuration can turn off the hints the site sends to browsers ahead of each page (Resource Hints in HTTP Headers, on by default), for servers, CDNs or optimising extensions that send their own
 - Global Configuration has a Frontend Settings section on its first tab, gathering the settings that only concern the site: Site Offline, Inline Editing, the site's default editor, the default CAPTCHA and the feed settings
 - The window for choosing a module position (used by extensions) looks and works like the other pickers in Isis and Prothero, with Search Tools and a larger window
 - The windows for choosing an article, category, contact, news feed, menu item or module position, and those for creating or editing one from a field, share one piece of code instead of a copy each, and 15 files Joomla 3 hadn't used since 2016 are gone; they work as before
+
 **Security fixes:**
 - Multilingual Associations: a crafted link opened by a logged-in administrator could add code to the page that picks an item to associate (an old Joomla 3 issue)
 - Joomla's security release of November 2026 (Joomla 6.2.1 and 5.4.11): all 58 issues were checked, and the 32 that also affect Joomla 3 are fixed here (all old Joomla 3 issues):
