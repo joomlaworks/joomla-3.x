@@ -9,7 +9,7 @@ So we're actively developing Joomla 3.x UTD as an up-to-date distribution of the
 
 If you are a Joomla extension developer still supporting Joomla 3.x and you are reading this, please do your users a favour and make sure your extension update XML files don't stop at Joomla 3.10.x.
 
-**New in 3.17: work with your site through AI assistants and the command line.** Joomla 3.x UTD has a built-in MCP server and a command line with 100 commands. See the guide, **[AI Assistants & the Command Line](AI-GUIDE.md)**, to connect Claude, ChatGPT/Codex, Gemini, Copilot, Cursor, Devin Desktop and other assistants, and to use the command line for pretty much anything.
+**New in 3.17: work with your site through AI assistants and the command line.** Joomla 3.x UTD has a built-in MCP server and a command line with 101 commands. See the guide, **[AI Assistants & the Command Line](AI-GUIDE.md)**, to connect Claude, ChatGPT/Codex, Gemini, Copilot, Cursor, Devin Desktop and other assistants, and to use the command line for pretty much anything.
 
 ## DOCUMENTATION
 - **[README.md](README.md)** (this file): what Joomla 3.x UTD is, a short summary of each release, upgrading and installing, supported PHP versions and databases.
@@ -24,7 +24,7 @@ If you are a Joomla extension developer still supporting Joomla 3.x and you are 
 ## CONTENTS
 - [Documentation](#documentation)
 - [Changelog](#changelog)
-  - [Version 3.19 - unreleased [pending]](#version-319---unreleased-pending)
+  - [Version 3.19 - released November 25th, 2026](#version-319---released-november-25th-2026)
   - [Version 3.18 - released November 5th, 2026](#version-318---released-november-5th-2026)
   - [Version 3.17 - released October 10th, 2026](#version-317---released-october-10th-2026)
   - [Version 3.16 - released October 3rd, 2026](#version-316---released-october-3rd-2026)

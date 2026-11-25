@@ -32,7 +32,7 @@ This guide covers both: how to connect an AI assistant to your site, what it can
 
 ## HOW IT FITS TOGETHER
 
-- **The command line** (`php cli/joomla.php <command>`) has 100 commands: the command names of Joomla 4 and later (`core:update`, `config:set`, `user:add`, ...) plus many of its own for content, templates, databases, health checks and logs. Every command can answer in JSON (`--format=json`), and every command which changes something can show what it would change first (`--dry-run`).
+- **The command line** (`php cli/joomla.php <command>`) has 101 commands: the command names of Joomla 4 and later (`core:update`, `config:set`, `user:add`, ...) plus many of its own for content, templates, databases, health checks and logs. Every command can answer in JSON (`--format=json`), and every command which changes something can show what it would change first (`--dry-run`).
 - **The MCP server** (`php cli/joomla.php mcp:serve`) offers those commands to an AI assistant as tools (97 of them: all but `help`, `list` and `mcp:serve` itself), each described with its options. The assistant starts the server itself and talks to it over standard input and output, so there's no port to open and nothing to expose to the web.
 - **Changes go through Joomla**, not around it: content is saved by the administrator's own models, with their validation and permission checks, and every change is recorded in the User Actions Log.
 
