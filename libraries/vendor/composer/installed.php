@@ -175,12 +175,12 @@
             'dev_requirement' => false,
         ),
         'phpmailer/phpmailer' => array(
-            'pretty_version' => 'v7.1.1',
-            'version' => '7.1.1.0',
+            'pretty_version' => 'v7.2.0',
+            'version' => '7.2.0.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phpmailer/phpmailer',
             'aliases' => array(),
-            'reference' => '1bc1716a507a65e039d4ac9d9adebbbd0d346e15',
+            'reference' => 'f5eb50148734d03bbbb81825c722c1889636d51a',
             'dev_requirement' => false,
         ),
         'psr/container' => array(

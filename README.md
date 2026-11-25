@@ -60,7 +60,8 @@ Summary of changes:
 - **Prothero:** switch between light and dark from the user menu, as in Joomla 6
 - **Picking images and PDF files with the Media Manager itself**, in the folder you used last
 - **System Update** (formerly Joomla! Update), in the System menu
-- **Extensions by Joomdonation work again** (3.18 had removed a part of Joomla 3 they use), and many more fixes for extensions such as K2 and Kunena, PostgreSQL, PHP 8 and the administrator templates
+- **Extensions by Joomdonation work again** (3.18 had removed a part of Joomla 3 they use), Regular Labs' editor button windows too, and many more fixes for extensions such as K2 and Kunena, PostgreSQL, PHP 8 and the administrator templates
+- **TinyMCE 8.11 and PHPMailer 7.2**, their latest releases
 
 Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 
@@ -71,6 +72,7 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 - Command line: one command updates every extension and template that has an update (`extension:update --all`, with `--dry-run` to see first what it would do)
 
 **Improvements:**
+- TinyMCE updated to 8.11.0 (editing fixes for accordions, lists, tables, images and right-to-left text) and the mail library PHPMailer to 7.2.0 (fixes for long address lists and signed messages)
 - The Page Cache tells caches in front of the site (a CDN, Varnish) how long they may keep each page (1 minute for the home page, 3 for the others), while browsers still check for a fresh copy every time; set it to 0 to turn it off
 - Joomla! Update is now **System Update**, in the System menu above System Information (it's no longer listed under Components), with the new name everywhere in the administrator, its update notifications included
 - A contact's Miscellaneous Information is edited in the first tab, below the other details, instead of a tab of its own
