@@ -95,6 +95,7 @@ Every change is described in detail in [CHANGELOG.md](CHANGELOG.md).
 
 **Bug fixes:**
 - **Extensions:**
+  - Windows opened by older extensions' buttons (such as Regular Labs' Tooltips, Tabs and Sliders in the editor) open as they did before 3.18 again, instead of empty or with a form that didn't work ([#36](https://github.com/joomlaworks/joomla-3.x/issues/36))
   - Extensions by Joomdonation (Payment Form, Events Booking, Membership Pro, Docman and others built on its OSL library) work again: 3.18 had removed a part of Joomla 3 they rely on (the Framework's "DI" container), and this update brings it back
 - **Administrator:**
   - Prothero: messages that extensions show over the page (such as K2's) are no longer faint and half hidden under the toolbar

@@ -346,16 +346,7 @@
 
 					applyContent(html);
 
-					if (options.evalScripts !== false) {
-						for (const old of modal.content.querySelectorAll('script')) {
-							const script = document.createElement('script');
-
-							script.text = old.text;
-							old.parentNode.replaceChild(script, old);
-						}
-					}
-
-					emit('ajax', [html]);
+					return (options.evalScripts !== false ? runScripts(modal.content) : Promise.resolve()).then(() => emit('ajax', [html]));
 				})
 				.catch(() => onError());
 
@@ -499,6 +490,25 @@
 		return CMS.modal;
 	}
 
+	// MooTools' size methods of window, which options written for SqueezeBox use ({x: window.getSize().x - 100}): stock Joomla
+	// loaded MooTools with its modals, core no longer does, and an option that fails sent the link to another handler
+	const mooWindow = typeof Proxy === 'undefined' ? window : new Proxy(window, {
+		get(target, key) {
+			const helpers = {
+				getSize: () => ({ x: window.innerWidth, y: window.innerHeight }),
+				getScroll: () => ({ x: window.pageXOffset, y: window.pageYOffset }),
+				getScrollSize: () => ({ x: document.documentElement.scrollWidth, y: document.documentElement.scrollHeight }),
+			};
+			const value = target[key];
+
+			if (value === undefined && helpers[key]) {
+				return helpers[key];
+			}
+
+			return typeof value === 'function' ? value.bind(target) : value;
+		},
+	});
+
 	// A link's own options: its rel (or another attribute), an object literal evaluated as SqueezeBox did
 	const parseOptions = (element, attribute, secure) => {
 		const value = element && attribute ? element.getAttribute(attribute) : '';
@@ -508,10 +518,79 @@
 		}
 
 		try {
-			return secure ? JSON.parse(value) : (new Function('return (' + value + ');'))(); // eslint-disable-line no-new-func
+			return secure ? JSON.parse(value) : (new Function('window', 'return (' + value + ');'))(mooWindow); // eslint-disable-line no-new-func
 		} catch (error) {
+			// The handler is then chosen from the address alone (an ajax request for most): say why
+			console.warn('CMS.modal: the options of this link could not be read, so they are ignored:', value, error);
+
 			return null;
 		}
+	};
+
+	// The scripts of HTML loaded into the box, in their order (SqueezeBox ran the inline ones only): script options join the
+	// page's, data blocks are left alone, files the page already has aren't loaded again (a second jQuery would drop its
+	// plugins), the others are loaded and waited for, so inline code after them finds them
+	const runnableType = (type) => !type || /^\s*(?:(?:text|application)\/(?:x-)?(?:java|ecma)script|module)\s*$/i.test(type);
+
+	const runScripts = (container) => {
+		const bare = (url) => String(url).split(/[?#]/)[0];
+		const loaded = new Set();
+
+		Array.prototype.forEach.call(document.scripts, (script) => {
+			if (script.src && !container.contains(script)) {
+				loaded.add(bare(script.src));
+			}
+		});
+
+		return Array.prototype.reduce.call(container.querySelectorAll('script'), (chain, old) => chain.then(() => {
+			if (old.classList.contains('joomla-script-options')) {
+				try {
+					// Strings the page hasn't read yet are taken first, as the box's would replace them
+					CMS.text.get('');
+					CMS.options.load(JSON.parse(old.text || '{}'));
+				} catch (error) {
+					console.warn('CMS.modal: script options that could not be read', error);
+				}
+
+				old.className = old.className.replace(/\bnew\b/, 'loaded');
+
+				return null;
+			}
+
+			if (!runnableType(old.getAttribute('type')) || !old.parentNode) {
+				return null;
+			}
+
+			const script = document.createElement('script');
+
+			Array.prototype.forEach.call(old.attributes, (attribute) => script.setAttribute(attribute.name, attribute.value));
+
+			if (old.src) {
+				const src = bare(old.src);
+
+				if (loaded.has(src)) {
+					return null;
+				}
+
+				loaded.add(src);
+
+				return new Promise((resolve) => {
+					script.onload = resolve;
+					script.onerror = resolve;
+					old.parentNode.replaceChild(script, old);
+				});
+			}
+
+			script.text = old.text;
+
+			try {
+				old.parentNode.replaceChild(script, old);
+			} catch (error) {
+				console.error(error);
+			}
+
+			return null;
+		}), Promise.resolve());
 	};
 
 	CMS.modal = {
