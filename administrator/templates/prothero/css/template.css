@@ -3102,6 +3102,10 @@ body .navbar-fixed-top {margin-bottom:0;}
     .nav-collapse .dropdown-menu li + li a {margin-bottom:0;}
 }
 
+/* The user menu's colour scheme choice: a check beside the current one */
+.scheme-choice [class^="icon-"] {width:1em;margin-inline-end:4px;}
+.scheme-choice[aria-checked="false"] [class^="icon-"] {visibility:hidden;}
+
 /* --- Prothero: Phones --- */
 /* The top bar: the logo, the site's name and the menu button in one row, centred; the opened menu under them */
 @media (max-width:767px) {
@@ -3148,6 +3152,8 @@ body .navbar-fixed-top {margin-bottom:0;}
     .navbar .nav-collapse .nav-user .dropdown-menu > li > a {display:block;margin:0;padding:4px 0;font-size:var(--fs-base);color:var(--c-nav-soft);background:none;border:0;}
     .navbar .nav-collapse .nav-user .dropdown-menu > li > span {flex-basis:100%;color:var(--c-nav-fg);}
     .navbar .nav-collapse .nav-user .dropdown-menu > li.divider {display:none;}
+    .navbar .nav-collapse .nav-user .dropdown-menu > li.scheme-item {order:1;}
+    .navbar .nav-collapse .nav-user .dropdown-menu > li.nav-header {flex-basis:100%;margin-top:6px;padding:0;color:var(--c-nav-soft);}
     /* Lists: the Reorder button (js/template.js), and the drag handles while the list is sorted by ordering (touch works through
        media/system/js/sortablelist.js); a larger handle for a finger */
     .js-stools-container-bar .btn-wrapper.prothero-reorder {display:block;margin:12px 0 0;}

@@ -73,6 +73,13 @@ $page = require __DIR__ . '/includes/helper.php';
 									<a href="index.php?option=com_admin&amp;task=profile.edit&amp;id=<?php echo $page->user->id; ?>"><?php echo JText::_('TPL_PROTHERO_EDIT_ACCOUNT'); ?></a>
 								</li>
 								<li class="divider"></li>
+								<li class="nav-header scheme-item"><?php echo JText::_('TPL_PROTHERO_COLOR_SCHEME_LABEL'); ?></li>
+								<?php foreach (array('light' => 'TPL_PROTHERO_COLOR_SCHEME_LIGHT', 'dark' => 'TPL_PROTHERO_COLOR_SCHEME_DARK', 'auto' => 'TPL_PROTHERO_COLOR_SCHEME_AUTO') as $scheme => $label) : ?>
+								<li class="scheme-item">
+									<a href="#" class="scheme-choice" role="menuitemradio" aria-checked="<?php echo $page->scheme === $scheme ? 'true' : 'false'; ?>" data-scheme-choice="<?php echo $scheme; ?>" data-scheme-path="<?php echo htmlspecialchars(JUri::base(true) . '/', ENT_QUOTES, 'UTF-8'); ?>"><span class="icon-checkmark" aria-hidden="true"></span> <?php echo JText::_($label); ?></a>
+								</li>
+								<?php endforeach; ?>
+								<li class="divider"></li>
 								<li class="">
 									<a href="<?php echo JRoute::_('index.php?option=com_login&task=logout&' . JSession::getFormToken() . '=1'); ?>"><?php echo JText::_('TPL_PROTHERO_LOGOUT'); ?></a>
 								</li>

@@ -656,6 +656,44 @@
 		});
 	}
 
+	/* --- Colour scheme from the user menu: kept in a cookie for the administrator, read by ProtheroHelper::scheme() --- */
+
+	function initSchemeChoice() {
+		document.addEventListener('click', function (event) {
+			var link = event.target.closest ? event.target.closest('[data-scheme-choice]') : null;
+
+			if (!link) {
+				return;
+			}
+
+			event.preventDefault();
+
+			var scheme = link.getAttribute('data-scheme-choice');
+			var secure = window.location.protocol === 'https:' ? '; secure' : '';
+
+			document.cookie = 'prothero_scheme=' + scheme + '; path=' + link.getAttribute('data-scheme-path') + '; max-age=31536000; samesite=lax' + secure;
+
+			// The page and the frames open in it (modals), which load their pages with the same cookie
+			var apply = function (doc) {
+				if (doc && doc.documentElement.hasAttribute('data-scheme')) {
+					doc.documentElement.setAttribute('data-scheme', scheme);
+				}
+			};
+
+			apply(document);
+			$$('iframe').forEach(function (frame) {
+				try {
+					apply(frame.contentDocument);
+				} catch (error) {
+					// Another site's frame
+				}
+			});
+			$$('[data-scheme-choice]').forEach(function (item) {
+				item.setAttribute('aria-checked', item === link ? 'true' : 'false');
+			});
+		});
+	}
+
 	/* --- Start --- */
 
 	function init() {
@@ -675,6 +713,7 @@
 		initTabRows();
 		initReorder();
 		initFitTables();
+		initSchemeChoice();
 
 		// Events only jQuery hears: Chosen ready (and changed through its API), subform rows added
 		if (jq()) {

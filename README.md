@@ -57,6 +57,7 @@ A short overview of each release. Every change is described in detail in [CHANGE
 **New features:**
 - The editors grow with your text, as in WordPress' Classic Editor: TinyMCE, TinyMCE (legacy) and the plain text box no longer scroll inside a fixed box. Markdown and Blocks already did. The editors' toolbars stay at the top of the window and the row of editor buttons (Article, Image, Read More...) at its foot, so they're at hand in long texts. Each editor has a Grow with Content option to turn it off. This is for the administrator: when editing on the site, the editors keep their fixed height
 - The Page Cache can load a page in the background when a visitor is about to open it (in Chrome, Edge and Opera), so it shows at once; on by default, for visitors who aren't logged in
+- Prothero: switch between light and dark (or follow your device) from the user menu at the top right, as in Joomla 6's Atum; the choice applies at once and is remembered in that browser, login page included
 - Command line: one command updates every extension and template that has an update (`extension:update --all`, with `--dry-run` to see first what it would do)
 
 **Improvements:**

@@ -333,7 +333,8 @@ if (!class_exists('ProtheroHelper', false)) {
         }
 
         /**
-         * The Colour Scheme option, for the data-scheme attribute of <html>: light, dark or auto (follows the device).
+         * The Colour Scheme option, for the data-scheme attribute of <html>: light, dark or auto (follows the device). The
+         * choice made in the user menu (cookie prothero_scheme, set by js/template.js) wins over the option in that browser.
          *
          * @param   mixed  $params  The template style's options (a Registry), or null
          *
@@ -343,6 +344,12 @@ if (!class_exists('ProtheroHelper', false)) {
          */
         public static function scheme($params)
         {
+            $choice = isset($_COOKIE['prothero_scheme']) && is_string($_COOKIE['prothero_scheme']) ? $_COOKIE['prothero_scheme'] : '';
+
+            if (in_array($choice, array('light', 'dark', 'auto'), true)) {
+                return $choice;
+            }
+
             // The error page calls it too, when something may have failed already: never let the option break that page
             try {
                 $scheme = is_object($params) ? (string) $params->get('colorScheme', 'auto') : 'auto';
