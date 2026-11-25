@@ -184,7 +184,8 @@ class Language
     {
         $this->strings = array();
 
-        if ($lang == null) {
+        // Only a well-formed tag names folders and files to read (the request's language comes from visitors)
+        if ($lang == null || !LanguageHelper::isValidTag($lang)) {
             $lang = $this->default;
         }
 
@@ -664,6 +665,10 @@ class Language
         // If language is null set as the current language.
         if (!$lang) {
             $lang = $this->lang;
+        }
+
+        if (!LanguageHelper::isValidTag($lang)) {
+            return false;
         }
 
         // Load the default language first if we're not debugging and a non-default language is requested to be loaded
@@ -1169,6 +1174,11 @@ class Language
         \JLog::add(__METHOD__ . ' is deprecated. Instantiate a new Language object instead.', \JLog::WARNING, 'deprecated');
 
         $previous = $this->lang;
+
+        if (!LanguageHelper::isValidTag($lang)) {
+            return $previous;
+        }
+
         $this->lang = $lang;
         $this->metadata = LanguageHelper::getMetadata($this->lang);
 

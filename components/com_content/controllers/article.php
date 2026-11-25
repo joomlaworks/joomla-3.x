@@ -19,6 +19,8 @@ use Joomla\Utilities\ArrayHelper;
  */
 class ContentControllerArticle extends JControllerForm
 {
+    use \Joomla\CMS\Categories\CategoryChangeTrait;
+
     /**
      * The URL view item variable.
      *
@@ -99,6 +101,26 @@ class ContentControllerArticle extends JControllerForm
         }
     }
 
+
+    /**
+     * Method to check if you can save a record: creating it in, or moving it to, a category needs the create permission
+     * there (the category field lists only those, but the posted value is what's stored)
+     *
+     * @param   array   $data  An array of input data.
+     * @param   string  $key   The name of the key for the primary key; default is id.
+     *
+     * @return  boolean
+     *
+     * @since   3.19.0
+     */
+    protected function allowSave($data, $key = 'id')
+    {
+        if (!$this->allowCategoryChange($this->getModel()->getTable(), (int) (isset($data[$key]) ? $data[$key] : 0), $data)) {
+            return false;
+        }
+
+        return parent::allowSave($data, $key);
+    }
     /**
      * Method override to check if you can edit an existing record.
      *
@@ -396,11 +418,56 @@ class ContentControllerArticle extends JControllerForm
                 $url = JRoute::_('index.php');
             }
 
+            // Only articles the visitor may see take votes: published, in a published category, within both view levels
+            if (!$this->canVote($id)) {
+                $this->setRedirect($url, JText::_('COM_CONTENT_ARTICLE_VOTE_FAILURE'), 'error');
+
+                return;
+            }
+
             if ($model->storeVote($id, $user_rating)) {
                 $this->setRedirect($url, JText::_('COM_CONTENT_ARTICLE_VOTE_SUCCESS'));
             } else {
                 $this->setRedirect($url, JText::_('COM_CONTENT_ARTICLE_VOTE_FAILURE'));
             }
+        }
+    }
+
+    /**
+     * Whether the current user may see, and so vote for, an article
+     *
+     * @param   integer  $id  The article's id
+     *
+     * @return  boolean
+     *
+     * @since   3.19.0
+     */
+    protected function canVote($id)
+    {
+        if ($id < 1) {
+            return false;
+        }
+
+        $db       = JFactory::getDbo();
+        $groups   = implode(',', array_map('intval', JFactory::getUser()->getAuthorisedViewLevels()));
+        $nullDate = $db->quote($db->getNullDate());
+        $now      = $db->quote(JFactory::getDate()->toSql());
+        $query    = $db->getQuery(true)
+            ->select('a.id')
+            ->from($db->quoteName('#__content', 'a'))
+            ->join('INNER', $db->quoteName('#__categories', 'c') . ' ON c.id = a.catid')
+            ->where('a.id = ' . (int) $id)
+            ->where('a.state = 1')
+            ->where('c.published = 1')
+            ->where('a.access IN (' . $groups . ')')
+            ->where('c.access IN (' . $groups . ')')
+            ->where('(a.publish_up IS NULL OR a.publish_up = ' . $nullDate . ' OR a.publish_up <= ' . $now . ')')
+            ->where('(a.publish_down IS NULL OR a.publish_down = ' . $nullDate . ' OR a.publish_down >= ' . $now . ')');
+
+        try {
+            return (bool) $db->setQuery($query, 0, 1)->loadResult();
+        } catch (RuntimeException $e) {
+            return false;
         }
     }
 }

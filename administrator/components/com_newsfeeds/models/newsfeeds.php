@@ -200,9 +200,11 @@ class NewsfeedsModelNewsfeeds extends JModelList
             $query->where($db->quoteName('a.access') . ' = ' . (int) $access);
         }
 
-        // Implement View Level Access
+        // Implement View Level Access, for the feed and its category
         if (!$user->authorise('core.admin')) {
-            $query->where($db->quoteName('a.access') . ' IN (' . implode(',', $user->getAuthorisedViewLevels()) . ')');
+            $groups = implode(',', $user->getAuthorisedViewLevels());
+            $query->where($db->quoteName('a.access') . ' IN (' . $groups . ')');
+            $query->where($db->quoteName('c.access') . ' IN (' . $groups . ')');
         }
 
         // Filter by published state.

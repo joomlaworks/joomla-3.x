@@ -385,7 +385,8 @@ class InputFilter extends BaseInputFilter
      */
     public function emailToPunycode($text)
     {
-        $pattern = '/(("mailto:)+[\w\.\-\+]+\@[^"?]+\.+[^."?]+("|\?))/';
+        // One dot before the last label (not "\.+") and a match starting only at the first of repeated prefixes keep it linear
+        $pattern = '/((?<!"mailto:)("mailto:)+[\w\.\-\+]+\@[^"?]+\.[^."?]+("|\?))/';
 
         if (preg_match_all($pattern, $text, $matches)) {
             foreach ($matches[0] as $match) {
@@ -956,15 +957,18 @@ class InputFilter extends BaseInputFilter
     protected function escapeAttributeValues($source)
     {
         $alreadyFiltered = '';
-        $remainder = $source;
         $badChars = array('<', '"', '>');
         $escapedChars = array('&lt;', '&quot;', '&gt;');
+
+        // Searched from an offset: cutting the rest of the source after every attribute made long inputs take quadratic time
+        $offset = 0;
+        $length = strlen($source);
 
         /*
          * Process each portion based on presence of =" and "<space>, "/>, or ">
          * See if there are any more attributes to process
          */
-        while (preg_match('#<[^>]*?=\s*?(\"|\')#s', $remainder, $matches, PREG_OFFSET_CAPTURE)) {
+        while ($offset < $length && preg_match('#<[^>]*?=\s*?(\"|\')#s', $source, $matches, PREG_OFFSET_CAPTURE, $offset)) {
             // Get the portion before the attribute value
             $quotePosition = $matches[0][1];
             $nextBefore = $quotePosition + strlen($matches[0][0]);
@@ -977,26 +981,26 @@ class InputFilter extends BaseInputFilter
             $pregMatch = ($quote == '"') ? '#(\"\s*/\s*>|\"\s*>|\"\s+|\"$)#' : "#(\'\s*/\s*>|\'\s*>|\'\s+|\'$)#";
 
             // Get the portion after attribute value
-            if (preg_match($pregMatch, substr($remainder, $nextBefore), $matches, PREG_OFFSET_CAPTURE)) {
+            if (preg_match($pregMatch, $source, $matches, PREG_OFFSET_CAPTURE, $nextBefore)) {
                 // We have a closing quote
-                $nextAfter = $nextBefore + $matches[0][1];
+                $nextAfter = $matches[0][1];
             } else {
                 // No closing quote
-                $nextAfter = strlen($remainder);
+                $nextAfter = $length;
             }
 
             // Get the actual attribute value
-            $attributeValue = substr($remainder, $nextBefore, $nextAfter - $nextBefore);
+            $attributeValue = substr($source, $nextBefore, $nextAfter - $nextBefore);
 
             // Escape bad chars
             $attributeValue = str_replace($badChars, $escapedChars, $attributeValue);
             $attributeValue = $this->_stripCSSExpressions($attributeValue);
-            $alreadyFiltered .= substr($remainder, 0, $nextBefore) . $attributeValue . $quote;
-            $remainder = substr($remainder, $nextAfter + 1);
+            $alreadyFiltered .= substr($source, $offset, $nextBefore - $offset) . $attributeValue . $quote;
+            $offset = $nextAfter + 1;
         }
 
-        // At this point, we just have to return the $alreadyFiltered and the $remainder
-        return $alreadyFiltered . $remainder;
+        // At this point, we just have to return the $alreadyFiltered and the rest
+        return $alreadyFiltered . ($offset < $length ? substr($source, $offset) : '');
     }
 
     /**

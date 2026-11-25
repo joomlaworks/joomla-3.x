@@ -99,6 +99,22 @@ class FinderIndexerQuery
     public $highlight = array();
 
     /**
+     * The tokens whose data was loaded (spl_object_hash() => true): the tokenizer gives a repeated word the same object
+     *
+     * @var    array
+     * @since  3.19.0
+     */
+    private $loadedTokens = array();
+
+    /**
+     * The tokens added to the included ones (spl_object_hash() => true)
+     *
+     * @var    array
+     * @since  3.19.0
+     */
+    private $includedTokens = array();
+
+    /**
      * The number of matching terms for the query input.
      *
      * @var    integer
@@ -955,8 +971,7 @@ class FinderIndexerQuery
                     $token->required = true;
 
                     // Add the current token to the stack.
-                    $this->included[] = $token;
-                    $this->highlight  = array_merge($this->highlight, array_keys($token->matches));
+                    $this->addIncluded($token);
 
                     // Skip the next token (the mode operator).
                     $this->operators[] = $terms[$i + 1];
@@ -969,8 +984,7 @@ class FinderIndexerQuery
                     $other->required = true;
 
                     // Add the token after the next token to the stack.
-                    $this->included[] = $other;
-                    $this->highlight  = array_merge($this->highlight, array_keys($other->matches));
+                    $this->addIncluded($other);
 
                     // Remove the processed phrases if possible.
                     if (($pk = array_search($terms[$i], $phrases, true)) !== false) {
@@ -999,8 +1013,7 @@ class FinderIndexerQuery
 
                     // Add the current token to the stack.
                     if ((bool) $token->matches) {
-                        $this->included[] = $token;
-                        $this->highlight  = array_merge($this->highlight, array_keys($token->matches));
+                        $this->addIncluded($token);
                     } else {
                         $this->ignored[] = $token;
                     }
@@ -1017,8 +1030,7 @@ class FinderIndexerQuery
 
                     // Add the token after the next token to the stack.
                     if ((bool) $other->matches) {
-                        $this->included[] = $other;
-                        $this->highlight  = array_merge($this->highlight, array_keys($other->matches));
+                        $this->addIncluded($other);
                     } else {
                         $this->ignored[] = $other;
                     }
@@ -1054,8 +1066,7 @@ class FinderIndexerQuery
 
                 // Add the token after the next token to the stack.
                 if ((bool) $other->matches) {
-                    $this->included[] = $other;
-                    $this->highlight  = array_merge($this->highlight, array_keys($other->matches));
+                    $this->addIncluded($other);
                 } else {
                     $this->ignored[] = $other;
                 }
@@ -1119,8 +1130,7 @@ class FinderIndexerQuery
             $token->required = true;
 
             // Add the current token to the stack.
-            $this->included[] = $token;
-            $this->highlight  = array_merge($this->highlight, array_keys($token->matches));
+            $this->addIncluded($token);
 
             // Remove the processed term if possible.
             if (($pk = array_search($phrases[$i], $terms, true)) !== false) {
@@ -1152,8 +1162,7 @@ class FinderIndexerQuery
 
                 // Add the token to the appropriate stack.
                 if ($token->required || (bool) $token->matches) {
-                    $this->included[] = $token;
-                    $this->highlight  = array_merge($this->highlight, array_keys($token->matches));
+                    $this->addIncluded($token);
                 } else {
                     $this->ignored[] = $token;
                 }
@@ -1161,6 +1170,29 @@ class FinderIndexerQuery
         }
 
         return true;
+    }
+
+    /**
+     * Adds a token to the included ones and its terms to the highlighted ones, once: the tokenizer gives a repeated word the
+     * same object, and adding it again made every repetition in a query slower to process
+     *
+     * @param   FinderIndexerToken  $token  A token
+     *
+     * @return  void
+     *
+     * @since   3.19.0
+     */
+    private function addIncluded($token)
+    {
+        $key = spl_object_hash($token);
+
+        if (isset($this->includedTokens[$key])) {
+            return;
+        }
+
+        $this->includedTokens[$key] = true;
+        $this->included[]           = $token;
+        $this->highlight            = array_merge($this->highlight, array_keys($token->matches));
     }
 
     /**
@@ -1180,6 +1212,15 @@ class FinderIndexerQuery
      */
     protected function getTokenData($token)
     {
+        // A repeated word is the same token object: its data is loaded once, or its matches grow with every repetition
+        $key = spl_object_hash($token);
+
+        if (isset($this->loadedTokens[$key])) {
+            return $token;
+        }
+
+        $this->loadedTokens[$key] = true;
+
         // Get the database object.
         $db = JFactory::getDbo();
 

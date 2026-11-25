@@ -54,30 +54,30 @@ JHtml::_('textdiff.textdiff', 'diff');
 	<?php $rowClass = ($value->value == $object2->$name->value) ? 'items-equal' : 'items-not-equal'; ?>
 	<tr class="<?php echo $rowClass; ?>">
 	<?php if (is_object($value->value)) : ?>
-		<td><strong><?php echo $value->label; ?></strong></td>
+		<td><strong><?php echo $this->escape($value->label); ?></strong></td>
 		<td /><td /><td />
 		<?php foreach ($value->value as $subName => $subValue) : ?>
 			<?php $newSubValue = isset($object2->$name->value->$subName->value) ? $object2->$name->value->$subName->value : ''; ?>
 			<?php if ($subValue->value || $newSubValue) : ?>
 				<?php $rowClass = ($subValue->value == $newSubValue) ? 'items-equal' : 'items-not-equal'; ?>
 				<tr class="<?php echo $rowClass; ?>">
-				<td><i>&nbsp;&nbsp;<?php echo $subValue->label; ?></i></td>
+				<td><i>&nbsp;&nbsp;<?php echo $this->escape($subValue->label); ?></i></td>
 				<td class="originalhtml" style="display:none" ><?php echo htmlspecialchars((string) $subValue->value, ENT_COMPAT, 'UTF-8'); ?></td>
 				<td class="changedhtml" style="display:none" ><?php echo htmlspecialchars($newSubValue, ENT_COMPAT, 'UTF-8'); ?></td>
-				<td class="original"><?php echo $subValue->value; ?></td>
-				<td class="changed"><?php echo $newSubValue; ?></td>
+				<td class="original"><?php echo $this->escape((string) $subValue->value); ?></td>
+				<td class="changed"><?php echo $this->escape((string) $newSubValue); ?></td>
 				<td class="diff" />
 				<td class="diffhtml" />
 				</tr>
 			<?php endif; ?>
 		<?php endforeach; ?>
 	<?php else : ?>
-		<td><strong><?php echo $value->label; ?></strong></td>
+		<td><strong><?php echo $this->escape($value->label); ?></strong></td>
 		<td class="originalhtml" style="display:none" ><?php echo htmlspecialchars((string) $value->value); ?></td>
 		<?php $object2->$name->value = is_object($object2->$name->value) ? json_encode($object2->$name->value) : $object2->$name->value; ?>
 		<td class="changedhtml" style="display:none" ><?php echo htmlspecialchars((string) $object2->$name->value, ENT_COMPAT, 'UTF-8'); ?></td>
-		<td class="original"><?php echo $value->value; ?></td>
-		<td class="changed"><?php echo $object2->$name->value; ?></td>
+		<td class="original"><?php echo $this->escape((string) $value->value); ?></td>
+		<td class="changed"><?php echo $this->escape((string) $object2->$name->value); ?></td>
 		<td class="diff" />
 		<td class="diffhtml" />
 	<?php endif; ?>

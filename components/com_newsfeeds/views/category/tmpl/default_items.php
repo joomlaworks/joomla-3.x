@@ -56,7 +56,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 				<span class="list pull-left">
 					<div class="list-title">
 						<a href="<?php echo JRoute::_(NewsFeedsHelperRoute::getNewsfeedRoute($item->slug, $item->catid)); ?>">
-							<?php echo $item->name; ?>
+							<?php echo $this->escape($item->name); ?>
 						</a>
 					</div>
 				</span>

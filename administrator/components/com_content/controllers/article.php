@@ -19,6 +19,8 @@ use Joomla\Utilities\ArrayHelper;
  */
 class ContentControllerArticle extends JControllerForm
 {
+    use \Joomla\CMS\Categories\CategoryChangeTrait;
+
     /**
      * Class constructor.
      *
@@ -65,6 +67,26 @@ class ContentControllerArticle extends JControllerForm
         return $allow;
     }
 
+
+    /**
+     * Method to check if you can save a record: creating it in, or moving it to, a category needs the create permission
+     * there (the category field lists only those, but the posted value is what's stored)
+     *
+     * @param   array   $data  An array of input data.
+     * @param   string  $key   The name of the key for the primary key; default is id.
+     *
+     * @return  boolean
+     *
+     * @since   3.19.0
+     */
+    protected function allowSave($data, $key = 'id')
+    {
+        if (!$this->allowCategoryChange($this->getModel()->getTable(), (int) (isset($data[$key]) ? $data[$key] : 0), $data)) {
+            return false;
+        }
+
+        return parent::allowSave($data, $key);
+    }
     /**
      * Method override to check if you can edit an existing record.
      *

@@ -57,6 +57,11 @@ class ContactControllerContact extends JControllerForm
         $model->setState('filter.published', 1);
         $contact = $model->getItem($id);
 
+        // A contact the visitor may not see takes no messages either
+        if (!$contact || empty($contact->params) || !$contact->params->get('access-view', false)) {
+            throw new RuntimeException(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+        }
+
         // Get item params, take menu parameters into account if necessary
         $active = $app->getMenu()->getActive();
         $stateParams = clone $model->getState()->get('params');

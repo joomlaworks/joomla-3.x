@@ -103,7 +103,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 							<span class="label label-warning"><?php echo JText::_('JUNPUBLISHED'); ?></span>
 						<?php endif; ?>
 						<a href="<?php echo JRoute::_(ContactHelperRoute::getContactRoute($item->slug, $item->catid)); ?>">
-							<span><?php echo $item->name; ?></span>
+							<span><?php echo $this->escape($item->name); ?></span>
 						</a>
 					</td>
 

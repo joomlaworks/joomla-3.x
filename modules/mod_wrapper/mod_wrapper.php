@@ -23,7 +23,7 @@ $height          = htmlspecialchars((string) $params->get('height', ''), ENT_COM
 $scroll          = htmlspecialchars((string) $params->get('scrolling', ''), ENT_COMPAT, 'UTF-8');
 $moduleclass_sfx = htmlspecialchars((string) $params->get('moduleclass_sfx', ''), ENT_COMPAT, 'UTF-8');
 $frameborder     = htmlspecialchars((string) $params->get('frameborder', ''), ENT_COMPAT, 'UTF-8');
-$ititle          = $module->title;
+$ititle          = htmlspecialchars((string) $module->title, ENT_COMPAT, 'UTF-8');
 $id              = $module->id;
 
 require JModuleHelper::getLayoutPath('mod_wrapper', $params->get('layout', 'default'));

@@ -68,11 +68,12 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 					<tr class="row<?php echo $i % 2; ?>">
 						<td>
 							<?php $buttonText = (isset($this->installedLang[0][$language->code]) || isset($this->installedLang[1][$language->code])) ? 'REINSTALL' : 'INSTALL'; ?>
-							<?php $onclick = 'document.getElementById(\'install_url\').value = \'' . $language->detailsurl . '\'; Joomla.submitbutton(\'install.install\');'; ?>
-							<input type="button" class="btn btn-small" value="<?php echo JText::_('COM_INSTALLER_' . $buttonText . '_BUTTON'); ?>" onclick="<?php echo $onclick; ?>" />
+							<?php // The feed's values are remote data: written as a JavaScript string, then escaped for the attribute?>
+							<?php $onclick = 'document.getElementById(\'install_url\').value = ' . json_encode((string) $language->detailsurl, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . '; Joomla.submitbutton(\'install.install\');'; ?>
+							<input type="button" class="btn btn-small" value="<?php echo JText::_('COM_INSTALLER_' . $buttonText . '_BUTTON'); ?>" onclick="<?php echo htmlspecialchars($onclick, ENT_QUOTES, 'UTF-8'); ?>" />
 						</td>
 						<td>
-							<?php echo $language->name; ?>
+							<?php echo $this->escape((string) $language->name); ?>
 						</td>
 						<td>
 							<?php echo $language->code; ?>
@@ -81,13 +82,17 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 								<?php $minorVersion = $version::MAJOR_VERSION . '.' . $version::MINOR_VERSION; ?>
 								<?php // Display a Note if language pack version is not equal to Joomla version?>
 								<?php if (strpos((string) $language->version, $minorVersion) !== 0 || strpos((string) $language->version, $currentShortVersion) !== 0) : ?>
-									<span class="label label-warning hasTooltip" title="<?php echo JText::_('JGLOBAL_LANGUAGE_VERSION_NOT_PLATFORM'); ?>"><?php echo $language->version; ?></span>
+									<span class="label label-warning hasTooltip" title="<?php echo JText::_('JGLOBAL_LANGUAGE_VERSION_NOT_PLATFORM'); ?>"><?php echo $this->escape((string) $language->version); ?></span>
 								<?php else : ?>
-									<span class="label label-success"><?php echo $language->version; ?></span>
+									<span class="label label-success"><?php echo $this->escape((string) $language->version); ?></span>
 								<?php endif; ?>
 						</td>
 						<td class="small hidden-phone">
-							<a href="<?php echo $language->detailsurl; ?>" target="_blank"><?php echo $language->detailsurl; ?></a>
+							<?php if (preg_match('#^https?://#i', (string) $language->detailsurl)) : ?>
+								<a href="<?php echo $this->escape($language->detailsurl); ?>" target="_blank" rel="noopener noreferrer"><?php echo $this->escape($language->detailsurl); ?></a>
+							<?php else : ?>
+								<?php echo $this->escape((string) $language->detailsurl); ?>
+							<?php endif; ?>
 						</td>
 					</tr>
 					<?php $i++; ?>

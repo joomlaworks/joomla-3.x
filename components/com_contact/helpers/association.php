@@ -39,7 +39,24 @@ abstract class ContactHelperAssociation extends CategoryHelperAssociation
 
         if ($view === 'contact') {
             if ($id) {
-                $associations = JLanguageAssociations::getAssociations('com_contact', '#__contact_details', 'com_contact.item', $id);
+                // Only associated items the visitor may see (as Articles' associations)
+                $user      = JFactory::getUser();
+                $db        = JFactory::getDbo();
+                $advClause = array(
+                    'c2.access IN (' . implode(',', array_map('intval', $user->getAuthorisedViewLevels())) . ')',
+                    'c2.language != ' . $db->quote(JFactory::getLanguage()->getTag()),
+                );
+
+                if (!$user->authorise('core.edit.state', 'com_contact') && !$user->authorise('core.edit', 'com_contact')) {
+                    $nullDate = $db->quote($db->getNullDate());
+                    $nowDate  = $db->quote(JFactory::getDate()->toSql());
+
+                    $advClause[] = '(c2.publish_up IS NULL OR c2.publish_up = ' . $nullDate . ' OR c2.publish_up <= ' . $nowDate . ')';
+                    $advClause[] = '(c2.publish_down IS NULL OR c2.publish_down = ' . $nullDate . ' OR c2.publish_down >= ' . $nowDate . ')';
+                    $advClause[] = 'c2.published = 1';
+                }
+
+                $associations = JLanguageAssociations::getAssociations('com_contact', '#__contact_details', 'com_contact.item', $id, 'id', 'alias', 'catid', $advClause);
 
                 $return = array();
 

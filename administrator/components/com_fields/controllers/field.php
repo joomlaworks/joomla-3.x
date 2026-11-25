@@ -61,6 +61,29 @@ class FieldsControllerField extends JControllerForm
         return JFactory::getUser()->authorise('core.create', $this->component);
     }
 
+
+    /**
+     * Method to check if you can save a record: a posted context must be of this request's component
+     *
+     * @param   array   $data  An array of input data.
+     * @param   string  $key   The name of the key for the primary key.
+     *
+     * @return  boolean
+     *
+     * @since   3.19.0
+     */
+    protected function allowSave($data, $key = 'id')
+    {
+        if (array_key_exists('context', $data)) {
+            $parts = explode('.', is_string($data['context']) ? $data['context'] : '');
+
+            if ($parts[0] !== $this->component) {
+                return false;
+            }
+        }
+
+        return parent::allowSave($data, $key);
+    }
     /**
      * Method override to check if you can edit an existing record.
      *

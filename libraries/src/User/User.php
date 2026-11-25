@@ -365,13 +365,8 @@ class User extends \JObject
         if ($this->isRoot === null) {
             $this->isRoot = false;
 
-            // Check for the configuration file failsafe.
-            $rootUser = \JFactory::getConfig()->get('root_user');
-
-            // The root_user variable can be a numeric user ID or a username.
-            if (is_numeric($rootUser) && $this->id > 0 && $this->id == $rootUser) {
-                $this->isRoot = true;
-            } elseif ($this->username && $this->username == $rootUser) {
+            // Check for the configuration file failsafe: a user ID or a username
+            if (UserHelper::isRootUser($this->id, $this->username)) {
                 $this->isRoot = true;
             } elseif ($this->id > 0) {
                 // Get all groups against which the user is mapped.
@@ -761,6 +756,14 @@ class User extends \JObject
             if (in_array(false, $result, true)) {
                 // Plugin will have to raise its own error or throw an exception.
                 return false;
+            }
+
+            // A token sent for a password reset (or an activation) stops working when the email address or the password changes;
+            // a blocked user (registration waiting for activation) keeps it
+            if (!$isNew && !empty($table->activation) && !$table->block
+                && ($table->password !== $oldUser->password || $table->email !== $oldUser->email)) {
+                $table->activation = '';
+                $this->activation  = '';
             }
 
             // Store the user data in the database

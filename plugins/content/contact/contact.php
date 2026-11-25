@@ -104,8 +104,14 @@ class PlgContentContact extends JPlugin
 
         $query->select('MAX(contact.id) AS contactid, contact.alias, contact.catid, contact.webpage, contact.email_to');
         $query->from($this->db->quoteName('#__contact_details', 'contact'));
+        $query->join('INNER', $this->db->quoteName('#__categories', 'c') . ' ON c.id = contact.catid');
         $query->where('contact.published = 1');
         $query->where('contact.user_id = ' . (int) $userId);
+
+        // Only a contact the visitor may view, as the contact view: its own and its category's view level
+        $groups = implode(',', array_map('intval', JFactory::getUser()->getAuthorisedViewLevels()));
+        $query->where('contact.access IN (' . $groups . ')');
+        $query->where('c.access IN (' . $groups . ')');
 
         if (JLanguageMultilang::isEnabled() === true) {
             $query->where('(contact.language in '

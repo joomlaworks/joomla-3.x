@@ -91,6 +91,11 @@ class LoginController extends JControllerLegacy
 
         $userid = $this->input->getInt('uid', null);
 
+        // Ending another user's sessions needs the permission the Logged-in Users module's logout link asks for
+        if ($userid && $userid !== (int) JFactory::getUser()->id && !JFactory::getUser()->authorise('core.manage', 'com_users')) {
+            throw new JAccessExceptionNotallowed(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+        }
+
         if ($app->get('shared_session', '0')) {
             $clientid = null;
         } else {

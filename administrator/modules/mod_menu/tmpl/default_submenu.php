@@ -83,14 +83,15 @@ if ($link = $current->get('link')) {
         }
     }
 
-    $target = $current->get('target') ? 'target="' . $current->get('target') . '"' : '';
+    // Links, targets and titles of custom administrator menus are stored values (entities already in them are kept)
+    $target = $current->get('target') ? 'target="' . htmlspecialchars((string) $current->get('target'), ENT_QUOTES, 'UTF-8') . '"' : '';
 
-    echo '<a' . $linkClass . $dataToggle . ' href="' . $link . '" ' . $target . '>' .
-                JText::_($current->get('title')) . $icon . $dropdownCaret . '</a>';
+    echo '<a' . $linkClass . $dataToggle . ' href="' . htmlspecialchars((string) $link, ENT_QUOTES, 'UTF-8', false) . '" ' . $target . '>' .
+                htmlspecialchars(JText::_($current->get('title')), ENT_QUOTES, 'UTF-8', false) . $icon . $dropdownCaret . '</a>';
 }
 // Separator
 else {
-    echo '<span>' . JText::_($current->get('title')) . '</span>';
+    echo '<span>' . htmlspecialchars(JText::_($current->get('title')), ENT_QUOTES, 'UTF-8', false) . '</span>';
 }
 
 // Recurse through children if they exist

@@ -149,10 +149,10 @@ function modChrome_outline($module, &$params, &$attribs)
 	<div class="mod-preview">
 		<div class="mod-preview-info">
 			<div class="mod-preview-position">
-				<?php echo JText::sprintf('JGLOBAL_PREVIEW_POSITION', $module->position); ?>
+				<?php echo JText::sprintf('JGLOBAL_PREVIEW_POSITION', htmlspecialchars((string) $module->position, ENT_QUOTES, 'UTF-8')); ?>
 			</div>
 			<div class="mod-preview-style">
-				<?php echo JText::sprintf('JGLOBAL_PREVIEW_STYLE', $module->style); ?>
+				<?php echo JText::sprintf('JGLOBAL_PREVIEW_STYLE', htmlspecialchars((string) $module->style, ENT_QUOTES, 'UTF-8')); ?>
 			</div>
 		</div>
 		<div class="mod-preview-wrapper">

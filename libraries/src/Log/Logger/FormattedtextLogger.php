@@ -127,15 +127,10 @@ class FormattedtextLogger extends Logger
             return;
         }
 
-        // Initialise the file if not already done.
-        $this->initFile();
-
         // Format all lines and write to file.
         $lines = array_map(array($this, 'formatLine'), $this->deferredEntries);
 
-        if (!\JFile::append($this->path, implode("\n", $lines) . "\n")) {
-            throw new \RuntimeException('Cannot write to log file.');
-        }
+        $this->appendToFile(implode("\n", $lines) . "\n");
     }
 
     /**
@@ -156,16 +151,11 @@ class FormattedtextLogger extends Logger
         }
         // Write it immediately.
         else {
-            // Initialise the file if not already done.
-            $this->initFile();
-
             // Write the new entry to the file.
             $line = $this->formatLine($entry);
             $line .= "\n";
 
-            if (!\JFile::append($this->path, $line)) {
-                throw new \RuntimeException('Cannot write to log file.');
-            }
+            $this->appendToFile($line);
         }
     }
 
@@ -245,9 +235,68 @@ class FormattedtextLogger extends Logger
     }
 
     /**
-     * Method to initialise the log file.  This will create the folder path to the file if it doesn't already
-     * exist and also get a new file header if the file doesn't already exist.  If the file already exists it
-     * will simply open it for writing.
+     * Appends to the log file, with the file's header when it's new or empty, through one locked handle: the header was
+     * written separately from the entries, so a file removed in between (log rotation) was created again without it, and
+     * a .php log file without its die() could run what a request had put into the log
+     *
+     * @param   string  $data  The formatted lines
+     *
+     * @return  void
+     *
+     * @since   3.19.0
+     * @throws  \RuntimeException
+     */
+    protected function appendToFile($data)
+    {
+        $folder = dirname($this->path);
+
+        if (!is_dir($folder) && !\JFolder::create($folder)) {
+            throw new \RuntimeException('Cannot write to log file.');
+        }
+
+        // "c+" creates a missing file without emptying an existing one
+        $handle = @fopen($this->path, 'c+');
+
+        if ($handle === false) {
+            throw new \RuntimeException('Cannot write to log file.');
+        }
+
+        try {
+            $stat = flock($handle, LOCK_EX) ? fstat($handle) : false;
+
+            if ($stat === false) {
+                throw new \RuntimeException('Cannot write to log file.');
+            }
+
+            if ((int) $stat['size'] === 0) {
+                $data = $this->generateFileHeader() . $data;
+            } elseif (fseek($handle, 0, SEEK_END) !== 0) {
+                throw new \RuntimeException('Cannot write to log file.');
+            }
+
+            $length  = strlen($data);
+            $written = 0;
+
+            while ($written < $length) {
+                $result = fwrite($handle, substr($data, $written));
+
+                if ($result === false || $result === 0) {
+                    throw new \RuntimeException('Cannot write to log file.');
+                }
+
+                $written += $result;
+            }
+
+            fflush($handle);
+            flock($handle, LOCK_UN);
+        } finally {
+            fclose($handle);
+        }
+    }
+
+    /**
+     * Method to initialise the log file: the folder and the file with its header (kept for classes extending this logger;
+     * appendToFile() does it itself)
      *
      * @return  void
      *
@@ -256,20 +305,7 @@ class FormattedtextLogger extends Logger
      */
     protected function initFile()
     {
-        // We only need to make sure the file exists
-        if (\JFile::exists($this->path)) {
-            return;
-        }
-
-        // Make sure the folder exists in which to create the log file.
-        \JFolder::create(dirname($this->path));
-
-        // Build the log file header.
-        $head = $this->generateFileHeader();
-
-        if (!\JFile::write($this->path, $head)) {
-            throw new \RuntimeException('Cannot write to log file.');
-        }
+        $this->appendToFile('');
     }
 
     /**

@@ -75,6 +75,12 @@ A short overview of each release. Every change is described in detail in [CHANGE
 - The windows for choosing an article, category, contact, news feed, menu item or module position, and those for creating or editing one from a field, share one piece of code instead of a copy each, and 15 files Joomla 3 hadn't used since 2016 are gone; they work as before
 **Security fixes:**
 - Multilingual Associations: a crafted link opened by a logged-in administrator could add code to the page that picks an item to associate (an old Joomla 3 issue)
+- Joomla's security release of November 2026 (Joomla 6.2.1 and 5.4.11): all 58 issues were checked, and the 32 that also affect Joomla 3 are fixed here (all old Joomla 3 issues):
+  - Harmful code can no longer be saved through the names of contacts, news feeds, banners, banner clients and modules, or slipped into Smart Search's search page, the administrator menu, the language installer, Content History and template archives
+  - Visitors can no longer send messages to unpublished or restricted contacts, see restricted contacts, news feeds, tags or associated items, rate articles they can't see, or send privacy requests without logging in; the site no longer opens the administrator's menu item list to visitors
+  - Editors can no longer move items into categories, or fields into other components, where they aren't allowed to create them, nor set a contact's publishing dates without the right to publish; administrators without access to Users can no longer log other users out
+  - A crafted language setting can no longer make the site run files from elsewhere, an account named like the recovery user's ID no longer gets its rights, and password reset links stop working once the password or email changes
+  - Long specially made texts no longer slow the site down (text filtering, email cloaking, Smart Search); log files always keep their protective first line; Install from Web no longer sends your form's security token to extension providers
 
 **Bug fixes:**
 - **Extensions:**

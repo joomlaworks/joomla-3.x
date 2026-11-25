@@ -26,18 +26,18 @@ JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
 <?php foreach ($this->item->data as $name => $value) : ?>
 	<tr>
 	<?php if (is_object($value->value)) : ?>
-		<td><strong><?php echo $value->label; ?></strong></td>
+		<td><strong><?php echo $this->escape($value->label); ?></strong></td>
 		<td></td><tr>
 		<?php foreach ($value->value as $subName => $subValue) : ?>
 			<?php if ($subValue) : ?>
 				<tr>
-				<td><i>&nbsp;&nbsp;<?php echo $subValue->label; ?></i></td>
+				<td><i>&nbsp;&nbsp;<?php echo $this->escape($subValue->label); ?></i></td>
 				<td><?php echo $this->escape($subValue->value); ?></td>
 				</tr>
 			<?php endif; ?>
 		<?php endforeach; ?>
 	<?php else : ?>
-		<td><strong><?php echo $value->label; ?></strong></td>
+		<td><strong><?php echo $this->escape($value->label); ?></strong></td>
 		<td><?php echo $this->escape($value->value); ?></td>
 	<?php endif; ?>
 	</tr>

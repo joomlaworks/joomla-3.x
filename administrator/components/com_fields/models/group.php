@@ -10,6 +10,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * Group Model
@@ -46,6 +47,13 @@ class FieldsModelGroup extends JModelAdmin
      */
     public function save($data)
     {
+        // The user must manage the component of the context the record is saved in
+        if (!$this->canSaveContext($data)) {
+            $this->setError(JText::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'));
+
+            return false;
+        }
+
         // Alter the title for save as copy
         $input = JFactory::getApplication()->input;
 
@@ -129,6 +137,88 @@ class FieldsModelGroup extends JModelAdmin
     }
 
     /**
+     * Whether the record may be saved in its context: an existing one keeps its stored context, and the user must manage
+     * the component of that context (the request's context alone isn't enough)
+     *
+     * @param   array  $data  The form data
+     *
+     * @return  boolean
+     *
+     * @since   3.19.0
+     */
+    protected function canSaveContext(array $data)
+    {
+        $context  = isset($data['context']) && is_string($data['context']) ? $data['context'] : '';
+        $recordId = isset($data['id']) ? (int) $data['id'] : 0;
+
+        if ($recordId) {
+            $table = $this->getTable();
+
+            if ($table->load($recordId)) {
+                if ($context !== '' && $context !== $table->context) {
+                    return false;
+                }
+
+                $context = (string) $table->context;
+            }
+        }
+
+        if ($context === '') {
+            $context = (string) $this->getState('filter.context');
+        }
+
+        return $this->canManageContext($context);
+    }
+
+    /**
+     * Whether the user manages the component of a context
+     *
+     * @param   string  $context  The context, e.g. com_content.article
+     *
+     * @return  boolean
+     *
+     * @since   3.19.0
+     */
+    protected function canManageContext($context)
+    {
+        $parts = explode('.', (string) $context);
+
+        return $parts[0] !== '' && JFactory::getUser()->authorise('core.manage', $parts[0]);
+    }
+
+    /**
+     * Method to perform batch operations: every record must belong to a component the user manages
+     *
+     * @param   array  $commands  An array of commands to perform.
+     * @param   array  $pks       An array of item ids.
+     * @param   array  $contexts  An array of item contexts.
+     *
+     * @return  boolean
+     *
+     * @since   3.19.0
+     */
+    public function batch($commands, $pks, $contexts)
+    {
+        $table = $this->getTable();
+
+        foreach (ArrayHelper::toInteger((array) $pks) as $pk) {
+            if (!$pk) {
+                continue;
+            }
+
+            $table->reset();
+
+            if (!$table->load($pk) || !$this->canManageContext($table->context)) {
+                $this->setError(JText::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_EDIT'));
+
+                return false;
+            }
+        }
+
+        return parent::batch($commands, $pks, $contexts);
+    }
+
+    /**
      * Method to test whether a record can be deleted.
      *
      * @param   object  $record  A record object.
@@ -139,11 +229,14 @@ class FieldsModelGroup extends JModelAdmin
      */
     protected function canDelete($record)
     {
-        if (empty($record->id) || $record->state != -2) {
+        if (empty($record->id) || $record->state != -2 || !$this->canManageContext(isset($record->context) ? $record->context : '')) {
             return false;
         }
 
-        return JFactory::getUser()->authorise('core.delete', $record->context . '.fieldgroup.' . (int) $record->id);
+        // Group assets are named after the component (the context gave an asset that doesn't exist)
+        $parts = explode('.', (string) $record->context);
+
+        return JFactory::getUser()->authorise('core.delete', $parts[0] . '.fieldgroup.' . (int) $record->id);
     }
 
     /**
@@ -158,15 +251,21 @@ class FieldsModelGroup extends JModelAdmin
      */
     protected function canEditState($record)
     {
-        $user = JFactory::getUser();
+        // The user must manage the component of the record, not only the request's
+        if (!$this->canManageContext(isset($record->context) ? $record->context : '')) {
+            return false;
+        }
+
+        $user  = JFactory::getUser();
+        $parts = explode('.', (string) $record->context);
 
         // Check for existing fieldgroup.
         if (!empty($record->id)) {
-            return $user->authorise('core.edit.state', $record->context . '.fieldgroup.' . (int) $record->id);
+            return $user->authorise('core.edit.state', $parts[0] . '.fieldgroup.' . (int) $record->id);
         }
 
         // Default to component settings.
-        return $user->authorise('core.edit.state', $record->context);
+        return $user->authorise('core.edit.state', $parts[0]);
     }
 
     /**

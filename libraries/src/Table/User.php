@@ -261,7 +261,8 @@ class User extends Table
         $config = \JFactory::getConfig();
         $rootUser = $config->get('root_user');
 
-        if (!is_numeric($rootUser)) {
+        // A whole number is a user ID (UserHelper::isRootUser()): there's no username to protect
+        if (is_string($rootUser) && $rootUser !== '' && !ctype_digit($rootUser)) {
             $query->clear()
                 ->select($this->_db->quoteName('id'))
                 ->from($this->_db->quoteName('#__users'))
@@ -269,8 +270,8 @@ class User extends Table
             $this->_db->setQuery($query);
             $xid = (int) $this->_db->loadResult();
 
-            if ($rootUser == $this->username && (!$xid || $xid && $xid != (int) $this->id)
-                || $xid && $xid == (int) $this->id && $rootUser != $this->username) {
+            if ($rootUser === (string) $this->username && (!$xid || $xid && $xid != (int) $this->id)
+                || $xid && $xid == (int) $this->id && $rootUser !== (string) $this->username) {
                 $this->setError(\JText::_('JLIB_DATABASE_ERROR_USERNAME_CANNOT_CHANGE'));
 
                 return false;

@@ -126,18 +126,4 @@ class BannersModelClient extends JModelAdmin
 
         return $data;
     }
-
-    /**
-     * Prepare and sanitise the table prior to saving.
-     *
-     * @param   JTable  $table  A JTable object.
-     *
-     * @return  void
-     *
-     * @since   1.6
-     */
-    protected function prepareTable($table)
-    {
-        $table->name = htmlspecialchars_decode((string) $table->name, ENT_QUOTES);
-    }
 }

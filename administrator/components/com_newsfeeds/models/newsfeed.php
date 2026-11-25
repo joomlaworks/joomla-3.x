@@ -60,7 +60,7 @@ class NewsfeedsModelNewsfeed extends JModelAdmin
         }
 
         if (!empty($record->catid)) {
-            return JFactory::getUser()->authorise('core.delete', 'com_newsfeed.category.' . (int) $record->catid);
+            return JFactory::getUser()->authorise('core.delete', 'com_newsfeeds.category.' . (int) $record->catid);
         }
 
         return parent::canDelete($record);
@@ -291,7 +291,6 @@ class NewsfeedsModelNewsfeed extends JModelAdmin
         $date = JFactory::getDate();
         $user = JFactory::getUser();
 
-        $table->name = htmlspecialchars_decode((string) $table->name, ENT_QUOTES);
         $table->alias = JApplicationHelper::stringURLSafe($table->alias, $table->language);
 
         if (empty($table->alias)) {

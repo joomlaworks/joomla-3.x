@@ -58,13 +58,13 @@ $listDirn   = $this->escape($this->state->get('list.direction'));
 					<?php foreach ($this->items as $i => $item) : ?>
 						<tr class="row<?php echo $i % 2; ?>">
 							<td>
-								<?php echo $item->banner_name; ?>
+								<?php echo $this->escape($item->banner_name); ?>
 								<div class="small">
 									<?php echo JText::_('JCATEGORY') . ': ' . $this->escape($item->category_title); ?>
 								</div>
 							</td>
 							<td>
-								<?php echo $item->client_name; ?>
+								<?php echo $this->escape($item->client_name); ?>
 							</td>
 							<td class="small hidden-phone">
 								<?php echo $item->track_type == 1 ? JText::_('COM_BANNERS_IMPRESSION') : JText::_('COM_BANNERS_CLICK'); ?>

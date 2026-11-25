@@ -53,6 +53,13 @@ abstract class JHtmlTag
                 ->from('#__tags AS a')
                 ->where('a.parent_id > 0');
 
+            // Only tags the user may view
+            $user = JFactory::getUser();
+
+            if (!$user->authorise('core.admin')) {
+                $query->where('a.access IN (' . implode(',', array_map('intval', $user->getAuthorisedViewLevels())) . ')');
+            }
+
             // Filter on the published state
             if (isset($config['filter.published'])) {
                 if (is_numeric($config['filter.published'])) {

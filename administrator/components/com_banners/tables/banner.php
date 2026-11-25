@@ -62,9 +62,6 @@ class BannersTableBanner extends JTable
      */
     public function check()
     {
-        // Set name
-        $this->name = htmlspecialchars_decode($this->name, ENT_QUOTES);
-
         // Set alias
         if (trim($this->alias) == '') {
             $this->alias = $this->name;

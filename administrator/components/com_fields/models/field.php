@@ -86,6 +86,13 @@ class FieldsModelField extends JModelAdmin
      */
     public function save($data)
     {
+        // The user must manage the component of the context the record is saved in
+        if (!$this->canSaveContext($data)) {
+            $this->setError(JText::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'));
+
+            return false;
+        }
+
         $field = null;
 
         if (isset($data['id']) && $data['id']) {
@@ -686,6 +693,88 @@ class FieldsModelField extends JModelAdmin
     }
 
     /**
+     * Whether the record may be saved in its context: an existing one keeps its stored context, and the user must manage
+     * the component of that context (the request's context alone isn't enough)
+     *
+     * @param   array  $data  The form data
+     *
+     * @return  boolean
+     *
+     * @since   3.19.0
+     */
+    protected function canSaveContext(array $data)
+    {
+        $context  = isset($data['context']) && is_string($data['context']) ? $data['context'] : '';
+        $recordId = isset($data['id']) ? (int) $data['id'] : 0;
+
+        if ($recordId) {
+            $table = $this->getTable();
+
+            if ($table->load($recordId)) {
+                if ($context !== '' && $context !== $table->context) {
+                    return false;
+                }
+
+                $context = (string) $table->context;
+            }
+        }
+
+        if ($context === '') {
+            $context = (string) $this->getState('field.context');
+        }
+
+        return $this->canManageContext($context);
+    }
+
+    /**
+     * Whether the user manages the component of a context
+     *
+     * @param   string  $context  The context, e.g. com_content.article
+     *
+     * @return  boolean
+     *
+     * @since   3.19.0
+     */
+    protected function canManageContext($context)
+    {
+        $parts = explode('.', (string) $context);
+
+        return $parts[0] !== '' && JFactory::getUser()->authorise('core.manage', $parts[0]);
+    }
+
+    /**
+     * Method to perform batch operations: every record must belong to a component the user manages
+     *
+     * @param   array  $commands  An array of commands to perform.
+     * @param   array  $pks       An array of item ids.
+     * @param   array  $contexts  An array of item contexts.
+     *
+     * @return  boolean
+     *
+     * @since   3.19.0
+     */
+    public function batch($commands, $pks, $contexts)
+    {
+        $table = $this->getTable();
+
+        foreach (ArrayHelper::toInteger((array) $pks) as $pk) {
+            if (!$pk) {
+                continue;
+            }
+
+            $table->reset();
+
+            if (!$table->load($pk) || !$this->canManageContext($table->context)) {
+                $this->setError(JText::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_EDIT'));
+
+                return false;
+            }
+        }
+
+        return parent::batch($commands, $pks, $contexts);
+    }
+
+    /**
      * Method to test whether a record can be deleted.
      *
      * @param   object  $record  A record object.
@@ -696,7 +785,7 @@ class FieldsModelField extends JModelAdmin
      */
     protected function canDelete($record)
     {
-        if (empty($record->id) || $record->state != -2) {
+        if (empty($record->id) || $record->state != -2 || !$this->canManageContext(isset($record->context) ? $record->context : '')) {
             return false;
         }
 
@@ -717,6 +806,11 @@ class FieldsModelField extends JModelAdmin
      */
     protected function canEditState($record)
     {
+        // The user must manage the component of the record, not only the request's
+        if (!$this->canManageContext(isset($record->context) ? $record->context : '')) {
+            return false;
+        }
+
         $user  = JFactory::getUser();
         $parts = FieldsHelper::extract($record->context);
 
@@ -1039,25 +1133,59 @@ class FieldsModelField extends JModelAdmin
     protected function batchMove($value, $pks, $contexts)
     {
         // Set the variables
-        $user      = JFactory::getUser();
-        $table     = $this->getTable();
-        $context   = explode('.', (string) JFactory::getApplication()->getUserState('com_fields.fields.context'));
-        $value     = (int) $value;
+        $user         = JFactory::getUser();
+        $table        = $this->getTable();
+        $value        = (int) $value;
+        $groupContext = null;
+
+        // A target group must exist, and every moved field must be of its context
+        if ($value) {
+            $db    = $this->getDbo();
+            $query = $db->getQuery(true)
+                ->select($db->quoteName('context'))
+                ->from($db->quoteName('#__fields_groups'))
+                ->where($db->quoteName('id') . ' = ' . $value);
+
+            $groupContext = $db->setQuery($query)->loadResult();
+        }
+
+        $allowed = !$value || $groupContext !== null;
+
+        // Every field is checked before any is moved, by the component of its stored context (the list's context was used)
+        foreach ($pks as $pk) {
+            if (!$allowed) {
+                break;
+            }
+
+            $table->reset();
+
+            if (!$table->load($pk)) {
+                $allowed = false;
+
+                break;
+            }
+
+            $parts = explode('.', (string) $table->context);
+
+            $allowed = ($groupContext === null || $groupContext === $table->context)
+                && $user->authorise('core.edit', $parts[0] . '.fieldgroup.' . $value)
+                && $user->authorise('core.edit', $parts[0] . '.field.' . (int) $pk);
+        }
+
+        if (!$allowed) {
+            $this->setError(JText::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_EDIT'));
+
+            return false;
+        }
 
         foreach ($pks as $pk) {
-            if ($user->authorise('core.edit', $context[0] . '.fieldgroup.' . $value)) {
-                $table->reset();
-                $table->load($pk);
+            $table->reset();
+            $table->load($pk);
 
-                $table->group_id = $value;
+            $table->group_id = $value;
 
-                if (!$table->store()) {
-                    $this->setError($table->getError());
-
-                    return false;
-                }
-            } else {
-                $this->setError(JText::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_EDIT'));
+            if (!$table->store()) {
+                $this->setError($table->getError());
 
                 return false;
             }

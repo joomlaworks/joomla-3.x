@@ -77,7 +77,7 @@ JHtml::_('behavior.core');
 					<?php endif; ?>
 					<div class="list-title span<?php echo $contactWidth; ?> col-md-<?php echo $contactWidth; ?>">
 						<a href="<?php echo JRoute::_(ContactHelperRoute::getContactRoute($item->slug, $item->catid)); ?>">
-							<?php echo $item->name; ?>
+							<?php echo $this->escape($item->name); ?>
 						</a>
 						<?php if ($this->items[$i]->published == 0) : ?>
 							<span class="label label-warning">

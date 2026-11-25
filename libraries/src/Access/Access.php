@@ -999,9 +999,7 @@ class Access
 
         // Check for the recovery mode setting and return early.
         $user      = \JUser::getInstance($userId);
-        $root_user = \JFactory::getConfig()->get('root_user');
-
-        if (($user->username && $user->username == $root_user) || (is_numeric($root_user) && $user->id > 0 && $user->id == $root_user)) {
+        if (\Joomla\CMS\User\UserHelper::isRootUser($user->id, $user->username)) {
             // Find the super user levels.
             foreach (self::$viewLevels as $level => $rule) {
                 foreach ($rule as $id) {

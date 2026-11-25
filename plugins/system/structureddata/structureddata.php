@@ -116,6 +116,11 @@ class PlgSystemStructureddata extends CMSPlugin
             return;
         }
 
+        // An error answered with the page (a restricted article is a 403 with its view's message) describes nothing
+        if ($this->responseStatus($app) >= 400) {
+            return;
+        }
+
         // Never let a page fail for its metadata
         try {
             $page = $this->describePage($app, $doc);
@@ -475,9 +480,32 @@ class PlgSystemStructureddata extends CMSPlugin
             ->select($db->quoteName(array('id', 'title', 'description', 'images', 'metadesc')))
             ->from($db->quoteName('#__tags'))
             ->where($db->quoteName('id') . ' = ' . (int) $id)
-            ->where($db->quoteName('published') . ' = 1');
+            ->where($db->quoteName('published') . ' = 1')
+            ->where($db->quoteName('access') . ' IN (' . implode(',', array_map('intval', Factory::getUser()->getAuthorisedViewLevels())) . ')');
 
         return $db->setQuery($query)->loadObject() ?: null;
+    }
+
+    /**
+     * The response's status code so far (200 when none was set)
+     *
+     * @param   JApplicationCms  $app  The application
+     *
+     * @return  integer
+     *
+     * @since   3.19.0
+     */
+    protected function responseStatus($app)
+    {
+        $status = 200;
+
+        foreach ($app->getHeaders() as $header) {
+            if (strtolower((string) $header['name']) === 'status') {
+                $status = (int) $header['value'];
+            }
+        }
+
+        return $status;
     }
 
     /**

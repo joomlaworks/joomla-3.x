@@ -177,12 +177,16 @@ class ContactModelContact extends JModelAdmin
             $form->setFieldAttribute('featured', 'disabled', 'true');
             $form->setFieldAttribute('ordering', 'disabled', 'true');
             $form->setFieldAttribute('published', 'disabled', 'true');
+            $form->setFieldAttribute('publish_up', 'disabled', 'true');
+            $form->setFieldAttribute('publish_down', 'disabled', 'true');
 
             // Disable fields while saving.
             // The controller has already verified this is a record you can edit.
             $form->setFieldAttribute('featured', 'filter', 'unset');
             $form->setFieldAttribute('ordering', 'filter', 'unset');
             $form->setFieldAttribute('published', 'filter', 'unset');
+            $form->setFieldAttribute('publish_up', 'filter', 'unset');
+            $form->setFieldAttribute('publish_down', 'filter', 'unset');
         }
 
         return $form;
@@ -336,8 +340,6 @@ class ContactModelContact extends JModelAdmin
     protected function prepareTable($table)
     {
         $date = JFactory::getDate()->toSql();
-
-        $table->name = htmlspecialchars_decode((string) $table->name, ENT_QUOTES);
 
         $table->generateAlias();
 

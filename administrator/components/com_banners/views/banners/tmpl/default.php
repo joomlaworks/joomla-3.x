@@ -146,7 +146,7 @@ if ($saveOrder) {
 								<?php echo JHtml::_('banner.pinned', $item->sticky, $i, $canChange); ?>
 							</td>
 							<td class="small hidden-phone">
-								<?php echo $item->client_name; ?>
+								<?php echo $this->escape($item->client_name); ?>
 							</td>
 							<td class="small hidden-phone">
 								<?php echo JText::sprintf('COM_BANNERS_IMPRESSIONS', $item->impmade, $item->imptotal ?: JText::_('COM_BANNERS_UNLIMITED')); ?>

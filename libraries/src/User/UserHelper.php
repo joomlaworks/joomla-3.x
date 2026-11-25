@@ -885,4 +885,30 @@ abstract class UserHelper
 
         return $column . ' = ' . $db->quote((string) $value);
     }
+
+    /**
+     * Whether a user is the configuration's root_user (recovery mode): a whole number (an integer or a string of digits) is a
+     * user ID, anything else a username, compared exactly. Loose comparisons let a username such as "42" (or "42abc" before
+     * PHP 8) match a root_user given as ID 42.
+     *
+     * @param   integer  $id        The user's ID
+     * @param   string   $username  The user's username
+     * @param   mixed    $rootUser  The root_user value, the configuration's when null
+     *
+     * @return  boolean
+     *
+     * @since   3.19.0
+     */
+    public static function isRootUser($id, $username, $rootUser = null)
+    {
+        if ($rootUser === null) {
+            $rootUser = \JFactory::getConfig()->get('root_user');
+        }
+
+        if (is_int($rootUser) || (is_string($rootUser) && ctype_digit($rootUser))) {
+            return (int) $id > 0 && (int) $id === (int) $rootUser;
+        }
+
+        return is_string($rootUser) && $rootUser !== '' && is_string($username) && $username === $rootUser;
+    }
 }

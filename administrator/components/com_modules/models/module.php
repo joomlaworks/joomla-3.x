@@ -147,7 +147,7 @@ class ModulesModelModule extends JModelAdmin
                 } elseif ($value == 'nochange') {
                     $position = $table->position;
                 } else {
-                    $position = $value;
+                    $position = JFilterInput::getInstance()->clean($value, 'string');
                 }
 
                 $table->position = $position;
@@ -253,7 +253,7 @@ class ModulesModelModule extends JModelAdmin
                 } elseif ($value == 'nochange') {
                     $position = $table->position;
                 } else {
-                    $position = $value;
+                    $position = JFilterInput::getInstance()->clean($value, 'string');
                 }
 
                 $table->position = $position;
@@ -742,7 +742,8 @@ class ModulesModelModule extends JModelAdmin
      */
     protected function prepareTable($table)
     {
-        $table->title    = htmlspecialchars_decode((string) $table->title, ENT_QUOTES);
+        // The title isn't decoded: the form's filter already turned entities into characters, so decoding again made
+        // markup of "&amp;lt;" entities into real tags, which module chromes print as they are
         $table->position = trim((string) $table->position);
 
         // A new module without an ordering goes last in its position (they all got 0, which dragging couldn't change)

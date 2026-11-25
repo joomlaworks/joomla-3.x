@@ -457,6 +457,21 @@ class LanguageHelper
     }
 
     /**
+     * Whether a value is a well-formed language tag (two or three lower case letters, a dash and two upper case letters, as
+     * en-GB or ast-ES): what must be checked before a tag names a folder or a file
+     *
+     * @param   mixed  $lang  The value to check
+     *
+     * @return  boolean
+     *
+     * @since   3.19.0
+     */
+    public static function isValidTag($lang)
+    {
+        return is_string($lang) && preg_match('/^[a-z]{2,3}-[A-Z]{2}$/D', $lang) === 1;
+    }
+
+    /**
      * Checks if a language exists.
      *
      * This is a simple, quick check for the directory that should contain language files for the given user.
@@ -472,8 +487,8 @@ class LanguageHelper
     {
         static $paths = array();
 
-        // Return false if no language was specified
-        if (!$lang) {
+        // Return false if no language was specified, or the value isn't a well-formed language tag
+        if (!$lang || !self::isValidTag($lang)) {
             return false;
         }
 
@@ -501,6 +516,10 @@ class LanguageHelper
      */
     public static function getMetadata($lang)
     {
+        if (!self::isValidTag($lang)) {
+            return null;
+        }
+
         $file = self::getLanguagePath(JPATH_BASE, $lang) . '/' . $lang . '.xml';
 
         if (!is_file($file)) {

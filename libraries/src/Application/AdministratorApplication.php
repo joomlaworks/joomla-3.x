@@ -428,7 +428,7 @@ class AdministratorApplication extends CMSApplication
         $rootUser = $this->get('root_user');
 
         if (property_exists('\JConfig', 'root_user')) {
-            if (\JFactory::getUser()->get('username') === $rootUser || \JFactory::getUser()->id === (string) $rootUser) {
+            if (\Joomla\CMS\User\UserHelper::isRootUser(\JFactory::getUser()->id, \JFactory::getUser()->username, $rootUser)) {
                 $this->enqueueMessage(
                     \JText::sprintf(
                         'JWARNING_REMOVE_ROOT_USER',

@@ -405,8 +405,8 @@ final class InstallationApplicationWeb extends JApplicationCms
             }
         }
 
-        // Give the user English.
-        if (empty($options['language'])) {
+        // Give the user English, also for anything but a well-formed language tag (it names the language's folder)
+        if (empty($options['language']) || !JLanguageHelper::isValidTag($options['language'])) {
             $options['language'] = 'en-GB';
         }
 

@@ -29,6 +29,17 @@ class PrivacyControllerRequest extends JControllerLegacy
         // Check the request token.
         $this->checkToken('post');
 
+        // Requests are made and confirmed by logged-in users: their account's email address is the request's
+        if (JFactory::getUser()->guest) {
+            $this->setRedirect(
+                JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode('index.php?option=com_privacy&view=confirm'), false),
+                JText::_('JGLOBAL_YOU_MUST_LOGIN_FIRST'),
+                'error'
+            );
+
+            return false;
+        }
+
         /** @var PrivacyModelConfirm $model */
         $model = $this->getModel('Confirm', 'PrivacyModel');
         $data  = $this->input->post->get('jform', array(), 'array');
@@ -74,6 +85,17 @@ class PrivacyControllerRequest extends JControllerLegacy
     {
         // Check the request token.
         $this->checkToken('post');
+
+        // Requests are made and confirmed by logged-in users: their account's email address is the request's
+        if (JFactory::getUser()->guest) {
+            $this->setRedirect(
+                JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode('index.php?option=com_privacy&view=request'), false),
+                JText::_('JGLOBAL_YOU_MUST_LOGIN_FIRST'),
+                'error'
+            );
+
+            return false;
+        }
 
         /** @var PrivacyModelRequest $model */
         $model = $this->getModel('Request', 'PrivacyModel');

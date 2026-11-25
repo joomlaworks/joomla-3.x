@@ -204,16 +204,36 @@
 			return false;
 		}
 
+		// Only the fields the developer's site needs go there: the installer's form also holds the form token
 		const form = byId('adminForm');
+		const handOff = document.createElement('form');
 
-		form.setAttribute('action', redirectUrl);
-		['task', 'install_directory', 'install_url', 'installtype', 'filter_search'].forEach((name) => {
-			form.querySelectorAll('input[name="' + name + '"]').forEach((input) => {
-				input.disabled = true;
-			});
+		handOff.method = 'post';
+		handOff.action = redirectUrl;
+		handOff.hidden = true;
+
+		['installat', 'installfrom', 'installapp'].forEach((name) => {
+			const source = form ? form.querySelector('[name="' + name + '"]') : null;
+
+			if (source) {
+				const input = document.createElement('input');
+
+				input.type = 'hidden';
+				input.name = name;
+				input.value = source.value;
+				handOff.appendChild(input);
+			}
 		});
 
-		return true;
+		document.body.appendChild(handOff);
+		handOff.submit();
+
+		// The directory's button would submit the installer's form otherwise (its inline handler may not return this)
+		if (window.event && window.event.cancelable) {
+			window.event.preventDefault();
+		}
+
+		return false;
 	};
 
 	Joomla.installfromweb = (installUrl, name) => {
